@@ -193,7 +193,7 @@ namespace Fungus
                             break;
 #if UNITY_2019_2_OR_NEWER
                 case Property.KeepAnimatorControllerStateOnDisable:
-                            iob.Value = target.keepAnimatorControllerStateOnDisable;
+                            iob.Value = target.keepAnimatorStateOnDisable;
                             break;
 #endif
                         default:
@@ -249,7 +249,7 @@ namespace Fungus
                             break;
 #if UNITY_2019_2_OR_NEWER
                         case Property.KeepAnimatorControllerStateOnDisable:
-                            target.keepAnimatorControllerStateOnDisable = iob.Value;
+                            target.keepAnimatorStateOnDisable = iob.Value;
                             break;
 #endif
                 default:
