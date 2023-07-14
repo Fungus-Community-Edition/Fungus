@@ -86,7 +86,14 @@ public class LTDescr
 	public UnityEngine.UI.Image uiImage;
 	public UnityEngine.UI.RawImage rawImage;
 	public UnityEngine.Sprite[] sprites;
-	#endif
+#endif
+
+    // Convenience Getters
+    public Transform toTrans{
+        get{
+            return optional.toTrans;
+        }
+    }
 
 	public LTDescrOptional _optional = new LTDescrOptional();
 
@@ -131,7 +138,7 @@ public class LTDescr
 			return _optional;
 		}
 		set{
-			this._optional = optional;
+			this._optional = value;
 		}
 	}
 
@@ -150,11 +157,15 @@ public class LTDescr
 		this.easeMethod = this.easeLinear;
 		this.from = this.to = Vector3.zero;
 		this._optional.reset();
-
-
 	}
 
 	// Initialize and Internal Methods
+
+    public LTDescr setFollow()
+    {
+        this.type = TweenAction.FOLLOW;
+        return this;
+    }
 
 	public LTDescr setMoveX(){
 		this.type = TweenAction.MOVE_X;
@@ -199,6 +210,11 @@ public class LTDescr
 	}
 
 	private void initFromInternal(){ this.fromInternal.x = 0; }
+
+    public LTDescr setOffset( Vector3 offset ){
+        this.toInternal = offset;
+        return this;
+    }
 
 	public LTDescr setMoveCurved(){
 		this.type = TweenAction.MOVE_CURVED;
@@ -881,6 +897,12 @@ public class LTDescr
 		return this;
 	}
 
+    public LTDescr setTarget(Transform trans)
+    {
+        this.optional.toTrans = trans;
+        return this;
+    }
+
 	private void init(){
 		this.hasInitiliazed = true;
 
@@ -892,7 +914,8 @@ public class LTDescr
 		if (this.time <= 0f) // avoid dividing by zero
 			this.time = Mathf.Epsilon;
 
-		this.initInternal();
+        if(this.initInternal!=null)
+    		this.initInternal();
 
 		this.diff = this.to - this.from;
 		this.diffDiv2 = this.diff * 0.5f;
