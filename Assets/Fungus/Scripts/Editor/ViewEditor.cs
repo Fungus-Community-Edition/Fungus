@@ -135,17 +135,21 @@ namespace Fungus.EditorUtils
 
             Handles.color = Color.white;
 
+            // todo: does fixing this break backwards compatibility?
+            // it only seems to throw an error in 2022
             for (int i = 0; i < 2; ++i)
             {
                 Vector3 newPos = Handles.FreeMoveHandle(handles[i],
-                                                        Quaternion.identity,
-                                                        HandleUtility.GetHandleSize(pos) * 0.1f,
-                                                        Vector3.zero,
-#if UNITY_5_6_OR_NEWER
-                                                        Handles.CubeHandleCap);
-#else
-                                                        Handles.CubeCap);
-#endif
+                    #if !UNITY_2022_1_OR_NEWER
+                        Quaternion.identity,
+                    #endif
+                        HandleUtility.GetHandleSize(pos) * 0.1f,
+                        Vector3.zero,
+                    #if UNITY_5_6_OR_NEWER
+                        Handles.CubeHandleCap);
+                    #else
+                        Handles.CubeCap);
+                    #endif
 
                 if (newPos != handles[i])
                 {

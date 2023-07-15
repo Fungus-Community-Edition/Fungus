@@ -73,7 +73,13 @@ public class JSONChecker : EditorWindow {
 #if UNITY_2017_1_OR_NEWER
 			var test = new UnityWebRequest(URL);
 			test.SendWebRequest();
+            // todo: does fixing this break backwards compatibility?
+            // it only seems to throw an error in 2022
+		#if !UNITY_2022_1_OR_NEWER
 			while (!test.isDone && !test.isNetworkError) ;
+		#else
+			while (!test.isDone && test.result != UnityWebRequest.Result.ConnectionError) ;
+		#endif
 #else
 			var test = new WWW(URL);
  			while (!test.isDone) ;
