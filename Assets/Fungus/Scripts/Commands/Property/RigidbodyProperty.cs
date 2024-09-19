@@ -72,16 +72,28 @@ namespace Fungus
                     switch (property)
                     {
                         case Property.Velocity:
+                            #if UNITY_6000
+                            iov.Value = target.linearVelocity;
+                            #else
                             iov.Value = target.velocity;
+                            #endif
                             break;
                         case Property.AngularVelocity:
                             iov.Value = target.angularVelocity;
                             break;
                         case Property.Drag:
+                            #if UNITY_6000
+                            iof.Value = target.linearDamping;
+                            #else
                             iof.Value = target.drag;
+                            #endif
                             break;
                         case Property.AngularDrag:
+                            #if UNITY_6000
+                            iof.Value = target.angularDamping;
+                            #else
                             iof.Value = target.angularDrag;
+                            #endif
                             break;
                         case Property.Mass:
                             iof.Value = target.mass;
@@ -142,16 +154,28 @@ namespace Fungus
                     switch (property)
                     {
                         case Property.Velocity:
+                            #if UNITY_6000
+                            target.linearVelocity = iov.Value;
+                            #else
                             target.velocity = iov.Value;
+                            #endif
                             break;
                         case Property.AngularVelocity:
                             target.angularVelocity = iov.Value;
                             break;
                         case Property.Drag:
+                            #if UNITY_6000
+                            target.linearDamping = iof.Value;
+                            #else
                             target.drag = iof.Value;
+                            #endif
                             break;
                         case Property.AngularDrag:
+                            #if UNITY_6000
+                            target.angularDamping = iof.Value;
+                            #else
                             target.angularDrag = iof.Value;
+                            #endif
                             break;
                         case Property.Mass:
                             target.mass = iof.Value;

@@ -73,7 +73,11 @@ namespace Fungus
                             iof.Value = target.rotation;
                             break;
                         case Property.Velocity:
+                            #if UNITY_6000
+                            iov2.Value = target.linearVelocity;
+                            #else
                             iov2.Value = target.velocity;
+                            #endif
                             break;
                         case Property.AngularVelocity:
                             iof.Value = target.angularVelocity;
@@ -94,10 +98,18 @@ namespace Fungus
                             iof.Value = target.inertia;
                             break;
                         case Property.Drag:
+                            #if UNITY_6000
+                            iof.Value = target.linearDamping;
+                            #else
                             iof.Value = target.drag;
+                            #endif
                             break;
                         case Property.AngularDrag:
+                            #if UNITY_6000
+                            iof.Value = target.angularDamping;
+                            #else
                             iof.Value = target.angularDrag;
+                            #endif
                             break;
                         case Property.GravityScale:
                             iof.Value = target.gravityScale;
@@ -134,7 +146,11 @@ namespace Fungus
                             target.rotation = iof.Value;
                             break;
                         case Property.Velocity:
+                            #if UNITY_6000
+                            target.linearVelocity = iov2.Value;
+                            #else
                             target.velocity = iov2.Value;
+                            #endif
                             break;
                         case Property.AngularVelocity:
                             target.angularVelocity = iof.Value;
@@ -152,10 +168,18 @@ namespace Fungus
                             target.inertia = iof.Value;
                             break;
                         case Property.Drag:
+                            #if UNITY_6000
+                            target.linearDamping = iof.Value;
+                            #else
                             target.drag = iof.Value;
+                            #endif
                             break;
                         case Property.AngularDrag:
+                            #if UNITY_6000
+                            target.angularDamping = iof.Value;
+                            #else
                             target.angularDrag = iof.Value;
+                            #endif
                             break;
                         case Property.GravityScale:
                             target.gravityScale = iof.Value;
