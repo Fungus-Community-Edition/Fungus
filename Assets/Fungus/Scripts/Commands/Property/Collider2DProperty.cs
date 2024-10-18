@@ -70,7 +70,13 @@ namespace Fungus
                             iob.Value = target.usedByEffector;
                             break;
                         case Property.UsedByComposite:
+
+                        // #if UNITY_6000
+                        //     iob.Value = target.compositeOperation != Collider2D.CompositeOperation.None;
+                        // #else
                             iob.Value = target.usedByComposite;
+                        // #endif
+
                             break;
                         case Property.Offset:
                             iov2.Value = target.offset;
@@ -107,7 +113,13 @@ namespace Fungus
                             target.usedByEffector = iob.Value;
                             break;
                         case Property.UsedByComposite:
+
+                        // #if UNITY_6000
+                        //     target.compositeOperation = iob.Value;
+                        // #else
                             target.usedByComposite = iob.Value;
+                        // #endif
+
                             break;
                         case Property.Offset:
                             target.offset = iov2.Value;

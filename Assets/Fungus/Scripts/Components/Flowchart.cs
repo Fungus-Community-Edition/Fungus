@@ -121,7 +121,11 @@ namespace Fungus
                 return;
             }
             
+        #if UNITY_6000
+            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
+        #else
             EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
+        #endif
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
@@ -308,7 +312,11 @@ namespace Fungus
         /// </summary>
         public static void BroadcastFungusMessage(string messageName)
         {
+        #if UNITY_6000
+            var eventHandlers = UnityEngine.Object.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
+        #else
             var eventHandlers = UnityEngine.Object.FindObjectsOfType<MessageReceived>();
+        #endif
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];

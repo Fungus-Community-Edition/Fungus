@@ -484,7 +484,11 @@ namespace Fungus.EditorUtils
             // serialization / deserialization when playing the game in the editor.
             if (fungusState == null)
             {
+            #if UNITY_6000
+                fungusState = GameObject.FindFirstObjectByType<FungusState>();
+            #else
                 fungusState = GameObject.FindObjectOfType<FungusState>();
+            #endif
                 if (fungusState == null)
                 {
                     GameObject go = new GameObject("_FungusState");

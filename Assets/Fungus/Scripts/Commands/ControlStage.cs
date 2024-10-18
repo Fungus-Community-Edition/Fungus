@@ -127,7 +127,11 @@ namespace Fungus
             if (stage == null)           
             {
                 // If no default specified, try to get any portrait stage in the scene
+            #if UNITY_6000
+                stage = GameObject.FindFirstObjectByType<Stage>();
+            #else
                 stage = FindObjectOfType<Stage>();
+            #endif
 
                 // If portrait stage does not exist, do nothing
                 if (stage == null)
@@ -142,7 +146,11 @@ namespace Fungus
             {
                 if (replacedStage == null)        // If no default specified, try to get any portrait stage in the scene
                 {
+                #if UNITY_6000
+                    replacedStage = GameObject.FindFirstObjectByType<Stage>();
+                #else
                     replacedStage = GameObject.FindObjectOfType<Stage>();
+                #endif
                 }
                 // If portrait stage does not exist, do nothing
                 if (replacedStage == null)

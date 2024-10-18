@@ -118,7 +118,13 @@ namespace Fungus
                             iob.Value = target.useFullKinematicContacts;
                             break;
                         case Property.IsKinematic:
+
+                        #if UNITY_6000
+                            iob.Value = target.bodyType == RigidbodyType2D.Kinematic;
+                        #else
                             iob.Value = target.isKinematic;
+                        #endif
+
                             break;
                         case Property.FreezeRotation:
                             iob.Value = target.freezeRotation;
@@ -188,7 +194,18 @@ namespace Fungus
                             target.useFullKinematicContacts = iob.Value;
                             break;
                         case Property.IsKinematic:
+
+                        #if UNITY_6000
+                            if (iob.Value) {
+                                target.bodyType = RigidbodyType2D.Kinematic;
+                            }
+                            else {
+                                target.bodyType = RigidbodyType2D.Dynamic;
+                            }
+                        #else
                             target.isKinematic = iob.Value;
+                        #endif
+
                             break;
                         case Property.FreezeRotation:
                             target.freezeRotation = iob.Value;

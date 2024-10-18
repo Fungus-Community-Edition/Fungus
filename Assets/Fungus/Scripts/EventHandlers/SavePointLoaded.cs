@@ -32,7 +32,11 @@ namespace Fungus
         public static void NotifyEventHandlers(string _savePointKey)
         {
             // Fire any matching SavePointLoaded event handler with matching save key.
+        #if UNITY_6000
+            var eventHandlers = Object.FindObjectsByType<SavePointLoaded>(FindObjectsSortMode.None);
+        #else
             var eventHandlers = Object.FindObjectsOfType<SavePointLoaded>();
+        #endif
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
