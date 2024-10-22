@@ -28,9 +28,9 @@ namespace Fungus
     /// <summary>
     /// Plays, loops, or stops an audiosource. Any AudioSources with the same tag as the target Audio Source will automatically be stoped.
     /// </summary>
-    [CommandInfo("Audio", 
+    [CommandInfo("Audio",
                  "Control Audio",
-                 "Plays, loops, or stops an audiosource. Any AudioSources with the same tag as the target Audio Source will automatically be stoped.")]
+                 "Plays, loops, or stops an audiosource. Any AudioSources with the same tag as the target Audio Source will automatically be stopped.")]
     [ExecuteInEditMode]
     public class ControlAudio : Command
     {
@@ -41,19 +41,26 @@ namespace Fungus
         [Tooltip("Audio clip to play")]
         [SerializeField] protected AudioSourceData _audioSource;
 
-        [Range(0,1)]
+        [Range(0, 1)]
         [Tooltip("Start audio at this volume")]
         [SerializeField] protected float startVolume = 1;
 
-        [Range(0,1)]
+        [Range(0, 1)]
         [Tooltip("End audio at this volume")]
         [SerializeField] protected float endVolume = 1;
-        
+
         [Tooltip("Time to fade between current volume level and target volume level.")]
-        [SerializeField] protected float fadeDuration; 
+        [SerializeField] protected float fadeDuration;
 
         [Tooltip("Wait until this command has finished before executing the next command.")]
         [SerializeField] protected bool waitUntilFinished = false;
+
+        protected virtual void Awake()
+        {
+            tweenArgs.Target = _audioSource;
+        }
+
+        protected AudioTweenArgs tweenArgs = new AudioTweenArgs();
 
         // If there's other music playing in the scene, assign it the same tag as the new music you want to play and
         // the old music will be automatically stopped.
@@ -66,12 +73,12 @@ namespace Fungus
                 return;
             }
 
-        #if UNITY_6000
+#if UNITY_6000
             var audioSources = GameObject.FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
-        #else
+#else
             var audioSources = GameObject.FindObjectsOfType<AudioSource>();
-        #endif
-        
+#endif
+
             for (int i = 0; i < audioSources.Length; i++)
             {
                 var a = audioSources[i];
@@ -82,19 +89,20 @@ namespace Fungus
             }
         }
 
-        protected virtual void PlayOnce() 
+        protected virtual void PlayOnce()
         {
             if (fadeDuration > 0)
             {
                 // Fade volume in
-                LeanTween.value(_audioSource.Value.gameObject, 
-                    _audioSource.Value.volume, 
-                    endVolume,
-                    fadeDuration
-                ).setOnUpdate(
-                    (float updateVolume)=>{
-                    _audioSource.Value.volume = updateVolume;
-                });
+                FadeVolumeForPlayOnce();
+                //LeanTween.value(_audioSource.Value.gameObject, 
+                //    _audioSource.Value.volume, 
+                //    endVolume,
+                //    fadeDuration
+                //).setOnUpdate(
+                //    (float updateVolume)=>{
+                //    _audioSource.Value.volume = updateVolume;
+                //});
             }
 
             _audioSource.Value.PlayOneShot(_audioSource.Value.clip);
@@ -103,6 +111,19 @@ namespace Fungus
             {
                 StartCoroutine(WaitAndContinue());
             }
+        }
+
+        protected virtual AudioTweenManager Tweener { get { return AudioTweenManager.S; } }
+
+        protected virtual void FadeVolumeForPlayOnce()
+        {
+            Tweener.CancelTween(_audioSource.Value, AudioTweenType.Volume);
+
+            tweenArgs.BaseValue = _audioSource.Value.volume;
+            tweenArgs.TargetValue = endVolume;
+            tweenArgs.HowLongToTake = fadeDuration;
+
+            Tweener.TweenAudioVolume(tweenArgs);
         }
 
         protected virtual IEnumerator WaitAndContinue()
@@ -121,22 +142,22 @@ namespace Fungus
         {
             if (fadeDuration > 0)
             {
-                _audioSource.Value.volume = 0;
+                FadeVolumeForPlayLoop();
                 _audioSource.Value.loop = true;
                 _audioSource.Value.GetComponent<AudioSource>().Play();
-                LeanTween.value(_audioSource.Value.gameObject,0,endVolume,fadeDuration
-                ).setOnUpdate(
-                    (float updateVolume)=>{
-                    _audioSource.Value.volume = updateVolume;
-                }
-                ).setOnComplete(
-                    ()=>{
-                    if (waitUntilFinished)
-                    {
-                        Continue();
-                    }
-                }
-                );
+                //LeanTween.value(_audioSource.Value.gameObject,0,endVolume,fadeDuration
+                //).setOnUpdate(
+                //    (float updateVolume)=>{
+                //    _audioSource.Value.volume = updateVolume;
+                //}
+                //).setOnComplete(
+                //    ()=>{
+                //    if (waitUntilFinished)
+                //    {
+                //        Continue();
+                //    }
+                //}
+                //);
             }
             else
             {
@@ -146,25 +167,37 @@ namespace Fungus
             }
         }
 
+        protected virtual void FadeVolumeForPlayLoop()
+        {
+            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
+
+            tweenArgs.BaseValue = 0;
+            tweenArgs.TargetValue = endVolume;
+            tweenArgs.HowLongToTake = fadeDuration;
+
+            Tweener.TweenAudioVolume(tweenArgs);
+        }
+
         protected virtual void PauseLoop()
         {
             if (fadeDuration > 0)
             {
-                LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,0,fadeDuration
-                ).setOnUpdate(
-                    (float updateVolume)=>{
-                    _audioSource.Value.volume = updateVolume;
-                }
-                ).setOnComplete(
-                    ()=>{
+                FadeVolumeForPauseLoop();
+                //LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,0,fadeDuration
+                //).setOnUpdate(
+                //    (float updateVolume)=>{
+                //    _audioSource.Value.volume = updateVolume;
+                //}
+                //).setOnComplete(
+                //    ()=>{
 
-                    _audioSource.Value.GetComponent<AudioSource>().Pause();
-                    if (waitUntilFinished)
-                    {
-                        Continue();
-                    }
-                }
-                );
+                //    _audioSource.Value.GetComponent<AudioSource>().Pause();
+                //    if (waitUntilFinished)
+                //    {
+                //        Continue();
+                //    }
+                //}
+                //);
             }
             else
             {
@@ -172,25 +205,45 @@ namespace Fungus
             }
         }
 
+        protected virtual void FadeVolumeForPauseLoop()
+        {
+            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
+
+            tweenArgs.BaseValue = _audioSource.Value.volume;
+            tweenArgs.TargetValue = 0;
+            tweenArgs.HowLongToTake = fadeDuration;
+            tweenArgs.OnComplete = (AudioTweenArgs args) =>
+            {
+                _audioSource.Value.GetComponent<AudioSource>().Pause();
+                if (waitUntilFinished)
+                {
+                    Continue();
+                }
+            };
+
+            Tweener.TweenAudioVolume(tweenArgs);
+        }
+
         protected virtual void StopLoop(AudioSource source)
         {
             if (fadeDuration > 0)
             {
-                LeanTween.value(source.gameObject,_audioSource.Value.volume,0,fadeDuration
-                ).setOnUpdate(
-                    (float updateVolume)=>{
-                    source.volume = updateVolume;
-                }
-                ).setOnComplete(
-                    ()=>{
+                FadeVolumeForStopLoop(source);
+                //LeanTween.value(source.gameObject,_audioSource.Value.volume,0,fadeDuration
+                //).setOnUpdate(
+                //    (float updateVolume)=>{
+                //    source.volume = updateVolume;
+                //}
+                //).setOnComplete(
+                //    ()=>{
 
-                    source.GetComponent<AudioSource>().Stop();
-                    if (waitUntilFinished)
-                    {
-                        Continue();
-                    }
-                }
-                );
+                //    source.GetComponent<AudioSource>().Stop();
+                //    if (waitUntilFinished)
+                //    {
+                //        Continue();
+                //    }
+                //}
+                //);
             }
             else
             {
@@ -198,19 +251,57 @@ namespace Fungus
             }
         }
 
-        protected virtual void ChangeVolume()
+        protected virtual void FadeVolumeForStopLoop(AudioSource source)
         {
-            LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,endVolume,fadeDuration
-            ).setOnUpdate(
-                (float updateVolume)=>{
-                _audioSource.Value.volume = updateVolume;
-            }).setOnComplete(
-                ()=>{
+            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
+
+            tweenArgs.BaseValue = _audioSource.Value.volume;
+            tweenArgs.TargetValue = 0;
+            tweenArgs.HowLongToTake = fadeDuration;
+            tweenArgs.OnComplete = (AudioTweenArgs args) =>
+            {
+                source.GetComponent<AudioSource>().Stop();
                 if (waitUntilFinished)
                 {
                     Continue();
                 }
-            });
+            };
+
+            Tweener.TweenAudioVolume(tweenArgs);
+        }
+
+        protected virtual void ChangeVolume()
+        {
+            FadeVolumeForChangeVolume();
+            //LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,endVolume,fadeDuration
+            //).setOnUpdate(
+            //    (float updateVolume)=>{
+            //    _audioSource.Value.volume = updateVolume;
+            //}).setOnComplete(
+            //    ()=>{
+            //    if (waitUntilFinished)
+            //    {
+            //        Continue();
+            //    }
+            //});
+        }
+
+        protected virtual void FadeVolumeForChangeVolume()
+        {
+            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
+
+            tweenArgs.BaseValue = _audioSource.Value.volume;
+            tweenArgs.TargetValue = endVolume;
+            tweenArgs.HowLongToTake = fadeDuration;
+            tweenArgs.OnComplete = (AudioTweenArgs args) =>
+            {
+                if (waitUntilFinished)
+                {
+                    Continue();
+                }
+            };
+
+            Tweener.TweenAudioVolume(tweenArgs);
         }
 
         protected virtual void AudioFinished()
@@ -231,12 +322,12 @@ namespace Fungus
                 return;
             }
 
-            if (control != ControlAudioType.ChangeVolume)
+            if (fadeDuration <= 0)
             {
                 _audioSource.Value.volume = endVolume;
             }
 
-            switch(control)
+            switch (control)
             {
                 case ControlAudioType.PlayOnce:
                     StopAudioWithSameTag();
@@ -253,7 +344,7 @@ namespace Fungus
                     StopLoop(_audioSource.Value);
                     break;
                 case ControlAudioType.ChangeVolume:
-                    ChangeVolume(); 
+                    ChangeVolume();
                     break;
             }
             if (!waitUntilFinished)
@@ -284,7 +375,7 @@ namespace Fungus
             }
             return control.ToString() + " \"" + _audioSource.Value.name + "\"" + fadeType;
         }
-        
+
         public override Color GetButtonColor()
         {
             return new Color32(242, 209, 176, 255);
@@ -299,7 +390,7 @@ namespace Fungus
 
         #region Backwards compatibility
 
-        [HideInInspector] [FormerlySerializedAs("audioSource")] public AudioSource audioSourceOLD;
+        [HideInInspector][FormerlySerializedAs("audioSource")] public AudioSource audioSourceOLD;
 
         protected virtual void OnEnable()
         {
@@ -311,5 +402,5 @@ namespace Fungus
         }
 
         #endregion
-    }    
+    }
 }
