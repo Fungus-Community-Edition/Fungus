@@ -1,3 +1,30 @@
+Fungus Community Edition
+========================
+A community revival of the Fungus project. Our goal is to maintain support for newer versions of Unity, and hopefully get Fungus back on the Asset Store.
+We would also like make extensions created by community members easier to share.
+
+Maintainers:
+============
+- [Evan Sklarski](https://github.com/esklarski)
+- [CG-Tespy](https://github.com/CG-Tespy)
+
+Compatibility:
+==============
+For now, we've Updated Fungus to work in:
+- Unity 6 LTS
+- Unity 2022 LTS
+- Unity 2021 LTS
+
+Previous versions back to Unity 5 _should_ be supported but no testing has been done so far. If you do, please let us know.
+
+
+___
+___
+___
+
+
+Original README:
+================
 Fungus
 ======
 
