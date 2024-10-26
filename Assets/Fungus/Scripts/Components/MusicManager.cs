@@ -49,6 +49,9 @@ namespace Fungus
             audioSourceDefaultVoice.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.VoiceGroup;
             audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
 
+            fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
+            fadeAmbianceVolume.Target = fadeAmbiancePitch.Target = audioSourceAmbiance;
+
         }
 
         protected AudioTweenArgs fadeMusicVolume = new AudioTweenArgs(), fadeMusicPitch = new AudioTweenArgs(),
