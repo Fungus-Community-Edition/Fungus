@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Events;
 
 namespace Fungus
 {
@@ -54,7 +56,7 @@ namespace Fungus
         }
 
         protected IList<AudioSource> sourcesRegistered = new List<AudioSource>();
-        
+
         public virtual void Unregister(AudioSource sourceToUnregister)
         {
             foreach (var holder in TweenHolders.Values)
@@ -121,27 +123,43 @@ namespace Fungus
             }
 
             CancelTween(tweenTarget, AudioTweenType.Volume);
-            process = TweenAudioVolumeProcess(args);
+            process = GeneralTweenProcess<float>(args, FloatLerper, AudioSourceVolPreUpdate);
             var volumeTweenHolder = TweenHolders[AudioTweenType.Volume];
             volumeTweenHolder[tweenTarget] = process;
         }
 
-        protected virtual IEnumerator TweenAudioVolumeProcess(AudioTweenArgs args)
+        protected virtual IEnumerator GeneralTweenProcess<TTargetVal>(TweenArgs args,
+            LerpFunc<TTargetVal> lerper,
+            UnityAction<TweenArgs, TTargetVal> preOnUpdate)
         {
-            AudioSource target = args.Target;
-            float baseVolume = args.BaseValue, targetVolume = args.TargetValue,
-                timer = 0, howLongToTake = args.HowLongToTake;
+            TTargetVal baseVal = (TTargetVal)args.BaseValue, targetVal = (TTargetVal)args.TargetValue;
+            float timer = 0, howLongToTake = args.HowLongToTake;
 
             while (timer < howLongToTake)
             {
                 timer += Time.deltaTime;
-                float howFarAlong = timer / howLongToTake;
-                float newVol = Mathf.Lerp(baseVolume, targetVolume, howFarAlong);
-                target.volume = newVol;
+                float howFarAlong = Mathf.Clamp(timer / howLongToTake, 0, 1);
+                // ^We don't want to overshoot things when we get to the end
+                TTargetVal newVal = lerper(baseVal, targetVal, howFarAlong);
+                preOnUpdate(args, newVal);
+                args.OnUpdate(newVal);
                 yield return waitForEndOfFrame;
             }
 
-            args.OnComplete(args);
+            args.OnUpdate(args);
+
+        }
+
+        protected virtual float FloatLerper(float baseVal, float targetVal, float howFarAlong)
+        {
+            float result = baseVal + (targetVal - baseVal) * howFarAlong;
+            return result;
+        }
+
+        protected virtual void AudioSourceVolPreUpdate(TweenArgs args, float newVol)
+        {
+            AudioTweenArgs audioArgs = args as AudioTweenArgs;
+            audioArgs.Target.volume = newVol;
         }
 
         public virtual void TweenAudioPitch(AudioTweenArgs args)
@@ -171,7 +189,7 @@ namespace Fungus
             }
 
             CancelTween(tweenTarget, AudioTweenType.Pitch);
-            process = TweenAudioVolumeProcess(args);
+            process = TweenAudioPitchProcess(args);
             var pitchTweenHolder = TweenHolders[AudioTweenType.Pitch];
             pitchTweenHolder[tweenTarget] = process;
         }
@@ -188,6 +206,7 @@ namespace Fungus
                 float howFarAlong = timer / howLongToTake;
                 float newPitch = Mathf.Lerp(basePitch, targetPitch, howFarAlong);
                 source.pitch = newPitch;
+                args.OnUpdate(newPitch);
                 yield return waitForEndOfFrame;
             }
 

@@ -1433,6 +1433,10 @@ GameObject:
   - component: {fileID: 1280780494}
   - component: {fileID: 1280780493}
   - component: {fileID: 1280780492}
+  - component: {fileID: 1280780499}
+  - component: {fileID: 1280780498}
+  - component: {fileID: 1280780497}
+  - component: {fileID: 1280780496}
   m_Layer: 0
   m_Name: FadingBGM
   m_TagString: Untagged
@@ -1514,9 +1518,8 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 1280780484}
-  selectedCommands:
-  - {fileID: 1280780483}
+  - {fileID: 1280780499}
+  selectedCommands: []
   variables:
   - {fileID: 1280780463}
   - {fileID: 1280780467}
@@ -2084,7 +2087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scope: 0
-  key: fadeDurInput
+  key: fadeDurInputField
   value: {fileID: 1115259958}
 --- !u!114 &1280780495
 MonoBehaviour:
@@ -2106,6 +2109,86 @@ MonoBehaviour:
   text:
     stringRef: {fileID: 1280780475}
     stringVal: 
+--- !u!114 &1280780496
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280780457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a0f240e2687b2a4b856f1155e356efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 1280780499}
+  suppressBlockAutoSelect: 0
+  inputFieldHolder: {fileID: 1280780494}
+  output: {fileID: 1280780493}
+--- !u!114 &1280780497
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280780457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65588da055b7c934dbadef0552665501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 24
+  indentLevel: 0
+  input:
+    stringRef: {fileID: 1280780493}
+    stringVal: 
+  output: {fileID: 1280780466}
+--- !u!114 &1280780498
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280780457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224c890584ca2cc42a187d9e5fff2a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 23
+  indentLevel: 0
+  hasTextField:
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 1688831461}
+  output: {fileID: 1280780466}
+--- !u!114 &1280780499
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280780457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 512.94476
+    y: 208.39845
+    width: 165.83
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 25
+  blockName: OnFadeDurChanged
+  description: 
+  eventHandler: {fileID: 1280780496}
+  commandList:
+  - {fileID: 1280780498}
+  - {fileID: 1280780497}
+  suppressAllAutoSelections: 0
 --- !u!1 &1559518171
 GameObject:
   m_ObjectHideFlags: 0

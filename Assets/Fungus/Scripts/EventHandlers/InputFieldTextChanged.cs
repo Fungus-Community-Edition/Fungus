@@ -28,8 +28,11 @@ namespace Fungus
 
         protected virtual void OnDisable()
         {
-            InputField field = inputFieldHolder.Value.GetComponent<InputField>();
-            field.onValueChanged.RemoveListener(OnTextChanged);
+            if (inputFieldHolder != null && inputFieldHolder.Value != null)
+            {
+                InputField field = inputFieldHolder.Value.GetComponent<InputField>();
+                field.onValueChanged.RemoveListener(OnTextChanged);
+            }
         }
     }
 }
