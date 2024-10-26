@@ -75,14 +75,6 @@ namespace Fungus
             {
                 // Fade volume in
                 FadeVolumeForPlayOnce();
-                //LeanTween.value(_audioSource.Value.gameObject, 
-                //    _audioSource.Value.volume, 
-                //    endVolume,
-                //    fadeDuration
-                //).setOnUpdate(
-                //    (float updateVolume)=>{
-                //    _audioSource.Value.volume = updateVolume;
-                //});
             }
 
             _audioSource.Value.PlayOneShot(_audioSource.Value.clip);
@@ -125,19 +117,6 @@ namespace Fungus
                 FadeVolumeForPlayLoop();
                 _audioSource.Value.loop = true;
                 _audioSource.Value.GetComponent<AudioSource>().Play();
-                //LeanTween.value(_audioSource.Value.gameObject,0,endVolume,fadeDuration
-                //).setOnUpdate(
-                //    (float updateVolume)=>{
-                //    _audioSource.Value.volume = updateVolume;
-                //}
-                //).setOnComplete(
-                //    ()=>{
-                //    if (waitUntilFinished)
-                //    {
-                //        Continue();
-                //    }
-                //}
-                //);
             }
             else
             {
@@ -163,21 +142,6 @@ namespace Fungus
             if (fadeDuration > 0)
             {
                 FadeVolumeForPauseLoop();
-                //LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,0,fadeDuration
-                //).setOnUpdate(
-                //    (float updateVolume)=>{
-                //    _audioSource.Value.volume = updateVolume;
-                //}
-                //).setOnComplete(
-                //    ()=>{
-
-                //    _audioSource.Value.GetComponent<AudioSource>().Pause();
-                //    if (waitUntilFinished)
-                //    {
-                //        Continue();
-                //    }
-                //}
-                //);
             }
             else
             {
@@ -209,21 +173,6 @@ namespace Fungus
             if (fadeDuration > 0)
             {
                 FadeVolumeForStopLoop(source);
-                //LeanTween.value(source.gameObject,_audioSource.Value.volume,0,fadeDuration
-                //).setOnUpdate(
-                //    (float updateVolume)=>{
-                //    source.volume = updateVolume;
-                //}
-                //).setOnComplete(
-                //    ()=>{
-
-                //    source.GetComponent<AudioSource>().Stop();
-                //    if (waitUntilFinished)
-                //    {
-                //        Continue();
-                //    }
-                //}
-                //);
             }
             else
             {
@@ -253,17 +202,6 @@ namespace Fungus
         protected virtual void ChangeVolume()
         {
             FadeVolumeForChangeVolume();
-            //LeanTween.value(_audioSource.Value.gameObject,_audioSource.Value.volume,endVolume,fadeDuration
-            //).setOnUpdate(
-            //    (float updateVolume)=>{
-            //    _audioSource.Value.volume = updateVolume;
-            //}).setOnComplete(
-            //    ()=>{
-            //    if (waitUntilFinished)
-            //    {
-            //        Continue();
-            //    }
-            //});
         }
 
         protected virtual void FadeVolumeForChangeVolume()

@@ -101,20 +101,6 @@ namespace Fungus
                 };
 
                 Tweener.TweenAudioVolume(fadeMusicVolume);
-
-
-                //LeanTween.value(gameObject, startVolume, 0f, fadeDuration)
-                //    .setOnUpdate((v) => {
-                //        // Fade out current music
-                //        audioSourceMusic.volume = v;
-                //    }).setOnComplete(() => {
-                //        // Play new music
-                //        audioSourceMusic.volume = startVolume;
-                //        audioSourceMusic.clip = musicClip;
-                //        audioSourceMusic.loop = loop;
-                //        audioSourceMusic.time = atTime;  // May be inaccurate if the audio source is compressed http://docs.unity3d.com/ScriptReference/AudioSource-time.html BK
-                //        audioSourceMusic.Play();
-                //    });
             }
         }
 
@@ -186,21 +172,6 @@ namespace Fungus
 
             Tweener.TweenAudioPitch(fadeMusicPitch);
             Tweener.TweenAudioPitch(fadeAmbiancePitch);
-
-            //LeanTween.value(gameObject,
-            //    audioSourceMusic.pitch,
-            //    pitch,
-            //    duration).setOnUpdate((p) =>
-            //    {
-            //        audioSourceMusic.pitch = p;
-            //        audioSourceAmbiance.pitch = p;
-            //    }).setOnComplete(() =>
-            //    {
-            //        if (onComplete != null)
-            //        {
-            //            onComplete();
-            //        }
-            //    });
         }
 
         /// <summary>
@@ -233,21 +204,6 @@ namespace Fungus
 
             Tweener.TweenAudioVolume(fadeMusicVolume);
             Tweener.TweenAudioVolume(fadeAmbianceVolume);
-
-            //LeanTween.value(gameObject,
-            //    audioSourceMusic.volume,
-            //    volume,
-            //    duration).setOnUpdate((v) =>
-            //    {
-            //        audioSourceMusic.volume = v;
-            //        audioSourceAmbiance.volume = v;
-            //    }).setOnComplete(() =>
-            //    {
-            //        if (onComplete != null)
-            //        {
-            //            onComplete();
-            //        }
-            //    });
         }
 
         /// <summary>
