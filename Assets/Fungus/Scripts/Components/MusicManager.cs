@@ -43,6 +43,9 @@ namespace Fungus
             audioSourceDefaultVoice = audioSources[3];
             audioSourceWriterSoundEffect = audioSources[4];
 
+            audioSourceMusic.pitch = audioSourceAmbiance.pitch = audioSourceSoundEffect.pitch =
+                audioSourceDefaultVoice.pitch = audioSourceWriterSoundEffect.pitch = 1;
+
             audioSourceMusic.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.MusicGroup;
             audioSourceSoundEffect.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.SFXGroup;
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
@@ -143,21 +146,19 @@ namespace Fungus
         /// <summary>
         /// Shifts the game music pitch to required value over a period of time.
         /// </summary>
-        /// <param name="pitch">The new music pitch value.</param>
+        /// <param name="pitch">The new music pitch value. Between 0 and 200.</param>
         /// <param name="duration">The length of time in seconds needed to complete the pitch change.</param>
         /// <param name="onComplete">A delegate method to call when the pitch shift has completed.</param>
-        public virtual void SetAudioPitch(float pitch, float duration, System.Action onComplete)
+        public virtual void SetAudioPitch(float pitch, float duration, System.Action onComplete = null)
         {
             // We don't want any tweens to get in the way of setting the pitch 
             // (be it immediately or through another tween), so...
-            Tweener.CancelTween(audioSourceMusic, AudioTweenType.Pitch);
-            Tweener.CancelTween(audioSourceAmbiance, AudioTweenType.Pitch);
 
             onComplete += delegate { };
             if (Mathf.Approximately(duration, 0f))
             {
-                audioSourceMusic.pitch = pitch;
-                audioSourceAmbiance.pitch = pitch;
+                audioSourceMusic.pitch = pitch / 100f;
+                audioSourceAmbiance.pitch = pitch / 100f;
                 onComplete();
                 return;
             }
@@ -170,22 +171,19 @@ namespace Fungus
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            Tweener.TweenAudioPitch(fadeMusicPitch);
-            Tweener.TweenAudioPitch(fadeAmbiancePitch);
+            NeoTweenManager.TweenAudioSourcePitch(fadeMusicPitch);
+            NeoTweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
         }
 
         /// <summary>
         /// Fades the game music volume to required level over a period of time.
         /// </summary>
-        /// <param name="volume">The new music volume value [0..1]</param>
+        /// <param name="volume">The new music volume value (range from 0 for silent to 100 for max)</param>
         /// <param name="duration">The length of time in seconds needed to complete the volume change.</param>
         /// <param name="onComplete">Delegate function to call when fade completes.</param>
         public virtual void SetAudioVolume(float volume, float duration, System.Action onComplete)
         {
             onComplete += delegate { };
-            Tweener.CancelTween(audioSourceMusic, AudioTweenType.Volume);
-            Tweener.CancelTween(audioSourceAmbiance, AudioTweenType.Volume);
-
             if (Mathf.Approximately(duration, 0f))
             {
                 audioSourceMusic.volume = volume;
@@ -202,8 +200,8 @@ namespace Fungus
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            Tweener.TweenAudioVolume(fadeMusicVolume);
-            Tweener.TweenAudioVolume(fadeAmbianceVolume);
+            NeoTweenManager.TweenAudioSourceVolume(fadeMusicVolume);
+            NeoTweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

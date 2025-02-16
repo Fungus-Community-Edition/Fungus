@@ -2076,7 +2076,6 @@ GameObject:
   - component: {fileID: 1280780470}
   - component: {fileID: 1280780469}
   - component: {fileID: 1280780468}
-  - component: {fileID: 1280780467}
   - component: {fileID: 1280780466}
   - component: {fileID: 1280780465}
   - component: {fileID: 1280780464}
@@ -2106,6 +2105,7 @@ GameObject:
   - component: {fileID: 1280780497}
   - component: {fileID: 1280780496}
   - component: {fileID: 1280780500}
+  - component: {fileID: 1280780501}
   m_Layer: 0
   m_Name: FadingBGM
   m_TagString: Untagged
@@ -2142,7 +2142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 195.0989
+    x: 194.0989
     y: 99
     width: 67.41
     height: 40
@@ -2175,7 +2175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 28.797258, y: 244.45639}
+  scrollPos: {x: -21.701103, y: 303.10977}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 240
@@ -2187,12 +2187,11 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 1280780479}
+  - {fileID: 1280780470}
   selectedCommands:
-  - {fileID: 1280780485}
+  - {fileID: 1280780465}
   variables:
   - {fileID: 1280780463}
-  - {fileID: 1280780467}
   - {fileID: 1280780466}
   - {fileID: 1280780464}
   - {fileID: 1280780476}
@@ -2201,6 +2200,7 @@ MonoBehaviour:
   - {fileID: 1280780487}
   - {fileID: 1280780486}
   - {fileID: 1280780494}
+  - {fileID: 1280780501}
   description: 
   stepPause: 0
   colorCommands: 1
@@ -2278,7 +2278,7 @@ MonoBehaviour:
     floatRef: {fileID: 1280780464}
     floatVal: 1
   endVolume:
-    floatRef: {fileID: 1280780467}
+    floatRef: {fileID: 1280780501}
     floatVal: 1
   fadeDuration:
     floatRef: {fileID: 1280780466}
@@ -2302,21 +2302,6 @@ MonoBehaviour:
   scope: 0
   key: fadeDur
   value: 3
---- !u!114 &1280780467
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1280780457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: endVol
-  value: 0.8
 --- !u!114 &1280780468
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2377,7 +2362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 485.00003
+    x: 484.00003
     y: 104.000015
     width: 122.05
     height: 40
@@ -2452,7 +2437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  variable: {fileID: 1280780467}
+  variable: {fileID: 1280780501}
   outValue: {fileID: 1280780476}
 --- !u!114 &1280780475
 MonoBehaviour:
@@ -2585,7 +2570,7 @@ MonoBehaviour:
   hasTextField:
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 1809031937}
-  output: {fileID: 1280780467}
+  output: {fileID: 1280780501}
 --- !u!114 &1280780484
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2713,7 +2698,7 @@ MonoBehaviour:
   input:
     stringRef: {fileID: 1280780476}
     stringVal: 
-  output: {fileID: 1280780467}
+  output: {fileID: 1280780501}
 --- !u!114 &1280780492
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2877,6 +2862,21 @@ MonoBehaviour:
   pitch: 1
   fadeDuration: 0
   waitUntilFinished: 1
+--- !u!114 &1280780501
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280780457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: endVol
+  value: 0.8
 --- !u!1 &1439173439
 GameObject:
   m_ObjectHideFlags: 0
@@ -3361,7 +3361,7 @@ MonoBehaviour:
   scrollPos: {x: 166.58478, y: 224.4117}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
-  blockViewHeight: 240
+  blockViewHeight: 200
   zoom: 0.97
   scrollViewRect:
     serializedVersion: 2
@@ -3369,8 +3369,10 @@ MonoBehaviour:
     y: -340
     width: 1114
     height: 859
-  selectedBlocks: []
-  selectedCommands: []
+  selectedBlocks:
+  - {fileID: 1439173472}
+  selectedCommands:
+  - {fileID: 1439173481}
   variables:
   - {fileID: 1439173473}
   - {fileID: 1439173469}

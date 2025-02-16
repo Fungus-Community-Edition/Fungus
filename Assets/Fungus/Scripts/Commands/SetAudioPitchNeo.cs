@@ -4,7 +4,7 @@ namespace Fungus
 {
     [CommandInfo("Audio",
         "SetAudioPitchNeo",
-        "Le tin")]
+        "Le tin. The pitch value has to be between 0 and 2.")]
     [AddComponentMenu("")]
     public class SetAudioPitchNeo : Command
     {
@@ -29,8 +29,7 @@ namespace Fungus
             };
 
             var musicManager = FungusManager.Instance.MusicManager;
-
-            musicManager.SetAudioPitch(pitch, fadeDuration, onComplete);
+            musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
 
             if (!waitUntilFinished)
             {
@@ -40,7 +39,7 @@ namespace Fungus
 
         public override string GetSummary()
         {
-            return "Set to " + pitch + " over " + fadeDuration + " seconds.";
+            return "Set to " + pitch.Value + " over " + fadeDuration.Value + " seconds.";
         }
 
         public override Color GetButtonColor()

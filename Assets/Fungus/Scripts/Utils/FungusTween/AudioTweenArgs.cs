@@ -7,6 +7,15 @@ namespace Fungus
     {
         public UnityAction<AudioTweenArgs> OnComplete = delegate { };
 
+        public virtual float BaseValNormalized
+        {
+            get { return BaseValue / 100f; }
+        }
+        public virtual float TargValNormalized
+        {
+            get { return TargetValue / 100f; }
+        }
+
         public override void Reset()
         {
             base.Reset();
