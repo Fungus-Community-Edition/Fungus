@@ -111,17 +111,13 @@ namespace Fungus
             }
         }
 
-        protected virtual AudioTweenManager Tweener { get { return AudioTweenManager.S; } }
-
         protected virtual void FadeVolumeForPlayOnce()
         {
-            Tweener.CancelTween(_audioSource.Value, AudioTweenType.Volume);
-
             tweenArgs.BaseValue = _audioSource.Value.volume;
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            Tweener.TweenAudioVolume(tweenArgs);
+            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual IEnumerator WaitAndContinue()
@@ -167,13 +163,11 @@ namespace Fungus
 
         protected virtual void FadeVolumeForPlayLoop()
         {
-            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
-
             tweenArgs.BaseValue = 0;
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            Tweener.TweenAudioVolume(tweenArgs);
+            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void PauseLoop()
@@ -205,8 +199,6 @@ namespace Fungus
 
         protected virtual void FadeVolumeForPauseLoop()
         {
-            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
-
             tweenArgs.BaseValue = _audioSource.Value.volume;
             tweenArgs.TargetValue = 0;
             tweenArgs.HowLongToTake = fadeDuration;
@@ -219,7 +211,7 @@ namespace Fungus
                 }
             };
 
-            Tweener.TweenAudioVolume(tweenArgs);
+            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void StopLoop(AudioSource source)
@@ -251,8 +243,6 @@ namespace Fungus
 
         protected virtual void FadeVolumeForStopLoop(AudioSource source)
         {
-            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
-
             tweenArgs.BaseValue = _audioSource.Value.volume;
             tweenArgs.TargetValue = 0;
             tweenArgs.HowLongToTake = fadeDuration;
@@ -265,7 +255,7 @@ namespace Fungus
                 }
             };
 
-            Tweener.TweenAudioVolume(tweenArgs);
+            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void ChangeVolume()
@@ -286,8 +276,6 @@ namespace Fungus
 
         protected virtual void FadeVolumeForChangeVolume()
         {
-            Tweener.CancelTween(_audioSource, AudioTweenType.Volume);
-
             tweenArgs.BaseValue = _audioSource.Value.volume;
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
@@ -299,7 +287,7 @@ namespace Fungus
                 }
             };
 
-            Tweener.TweenAudioVolume(tweenArgs);
+            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void AudioFinished()

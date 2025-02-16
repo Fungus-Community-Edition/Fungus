@@ -38,7 +38,7 @@ namespace Fungus
 
             var musicManager = FungusManager.Instance.MusicManager;
 
-            musicManager.SetAudioPitch(pitch, fadeDuration, onComplete);
+            musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
 
             if (!waitUntilFinished)
             {

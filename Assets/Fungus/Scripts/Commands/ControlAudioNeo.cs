@@ -13,7 +13,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Audio",
                  "ControlAudioNeo",
-                 "Plays, loops, or stops an audiosource. Any AudioSources with the same tag as the target Audio Source will automatically be stopped. \n\nThe volume values have to be between 0 for silent and 1 for max.")]
+                 "[EXPERIMENTAL] Plays, loops, or stops an audiosource. Any AudioSources with the same tag as the target Audio Source will automatically be stopped. \n\nThe volume values have to be between 0 for silent and 1 for max.")]
     [ExecuteInEditMode]
     public class ControlAudioNeo : Command
     {

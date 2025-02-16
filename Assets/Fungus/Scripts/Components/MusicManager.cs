@@ -43,9 +43,6 @@ namespace Fungus
             audioSourceDefaultVoice = audioSources[3];
             audioSourceWriterSoundEffect = audioSources[4];
 
-            audioSourceMusic.pitch = audioSourceAmbiance.pitch = audioSourceSoundEffect.pitch =
-                audioSourceDefaultVoice.pitch = audioSourceWriterSoundEffect.pitch = 1;
-
             audioSourceMusic.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.MusicGroup;
             audioSourceSoundEffect.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.SFXGroup;
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
@@ -103,11 +100,10 @@ namespace Fungus
                     audioSourceMusic.Play();
                 };
 
-                Tweener.TweenAudioVolume(fadeMusicVolume);
+                NeoTweenManager.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
 
-        protected AudioTweenManager Tweener { get { return AudioTweenManager.S; } }
         protected virtual void CancelTweensOn(AudioSource audioSource,
             IDictionary<AudioSource, IEnumerator> tweenCache)
         {

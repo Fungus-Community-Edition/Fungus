@@ -4,7 +4,7 @@ namespace Fungus
 {
     [CommandInfo("Audio",
         "SetAudioPitchNeo",
-        "Le tin. The pitch value has to be between 0 and 2.")]
+        "[EXPERIMENTAL] Le tin. The pitch value has to be between 0 and 2.")]
     [AddComponentMenu("")]
     public class SetAudioPitchNeo : Command
     {
