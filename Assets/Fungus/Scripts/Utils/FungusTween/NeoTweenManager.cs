@@ -79,8 +79,9 @@ namespace Fungus
         }
 
         public static Tween<float> TweenFloat(Func<float> getFloatToTween, Action<float> setFloatToTween,
-            float endValue, float duration)
+            float endValue, float duration, Action onComplete = null)
         {
+            onComplete += delegate { };
             string id = $"{getFloatToTween.Target.GetHashCode()}_Float";
             object target = getFloatToTween.Target;
             float startVal = getFloatToTween();
@@ -88,7 +89,28 @@ namespace Fungus
             Tween<float> result = new Tween<float>(target, id, startVal, endValue, duration, value =>
             {
                 setFloatToTween(value);
-            });
+            })
+            .SetOnComplete(onComplete);
+
+            return result;
+        }
+
+        /// <summary>
+        /// For tweening basic primitives and vectors.
+        /// </summary>
+        public static Tween<T> TweenBasic<T>(Func<T> getValToTween, Action<T> setValToTween,
+            T endValue, float duration, Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = $"{getValToTween.Target.GetHashCode()}_{typeof(T).FullName}";
+            object target = getValToTween.Target;
+            T startVal = getValToTween();
+
+            Tween<T> result = new Tween<T>(target, id, startVal, endValue, duration, value =>
+            {
+                setValToTween(value);
+            })
+            .SetOnComplete(onComplete);
 
             return result;
         }
@@ -155,32 +177,41 @@ namespace Fungus
 
         public static Tween<float> TweenAudioSourceVolume(AudioTweenArgs args)
         {
-            return TweenAudioSourceVolume(args.Target, args.BaseValue, args.TargetValue, args.HowLongToTake);
+            void ApplyOnComplete()
+            {
+                args.OnComplete(args);
+            }
+            return TweenAudioSourceVolume(args.Target, args.BaseValue, args.TargetValue, args.HowLongToTake, ApplyOnComplete);
         }
 
         /// <summary>
         /// Uses a scale of 0 to 100
         /// </summary>
         /// <returns></returns>
-        public static Tween<float> TweenAudioSourceVolume(AudioSource source, float startVol, float endVol, float duration)
+        public static Tween<float> TweenAudioSourceVolume(AudioSource source, float startVol,
+            float endVol, float duration, Action onComplete = null)
         {
-            return TweenAudioSourceVolume01(source, startVol / 100, endVol / 100, duration);
+            return TweenAudioSourceVolume01(source, startVol / 100, endVol / 100, duration, onComplete);
         }
 
         /// <summary>
         /// Uses a scale of 0 to 2
         /// </summary>
-        public static Tween<float> TweenAudioSourceVolume01(AudioSource source, float startVol, float endVol, float duration)
+        public static Tween<float> TweenAudioSourceVolume01(AudioSource source, float startVol,
+            float endVol, float duration, Action onComplete = null)
         {
 
             string id = $"AudioSource_{source.GetInstanceID()}_Volume";
             Tween<float> result = new Tween<float>(source, id, startVol, endVol, duration, val =>
             {
                 source.volume = val;
-            });
+            })
+                .SetOnComplete(onComplete);
 
             return result;
         }
+
+        
 
     }
 }

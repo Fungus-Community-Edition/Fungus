@@ -229,37 +229,16 @@ namespace Fungus
 		/// <summary>
 		/// Perform a fullscreen fade over a duration.
 		/// </summary>
-		public virtual void Fade(float targetAlpha, float fadeDuration, Action fadeAction, LeanTweenType leanTweenType = LeanTweenType.easeInOutQuad)
+		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete, LeanTweenType leanTweenType = LeanTweenType.easeInOutQuad)
 		{
-			Debug.LogError("CameraManager's Fade funcs no longer take into account the LeanTweenType inputs");
-			
-			//StopFadeTween();
-
-			//if (Mathf.Approximately(fadeDuration, 0))
-			//{
-			//	fadeAlpha = targetAlpha;
-			//	if (fadeAction != null) fadeAction();
-			//}
-			//else
-			//{
-			//	fadeTween = LeanTween.value(fadeAlpha, targetAlpha, fadeDuration)
-			//		.setEase(leanTweenType)
-			//		.setOnUpdate((x) => fadeAlpha = x)
-			//		.setOnComplete(() =>
-			//		{
-			//			fadeAlpha = targetAlpha;
-			//			var tempFadeActin = fadeAction;
-			//			fadeAction = null;
-			//			if (tempFadeActin != null) tempFadeActin();
-			//		});
-			//}
+			Debug.LogWarning("CameraManager's Fade funcs no longer take into account the LeanTweenType inputs");
+			_neoFadeTween = NeoTweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
 		}
 
-		protected virtual async void FadeAsync(float valToTween, float targetValue,
-			float fadeDuration, Action fadeAction = null)
+		protected Tween<float> _neoFadeTween;
+		protected virtual void UpdateFadeAlpha(float newVal)
 		{
-			fadeAction += delegate { };
-
+			fadeAlpha = newVal;
 		}
 
 		/// <summary>
@@ -269,7 +248,7 @@ namespace Fungus
 			LeanTweenType fadeType = LeanTweenType.easeInOutQuad, LeanTweenType sizeTweenType = LeanTweenType.easeInOutQuad, 
 			LeanTweenType posTweenType = LeanTweenType.easeInOutQuad, LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad)
 		{
-			Debug.LogWarning("LeanTweenType arguments in CameraManager FadeToView func are being ignored");
+			Debug.LogWarning("LeanTweenType arguments in CameraManager FadeToView func are being ignored.");
 
 			swipePanActive = false;
 			fadeAlpha = 0f;
@@ -317,97 +296,135 @@ namespace Fungus
 
 		protected void StopFadeTween()
 		{
-			if (fadeTween != null)
-			{
-				LeanTween.cancel(fadeTween.id, true);
-				fadeTween = null;
-			}
+			_neoFadeTween?.FullKill();
+			//if (fadeTween != null)
+			//{
+			//	LeanTween.cancel(fadeTween.id, true);
+			//	fadeTween = null;
+			//}
 		}
 
 		protected void StopPosTweens()
 		{
-			if (sizeTween != null)
-			{
-				LeanTween.cancel(sizeTween.id, true);
-				sizeTween = null;
-			}
-			if (camPosTween != null)
-			{
-				LeanTween.cancel(camPosTween.id, true);
-				camPosTween = null;
-			}
-			if (camRotTween != null)
-			{
-				LeanTween.cancel(camRotTween.id, true);
-				camRotTween = null;
-			}
+			_camOrthoSizeTween?.FullKill();
+			_neoCamPosTween?.FullKill();
+			_neoCamRotTween?.FullKill();
+
+			//_camOrthoSizeTween = null;
+			//_neoCamPosTween = null;
+			//_neoCamRotTween = null;
 		}
+
+		protected Tween<float> _camOrthoSizeTween;
+		protected Tween<Vector3> _neoCamPosTween;
+		protected Tween<Quaternion> _neoCamRotTween;
 
 		/// <summary>
 		/// Moves camera from current position to a target position over a period of time.
 		/// </summary>
-		public virtual void PanToPosition(Camera camera, Vector3 targetPosition, Quaternion targetRotation, float targetSize, float duration, Action arriveAction,
+		public virtual void PanToPosition(Camera camera, Vector3 targetPosition, Quaternion targetRotation,
+			float targetSize, float duration, Action onPanDone,
 			LeanTweenType sizeTweenType = LeanTweenType.easeInOutQuad, LeanTweenType posTweenType = LeanTweenType.easeInOutQuad, LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad)
 		{
-			Debug.LogError("CameraManager's LeanTween-dependent funcs are deprecated to the point of no longer doing anything. Please switch to the non-LT-dependent versions.");
+			Debug.LogWarning("LeanTweenType args in CameraManager PanToPosition are being ignored.");
+			
+			if (camera == null)
+			{
+				Debug.LogWarning("Camera is null");
+				return;
+			}
 
-   //         if (camera == null)
-			//{
-			//	Debug.LogWarning("Camera is null");
-			//	return;
-			//}
+			if (setCameraZ)
+			{
+				targetPosition.z = camera.transform.position.z;
+			}
 
-			//if(setCameraZ)
-			//{
-			//	targetPosition.z = camera.transform.position.z;
-			//}
+			StopPosTweens();
+			swipePanActive = false;
 
-			//// Stop any pan that is currently active
-			//StopPosTweens();
-			//swipePanActive = false;
+			if (Mathf.Approximately(duration, 0f))
+			{
+				// Move immediately
+				camera.orthographicSize = targetSize;
+				camera.transform.SetPositionAndRotation(targetPosition, targetRotation);
+				SetCameraZ(camera);
+				onPanDone?.Invoke();
+			}
+			else
+			{
+				_camOrthoSizeTween = NeoTweenManager.TweenBasic(
+					() => camera.orthographicSize,
+					UpdateCamOrthoSize,
+					targetSize, duration,
+					OnCamPosPanTweenDone);
+				void UpdateCamOrthoSize(float newSize)
+				{
+					camera.orthographicSize = newSize;
+				}
+				void OnCamPosPanTweenDone()
+				{
+					camera.orthographicSize = targetSize;
+					onPanDone?.Invoke();
+					sizeTween = null;
+				}
 
-			//if (Mathf.Approximately(duration, 0f))
-			//{
-			//	// Move immediately
-			//	camera.orthographicSize = targetSize;
-			//	camera.transform.position = targetPosition;
-			//	camera.transform.rotation = targetRotation;
+				//sizeTween = LeanTween.value(camera.orthographicSize, targetSize, duration)
+				//	.setEase(sizeTweenType)
+				//	.setOnUpdate(x => camera.orthographicSize = x)
+				//	.setOnComplete(() =>
+				//	{
+				//		camera.orthographicSize = targetSize;
+				//		if (onPanDone != null) onPanDone();
+				//		sizeTween = null;
+				//	});
 
-			//	SetCameraZ(camera);
+				
+				_neoCamPosTween = NeoTweenManager.TweenBasic(
+					() => camera.transform.position,
+					UpdateCamPos,
+					targetPosition, duration)
+					.SetOnComplete(OnCamPosTweenDone);
+				void UpdateCamPos(Vector3 newPos)
+				{
+					camera.transform.position = newPos;
+				}
+				void OnCamPosTweenDone()
+				{
+					camera.transform.position = targetPosition;
+					_neoCamPosTween = null;
+				}
 
-			//	if (arriveAction != null)
-			//	{
-			//		arriveAction();
-			//	}
-			//}
-			//else
-			//{
-			//	sizeTween = LeanTween.value(camera.orthographicSize, targetSize, duration)
-			//		.setEase(sizeTweenType)
-			//		.setOnUpdate(x => camera.orthographicSize = x)
-			//		.setOnComplete(() =>
-			//		{
-			//			camera.orthographicSize = targetSize;
-			//			if (arriveAction != null) arriveAction();
-			//			sizeTween = null;
-			//		});
+				//camPosTween = LeanTween.move(camera.gameObject, targetPosition, duration)
+				//	.setEase(posTweenType)
+				//	.setOnComplete(() =>
+				//	{
+				//		camera.transform.position = targetPosition;
+				//		camPosTween = null;
+				//	});
 
-			//	camPosTween = LeanTween.move(camera.gameObject, targetPosition, duration)
-			//		.setEase(posTweenType)
-			//		.setOnComplete(() =>
-			//		{
-			//			camera.transform.position = targetPosition;
-			//			camPosTween = null;
-			//		});
+				Transform camTrans = camera.transform;
+				_neoCamRotTween = NeoTweenManager.TweenBasic<Quaternion>(() => camTrans.rotation,
+					UpdateCamRot,
+					targetRotation, duration,
+					OnCamRotTweenDone);
+				void UpdateCamRot(Quaternion newRot)
+				{
+					camTrans.rotation = newRot;
+				}
+				void OnCamRotTweenDone()
+				{
+					camTrans.rotation = targetRotation;
+					camRotTween = null;
+				}
 
-			//	camRotTween = LeanTween.rotate(camera.gameObject, targetRotation.eulerAngles, duration)
-			//		.setEase(rotTweenType)
-			//		.setOnComplete(() =>
-			//		{
-			//			camera.transform.rotation = targetRotation;
-			//			camRotTween = null;
-			//		});
-			//}
+				//camRotTween = LeanTween.rotate(camera.gameObject, targetRotation.eulerAngles, duration)
+				//	.setEase(rotTweenType)
+				//	.setOnComplete(() =>
+				//	{
+				//		camera.transform.rotation = targetRotation;
+				//		camRotTween = null;
+				//	});
+			}
 		}
 
 		/// <summary>
@@ -436,10 +453,7 @@ namespace Fungus
 				swipePanActive = true;
 				swipeCamera = camera;
 
-				if (arriveAction != null)
-				{
-					arriveAction();
-				}
+				arriveAction?.Invoke();
 			}); 
 		}
 
