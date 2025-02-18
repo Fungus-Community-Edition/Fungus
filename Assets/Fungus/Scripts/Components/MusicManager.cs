@@ -51,7 +51,6 @@ namespace Fungus
 
             fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
             fadeAmbianceVolume.Target = fadeAmbiancePitch.Target = audioSourceAmbiance;
-
         }
 
         protected AudioTweenArgs fadeMusicVolume = new AudioTweenArgs(), fadeMusicPitch = new AudioTweenArgs(),
@@ -100,18 +99,7 @@ namespace Fungus
                     audioSourceMusic.Play();
                 };
 
-                NeoTweenManager.TweenAudioSourceVolume(fadeMusicVolume);
-            }
-        }
-
-        protected virtual void CancelTweensOn(AudioSource audioSource,
-            IDictionary<AudioSource, IEnumerator> tweenCache)
-        {
-            IEnumerator tween = tweenCache[audioSource];
-            if (tween != null)
-            {
-                StopCoroutine(tween);
-                tweenCache[audioSource] = null;
+                TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
 
@@ -167,8 +155,8 @@ namespace Fungus
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            NeoTweenManager.TweenAudioSourcePitch(fadeMusicPitch);
-            NeoTweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
+            TweenManager.TweenAudioSourcePitch(fadeMusicPitch);
+            TweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
         }
 
         /// <summary>
@@ -196,8 +184,8 @@ namespace Fungus
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            NeoTweenManager.TweenAudioSourceVolume(fadeMusicVolume);
-            NeoTweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
+            TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
+            TweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

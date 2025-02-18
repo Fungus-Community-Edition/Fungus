@@ -5,17 +5,17 @@ using System;
 
 namespace Fungus
 {
-    public class NeoTweenManager : MonoBehaviour
+    public class TweenManager : MonoBehaviour
     {
-        protected static NeoTweenManager _s;
-        public static NeoTweenManager S
+        protected static TweenManager _s;
+        public static TweenManager S
         {
             get
             {
                 if (_s == null)
                 {
                     GameObject holder = new GameObject("FungusTweenManager");
-                    _s = holder.AddComponent<NeoTweenManager>();
+                    _s = holder.AddComponent<TweenManager>();
 
                 }
 

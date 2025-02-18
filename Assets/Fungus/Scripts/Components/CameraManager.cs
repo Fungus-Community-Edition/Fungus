@@ -232,7 +232,7 @@ namespace Fungus
 		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete, LeanTweenType leanTweenType = LeanTweenType.easeInOutQuad)
 		{
 			Debug.LogWarning("CameraManager's Fade funcs no longer take into account the LeanTweenType inputs");
-			_neoFadeTween = NeoTweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
+			_neoFadeTween = TweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
 		}
 
 		protected Tween<float> _neoFadeTween;
@@ -352,7 +352,7 @@ namespace Fungus
 			}
 			else
 			{
-				_camOrthoSizeTween = NeoTweenManager.TweenBasic(
+				_camOrthoSizeTween = TweenManager.TweenBasic(
 					() => camera.orthographicSize,
 					UpdateCamOrthoSize,
 					targetSize, duration,
@@ -379,7 +379,7 @@ namespace Fungus
 				//	});
 
 				
-				_neoCamPosTween = NeoTweenManager.TweenBasic(
+				_neoCamPosTween = TweenManager.TweenBasic(
 					() => camera.transform.position,
 					UpdateCamPos,
 					targetPosition, duration)
@@ -403,7 +403,7 @@ namespace Fungus
 				//	});
 
 				Transform camTrans = camera.transform;
-				_neoCamRotTween = NeoTweenManager.TweenBasic<Quaternion>(() => camTrans.rotation,
+				_neoCamRotTween = TweenManager.TweenBasic<Quaternion>(() => camTrans.rotation,
 					UpdateCamRot,
 					targetRotation, duration,
 					OnCamRotTweenDone);

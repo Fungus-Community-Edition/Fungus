@@ -138,7 +138,7 @@ namespace Fungus
             tweenArgs.TargetValue = endVolume * 100f;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
+            TweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual IEnumerator WaitAndContinue()
@@ -181,7 +181,7 @@ namespace Fungus
             tweenArgs.TargetValue = endVolume * 100f;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
+            TweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void PauseLoop()
@@ -210,7 +210,7 @@ namespace Fungus
                 }
             };
 
-            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
+            TweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void StopLoop(AudioSource source)
@@ -239,7 +239,7 @@ namespace Fungus
                 }
             };
 
-            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
+            TweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void ChangeVolume()
@@ -260,7 +260,7 @@ namespace Fungus
                 }
             };
 
-            NeoTweenManager.TweenAudioSourceVolume(tweenArgs);
+            TweenManager.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void AudioFinished()

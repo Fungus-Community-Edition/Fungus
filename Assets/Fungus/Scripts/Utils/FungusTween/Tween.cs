@@ -15,7 +15,7 @@ namespace Fungus
             _duration = duration;
             _onTweenUpdate = onTweenUpdate + delegate { };
 
-            NeoTweenManager.S.AddTween(this);
+            TweenManager.S.AddTween(this);
         }
 
         public virtual object Target { get; protected set; }
