@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.UI;
 
 namespace Fungus
 {
@@ -46,9 +47,20 @@ namespace Fungus
 
                 if (tween.IsComplete && !tween.WasKilled)
                 {
+                    var onCompleteToCall = tween.OnComplete;
                     tween.OnComplete();
                     tween.OnComplete = delegate { };
-                    RemoveTween(pair.Key);
+
+                    var tweenAfterOnComplete = _activeTweens[pair.Key];
+                    bool replacedTheTween = tweenAfterOnComplete != tween;
+                    // ^Like for when OnComplete involves applying a tween of the same type
+                    // on the same target as the one the OnComplete belongs to
+
+                    if (!replacedTheTween)
+                    {
+                        RemoveTween(pair.Key);
+                    }
+                    
                 }
 
                 if (tween.WasKilled)
@@ -75,6 +87,38 @@ namespace Fungus
                     color.a = val;
                     renderer.color = color;
                 });
+            return result;
+        }
+
+        public static Tween<float> TweenGraphicAlpha(Graphic graphic, float startAlpha, float endAlpha, float duration,
+            Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = $"Graphic_{graphic.GetInstanceID()}_Alpha";
+
+            Tween<float> result = new Tween<float>(graphic.gameObject, id, startAlpha,
+                endAlpha, duration, val =>
+                {
+                    Color color = graphic.color;
+                    color.a = val;
+                    graphic.color = color;
+                })
+                .SetOnComplete(onComplete);
+            return result;
+        }
+
+        public static Tween<Color> TweenGraphicColor(Graphic graphic, Color startCol, Color endCol, float duration,
+            Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = $"Graphic_{graphic.GetInstanceID()}_Color";
+
+            Tween<Color> result = new Tween<Color>(graphic.gameObject, id, startCol,
+                endCol, duration, val =>
+                {
+                    graphic.color = val;
+                })
+                .SetOnComplete(onComplete);
             return result;
         }
 
@@ -127,6 +171,18 @@ namespace Fungus
                 endScale, duration, value =>
                 {
                     transform.localScale = value;
+                });
+
+            return result;
+        }
+
+        public static Tween<Vector3> TweenPosition(Transform transform, Vector3 startPos, Vector3 endPos, float duration)
+        {
+            string id = $"Transform_{transform.GetInstanceID()}_Pos";
+            Tween<Vector3> result = new Tween<Vector3>(transform, id, startPos,
+                endPos, duration, value =>
+                {
+                    transform.position = value;
                 });
 
             return result;
@@ -211,7 +267,48 @@ namespace Fungus
             return result;
         }
 
-        
+        public static Tween<float> TweenCanvasGroupAlpha(CanvasGroup group, float startAlpha, float targAlpha,
+            float duration, Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = $"CanvasGroup_{group.GetInstanceID()}_Alpha";
 
+            void UpdateTheAlpha(float newAlpha)
+            {
+                group.alpha = newAlpha;
+            }
+            Tween<float> result = new Tween<float>(group, id, startAlpha, targAlpha, duration, UpdateTheAlpha)
+            .SetOnComplete(onComplete);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Kills all tween targeting the specified target
+        /// </summary>
+        public virtual void KillAllOn(object target, bool callOnComplete = true)
+        {
+            IList<ITween> toCancel = (from elem in _activeTweens.Values
+                                      where elem.Target == target
+                                      select elem).ToList();
+            foreach (var elem in toCancel)
+            {
+                if (callOnComplete)
+                {
+                    elem.OnComplete();
+                }
+
+                elem.OnCompleteKill();
+            }
+        }
+
+        public virtual bool IsTweeningOn(object target)
+        {
+            bool result = (from elem in _activeTweens.Values
+                           where elem.Target == target
+                           select elem).Count() > 0;
+
+            return result;
+        }
     }
 }

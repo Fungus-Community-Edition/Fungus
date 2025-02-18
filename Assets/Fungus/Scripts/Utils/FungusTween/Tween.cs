@@ -45,7 +45,15 @@ namespace Fungus
                     }
 
                     ElapseTimeAsNeeded();
-                    _progress = _elapsedTime / _duration;
+
+                    if (Mathf.Approximately(_duration, 0f))
+                    {
+                        _progress = 1f;
+                    }
+                    else
+                    {
+                        _progress = _elapsedTime / _duration;
+                    }
 
                     ApplyInterpolation();
                     _onUpdate?.Invoke();

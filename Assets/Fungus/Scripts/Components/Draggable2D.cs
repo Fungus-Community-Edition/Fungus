@@ -5,7 +5,6 @@
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using Fungus.DentedPixel;
 
 namespace Fungus
 {
@@ -174,12 +173,16 @@ namespace Fungus
 
                 if (returnOnCancelled)
                 {
-                    LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
+                    TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                    startingPosition, returnDuration);
+                    //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
                 }
             }
-            else if(returnOnCompleted)
+            else if (returnOnCompleted)
             {
-                LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
+                TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                    startingPosition, returnDuration);
+                //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
             }
 
             beingDragged = false;

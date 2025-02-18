@@ -159,39 +159,53 @@ namespace Fungus
         }
 
         #region Public methods
-
+        protected Tween<float> _neoFadeTween;
         public virtual void ToggleNarrativeLogView()
         {
-            if (fadeTween != null)
+            //if (fadeTween != null)
+            //{
+            //    LeanTween.cancel(fadeTween.id, true);
+            //    fadeTween = null;
+            //}
+
+            if (_neoFadeTween != null)
             {
-                LeanTween.cancel(fadeTween.id, true);
-                fadeTween = null;
+                _neoFadeTween.OnCompleteKill();
+                _neoFadeTween = null;
             }
 
+            float targAlpha, duration = 0.2f;
             if (narrativeLogActive)
             {
                 // Switch menu off
-                LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 0f, .2f)
-                    .setEase(LeanTweenType.easeOutQuint)
-                    .setOnUpdate((t) => {
-                    narrativeLogMenuGroup.alpha = t;
-                }).setOnComplete(() => {
-                    narrativeLogMenuGroup.alpha = 0f;
-                });
+                //LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 0f, .2f)
+                //    .setEase(LeanTweenType.easeOutQuint)
+                //    .setOnUpdate((t) => {
+                //    narrativeLogMenuGroup.alpha = t;
+                //}).setOnComplete(() => {
+                //    narrativeLogMenuGroup.alpha = 0f;
+                //});
+                targAlpha = 0f;
                 
             }
             else
             {
                 // Switch menu on
-                LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 1f, .2f)
-                    .setEase(LeanTweenType.easeOutQuint)
-                    .setOnUpdate((t) => {
-                    narrativeLogMenuGroup.alpha = t;
-                }).setOnComplete(() => {
-                    narrativeLogMenuGroup.alpha = 1f;
-                });
-                
+                //LeanTween.value(narrativeLogMenuGroup.gameObject, narrativeLogMenuGroup.alpha, 1f, .2f)
+                //    .setEase(LeanTweenType.easeOutQuint)
+                //    .setOnUpdate((t) => {
+                //    narrativeLogMenuGroup.alpha = t;
+                //}).setOnComplete(() => {
+                //    narrativeLogMenuGroup.alpha = 1f;
+                //});
+
+                targAlpha = 1;
             }
+
+            _neoFadeTween = TweenManager.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
+                    (newAlpha) => narrativeLogMenuGroup.alpha = newAlpha,
+                    targAlpha, duration)
+                    .SetOnComplete(() => narrativeLogMenuGroup.alpha = targAlpha);
 
             narrativeLogActive = !narrativeLogActive;
         }

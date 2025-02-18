@@ -298,9 +298,25 @@ namespace Fungus
 				var c = activeCharacters[i];
 				if (c.State.portraitImage != null)
 				{
-					if (LeanTween.isTweening(c.State.portraitImage.gameObject))
+					//if (LeanTween.isTweening(portraitGo))
+					//{
+					//	LeanTween.cancel(c.State.portraitImage.gameObject, true);
+					//	PortraitController.SetRectTransform(c.State.portraitImage.rectTransform, c.State.position);
+					//	if (c.State.dimmed == true)
+					//	{
+					//		c.State.portraitImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+					//	}
+					//	else
+					//	{
+					//		c.State.portraitImage.color = Color.white;
+					//	}
+					//}
+
+					GameObject portraitGo = c.State.portraitImage.gameObject;
+
+					if (TweenManager.S.IsTweeningOn(portraitGo))
 					{
-						LeanTween.cancel(c.State.portraitImage.gameObject, true);
+						TweenManager.S.KillAllOn(portraitGo);
 						PortraitController.SetRectTransform(c.State.portraitImage.rectTransform, c.State.position);
 						if (c.State.dimmed == true)
 						{

@@ -57,10 +57,12 @@ namespace Fungus
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            LeanTween.alpha(image.rectTransform, targetAlpha, duration).setEase(tweenType).setEase(tweenType);
+                            //LeanTween.alpha(image.rectTransform, targetAlpha, duration).setEase(tweenType).setEase(tweenType);
+                            TweenManager.TweenGraphicAlpha(image, image.color.a, targetAlpha, duration);
                             break;
                         case FadeMode.Color:
-                            LeanTween.color(image.rectTransform, targetColor, duration).setEase(tweenType).setEase(tweenType);
+                            //LeanTween.color(image.rectTransform, targetColor, duration).setEase(tweenType).setEase(tweenType);
+                            TweenManager.TweenGraphicColor(image, image.color, targetColor, duration);
                             break;
                     }
                 }
@@ -89,10 +91,12 @@ namespace Fungus
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            LeanTween.textAlpha(text.rectTransform, targetAlpha, duration).setEase(tweenType);
+                            //LeanTween.textAlpha(text.rectTransform, targetAlpha, duration).setEase(tweenType);
+                            TweenManager.TweenGraphicAlpha(text, text.color.a, targetAlpha, duration);
                             break;
                         case FadeMode.Color:
-                            LeanTween.textColor(text.rectTransform, targetColor, duration).setEase(tweenType);
+                            //LeanTween.textColor(text.rectTransform, targetColor, duration).setEase(tweenType);
+                            TweenManager.TweenGraphicColor(text, text.color, targetColor, duration);
                             break;
                     }
                 }
@@ -121,10 +125,18 @@ namespace Fungus
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            LeanTween.alpha(go, targetAlpha, duration).setEase(tweenType);
+                            //LeanTween.alpha(go, targetAlpha, duration).setEase(tweenType);
+                            Color withTargetAlpha = textMesh.color;
+                            withTargetAlpha.a = targetAlpha;
+                            TweenManager.TweenBasic<Color>(() => textMesh.color,
+                                (newCol) => textMesh.color = newCol,
+                                withTargetAlpha, duration);
                             break;
                         case FadeMode.Color:
-                            LeanTween.color(go, targetColor, duration).setEase(tweenType);
+                            //LeanTween.color(go, targetColor, duration).setEase(tweenType);
+                            TweenManager.TweenBasic<Color>(() => textMesh.color,
+                                (newCol) => textMesh.color = newCol,
+                                targetColor, duration);
                             break;
                     }
                 }
@@ -155,22 +167,25 @@ namespace Fungus
                     switch (fadeMode)
                     {
                     case FadeMode.Alpha:
-                        LeanTween.value(tmpro.gameObject, tmpro.color.a, targetAlpha.Value, duration)
-                                 .setEase(tweenType)
-                                 .setOnUpdate((float alphaValue) =>
-                                 {
-                                     Color tempColor = tmpro.color;
-                                     tempColor.a = alphaValue;
-                                     tmpro.color = tempColor;
-                                 });
+                            //LeanTween.value(tmpro.gameObject, tmpro.color.a, targetAlpha.Value, duration)
+                            //         .setEase(tweenType)
+                            //         .setOnUpdate((float alphaValue) =>
+                            //         {
+                            //             Color tempColor = tmpro.color;
+                            //             tempColor.a = alphaValue;
+                            //             tmpro.color = tempColor;
+                            //         });
+                            TweenManager.TweenGraphicAlpha(tmpro, tmpro.color.a, targetAlpha.Value, duration); ;
+
                         break;
                     case FadeMode.Color:
-                        LeanTween.value(tmpro.gameObject, tmpro.color, targetColor.Value, duration)
-                                 .setEase(tweenType)
-                                 .setOnUpdate((Color colorValue) =>
-                                 {
-                                     tmpro.color = colorValue;
-                                 });
+                        //LeanTween.value(tmpro.gameObject, tmpro.color, targetColor.Value, duration)
+                        //         .setEase(tweenType)
+                        //         .setOnUpdate((Color colorValue) =>
+                        //         {
+                        //             tmpro.color = colorValue;
+                        //         });
+                        TweenManager.TweenGraphicColor(tmpro, tmpro.color, targetColor.Value, duration);
                         break;
                     }
                 }
@@ -198,11 +213,17 @@ namespace Fungus
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            LeanTween.alphaCanvas(canvasGroup, targetAlpha, duration).setEase(tweenType);
+                            //LeanTween.alphaCanvas(canvasGroup, targetAlpha, duration).setEase(tweenType);
+                            TweenManager.TweenBasic<float>(() => canvasGroup.alpha,
+                                (newVal) => canvasGroup.alpha = newVal,
+                                targetAlpha, duration);
                             break;
                         case FadeMode.Color:
-                            LeanTween.alphaCanvas(canvasGroup, targetColor.Value.a, duration).setEase(tweenType);
-                        break;
+                            //LeanTween.alphaCanvas(canvasGroup, targetColor.Value.a, duration).setEase(tweenType);
+                            TweenManager.TweenBasic<float>(() => canvasGroup.alpha,
+                                (newVal) => canvasGroup.alpha = newVal,
+                                targetColor.Value.a, duration);
+                            break;
                     }
                 }
             }

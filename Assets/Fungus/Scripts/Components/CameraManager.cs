@@ -232,6 +232,14 @@ namespace Fungus
 		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete, LeanTweenType leanTweenType = LeanTweenType.easeInOutQuad)
 		{
 			Debug.LogWarning("CameraManager's Fade funcs no longer take into account the LeanTweenType inputs");
+
+			if (Mathf.Approximately(fadeDuration, 0))
+			{
+				fadeAlpha = targetAlpha;
+				onComplete?.Invoke();
+				return;
+			}
+
 			_neoFadeTween = TweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
 		}
 
@@ -244,7 +252,7 @@ namespace Fungus
 		/// <summary>
 		/// Fade out, move camera to view and then fade back in.
 		/// </summary>
-		public virtual void FadeToView(Camera camera, View view, float fadeDuration, bool fadeOut, Action fadeAction, 
+		public virtual void FadeToView(Camera camera, View view, float fadeDuration, bool fadeOut, Action onComplete, 
 			LeanTweenType fadeType = LeanTweenType.easeInOutQuad, LeanTweenType sizeTweenType = LeanTweenType.easeInOutQuad, 
 			LeanTweenType posTweenType = LeanTweenType.easeInOutQuad, LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad)
 		{
@@ -275,11 +283,12 @@ namespace Fungus
 				PanToPosition(camera, view.transform.position, view.transform.rotation, view.ViewSize, 0f, null, sizeTweenType, posTweenType, rotTweenType);
 
 				// Fade in
-				Fade(0f, inDuration, delegate
+				Fade(0f, inDuration, () =>
 				{
-					if (fadeAction != null)
+					
+					if (onComplete != null)
 					{
-						fadeAction();
+						onComplete();
 					}
 				}, fadeType);
 			}, fadeType);
@@ -306,9 +315,9 @@ namespace Fungus
 
 		protected void StopPosTweens()
 		{
-			_camOrthoSizeTween?.FullKill();
-			_neoCamPosTween?.FullKill();
-			_neoCamRotTween?.FullKill();
+			_camOrthoSizeTween?.OnCompleteKill();
+			_neoCamPosTween?.OnCompleteKill();
+			_neoCamRotTween?.OnCompleteKill();
 
 			//_camOrthoSizeTween = null;
 			//_neoCamPosTween = null;
