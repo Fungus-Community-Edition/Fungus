@@ -1,29 +1,21 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 
 namespace Fungus
 {
-    /// <summary>
-    /// Sets the global pitch level for audio played with Play Music and Play Sound commands.
-    /// </summary>
     [CommandInfo("Audio",
-                 "Set Audio Pitch",
-                 "Sets the global pitch level for audio played with Play Music and Play Sound commands.")]
+        "SetAudioPitchNeo",
+        "[EXPERIMENTAL] Le tin. The pitch value has to be between 0 and 2.")]
     [AddComponentMenu("")]
-    public class SetAudioPitch : Command
+    public class SetAudioPitchNeo : Command
     {
-        [Range(0,1)]
         [Tooltip("Global pitch level for audio played using the Play Music and Play Sound commands")]
-        [SerializeField] protected float pitch = 1;
+        [SerializeField] protected FloatData pitch = new FloatData(1);
 
-        [Range(0,30)]
         [Tooltip("Time to fade between current pitch level and target pitch level.")]
-        [SerializeField] protected float fadeDuration; 
+        [SerializeField] protected FloatData fadeDuration;
 
         [Tooltip("Wait until the pitch change has finished before executing next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         #region Public members
 
@@ -37,7 +29,6 @@ namespace Fungus
             };
 
             var musicManager = FungusManager.Instance.MusicManager;
-
             musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
 
             if (!waitUntilFinished)
@@ -48,7 +39,7 @@ namespace Fungus
 
         public override string GetSummary()
         {
-            return "Set to " + pitch + " over " + fadeDuration + " seconds.";
+            return "Set to " + pitch.Value + " over " + fadeDuration.Value + " seconds.";
         }
 
         public override Color GetButtonColor()

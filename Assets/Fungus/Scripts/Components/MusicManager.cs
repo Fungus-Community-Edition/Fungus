@@ -3,7 +3,8 @@
 
 using UnityEngine;
 using UnityEngine.Audio;
-using Fungus.DentedPixel;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Fungus
 {
@@ -47,7 +48,13 @@ namespace Fungus
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
             audioSourceDefaultVoice.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.VoiceGroup;
             audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
+
+            fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
+            fadeAmbianceVolume.Target = fadeAmbiancePitch.Target = audioSourceAmbiance;
         }
+
+        protected AudioTweenArgs fadeMusicVolume = new AudioTweenArgs(), fadeMusicPitch = new AudioTweenArgs(),
+            fadeAmbianceVolume = new AudioTweenArgs(), fadeAmbiancePitch = new AudioTweenArgs();
 
         protected virtual void Start()
         {
@@ -79,18 +86,20 @@ namespace Fungus
             {
                 float startVolume = audioSourceMusic.volume;
 
-                LeanTween.value(gameObject, startVolume, 0f, fadeDuration)
-                    .setOnUpdate((v) => {
-                        // Fade out current music
-                        audioSourceMusic.volume = v;
-                    }).setOnComplete(() => {
-                        // Play new music
-                        audioSourceMusic.volume = startVolume;
-                        audioSourceMusic.clip = musicClip;
-                        audioSourceMusic.loop = loop;
-                        audioSourceMusic.time = atTime;  // May be inaccurate if the audio source is compressed http://docs.unity3d.com/ScriptReference/AudioSource-time.html BK
-                        audioSourceMusic.Play();
-                    });
+                fadeMusicVolume.BaseValue = startVolume;
+                fadeMusicVolume.TargetValue = 0;
+                fadeMusicVolume.HowLongToTake = fadeDuration;
+                fadeMusicVolume.OnComplete = (AudioTweenArgs args) =>
+                {
+                    // Play new music
+                    audioSourceMusic.volume = args.BaseValue;
+                    audioSourceMusic.clip = musicClip;
+                    audioSourceMusic.loop = loop;
+                    audioSourceMusic.time = atTime;  // May be inaccurate if the audio source is compressed http://docs.unity3d.com/ScriptReference/AudioSource-time.html BK
+                    audioSourceMusic.Play();
+                };
+
+                TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
 
@@ -121,69 +130,62 @@ namespace Fungus
         /// <summary>
         /// Shifts the game music pitch to required value over a period of time.
         /// </summary>
-        /// <param name="pitch">The new music pitch value.</param>
+        /// <param name="pitch">The new music pitch value. Between 0 and 200.</param>
         /// <param name="duration">The length of time in seconds needed to complete the pitch change.</param>
         /// <param name="onComplete">A delegate method to call when the pitch shift has completed.</param>
-        public virtual void SetAudioPitch(float pitch, float duration, System.Action onComplete)
+        public virtual void SetAudioPitch(float pitch, float duration, System.Action onComplete = null)
         {
+            // We don't want any tweens to get in the way of setting the pitch 
+            // (be it immediately or through another tween), so...
+
+            onComplete += delegate { };
             if (Mathf.Approximately(duration, 0f))
             {
-                audioSourceMusic.pitch = pitch;
-                audioSourceAmbiance.pitch = pitch;
-                if (onComplete != null)
-                {
-                    onComplete();
-                }
+                audioSourceMusic.pitch = pitch / 100f;
+                audioSourceAmbiance.pitch = pitch / 100f;
+                onComplete();
                 return;
             }
 
-            LeanTween.value(gameObject,
-                audioSourceMusic.pitch,
-                pitch,
-                duration).setOnUpdate((p) =>
-                {
-                    audioSourceMusic.pitch = p;
-                    audioSourceAmbiance.pitch = p;
-                }).setOnComplete(() =>
-                {
-                    if (onComplete != null)
-                    {
-                        onComplete();
-                    }
-                });
+            fadeMusicPitch.BaseValue = fadeAmbiancePitch.BaseValue = audioSourceMusic.pitch;
+            fadeMusicPitch.TargetValue = fadeAmbiancePitch.TargetValue = pitch;
+            fadeMusicPitch.HowLongToTake = fadeAmbiancePitch.HowLongToTake = duration;
+
+            fadeMusicPitch.OnComplete = (AudioTweenArgs args) => onComplete();
+            // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
+            // through just one call of this func
+
+            TweenManager.TweenAudioSourcePitch(fadeMusicPitch);
+            TweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
         }
 
         /// <summary>
         /// Fades the game music volume to required level over a period of time.
         /// </summary>
-        /// <param name="volume">The new music volume value [0..1]</param>
+        /// <param name="volume">The new music volume value (range from 0 for silent to 100 for max)</param>
         /// <param name="duration">The length of time in seconds needed to complete the volume change.</param>
         /// <param name="onComplete">Delegate function to call when fade completes.</param>
         public virtual void SetAudioVolume(float volume, float duration, System.Action onComplete)
         {
+            onComplete += delegate { };
             if (Mathf.Approximately(duration, 0f))
             {
-                if (onComplete != null)
-                {
-                    onComplete();
-                }
                 audioSourceMusic.volume = volume;
                 audioSourceAmbiance.volume = volume;
+                onComplete();
                 return;
             }
 
-            LeanTween.value(gameObject,
-                audioSourceMusic.volume,
-                volume,
-                duration).setOnUpdate((v) => {
-                    audioSourceMusic.volume = v;
-                    audioSourceAmbiance.volume = v;
-                }).setOnComplete(() => {
-                    if (onComplete != null)
-                    {
-                        onComplete();
-                    }
-                });
+            fadeMusicVolume.BaseValue = fadeAmbianceVolume.BaseValue = audioSourceMusic.volume;
+            fadeMusicVolume.TargetValue = fadeAmbianceVolume.TargetValue = volume;
+            fadeMusicVolume.HowLongToTake = fadeAmbianceVolume.HowLongToTake = duration;
+
+            fadeMusicVolume.OnComplete = (AudioTweenArgs args) => onComplete();
+            // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
+            // through just one call of this func
+
+            TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
+            TweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

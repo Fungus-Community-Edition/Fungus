@@ -203,37 +203,56 @@ namespace Fungus
         /// </summary>
         public virtual void ToggleSaveMenu()
         {
-            if (fadeTween != null)
+            //if (fadeTween != null)
+            //{
+            //    LeanTween.cancel(fadeTween.id, true);
+            //    fadeTween = null;
+            //}
+            
+            if (_neoFadeTween != null)
             {
-                LeanTween.cancel(fadeTween.id, true);
-                fadeTween = null;
+                _neoFadeTween.OnCompleteKill();
+                _neoFadeTween = null;
             }
 
+            float targAlpha, duration = 0.2f;
             if (saveMenuActive)
             {
                 // Switch menu off
-                LeanTween.value(saveMenuGroup.gameObject, saveMenuGroup.alpha, 0f, 0.2f)
-                    .setEase(LeanTweenType.easeOutQuint)
-                    .setOnUpdate( (t) => {
-                    saveMenuGroup.alpha = t;
-                }).setOnComplete( () => {
-                    saveMenuGroup.alpha = 0f;
-                });
+                //LeanTween.value(saveMenuGroup.gameObject, saveMenuGroup.alpha, 0f, 0.2f)
+                //    .setEase(LeanTweenType.easeOutQuint)
+                //    .setOnUpdate( (t) => {
+                //    saveMenuGroup.alpha = t;
+                //}).setOnComplete( () => {
+                //    saveMenuGroup.alpha = 0f;
+                //});
+                targAlpha = 0f;
             }
             else
             {
                 // Switch menu on
-                LeanTween.value(saveMenuGroup.gameObject, saveMenuGroup.alpha, 1f, 0.2f)
-                    .setEase(LeanTweenType.easeOutQuint)
-                    .setOnUpdate( (t) => {
-                    saveMenuGroup.alpha = t;
-                }).setOnComplete( () => {
-                    saveMenuGroup.alpha = 1f;
-                });
+                //LeanTween.value(saveMenuGroup.gameObject, saveMenuGroup.alpha, 1f, 0.2f)
+                //    .setEase(LeanTweenType.easeOutQuint)
+                //    .setOnUpdate( (t) => {
+                //    saveMenuGroup.alpha = t;
+                //}).setOnComplete( () => {
+                //    saveMenuGroup.alpha = 1f;
+                //});
+
+                targAlpha = 1f;
             }
+
+            void EnsureExactlyAtTarget()
+            {
+                saveMenuGroup.alpha = targAlpha;
+            }
+            _neoFadeTween = TweenManager.TweenCanvasGroupAlpha(saveMenuGroup, saveMenuGroup.alpha, targAlpha, duration)
+                .SetOnComplete(EnsureExactlyAtTarget);
 
             saveMenuActive = !saveMenuActive;
         }
+
+        protected Tween<float> _neoFadeTween;
 
         /// <summary>
         /// Handler function called when the Save button is pressed.

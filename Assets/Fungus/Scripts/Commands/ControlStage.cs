@@ -2,7 +2,6 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
-using Fungus.DentedPixel;
 
 namespace Fungus
 {
@@ -64,11 +63,16 @@ namespace Fungus
                 return;
             }
 
-            LeanTween.value(canvasGroup.gameObject, canvasGroup.alpha, targetAlpha, duration).setOnUpdate( (float alpha) => {
-                canvasGroup.alpha = alpha;
-            }).setOnComplete( () => {
-                OnComplete();
-            });
+            //LeanTween.value(canvasGroup.gameObject, canvasGroup.alpha, targetAlpha, duration).setOnUpdate( (float alpha) => {
+            //    canvasGroup.alpha = alpha;
+            //}).setOnComplete( () => {
+            //    OnComplete();
+            //});
+
+            TweenManager.TweenBasic(() => canvasGroup.alpha,
+                (newVal) => canvasGroup.alpha = newVal,
+                targetAlpha, duration,
+                OnComplete);
         }
 
         protected virtual void MoveToFront(Stage stage)

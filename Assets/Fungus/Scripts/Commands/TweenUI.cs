@@ -39,7 +39,8 @@ namespace Fungus
 
             if (waitUntilFinished)
             {
-                LeanTween.value(gameObject, 0f, 1f, duration).setOnComplete(OnComplete);
+                //LeanTween.value(gameObject, 0f, 1f, duration).setOnComplete(OnComplete);
+                Invoke(nameof(OnComplete), duration);
             }
         }
 

@@ -298,22 +298,31 @@ namespace Fungus
         protected virtual void DoMoveTween(PortraitOptions options)
         {
             CleanPortraitOptions(options);
-
-            LeanTween.cancel(options.character.State.holder.gameObject);
+            //LeanTween.cancel(options.character.State.holder.gameObject);
+            Transform stateHolder = options.character.State.holder;
+            TweenManager.S.KillAllOn(stateHolder);
+            if (_moveTween != null)
+            {
+                _moveTween.OnCompleteKill();
+                _moveTween = null;
+            }
 
             // LeanTween doesn't handle 0 duration properly
             float duration = (options.moveDuration > 0f) ? options.moveDuration : float.Epsilon;
 
             // LeanTween.move uses the anchoredPosition, so all position images must have the same anchor position
-            LeanTween.move(options.character.State.holder.gameObject, options.toPosition.position, duration)
-                .setEase(stage.FadeEaseType);
-
+            //LeanTween.move(options.character.State.holder.gameObject, options.toPosition.position, duration)
+            //    .setEase(stage.FadeEaseType);
+            
+            Vector3 targetPos = options.toPosition.position;
+            _moveTween = TweenManager.TweenPosition(stateHolder, stateHolder.transform.position, targetPos, duration);
             if (options.waitUntilFinished)
             {
                 waitTimer = duration;
             }
         }
 
+        protected Tween<Vector3> _moveTween;
         /// <summary>
         /// Performs a deep copy of all values from one RectTransform to another.
         /// </summary>
@@ -437,19 +446,32 @@ namespace Fungus
                 HidePortrait(options.character.State.portraitImage.rectTransform, duration);
             }
 
-            options.character.State.SetPortraitImageBySprite(options.portrait);
-            options.character.State.portraitImage.rectTransform.gameObject.SetActive(true);
             
-            if(options.character.State.portraitImage.color != Color.white)
+            options.character.State.SetPortraitImageBySprite(options.portrait);
+            //portraitImage.rectTransform.gameObject.SetActive(true);
+            options.character.State.portraitImage.rectTransform.gameObject.SetActive(true);
+
+            Image portraitImage = options.character.State.portraitImage;
+            if (portraitImage.color != Color.white)
             {
-                LeanTween.color(options.character.State.portraitImage.rectTransform, Color.white, duration)
-                    .setEase(stage.FadeEaseType)
-                    .setRecursive(false);
+                //LeanTween.color(options.character.State.portraitImage.rectTransform, Color.white, duration)
+                //    .setEase(stage.FadeEaseType)
+                //    .setRecursive(false);
+                TweenManager.TweenBasic(() => portraitImage.color,
+                    (newCol) => portraitImage.color = newCol,
+                    Color.white, duration);
             }
 
-            LeanTween.alpha(options.character.State.portraitImage.rectTransform, 1f, duration)
-                .setEase(stage.FadeEaseType)
-                .setRecursive(false);
+            //LeanTween.alpha(options.character.State.portraitImage.rectTransform, 1f, duration)
+            //    .setEase(stage.FadeEaseType)
+            //    .setRecursive(false);
+
+            Color withTargetAlpha = portraitImage.color;
+            withTargetAlpha.a = 1f;
+
+            TweenManager.TweenBasic(() => portraitImage.color,
+                    (newCol) => portraitImage.color = newCol,
+                    withTargetAlpha, duration);
 
             DoMoveTween(options);
 
@@ -471,10 +493,17 @@ namespace Fungus
 
         protected virtual void HidePortrait(RectTransform rectTransform, float duration)
         {
-            LeanTween.alpha(rectTransform, 0f, duration)
-                .setEase(stage.FadeEaseType)
-                .setRecursive(false)
-                .setOnComplete(() => rectTransform.gameObject.SetActive(false));
+            //LeanTween.alpha(rectTransform, 0f, duration)
+            //    .setEase(stage.FadeEaseType)
+            //    .setRecursive(false)
+            //    .setOnComplete(() => rectTransform.gameObject.SetActive(false));
+
+            void HideTheRect()
+            {
+                rectTransform.gameObject.SetActive(false);
+            }
+            Image image = rectTransform.GetComponent<Image>();
+            TweenManager.TweenGraphicAlpha(image, image.color.a, 0f, duration, HideTheRect);
         }
 
         /// <summary>
@@ -528,7 +557,12 @@ namespace Fungus
             // LeanTween doesn't handle 0 duration properly
             float duration = (stage.FadeDuration > 0f) ? stage.FadeDuration : float.Epsilon;
 
-            LeanTween.color(character.State.portraitImage.rectTransform, targetColor, duration).setEase(stage.FadeEaseType).setRecursive(false);
+            //LeanTween.color(character.State.portraitImage.rectTransform, targetColor, duration).setEase(stage.FadeEaseType).setRecursive(false);
+
+            Image image = character.State.portraitImage;
+            TweenManager.TweenBasic(() => image.color,
+                (newCol) => image.color = newCol,
+                targetColor, duration);
         }
 
         #region Overloads and Helpers
