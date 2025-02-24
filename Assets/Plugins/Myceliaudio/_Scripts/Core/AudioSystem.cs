@@ -1,4 +1,5 @@
-#define CGT_MYCELIAUDIO_1_00_05b
+#define MYCELIAUDIO
+#define MYCELIAUDIO_1_00_05b
 using UnityEngine;
 using System.Collections.Generic;
 
