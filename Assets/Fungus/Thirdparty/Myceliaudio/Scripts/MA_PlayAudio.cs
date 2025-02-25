@@ -58,13 +58,26 @@ namespace Fungus.Myceliaudio
         public override string GetSummary()
         {
             string result;
-            if (!ValidClip)
+            bool assignedClipVar = clip.audioClipRef != null;
+            if (assignedClipVar)
             {
-                result = "Error: No clip given";
+                // In this case, we don't want to spit out an error just because the var has nothing assigned.
+                // For all we know, it could be intentional; the user might want to assign something
+                // to the var during runtime but not in the editor
+                result = $"{trackGroup} Tr {track.Value} {clip.audioClipRef.Key} ";
+
+                if (!ValidClip)
+                {
+                    result += "(has no audio assigned)";
+                }
+            }
+            else if (ValidClip)
+            {
+                result = $"{trackGroup} Tr {track.Value} {clip.Value.name}";
             }
             else
             {
-                result = $"{trackGroup} Tr {track.Value} {clip.Value.name}";
+                result = "Error: No clip or clip variable given";
             }
 
             return result;
