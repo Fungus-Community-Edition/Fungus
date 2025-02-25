@@ -1914,8 +1914,7 @@ MonoBehaviour:
     height: 859
   selectedBlocks:
   - {fileID: 1553499533}
-  selectedCommands:
-  - {fileID: 1553499536}
+  selectedCommands: []
   variables:
   - {fileID: 1553499531}
   - {fileID: 1553499530}
@@ -1998,6 +1997,11 @@ PrefabInstance:
       propertyPath: _trackGroup
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3502163439462159777, guid: 41a718333ebc01f40b82a9676f062b07,
+        type: 3}
+      propertyPath: _soundToPlay
+      value: 
+      objectReference: {fileID: 8300000, guid: aa0e4d8ef7c7c234fb236c9c51d2d12e, type: 3}
     - target: {fileID: 4848103523424832900, guid: 41a718333ebc01f40b82a9676f062b07,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2198,6 +2202,11 @@ PrefabInstance:
       propertyPath: _trackGroup
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8613952565700619793, guid: 41a718333ebc01f40b82a9676f062b07,
+        type: 3}
+      propertyPath: _soundToPlay
+      value: 
+      objectReference: {fileID: 8300000, guid: aa0e4d8ef7c7c234fb236c9c51d2d12e, type: 3}
     - target: {fileID: 8613952565700619793, guid: 41a718333ebc01f40b82a9676f062b07,
         type: 3}
       propertyPath: _applyOnStart
