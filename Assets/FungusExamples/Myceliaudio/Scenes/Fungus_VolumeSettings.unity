@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: clip
-  value: {fileID: 8300000, guid: 654ff23bf1984a34eba8be5e88a3dc4b, type: 3}
+  value: {fileID: 8300000, guid: 47724027829dfe048b5091e72864a814, type: 3}
 --- !u!114 &1553499532
 MonoBehaviour:
   m_ObjectHideFlags: 2
