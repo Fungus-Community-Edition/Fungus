@@ -11,6 +11,8 @@ namespace Fungus.Myceliaudio
         [SerializeField] protected BooleanData loop = new BooleanData(false);
         [SerializeField] protected FloatData loopStartPoint = new FloatData(0);
         [SerializeField] protected FloatData loopEndPoint = new FloatData(0);
+        [Tooltip("If true, this Command will be skipped if the clip is already playing in the specified track.")]
+        [SerializeField] protected BooleanData skipIfAlreadyPlaying = new BooleanData();
 
         public override void OnEnter()
         {
@@ -18,8 +20,14 @@ namespace Fungus.Myceliaudio
 
             if (ValidClip)
             {
-                PlayAudioArgs args = GetAudioArgs();
-                AudioSystem.S.Play(args);
+                AudioClip whatIsPlayingThere = AudioSys.GetClipPlayingAt(trackGroup, track);
+                bool alreadyPlayingThatClipThere = whatIsPlayingThere == clip;
+                bool shouldSkip = skipIfAlreadyPlaying && alreadyPlayingThatClipThere;
+                if (!shouldSkip)
+                {
+                    PlayAudioArgs args = GetAudioArgs();
+                    AudioSystem.S.Play(args);
+                }
             }
             else
             {
