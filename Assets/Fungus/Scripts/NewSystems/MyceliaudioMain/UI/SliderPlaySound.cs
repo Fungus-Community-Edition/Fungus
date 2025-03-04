@@ -36,8 +36,6 @@ namespace Amanita.Myceliaudio
 
         protected virtual void PlayTheSound()
         {
-            Debug.Log($"On cooldown: {_isOnCooldown}");
-            
 #if UNITY_EDITOR
             PrepAudioArgs(); // For when we want to change things in Play Mode
 #endif
@@ -46,7 +44,6 @@ namespace Amanita.Myceliaudio
 
         protected virtual void EndCooldown()
         {
-            Debug.Log($"No longer on cooldown!");
             _isOnCooldown = false;
         }
 
@@ -64,8 +61,6 @@ namespace Amanita.Myceliaudio
 
         protected virtual void OnSliderValueChanged(float newValue)
         {
-            Debug.Log($"SliderPlaySound playing the sound. New value: {newValue}");
-
             if (this.ShouldUseSliderStep && IsDifferentStepValue(newValue))
             {
                 PlayTheSound();
