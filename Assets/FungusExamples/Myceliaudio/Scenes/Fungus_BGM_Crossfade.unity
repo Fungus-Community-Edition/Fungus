@@ -768,6 +768,10 @@ GameObject:
   - component: {fileID: 549323103}
   - component: {fileID: 549323122}
   - component: {fileID: 549323121}
+  - component: {fileID: 549323123}
+  - component: {fileID: 549323126}
+  - component: {fileID: 549323125}
+  - component: {fileID: 549323124}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -972,19 +976,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 22.128311, y: 76.03785}
+  scrollPos: {x: 41.540398, y: 172.47392}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 200
-  zoom: 0.94000006
+  zoom: 0.85000014
   scrollViewRect:
     serializedVersion: 2
     x: -343
     y: -340
     width: 1114
     height: 859
-  selectedBlocks: []
-  selectedCommands: []
+  selectedBlocks:
+  - {fileID: 549323100}
+  selectedCommands:
+  - {fileID: 549323126}
   variables:
   - {fileID: 549323059}
   - {fileID: 549323058}
@@ -1126,6 +1132,9 @@ MonoBehaviour:
   loopEndPoint:
     floatRef: {fileID: 0}
     floatVal: 0
+  skipIfAlreadyPlaying:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
 --- !u!114 &549323069
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1156,6 +1165,9 @@ MonoBehaviour:
   loopEndPoint:
     floatRef: {fileID: 0}
     floatVal: 0
+  skipIfAlreadyPlaying:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
 --- !u!114 &549323070
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1768,6 +1780,7 @@ MonoBehaviour:
   eventHandler: {fileID: 549323081}
   commandList:
   - {fileID: 549323084}
+  - {fileID: 549323125}
   - {fileID: 549323083}
   - {fileID: 549323082}
   suppressAllAutoSelections: 0
@@ -2054,6 +2067,7 @@ MonoBehaviour:
   eventHandler: {fileID: 549323088}
   commandList:
   - {fileID: 549323090}
+  - {fileID: 549323123}
   - {fileID: 549323089}
   suppressAllAutoSelections: 0
 --- !u!114 &549323092
@@ -2285,6 +2299,7 @@ MonoBehaviour:
   eventHandler: {fileID: 549323092}
   commandList:
   - {fileID: 549323094}
+  - {fileID: 549323124}
   - {fileID: 549323093}
   suppressAllAutoSelections: 0
 --- !u!114 &549323096
@@ -2540,6 +2555,7 @@ MonoBehaviour:
   eventHandler: {fileID: 549323096}
   commandList:
   - {fileID: 549323099}
+  - {fileID: 549323126}
   - {fileID: 549323098}
   - {fileID: 549323097}
   suppressAllAutoSelections: 0
@@ -3705,6 +3721,102 @@ MonoBehaviour:
   vector3Data:
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
+--- !u!114 &549323123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549323050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 514ec18f5085cba48bbe6701e4697eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 55
+  indentLevel: 0
+  function: 1
+  inLHSValue:
+    floatRef: {fileID: 549323074}
+    floatVal: 0
+  inRHSValue:
+    floatRef: {fileID: 549323052}
+    floatVal: 0
+  outValue:
+    floatRef: {fileID: 549323074}
+    floatVal: 0
+--- !u!114 &549323124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549323050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 514ec18f5085cba48bbe6701e4697eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 58
+  indentLevel: 0
+  function: 0
+  inLHSValue:
+    floatRef: {fileID: 549323074}
+    floatVal: 0
+  inRHSValue:
+    floatRef: {fileID: 549323051}
+    floatVal: 0
+  outValue:
+    floatRef: {fileID: 549323074}
+    floatVal: 0
+--- !u!114 &549323125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549323050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 514ec18f5085cba48bbe6701e4697eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 57
+  indentLevel: 0
+  function: 0
+  inLHSValue:
+    floatRef: {fileID: 549323072}
+    floatVal: 0
+  inRHSValue:
+    floatRef: {fileID: 549323114}
+    floatVal: 0
+  outValue:
+    floatRef: {fileID: 549323072}
+    floatVal: 0
+--- !u!114 &549323126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549323050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 514ec18f5085cba48bbe6701e4697eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 56
+  indentLevel: 0
+  function: 1
+  inLHSValue:
+    floatRef: {fileID: 549323072}
+    floatVal: 0
+  inRHSValue:
+    floatRef: {fileID: 549323064}
+    floatVal: 0
+  outValue:
+    floatRef: {fileID: 549323072}
+    floatVal: 0
 --- !u!1 &563081448
 GameObject:
   m_ObjectHideFlags: 0
