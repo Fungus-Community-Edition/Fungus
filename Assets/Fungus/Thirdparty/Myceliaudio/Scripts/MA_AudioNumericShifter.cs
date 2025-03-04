@@ -1,6 +1,7 @@
 using UnityEngine;
+using Fungus;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     /// <summary>
     /// For changing some numeric value in an AudioSource. Volume, pitch, etc

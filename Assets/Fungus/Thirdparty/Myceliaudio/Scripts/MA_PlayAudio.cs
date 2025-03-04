@@ -1,7 +1,7 @@
 using UnityEngine;
-using Myceliaudio;
+using Fungus;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand

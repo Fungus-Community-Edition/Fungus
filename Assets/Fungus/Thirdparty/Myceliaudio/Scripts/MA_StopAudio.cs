@@ -1,6 +1,7 @@
 using UnityEngine;
+using Fungus;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Stop Audio", "Stops the audio playing in a specific track.")]
     public class MA_StopAudio : MyceliaudioCommand

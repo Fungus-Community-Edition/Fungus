@@ -1,7 +1,7 @@
-using Myceliaudio;
 using UnityEngine;
+using Fungus;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA GetSet Vol", "Lets you get or set the volume of an individual track or group thereof. We work with a scale of 0 for silent and 100 for max.")]
     public class MA_TrackVolume : MyceliaudioCommand

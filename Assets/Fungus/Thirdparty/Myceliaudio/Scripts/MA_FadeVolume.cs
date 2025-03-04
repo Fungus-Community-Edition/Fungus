@@ -1,7 +1,7 @@
-using Myceliaudio;
+using Fungus;
 using UnityEngine;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand

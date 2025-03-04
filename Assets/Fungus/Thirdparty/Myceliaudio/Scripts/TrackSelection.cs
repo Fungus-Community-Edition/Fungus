@@ -1,4 +1,4 @@
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     public enum TrackSelection
     {

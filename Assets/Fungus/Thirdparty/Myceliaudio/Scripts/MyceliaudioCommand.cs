@@ -1,7 +1,7 @@
 using UnityEngine;
-using Myceliaudio;
+using Fungus;
 
-namespace Fungus.Myceliaudio
+namespace Amanita.Myceliaudio
 {
     public abstract class MyceliaudioCommand : Command
     {
