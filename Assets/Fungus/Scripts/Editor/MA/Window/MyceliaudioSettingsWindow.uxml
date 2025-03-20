@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Plugins/CGT_AudioManagementSys/Editor/Styles/MyceliaudioSettings.uss?fileID=7433441132597879392&amp;guid=9ba30295adeb13d439f883a30340bf6d&amp;type=3#MyceliaudioSettings" />
+    <ui:Label tabindex="-1" text="Myceliaudio Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MainHeader" style="font-size: 36px; -unity-text-align: upper-center; -unity-font-style: bold; padding-top: 10px;" />
+    <ui:VisualElement name="DefaultVolumeSettings" style="flex-grow: 1; font-size: 18px; -unity-font-style: bold; margin-right: 30px; margin-left: 30px;">
+        <ui:Label tabindex="-1" text="Default Volumes" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; -unity-text-align: upper-left; font-size: 24px;" />
+        <ui:VisualElement name="MasterVolume" class="volumeSlider" style="flex-direction: row;">
+            <ui:SliderInt label="Master" high-value="100" name="MasterVolumeSlider" style="width: 80%; height: auto;" />
+            <ui:Label tabindex="-1" text=" ???%" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ValueDisplay" style="-unity-text-align: upper-right; opacity: 1; margin-left: 5px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="BGMusicVolume" class="volumeSlider" style="flex-direction: row;">
+            <ui:SliderInt label="BG Music" high-value="100" name="BGMusicSlider" style="width: 80%; height: auto; align-items: stretch; margin-right: 2px;" />
+            <ui:Label tabindex="-1" text=" ???%" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ValueDisplay" style="-unity-text-align: upper-right; opacity: 1; margin-left: 5px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SoundFXVolume" class="volumeSlider" style="flex-direction: row;">
+            <ui:SliderInt label="Sound FX" high-value="100" name="SoundFXSlider" style="width: 80%; height: auto; align-items: stretch; margin-right: 2px;" />
+            <ui:Label tabindex="-1" text=" ???%" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ValueDisplay" style="-unity-text-align: upper-right; opacity: 1; margin-left: 5px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="VoiceVolume" class="volumeSlider" style="flex-direction: row;">
+            <ui:SliderInt label="Voice" high-value="100" name="VoiceSlider" style="width: 80%; height: auto; align-items: stretch; margin-right: 2px;" />
+            <ui:Label tabindex="-1" text=" ???%" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ValueDisplay" style="-unity-text-align: upper-right; opacity: 1; margin-left: 5px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:Button text="Save Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveButton" style="width: auto; font-size: 18px; margin-right: 30%; margin-left: 30%; margin-bottom: 10px;" />
+</ui:UXML>

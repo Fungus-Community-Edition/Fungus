@@ -1,0 +1,13 @@
+.custom-label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(68, 138, 255);
+}
+
+.volumeSlider {
+    margin-top: 2px;
+    margin-right: 30px;
+    margin-bottom: 2px;
+    margin-left: 30px;
+    -unity-font-style: bold;
+}
