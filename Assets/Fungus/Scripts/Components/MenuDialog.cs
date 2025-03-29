@@ -22,11 +22,17 @@ namespace Fungus
 	{
 		[Tooltip("Automatically select the first interactable button when the menu is shown.")]
 		[SerializeField] protected bool autoSelectFirstButton = false;
-#if ENABLE_INPUT_SYSTEM
-		[Tooltip("Automatically select the first interactable button when one of these inputs are triggered" +
+
+		[Header("Input-Handling")]
+		[Tooltip("Automatically select the first interactable button when one of the inputs are triggered" +
 			"and none of the buttons were selected at the time. This is mainly intended to make it so this" +
 			"responds well to transitioning between mouse/keyboard and gamepad.")]
 		[SerializeField] protected bool autoSelectBasedOnInput = true;
+#if ENABLE_LEGACY_INPUT_MANAGER
+		[Tooltip("In response to any of these axes, this will make sure there's one button selected in the menu dialog.")]
+		[SerializeField] protected string[] inputAxes = new string[0];
+#endif
+#if ENABLE_INPUT_SYSTEM
 		[Tooltip("In response to any of these actions, this will make sure there's one button selected in the menu dialog.")]
 		[SerializeField] protected InputActionReference[] inputActions = new InputActionReference[0];
 #endif
@@ -139,7 +145,7 @@ namespace Fungus
 
 			void EnableAndListenForInput()
 			{
-				foreach (var actionEl in inputActions)
+				foreach (InputActionReference actionEl in inputActions)
 				{
 					if (actionEl != null && actionEl.action != null)
 					{
@@ -155,27 +161,27 @@ namespace Fungus
 		private void OnActionPerformed(InputAction.CallbackContext context)
 		{
 			EnsureOneOptionIsSelected();
-			void EnsureOneOptionIsSelected()
+		}
+
+		protected virtual void EnsureOneOptionIsSelected()
+		{
+			bool anyOptionsSelected = CachedButtons.Any
+				(
+				option => option.gameObject.activeInHierarchy
+				&& option.interactable &&
+				EventSystem.current.currentSelectedGameObject == option.gameObject
+				);
+
+			if (!anyOptionsSelected)
 			{
-				bool anyOptionsSelected = CachedButtons.Any
-					(
-					option => option.gameObject.activeInHierarchy
-					&& option.interactable &&
-					EventSystem.current.currentSelectedGameObject == option.gameObject
-					);
+				Button toSelect = CachedButtons.FirstOrDefault(option => option.gameObject.activeInHierarchy && option.interactable);
 
-				if (!anyOptionsSelected)
+				if (toSelect != null)
 				{
-					Button toSelect = CachedButtons.FirstOrDefault(option => option.gameObject.activeInHierarchy && option.interactable);
-
-					if (toSelect != null)
-					{
-						EventSystem.current.SetSelectedGameObject(toSelect.gameObject);
-					}
+					EventSystem.current.SetSelectedGameObject(toSelect.gameObject);
 				}
 			}
 		}
-
 		protected virtual void OnDisable()
 		{
 			UNlistenForInput();
@@ -192,10 +198,29 @@ namespace Fungus
 		}
 #endif
 
+		protected virtual void Update()
+		{
+#if ENABLE_LEGACY_INPUT_MANAGER
+			HandleResponseToInputAxes();
+#endif
+		}
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+		protected virtual void HandleResponseToInputAxes()
+		{
+			foreach (string inputAxisEl in inputAxes)
+			{
+				bool inputDetected = Input.GetAxis(inputAxisEl) != 0;
+				if (inputDetected)
+				{
+					EnsureOneOptionIsSelected();
+					return; // So we don't iterate over more axes per frame than necessary
+				}
+			}
+		}
+#endif
 		#region Public members
 
-		
-		
 		/// <summary>
 		/// A cached slider object used for the timer in the menu dialog.
 		/// </summary>
