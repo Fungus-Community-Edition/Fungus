@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 22515124}
   - component: {fileID: 11415064}
   - component: {fileID: 11415124}
+  - component: {fileID: 1078821080109785723}
   m_Layer: 5
   m_Name: MenuDialog
   m_TagString: Untagged
@@ -273,10 +274,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoSelectFirstButton: 1
-  autoSelectBasedOnInput: 1
+--- !u!114 &1078821080109785723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72a23fa110aefcf4da64ef5e32a83971, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoSelect: 1
+  useAxes: 1
   inputAxes:
   - Horizontal
   - Vertical
+  useActions: 1
   inputActions: []
 --- !u!1 &115108
 GameObject:
