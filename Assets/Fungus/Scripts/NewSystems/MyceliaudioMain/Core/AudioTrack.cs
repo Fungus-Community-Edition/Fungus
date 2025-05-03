@@ -145,6 +145,7 @@ namespace Amanita.Myceliaudio
 
             double lengthOfTheLoopSegment = clipLength - loopPoint;
             double whenToReturnToLoopPoint = AudioSettings.dspTime + clipLength;
+            bool loopNormally = Mathf.Approximately((float)args.LoopStartPoint, 0) && !args.HasLoopEndPoint;
 
             while (true)
             {
@@ -152,16 +153,20 @@ namespace Amanita.Myceliaudio
                 {
                     yield break;
                 }
-
-                bool shouldReturnToLoopPoint = AudioSettings.dspTime >= whenToReturnToLoopPoint;
-
-                if (shouldReturnToLoopPoint)
+                else if (!loopNormally) // We want to take a more hands-off approach when looping normally
                 {
-                    _baseSource.time = loopPoint;
-                    whenToReturnToLoopPoint += lengthOfTheLoopSegment;
+                    bool shouldReturnToLoopPoint = AudioSettings.dspTime >= whenToReturnToLoopPoint;
+
+                    if (shouldReturnToLoopPoint)
+                    {
+                        _baseSource.time = loopPoint;
+                        whenToReturnToLoopPoint += lengthOfTheLoopSegment;
+                    }
+
                 }
 
                 yield return null;
+
             }
         }
 
