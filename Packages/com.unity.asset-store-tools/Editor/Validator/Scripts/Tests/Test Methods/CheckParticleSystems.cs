@@ -29,7 +29,7 @@ namespace AssetStoreTools.Validator.TestMethods
                     continue;
                 }
 
-                var particleSystems = GameObject.FindObjectsOfType<ParticleSystem>();
+                var particleSystems = GameObject.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None);
                 foreach (var ps in particleSystems)
                 {
                     if (PrefabUtility.IsPartOfAnyPrefab(ps.gameObject))

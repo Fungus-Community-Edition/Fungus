@@ -6,6 +6,7 @@ namespace Amanita.Myceliaudio
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand
     {
+        [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
         [SerializeField] protected IntegerData track = new IntegerData(0);
         [SerializeField] protected FloatData targetVol = new FloatData();
         [SerializeField] protected FloatData duration = new FloatData(1);

@@ -861,7 +861,7 @@ namespace Fungus
             for (int i = 0; i < writerListeners.Count; i++)
             {
                 var writerListener = writerListeners[i];
-                writerListener.OnStart(audioClip);
+                writerListener.OnStartWritingNewText(audioClip);
             }
         }
 
@@ -914,7 +914,7 @@ namespace Fungus
             for (int i = 0; i < writerListeners.Count; i++)
             {
                 var writerListener = writerListeners[i];
-                writerListener.OnGlyph();
+                writerListener.OnGlyphWritten();
             }
         }
 

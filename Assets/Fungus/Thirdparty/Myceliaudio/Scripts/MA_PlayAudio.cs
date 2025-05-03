@@ -6,26 +6,45 @@ namespace Amanita.Myceliaudio
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand
     {
-        [SerializeField] protected IntegerData track = new IntegerData(0);
-        [SerializeField] protected AudioClipData clip = new AudioClipData(null);
-        [SerializeField] protected BooleanData loop = new BooleanData(false);
-        [SerializeField] protected FloatData loopStartPoint = new FloatData(0);
-        [SerializeField] protected FloatData loopEndPoint = new FloatData(0);
+        public enum AudioPlayMode
+        {
+            Null,
+            Play,
+            Unpause
+        }
+
+        [SerializeField] protected AudioPlayMode mode = AudioPlayMode.Play;
+        [SerializeField] protected FlowchartPlayAudioArgs mainPlayConfig;
         [Tooltip("If true, this Command will be skipped if the clip is already playing in the specified track.")]
         [SerializeField] protected BooleanData skipIfAlreadyPlaying = new BooleanData();
+
+        [SerializeField] protected BooleanData useConfigSO = new BooleanData();
+        [SerializeField] protected PlayAudioArgsSO configSO;
 
         public override void OnEnter()
         {
             base.OnEnter();
+            HandlePlaying();
+            HandleUnpausing();
+            Continue();
+        }
+
+        protected virtual void HandlePlaying()
+        {
+            if (mode != AudioPlayMode.Play)
+            {
+                return;
+            }
 
             if (ValidClip)
             {
-                AudioClip whatIsPlayingThere = AudioSys.GetClipPlayingAt(trackGroup, track);
-                bool alreadyPlayingThatClipThere = whatIsPlayingThere == clip;
+                AudioClip whatIsPlayingThere = AudioSys.GetClipPlayingAt(TrackGroup, Track);
+                bool alreadyPlayingThatClipThere = whatIsPlayingThere == Clip;
                 bool shouldSkip = skipIfAlreadyPlaying && alreadyPlayingThatClipThere;
                 if (!shouldSkip)
                 {
-                    PlayAudioArgs args = GetAudioArgs();
+
+                    IPlayAudioContext args = GetPlayAudioContext();
                     AudioSystem.S.Play(args);
                 }
             }
@@ -33,21 +52,139 @@ namespace Amanita.Myceliaudio
             {
                 PointOutClipInvalidity();
             }
-
-            Continue();
         }
 
-        protected virtual bool ValidClip { get { return clip.Value != null; } }
-
-        protected virtual PlayAudioArgs GetAudioArgs()
+        protected virtual bool ValidClip
         {
-            PlayAudioArgs result = new PlayAudioArgs
+            get
             {
-                Clip = clip.Value,
-                Loop = loop,
-                Track = track,
-                TrackGroup = trackGroup
-            };
+                bool result;
+
+                if (useConfigSO)
+                {
+                    if (configSO == null)
+                    {
+                        AlertForMissingConfigSO();
+                        result = false;
+                    }
+                    else
+                    {
+                        result = true;
+                    }
+                }
+                else
+                {
+                    result = mainPlayConfig.Clip != null;
+                }
+
+                return result;
+            }
+        }
+
+        protected static void AlertForMissingConfigSO()
+        {
+            Debug.LogError(missingUseConfigSOMessage);
+        }
+
+        protected static string missingUseConfigSOMessage = $"Needs a config SO. If you'd rather not use one for this, then set useConfigSO to false.";
+
+        protected virtual TrackGroup TrackGroup
+        {
+            get
+            {
+                TrackGroup result = TrackGroup.Null;
+
+                if (useConfigSO)
+                {
+                    if (configSO != null)
+                    {
+                        result = configSO.TrackGroup;
+                    }
+                    else
+                    {
+                        AlertForMissingConfigSO();
+                    }
+                }
+                else
+                {
+                    result = mainPlayConfig.TrackGroup;
+                }
+
+                return result;
+            }
+        }
+
+        protected virtual int Track
+        {
+            get
+            {
+                int result = -1;
+
+                if (useConfigSO)
+                {
+                    if (configSO != null)
+                    {
+                        result = configSO.Track;
+                    }
+                    else
+                    {
+                        AlertForMissingConfigSO();
+                    }
+                }
+                else
+                {
+                    result = mainPlayConfig.Track;
+                }
+
+                return result;
+            }
+        }
+
+        protected virtual AudioClip Clip
+        {
+            get
+            {
+                AudioClip result = null;
+
+                if (useConfigSO)
+                {
+                    if (configSO != null)
+                    {
+                        result = configSO.Clip;
+                    }
+                    else
+                    {
+                        AlertForMissingConfigSO();
+                    }
+                }
+                else
+                {
+                    result = mainPlayConfig.Clip;
+                }
+
+                return result;
+            }
+        }
+
+        protected virtual IPlayAudioContext GetPlayAudioContext()
+        {
+            IPlayAudioContext result = null;
+
+            if (useConfigSO)
+            {
+                if (configSO != null)
+                {
+                    return configSO;
+                }
+                else
+                {
+                    AlertForMissingConfigSO();
+                }
+            }
+            else
+            {
+                result = mainPlayConfig;
+            }
 
             return result;
         }
@@ -63,32 +200,167 @@ namespace Amanita.Myceliaudio
             Debug.LogWarning(errorMessage);
         }
 
+        protected virtual void HandleUnpausing()
+        {
+            if (mode != AudioPlayMode.Unpause)
+            {
+                return;
+            }
+
+            AudioSystem.S.Unpause(TrackGroup, Track);
+        }
+
         public override string GetSummary()
         {
-            string result;
-            bool assignedClipVar = clip.audioClipRef != null;
-            if (assignedClipVar)
-            {
-                // In this case, we don't want to spit out an error just because the var has nothing assigned.
-                // For all we know, it could be intentional; the user might want to assign something
-                // to the var during runtime but not in the editor
-                result = $"{trackGroup} Tr {track.Value} {clip.audioClipRef.Key} ";
+            string result = GetCorrectSummary();
+            return result;
+        }
 
-                if (!ValidClip)
-                {
-                    result += "(has no audio assigned)";
-                }
-            }
-            else if (ValidClip)
+        protected virtual string GetCorrectSummary()
+        {
+            string result = $"{mode} ";
+
+            if (mode == AudioPlayMode.Play)
             {
-                result = $"{trackGroup} Tr {track.Value} {clip.Value.name}";
+                result += MessageForPlaying();
+            }
+            else if (mode == AudioPlayMode.Unpause)
+            {
+                result += MessageForUnpausing();
             }
             else
             {
-                result = "Error: No clip or clip variable given";
+                result = $"ERROR: {mode} is not a valid play mode.";
             }
 
             return result;
+        }
+
+        protected virtual string MessageForPlaying()
+        {
+            string result = string.Empty;
+            result = $"{ClipNameForSummary()} in {TrackGroup} Tr {TrackNameForSummary()}";
+
+            return result;
+        }
+
+        protected virtual string TrackNameForSummary()
+        {
+            string name = string.Empty;
+
+            if (useConfigSO)
+            {
+                if (configSO != null)
+                {
+                    name = configSO.Track.ToString();
+                }
+                else
+                {
+                    name = "ERROR: Need config SO";
+                }
+            }
+            else
+            {
+                IntegerData intData = mainPlayConfig.TrackData;
+                IntegerVariable intRef = intData.integerRef;
+                bool assignedVar = intRef != null;
+
+                if (assignedVar)
+                {
+                    name = $"{intRef.Key}";
+                }
+                else
+                {
+                    name = $"{Track}";
+                }
+            }
+
+            return name;
+        }
+    
+        protected virtual string ClipNameForSummary()
+        {
+            string name = string.Empty;
+
+            if (useConfigSO)
+            {
+                if (configSO != null)
+                {
+                    if (configSO.Clip == null)
+                    {
+                        
+                    }
+                    else
+                    { 
+                        name = Clip.name;
+                    }
+                }
+                else
+                {
+                    name = "ERROR: Need config SO";
+                }
+            }
+            else
+            {
+                AudioClipData clipData = mainPlayConfig.ClipData;
+                AudioClipVariable clipRef = clipData.audioClipRef;
+                bool assignedVar = clipRef != null;
+
+                if (assignedVar)
+                {
+                    name = $"{clipRef.Key}";
+                    if (!ValidClip)
+                    {
+                        name += " (clipless)";
+                    }
+                }
+                else
+                {
+                    name = Clip.name;
+                }
+            }
+
+            return name;
+        }
+
+        protected virtual string MessageForUnpausing()
+        {
+            string result = $"{TrackGroup} Tr {TrackNameForSummary()}";
+            return result;
+        }
+    }
+
+    [System.Serializable]
+    public class FlowchartPlayAudioArgs : IPlayAudioContext
+    {
+        [SerializeField] protected TrackGroup trackGroup = TrackGroup.Null;
+        [SerializeField] protected IntegerData track = new IntegerData(0);
+        [SerializeField] protected AudioClipData clip = new AudioClipData(null);
+        [SerializeField] protected BooleanData loop = new BooleanData(false);
+        [SerializeField] protected FloatData loopStartPoint = new FloatData(0);
+        [SerializeField] protected FloatData loopEndPoint = new FloatData(0);
+        [SerializeField] protected BooleanData oneShot = new BooleanData();
+
+        public virtual TrackGroup TrackGroup { get { return trackGroup; } }
+        public virtual int Track { get { return track; } }
+        public virtual AudioClip Clip { get { return clip; } set { clip.Value = value; } }
+        public virtual bool Loop { get { return loop; } }
+        public virtual double LoopStartPoint {  get { return loopStartPoint; } }
+        public virtual double LoopEndPoint { get { return loopEndPoint; } }
+        public virtual bool OneShot { get { return oneShot; } }
+        public virtual bool HasEndPointBeforeEndOfClip
+        {
+            get { return loopEndPoint > 0; }
+        }
+
+        public virtual IntegerData TrackData
+        {
+            get { return track; }
+        }
+
+        public virtual AudioClipData ClipData
+        {
+            get { return clip; }
         }
     }
 }

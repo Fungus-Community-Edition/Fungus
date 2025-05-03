@@ -1,11 +1,12 @@
 #define MYCELIAUDIO
-#define MYCELIAUDIO_1_00_05b
+#define AMANITA_MYCELIAUDIO
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Video;
 
 namespace Amanita.Myceliaudio
 {
-    public class AudioSystem : MonoBehaviour
+    public class AudioSystem : MonoBehaviour, IAudioPlayer<IPlayAudioContext>
     {
         public static AudioSystem S
         {
@@ -46,6 +47,7 @@ namespace Amanita.Myceliaudio
         }
 
         protected static AudioSystem _s;
+        protected AudioClipSplitter _clipSplitter = new AudioClipSplitter();
 
         protected virtual void RegisterTrackManagers()
         {
@@ -95,10 +97,28 @@ namespace Amanita.Myceliaudio
             managerToUse.BaseVolume = newVol;
         }
 
-        public virtual void Play(PlayAudioArgs args)
+        public virtual void Play(IPlayAudioContext args)
         {
-            var managerToInvolve = TrackManagers[args.TrackGroup];
-            managerToInvolve.Play(args);
+            if (args.OneShot)
+            {
+                PlayOneShot(args);
+            }
+            else
+            {
+                var managerToInvolve = TrackManagers[args.TrackGroup];
+                managerToInvolve.Play(args);
+            }
+        }
+
+        public virtual void PlayOneShot(IPlayAudioContext args)
+        {
+            PlayOneShot(args.TrackGroup, args.Track, args.Clip);
+        }
+
+        public virtual void PlayOneShot(TrackGroup group, int track, AudioClip clip)
+        {
+            var managerToInvolve = TrackManagers[group];
+            managerToInvolve.PlayOneShot(track, clip);
         }
 
         public virtual void StopPlaying(TrackGroup trackGroup, int track = 0)
@@ -120,12 +140,6 @@ namespace Amanita.Myceliaudio
             var manager = TrackManagers[trackGroup];
             return manager.GetClipPlayingIn(track);
         }
-    
-        public virtual void SetLoop(TrackGroup group, int track, bool loop)
-        {
-            var manager = TrackManagers[group];
-            manager.SetLoop(track, loop);
-        }
 
         public virtual bool GetIsPlaying(TrackGroup group, int track)
         {
@@ -133,10 +147,51 @@ namespace Amanita.Myceliaudio
             return manager.GetIsPlaying(track);
         }
 
-        public virtual float GetTime(TrackGroup group, int track)
+        public virtual float GetIntroTime(TrackGroup group, int track)
         {
             var manager = TrackManagers[group];
-            return manager.GetTime(track);
+            return manager.GetIntroTime(track);
         }
+
+        public virtual float GetMainTime(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetMainTime(track);
+        }
+
+        public virtual AudioClip GetIntroClipAssigned(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetIntroClipAssigned(track);
+        }
+
+        public virtual AudioClip GetIntroClip(AudioClip originalClip, double loopStartPoint)
+        {
+            return _clipSplitter.GetIntroClip(originalClip, loopStartPoint);
+        }
+
+        public virtual AudioClip GetLoopClip(AudioClip originalClip, double loopStartPoint, double loopEndPoint)
+        {
+            return _clipSplitter.GetLoopClip(originalClip, loopStartPoint, loopEndPoint);
+        }
+
+        public virtual void Pause(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            manager.Pause(track);
+        }
+
+        public virtual void Unpause(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            manager.Unpause(track);
+        }
+
+        protected virtual void OnDestroy()
+        {
+
+            _clipSplitter.Clear();
+        }
+
     }
 }
