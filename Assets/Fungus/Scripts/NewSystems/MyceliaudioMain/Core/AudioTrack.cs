@@ -112,13 +112,8 @@ namespace Amanita.Myceliaudio
         {
             if (args.Loop)
             {
-                _baseSource.Stop();
-                _baseSource.loop = true; // To avoid issues for when the end point is at the exact end of the song
-
-                if (_playOnLoop != null)
-                {
-                    AudioSys.StopCoroutine(_playOnLoop);
-                }
+                Stop();
+                Loop = true; // To avoid issues for when the end point is at the exact end of the song
 
                 _playOnLoop = PlayOnLoopCoroutine(args);
                 AudioSys.StartCoroutine(_playOnLoop);
@@ -153,6 +148,11 @@ namespace Amanita.Myceliaudio
 
             while (true)
             {
+                if (!Loop) // Since that could get changed while we're playing
+                {
+                    yield break;
+                }
+
                 bool shouldReturnToLoopPoint = AudioSettings.dspTime >= whenToReturnToLoopPoint;
 
                 if (shouldReturnToLoopPoint)
@@ -194,6 +194,34 @@ namespace Amanita.Myceliaudio
                     return null;
                 }
 
+            }
+        }
+
+        public virtual bool Loop
+        {
+            get
+            {
+                return _baseSource.loop;
+            }
+            set
+            {
+                _baseSource.loop = value;
+            }
+        }
+
+        public virtual bool IsPlaying
+        {
+            get
+            {
+                return _baseSource.isPlaying;
+            }
+        }
+
+        public virtual float Time
+        {
+            get
+            {
+                return _baseSource.time;
             }
         }
     }

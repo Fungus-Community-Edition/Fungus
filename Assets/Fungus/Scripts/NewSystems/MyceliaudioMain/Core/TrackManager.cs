@@ -210,5 +210,26 @@ namespace Amanita.Myceliaudio
             var trackInvolved = tracks[track];
             return trackInvolved.ClipPlaying;
         }
+
+        public virtual void SetLoop(int track, bool loop)
+        {
+            EnsureTrackExists(track);
+            var trackInvolved = tracks[track];
+            trackInvolved.Loop = loop;
+        }
+
+        public virtual bool GetIsPlaying(int track)
+        {
+            EnsureTrackExists(track);
+            var trackInvolved = tracks[track];
+            return trackInvolved.IsPlaying;
+        }
+
+        public virtual float GetTime(int track)
+        {
+            EnsureTrackExists(track);
+            var trackInvolved = tracks[track];
+            return trackInvolved.Time;
+        }
     }
 }

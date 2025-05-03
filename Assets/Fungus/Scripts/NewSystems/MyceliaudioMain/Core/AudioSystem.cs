@@ -120,5 +120,23 @@ namespace Amanita.Myceliaudio
             var manager = TrackManagers[trackGroup];
             return manager.GetClipPlayingIn(track);
         }
+    
+        public virtual void SetLoop(TrackGroup group, int track, bool loop)
+        {
+            var manager = TrackManagers[group];
+            manager.SetLoop(track, loop);
+        }
+
+        public virtual bool GetIsPlaying(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetIsPlaying(track);
+        }
+
+        public virtual float GetTime(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetTime(track);
+        }
     }
 }
