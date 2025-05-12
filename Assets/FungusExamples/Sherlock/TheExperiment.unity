@@ -4189,11 +4189,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 3118.3325, y: 1513.838}
+  scrollPos: {x: 3158.879, y: 1530.4153}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 240
-  zoom: 1
+  zoom: 0.97
   scrollViewRect:
     serializedVersion: 2
     x: -4071.385
@@ -4410,8 +4410,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -2429.3325
-    y: -948.8522
+    x: -2431.3945
+    y: -947.8212
     width: 112.7
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -4467,7 +4467,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -2429.3184
-    y: -879.838
+    y: -878.80707
     width: 113.009995
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -4693,8 +4693,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -2745.3325
-    y: -951.838
+    x: -2747.3945
+    y: -949.7761
     width: 79.49
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -7148,27 +7148,36 @@ MonoBehaviour:
   itemId: 105
   indentLevel: 0
   trackGroup: 2
-  track:
-    integerRef: {fileID: 1390555443}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 1390555441}
-    audioClipVal: {fileID: 0}
-  loop:
-    booleanRef: {fileID: 0}
-    booleanVal: 1
-  loopStartPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
+  mainCommandConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 1390555443}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 1390555441}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
   skipIfAlreadyPlaying:
     booleanRef: {fileID: 0}
     booleanVal: 1
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
 --- !u!114 &1390555443
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
