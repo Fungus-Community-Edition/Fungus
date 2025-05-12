@@ -154,9 +154,7 @@ namespace Fungus
             }
 
             playingVoiceover = false;
-            //AudioSystem.S.SetTrackVol(TrackGroup.Voice, playVoiceOver.Track, silent);
-            Debug.Log("DIS LION");
-            //Debug.Log("asgfvaegg5t 78why4r5t37yq4tW");
+
             if (voiceOverClip != null)
             {
                 // Voice over clip provided

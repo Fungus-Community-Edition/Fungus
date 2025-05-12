@@ -131,9 +131,8 @@ namespace Amanita.Myceliaudio
         {
             _playsIntros.Stop();
             _playsMains.Stop();
-            //_baseSource.loop = args.Loop;
             _playsMains.loop = args.Loop;
-            _playsIntros.clip = args.Clip;
+            _playsMains.clip = args.Clip;
 
             if (args.Loop)
             {
@@ -147,7 +146,7 @@ namespace Amanita.Myceliaudio
             }
             else
             {
-                _playsIntros.Play();
+                _playsMains.Play();
             }
         }
 
