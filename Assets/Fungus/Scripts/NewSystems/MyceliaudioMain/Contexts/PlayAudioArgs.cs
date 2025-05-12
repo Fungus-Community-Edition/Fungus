@@ -3,12 +3,13 @@ using UnityEngine;
 
 namespace Amanita.Myceliaudio
 {
-    public class PlayAudioArgs : EventArgs
+    [System.Serializable]
+    public class PlayAudioArgs : EventArgs, IPlayAudioContext
     {
-        public virtual AudioClip Clip { get; set; }
-        public virtual TrackGroup TrackGroup { get; set; }
-        public virtual int Track { get; set; }
-        public virtual bool Loop { get; set; }
+        [field: SerializeField] public virtual AudioClip Clip { get; set; }
+        [field: SerializeField] public virtual TrackGroup TrackGroup { get; set; }
+        [field: SerializeField] public virtual int Track { get; set; }
+        [field: SerializeField] public virtual bool Loop { get; set; }
 
         public virtual double LoopStartPoint
         {
@@ -21,7 +22,7 @@ namespace Amanita.Myceliaudio
                 _loopStartPoint = Math.Clamp(value, 0, double.MaxValue);
             }
         }
-        protected double _loopStartPoint;
+        [SerializeField] protected double _loopStartPoint;
 
         public virtual double LoopEndPoint
         {
@@ -34,12 +35,14 @@ namespace Amanita.Myceliaudio
                 _loopEndPoint = Math.Clamp(value, 0, double.MaxValue);
             }
         }
-        protected double _loopEndPoint;
+        [SerializeField] protected double _loopEndPoint;
 
-        public virtual bool HasLoopEndPoint
+        public virtual bool HasEndPointBeforeEndOfClip
         {
             get { return LoopEndPoint > 0; }
         }
+
+        [field: SerializeField] public virtual bool OneShot { get; set; }
 
         public static PlayAudioArgs CreateCopy(PlayAudioArgs other)
         {

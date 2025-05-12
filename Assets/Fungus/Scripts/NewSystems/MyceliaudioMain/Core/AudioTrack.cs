@@ -4,15 +4,30 @@ using UnityEngine;
 namespace Amanita.Myceliaudio
 {
     /// <summary>
-    /// Helper class for NeoNeoAudioSys that also kind of wraps Unity's built-in AudioSource component
+    /// Helper class for that also kind of wraps Unity's built-in AudioSource component
     /// </summary>
     public class AudioTrack : IAudioTrackTweenables
     {
-        public virtual int ID { get; set; }
-
-        public virtual void Init(GameObject toWorkWith)
+        public virtual int ID
         {
-            GameObject = toWorkWith;
+            get { return _id; }
+            set
+            {
+                if (_id != value)
+                {
+                    _id = value;
+                    GameObject.name = $"Track_{ID:D3}";
+                }
+            }
+        }
+
+        protected int _id;
+
+        public virtual void Init(GameObject parent)
+        {
+            GameObject = new GameObject($"Track_{ID:D3}");
+            GameObject.transform.SetParent(parent.transform, false);
+
             SetUpAudioSource();
         }
 
@@ -20,12 +35,16 @@ namespace Amanita.Myceliaudio
 
         protected virtual void SetUpAudioSource()
         {
-            _baseSource = GameObject.AddComponent<AudioSource>();
-            _baseSource.playOnAwake = false;
-            _baseSource.volume = RealVolumeNormalized;
+            _playsIntros = GameObject.AddComponent<AudioSource>();
+            _playsMains = GameObject.AddComponent<AudioSource>();
+            _playsIntros.playOnAwake = _playsMains.playOnAwake = false;
+            _playsIntros.volume = _playsMains.volume = RealVolumeNormalized;
+
+            _playsMains.loop = true;
+            // ^Since we use this to play the loop segments of clips that have a loop start point
         }
 
-        protected AudioSource _baseSource;
+        protected AudioSource _playsIntros, _playsMains;
 
         public virtual TrackManager Anchor
         {
@@ -65,14 +84,14 @@ namespace Amanita.Myceliaudio
         /// </summary>
         public virtual float CurrentVolumeApplied
         {
-            get { return _baseSource.volume * AudioMath.VolumeConversion; }
+            get { return _playsIntros.volume * AudioMath.VolumeConversion; }
             protected set
             {
                 // Need to convert to a scale of 0 to 1 since that's what the base
                 // audio sources prefer
                 float normalizedForAudioSource = value / AudioMath.VolumeConversion;
                 float withinLimits = Mathf.Clamp(normalizedForAudioSource, AudioMath.MinVol, AudioMath.MaxVolNormalized);
-                _baseSource.volume = withinLimits;
+                _playsIntros.volume = _playsMains.volume = withinLimits;
             }
         }
 
@@ -108,19 +127,27 @@ namespace Amanita.Myceliaudio
             get { return RealVolume / AudioMath.VolumeConversion; }
         }
 
-        public virtual void Play(PlayAudioArgs args)
+        public virtual void Play(IPlayAudioContext args)
         {
+            _playsIntros.Stop();
+            _playsMains.Stop();
+            //_baseSource.loop = args.Loop;
+            _playsMains.loop = args.Loop;
+            _playsIntros.clip = args.Clip;
+
             if (args.Loop)
             {
-                Stop();
-                Loop = true; // To avoid issues for when the end point is at the exact end of the song
+                if (_playOnLoop != null)
+                {
+                    AudioSys.StopCoroutine(_playOnLoop);
+                }
 
                 _playOnLoop = PlayOnLoopCoroutine(args);
                 AudioSys.StartCoroutine(_playOnLoop);
             }
             else
             {
-                _baseSource.PlayOneShot(args.Clip);
+                _playsIntros.Play();
             }
         }
 
@@ -128,49 +155,98 @@ namespace Amanita.Myceliaudio
         // ^Need this as a separate object to avoid loop points getting confused when
         // switching from one song to another
 
-        protected IEnumerator PlayOnLoopCoroutine(PlayAudioArgs args)
+        protected IEnumerator PlayOnLoopCoroutine(IPlayAudioContext args)
         {
-            AudioClip clip = _baseSource.clip = args.Clip;
-            _baseSource.Play();
+            AudioClip baseClip = args.Clip;
+            bool loopTheEntireSong = args.LoopStartPoint <= 0 && !args.HasEndPointBeforeEndOfClip;
 
-            // Since the base loop point is in milliseconds...
-            float loopPoint = (float)(args.LoopStartPoint / 1000.0);
-            // ^AudioSource.time is a float, not a double, so...
-
-            double clipLength = clip.PreciseLength();
-            if (args.HasLoopEndPoint)
+            if (loopTheEntireSong)
             {
-                clipLength = args.LoopEndPoint / 1000.0;
+                // No need to do any fancy file-splitting in this case
+                _playsMains.clip = baseClip;
+                _playsMains.Play();
+                yield break;
             }
 
-            double lengthOfTheLoopSegment = clipLength - loopPoint;
-            double whenToReturnToLoopPoint = AudioSettings.dspTime + clipLength;
-            bool loopNormally = Mathf.Approximately((float)args.LoopStartPoint, 0) && !args.HasLoopEndPoint;
-
-            while (true)
+            PlayBasedOnSplitClips();
+            void PlayBasedOnSplitClips()
             {
-                if (!Loop) // Since that could get changed while we're playing
+                double loopStartPoint, loopEndPoint;
+                FindLoopPoints();
+                void FindLoopPoints()
                 {
-                    yield break;
-                }
-                else if (!loopNormally) // We want to take a more hands-off approach when looping normally
-                {
-                    bool shouldReturnToLoopPoint = AudioSettings.dspTime >= whenToReturnToLoopPoint;
-
-                    if (shouldReturnToLoopPoint)
+                    // The loop points in the args are in milliseconds, and as we need to
+                    // work with points in seconds instead...
+                    loopStartPoint = args.LoopStartPoint / 1000.0;
+                    loopEndPoint = baseClip.PreciseLength();
+                    // ^Since by default, end points are at the exact end of the audio clip
+                    if (args.HasEndPointBeforeEndOfClip)
                     {
-                        _baseSource.time = loopPoint;
-                        whenToReturnToLoopPoint += lengthOfTheLoopSegment;
+                        loopEndPoint = args.LoopEndPoint / 1000.0;
+                    }
+                }
+
+                AudioClip intro = null, loopSegment;
+                bool weHaveAnIntroToPlay;
+                FetchSplitClips();
+
+                void FetchSplitClips()
+                {
+                    weHaveAnIntroToPlay = loopStartPoint > 0 & args.HasEndPointBeforeEndOfClip;
+                    // ^Can't have an intro without a loop segment. 
+
+                    if (weHaveAnIntroToPlay)
+                    {
+                        intro = AudioSystem.S.GetIntroClip(baseClip, loopStartPoint);
                     }
 
+                    loopSegment = AudioSystem.S.GetLoopClip(baseClip, loopStartPoint, loopEndPoint);
                 }
 
-                yield return null;
+                _playsIntros.clip = intro;
+                _playsMains.clip = loopSegment;
+
+                PlayTheRightClips();
+                void PlayTheRightClips()
+                {
+                    if (weHaveAnIntroToPlay)
+                    {
+                        _playsIntros.Play();
+
+                        SetLoopToPlayRightAfterIntro();
+                        void SetLoopToPlayRightAfterIntro()
+                        {
+                            double slightBuffer = 0.00;
+                            double afterTheFirstPlayIsDone = AudioSettings.dspTime +
+                                _playsIntros.clip.PreciseLength() + slightBuffer;
+                            _playsMains.PlayScheduled(afterTheFirstPlayIsDone);
+                        }
+                    }
+                    else
+                    {
+                        _playsMains.Play();
+                        // ^This would mean that the only cutoff is with the end point, and thus that
+                        // the start point is at the exact beginning of the song.
+                    }
+                }
 
             }
+
+
+            yield break;
         }
 
         protected virtual AudioSystem AudioSys { get { return AudioSystem.S; } }
+
+        public virtual void PlayOneShot(IPlayAudioContext args)
+        {
+            PlayOneShot(args.Clip);
+        }
+
+        public virtual void PlayOneShot(AudioClip clip)
+        {
+            _playsIntros.PlayOneShot(clip);
+        }
 
         public virtual void Stop()
         {
@@ -180,7 +256,7 @@ namespace Amanita.Myceliaudio
                 _playOnLoop = null;
             }
 
-            _baseSource.Stop();
+            _playsIntros.Stop();
         }
 
         /// <summary>
@@ -190,44 +266,56 @@ namespace Amanita.Myceliaudio
         {
             get
             {
-                if (_baseSource.isPlaying)
+                if (IsPlayingIntro)
                 {
-                    return _baseSource.clip;
+                    return _playsIntros.clip;
+                }
+                else if (IsPlayingMain)
+                {
+                    return _playsMains.clip;
                 }
                 else
                 {
                     return null;
                 }
-
             }
         }
 
-        public virtual bool Loop
-        {
-            get
-            {
-                return _baseSource.loop;
-            }
-            set
-            {
-                _baseSource.loop = value;
-            }
-        }
-
+        /// <summary>
+        /// Whether or not this track is playing anything
+        /// </summary>
         public virtual bool IsPlaying
         {
-            get
-            {
-                return _baseSource.isPlaying;
-            }
+            get { return IsPlayingIntro || IsPlayingMain; }
         }
 
-        public virtual float Time
+        public virtual bool IsPlayingIntro
         {
-            get
-            {
-                return _baseSource.time;
-            }
+            get { return _playsIntros.isPlaying; }
+        }
+
+        public virtual bool IsPlayingMain
+        {
+            get { return _playsMains.isPlaying; }
+        }
+
+        public virtual float IntroTime
+        {
+            get { return _playsIntros.time; }
+        }
+        public virtual float MainTime
+        {
+            get { return _playsMains.time; }
+        }
+
+        public virtual AudioClip IntroClipAssigned
+        {
+            get { return _playsIntros.clip; }
+        }
+
+        public virtual AudioClip MainClipAssigned
+        {
+            get { return _playsMains.clip; }
         }
     }
 }

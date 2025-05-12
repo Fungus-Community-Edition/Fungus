@@ -19,7 +19,7 @@ namespace Fungus
         /// Called when the Writer starts writing new text.
         /// </summary>
         /// <param name="audioClip">An optional audioClip sound effect can be supplied (e.g. for voiceover)</param>
-        void OnStart(AudioClip audioClip);
+        void OnStartWritingNewText(AudioClip audioClip);
 
         /// Called when the Writer has paused writing text (e.g. on a {wi} tag).
         void OnPause();
@@ -42,7 +42,7 @@ namespace Fungus
         void OnAllWordsWritten();
 
         /// Called every time the Writer writes a new character glyph.
-        void OnGlyph();
+        void OnGlyphWritten();
 
         /// <summary>
         /// Called when voiceover should start.

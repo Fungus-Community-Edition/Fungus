@@ -20,7 +20,7 @@ namespace Fungus.EditorUtils
 
         protected virtual void OnEnable()
         {
-            volumeProp = serializedObject.FindProperty("volume");
+            //volumeProp = serializedObject.FindProperty("volume");
             loopProp = serializedObject.FindProperty("loop");
             targetAudioSourceProp = serializedObject.FindProperty("targetAudioSource");
             inputSoundProp = serializedObject.FindProperty("inputSound");
@@ -34,13 +34,13 @@ namespace Fungus.EditorUtils
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(volumeProp);
+            //EditorGUILayout.PropertyField(volumeProp);
             EditorGUILayout.PropertyField(loopProp);
-            EditorGUILayout.PropertyField(useLegacyAudioLogicProp);
-            if (useLegacyAudioLogicProp.boolValue)
-            {
-                EditorGUILayout.PropertyField(targetAudioSourceProp);
-            }
+            //EditorGUILayout.PropertyField(useLegacyAudioLogicProp);
+            //if (useLegacyAudioLogicProp.boolValue)
+            //{
+            //    EditorGUILayout.PropertyField(targetAudioSourceProp);
+            //}
             EditorGUILayout.PropertyField(inputSoundProp);
 
             EditorGUILayout.PropertyField(audioModeProp);
@@ -53,12 +53,12 @@ namespace Fungus.EditorUtils
                 EditorGUILayout.PropertyField(soundEffectProp);
             }
 
-            if( ( ((MonoBehaviour)target).GetComponent<AudioSource>() != null || targetAudioSourceProp.objectReferenceValue != null) &&
-                !useLegacyAudioLogicProp.boolValue)
-            {
-                EditorGUILayout.HelpBox("AudioSource found or targetAudioSource set but will not be used. " +
-                    "\nToggle useLegacyAudioLogic to use the targetAudioSource and not the AudioSources that might be provided by the Character", MessageType.Warning);
-            }
+            //if( ( ((MonoBehaviour)target).GetComponent<AudioSource>() != null || targetAudioSourceProp.objectReferenceValue != null) &&
+            //    !useLegacyAudioLogicProp.boolValue)
+            //{
+            //    EditorGUILayout.HelpBox("AudioSource found or targetAudioSource set but will not be used. " +
+            //        "\nToggle useLegacyAudioLogic to use the targetAudioSource and not the AudioSources that might be provided by the Character", MessageType.Warning);
+            //}
 
             serializedObject.ApplyModifiedProperties();
         }
