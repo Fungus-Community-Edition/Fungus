@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Amanita.Myceliaudio
 {
-    [CreateAssetMenu(fileName = "PlayAudioArgsSO", menuName = "CGT/Myceliaudio/PlayAudioArgsSO")]
+    [CreateAssetMenu(fileName = "PlayAudioArgsSO", menuName = "Amanita/Myceliaudio/PlayAudioArgsSO")]
     public class PlayAudioArgsSO : ScriptableObject, IPlayAudioContext
     {
         [SerializeField] protected PlayAudioArgs _details;
