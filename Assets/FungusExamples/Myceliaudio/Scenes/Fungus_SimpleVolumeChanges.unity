@@ -437,7 +437,6 @@ GameObject:
   - component: {fileID: 367607555}
   - component: {fileID: 367607554}
   - component: {fileID: 367607553}
-  - component: {fileID: 367607559}
   - component: {fileID: 367607558}
   - component: {fileID: 367607557}
   - component: {fileID: 367607582}
@@ -466,6 +465,8 @@ GameObject:
   - component: {fileID: 367607585}
   - component: {fileID: 367607584}
   - component: {fileID: 367607583}
+  - component: {fileID: 367607587}
+  - component: {fileID: 367607586}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -723,22 +724,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
-  trackGroup: 2
-  track:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 367607547}
-    audioClipVal: {fileID: 0}
-  loop:
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 367607587}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 367607547}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
     booleanRef: {fileID: 0}
-    booleanVal: 1
-  loopStartPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
+    booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
 --- !u!114 &367607549
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -768,8 +781,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 292
-    y: 225
+    x: 287
+    y: 206
     width: 67.41
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -783,7 +796,6 @@ MonoBehaviour:
   - {fileID: 367607545}
   - {fileID: 367607542}
   - {fileID: 367607553}
-  - {fileID: 367607559}
   suppressAllAutoSelections: 0
 --- !u!114 &367607551
 MonoBehaviour:
@@ -810,9 +822,9 @@ MonoBehaviour:
     width: 0
     height: 0
   selectedBlocks:
-  - {fileID: 367607585}
+  - {fileID: 367607550}
   selectedCommands:
-  - {fileID: 367607583}
+  - {fileID: 367607548}
   variables:
   - {fileID: 367607547}
   - {fileID: 367607546}
@@ -825,6 +837,8 @@ MonoBehaviour:
   - {fileID: 367607558}
   - {fileID: 367607557}
   - {fileID: 367607580}
+  - {fileID: 367607587}
+  - {fileID: 367607586}
   description: 
   stepPause: 0
   colorCommands: 1
@@ -951,36 +965,6 @@ MonoBehaviour:
   scope: 0
   key: loopStartPoint
   value: 0
---- !u!114 &367607559
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 367607535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 10
-  indentLevel: 0
-  trackGroup: 2
-  track:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 367607547}
-    audioClipVal: {fileID: 0}
-  loop:
-    booleanRef: {fileID: 0}
-    booleanVal: 1
-  loopStartPoint:
-    floatRef: {fileID: 367607558}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 367607557}
-    floatVal: 0
 --- !u!114 &367607560
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2053,8 +2037,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 580
-    y: 333
+    x: 333
+    y: 353
     width: 190.37
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2070,7 +2054,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &367607583
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2082,25 +2066,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
-  trackGroup: 3
-  track:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 367607546}
-    audioClipVal: {fileID: 0}
-  loop:
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      integerRef: {fileID: 367607586}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 367607546}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
     booleanRef: {fileID: 0}
     booleanVal: 0
-  loopStartPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
 --- !u!114 &367607584
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2127,8 +2123,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 379
-    y: 428
+    x: 347
+    y: 463
     width: 154.56
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2140,6 +2136,36 @@ MonoBehaviour:
   commandList:
   - {fileID: 367607583}
   suppressAllAutoSelections: 0
+--- !u!114 &367607586
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 367607535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: sfxTrack
+  value: 0
+--- !u!114 &367607587
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 367607535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: bgmTrack
+  value: 0
 --- !u!1 &489644978
 GameObject:
   m_ObjectHideFlags: 0

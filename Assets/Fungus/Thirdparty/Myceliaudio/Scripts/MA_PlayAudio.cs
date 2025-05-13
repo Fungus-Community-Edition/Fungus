@@ -316,7 +316,10 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    name = Clip.name;
+                    if (Clip != null)
+                    {
+                        name = Clip.name;
+                    }
                 }
             }
 

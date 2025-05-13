@@ -724,7 +724,6 @@ GameObject:
   - component: {fileID: 549323074}
   - component: {fileID: 549323073}
   - component: {fileID: 549323072}
-  - component: {fileID: 549323071}
   - component: {fileID: 549323080}
   - component: {fileID: 549323085}
   - component: {fileID: 549323084}
@@ -960,7 +959,6 @@ MonoBehaviour:
   - {fileID: 549323065}
   - {fileID: 549323069}
   - {fileID: 549323068}
-  - {fileID: 549323071}
   - {fileID: 549323080}
   suppressAllAutoSelections: 0
 --- !u!114 &549323062
@@ -976,11 +974,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 41.540398, y: 172.47392}
+  scrollPos: {x: 31.85714, y: 83.22439}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 200
-  zoom: 0.85000014
+  zoom: 0.8200002
   scrollViewRect:
     serializedVersion: 2
     x: -343
@@ -988,9 +986,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 549323100}
+  - {fileID: 549323061}
   selectedCommands:
-  - {fileID: 549323126}
+  - {fileID: 549323068}
   variables:
   - {fileID: 549323059}
   - {fileID: 549323058}
@@ -1116,25 +1114,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
-  trackGroup: 2
-  track:
-    integerRef: {fileID: 549323066}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 549323058}
-    audioClipVal: {fileID: 0}
-  loop:
-    booleanRef: {fileID: 0}
-    booleanVal: 1
-  loopStartPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 549323066}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 549323058}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
   skipIfAlreadyPlaying:
     booleanRef: {fileID: 0}
     booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
 --- !u!114 &549323069
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1149,25 +1156,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 2
   indentLevel: 0
-  trackGroup: 2
-  track:
-    integerRef: {fileID: 549323067}
-    integerVal: 0
-  clip:
-    audioClipRef: {fileID: 549323059}
-    audioClipVal: {fileID: 0}
-  loop:
-    booleanRef: {fileID: 0}
-    booleanVal: 1
-  loopStartPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  loopEndPoint:
-    floatRef: {fileID: 0}
-    floatVal: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 549323067}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 549323059}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
   skipIfAlreadyPlaying:
     booleanRef: {fileID: 0}
     booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
 --- !u!114 &549323070
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1181,30 +1197,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemId: 1
-  indentLevel: 0
-  trackGroup: 2
-  operation: 2
-  track:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  targetVol:
-    floatRef: {fileID: 549323054}
-    floatVal: 0
-  trackSelection: 2
-  outputVar: {fileID: 0}
---- !u!114 &549323071
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 549323050}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c93d7fdc06652b4e809c53dbe33b6d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 12
   indentLevel: 0
   trackGroup: 2
   operation: 2
@@ -2055,8 +2047,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 1095.5314
-    y: 452.1487
+    x: 1081.4133
+    y: 302.7368
     width: 191.67
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2287,8 +2279,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 238.29718
-    y: 428.74414
+    x: 225.35603
+    y: 367.5675
     width: 187.1
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2543,8 +2535,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 1049.999
-    y: 320.23373
+    x: 1080.5876
+    y: 223.76326
     width: 194.94
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2686,8 +2678,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 870.2115
-    y: 582.47327
+    x: 1030.2118
+    y: 597.7674
     width: 185.78
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2736,8 +2728,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 498.08307
-    y: 578.21796
+    x: 316.90643
+    y: 598.2179
     width: 189.88
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -3723,7 +3715,7 @@ MonoBehaviour:
     vector3Val: {x: 0, y: 0, z: 0}
 --- !u!114 &549323123
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3747,7 +3739,7 @@ MonoBehaviour:
     floatVal: 0
 --- !u!114 &549323124
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3771,7 +3763,7 @@ MonoBehaviour:
     floatVal: 0
 --- !u!114 &549323125
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3795,7 +3787,7 @@ MonoBehaviour:
     floatVal: 0
 --- !u!114 &549323126
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

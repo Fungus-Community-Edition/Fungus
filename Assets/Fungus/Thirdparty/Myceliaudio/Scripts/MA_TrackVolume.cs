@@ -1,9 +1,12 @@
 using UnityEngine;
 using Fungus;
+using System.Text;
 
 namespace Amanita.Myceliaudio
 {
-    [CommandInfo("Myceliaudio", "MA GetSet Vol", "Lets you get or set the volume of an individual track or group thereof. We work with a scale of 0 for silent and 100 for max.")]
+    [CommandInfo("Myceliaudio",
+        "MA GetSet Vol",
+        "Lets you get or set the volume of an individual track or group thereof. We work with a scale of 0 for silent and 100 for max.")]
     public class MA_TrackVolume : MyceliaudioCommand
     {
         [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
@@ -100,7 +103,18 @@ namespace Amanita.Myceliaudio
 
                 if (trackSelection == TrackSelection.Indiv)
                 {
-                    result += $"'s Tr {track} ";
+                    string trackString = string.Empty;
+                    IntegerVariable trackVar = track.integerRef;
+                    if (trackVar != null)
+                    {
+                        trackString = trackVar.Key;
+                    }
+                    else
+                    {
+                        trackString = track.Value.ToString();
+                    }
+
+                    result += $"'s Tr {trackString} ";
                 }
 
                 if (outputVar != null)
@@ -114,15 +128,26 @@ namespace Amanita.Myceliaudio
 
         protected virtual string SummaryForSetting()
         {
-            string result = $"{operation} {trackGroup}'s ";
-
+            string result = $"{operation} {trackGroup}";
+            string trackString = string.Empty;
             if (trackSelection == TrackSelection.Indiv)
             {
-                result += $"Tr {track} vol to";
+                IntegerVariable trackVar = track.integerRef;
+                if (trackVar != null)
+                {
+                    trackString = trackVar.Key;
+                }
+                else
+                {
+                    trackString = track.Value.ToString();
+                }
+
+                result += $"Tr {trackString}'s vol to ";
+                //result += $"Tr {track} vol to ";
             }
             else if (trackSelection == TrackSelection.Group)
             {
-                result += $"vol to ";
+                result += $"'s vol to ";
             }
 
             if (targetVol.floatRef == null)
