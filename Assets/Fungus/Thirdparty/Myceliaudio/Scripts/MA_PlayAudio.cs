@@ -6,6 +6,14 @@ namespace Amanita.Myceliaudio
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand
     {
+        public enum AudioPlayMode
+        {
+            Null,
+            Play,
+            Unpause
+        }
+
+        [SerializeField] protected AudioPlayMode mode = AudioPlayMode.Play;
         [SerializeField] protected FlowchartPlayAudioArgs mainPlayConfig;
         [Tooltip("If true, this Command will be skipped if the clip is already playing in the specified track.")]
         [SerializeField] protected BooleanData skipIfAlreadyPlaying = new BooleanData();
@@ -16,6 +24,17 @@ namespace Amanita.Myceliaudio
         public override void OnEnter()
         {
             base.OnEnter();
+            HandlePlaying();
+            HandleUnpausing();
+            Continue();
+        }
+
+        protected virtual void HandlePlaying()
+        {
+            if (mode != AudioPlayMode.Play)
+            {
+                return;
+            }
 
             if (ValidClip)
             {
@@ -24,6 +43,7 @@ namespace Amanita.Myceliaudio
                 bool shouldSkip = skipIfAlreadyPlaying && alreadyPlayingThatClipThere;
                 if (!shouldSkip)
                 {
+
                     IPlayAudioContext args = GetPlayAudioContext();
                     AudioSystem.S.Play(args);
                 }
@@ -32,8 +52,6 @@ namespace Amanita.Myceliaudio
             {
                 PointOutClipInvalidity();
             }
-
-            Continue();
         }
 
         protected virtual bool ValidClip
@@ -182,49 +200,132 @@ namespace Amanita.Myceliaudio
             Debug.LogWarning(errorMessage);
         }
 
+        protected virtual void HandleUnpausing()
+        {
+            if (mode != AudioPlayMode.Unpause)
+            {
+                return;
+            }
+
+            AudioSystem.S.Unpause(TrackGroup, Track);
+        }
+
         public override string GetSummary()
         {
-            string result;
+            string result = GetCorrectSummary();
+            return result;
+        }
+
+        protected virtual string GetCorrectSummary()
+        {
+            string result = $"{mode} ";
+
+            if (mode == AudioPlayMode.Play)
+            {
+                result += MessageForPlaying();
+            }
+            else if (mode == AudioPlayMode.Unpause)
+            {
+                result += MessageForUnpausing();
+            }
+            else
+            {
+                result = $"ERROR: {mode} is not a valid play mode.";
+            }
+
+            return result;
+        }
+
+        protected virtual string MessageForPlaying()
+        {
+            string result = string.Empty;
+            result = $"{ClipNameForSummary()} in {TrackGroup} Tr {TrackNameForSummary()}";
+
+            return result;
+        }
+
+        protected virtual string TrackNameForSummary()
+        {
+            string name = string.Empty;
 
             if (useConfigSO)
             {
                 if (configSO != null)
                 {
-                    result = $"{TrackGroup} Tr {Track} {Clip.name} ";
+                    name = configSO.Track.ToString();
                 }
                 else
                 {
-                    result = "ERROR: Needs config object";
+                    name = "ERROR: Need config SO";
+                }
+            }
+            else
+            {
+                IntegerData intData = mainPlayConfig.TrackData;
+                IntegerVariable intRef = intData.integerRef;
+                bool assignedVar = intRef != null;
+
+                if (assignedVar)
+                {
+                    name = $"{intRef.Key}";
+                }
+                else
+                {
+                    name = $"{Track}";
+                }
+            }
+
+            return name;
+        }
+    
+        protected virtual string ClipNameForSummary()
+        {
+            string name = string.Empty;
+
+            if (useConfigSO)
+            {
+                if (configSO != null)
+                {
+                    if (configSO.Clip == null)
+                    {
+                        
+                    }
+                    else
+                    { 
+                        name = Clip.name;
+                    }
+                }
+                else
+                {
+                    name = "ERROR: Need config SO";
                 }
             }
             else
             {
                 AudioClipData clipData = mainPlayConfig.ClipData;
                 AudioClipVariable clipRef = clipData.audioClipRef;
-                bool assignedClipVar = clipRef != null;
+                bool assignedVar = clipRef != null;
 
-                if (assignedClipVar)
+                if (assignedVar)
                 {
-                    // In this case, we don't want to spit out an error just because the var has nothing
-                    // assigned. For all we know, it could be intentional; the user might want to assign
-                    // something to the var during runtime but not in the editor.
-                    result = $"{TrackGroup} Tr {Track} {clipRef.Key} ";
-
+                    name = $"{clipRef.Key}";
                     if (!ValidClip)
                     {
-                        result += "(clipless)";
+                        name += " (clipless)";
                     }
-                }
-                else if (ValidClip)
-                {
-                    result = $"{TrackGroup} Tr {Track} {Clip.name}";
                 }
                 else
                 {
-                    result = "Error: No clip or clip variable given";
+                    name = Clip.name;
                 }
             }
-            
+
+            return name;
+        }
+
+        protected virtual string MessageForUnpausing()
+        {
+            string result = $"{TrackGroup} Tr {TrackNameForSummary()}";
             return result;
         }
     }

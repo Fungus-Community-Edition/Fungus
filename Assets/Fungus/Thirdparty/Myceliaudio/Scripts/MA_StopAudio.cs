@@ -49,8 +49,9 @@ namespace Amanita.Myceliaudio
                 trackToDisplay = track.Value.ToString();
             }
 
-            string result = $"In {trackGroup} Tr {trackToDisplay}";
+            string result = $"{stopMode} {trackGroup} Tr {trackToDisplay}";
             return result;
         }
+
     }
 }

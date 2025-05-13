@@ -4098,7 +4098,18 @@ GameObject:
   - component: {fileID: 1390555442}
   - component: {fileID: 1390555441}
   - component: {fileID: 1390555443}
+  - component: {fileID: 1390555454}
+  - component: {fileID: 1390555453}
+  - component: {fileID: 1390555452}
+  - component: {fileID: 1390555451}
+  - component: {fileID: 1390555450}
+  - component: {fileID: 1390555449}
+  - component: {fileID: 1390555448}
+  - component: {fileID: 1390555447}
+  - component: {fileID: 1390555446}
+  - component: {fileID: 1390555445}
   - component: {fileID: 1390555444}
+  - component: {fileID: 1390555456}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -4193,7 +4204,7 @@ MonoBehaviour:
   scrollPos: {x: 3158.879, y: 1530.4153}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
-  blockViewHeight: 240
+  blockViewHeight: 200
   zoom: 0.97
   scrollViewRect:
     serializedVersion: 2
@@ -4202,13 +4213,19 @@ MonoBehaviour:
     width: 5969.446
     height: 2818.8503
   selectedBlocks:
-  - {fileID: 1390555298}
+  - {fileID: 1390555312}
   selectedCommands:
-  - {fileID: 1390555442}
+  - {fileID: 1390555384}
   variables:
   - {fileID: 1390555396}
   - {fileID: 1390555441}
   - {fileID: 1390555443}
+  - {fileID: 1390555452}
+  - {fileID: 1390555451}
+  - {fileID: 1390555450}
+  - {fileID: 1390555448}
+  - {fileID: 1390555447}
+  - {fileID: 1390555445}
   description: 'Example scene from Sherlock: The Game Is On'
   stepPause: 0
   colorCommands: 1
@@ -4695,7 +4712,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -2747.3945
-    y: -948.7452
+    y: -947.71423
     width: 79.49
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -4711,10 +4728,15 @@ MonoBehaviour:
   - {fileID: 1390555299}
   - {fileID: 1390555319}
   - {fileID: 1390555391}
-  - {fileID: 1390555444}
+  - {fileID: 1390555453}
+  - {fileID: 1390555454}
   - {fileID: 1390555390}
+  - {fileID: 1390555449}
+  - {fileID: 1390555456}
   - {fileID: 1390555389}
+  - {fileID: 1390555444}
   - {fileID: 1390555318}
+  - {fileID: 1390555446}
   - {fileID: 1390555384}
   - {fileID: 1390555317}
   - {fileID: 1390555383}
@@ -4880,7 +4902,7 @@ MonoBehaviour:
   indentLevel: 0
   duration: 1
   targetAlpha: 0
-  waitUntilFinished: 1
+  waitUntilFinished: 0
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   fadeTweenType: 4
@@ -4900,7 +4922,7 @@ MonoBehaviour:
   indentLevel: 0
   duration: 1
   targetAlpha: 1
-  waitUntilFinished: 1
+  waitUntilFinished: 0
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   fadeTweenType: 4
@@ -6930,7 +6952,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1390555290}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc30c92f7ffe3d746ac76cd528d616e5, type: 3}
   m_Name: 
@@ -6953,7 +6975,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1390555290}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc30c92f7ffe3d746ac76cd528d616e5, type: 3}
   m_Name: 
@@ -6976,7 +6998,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1390555290}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc30c92f7ffe3d746ac76cd528d616e5, type: 3}
   m_Name: 
@@ -7149,6 +7171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 105
   indentLevel: 0
+  mode: 1
   mainPlayConfig:
     trackGroup: 2
     track:
@@ -7193,7 +7216,235 @@ MonoBehaviour:
   value: 0
 --- !u!114 &1390555444
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 111
+  indentLevel: 0
+  mode: 2
+  mainPlayConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 1390555443}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 1390555441}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1390555445
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: fadeInDur
+  value: 2
+--- !u!114 &1390555446
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f493c5acedac74a41aacf344e50ee61c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 110
+  indentLevel: 0
+  trackGroup: 2
+  track:
+    integerRef: {fileID: 1390555443}
+    integerVal: 0
+  targetVol:
+    floatRef: {fileID: 1390555451}
+    floatVal: 0
+  duration:
+    floatRef: {fileID: 1390555445}
+    floatVal: 1
+  waitUntilFinished:
+    booleanRef: {fileID: 0}
+    booleanVal: 1
+--- !u!114 &1390555447
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: sfxTrack
+  value: 0
+--- !u!114 &1390555448
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9e14562e1210645a10d8edfca25e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: pourLiquid
+  value: {fileID: 8300000, guid: e513fc9af808b8c438338e58bc17a700, type: 3}
+--- !u!114 &1390555449
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 109
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      integerRef: {fileID: 1390555447}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 1390555448}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+  skipIfAlreadyPlaying:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1390555450
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: fadeOutDur
+  value: 2
+--- !u!114 &1390555451
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: fullVol
+  value: 100
+--- !u!114 &1390555452
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: silent
+  value: 0
+--- !u!114 &1390555453
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f493c5acedac74a41aacf344e50ee61c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 108
+  indentLevel: 0
+  trackGroup: 2
+  track:
+    integerRef: {fileID: 1390555443}
+    integerVal: 0
+  targetVol:
+    floatRef: {fileID: 1390555452}
+    floatVal: 0
+  duration:
+    floatRef: {fileID: 1390555450}
+    floatVal: 1
+  waitUntilFinished:
+    booleanRef: {fileID: 0}
+    booleanVal: 1
+--- !u!114 &1390555454
+MonoBehaviour:
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -7203,13 +7454,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0af3912f604d7b0459811cca867bc43d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 106
+  itemId: 107
   indentLevel: 0
-  stopMode: 0
+  stopMode: 2
   trackGroup: 2
   track:
     integerRef: {fileID: 0}
     integerVal: 0
+--- !u!114 &1390555456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 113
+  indentLevel: 0
+  _duration:
+    floatRef: {fileID: 0}
+    floatVal: 1
+  durationOLD: 0
 --- !u!1 &1403072068
 GameObject:
   m_ObjectHideFlags: 0
