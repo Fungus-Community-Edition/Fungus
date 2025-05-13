@@ -1795,6 +1795,9 @@ GameObject:
   - component: {fileID: 1831099600}
   - component: {fileID: 1831099572}
   - component: {fileID: 1831099602}
+  - component: {fileID: 1831099657}
+  - component: {fileID: 1831099656}
+  - component: {fileID: 1831099655}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -1842,11 +1845,12 @@ MonoBehaviour:
     width: 1939.0176
     height: 2009.5223
   selectedBlocks:
-  - {fileID: 1831099578}
-  selectedCommands:
-  - {fileID: 1831099574}
+  - {fileID: 1831099628}
+  selectedCommands: []
   variables:
   - {fileID: 1831099569}
+  - {fileID: 1831099657}
+  - {fileID: 1831099656}
   description: 'This is an example of a short Visual Novel / RPG
 
     style game'
@@ -1986,7 +1990,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1831099566}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1902400ccc99b45d69ad01cb86b57d0f, type: 3}
   m_Name: 
@@ -2023,6 +2027,7 @@ MonoBehaviour:
   eventHandler: {fileID: 1831099654}
   commandList:
   - {fileID: 1831099577}
+  - {fileID: 1831099655}
   - {fileID: 1831099576}
   - {fileID: 1831099575}
   - {fileID: 1831099574}
@@ -4291,6 +4296,78 @@ MonoBehaviour:
   parentBlock: {fileID: 1831099578}
   suppressBlockAutoSelect: 0
   waitForFrames: 1
+--- !u!114 &1831099655
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831099566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 73
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 2
+    track:
+      integerRef: {fileID: 1831099656}
+      integerVal: 0
+    clip:
+      audioClipRef: {fileID: 1831099657}
+      audioClipVal: {fileID: 0}
+    loop:
+      booleanRef: {fileID: 0}
+      booleanVal: 1
+    loopStartPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    loopEndPoint:
+      floatRef: {fileID: 0}
+      floatVal: 0
+    oneShot:
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1831099656
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831099566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: bgmTrack
+  value: 0
+--- !u!114 &1831099657
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831099566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9e14562e1210645a10d8edfca25e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: bgm
+  value: {fileID: 8300000, guid: 1f6fe06a995faae469274b3c352ebbd9, type: 3}
 --- !u!1001 &1849986066
 PrefabInstance:
   m_ObjectHideFlags: 0
