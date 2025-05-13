@@ -129,18 +129,12 @@ namespace Amanita.Myceliaudio
 
         public virtual void Play(IPlayAudioContext args)
         {
-            _playsIntros.Stop();
-            _playsMains.Stop();
+            Stop();
             _playsMains.loop = args.Loop;
             _playsMains.clip = args.Clip;
 
             if (args.Loop)
             {
-                if (_playOnLoop != null)
-                {
-                    AudioSys.StopCoroutine(_playOnLoop);
-                }
-
                 _playOnLoop = PlayOnLoopCoroutine(args);
                 AudioSys.StartCoroutine(_playOnLoop);
             }
@@ -256,6 +250,7 @@ namespace Amanita.Myceliaudio
             }
 
             _playsIntros.Stop();
+            _playsMains.Stop();
         }
 
         /// <summary>
