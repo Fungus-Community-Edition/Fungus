@@ -316,5 +316,17 @@ namespace Amanita.Myceliaudio
         {
             get { return _playsMains.clip; }
         }
+
+        public virtual void Pause()
+        {
+            _playsIntros.Pause();
+            _playsMains.Pause();
+        }
+
+        public virtual void Unpause()
+        {
+            _playsIntros.UnPause();
+            _playsMains.UnPause();
+        }
     }
 }

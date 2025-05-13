@@ -2,6 +2,7 @@
 #define AMANITA_MYCELIAUDIO
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Video;
 
 namespace Amanita.Myceliaudio
 {
@@ -172,6 +173,18 @@ namespace Amanita.Myceliaudio
         public virtual AudioClip GetLoopClip(AudioClip originalClip, double loopStartPoint, double loopEndPoint)
         {
             return _clipSplitter.GetLoopClip(originalClip, loopStartPoint, loopEndPoint);
+        }
+
+        public virtual void Pause(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            manager.Pause(track);
+        }
+
+        public virtual void Unpause(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            manager.Unpause(track);
         }
 
         protected virtual void OnDestroy()

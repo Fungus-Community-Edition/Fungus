@@ -5,8 +5,6 @@ namespace Amanita.Myceliaudio
 {
     public abstract class MyceliaudioCommand : Command
     {
-        [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
-
         protected virtual AudioSystem AudioSys { get { return AudioSystem.S; } }
         public override Color GetButtonColor()
         {

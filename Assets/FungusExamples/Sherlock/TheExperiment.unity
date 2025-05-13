@@ -4098,6 +4098,7 @@ GameObject:
   - component: {fileID: 1390555442}
   - component: {fileID: 1390555441}
   - component: {fileID: 1390555443}
+  - component: {fileID: 1390555444}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -4275,7 +4276,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -2590.3325
-    y: -1083.838
+    y: -1082.8071
     width: 88.85
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -4694,7 +4695,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -2747.3945
-    y: -949.7761
+    y: -948.7452
     width: 79.49
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -4710,6 +4711,7 @@ MonoBehaviour:
   - {fileID: 1390555299}
   - {fileID: 1390555319}
   - {fileID: 1390555391}
+  - {fileID: 1390555444}
   - {fileID: 1390555390}
   - {fileID: 1390555389}
   - {fileID: 1390555318}
@@ -7147,8 +7149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 105
   indentLevel: 0
-  trackGroup: 2
-  mainCommandConfig:
+  mainPlayConfig:
     trackGroup: 2
     track:
       integerRef: {fileID: 1390555443}
@@ -7190,6 +7191,25 @@ MonoBehaviour:
   scope: 0
   key: bgmTrack
   value: 0
+--- !u!114 &1390555444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390555290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af3912f604d7b0459811cca867bc43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 106
+  indentLevel: 0
+  stopMode: 0
+  trackGroup: 2
+  track:
+    integerRef: {fileID: 0}
+    integerVal: 0
 --- !u!1 &1403072068
 GameObject:
   m_ObjectHideFlags: 0

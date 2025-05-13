@@ -6,12 +6,34 @@ namespace Amanita.Myceliaudio
     [CommandInfo("Myceliaudio", "MA Stop Audio", "Stops the audio playing in a specific track.")]
     public class MA_StopAudio : MyceliaudioCommand
     {
+        public enum StopMode
+        {
+            Null,
+            Stop,
+            Pause
+        }
+
+        [SerializeField] protected StopMode stopMode = StopMode.Stop;
+        [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
         [SerializeField] protected IntegerData track = new IntegerData(0);
 
         public override void OnEnter()
         {
             base.OnEnter();
-            AudioSys.StopPlaying(trackGroup, track);
+
+            if (stopMode == StopMode.Pause)
+            {
+                AudioSys.Pause(trackGroup, track);
+            }
+            else if (stopMode == StopMode.Stop)
+            {
+                AudioSys.StopPlaying(trackGroup, track);
+            }
+            else
+            {
+                Debug.LogWarning($"No proper stop mode set here.");
+            }
+
             Continue();
         }
 

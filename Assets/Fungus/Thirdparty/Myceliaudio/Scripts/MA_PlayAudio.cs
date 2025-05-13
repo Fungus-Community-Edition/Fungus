@@ -1,14 +1,12 @@
 using UnityEngine;
 using Fungus;
-using UnityEngine.Serialization;
 
 namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand
     {
-        [FormerlySerializedAs("mainConfig")]
-        [SerializeField] protected FlowchartPlayAudioArgs mainCommandConfig;
+        [SerializeField] protected FlowchartPlayAudioArgs mainPlayConfig;
         [Tooltip("If true, this Command will be skipped if the clip is already playing in the specified track.")]
         [SerializeField] protected BooleanData skipIfAlreadyPlaying = new BooleanData();
 
@@ -58,7 +56,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainCommandConfig.Clip != null;
+                    result = mainPlayConfig.Clip != null;
                 }
 
                 return result;
@@ -91,7 +89,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainCommandConfig.TrackGroup;
+                    result = mainPlayConfig.TrackGroup;
                 }
 
                 return result;
@@ -117,7 +115,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainCommandConfig.Track;
+                    result = mainPlayConfig.Track;
                 }
 
                 return result;
@@ -143,7 +141,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainCommandConfig.Clip;
+                    result = mainPlayConfig.Clip;
                 }
 
                 return result;
@@ -167,7 +165,7 @@ namespace Amanita.Myceliaudio
             }
             else
             {
-                result = mainCommandConfig;
+                result = mainPlayConfig;
             }
 
             return result;
@@ -201,7 +199,7 @@ namespace Amanita.Myceliaudio
             }
             else
             {
-                AudioClipData clipData = mainCommandConfig.ClipData;
+                AudioClipData clipData = mainPlayConfig.ClipData;
                 AudioClipVariable clipRef = clipData.audioClipRef;
                 bool assignedClipVar = clipRef != null;
 
@@ -219,7 +217,7 @@ namespace Amanita.Myceliaudio
                 }
                 else if (ValidClip)
                 {
-                    result = $"{trackGroup} Tr {Track} {Clip.name}";
+                    result = $"{TrackGroup} Tr {Track} {Clip.name}";
                 }
                 else
                 {
