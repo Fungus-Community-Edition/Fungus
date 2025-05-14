@@ -1,138 +1,102 @@
-﻿using System.Collections.Generic;
+﻿using Fungus;
+using System.Collections.Generic;
 using UnityEngine;
-using Fungus;
-
-using BaseFungus = Fungus;
 
 namespace Amanita.SaveSys
 {
-    /// <summary>
-    /// Contains much of the state of a Flowchart.
-    /// </summary>
-    public class FlowchartData : SaveData
+    [System.Serializable]
+    public class FlowchartSaveData : SaveData
     {
-        #region Fields
-        [SerializeField] protected string flowchartName;
-        [SerializeField] protected FlowchartVariables vars = new FlowchartVariables();
-        [SerializeField] protected List<BlockData> blocks = new List<BlockData>();
-        #endregion
+        [SerializeField] protected List<string> keys = new();
+        [SerializeField] protected List<string> values = new();
+        [SerializeField] protected List<string> objectIdentifiers = new(); // Stores GameObject references
 
-        #region Public Properties
-        /// <summary>
-        /// Gets or sets the name of the encoded Flowchart.
-        /// </summary>
-        public string FlowchartName         { get { return flowchartName; } set { flowchartName = value; } }
-        public FlowchartVariables Vars      { get { return vars; } set { vars = value; } }
-        public List<BlockData> Blocks       { get { return blocks; } set { blocks = value; } }
-        #endregion
-
-        #region Constructors
-        public FlowchartData()                                          { }
-
-        public FlowchartData(Flowchart flowchart)
+        public FlowchartSaveData(Flowchart toCreateFrom)
         {
-            SetFrom(flowchart);
-        }
-        #endregion
-
-        #region Public methods
-        
-        /// <summary>
-        /// Makes the FlowchartData instance hold the state of only the passed Flowchart.
-        /// </summary>
-        public virtual void SetFrom(Flowchart flowchart)
-        {
-            Clear(); // Get rid of any old state data first
-
-            FlowchartName = flowchart.name;
-            SetVariablesFrom(flowchart);
-            SetBlocksFrom(flowchart);
+            
         }
 
-        /// <summary>
-        /// Clears all state this FlowchartData has.
-        /// </summary>
-        public override void Clear()
+        public FlowchartSaveData(Dictionary<string, object> variables) : base()
         {
-            flowchartName = string.Empty;
-            ClearVariables();
-            ClearBlocks();
-        }
-
-        #region Static Methods
-        public static FlowchartData CreateFrom(Flowchart flowchart)
-        {
-            return new FlowchartData(flowchart);
-        }
-        #endregion
-
-        #region Helpers
-
-        protected virtual void ClearVariables()
-        {
-            vars.Clear();
-        }
-
-        protected virtual void ClearBlocks()
-        {
-            blocks.Clear();
-        }
-
-        protected virtual void SetVariablesFrom(Flowchart flowchart)
-        {
-            for (int i = 0; i < flowchart.Variables.Count; i++) 
+            foreach (var kvp in variables)
             {
-                var variable = flowchart.Variables[i];
+                keys.Add(kvp.Key);
 
-                TrySetVariable<string, StringVar, StringVariable>(variable, vars.Strings);
-                TrySetVariable<int, IntVar, IntegerVariable>(variable, vars.Ints);
-                TrySetVariable<float, FloatVar, FloatVariable>(variable, vars.Floats);
-                TrySetVariable<bool, BoolVar, BooleanVariable>(variable, vars.Bools);
-                TrySetVariable<Color, ColorVar, ColorVariable>(variable, vars.Colors);
-                TrySetVariable<Vector2, Vec2Var, Vector2Variable>(variable, vars.Vec2s);
-                TrySetVariable<Vector3, Vec3Var, Vector3Variable>(variable, vars.Vec3s);
-            }
-        
-        }
-
-        /// <summary>
-        /// Adds the passed variable to the passed list if it can be cast to the correct type.
-        /// 
-        /// TBase: Base type encapsulated by the variable
-        /// 
-        /// TSVarType: This save system's serializable container for the variable
-        /// TNSVariableType: Fungus's built-in flowchart-only container for the variable
-        /// </summary>
-        protected virtual void TrySetVariable<TBase, TSVarType, TNSVariableType>(BaseFungus.Variable varToSet, 
-                                                                                IList<TSVarType> varList) 
-        where TSVarType: Var<TBase>, new()
-        where TNSVariableType: BaseFungus.VariableBase<TBase>
-        {
-            var fungusBaseVar = varToSet as TNSVariableType;
-
-            if (fungusBaseVar != null)
-            {
-                var toAdd  = new TSVarType();
-                toAdd.Key = fungusBaseVar.Key;
-                toAdd.Value = fungusBaseVar.Value;
-                varList.Add(toAdd);
+                if (kvp.Value is GameObject obj)
+                {
+                    values.Add(obj.name); // Store name as identifier
+                    objectIdentifiers.Add(obj.name); // Track for later reconstruction
+                }
+                else if (kvp.Value is Transform t)
+                {
+                    values.Add(t.gameObject.name + "/" + GetTransformPath(t)); // Store transform path
+                    objectIdentifiers.Add(t.gameObject.name); // Track GameObject separately
+                }
+                else
+                {
+                    values.Add(kvp.Value.ToString()); // Store primitives normally
+                }
             }
         }
 
-        protected virtual void SetBlocksFrom(Flowchart flowchart)
+        private static string GetTransformPath(Transform transform)
         {
-            // Register data for the blocks the flowchart is executing
-            var executingBlocks = flowchart.GetExecutingBlocks();
-            for (int i = 0; i < executingBlocks.Count; i++)
+            string path = transform.name;
+            while (transform.parent != null)
             {
-                BlockData newBlockData = new BlockData(executingBlocks[i]);
-                blocks.Add(newBlockData);
+                transform = transform.parent;
+                path = transform.name + "/" + path;
             }
+            return path;
         }
 
-        #endregion
+        public override SaveDataItem ToSaveDataItem()
+        {
+            throw new System.NotImplementedException();
+        }
 
-        #endregion
+        public static void ApplyFlowchartSaveData(Flowchart flowchart, FlowchartSaveData saveData)
+        {
+            Dictionary<string, object> variables = new();
+
+            for (int i = 0; i < saveData.keys.Count; i++)
+            {
+                string key = saveData.keys[i];
+                string value = saveData.values[i];
+
+                if (saveData.objectIdentifiers.Contains(key))
+                {
+                    var foundObject = GameObject.Find(value.Split('/')[0]); // Find GameObject
+                    if (foundObject != null)
+                    {
+                        if (value.Contains("/"))
+                        {
+                            var transformPath = value.Split('/')[1..]; // Extract Transform hierarchy
+                            var targetTransform = FindTransformByPath(foundObject.transform, transformPath);
+                            variables[key] = targetTransform;
+                        }
+                        else
+                        {
+                            variables[key] = foundObject;
+                        }
+                    }
+                }
+                else
+                {
+                    variables[key] = value;
+                }
+            }
+
+        }
+
+        private static Transform FindTransformByPath(Transform root, string[] path)
+        {
+            foreach (string step in path)
+            {
+                root = root.Find(step);
+                if (root == null) return null;
+            }
+            return root;
+        }
     }
-
 }

@@ -1,62 +1,74 @@
 ﻿
+using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    [System.Serializable]
-    public class SaveData 
+    [Serializable]
+    public abstract class SaveData
     {
-        [SerializeField] string sceneName;
+        [SerializeField] protected string saveID;
+        [SerializeField] protected float saveVersion = 1;
+        [SerializeField] protected string utcTimeStamp = string.Empty;
 
-        public string SceneName
+        public string SaveID => saveID;
+        public float SaveVersion => saveVersion;
+        public string SavedAtUtc => utcTimeStamp;
+
+        protected SaveData()
         {
-            get                         { return sceneName; }
-            set                         { sceneName = value; }
+            saveID = Guid.NewGuid().ToString();
+            UpdateTimeStamp();
         }
 
-        #region Constructors
-        public SaveData()               {}
-
-        public SaveData(string sceneName)
+        protected virtual void UpdateTimeStamp()
         {
-            this.sceneName = sceneName;
+            utcTimeStamp = DateTime.UtcNow.ToString(iso8601Format);
+            UpdateTimeStampDateTime();
+        }
+        protected static string iso8601Format = "o";
+
+        protected virtual void UpdateTimeStampDateTime()
+        {
+            IFormatProvider provider = CultureInfo.InvariantCulture;
+            DateTimeStyles style = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal;
+
+            bool successfulParse = DateTime.TryParseExact(
+                utcTimeStamp, iso8601Format,
+                provider, style,
+                out var result);
+
+            TimeStamp = result;
+            if (!successfulParse)
+            {
+                TimeStamp = DateTime.UnixEpoch;
+            }
         }
 
-        /// <summary>
-        /// Creates a copy of the passed SaveData.
-        /// </summary>
-        public SaveData(SaveData other)
+        protected SaveData(string saveID)
         {
-            SetFrom(other);
+            this.saveID = saveID;
+            UpdateTimeStamp();
         }
 
-        #endregion
-
-        /// <summary>
-        /// Turns this save data into a deep copy of the one passed, given class constraints.
-        /// </summary>
-        public virtual void SetFrom(SaveData other)
+        // Optionally, allow setting timestamp manually
+        protected SaveData(string saveID, string savedAtUtc)
         {
-            this.sceneName = other.sceneName;
+            this.saveID = saveID;
+            this.utcTimeStamp = savedAtUtc;
+            UpdateTimeStampDateTime();
         }
 
-        /// <summary>
-        /// Clears this save data of all state it was holding.
-        /// </summary>
-        public virtual void Clear()
+        public abstract SaveDataItem ToSaveDataItem();
+
+        public virtual void OnDeserialize()
         {
-            this.sceneName = string.Empty;
+            UpdateTimeStampDateTime();
         }
 
-        public virtual SaveDataItem ToSaveDataItem()
-        {
-            var thisAsJson = JsonUtility.ToJson(this, true);
-            var typeOfThis = this.GetType();
-
-            var newItem = new SaveDataItem(typeOfThis.Name, thisAsJson);
-
-            return newItem;
-        }
-
+        public DateTime TimeStamp { get; protected set; }
     }
+
+
 }
