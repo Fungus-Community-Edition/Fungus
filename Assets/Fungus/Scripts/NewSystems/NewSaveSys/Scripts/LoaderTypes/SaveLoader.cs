@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
 
     public abstract class SaveLoader : MonoBehaviour, ISaveLoader

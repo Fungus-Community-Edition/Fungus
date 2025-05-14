@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Events;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     public static class Signals
     {

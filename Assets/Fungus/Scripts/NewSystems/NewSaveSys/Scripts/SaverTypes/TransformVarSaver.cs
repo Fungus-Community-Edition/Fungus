@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Saves the state of all Transform variables belonging to specified flowcharts.

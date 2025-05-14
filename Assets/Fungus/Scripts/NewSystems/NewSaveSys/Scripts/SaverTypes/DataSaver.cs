@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// For MonoBehaviours that can create SaveData that can be encoded to an array of SaveDataItems.

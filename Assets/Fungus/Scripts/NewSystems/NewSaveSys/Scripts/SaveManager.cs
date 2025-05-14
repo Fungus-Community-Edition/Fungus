@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// The main interface for creating, loading, and deleting saves.

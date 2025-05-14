@@ -1,4 +1,4 @@
-﻿namespace CGTUnity.Fungus.SaveSystem
+﻿namespace Amanita.SaveSys
 {
     public interface ISaveLoader
     {

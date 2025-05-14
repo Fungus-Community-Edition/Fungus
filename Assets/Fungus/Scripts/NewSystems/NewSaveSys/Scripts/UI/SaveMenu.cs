@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Main manager of the save system's UI, meant to be the main interface used when

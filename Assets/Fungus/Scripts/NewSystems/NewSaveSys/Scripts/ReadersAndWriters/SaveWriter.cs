@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.IO;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Fungus/SaveSystem/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Fungus;
 using BaseFungus = Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Can currently only decode these variables for Flowcharts: Bool, Int, Float, and String.

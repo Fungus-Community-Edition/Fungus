@@ -2,7 +2,7 @@
 using UnityEngine;
 using Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Creates Flowchart save data.

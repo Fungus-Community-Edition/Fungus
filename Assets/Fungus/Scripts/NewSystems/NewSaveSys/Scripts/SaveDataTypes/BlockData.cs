@@ -2,7 +2,7 @@
 using Fungus;
 
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Save data for the Blocks in a Flowchart.

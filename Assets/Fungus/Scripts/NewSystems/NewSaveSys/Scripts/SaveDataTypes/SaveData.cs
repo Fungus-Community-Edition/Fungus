@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     [System.Serializable]
     public class SaveData 

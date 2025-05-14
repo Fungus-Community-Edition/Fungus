@@ -4,7 +4,7 @@ using UnityEngine;
 using Fungus;
 using BaseFungus = Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     public static class FlowchartExtensions 
     {

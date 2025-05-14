@@ -4,7 +4,7 @@ using DateTime = System.DateTime;
 using System.Globalization;
 using CGT.Globalization;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     [RequireComponent(typeof(RectTransform))]
     public class SaveSlot : MonoBehaviour

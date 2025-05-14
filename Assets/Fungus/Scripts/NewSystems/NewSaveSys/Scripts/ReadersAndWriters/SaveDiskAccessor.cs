@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Contains functionality common to SaveWriters and SaveReaders.

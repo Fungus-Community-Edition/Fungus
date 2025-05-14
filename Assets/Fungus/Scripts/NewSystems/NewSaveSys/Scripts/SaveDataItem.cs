@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// A container for a single SaveData instance, for encoding and later decoding.

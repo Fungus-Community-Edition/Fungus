@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Reads save data from disk and encodes it into a GameSaveData object(s).

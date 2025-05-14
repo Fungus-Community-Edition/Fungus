@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Helps signify where into a game the player has gotten, so that when a GameSaveData is loaded, 

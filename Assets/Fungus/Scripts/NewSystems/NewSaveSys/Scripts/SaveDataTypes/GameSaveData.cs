@@ -2,7 +2,7 @@
 using UnityEngine;
 using DateTime = System.DateTime;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Contains the state of an entire playthrough.

@@ -6,7 +6,7 @@ using Fungus;
 
 using BaseFungus = Fungus;
 
-namespace CGTUnity.Fungus.SaveSystem
+namespace Amanita.SaveSys
 {
     /// <summary>
     /// Contains much of the state of a Flowchart.
