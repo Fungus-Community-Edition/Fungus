@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace MoonSharp.Interpreter.Interop
+﻿namespace MoonSharp.Interpreter.Interop
 {
 
 	/// <summary>

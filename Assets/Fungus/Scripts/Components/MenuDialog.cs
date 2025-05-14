@@ -11,7 +11,6 @@ using Fungus.Lua;
 using System;
 
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
 #endif
 
 namespace Fungus

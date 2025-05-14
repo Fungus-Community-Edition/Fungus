@@ -1,9 +1,8 @@
 namespace Fungus.DentedPixel
 {
-	using UnityEngine;
-	using System.Collections.Generic;
+    using UnityEngine;
 
-	public class LeanAudioStream
+    public class LeanAudioStream
 	{
 
 		public int position = 0;

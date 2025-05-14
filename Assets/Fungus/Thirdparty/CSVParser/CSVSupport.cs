@@ -1,10 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System;
-
-namespace Fungus
+﻿namespace Fungus
 {
 
 	// Some CSV utilities cobbled together from stack overflow answers

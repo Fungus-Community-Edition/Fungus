@@ -2,9 +2,6 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
-using UnityEngine.Audio;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Fungus
 {

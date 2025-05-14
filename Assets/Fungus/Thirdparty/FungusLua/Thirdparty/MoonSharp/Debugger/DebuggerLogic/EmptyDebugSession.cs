@@ -1,9 +1,6 @@
 ﻿#if (!PCL) && ((!UNITY_5) || UNITY_STANDALONE)
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MoonSharp.Interpreter;
 using MoonSharp.VsCodeDebugger.SDK;
 

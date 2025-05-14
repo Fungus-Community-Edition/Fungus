@@ -31,7 +31,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Serialization.Json;
-using MoonSharp.Interpreter.Serialization;
 
 namespace MoonSharp.VsCodeDebugger.SDK
 {
