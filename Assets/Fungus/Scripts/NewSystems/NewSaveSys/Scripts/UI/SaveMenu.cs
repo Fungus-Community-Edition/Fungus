@@ -20,10 +20,10 @@ namespace Amanita.SaveSys
         protected virtual void Awake()
         {
             // Make sure we have the components we need
-            if (gameLoader == null) gameLoader = FindObjectOfType<GameLoader>();
-            if (gameSaver == null) gameSaver = FindObjectOfType<GameSaver>();
-            if (slotManager == null) slotManager = FindObjectOfType<SaveSlotManager>();
-            if (saveManager == null) saveManager = FindObjectOfType<SaveManager>();
+            if (gameLoader == null) gameLoader = FindFirstObjectByType<GameLoader>();
+            if (gameSaver == null) gameSaver = FindFirstObjectByType<GameSaver>();
+            if (slotManager == null) slotManager = FindFirstObjectByType<SaveSlotManager>();
+            if (saveManager == null) saveManager = FindFirstObjectByType<SaveManager>();
             canvasGroup = GetComponent<CanvasGroup>();
         }
         
@@ -33,12 +33,12 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual void SaveToSlot(int slotNumber)
         {
-            saveManager.AddSave(slotNumber, true);
+            saveManager.AddSave(slotNumber);
         }
 
         public virtual void SaveToSlot(SaveSlot slot)
         {
-            saveManager.AddSave(slot, true);
+            saveManager.AddSave(slot);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual void SaveToSlot(GameSaveData saveData)
         {
-            saveManager.AddSave(saveData, true);
+            saveManager.AddSave(saveData);
         }
 
         public virtual void SaveToSelectedSlot()

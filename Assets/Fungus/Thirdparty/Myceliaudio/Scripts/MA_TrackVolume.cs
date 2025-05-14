@@ -1,6 +1,5 @@
 using UnityEngine;
 using Fungus;
-using System.Text;
 
 namespace Amanita.Myceliaudio
 {

@@ -1,10 +1,8 @@
 ﻿namespace Fungus.DentedPixel
 {
-	using System.Collections;
-	using System.Collections.Generic;
-	using UnityEngine;
+    using UnityEngine;
 
-	/**
+    /**
 	* Internal Representation of a Sequence<br>
 	* <br>
 	* &nbsp;&nbsp;<h4>Example:</h4> 
@@ -21,7 +19,7 @@
 	* @class LTSeq
 	* @constructor
 */
-	public class LTSeq
+    public class LTSeq
 	{
 
 		public LTSeq previous;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MoonSharp.Interpreter.Interop;
-using System.Reflection;
 
 namespace MoonSharp.Interpreter
 {

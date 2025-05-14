@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
-using MoonSharp.Interpreter.Interop.RegistrationPolicies;
 
 namespace MoonSharp.Interpreter.Interop.Converters
 {

@@ -1,11 +1,9 @@
 namespace Fungus.DentedPixel
 {
-	using UnityEngine;
-	using System;
-	using System.Collections;
-	using System.Collections.Generic;
+    using UnityEngine;
+    using System;
 
-	public class LTDescrOptional
+    public class LTDescrOptional
 	{
 
 		public Transform toTrans { get; set; }

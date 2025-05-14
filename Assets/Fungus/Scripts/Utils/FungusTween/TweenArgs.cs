@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Fungus

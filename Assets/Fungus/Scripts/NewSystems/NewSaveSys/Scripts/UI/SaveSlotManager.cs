@@ -52,7 +52,7 @@ namespace Amanita.SaveSys
 
             IList<GameSaveData> saves = new List<GameSaveData>();
 
-            foreach (var save in SaveManager.WrittenSaves.Values)
+            foreach (var save in SaveManager.S.WrittenSaves)
             {
                 saves.Add(save);
             }
