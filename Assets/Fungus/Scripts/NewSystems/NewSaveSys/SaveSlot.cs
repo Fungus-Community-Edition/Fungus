@@ -10,10 +10,10 @@ namespace Amanita.SaveSys
         public string SlotName { get; set; } = string.Empty; // Optional, for user-friendly display
         public string LastSavedUtc { get; set; } = string.Empty;
         public float SaveVersion { get; set; } = -1;
-        public SaveDataItem[] SaveDataItems { get; set; } = new SaveDataItem[0];
+        public SerializedSaveData[] SaveDataItems { get; set; } = new SerializedSaveData[0];
 
         public SaveSlot(int slotIndex, string slotName,
-            IList<SaveDataItem> saveDataItems, float saveVersion, string lastSavedUtc)
+            IList<SerializedSaveData> saveDataItems, float saveVersion, string lastSavedUtc)
         {
             SlotIndex = slotIndex;
             SlotName = slotName;
