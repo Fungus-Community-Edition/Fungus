@@ -1421,5 +1421,23 @@ namespace Fungus
         }
 
         #endregion
+
+        [HideInInspector]
+        [SerializeField] private string uniqueId = "";
+        /// <summary>
+        /// Unique identifier not specific to localization.
+        /// </summary>
+        public string UniqueId => uniqueId;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(uniqueId))
+            {
+                uniqueId = System.Guid.NewGuid().ToString();
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+#endif
     }
 }

@@ -114,6 +114,21 @@ namespace Fungus
 
         [SerializeField] protected string key = "";
 
+        [HideInInspector]
+        [SerializeField] private string uniqueId = "";
+        public string UniqueId => uniqueId;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (string.IsNullOrEmpty(uniqueId))
+            {
+                uniqueId = System.Guid.NewGuid().ToString();
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+#endif
+
         #region Public members
 
         /// <summary>
