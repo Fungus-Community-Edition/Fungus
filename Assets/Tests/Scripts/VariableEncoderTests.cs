@@ -44,6 +44,8 @@ namespace Amanita.SaveSystemTests
             stringVar = flowchart.gameObject.AddComponent<StringVariable>();
             stringVar.Value = "Hello, World!";
             flowchart.Variables.Add(stringVar);
+
+            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }
 
         protected StringVariable nameVar = null;
@@ -53,6 +55,7 @@ namespace Amanita.SaveSystemTests
         protected Vector3Variable threeDPosVar = null;
         protected Vector2Variable twoDPosVar = null;
         protected StringVariable stringVar = null;
+        protected TransformVariable transformVar = null;
 
         protected virtual void PrepEncoders()
         {
@@ -60,9 +63,10 @@ namespace Amanita.SaveSystemTests
             vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
             colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
             stringEncoder = EncoderRegistry.GetEncoder(nameof(StringVariable));
+            transformEncoder = EncoderRegistry.GetEncoder(nameof(TransformVariable));
         }
 
-        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder, stringEncoder;
+        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder, stringEncoder, transformEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -203,6 +207,65 @@ namespace Amanita.SaveSystemTests
             stringEncoder.Decode(stringVar, encodedString);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
             Assert.IsTrue(encodedStringSuccess);
+        }
+
+        [Test]
+        public virtual void TransformEncoder_EncodingWorks()
+        {
+            Transform expectedTrans = transformVar.Value;
+            TransformState expectedState = TransformState.From(expectedTrans);
+            string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
+            string encodedTransStr = transformEncoder.Encode(transformVar);
+            bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransStr);
+            Assert.IsTrue(encodedTransSuccess);
+        }
+
+        [Test]
+        public virtual void TransformEncoder_DEcodingWorks()
+        {
+            Transform expectedTrans = transformVar.Value; // Should NOT be null at this point
+            string expectedName = expectedTrans.name;
+            SaveIdentifier identifier = expectedTrans.GetComponent<SaveIdentifier>();
+            string expectedUniqueID = null;
+            if (identifier != null)
+            {
+                expectedUniqueID = identifier.UniqueID;
+            }
+            Vector3 expectedPos = expectedTrans.position;
+            Quaternion expectedRot = expectedTrans.rotation;
+            Vector3 expectedScale = expectedTrans.localScale;
+            TransformState expectedState = TransformState.From(expectedTrans);
+
+            string encodedTransStr = transformEncoder.Encode(transformVar);
+            transformVar.Value.position += Vector3.right * 123;
+            transformVar.Value.rotation *= Quaternion.Euler(0, 90, 0);
+            transformVar.Value.localScale += Vector3.one * 0.5f;
+            transformVar.Value = null;
+
+            transformEncoder.Decode(transformVar, encodedTransStr);
+            // Part of the decoding process is applying the position, rotation and such
+            // to the transform. Thus, we won't need to apply it here.
+            Transform decodedTrans = transformVar.Value;
+
+            bool encodedTransSuccess = expectedTrans.Equals(decodedTrans);
+            bool encodedPosSuccess = expectedPos.Equals(decodedTrans.position);
+            bool encodedRotSuccess = expectedRot.Equals(decodedTrans.rotation);
+            bool encodedScaleSuccess = expectedScale.Equals(decodedTrans.localScale);
+            bool encodedNameSuccess = expectedName.Equals(decodedTrans.name);
+            bool encodedUniqueIDSuccess = true;
+            
+            if (identifier != null)
+            {
+                encodedUniqueIDSuccess = expectedUniqueID.Equals(identifier.UniqueID);
+            }
+            else
+            {
+                encodedUniqueIDSuccess = decodedTrans.GetComponent<SaveIdentifier>() == null;
+            }
+
+            bool success = encodedTransSuccess && encodedPosSuccess && encodedRotSuccess && encodedScaleSuccess && encodedNameSuccess && encodedUniqueIDSuccess;
+            Assert.IsTrue(success);
+
         }
     }
 }

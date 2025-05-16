@@ -12,6 +12,7 @@ namespace Amanita.SaveSys
             new VectorVarEncoder(),
             new ColorVarEncoder(),
             new StringVarEncoder(),
+            new TransformVarEncoder(),
             /* ... */
         };
 
