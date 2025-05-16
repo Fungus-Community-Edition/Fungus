@@ -18,6 +18,7 @@ namespace Amanita.SaveSystemTests
             PrepScene();
             PrepMetaData();
             numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
+            vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
         }
 
         protected virtual void PrepScene()
@@ -25,20 +26,30 @@ namespace Amanita.SaveSystemTests
             varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
             varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
+            PrepVars();
         }
 
         protected GameObject varStateTestPrefab;
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
+
+        protected virtual void PrepVars()
+        {
+            nameVar = (StringVariable)flowchart.GetVariable("name");
+            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
+            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
+            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
+            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+        }
+
         protected StringVariable nameVar = null;
         protected IntegerVariable scoreVar = null;
         protected BooleanVariable newPlayerVar = null;
         protected FloatVariable fastestTimeVar = null;
+        protected Vector3Variable threeDPosVar = null;
+        protected Vector2Variable twoDPosVar = null;
 
         protected virtual void PrepMetaData()
         {
@@ -59,7 +70,7 @@ namespace Amanita.SaveSystemTests
         protected string expectedTypeName, expectedTimeStamp;
         float expectedSaveVer;
 
-        protected IVarEncoder numericEncoder;
+        protected IVarEncoder numericEncoder, vectorEncoder;
 
 
         [TearDown]
@@ -135,7 +146,49 @@ namespace Amanita.SaveSystemTests
             bool success = scoreEncodeSuccess && fastestTimeEncodeSuccess;
             Assert.IsTrue(success);
 
+        }
 
+        [Test]
+        public virtual void VectorEncoder_EncodingWorks()
+        {
+            Vector2 expectedTwoDPos = twoDPosVar.Value;
+            Vector3 expectedThreeDPos = threeDPosVar.Value;
+
+            string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
+            string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
+
+            string encodedTwoDPosStr = vectorEncoder.Encode(twoDPosVar);
+            string encodedThreeDPosStr = vectorEncoder.Encode(threeDPosVar);
+
+            bool encodedTwoDPosSuccess = expectedEncodedTwoDPosStr.Equals(encodedTwoDPosStr);
+            bool encodedThreeDPosSuccess = expectedEncodedThreeDPosStr.Equals(encodedThreeDPosStr);
+            bool success = encodedTwoDPosSuccess && encodedThreeDPosSuccess;
+
+            Assert.IsTrue(success);
+        }
+
+        [Test]
+        public virtual void VectorEncoder_DECodingWorks()
+        {
+            Vector2 expectedTwoDPos = twoDPosVar.Value;
+            Vector3 expectedThreeDPos = threeDPosVar.Value;
+
+            string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
+            string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
+
+            string encodedTwoDPosStr = vectorEncoder.Encode(twoDPosVar);
+            string encodedThreeDPosStr = vectorEncoder.Encode(threeDPosVar);
+
+            twoDPosVar.Value += Vector2.right * 123;
+            threeDPosVar.Value += Vector3.right * 3429785;
+
+            vectorEncoder.Decode(twoDPosVar, encodedTwoDPosStr);
+            vectorEncoder.Decode(threeDPosVar, encodedThreeDPosStr);
+
+            bool encodedTwoDPosSuccess = expectedTwoDPos.Equals(twoDPosVar.Value);
+            bool encodedThreeDPosSuccess = expectedThreeDPos.Equals(threeDPosVar.Value);
+            bool success = encodedTwoDPosSuccess && encodedThreeDPosSuccess;
+            Assert.IsTrue(success);
         }
 
         [Test]
