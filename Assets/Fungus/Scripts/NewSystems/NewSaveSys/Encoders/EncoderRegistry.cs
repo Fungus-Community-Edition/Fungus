@@ -9,7 +9,12 @@ namespace Amanita.SaveSys
         private static readonly List<IVarEncoder> savers = new()
         {
             new NumericVarEncoder(),
-            /* ... */ };
+            new VectorVarEncoder(),
+            new ColorVarEncoder(),
+            new StringVarEncoder(),
+            new TransformVarEncoder(),
+            /* ... */
+        };
 
         public static IVarEncoder GetEncoder(FungusVar variable)
             => savers.Find(s => s.CanHandle(variable));

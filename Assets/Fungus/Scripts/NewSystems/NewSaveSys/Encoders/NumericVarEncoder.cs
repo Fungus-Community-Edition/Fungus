@@ -1,5 +1,6 @@
 using Fungus;
 using System;
+using UnityEngine;
 
 namespace Amanita.SaveSys
 {
@@ -15,7 +16,7 @@ namespace Amanita.SaveSys
         {
             IntegerVariable intVar => intVar.Value.ToString(),
             FloatVariable floatVar => floatVar.Value.ToString(roundTripFormat),
-            _ => throw new InvalidOperationException()
+            _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarEncoder.")
         };
 
         protected static string roundTripFormat = "R";
@@ -29,6 +30,10 @@ namespace Amanita.SaveSys
                 intVar.Value = int.Parse(data);
             else if (variable is FloatVariable floatVar)
                 floatVar.Value = float.Parse(data);
+            else
+            {
+                Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in NumericVarEncoder.");
+            }
         }
     }
 }
