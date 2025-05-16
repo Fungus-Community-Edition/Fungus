@@ -40,6 +40,10 @@ namespace Amanita.SaveSystemTests
             fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+
+            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
+            stringVar.Value = "Hello, World!";
+            flowchart.Variables.Add(stringVar);
         }
 
         protected StringVariable nameVar = null;
@@ -48,15 +52,17 @@ namespace Amanita.SaveSystemTests
         protected FloatVariable fastestTimeVar = null;
         protected Vector3Variable threeDPosVar = null;
         protected Vector2Variable twoDPosVar = null;
+        protected StringVariable stringVar = null;
 
         protected virtual void PrepEncoders()
         {
             numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
             vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
             colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
+            stringEncoder = EncoderRegistry.GetEncoder(nameof(StringVariable));
         }
 
-        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder;
+        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder, stringEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -177,5 +183,26 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(encodedColorSuccess);
         }
 
+        [Test]
+        public virtual void StringEncoder_EncodingWorks()
+        {
+            string expectedString = "Hello, World!";
+            stringVar.Value = expectedString;
+            string encodedString = stringEncoder.Encode(stringVar);
+            bool encodedStringSuccess = expectedString.Equals(encodedString);
+            Assert.IsTrue(encodedStringSuccess);
+        }
+
+        [Test]
+        public virtual void StringEncoder_DEcodingWorks()
+        {
+            string expectedString = "Hello, World!";
+            stringVar.Value = expectedString;
+            string encodedString = stringEncoder.Encode(stringVar);
+            stringVar.Value += " Good bye, cruel world!";
+            stringEncoder.Decode(stringVar, encodedString);
+            bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
+            Assert.IsTrue(encodedStringSuccess);
+        }
     }
 }

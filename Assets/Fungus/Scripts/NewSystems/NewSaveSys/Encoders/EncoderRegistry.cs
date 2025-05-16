@@ -9,8 +9,9 @@ namespace Amanita.SaveSys
         private static readonly List<IVarEncoder> savers = new()
         {
             new NumericVarEncoder(),
-            new VectorEncoder(),
-            new ColorEncoder(),
+            new VectorVarEncoder(),
+            new ColorVarEncoder(),
+            new StringVarEncoder(),
             /* ... */
         };
 

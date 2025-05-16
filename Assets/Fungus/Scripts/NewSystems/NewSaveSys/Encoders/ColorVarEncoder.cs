@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorEncoder : IVarEncoder
+    public class ColorVarEncoder : IVarEncoder
     {
         public virtual bool CanHandle(Variable variable) =>
             variable is ColorVariable;
