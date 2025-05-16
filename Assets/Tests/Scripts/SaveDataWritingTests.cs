@@ -17,6 +17,7 @@ namespace Amanita.SaveSystemTests
         {
             PrepScene();
             PrepMetaData();
+            numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
         }
 
         protected virtual void PrepScene()
@@ -58,6 +59,8 @@ namespace Amanita.SaveSystemTests
         protected string expectedTypeName, expectedTimeStamp;
         float expectedSaveVer;
 
+        protected IVarEncoder numericEncoder;
+
 
         [TearDown]
         public virtual void DoTearDown()
@@ -77,6 +80,62 @@ namespace Amanita.SaveSystemTests
             Debug.Log($"Checking if the main metadata fields were serialized properly.");
             bool success = metaData.Equals(deserializedMetaData);
             Assert.IsTrue(success);
+        }
+
+        [Test]
+        [Ignore("")]
+        public virtual void FlowchartVars_NumericsSerializedProperly()
+        {
+            // Arrange: set up the variables to be saved
+            int scoreBefore = scoreVar.Value;
+            float fastestTimeBefore = fastestTimeVar.Value;
+            // Act: create a new FlowchartSaveData object
+            FlowchartSaveData newData = new FlowchartSaveData(flowchart);
+
+        }
+
+        [Test]
+        public virtual void NumericEncoder_EncodingWorks()
+        {
+            int expectedScore = scoreVar.Value;
+            float expectedFastestTime = fastestTimeVar.Value;
+            string expectedEncodedScoreStr = expectedScore.ToString();
+            string expectedEncodedFastestTimeStr = expectedFastestTime.ToString(roundTripFormat);
+
+            string encodedScoreStr = numericEncoder.Encode(scoreVar);
+            string encodedFastestTimeStr = numericEncoder.Encode(fastestTimeVar);
+
+            bool encodedScoreSuccess = expectedEncodedScoreStr.Equals(encodedScoreStr);
+            bool encodedFastestTimeSuccess = expectedEncodedFastestTimeStr.Equals(encodedFastestTimeStr);
+
+            bool success = encodedScoreSuccess && encodedFastestTimeSuccess;
+            Assert.IsTrue(success);
+        }
+
+        protected static string roundTripFormat = "R";
+
+        [Test]
+        public virtual void NumericEncoder_DEcodingWorks()
+        {
+            int expectedScore = scoreVar.Value;
+            float expectedFastestTime = fastestTimeVar.Value;
+
+            string encodedScoreStr = numericEncoder.Encode(scoreVar);
+            string encodedFastestTimeStr = numericEncoder.Encode(fastestTimeVar);
+
+            // Alter the values to help us make sure that the encoding and decoding works
+            scoreVar.Value += 123;
+            fastestTimeVar.Value += 3429785;
+
+            numericEncoder.Decode(scoreVar, encodedScoreStr);
+            numericEncoder.Decode(fastestTimeVar, encodedFastestTimeStr);
+
+            bool scoreEncodeSuccess = expectedScore.Equals(scoreVar.Value);
+            bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
+            bool success = scoreEncodeSuccess && fastestTimeEncodeSuccess;
+            Assert.IsTrue(success);
+
+
         }
 
         [Test]
