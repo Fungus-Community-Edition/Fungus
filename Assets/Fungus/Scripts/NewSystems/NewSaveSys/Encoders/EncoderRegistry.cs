@@ -10,6 +10,7 @@ namespace Amanita.SaveSys
         {
             new NumericVarEncoder(),
             new VectorEncoder(),
+            new ColorEncoder(),
             /* ... */
         };
 

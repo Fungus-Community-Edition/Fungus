@@ -8,7 +8,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
-    public class SaveDataWritingTests
+    public class VariableEncoderTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -16,9 +16,7 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
-            PrepMetaData();
-            numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
-            vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
+            PrepEncoders();
         }
 
         protected virtual void PrepScene()
@@ -51,58 +49,19 @@ namespace Amanita.SaveSystemTests
         protected Vector3Variable threeDPosVar = null;
         protected Vector2Variable twoDPosVar = null;
 
-        protected virtual void PrepMetaData()
+        protected virtual void PrepEncoders()
         {
-            expectedTypeName = metaData.TypeName;
-            expectedSaveVer = 3.32789f;
-            expectedTimeStamp = DateTime.UtcNow.ToString("o");
-
-            metaData.SaveVersion = expectedSaveVer;
-            metaData.UTCTimeStamp = expectedTimeStamp;
-
-            serializedMetaData = metaData.Serialized();
-            deserializedMetaData = SaveMetaData.DeserializeFrom(serializedMetaData);
+            numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
+            vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
+            colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
         }
 
-        SaveMetaData metaData = new SaveMetaData();
-        protected SerializedSaveData serializedMetaData;
-        protected SaveMetaData deserializedMetaData;
-        protected string expectedTypeName, expectedTimeStamp;
-        float expectedSaveVer;
-
-        protected IVarEncoder numericEncoder, vectorEncoder;
-
+        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
         {
             UnityObject.Destroy(varStateTestScene);
-        }
-
-        [Test]
-        public virtual void Metadata_TypeNameSerializedProperly()
-        {
-            Assert.AreEqual(serializedMetaData.DataType, expectedTypeName);
-        }
-
-        [Test]
-        public virtual void Metadata_MainFieldsSerializedProperly()
-        {
-            Debug.Log($"Checking if the main metadata fields were serialized properly.");
-            bool success = metaData.Equals(deserializedMetaData);
-            Assert.IsTrue(success);
-        }
-
-        [Test]
-        [Ignore("")]
-        public virtual void FlowchartVars_NumericsSerializedProperly()
-        {
-            // Arrange: set up the variables to be saved
-            int scoreBefore = scoreVar.Value;
-            float fastestTimeBefore = fastestTimeVar.Value;
-            // Act: create a new FlowchartSaveData object
-            FlowchartSaveData newData = new FlowchartSaveData(flowchart);
-
         }
 
         [Test]
@@ -192,20 +151,31 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        [Ignore("")]
-        public void SaveAndLoad_FlowchartVariables_ExpectedValuesSaved()
+        public virtual void ColorEncoder_EncodingWorks()
         {
-            string nameBefore = nameVar.Value;
-            int scoreBefore = scoreVar.Value;
-            bool newPlayerBefore = newPlayerVar.Value;
-            float fastestTimeBefore = fastestTimeVar.Value;
+            Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+            ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
+            colorVar.Value = expectedColor;
 
-            FlowchartSaveData newData = new FlowchartSaveData(flowchart);
-
-            // Assert: the values are written as expected
-            Assert.AreEqual(nameBefore, newData);
+            string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
+            string encodedColorStr = colorEncoder.Encode(colorVar);
+            bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorStr);
+            Assert.IsTrue(encodedColorSuccess);
         }
 
-        
+        [Test]
+        public virtual void ColorEncoder_DEcodingWorks()
+        {
+            Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+            ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
+            colorVar.Value = expectedColor;
+
+            string encodedColorStr = colorEncoder.Encode(colorVar);
+            colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
+            colorEncoder.Decode(colorVar, encodedColorStr);
+            bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
+            Assert.IsTrue(encodedColorSuccess);
+        }
+
     }
 }
