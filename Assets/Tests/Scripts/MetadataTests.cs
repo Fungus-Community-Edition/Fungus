@@ -41,7 +41,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void Metadata_TypeNameSerializedProperly()
         {
-            Assert.AreEqual(serializedMetaData.DataType, expectedTypeName);
+            Assert.AreEqual(serializedMetaData.DataTypeName, expectedTypeName);
         }
 
         [Test]

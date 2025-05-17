@@ -44,7 +44,7 @@ namespace Amanita.SaveSys
         {
             SerializedSaveData serializedSaveData = new()
             {
-                DataType = TypeName,
+                DataTypeName = TypeName,
                 Data = JsonUtility.ToJson(this, true)
             };
             return serializedSaveData;
@@ -56,5 +56,12 @@ namespace Amanita.SaveSys
             key = "null",
             value = "null"
         };
+
+        public static new VariableSaveData DeserializeFrom(SerializedSaveData item)
+        {
+            ValidateSerializedData(item, nameof(VariableSaveData));
+            VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Data);
+            return data;
+        }
     }
 }
