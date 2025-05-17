@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CGT.Globalization
+namespace Amanita.Globalization
 {
 	public static class StandardFormatValues
 	{
