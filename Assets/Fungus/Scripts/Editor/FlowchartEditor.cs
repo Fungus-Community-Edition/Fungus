@@ -23,6 +23,7 @@ namespace Fungus.EditorUtils
         protected SerializedProperty hideCommandsProp;
         protected SerializedProperty luaEnvironmentProp;
         protected SerializedProperty luaBindingNameProp;
+        protected SerializedProperty saveVariablesProp;
 
         protected Texture2D addTexture;
 
@@ -47,6 +48,7 @@ namespace Fungus.EditorUtils
             hideCommandsProp = serializedObject.FindProperty("hideCommands");
             luaEnvironmentProp = serializedObject.FindProperty("luaEnvironment");
             luaBindingNameProp = serializedObject.FindProperty("luaBindingName");
+            saveVariablesProp = serializedObject.FindProperty("saveVariables");
 
             addTexture = FungusEditorResources.AddSmall;
 
@@ -78,7 +80,9 @@ namespace Fungus.EditorUtils
             //ReorderableListGUI.ListField(hideCommandsProp);
             EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip), true);
 
-            if(EditorGUI.EndChangeCheck())
+            EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName, saveVariablesProp.tooltip), true);
+
+            if (EditorGUI.EndChangeCheck())
             {
                 FlowchartDataStale = true;
             }

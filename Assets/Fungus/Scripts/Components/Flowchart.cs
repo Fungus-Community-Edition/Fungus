@@ -83,6 +83,15 @@ namespace Fungus
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
+        [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
+        [SerializeField] protected bool saveVariables = true;
+
+        public virtual bool SaveVariables
+        {
+            get { return saveVariables; }
+            set { saveVariables = value; }
+        }
+
         protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
 
         protected static bool eventSystemPresent;
