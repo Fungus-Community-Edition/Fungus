@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityRandom = UnityEngine.Random;
 
 namespace Amanita.Collections
 {
@@ -35,9 +37,20 @@ namespace Amanita.Collections
 
         public static T GetRandom<T>(this IList<T> baseList)
         {
-            int index = Random.Range(0, baseList.Count);
+            int index = UnityRandom.Range(0, baseList.Count);
             T result = baseList[index];
             return result;
+        }
+
+        public static bool Contains<T>(this IList<T> arr, T element) where T : IEquatable<T>
+        {
+            for (int i = 0; i < arr.Count; i++)
+            {
+                if (arr[i].Equals(element))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

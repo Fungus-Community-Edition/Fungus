@@ -830,17 +830,17 @@ namespace Fungus
         /// Register a new variable with the Flowchart at runtime. 
         /// The variable should be added as a component on the Flowchart game object.
         /// </summary>
-        public void SetVariable<T>(string key, T newvariable) where T : Variable
+        public void SetVariable<T>(string key, T newVar) where T : Variable
         {
             for (int i = 0; i < variables.Count; i++)
             {
-                var v = variables[i];
-                if (v != null && v.Key == key)
+                var currentVar = variables[i];
+                if (currentVar != null && currentVar.Key == key)
                 {
-                    T variable = v as T;
+                    T variable = currentVar as T;
                     if (variable != null)
                     {
-                        variable = newvariable;
+                        variable = newVar;
                         return;
                     }
                 }
@@ -1439,5 +1439,41 @@ namespace Fungus
             }
         }
 #endif
+
+        public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
+        where TVarType : VariableBase<TBase>
+        {
+            var variable = GetVariable<TVarType>(key);
+
+            if (variable != null)
+                variable.Value = value;
+            else
+                LetUserKnowVarDoesntExist(key);
+        }
+
+        protected virtual void LetUserKnowVarDoesntExist(string varName)
+        {
+            string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just like Santa Claus: it doesn't exist.";
+            Debug.LogWarning(warningMessage);
+        }
+
+        /// <summary>
+        /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
+        /// a unique key will be generated.
+        /// </summary>
+        public virtual TVarType AddVariable<TValHeld, TVarType>(string key = default,
+            TValHeld value = default,
+            VariableScope scope = VariableScope.Private)
+            where TVarType : VariableBase<TValHeld>
+        {
+            TVarType newVar = gameObject.AddComponent<TVarType>();
+            newVar.Key = GetUniqueVariableKey(key, newVar);
+            newVar.Value = value;
+            newVar.Scope = scope;
+            newVar.gameObject.hideFlags = HideFlags.HideInInspector;
+            variables.Add(newVar);
+            return newVar;
+        }
+
     }
 }
