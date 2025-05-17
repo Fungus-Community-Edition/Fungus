@@ -71,7 +71,7 @@ namespace Amanita.SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
-            UnityObject.Destroy(varStateTestScene);
+            UnityObject.DestroyImmediate(varStateTestScene);
         }
 
         [Test]
@@ -223,6 +223,8 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void TransformEncoder_DEcodingWorks()
         {
+            // This test always succeeds when it's the only one run, but when run as part of a suite, it
+            // sometimes fails.
             Transform expectedTrans = transformVar.Value; // Should NOT be null at this point
             string expectedName = expectedTrans.name;
             SaveIdentifier identifier = expectedTrans.GetComponent<SaveIdentifier>();
@@ -247,7 +249,7 @@ namespace Amanita.SaveSystemTests
             // to the transform. Thus, we won't need to apply it here.
             Transform decodedTrans = transformVar.Value;
 
-            bool encodedTransSuccess = expectedTrans.Equals(decodedTrans);
+            bool encodedTransSuccess = expectedTrans == decodedTrans;
             bool encodedPosSuccess = expectedPos.Equals(decodedTrans.position);
             bool encodedRotSuccess = expectedRot.Equals(decodedTrans.rotation);
             bool encodedScaleSuccess = expectedScale.Equals(decodedTrans.localScale);
