@@ -43,6 +43,15 @@ namespace Fungus
 
         [SerializeField] protected List<Command> commandList = new List<Command>();
 
+        [Tooltip("If true, the save system will keep track of (and when appropriate, load) this Block's execution state.")]
+        [SerializeField] protected bool saveExecutionState = true;
+
+        public virtual bool SaveExecutionState
+        {
+            get { return saveExecutionState; }
+            set { saveExecutionState = value; }
+        }
+
         protected ExecutionState executionState;
 
         protected Command activeCommand;
