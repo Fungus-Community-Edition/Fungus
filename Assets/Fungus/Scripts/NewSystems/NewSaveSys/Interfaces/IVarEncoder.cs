@@ -6,7 +6,12 @@ namespace Amanita.SaveSys
     {
         bool CanHandle(FungusVar variable);
         bool CanHandle(string typeName);
-        string Encode(FungusVar variable);
+        bool CanHandle(VariableSaveData variable);
+        string EncodeToString(FungusVar variable);
         void Decode(FungusVar variable, string data);
+        void Decode(FungusVar variable, VariableSaveData data);
+        VariableSaveData Encode(FungusVar varable);
     }
+
+
 }

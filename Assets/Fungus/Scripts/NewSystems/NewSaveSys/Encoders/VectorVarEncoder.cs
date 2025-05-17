@@ -1,6 +1,7 @@
 using Fungus;
 using UnityEngine;
 using System;
+using System.Net.Mime;
 
 namespace Amanita.SaveSys
 {
@@ -16,7 +17,13 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(string typeName) =>
             typeName == nameof(Vector2Variable) || typeName == nameof(Vector3Variable);
 
-        public virtual string Encode(Variable variable) => variable switch
+        public virtual bool CanHandle(VariableSaveData saveData)
+        {            
+            return saveData.VarTypeName == nameof(Vector2Variable) ||
+                saveData.VarTypeName == nameof(Vector3Variable);
+        }
+
+        public virtual string EncodeToString(Variable variable) => variable switch
             {
             Vector2Variable vector2Var => $"{vector2Var.Value.x},{vector2Var.Value.y}",
             Vector3Variable vector3Var => $"{vector3Var.Value.x},{vector3Var.Value.y},{vector3Var.Value.z}",
@@ -56,6 +63,37 @@ namespace Amanita.SaveSys
             {
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
             }
+        }
+    
+        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        {
+            bool validVarType = saveData.VarTypeName == nameof(Vector2Variable) ||
+                saveData.VarTypeName == nameof(Vector3Variable);
+            if (!validVarType)
+            {
+                Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
+                return;
+            }
+            Decode(variable, saveData.Value);
+        }
+        public virtual VariableSaveData Encode(Variable variable)
+        {
+            string data = EncodeToString(variable);
+            if (string.IsNullOrEmpty(data))
+            {
+                Debug.LogError($"Failed to encode variable {variable} in {this.GetType().Name}.");
+                return VariableSaveData.Null;
+            }
+
+            VariableSaveData result = new()
+            {
+                VarTypeName = variable.GetType().Name,
+                UniqueID = variable.UniqueId,
+                Key = variable.Key,
+                Value = data,
+            };
+
+            return result;
         }
     }
 }

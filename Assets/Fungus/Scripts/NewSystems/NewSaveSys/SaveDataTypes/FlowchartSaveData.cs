@@ -12,13 +12,13 @@ namespace Amanita.SaveSys
         // we can have these two lists of keys and values.
         // Also, when finding which flowchart this should be applied to, we search
         // by ID first. If not found, then we search by name.
-        [SerializeField] protected string flowchartID;
-        [SerializeField] protected string flowchartName;
+        [SerializeField] protected string flowchartID = string.Empty;
+        [SerializeField] protected string flowchartName = string.Empty;
         [SerializeField] protected List<string> varIDs = new();
         [SerializeField] protected List<string> varNames = new(); 
         // ^For when we can't find a var based on the ID
         [SerializeField] protected List<string> values = new();
-        [SerializeField] protected List<string> objectIdentifiers = new(); // Stores GameObject references
+        [SerializeField] protected List<string> variables = new();
 
         public FlowchartSaveData(Flowchart toCreateFrom)
         {
@@ -37,7 +37,7 @@ namespace Amanita.SaveSys
 
                 varIDs.Add(varEl.UniqueId);
                 varNames.Add(varEl.Key);
-                string encodedData = forThisVar.Encode(varEl);
+                string encodedData = forThisVar.EncodeToString(varEl);
                 values.Add(encodedData);
             }
         }
@@ -62,27 +62,6 @@ namespace Amanita.SaveSys
                 string value = saveData.values[i];
 
 
-                if (saveData.objectIdentifiers.Contains(key))
-                {
-                    var foundObject = GameObject.Find(value.Split('/')[0]); // Find GameObject
-                    if (foundObject != null)
-                    {
-                        if (value.Contains("/"))
-                        {
-                            var transformPath = value.Split('/')[1..]; // Extract Transform hierarchy
-                            var targetTransform = FindTransformByPath(foundObject.transform, transformPath);
-                            variables[key] = targetTransform;
-                        }
-                        else
-                        {
-                            variables[key] = foundObject;
-                        }
-                    }
-                }
-                else
-                {
-                    variables[key] = value;
-                }
             }
 
         }

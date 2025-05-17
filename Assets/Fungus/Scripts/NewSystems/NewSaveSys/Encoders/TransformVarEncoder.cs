@@ -18,7 +18,24 @@ namespace Amanita.SaveSys
             return typeName == nameof(TransformVariable);
         }
 
-        public virtual string Encode(FungusVar variable)
+        public virtual bool CanHandle(VariableSaveData saveData)
+        {
+            return CanHandle(saveData.VarTypeName);
+        }
+
+        public virtual VariableSaveData Encode(FungusVar variable)
+        {
+            VariableSaveData result = new()
+            {
+                VarTypeName = variable.GetType().Name,
+                UniqueID = variable.UniqueId,
+                Key = variable.Key,
+                Value = EncodeToString(variable)
+            };
+            return result;
+        }
+
+        public virtual string EncodeToString(FungusVar variable)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)
@@ -90,6 +107,23 @@ namespace Amanita.SaveSys
             }
 
             return whatWeFound;
+        }
+
+        public virtual void Decode(FungusVar variable, VariableSaveData saveData)
+        {
+            TransformVariable transformVar = variable as TransformVariable;
+            if (transformVar == null)
+            {
+                Debug.LogError($"{this.GetType().Name}: Cannot decode variable of type {variable.GetType()}");
+                return;
+            }
+
+            if (saveData.VarTypeName != variable.GetType().Name)
+            {
+                Debug.LogError($"TransformVarEncoder: Cannot decode variable of type {variable.GetType()} with data of type {saveData.VarTypeName}");
+                return;
+            }
+            Decode(variable, saveData.Value);
         }
     }
 
