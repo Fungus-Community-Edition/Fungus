@@ -11,7 +11,22 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(string typeName) =>
             typeName == nameof(ColorVariable);
 
-        public virtual string Encode(Variable toEncode)
+        public virtual bool CanHandle(VariableSaveData saveData) =>
+            CanHandle(saveData.VarTypeName);
+
+        public virtual VariableSaveData Encode(Variable variable)
+        {
+            VariableSaveData result = new()
+            {
+                VarTypeName = variable.GetType().Name,
+                UniqueID = variable.UniqueId,
+                Key = variable.Key,
+                Value = EncodeToString(variable)
+            };
+            return result;
+        }
+
+        public virtual string EncodeToString(Variable toEncode)
         {
             ColorVariable colorVar = toEncode as ColorVariable;
             if (colorVar == null)
@@ -47,6 +62,24 @@ namespace Amanita.SaveSys
                 return;
             }
             colorVar.Value = new Color(r, g, b, a);
+        }
+
+        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        {
+            if (saveData.VarTypeName != nameof(ColorVariable))
+            {
+                Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
+                return;
+            }
+
+            if (variable is ColorVariable colorVar)
+            {
+                Decode(colorVar, saveData.Value);
+            }
+            else
+            {
+                Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
         }
     }
 }

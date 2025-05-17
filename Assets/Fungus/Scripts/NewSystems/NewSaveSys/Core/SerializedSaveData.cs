@@ -11,10 +11,19 @@ namespace Amanita.SaveSys
         [SerializeField] protected string dataType;
         [SerializeField] protected string data;
 
-        public string DataType => dataType;
-        public string Data => data;
+        public string DataType
+        {
+            get => dataType;
+            set => dataType = value;
+        }
 
-        public SerializedSaveData(string dataType, string data)
+        public string Data
+        {
+            get => data;
+            set => data = value;
+        }
+
+        public SerializedSaveData(string dataType = "", string data = "")
         {
             this.dataType = dataType;
             this.data = data;

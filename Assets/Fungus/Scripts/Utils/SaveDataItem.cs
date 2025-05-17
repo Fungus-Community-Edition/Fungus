@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Fungus
 {
     /// <summary>
-    /// A container for a single unity of saved data.
+    /// A container for a single unit of saved data.
     /// The data and its associated type are stored as string properties.
     /// The data would typically be a JSON string representing a saved object.
     /// </summary>
@@ -16,17 +16,17 @@ namespace Fungus
         [SerializeField] protected string dataType = "";
         [SerializeField] protected string data = "";
 
-        #region Public methods
+        public virtual string DataType
+        {
+            get { return dataType; }
+            set { dataType = value; }
+        }
 
-        /// <summary>
-        /// Gets the type of the data.
-        /// </summary>
-        public virtual string DataType { get { return dataType; } }
-
-        /// <summary>
-        /// Gets the data.
-        /// </summary>
-        public virtual string Data { get { return data; } }
+        public virtual string Data
+        {
+            get { return data; }
+            set { data = value; }
+        }
 
         /// <summary>
         /// Factory method to create a new SaveDataItem.
@@ -40,6 +40,10 @@ namespace Fungus
             return item;
         }
 
-        #endregion
+        public static readonly SaveDataItem Null = new SaveDataItem()
+        {
+            dataType = "Null",
+            data = "null"
+        };
     }
 }
