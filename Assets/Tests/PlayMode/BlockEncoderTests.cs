@@ -90,6 +90,16 @@ namespace Amanita.SaveSystemTests
         }
 
         [UnityTest]
+        public virtual IEnumerator CorrectBlockIDDEcoded()
+        {
+            yield return new WaitForSeconds(0.1f);
+            BlockSaveData blockSaveData = new(block);
+            SerializedSaveData serializedData = blockSaveData.Serialized();
+            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
+        }
+
+        [UnityTest]
         public virtual IEnumerator CorrectActiveCommandIDEncoded()
         {
             yield return new WaitForSeconds(0.1f);

@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
+    [System.Serializable]
     public class VariableSaveData : SaveData
     {
         [SerializeField] protected string varTypeName = string.Empty;
