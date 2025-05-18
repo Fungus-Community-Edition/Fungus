@@ -15,6 +15,23 @@ namespace Amanita.SaveSys
         [SerializeField] protected List<VariableSaveData> savedVars = new();
         [SerializeField] protected List<BlockSaveData> savedBlocks = new();
 
+        public virtual string UniqueId
+        {
+            get => flowchartID;
+            set => flowchartID = value;
+        }
+
+        public virtual string FlowchartName
+        {
+            get => flowchartName;
+            set => flowchartName = value;
+        }
+
+        public virtual IList<VariableSaveData> SavedVars
+        {
+            get => savedVars;
+        }
+
         public FlowchartSaveData(Flowchart toCreateFrom)
         {
             SaveIdentifier identifier = toCreateFrom.GetComponent<SaveIdentifier>();
@@ -34,7 +51,7 @@ namespace Amanita.SaveSys
                 IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varEl);
                 if (forThisVar == null)
                 {
-                    Debug.LogError($"No serializer found for variable type: {varEl.GetType().Name}");
+                    Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");
                     continue;
                 }
 
