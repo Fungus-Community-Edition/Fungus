@@ -65,11 +65,10 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void FlowchartSaveData_Constructor_SetsFlowchartID()
+        public virtual void FlowchartSaveData_Constructor_SetsUniqueId()
         {
             FlowchartSaveData flowchartSaveData = new(flowchart);
-            SaveIdentifier saveIdentifier = flowchart.GetComponent<SaveIdentifier>();
-            Assert.AreEqual(saveIdentifier.UniqueID, flowchartSaveData.UniqueId);
+            Assert.AreEqual(flowchart.UniqueId, flowchartSaveData.UniqueId);
         }
 
         [Test]

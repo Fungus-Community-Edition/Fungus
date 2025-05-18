@@ -10,15 +10,15 @@ namespace Amanita.SaveSys
     {
         // When finding which flowchart this should be applied to, we search
         // by ID first. If not found, then we search by name.
-        [SerializeField] protected string flowchartID = string.Empty;
+        [SerializeField] protected string uniqueID = string.Empty;
         [SerializeField] protected string flowchartName = string.Empty;
         [SerializeField] protected List<VariableSaveData> savedVars = new();
         [SerializeField] protected List<BlockSaveData> savedBlocks = new();
 
         public virtual string UniqueId
         {
-            get => flowchartID;
-            set => flowchartID = value;
+            get => uniqueID;
+            set => uniqueID = value;
         }
 
         public virtual string FlowchartName
@@ -34,8 +34,7 @@ namespace Amanita.SaveSys
 
         public FlowchartSaveData(Flowchart toCreateFrom)
         {
-            SaveIdentifier identifier = toCreateFrom.GetComponent<SaveIdentifier>();
-            flowchartID = identifier.UniqueID;
+            uniqueID = toCreateFrom.UniqueId;
             flowchartName = toCreateFrom.name;
             SaveVars(toCreateFrom);
             SaveBlocks(toCreateFrom);
