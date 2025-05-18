@@ -6,11 +6,31 @@ namespace Amanita.SaveSys
     [System.Serializable]
     public class BlockSaveData : SaveData
     {
-        public virtual int ItemId { get; set; } = -1;
-        public virtual string BlockName { get; set; } = string.Empty;
+        [SerializeField] protected string blockName = string.Empty;
+        [SerializeField] protected int itemId = -1;
+        [SerializeField] protected int activeCommandId = -1;
+        [SerializeField] protected int activeCommandIndex = -1;
+        public virtual int ItemId
+        {
+            get => itemId;
+            set => itemId = value;
+        }
+        public virtual string BlockName
+        {
+            get => blockName;
+            set => blockName = value;
+        }
 
-        public virtual int ActiveCommandId { get; set; } = -1;
-        public virtual int ActiveCommandIndex { get; set; } = -1;
+        public virtual int ActiveCommandId
+        {
+            get => activeCommandId;
+            set => activeCommandId = value;
+        }
+        public virtual int ActiveCommandIndex
+        {
+            get => activeCommandIndex;
+            set => activeCommandIndex = value;
+        }
         
         public BlockSaveData()
         {

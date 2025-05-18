@@ -5,10 +5,11 @@ using Fungus;
 using System.Collections.Generic;
 using System;
 using UnityObject = UnityEngine.Object;
+using System.Linq;
 
 namespace Amanita.SaveSystemTests
 {
-    public class BlockEncoderTests
+    public class FlowchartSaveDataTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -56,6 +57,7 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
 
+
         [TearDown]
         public virtual void DoTearDown()
         {
@@ -63,14 +65,36 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void CorrectBlockIDEncoded()
+        public virtual void FlowchartSaveData_Constructor_SetsUniqueId()
         {
-            Block block = flowchart.FindBlock("TestBlock");
-            Assert.IsNotNull(block, "Block not found in flowchart.");
-
-            BlockSaveData blockSaveData = new(block);
-            Assert.AreEqual(block.ItemId, blockSaveData.ItemId, "Block ID mismatch.");
-
+            FlowchartSaveData flowchartSaveData = new(flowchart);
+            Assert.AreEqual(flowchart.UniqueId, flowchartSaveData.UniqueId);
         }
+
+        [Test]
+        public virtual void FlowchartSaveData_Constructor_SetsFlowchartName()
+        {
+            FlowchartSaveData flowchartSaveData = new(flowchart);
+            Assert.AreEqual(flowchart.name, flowchartSaveData.FlowchartName);
+        }
+
+        [Test]
+        public virtual void FlowchartSaveData_Constructor_SetsSavedVars()
+        {
+            FlowchartSaveData flowchartSaveData = new(flowchart);
+            foreach (Variable var in flowchart.Variables)
+            {
+                IVarEncoder forThisVar = EncoderRegistry.GetEncoder(var);
+                if (forThisVar == null)
+                {
+                    continue;
+                }
+
+                bool hasVarWithTheId = flowchartSaveData.SavedVars.Any(v => v.UniqueID == var.UniqueId);
+                Assert.IsTrue(hasVarWithTheId);
+            }
+        }
+
+
     }
 }
