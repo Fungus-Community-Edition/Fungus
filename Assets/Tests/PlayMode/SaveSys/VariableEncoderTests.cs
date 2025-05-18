@@ -180,6 +180,27 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
+        public virtual void BooleanEncoder_EncodingWorks_VarSaveData()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
+            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerData.Value);
+            Assert.IsTrue(encodedNewPlayerSuccess);
+        }
+
+        [Test]
+        public virtual void BooleanEncoder_DEcodingWorks_VarSaveData()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
+            booleanEncoder.Decode(newPlayerVar, encodedNewPlayerData);
+            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
+            Assert.IsTrue(encodedNewPlayerSuccess);
+        }
+
+        [Test]
         public virtual void VectorEncoder_EncodingWorks_String()
         {
             Vector2 expectedTwoDPos = twoDPosVar.Value;

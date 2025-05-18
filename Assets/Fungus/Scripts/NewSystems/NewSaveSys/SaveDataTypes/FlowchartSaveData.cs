@@ -32,6 +32,11 @@ namespace Amanita.SaveSys
             get => savedVars;
         }
 
+        public virtual IList<BlockSaveData> SavedBlocks
+        {
+            get => savedBlocks;
+        }
+
         public FlowchartSaveData(Flowchart toCreateFrom)
         {
             uniqueID = toCreateFrom.UniqueId;

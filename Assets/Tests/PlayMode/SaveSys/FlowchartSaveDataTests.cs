@@ -78,6 +78,10 @@ namespace Amanita.SaveSystemTests
             IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
                                                   where elem.SaveExecutionState
                                                   select elem).ToList();
+
+            bool triedSavingTheAppropriateAmountOfBlocks = blocksToSave.Count == flowchartSaveData.SavedBlocks.Count;
+            Assert.IsTrue(triedSavingTheAppropriateAmountOfBlocks);
+
             foreach (Block block in blocksToSave)
             {
                 BlockSaveData blockSaveData = new(block);
