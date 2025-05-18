@@ -1,11 +1,13 @@
 using NUnit.Framework;
 using UnityEngine;
+using System.Collections;
 using Amanita.SaveSys;
 using Fungus;
 using System.Collections.Generic;
 using System;
 using UnityObject = UnityEngine.Object;
 using System.Linq;
+using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
@@ -24,39 +26,12 @@ namespace Amanita.SaveSystemTests
             varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
             varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
-            PrepVars();
         }
 
         protected GameObject varStateTestPrefab;
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
-
-        protected virtual void PrepVars()
-        {
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
-            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
-            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
-
-            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
-            stringVar.Value = "Hello, World!";
-            flowchart.Variables.Add(stringVar);
-
-            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
-        }
-
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
-
 
         [TearDown]
         public virtual void DoTearDown()
@@ -95,6 +70,27 @@ namespace Amanita.SaveSystemTests
             }
         }
 
+        [UnityTest]
+        public virtual IEnumerator FlowchartSaveData_Constructor_SetsSavedBlocks()
+        {
+            yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
+            FlowchartSaveData flowchartSaveData = new(flowchart);
+            IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
+                                                  where elem.SaveExecutionState
+                                                  select elem).ToList();
+            foreach (Block block in blocksToSave)
+            {
+                BlockSaveData blockSaveData = new(block);
+                bool correctBlockName = blockSaveData.BlockName == block.BlockName;
+                bool correctItemId = blockSaveData.ItemId == block.ItemId;
+                bool correctActiveCommandId = blockSaveData.ActiveCommandId == block.ActiveCommand.ItemId;
+                bool correctActiveCommandIndex = blockSaveData.ActiveCommandIndex == block.ActiveCommand.CommandIndex;
+                Assert.IsTrue(correctBlockName, $"Block name mismatch for block {block.BlockName}.");
+                Assert.IsTrue(correctItemId, $"Item ID mismatch for block {block.BlockName}.");
+                Assert.IsTrue(correctActiveCommandId, $"Active command ID mismatch for block {block.BlockName}.");
+                Assert.IsTrue(correctActiveCommandIndex, $"Active command index mismatch for block {block.BlockName}.");
+            }
+        }
 
     }
 }
