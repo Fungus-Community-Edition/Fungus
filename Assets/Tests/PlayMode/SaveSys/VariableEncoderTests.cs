@@ -60,13 +60,14 @@ namespace Amanita.SaveSystemTests
         protected virtual void PrepEncoders()
         {
             numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
+            booleanEncoder = EncoderRegistry.GetEncoder(nameof(BooleanVariable));
             vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
             colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
             stringEncoder = EncoderRegistry.GetEncoder(nameof(StringVariable));
             transformEncoder = EncoderRegistry.GetEncoder(nameof(TransformVariable));
         }
 
-        protected IVarEncoder numericEncoder, vectorEncoder, colorEncoder, stringEncoder, transformEncoder;
+        protected IVarEncoder numericEncoder, booleanEncoder, vectorEncoder, colorEncoder, stringEncoder, transformEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -155,6 +156,48 @@ namespace Amanita.SaveSystemTests
             bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
             bool success = scoreEncodeSuccess && fastestTimeEncodeSuccess;
             Assert.IsTrue(success);
+        }
+
+        [Test]
+        public virtual void BooleanEncoder_EncodingWorks_String()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
+            string encodedNewPlayerStr = booleanEncoder.EncodeToString(newPlayerVar);
+            bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerStr);
+            Assert.IsTrue(encodedNewPlayerSuccess);
+        }
+
+        [Test]
+        public virtual void BooleanEncoder_DEcodingWorks_String()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            string encodedNewPlayerStr = booleanEncoder.EncodeToString(newPlayerVar);
+            newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
+            booleanEncoder.Decode(newPlayerVar, encodedNewPlayerStr);
+            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
+            Assert.IsTrue(encodedNewPlayerSuccess);
+        }
+
+        [Test]
+        public virtual void BooleanEncoder_EncodingWorks_VarSaveData()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
+            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerData.Value);
+            Assert.IsTrue(encodedNewPlayerSuccess);
+        }
+
+        [Test]
+        public virtual void BooleanEncoder_DEcodingWorks_VarSaveData()
+        {
+            bool expectedNewPlayer = newPlayerVar.Value;
+            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
+            booleanEncoder.Decode(newPlayerVar, encodedNewPlayerData);
+            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
+            Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
