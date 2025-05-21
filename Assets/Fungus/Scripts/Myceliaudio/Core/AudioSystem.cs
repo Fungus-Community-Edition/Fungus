@@ -2,6 +2,7 @@
 #define AMANITA_MYCELIAUDIO
 using UnityEngine;
 using System.Collections.Generic;
+using Fungus;
 
 namespace Amanita.Myceliaudio
 {
@@ -42,6 +43,14 @@ namespace Amanita.Myceliaudio
             }
 
             RegisterTrackManagers();
+
+            AttachSelfToFungusManager();
+            void AttachSelfToFungusManager()
+            {
+                GameObject managerGO = FungusManager.Instance.gameObject;
+                this.transform.SetParent(managerGO.transform, false);
+            }
+
             DontDestroyOnLoad(this.gameObject);
         }
 
