@@ -130,8 +130,13 @@ namespace Amanita.Myceliaudio
         public virtual void Play(IPlayAudioContext args)
         {
             Stop();
+            LoopStartPoint = args.LoopStartPoint / 1000.0;
+            LoopEndPoint = args.LoopEndPoint / 1000.0;
+
             _playsMains.loop = args.Loop;
-            _playsMains.clip = args.Clip;
+            _playsMains.clip = args.MainClip;
+
+            BaseMainClip = args.MainClip;
 
             if (args.Loop)
             {
@@ -150,7 +155,7 @@ namespace Amanita.Myceliaudio
 
         protected IEnumerator PlayOnLoopCoroutine(IPlayAudioContext args)
         {
-            AudioClip baseClip = args.Clip;
+            AudioClip baseClip = args.MainClip;
             bool loopTheEntireSong = args.LoopStartPoint <= 0 && !args.HasEndPointBeforeEndOfClip;
 
             if (loopTheEntireSong)
@@ -233,7 +238,7 @@ namespace Amanita.Myceliaudio
 
         public virtual void PlayOneShot(IPlayAudioContext args)
         {
-            PlayOneShot(args.Clip);
+            PlayOneShot(args.MainClip);
         }
 
         public virtual void PlayOneShot(AudioClip clip)
@@ -323,5 +328,15 @@ namespace Amanita.Myceliaudio
             _playsIntros.UnPause();
             _playsMains.UnPause();
         }
+
+        public virtual bool IsLoopingMain
+        {
+            get { return _playsMains.loop; }
+        }
+
+        public virtual double LoopStartPoint { get; protected set; }
+        public virtual double LoopEndPoint { get; protected set; }
+
+        public virtual AudioClip BaseMainClip { get; protected set; }
     }
 }

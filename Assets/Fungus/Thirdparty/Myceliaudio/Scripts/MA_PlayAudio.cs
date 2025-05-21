@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fungus;
+using UnityEngine.Serialization;
 
 namespace Amanita.Myceliaudio
 {
@@ -74,7 +75,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainPlayConfig.Clip != null;
+                    result = mainPlayConfig.MainClip != null;
                 }
 
                 return result;
@@ -150,7 +151,7 @@ namespace Amanita.Myceliaudio
                 {
                     if (configSO != null)
                     {
-                        result = configSO.Clip;
+                        result = configSO.MainClip;
                     }
                     else
                     {
@@ -159,7 +160,7 @@ namespace Amanita.Myceliaudio
                 }
                 else
                 {
-                    result = mainPlayConfig.Clip;
+                    result = mainPlayConfig.MainClip;
                 }
 
                 return result;
@@ -286,7 +287,7 @@ namespace Amanita.Myceliaudio
             {
                 if (configSO != null)
                 {
-                    if (configSO.Clip == null)
+                    if (configSO.MainClip == null)
                     {
                         
                     }
@@ -338,7 +339,9 @@ namespace Amanita.Myceliaudio
     {
         [SerializeField] protected TrackGroup trackGroup = TrackGroup.Null;
         [SerializeField] protected IntegerData track = new IntegerData(0);
-        [SerializeField] protected AudioClipData clip = new AudioClipData(null);
+        [SerializeField] protected AudioClipData introClip = new AudioClipData(null);
+        [FormerlySerializedAs("clip")]
+        [SerializeField] protected AudioClipData mainClip = new AudioClipData(null);
         [SerializeField] protected BooleanData loop = new BooleanData(false);
         [SerializeField] protected FloatData loopStartPoint = new FloatData(0);
         [SerializeField] protected FloatData loopEndPoint = new FloatData(0);
@@ -346,7 +349,8 @@ namespace Amanita.Myceliaudio
 
         public virtual TrackGroup TrackGroup { get { return trackGroup; } }
         public virtual int Track { get { return track; } }
-        public virtual AudioClip Clip { get { return clip; } set { clip.Value = value; } }
+        public virtual AudioClip MainClip { get { return mainClip; } set { mainClip.Value = value; } }
+        public virtual AudioClip IntroClip { get { return introClip; } set { introClip.Value = value; } }
         public virtual bool Loop { get { return loop; } }
         public virtual double LoopStartPoint {  get { return loopStartPoint; } }
         public virtual double LoopEndPoint { get { return loopEndPoint; } }
@@ -363,7 +367,7 @@ namespace Amanita.Myceliaudio
 
         public virtual AudioClipData ClipData
         {
-            get { return clip; }
+            get { return mainClip; }
         }
     }
 }

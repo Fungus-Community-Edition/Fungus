@@ -32,7 +32,7 @@ namespace Amanita.Myceliaudio
 
             _audioArgs.TrackGroup = _trackGroup;
             _audioArgs.Track = _track;
-            _audioArgs.Clip = _soundToPlay;
+            _audioArgs.MainClip = _soundToPlay;
         }
 
         protected Selectable _selectable;

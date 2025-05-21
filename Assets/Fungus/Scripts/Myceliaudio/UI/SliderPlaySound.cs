@@ -21,7 +21,7 @@ namespace Amanita.Myceliaudio
 
         protected virtual void PrepAudioArgs()
         {
-            _soundPlayArgs.Clip = _soundToPlay;
+            _soundPlayArgs.MainClip = _soundToPlay;
             _soundPlayArgs.TrackGroup = this._trackGroup;
             _soundPlayArgs.Track = this._track;
         }

@@ -5,6 +5,8 @@ using Fungus;
 using System.Collections.Generic;
 using System;
 using UnityObject = UnityEngine.Object;
+using System.Collections;
+using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
@@ -16,7 +18,6 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
-            PrepEncoders();
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
         }
 
@@ -57,18 +58,6 @@ namespace Amanita.SaveSystemTests
         protected Vector2Variable twoDPosVar = null;
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
-
-        protected virtual void PrepEncoders()
-        {
-            numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
-            booleanEncoder = EncoderRegistry.GetEncoder(nameof(BooleanVariable));
-            vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
-            colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
-            stringEncoder = EncoderRegistry.GetEncoder(nameof(StringVariable));
-            transformEncoder = EncoderRegistry.GetEncoder(nameof(TransformVariable));
-        }
-
-        protected IVarEncoder numericEncoder, booleanEncoder, vectorEncoder, colorEncoder, stringEncoder, transformEncoder;
 
         protected FlowchartApplier flowchartApplier;
 
@@ -117,6 +106,21 @@ namespace Amanita.SaveSystemTests
                 appliedCorrectFastestTime && appliedCorrectThreeDPos && appliedCorrectTwoDPos &&
                 appliedCorrectString && appliedCorrectTransform;
             Assert.IsTrue(success, "FlowchartApplier did not apply the variable states correctly.");
+        }
+
+        [UnityTest]
+        public virtual IEnumerator ReexecutesBlocks()
+        {
+            yield return new WaitForSeconds(0.1f);
+            FlowchartSaveData saveData = new FlowchartSaveData(flowchart);
+            flowchartApplier.Apply(new FlowchartSaveData[] { saveData });
+            yield return new WaitForSeconds(0.1f);
+            // The block should be executed at this time
+
+            Block testBlock = flowchart.FindBlock("TestBlock");
+            bool blockExecuted = testBlock.IsExecuting();
+            Assert.IsTrue(blockExecuted, "FlowchartApplier did not apply the block states correctly.");
+
         }
     }
 }

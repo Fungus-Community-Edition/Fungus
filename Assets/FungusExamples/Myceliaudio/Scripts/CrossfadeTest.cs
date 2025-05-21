@@ -27,7 +27,7 @@ namespace Amanita.Myceliaudio.Demos
             // We want both clips playing at the same time, but with the second being silent
             PlayAudioArgs playFirstClip = new PlayAudioArgs()
             {
-                Clip = firstClip,
+                MainClip = firstClip,
                 TrackGroup = TrackGroup.BGMusic,
                 Loop = true,
             };
@@ -36,7 +36,7 @@ namespace Amanita.Myceliaudio.Demos
 
             PlayAudioArgs playSecondClip = new PlayAudioArgs()
             {
-                Clip = secondClip,
+                MainClip = secondClip,
                 TrackGroup = TrackGroup.BGMusic,
                 Loop = true,
                 Track = 1,

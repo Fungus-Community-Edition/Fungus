@@ -18,7 +18,7 @@ namespace Amanita.Myceliaudio.Utils
 
             PlayAudioArgs playMusic = new PlayAudioArgs()
             {
-                Clip = _clip,
+                MainClip = _clip,
                 TrackGroup = TrackGroup.BGMusic,
                 Loop = true,
                 LoopStartPoint = _loopStartPoint,
