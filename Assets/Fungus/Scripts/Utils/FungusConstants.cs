@@ -50,6 +50,8 @@ namespace Fungus
         public const string UIPrefixForDeprecated = "[DEP] ";
         public const string UIPrefixForDeprecated_RichText = "<color=yellow>" + UIPrefixForDeprecated + "</color>";
 
+        public const string PathToFungusManagerPrefab = "Prefabs/FungusManager";
+
         /// <summary>
         /// The default name of the Input EventSystem, stored in the resources folder.
         /// </summary>

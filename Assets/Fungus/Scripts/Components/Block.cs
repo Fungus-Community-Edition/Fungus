@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fungus
 {
@@ -502,5 +503,22 @@ namespace Fungus
         }
 
         #endregion
+
+        public virtual Command FindCommandByID(int id)
+        {
+            Command result = (from commandEl in commandList
+                              where commandEl != null && commandEl.ItemId == id
+                              select commandEl).FirstOrDefault();
+            return result;
+        }
+
+        public virtual Command FindCommandByIndex(int index)
+        {
+            if (index < 0 || index >= commandList.Count)
+            {
+                return null;
+            }
+            return commandList[index];
+        }
     }
 }

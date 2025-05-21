@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Fungus.Lua;
+using System.Linq;
 
 namespace Fungus
 {
@@ -517,6 +518,16 @@ namespace Fungus
             return null;
         }
 
+        public virtual Block FindBlockByItemId(int itemId)
+        {
+            var blocks = GetComponents<Block>();
+            Block result = (from blockEl in blocks
+                            where blockEl.ItemId == itemId
+                            select blockEl).FirstOrDefault();
+
+            return result;
+        }
+
         /// <summary>
         /// Checks availability of the block in the Flowchart.
         /// You can use this method in a UI event. e.g. to test availability block, before handle it.
@@ -795,6 +806,27 @@ namespace Fungus
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Alias for the GetVariable(string key) method.
+        /// </summary>
+        public Variable GetVariableByName(string name)
+        {
+            return GetVariable(name);
+        }
+
+        public virtual Variable GetVariableById(string uniqueId)
+        {
+            Variable result = (from varEl in variables
+                               where varEl.UniqueId == uniqueId
+                               select varEl).FirstOrDefault();
+            if (result == null)
+            {
+                Debug.LogWarning($"Variable with unique ID {uniqueId} not found.");
+            }
+
+            return result;
         }
 
         /// <summary>

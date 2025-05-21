@@ -21,6 +21,9 @@ namespace Amanita.SaveSys
         public static IVarEncoder GetEncoder(FungusVar variable)
             => savers.Find(s => s.CanHandle(variable));
 
+        public static IVarEncoder GetEncoder(VariableSaveData saveData)
+            => savers.Find(s => s.CanHandle(saveData));
+
         public static IVarEncoder GetEncoder(string typeName)
             => savers.Find(s => s.CanHandle(typeName));
     }
