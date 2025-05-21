@@ -34,6 +34,11 @@ namespace Amanita.SaveSys
             set => this.value = value;
         }
 
+        /// <summary>
+        /// Alias for the Key property.
+        /// </summary>
+        public virtual string VarName => key;
+
         public VariableSaveData(string uniqueID = "", string key = "", string value = "")
         {
             this.uniqueID = uniqueID;
