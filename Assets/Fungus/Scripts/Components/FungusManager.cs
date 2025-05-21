@@ -8,15 +8,6 @@ namespace Fungus
     /// <summary>
     /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
     /// </summary>
-    [RequireComponent(typeof(CameraManager))]
-    [RequireComponent(typeof(MusicManager))]
-    [RequireComponent(typeof(EventDispatcher))]
-    [RequireComponent(typeof(GlobalVariables))]
-    [RequireComponent(typeof(MainAudioMixer))]
-#if UNITY_5_3_OR_NEWER
-    [RequireComponent(typeof(SaveManager))]
-    [RequireComponent(typeof(NarrativeLog))]
-    #endif
     public sealed class FungusManager : MonoBehaviour
     {
         volatile static FungusManager instance;  // The keyword "volatile" is friendly to the multi-thread.
@@ -28,17 +19,15 @@ namespace Fungus
             if (instance == null)
                 instance = this;
 
-            CameraManager = GetComponent<CameraManager>();
-            MusicManager = GetComponent<MusicManager>();
-            EventDispatcher = GetComponent<EventDispatcher>();
-            GlobalVariables = GetComponent<GlobalVariables>();
-            MainAudioMixer = GetComponent<MainAudioMixer>();
+            CameraManager = GetComponentInChildren<CameraManager>();
+            EventDispatcher = GetComponentInChildren<EventDispatcher>();
+            GlobalVariables = GetComponentInChildren<GlobalVariables>();
+            MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
 #if UNITY_5_3_OR_NEWER
-            SaveManager = GetComponent<SaveManager>();
-            NarrativeLog = GetComponent<NarrativeLog>();
+            SaveManager = GetComponentInChildren<SaveManager>();
+            NarrativeLog = GetComponentInChildren<NarrativeLog>();
 #endif
             MainAudioMixer.Init();
-            MusicManager.Init();
         }
 
         /// <summary>
@@ -111,10 +100,10 @@ namespace Fungus
                     {
                         if (instance == null)
                         {
-                            var go = new GameObject();
-                            go.name = "FungusManager";
-                            DontDestroyOnLoad(go);
-                            instance = go.AddComponent<FungusManager>();
+                            FungusManager prefab = Resources.Load<FungusManager>(FungusConstants.PathToFungusManagerPrefab);
+                            instance = Instantiate(prefab);
+                            instance.gameObject.name = prefab.name; // We don't want "Clone" in the name.
+                            DontDestroyOnLoad(instance.gameObject);
                         }
 
                     }
