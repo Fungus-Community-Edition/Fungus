@@ -8,7 +8,7 @@ namespace Amanita.Myceliaudio
     {
         public static AudioSystem BuildDefault()
         {
-            PrepSettingsFile();
+            PrepSettings();
             IList<GameObject> managers = PrepTrackManagers();
             GameObject mainSysHolder = new GameObject("Myceliaudio");
 
@@ -22,8 +22,9 @@ namespace Amanita.Myceliaudio
             return result;
         }
 
-        private static void PrepSettingsFile()
+        private static void PrepSettings()
         {
+#if !UNITY_WEBGL
             var filePath = Path.Combine(Application.dataPath, AudioSystem.SystemSettingsFileName);
 
             if (!File.Exists(filePath))
@@ -37,6 +38,9 @@ namespace Amanita.Myceliaudio
                 string jsonString = File.ReadAllText(filePath);
                 systemSettings = JsonUtility.FromJson<MyceliaudioSettings>(jsonString);
             }
+#else
+            systemSettings = new MyceliaudioSettings();
+#endif
         }
 
         private static MyceliaudioSettings systemSettings;
@@ -46,28 +50,48 @@ namespace Amanita.Myceliaudio
         {
             IList<GameObject> managers = new List<GameObject>();
 
-            GameObject masterManagerGO = new GameObject("Master"),
-                bgMusicManagerGO = new GameObject("BGMusic"),
-                soundFXManagerGO = new GameObject("SoundFX"),
+            GameObject masterManagerGO = null, bgMusicManagerGO = null,
+                soundFXManagerGO = null, voiceManagerGO = null;
+            PrepGameObjectsForManagers();
+            void PrepGameObjectsForManagers()
+            {
+                masterManagerGO = new GameObject("Master");
+                bgMusicManagerGO = new GameObject("BGMusic");
+                soundFXManagerGO = new GameObject("SoundFX");
                 voiceManagerGO = new GameObject("Voice");
+            }
 
-            TrackManager masterManager = masterManagerGO.AddComponent<TrackManager>(),
-                bgMusicManager = bgMusicManagerGO.AddComponent<TrackManager>(),
-                soundFXManager = soundFXManagerGO.AddComponent<TrackManager>(),
+            TrackManager masterManager = null, bgMusicManager = null,
+                soundFXManager = null, voiceManager = null;
+            AddManagers();
+            void AddManagers()
+            {
+                masterManager = masterManagerGO.AddComponent<TrackManager>();
+                bgMusicManager = bgMusicManagerGO.AddComponent<TrackManager>();
+                soundFXManager = soundFXManagerGO.AddComponent<TrackManager>();
                 voiceManager = voiceManagerGO.AddComponent<TrackManager>();
+            }
 
-            masterManager.Init(TrackGroup.Master);
-            bgMusicManager.Init(TrackGroup.BGMusic);
-            soundFXManager.Init(TrackGroup.SoundFX);
-            voiceManager.Init(TrackGroup.Voice);
+            InitManagers();
+            void InitManagers()
+            {
+                masterManager.Init(TrackGroup.Master);
+                bgMusicManager.Init(TrackGroup.BGMusic);
+                soundFXManager.Init(TrackGroup.SoundFX);
+                voiceManager.Init(TrackGroup.Voice);
+            }
 
             // To make sure that things are scaled off the master volume
             bgMusicManager.Anchor = soundFXManager.Anchor = voiceManager.Anchor = masterManager;
 
-            masterManager.BaseVolume = VolumeSettings.master;
-            bgMusicManager.BaseVolume = VolumeSettings.bgMusic;
-            soundFXManager.BaseVolume = VolumeSettings.soundFX;
-            voiceManager.BaseVolume = VolumeSettings.voice;
+            ApplyTheVolumes();
+            void ApplyTheVolumes()
+            {
+                masterManager.BaseVolume = VolumeSettings.master;
+                bgMusicManager.BaseVolume = VolumeSettings.bgMusic;
+                soundFXManager.BaseVolume = VolumeSettings.soundFX;
+                voiceManager.BaseVolume = VolumeSettings.voice;
+            }
 
             managers.Add(masterManagerGO);
             managers.Add(bgMusicManagerGO);

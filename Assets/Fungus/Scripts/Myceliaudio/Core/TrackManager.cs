@@ -274,5 +274,29 @@ namespace Amanita.Myceliaudio
             trackInvolved.Unpause();
         }
 
+        public virtual bool IsLoopingMain(int track)
+        {
+            var trackInvolved = GetTrackEnsured(track);
+            return trackInvolved.IsLoopingMain;
+        }
+
+        public virtual double GetLoopStartPoint(int track)
+        {
+            var trackInvolved = GetTrackEnsured(track);
+            return trackInvolved.LoopStartPoint;
+        }
+
+        public virtual double GetLoopEndPoint(int track)
+        {
+            var trackInvolved = GetTrackEnsured(track);
+            return trackInvolved.LoopEndPoint;
+        }
+
+        public virtual AudioClip GetBaseMainClip(int track)
+        {
+            var trackInvolved = GetTrackEnsured(track);
+            return trackInvolved.BaseMainClip;
+        }
+
     }
 }

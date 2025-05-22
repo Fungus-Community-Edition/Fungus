@@ -120,7 +120,7 @@ namespace Amanita.Myceliaudio
 
         public virtual void PlayOneShot(IPlayAudioContext args)
         {
-            PlayOneShot(args.TrackGroup, args.Track, args.Clip);
+            PlayOneShot(args.TrackGroup, args.Track, args.MainClip);
         }
 
         public virtual void PlayOneShot(TrackGroup group, int track, AudioClip clip)
@@ -183,6 +183,12 @@ namespace Amanita.Myceliaudio
             return _clipSplitter.GetLoopClip(originalClip, loopStartPoint, loopEndPoint);
         }
 
+        public virtual bool IsLoopingMain(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.IsLoopingMain(track);
+        }
+
         public virtual void Pause(TrackGroup group, int track)
         {
             var manager = TrackManagers[group];
@@ -195,10 +201,59 @@ namespace Amanita.Myceliaudio
             manager.Unpause(track);
         }
 
+        public virtual double GetLoopStartPoint(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetLoopStartPoint(track);
+        }
+
+        public virtual double GetLoopEndPoint(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetLoopEndPoint(track);
+        }
+
         protected virtual void OnDestroy()
         {
 
             _clipSplitter.Clear();
+        }
+
+        public virtual void Apply(VolumeSettings volumeSettings)
+        {
+            if (volumeSettings == null)
+            {
+                Debug.LogWarning("Volume settings are null.");
+                return;
+            }
+
+            float masterVol = volumeSettings.master;
+            float bgMusicVol = volumeSettings.bgMusic;
+            float soundFXVol = volumeSettings.soundFX;
+            float voiceVol = volumeSettings.voice;
+
+            SetTrackGroupVol(TrackGroup.Master, masterVol);
+            SetTrackGroupVol(TrackGroup.BGMusic, bgMusicVol);
+            SetTrackGroupVol(TrackGroup.SoundFX, soundFXVol);
+            SetTrackGroupVol(TrackGroup.Voice, voiceVol);
+        }
+
+        public virtual VolumeSettings GetVolumeSettings()
+        {
+            VolumeSettings volumeSettings = new VolumeSettings()
+            {
+                master = GetTrackGroupVol(TrackGroup.Master),
+                bgMusic = GetTrackGroupVol(TrackGroup.BGMusic),
+                soundFX = GetTrackGroupVol(TrackGroup.SoundFX),
+                voice = GetTrackGroupVol(TrackGroup.Voice)
+            };
+            return volumeSettings;
+        }
+
+        public virtual AudioClip GetBaseMainClip(TrackGroup group, int track)
+        {
+            var manager = TrackManagers[group];
+            return manager.GetBaseMainClip(track);
         }
 
     }
