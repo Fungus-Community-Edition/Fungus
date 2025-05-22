@@ -10,7 +10,6 @@ namespace Amanita.SaveSys
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
-
         public override void Apply(IList<FlowchartSaveData> saveDatas)
         {
             allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);

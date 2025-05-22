@@ -102,7 +102,7 @@ namespace Fungus
             {
                 Track = voiceOverAudioTrack,
                 TrackGroup = TrackGroup.Voice,
-                Clip = null, // We expect this to be set in Play()
+                MainClip = null, // We expect this to be set in Play()
                 Loop = false,
             };
 
@@ -110,7 +110,7 @@ namespace Fungus
             {
                 Track = beepAudioTrack,
                 TrackGroup = TrackGroup.SoundFX,
-                Clip = GetRandomBeep(),
+                MainClip = GetRandomBeep(),
                 Loop = false,
             };
 
@@ -118,7 +118,7 @@ namespace Fungus
             {
                 Track = inputAudioTrack,
                 TrackGroup = TrackGroup.SoundFX,
-                Clip = inputSound,
+                MainClip = inputSound,
                 Loop = false,
             };
 
@@ -126,7 +126,7 @@ namespace Fungus
             {
                 Track = effectAudioTrack,
                 TrackGroup = TrackGroup.SoundFX,
-                Clip = soundEffect,
+                MainClip = soundEffect,
                 Loop = loop,
             };
         }
@@ -249,7 +249,7 @@ namespace Fungus
 
         public virtual void OnInput()
         {
-            if (playInputSfx.Clip != null)
+            if (playInputSfx.MainClip != null)
             {
                 // Assumes we're playing a 2D sound, which Myceliaudio does by default
                 AudioSystem.S.Play(playInputSfx);
@@ -307,7 +307,7 @@ namespace Fungus
                     if (lastBeepDonePlaying)
                     {
                         AudioClip beepToUse = GetRandomBeep();
-                        playBeepSfx.Clip = beepToUse;
+                        playBeepSfx.MainClip = beepToUse;
                         playBeepSfx.Loop = false;
                         AudioSystem.S.Play(playBeepSfx);
                         //
@@ -324,7 +324,7 @@ namespace Fungus
             playingVoiceover = true;
 
             playVoiceOver.Loop = false;
-            playVoiceOver.Clip = voiceoverClip;
+            playVoiceOver.MainClip = voiceoverClip;
             AudioSystem.S.Play(playVoiceOver);
         }
 

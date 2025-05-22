@@ -4,24 +4,69 @@ using UnityEngine;
 namespace Amanita.Myceliaudio
 {
     [System.Serializable]
-    public class PlayAudioArgs : EventArgs, IPlayAudioContext
+    public class PlayAudioArgs : EventArgs, IPlayAudioContext, IEquatable<IPlayAudioContext>
     {
-        [field: SerializeField] public virtual AudioClip Clip { get; set; }
-        [field: SerializeField] public virtual TrackGroup TrackGroup { get; set; }
-        [field: SerializeField] public virtual int Track { get; set; }
-        [field: SerializeField] public virtual bool Loop { get; set; }
+        [SerializeField] protected AudioClip _introClip;
+        [SerializeField] protected AudioClip _mainClip;
+        [SerializeField] protected TrackGroup _trackGroup;
+        [SerializeField] protected int _track;
+        [SerializeField] protected bool _loop;
+
+        [HideInInspector]
+        [SerializeField] protected string _mainClipName = string.Empty;
+
+        public virtual AudioClip IntroClip
+        {
+            get { return _introClip; }
+            set { _introClip = value; }
+        }
+
+        public virtual AudioClip MainClip
+        {
+            get { return _mainClip; }
+            set
+            {
+                if (value != null && value.loadType == AudioClipLoadType.DecompressOnLoad)
+                {
+                    Debug.LogWarning("PlayAudioArgs: Clip is set to DecompressOnLoad. This may cause performance issues.");
+                }
+                _mainClip = value;
+
+                if (value != null)
+                {
+                    _mainClipName = value.name;
+                }
+                else
+                {
+                    _mainClipName = string.Empty;
+                }
+            }
+        }
+
+        public virtual TrackGroup TrackGroup
+        {
+            get { return _trackGroup; }
+            set { _trackGroup = value; }
+        }
+
+        public virtual int Track
+        {
+            get { return _track; }
+            set { _track = value; }
+        }
+
+        public virtual bool Loop
+        {
+            get { return _loop; }
+            set { _loop = value; }
+        }
 
         public virtual double LoopStartPoint
         {
-            get
-            {
-                return _loopStartPoint;
-            }
-            set
-            {
-                _loopStartPoint = Math.Clamp(value, 0, double.MaxValue);
-            }
+            get { return _loopStartPoint; }
+            set { _loopStartPoint = Math.Clamp(value, 0, double.MaxValue); }
         }
+
         [SerializeField] protected double _loopStartPoint;
 
         public virtual double LoopEndPoint
@@ -37,18 +82,23 @@ namespace Amanita.Myceliaudio
         }
         [SerializeField] protected double _loopEndPoint;
 
+        public virtual string MainClipName
+        {
+            get { return _mainClipName; }
+        }
+
         public virtual bool HasEndPointBeforeEndOfClip
         {
             get { return LoopEndPoint > 0; }
         }
 
-        [field: SerializeField] public virtual bool OneShot { get; set; }
+        public virtual bool OneShot { get; set; }
 
         public static PlayAudioArgs CreateCopy(PlayAudioArgs other)
         {
             PlayAudioArgs result = new PlayAudioArgs()
             {
-                Clip = other.Clip,
+                MainClip = other.MainClip,
                 TrackGroup = other.TrackGroup,
                 Track = other.Track,
                 Loop = other.Loop,
@@ -59,5 +109,30 @@ namespace Amanita.Myceliaudio
             return result;
         }
 
+        public static PlayAudioArgs Null => new PlayAudioArgs()
+        {
+            MainClip = null,
+            TrackGroup = TrackGroup.Null,
+            Track = 0,
+            Loop = false,
+            LoopStartPoint = 0,
+            LoopEndPoint = 0
+        };
+
+        public virtual bool Equals(IPlayAudioContext other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return MainClip == other.MainClip &&
+                   TrackGroup == other.TrackGroup &&
+                   Track == other.Track &&
+                   Loop == other.Loop &&
+                   LoopStartPoint == other.LoopStartPoint &&
+                   LoopEndPoint == other.LoopEndPoint;
+        }
     }
+
 }

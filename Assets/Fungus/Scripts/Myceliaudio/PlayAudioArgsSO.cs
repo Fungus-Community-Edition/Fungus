@@ -7,10 +7,16 @@ namespace Amanita.Myceliaudio
     {
         [SerializeField] protected PlayAudioArgs _details;
 
-        public virtual AudioClip Clip
+        public virtual AudioClip IntroClip
         {
-            get => _details.Clip;
-            set => _details.Clip = value;
+            get => _details.IntroClip;
+            set => _details.IntroClip = value;
+        }
+
+        public virtual AudioClip MainClip
+        {
+            get => _details.MainClip;
+            set => _details.MainClip = value;
         }
 
         public virtual TrackGroup TrackGroup
@@ -49,6 +55,11 @@ namespace Amanita.Myceliaudio
         {
             get => _details.OneShot;
             set => _details.OneShot = value;
+        }
+
+        protected virtual void OnValidate()
+        {
+            _details.MainClip = MainClip; // So that it updates the clip name as appropriate
         }
     }
 }
