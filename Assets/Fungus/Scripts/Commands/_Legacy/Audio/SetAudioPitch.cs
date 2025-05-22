@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sets the global pitch level for audio played with Play Music and Play Sound commands.

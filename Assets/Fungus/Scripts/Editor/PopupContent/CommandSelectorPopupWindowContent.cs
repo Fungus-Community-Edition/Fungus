@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Searchable Popup Window for adding a command to a block
@@ -62,7 +62,7 @@ namespace Fungus.EditorUtils
                 var obsAttr = item.Key.GetCustomAttribute<System.ObsoleteAttribute>();
 
                 var fliStr = (item.Value.Category.Length > 0 ? item.Value.Category + CATEGORY_CHAR : "") 
-                    + (obsAttr != null ? FungusConstants.UIPrefixForDeprecated_RichText : "")
+                    + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
                     + item.Value.CommandName;
                 allItems.Add(new FilteredListItem(CommandTypes.IndexOf(item.Key), fliStr, item.Value.HelpText));
             }
@@ -73,7 +73,7 @@ namespace Fungus.EditorUtils
             curBlock = block;
 
 
-            if (!FungusEditorPreferences.useLegacyMenus)
+            if (!AmanitaEditorPreferences.useLegacyMenus)
             {
                 var win = new CommandSelectorPopupWindowContent(currentHandlerName,
                     width, (int)(height - EditorGUIUtility.singleLineHeight * 3));

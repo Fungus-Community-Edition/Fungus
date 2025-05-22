@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Command to store the min or max of 2 values

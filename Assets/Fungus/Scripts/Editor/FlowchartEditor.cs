@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 
@@ -50,7 +50,7 @@ namespace Fungus.EditorUtils
             luaBindingNameProp = serializedObject.FindProperty("luaBindingName");
             saveVariablesProp = serializedObject.FindProperty("saveVariables");
 
-            addTexture = FungusEditorResources.AddSmall;
+            addTexture = AmanitaEditorResources.AddSmall;
 
             variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
         }

@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sort a target collection

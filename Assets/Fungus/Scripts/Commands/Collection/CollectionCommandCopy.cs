@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Clears target and then adds all of rhs to target.

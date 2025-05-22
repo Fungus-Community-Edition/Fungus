@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fungus.Lua;
+using Amanita.Lua;
 
-namespace Fungus
+namespace Amanita
 {
 	/// <summary>
 	/// Display story text in a visual novel style dialog box.

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Current state of the writing process.

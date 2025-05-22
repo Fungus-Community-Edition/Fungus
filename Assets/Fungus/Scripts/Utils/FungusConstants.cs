@@ -3,12 +3,12 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
-    /// Global constants used in various parts of Fungus.
+    /// Global constants used in various parts of Amanita.
     /// </summary>
-    public static class FungusConstants
+    public static class AmanitaConstants
     {
         /// <summary>
         /// Duration of fade for executing icon displayed beside blocks & commands.

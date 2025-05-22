@@ -1,7 +1,5 @@
-﻿using UnityEditor;
-
-#if UNITY_2019_3_12
-namespace Fungus.EditorUtils
+﻿#if UNITY_2019_3_12
+namespace Amanita.EditorUtils
 {
     //fix for a bug introduced in unity 2019.3.12 that prevents cross asmdef references from showing
     //  doco and code hinting correctly in vs2019

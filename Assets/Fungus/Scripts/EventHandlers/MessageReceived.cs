@@ -3,7 +3,7 @@
 
 ﻿using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// The block will execute when the specified message is received from a Send Message command.

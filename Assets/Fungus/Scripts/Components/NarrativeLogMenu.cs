@@ -5,9 +5,9 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// A singleton game object which displays a simple UI for the Narrative Log.

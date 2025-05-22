@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 #if UNITY_2018_1_OR_NEWER
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Static lookup for Text Mesh Pro Link animations. TMPro tracks and holds information about

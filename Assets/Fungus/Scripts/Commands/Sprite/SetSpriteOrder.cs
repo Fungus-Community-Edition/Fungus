@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Controls the render order of sprites by setting the Order In Layer property of a list of sprites.

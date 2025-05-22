@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Applies a jolt of force to a GameObject's position and wobbles it back to its initial position.

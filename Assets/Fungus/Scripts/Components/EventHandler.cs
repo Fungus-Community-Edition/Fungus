@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Attribute class for Fungus event handlers.

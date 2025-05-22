@@ -5,11 +5,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Provides a common and complete MonoBehavior based reference point for FungusCollection.
-    /// Fungus.GenericCollection inherits from this.
+    /// Amanita.GenericCollection inherits from this.
     /// </summary>
     [AddComponentMenu("")]
     [System.Serializable]

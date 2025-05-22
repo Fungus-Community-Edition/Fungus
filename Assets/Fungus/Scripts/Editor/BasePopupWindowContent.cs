@@ -3,11 +3,10 @@
 
 using UnityEditor;
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Common base for PopupWindowContent that is a search filterable list a la AddComponent

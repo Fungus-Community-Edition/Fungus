@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Amanita.Myceliaudio;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Type of audio effect to play.

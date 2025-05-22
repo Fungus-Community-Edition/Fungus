@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Destroys a specified game object in the scene.

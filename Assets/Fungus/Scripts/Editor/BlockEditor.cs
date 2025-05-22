@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
 	[CustomEditor(typeof(Block))]
 	public class BlockEditor : Editor
@@ -48,11 +48,11 @@ namespace Fungus.EditorUtils
 				return;
 			}
 
-			upIcon = FungusEditorResources.Up;
-			downIcon = FungusEditorResources.Down;
-			addIcon = FungusEditorResources.Add;
-			duplicateIcon = FungusEditorResources.Duplicate;
-			deleteIcon = FungusEditorResources.Delete;
+			upIcon = AmanitaEditorResources.Up;
+			downIcon = AmanitaEditorResources.Down;
+			addIcon = AmanitaEditorResources.Add;
+			duplicateIcon = AmanitaEditorResources.Duplicate;
+			deleteIcon = AmanitaEditorResources.Delete;
 
 			commandListProperty = serializedObject.FindProperty("commandList");
 
@@ -327,7 +327,7 @@ namespace Fungus.EditorUtils
 			// Previous Command
 			if (Event.current.type == EventType.KeyDown && (
 				  Event.current.keyCode == KeyCode.PageUp ||
-				  (FungusEditorPreferences.navigateCmdListWithArrows && Event.current.keyCode == KeyCode.UpArrow)))
+				  (AmanitaEditorPreferences.navigateCmdListWithArrows && Event.current.keyCode == KeyCode.UpArrow)))
 			{
 				SelectPrevious();
 				GUI.FocusControl("dummycontrol");
@@ -336,7 +336,7 @@ namespace Fungus.EditorUtils
 			// Next Command
 			if (Event.current.type == EventType.KeyDown && (
 				  Event.current.keyCode == KeyCode.PageDown ||
-				  (FungusEditorPreferences.navigateCmdListWithArrows && Event.current.keyCode == KeyCode.DownArrow)))
+				  (AmanitaEditorPreferences.navigateCmdListWithArrows && Event.current.keyCode == KeyCode.DownArrow)))
 			{
 				SelectNext();
 				GUI.FocusControl("dummycontrol");

@@ -3,13 +3,13 @@
 
 ﻿using UnityEngine;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Wrapper class for PlayerPrefs that adds the concept of multiple save slots.
     /// Save slots allow you to store multiple player save profiles.
     /// </summary>
-    public static class FungusPrefs
+    public static class AmanitaPrefs
     {
         #region Public members
 

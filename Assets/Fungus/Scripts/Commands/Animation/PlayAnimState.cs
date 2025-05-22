@@ -3,7 +3,7 @@
 
 ﻿using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Plays a state of an animator according to the state name.

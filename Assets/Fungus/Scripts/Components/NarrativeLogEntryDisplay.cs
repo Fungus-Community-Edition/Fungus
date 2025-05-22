@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Displays Narrative Log Entries in the UI.

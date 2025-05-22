@@ -1,5 +1,4 @@
 using UnityEngine;
-using Fungus;
 using UnityEngine.Serialization;
 
 namespace Amanita.Myceliaudio

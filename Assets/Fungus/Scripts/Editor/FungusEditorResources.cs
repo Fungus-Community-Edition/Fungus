@@ -12,10 +12,10 @@ using System.Collections.Generic;
 using System.Reflection;
 #endif
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
-    [CustomEditor(typeof(FungusEditorResources))]
-    public class FungusEditorResourcesInspector : Editor
+    [CustomEditor(typeof(AmanitaEditorResources))]
+    public class AmanitaEditorResourcesInspector : Editor
     {
         public override void OnInspectorGUI()
         {
@@ -27,7 +27,7 @@ namespace Fungus.EditorUtils
             {
                 if (GUILayout.Button("Sync with EditorResources folder"))
                 {
-                    FungusEditorResources.GenerateResourcesScript();
+                    AmanitaEditorResources.GenerateResourcesScript();
                 }
 
                 DrawDefaultInspector();
@@ -42,12 +42,12 @@ namespace Fungus.EditorUtils
         {
             foreach (var path in importedAssets)
             {
-                if (path.EndsWith("FungusEditorResources.asset"))
+                if (path.EndsWith("AmanitaEditorResources.asset"))
                 {
-                    var asset = AssetDatabase.LoadAssetAtPath(path, typeof(FungusEditorResources)) as FungusEditorResources;
+                    var asset = AssetDatabase.LoadAssetAtPath(path, typeof(AmanitaEditorResources)) as AmanitaEditorResources;
                     if (asset != null)
                     {
-                        FungusEditorResources.UpdateTextureReferences(asset);
+                        AmanitaEditorResources.UpdateTextureReferences(asset);
                         AssetDatabase.SaveAssets();
                         return;
                     }
@@ -56,7 +56,7 @@ namespace Fungus.EditorUtils
         }
     }
 
-    public partial class FungusEditorResources : ScriptableObject
+    public partial class AmanitaEditorResources : ScriptableObject
     {
         [Serializable]
         public class EditorTexture
@@ -76,33 +76,33 @@ namespace Fungus.EditorUtils
             }
         }
 
-        private static FungusEditorResources instance;
+        private static AmanitaEditorResources instance;
         private static readonly string editorResourcesFolderName = "\"EditorResources\"";
         private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Fungus", "EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
-        public static FungusEditorResources Instance
+        public static AmanitaEditorResources Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    var guids = AssetDatabase.FindAssets("FungusEditorResources t:FungusEditorResources");
+                    var guids = AssetDatabase.FindAssets("AmanitaEditorResources t:AmanitaEditorResources");
 
                     if (guids.Length == 0)
                     {
-                        instance = ScriptableObject.CreateInstance(typeof(FungusEditorResources)) as FungusEditorResources;
-                        AssetDatabase.CreateAsset(instance, GetRootFolder() + "/FungusEditorResources.asset");
+                        instance = ScriptableObject.CreateInstance(typeof(AmanitaEditorResources)) as AmanitaEditorResources;
+                        AssetDatabase.CreateAsset(instance, GetRootFolder() + "/AmanitaEditorResources.asset");
                     }
                     else 
                     {
                         if (guids.Length > 1)
                         {
-                            Debug.LogError("Multiple FungusEditorResources assets found!");
+                            Debug.LogError("Multiple AmanitaEditorResources assets found!");
                         }
 
                         var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                        instance = AssetDatabase.LoadAssetAtPath(path, typeof(FungusEditorResources)) as FungusEditorResources;
+                        instance = AssetDatabase.LoadAssetAtPath(path, typeof(AmanitaEditorResources)) as AmanitaEditorResources;
                     }
                 }
 
@@ -137,8 +137,8 @@ namespace Fungus.EditorUtils
                 textureNames.Add(Path.GetFileNameWithoutExtension(path));
             }
 
-            var scriptGuid = AssetDatabase.FindAssets("FungusEditorResources t:MonoScript")[0];
-            var relativePath = AssetDatabase.GUIDToAssetPath(scriptGuid).Replace("FungusEditorResources.cs", "FungusEditorResourcesGenerated.cs");
+            var scriptGuid = AssetDatabase.FindAssets("AmanitaEditorResources t:MonoScript")[0];
+            var relativePath = AssetDatabase.GUIDToAssetPath(scriptGuid).Replace("AmanitaEditorResources.cs", "AmanitaEditorResourcesGenerated.cs");
             var absolutePath = Application.dataPath + relativePath.Substring("Assets".Length);
             
             using (var writer = new StreamWriter(absolutePath))
@@ -150,9 +150,9 @@ namespace Fungus.EditorUtils
                 writer.WriteLine("");
                 writer.WriteLine("using UnityEngine;");
                 writer.WriteLine("");
-                writer.WriteLine("namespace Fungus.EditorUtils");
+                writer.WriteLine("namespace Amanita.EditorUtils");
                 writer.WriteLine("{");
-                writer.WriteLine("    public partial class FungusEditorResources : ScriptableObject");
+                writer.WriteLine("    public partial class AmanitaEditorResources : ScriptableObject");
                 writer.WriteLine("    {");
                 
                 foreach (var name in textureNames)
@@ -187,7 +187,7 @@ namespace Fungus.EditorUtils
             }
         }
 
-        public static void UpdateTextureReferences(FungusEditorResources instance)
+        public static void UpdateTextureReferences(AmanitaEditorResources instance)
         {
             // Iterate through all fields in instance and set texture references
             var serializedObject = new SerializedObject(instance);

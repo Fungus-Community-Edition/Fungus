@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     [System.Serializable]
     public class FungusException : System.Exception
@@ -26,7 +26,7 @@ namespace Fungus
     }
 
     /// <summary>
-    /// Throw a Fungus.Exception
+    /// Throw a Amanita.Exception
     /// </summary>
     [CommandInfo("Scripting",
                  "Throw Exception",

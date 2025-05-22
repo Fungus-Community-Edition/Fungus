@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using MoonSharp.Interpreter;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Contains all options to run a portrait command.

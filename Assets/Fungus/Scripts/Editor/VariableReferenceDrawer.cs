@@ -4,16 +4,16 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the VariableReference, allows for more easily selecting a target variable in external c#
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Fungus.VariableReference))]
+    [CustomPropertyDrawer(typeof(Amanita.VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
     {
-        public Fungus.Flowchart lastFlowchart;
+        public Amanita.Flowchart lastFlowchart;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -23,7 +23,7 @@ namespace Fungus.EditorUtils
             position.height = EditorGUIUtility.singleLineHeight;
             var variable = property.FindPropertyRelative("variable");
 
-            Fungus.Variable v = variable.objectReferenceValue as Fungus.Variable;
+            Amanita.Variable v = variable.objectReferenceValue as Amanita.Variable;
 
             if (variable.objectReferenceValue != null && lastFlowchart == null)
             {
@@ -33,7 +33,7 @@ namespace Fungus.EditorUtils
                 }
             }
 
-            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Fungus.Flowchart), true) as Fungus.Flowchart;
+            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Amanita.Flowchart), true) as Amanita.Flowchart;
             position.y += EditorGUIUtility.singleLineHeight;
             if (lastFlowchart != null)
             {

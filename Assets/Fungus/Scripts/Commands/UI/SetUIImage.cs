@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Changes the Image property on a UI element.

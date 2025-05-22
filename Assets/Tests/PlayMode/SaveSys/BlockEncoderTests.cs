@@ -2,9 +2,6 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections;
 using Amanita.SaveSys;
-using Fungus;
-using System.Collections.Generic;
-using System;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.TestTools;
 

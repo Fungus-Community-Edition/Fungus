@@ -9,7 +9,7 @@ using System.Reflection;
 using System;
 using System.Collections.Generic;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor(typeof(InvokeMethod))]
     public class InvokeMethodEditor : CommandEditor

@@ -3,7 +3,7 @@
 
 using System.Text;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Replaces special tokens in a string with substituted values (typically variables or localisation strings).

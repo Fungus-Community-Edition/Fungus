@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Spawns a new object based on a reference to a scene or prefab game object.

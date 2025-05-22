@@ -1,5 +1,4 @@
 using UnityEngine;
-using Fungus;
 
 namespace Amanita.SaveSys
 {

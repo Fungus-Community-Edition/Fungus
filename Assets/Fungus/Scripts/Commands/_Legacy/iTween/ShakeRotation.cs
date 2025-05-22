@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Randomly shakes a GameObject's rotation by a diminishing amount over time.

@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     // Helper Rect extension methods
     public static class RectExtensions

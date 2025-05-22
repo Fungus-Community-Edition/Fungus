@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Helper class for hiding the many, many ways we might want to show text to the user.

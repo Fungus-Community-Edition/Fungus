@@ -4,7 +4,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// PlayOneShot with given clip on given source

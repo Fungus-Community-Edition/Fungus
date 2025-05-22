@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus 
+namespace Amanita 
 {
     /// <summary>
     /// The block will execute when the user toggles on the target UI toggle object.

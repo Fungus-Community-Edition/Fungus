@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// The block will execute when the desired OnParticle message for the monobehaviour is received.

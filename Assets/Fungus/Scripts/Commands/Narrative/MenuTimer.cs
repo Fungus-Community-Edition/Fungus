@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Displays a timer bar and executes a target block if the player fails to select a menu option in time.

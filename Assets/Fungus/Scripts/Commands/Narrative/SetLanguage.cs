@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Set the active language for the scene. A Localization object with a localization file must be present in the scene.

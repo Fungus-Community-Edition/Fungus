@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Gets the text property from a UI Text object and stores it in a string variable.

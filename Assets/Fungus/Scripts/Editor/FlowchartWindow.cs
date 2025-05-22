@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Object = UnityEngine.Object;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class FlowchartWindow : EventWindow
     {
@@ -123,7 +123,7 @@ namespace Fungus.EditorUtils
                 workspace.Clear();
                 //cache these once as they can end up being called thousands of times per frame otherwise
                 var curRealTime = Time.realtimeSinceStartup;
-                var fadeTimer = curRealTime + FungusConstants.ExecutingIconFadeTime;
+                var fadeTimer = curRealTime + AmanitaConstants.ExecutingIconFadeTime;
                 for (int i = 0; i < blocks.Length; ++i)
                 {
                     var b = blocks[i];
@@ -259,9 +259,9 @@ namespace Fungus.EditorUtils
 
         protected virtual void OnEnable()
         {
-            addTexture = FungusEditorResources.AddSmall;
+            addTexture = AmanitaEditorResources.AddSmall;
             addButtonContent = new GUIContent(addTexture, "Add a new block");
-            connectionPointTexture = FungusEditorResources.ConnectionPoint;
+            connectionPointTexture = AmanitaEditorResources.ConnectionPoint;
             gridLineColor.a = EditorGUIUtility.isProSkin ? 0.5f : 0.25f;
 
             copyList.Clear();
@@ -1049,7 +1049,7 @@ namespace Fungus.EditorUtils
             GUI.contentColor = block != null ? GetBlockGraphics(block).tint : Color.white;
 
             var buttonPressed = false;
-            if (GUILayout.Button(FungusEditorResources.BulletPoint, style, GUILayout.Width(16)))
+            if (GUILayout.Button(AmanitaEditorResources.BulletPoint, style, GUILayout.Width(16)))
             {
                 buttonPressed = true;
             }
@@ -1287,7 +1287,7 @@ namespace Fungus.EditorUtils
                         Undo.RecordObject(block, "Block Position");
                         tempRect.position += distance;
                         block._NodeRect = tempRect;
-                        if (FungusEditorPreferences.useGridSnap)
+                        if (AmanitaEditorPreferences.useGridSnap)
                         {
                             block._NodeRect = block._NodeRect.SnapPosition(GridObjectSnap);
                         }
@@ -1470,7 +1470,7 @@ namespace Fungus.EditorUtils
                     var b = blocks[i];
                     DrawExecutingBlockIcon(b,
                         scriptViewRect,
-                        (b.ExecutingIconTimer - curRealTime) / FungusConstants.ExecutingIconFadeTime,
+                        (b.ExecutingIconTimer - curRealTime) / AmanitaConstants.ExecutingIconFadeTime,
                         emptyStyle);
                 }
             }
@@ -1495,7 +1495,7 @@ namespace Fungus.EditorUtils
             {
                 GUI.color = new Color(1f, 1f, 1f, alpha);
 
-                if (GUI.Button(rect, FungusEditorResources.PlayBig, style))
+                if (GUI.Button(rect, AmanitaEditorResources.PlayBig, style))
                 {
                     SelectBlock(b);
                 }
@@ -2059,9 +2059,9 @@ namespace Fungus.EditorUtils
             Color defaultTint;
             if (block._EventHandler != null)
             {
-                graphics.offTexture = FungusEditorResources.EventNodeOff;
-                graphics.onTexture = FungusEditorResources.EventNodeOn;
-                defaultTint = FungusConstants.DefaultEventBlockTint;
+                graphics.offTexture = AmanitaEditorResources.EventNodeOff;
+                graphics.onTexture = AmanitaEditorResources.EventNodeOn;
+                defaultTint = AmanitaConstants.DefaultEventBlockTint;
             }
             else
             {
@@ -2079,19 +2079,19 @@ namespace Fungus.EditorUtils
 
                 if (blockGraphicsUniqueListWorkSpace.Count > 1)
                 {
-                    graphics.offTexture = FungusEditorResources.ChoiceNodeOff;
-                    graphics.onTexture = FungusEditorResources.ChoiceNodeOn;
-                    defaultTint = FungusConstants.DefaultChoiceBlockTint;
+                    graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
+                    graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
+                    defaultTint = AmanitaConstants.DefaultChoiceBlockTint;
                 }
                 else
                 {
-                    graphics.offTexture = FungusEditorResources.ProcessNodeOff;
-                    graphics.onTexture = FungusEditorResources.ProcessNodeOn;
-                    defaultTint = FungusConstants.DefaultProcessBlockTint;
+                    graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
+                    graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
+                    defaultTint = AmanitaConstants.DefaultProcessBlockTint;
                 }
             }
 
-            graphics.tint = (block.UseCustomTint ? block.Tint : defaultTint) * FungusEditorPreferences.flowchatBlockTint;
+            graphics.tint = (block.UseCustomTint ? block.Tint : defaultTint) * AmanitaEditorPreferences.flowchatBlockTint;
 
             return graphics;
         }
@@ -2103,7 +2103,7 @@ namespace Fungus.EditorUtils
             Rect tempRect = block._NodeRect;
             tempRect.width = Mathf.Clamp(nodeWidthA, BlockMinWidth, BlockMaxWidth);
             tempRect.height = DefaultBlockHeight;
-            if (FungusEditorPreferences.useGridSnap)
+            if (AmanitaEditorPreferences.useGridSnap)
             {
                 tempRect = tempRect.SnapWidth(GridObjectSnap);
             }
@@ -2113,7 +2113,7 @@ namespace Fungus.EditorUtils
             var graphics = GetBlockGraphics(block);
 
             Rect windowRelativeRect = new Rect(block._NodeRect);
-            if (FungusEditorPreferences.useGridSnap)
+            if (AmanitaEditorPreferences.useGridSnap)
             {
                 windowRelativeRect = windowRelativeRect.SnapPosition(GridObjectSnap);
             }
@@ -2194,7 +2194,7 @@ namespace Fungus.EditorUtils
                         var obsAttr = eventType.GetCustomAttribute<System.ObsoleteAttribute>();
                         if (obsAttr != null)
                         {
-                            handlerLabel = "<" + FungusConstants.UIPrefixForDeprecated_RichText + info.EventHandlerName + "> ";
+                            handlerLabel = "<" + AmanitaConstants.UIPrefixForDeprecated_RichText + info.EventHandlerName + "> ";
                         }
                         else
                         {

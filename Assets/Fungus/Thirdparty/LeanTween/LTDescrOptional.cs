@@ -1,4 +1,4 @@
-namespace Fungus.DentedPixel
+namespace Amanita.DentedPixel
 {
     using UnityEngine;
     using System;

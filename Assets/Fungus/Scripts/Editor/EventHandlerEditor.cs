@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor(typeof(EventHandler), true)]
     public class EventHandlerEditor : Editor
@@ -84,7 +84,7 @@ namespace Fungus.EditorUtils
             }
 
 
-            if (!FungusEditorPreferences.suppressHelpBoxes)
+            if (!AmanitaEditorPreferences.suppressHelpBoxes)
             {
                 EditorGUILayout.Space();
                 DrawHelpBox();

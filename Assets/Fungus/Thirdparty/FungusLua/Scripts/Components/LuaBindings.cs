@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using System;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Represents a single Unity object (+ optional component) bound to a string key.

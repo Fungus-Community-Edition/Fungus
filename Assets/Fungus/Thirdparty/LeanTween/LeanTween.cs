@@ -1,4 +1,4 @@
-namespace Fungus.DentedPixel
+namespace Amanita.DentedPixel
 {
     // LeanTween version 2.46 - http://dentedpixel.com/developer-diary/
     //

@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Save an Boolean, Integer, Float or String variable to persistent storage using a string key.

@@ -4,7 +4,7 @@ using System.Linq;
 using System;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     public class TweenManager : MonoBehaviour
     {

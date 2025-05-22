@@ -4,7 +4,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor (typeof(Portrait))]
     public class PortraitEditor : CommandEditor

@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sets a trigger parameter on an Animator component to control a Unity animation.

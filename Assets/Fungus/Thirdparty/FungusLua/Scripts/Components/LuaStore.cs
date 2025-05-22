@@ -5,7 +5,7 @@
 using MoonSharp.Interpreter;
 using System.Collections.Generic;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Wrapper for a prime Lua table that persists across scene loads. 

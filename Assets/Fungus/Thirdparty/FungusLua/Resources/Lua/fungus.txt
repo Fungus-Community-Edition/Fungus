@@ -153,7 +153,7 @@ function M.getsaydialog()
 end
 
 -- Set the active character on the Say Dialog
--- character: A Fungus.Character component
+-- character: A Amanita.Character component
 -- portrait: The name of a sprite in the character's portrait list
 function M.setcharacter(character, portrait)
     assert(character, "character must not be nil")

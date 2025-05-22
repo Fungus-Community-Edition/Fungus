@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     namespace EditorUtils
     {
@@ -15,7 +15,7 @@ namespace Fungus
         /// ref https://docs.unity3d.com/ScriptReference/PreferenceItem.html
         /// </summary>
         [InitializeOnLoad]
-        public static class FungusEditorPreferences
+        public static class AmanitaEditorPreferences
         {
             // Have we loaded the prefs yet
             private static bool prefsLoaded = false;
@@ -35,7 +35,7 @@ namespace Fungus
             public static bool suppressHelpBoxes = false;
             public static bool navigateCmdListWithArrows = false;
 
-            static FungusEditorPreferences()
+            static AmanitaEditorPreferences()
             {
                 LoadOnScriptLoad();
             }
@@ -81,23 +81,23 @@ namespace Fungus
 
                 EditorGUILayout.Space();
                 //ideally if any are null, but typically it is all or nothing that have broken links due to version changes or moving files external to Unity
-                if (FungusEditorResources.Add == null)
+                if (AmanitaEditorResources.Add == null)
                 {
-                    EditorGUILayout.HelpBox("FungusEditorResources need to be regenerated!", MessageType.Error);
+                    EditorGUILayout.HelpBox("AmanitaEditorResources need to be regenerated!", MessageType.Error);
                 }
 
-                if (GUILayout.Button(new GUIContent("Select Fungus Editor Resources SO", "If Fungus icons are not showing correctly you may need to reassign the references in the FungusEditorResources. Button below will locate it.")))
+                if (GUILayout.Button(new GUIContent("Select Fungus Editor Resources SO", "If Fungus icons are not showing correctly you may need to reassign the references in the AmanitaEditorResources. Button below will locate it.")))
                 {
-                    var ids = AssetDatabase.FindAssets("t:FungusEditorResources");
+                    var ids = AssetDatabase.FindAssets("t:AmanitaEditorResources");
                     if (ids.Length > 0)
                     {
                         var p = AssetDatabase.GUIDToAssetPath(ids[0]);
-                        var asset = AssetDatabase.LoadAssetAtPath<FungusEditorResources>(p);
+                        var asset = AssetDatabase.LoadAssetAtPath<AmanitaEditorResources>(p);
                         Selection.activeObject = asset;
                     }
                     else
                     {
-                        Debug.LogError("No FungusEditorResources found!");
+                        Debug.LogError("No AmanitaEditorResources found!");
                     }
                 }
 

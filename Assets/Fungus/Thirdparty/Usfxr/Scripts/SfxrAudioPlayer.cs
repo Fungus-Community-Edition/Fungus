@@ -1,4 +1,4 @@
-namespace Fungus.Sfxr
+namespace Amanita.Sfxr
 {
 #if UNITY_EDITOR
 	using UnityEditor;

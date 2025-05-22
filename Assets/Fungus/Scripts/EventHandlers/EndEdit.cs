@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus 
+namespace Amanita 
 {
     /// <summary>
     /// The block will execute when the user finishes editing the text in the input field.

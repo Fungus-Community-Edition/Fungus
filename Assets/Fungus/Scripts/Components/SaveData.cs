@@ -6,7 +6,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// This component encodes and decodes a list of game objects to be saved for each Save Point.

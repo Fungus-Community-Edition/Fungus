@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
 #if UNITY_2019_2_OR_NEWER
 

@@ -2,7 +2,6 @@
 #define AMANITA_MYCELIAUDIO
 using UnityEngine;
 using System.Collections.Generic;
-using Fungus;
 
 namespace Amanita.Myceliaudio
 {

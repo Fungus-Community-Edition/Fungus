@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 #endif
 using System.Collections;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Helper component for loading a new scene.

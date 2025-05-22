@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using FungusVar = Fungus.Variable;
+using AmanitaVar = Amanita.Variable;
 
 namespace Amanita.SaveSys
 {
@@ -18,7 +18,7 @@ namespace Amanita.SaveSys
             /* ... */
         };
 
-        public static IVarEncoder GetEncoder(FungusVar variable)
+        public static IVarEncoder GetEncoder(AmanitaVar variable)
             => savers.Find(s => s.CanHandle(variable));
 
         public static IVarEncoder GetEncoder(VariableSaveData saveData)

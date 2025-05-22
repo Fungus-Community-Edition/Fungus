@@ -4,9 +4,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
 	/// <summary>
 	/// Manager for main camera. Supports several types of camera transition including snap, pan & fade.

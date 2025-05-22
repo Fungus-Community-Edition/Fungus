@@ -1,4 +1,4 @@
-namespace Fungus
+namespace Amanita
 {
     public enum GetOrSet
     {

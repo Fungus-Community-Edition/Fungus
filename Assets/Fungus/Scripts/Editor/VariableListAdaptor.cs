@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class VariableListAdaptor
     {
@@ -242,7 +242,7 @@ namespace Fungus.EditorUtils
             {
                 var existingGUICol = GUI.color;
                 GUI.color = Color.yellow;
-                GUI.Label(itemRects[0], FungusConstants.UIPrefixForDeprecated + variableInfo.VariableType);
+                GUI.Label(itemRects[0], AmanitaConstants.UIPrefixForDeprecated + variableInfo.VariableType);
                 GUI.color = existingGUICol;
             }
             else

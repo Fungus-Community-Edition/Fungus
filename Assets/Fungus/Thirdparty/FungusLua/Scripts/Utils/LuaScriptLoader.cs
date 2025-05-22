@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System;
 using MoonSharp.Interpreter;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Custom file loader for MoonSharp that loads in all Lua scripts in the project.

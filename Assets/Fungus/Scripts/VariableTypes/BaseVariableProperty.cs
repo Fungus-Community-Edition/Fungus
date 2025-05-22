@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     [AddComponentMenu("")]
     public abstract class BaseVariableProperty : Command

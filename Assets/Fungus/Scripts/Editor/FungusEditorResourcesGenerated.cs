@@ -5,9 +5,9 @@
 
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
-    public partial class FungusEditorResources : ScriptableObject
+    public partial class AmanitaEditorResources : ScriptableObject
     {
         [SerializeField] private EditorTexture add;
         [SerializeField] private EditorTexture add_small;

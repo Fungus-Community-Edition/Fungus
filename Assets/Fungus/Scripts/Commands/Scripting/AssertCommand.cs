@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Assert on 2 Fungus variable values.

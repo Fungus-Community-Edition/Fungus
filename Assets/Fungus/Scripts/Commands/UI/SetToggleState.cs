@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sets the state of a toggle UI object.

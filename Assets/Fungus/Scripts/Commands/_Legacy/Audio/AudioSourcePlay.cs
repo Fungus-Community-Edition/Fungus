@@ -4,7 +4,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Play a source, optionaly setting the clip and delay when called.

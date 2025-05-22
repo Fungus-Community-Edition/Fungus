@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Fungus
+namespace Amanita
 {
     public class AudioTweenArgs : TweenArgs<AudioSource, float>
     {

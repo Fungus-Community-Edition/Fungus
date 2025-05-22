@@ -6,7 +6,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     public class EnumFlagAttribute : PropertyAttribute
     {

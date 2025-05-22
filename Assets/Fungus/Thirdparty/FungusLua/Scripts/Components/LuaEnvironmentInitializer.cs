@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Helper class used to extend the initialization behavior of LuaEnvironment.

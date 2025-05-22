@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     [CommandInfo("Physics2D",
                  "Overlap2D",

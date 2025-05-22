@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor (typeof(Command), true)]
     public class CommandEditor : Editor 
@@ -139,7 +139,7 @@ namespace Fungus.EditorUtils
 
             // Display help text
             CommandInfoAttribute infoAttr = CommandEditor.GetCommandInfo(t.GetType());
-            if (infoAttr != null && !FungusEditorPreferences.suppressHelpBoxes)
+            if (infoAttr != null && !AmanitaEditorPreferences.suppressHelpBoxes)
             {
                 EditorGUILayout.HelpBox(infoAttr.HelpText, MessageType.Info, true);
             }

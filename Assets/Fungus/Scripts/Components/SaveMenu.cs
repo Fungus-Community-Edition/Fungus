@@ -6,9 +6,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// A singleton game object which displays a simple UI for the save system.
@@ -16,7 +16,7 @@ namespace Fungus
     public class SaveMenu : MonoBehaviour 
     {
         [Tooltip("The string key used to store save game data in Player Prefs. If you have multiple games defined in the same Unity project, use a unique key for each one.")]
-        [SerializeField] protected string saveDataKey = FungusConstants.DefaultSaveDataKey;
+        [SerializeField] protected string saveDataKey = AmanitaConstants.DefaultSaveDataKey;
 
         [Tooltip("Automatically load the most recently saved game on startup")]
         [SerializeField] protected bool loadOnStart = true;

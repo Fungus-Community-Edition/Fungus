@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor.Callbacks;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     [CustomEditor (typeof(LuaBindings))]
     public class LuaBindingsEditor : Editor 
@@ -84,7 +84,7 @@ namespace Fungus.Lua
                     GameObject go = objectProp.objectReferenceValue as GameObject;
                     if (go != null)
                     {
-                        Component flowchart = go.GetComponent("Fungus.Flowchart");
+                        Component flowchart = go.GetComponent("Amanita.Flowchart");
                         if (flowchart != null)
                         {
                             SerializedProperty componentProp = element.FindPropertyRelative("component");

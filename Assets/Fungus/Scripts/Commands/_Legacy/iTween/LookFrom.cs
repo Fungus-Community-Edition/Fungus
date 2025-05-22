@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Instantly rotates a GameObject to look at the supplied Vector3 then returns it to it's starting rotation over time.

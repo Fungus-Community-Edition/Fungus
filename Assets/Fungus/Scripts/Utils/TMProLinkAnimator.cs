@@ -5,7 +5,7 @@ using UnityEngine;
 
 #if UNITY_2018_1_OR_NEWER
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Component that is automatically added to all tmpro texts that contain links. Caches

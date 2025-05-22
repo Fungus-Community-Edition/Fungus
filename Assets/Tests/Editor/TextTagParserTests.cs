@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-namespace Fungus.Tests
+namespace Amanita.Tests
 {
     [TestFixture]
     public class TextTagParserTests

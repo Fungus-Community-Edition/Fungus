@@ -3,7 +3,7 @@
 
 ﻿using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sets a Draggable2D component to be draggable / non-draggable.

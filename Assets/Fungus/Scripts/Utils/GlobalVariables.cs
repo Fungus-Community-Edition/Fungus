@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Storage for a collection of fungus variables that can then be accessed globally.

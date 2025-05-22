@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     [CommandInfo("Variable", 
         "StringToFloat",

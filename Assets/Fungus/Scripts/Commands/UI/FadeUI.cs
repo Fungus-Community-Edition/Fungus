@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Select which type of fade will be applied.

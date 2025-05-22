@@ -3,7 +3,7 @@
 
 ﻿using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Stop all active iTweens in the current scene.

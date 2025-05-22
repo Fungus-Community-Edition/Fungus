@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.IO;
+using UnityLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.Myceliaudio.Editor
 {
@@ -130,7 +131,7 @@ namespace Amanita.Myceliaudio.Editor
             // value display is parented to
             SliderInt slider = evt.currentTarget as SliderInt;
 
-            Label valueLabel = slider.parent.Q<Label>(valueLabelName);
+            UnityLabel valueLabel = slider.parent.Q<UnityLabel>(valueLabelName);
             valueLabel.text = $"{slider.value}%";
 
             UpdateSettings();

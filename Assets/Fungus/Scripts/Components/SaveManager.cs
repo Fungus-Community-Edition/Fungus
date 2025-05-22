@@ -6,7 +6,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Manages the Save History (a list of Save Points) and provides a set of operations for saving and loading games.

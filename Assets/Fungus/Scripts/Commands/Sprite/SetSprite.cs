@@ -6,7 +6,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Changes the sprite on a SpriteRenderer.

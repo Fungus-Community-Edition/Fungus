@@ -5,7 +5,7 @@
 using UnityEditor;
 using MoonSharp.Interpreter.Serialization;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     [CustomEditor(typeof(LuaStore))]
     public class LuaStoreEditor : Editor

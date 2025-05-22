@@ -7,7 +7,7 @@ using System;
 using UnityEditorInternal;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class CommandListAdaptor
     {
@@ -32,7 +32,7 @@ namespace Fungus.EditorUtils
             if (commandLabelStyle == null)
             {
                 commandLabelStyle = new GUIStyle(GUI.skin.label);
-                commandLabelStyle.normal.background = FungusEditorResources.CommandBackground;
+                commandLabelStyle.normal.background = AmanitaEditorResources.CommandBackground;
                 commandLabelStyle.normal.textColor = Color.black;
                 int borderSize = 5;
                 commandLabelStyle.border.top = borderSize;
@@ -48,7 +48,7 @@ namespace Fungus.EditorUtils
 
             if (block.CommandList.Count == 0)
             {
-                if (!FungusEditorPreferences.suppressHelpBoxes)
+                if (!AmanitaEditorPreferences.suppressHelpBoxes)
                 {
                     EditorGUILayout.HelpBox("Press the + button below to add a command to the list.", MessageType.Info); 
                 }
@@ -160,7 +160,7 @@ namespace Fungus.EditorUtils
             }
             else if(obsAttr != null)
             {
-                summary = FungusConstants.UIPrefixForDeprecated_RichText + summary;
+                summary = AmanitaConstants.UIPrefixForDeprecated_RichText + summary;
             }
             
 
@@ -188,7 +188,7 @@ namespace Fungus.EditorUtils
                 }
             }
             var prevCol = GUI.color;
-            GUI.color = FungusEditorPreferences.commandListTint;
+            GUI.color = AmanitaEditorPreferences.commandListTint;
 
             string commandName = commandInfoAttr.CommandName;
             
@@ -386,11 +386,11 @@ namespace Fungus.EditorUtils
 
                 Color storeColor = GUI.color;
 
-                float alpha = (command.ExecutingIconTimer - Time.realtimeSinceStartup) / FungusConstants.ExecutingIconFadeTime;
+                float alpha = (command.ExecutingIconTimer - Time.realtimeSinceStartup) / AmanitaConstants.ExecutingIconFadeTime;
                 alpha = Mathf.Clamp01(alpha);
 
                 GUI.color = new Color(1f, 1f, 1f, alpha);
-                GUI.Label(iconRect, FungusEditorResources.PlaySmall, new GUIStyle());
+                GUI.Label(iconRect, AmanitaEditorResources.PlaySmall, new GUIStyle());
 
                 GUI.color = storeColor;
             }

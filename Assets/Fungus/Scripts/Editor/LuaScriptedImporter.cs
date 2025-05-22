@@ -10,7 +10,7 @@ using System.IO;
 	using UnityEditor.Experimental.AssetImporters;
 #endif
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
 #if UNITY_2018_4_OR_NEWER
     [ScriptedImporter(1, "lua")]

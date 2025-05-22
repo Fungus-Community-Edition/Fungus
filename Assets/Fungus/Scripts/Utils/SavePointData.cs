@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Serializable container for a Save Point's data. 
