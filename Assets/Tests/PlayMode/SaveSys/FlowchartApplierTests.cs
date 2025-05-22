@@ -15,6 +15,8 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
+            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
+            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
         }
 
@@ -23,6 +25,7 @@ namespace Amanita.SaveSystemTests
             varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
             varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
+            
             PrepVars();
         }
 
@@ -56,7 +59,9 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
 
+        protected FlowchartSaveEncoder flowchartSaveEncoder;
         protected FlowchartApplier flowchartApplier;
+        protected FlowchartSaveData flowchartSaveData = null;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -67,8 +72,6 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void AppliesVarStates()
         {
-            FlowchartSaveData saveData = new FlowchartSaveData(flowchart);
-
             string expectedNameVarValue = nameVar.Value;
             int expectedScoreVarValue = scoreVar.Value;
             bool expectedNewPlayerVarValue = newPlayerVar.Value;
@@ -89,7 +92,7 @@ namespace Amanita.SaveSystemTests
             stringVar.Value = "Not Hello, World!";
             transformVar.Value = null;
 
-            flowchartApplier.Apply(new FlowchartSaveData[] { saveData });
+            flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
@@ -109,8 +112,8 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator ReexecutesBlocks()
         {
             yield return new WaitForSeconds(0.1f);
-            FlowchartSaveData saveData = new FlowchartSaveData(flowchart);
-            flowchartApplier.Apply(new FlowchartSaveData[] { saveData });
+            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
+            flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
 

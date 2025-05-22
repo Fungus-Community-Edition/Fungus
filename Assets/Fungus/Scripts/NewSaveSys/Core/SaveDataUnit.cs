@@ -7,10 +7,10 @@ namespace Amanita.SaveSys
     /// Think of this as the equivalent to the old SaveDataItem class.
     /// </summary>
     [System.Serializable]
-    public class SerializedSaveData
+    public class SaveDataUnit
     {
         [SerializeField] protected string dataType;
-        [SerializeField] protected string data;
+        [SerializeField] protected string content;
 
         public string DataTypeName
         {
@@ -18,16 +18,16 @@ namespace Amanita.SaveSys
             set => dataType = value;
         }
 
-        public string Data
+        public string Content
         {
-            get => data;
-            set => data = value;
+            get => content;
+            set => content = value;
         }
 
-        public SerializedSaveData(string dataType = "", string data = "")
+        public SaveDataUnit(string dataType = "", string data = "")
         {
             this.dataType = dataType;
-            this.data = data;
+            this.content = data;
         }
 
     }

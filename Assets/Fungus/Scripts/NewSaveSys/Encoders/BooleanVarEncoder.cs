@@ -2,8 +2,15 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class BooleanVarEncoder : IVarEncoder
+    public class BooleanVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
     {
+        public int Priority => 0;
+
+        public object ToMakeFrom { get; set; }
+        public virtual bool NeedsInput => true;
+
+        public virtual bool CanHandle(object toMakeFrom) =>
+            CanHandle(toMakeFrom as Variable);
         public virtual bool CanHandle(Variable variable) =>
             variable is BooleanVariable;
         public virtual bool CanHandle(string typeName) =>
@@ -11,7 +18,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {
@@ -57,6 +64,24 @@ namespace Amanita.SaveSys
                 return;
             }
             booleanVar.Value = value;
+        }
+
+        public virtual SaveDataUnit EncodeToUnit(object toMakeFrom = null)
+        {
+            VariableSaveData varSave = EncodeToUnit(toMakeFrom as Variable);
+            if (varSave == null)
+            {
+                Debug.LogError($"Failed to encode {nameof(BooleanVariable)}.");
+                return null;
+            }
+
+            SaveDataUnit result = varSave.Serialized();
+            return result;
+        }
+
+        public SaveDataUnit Encode()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

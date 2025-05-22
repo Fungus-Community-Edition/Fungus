@@ -1,9 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarEncoder : IVarEncoder
+    public class ColorVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
     {
+        public virtual System.Object ToMakeFrom { get; set; } = null;
+        public virtual int Priority => 0;
+        public virtual bool NeedsInput => true;
+        public bool CanHandle(object toMakeFrom)
+        {
+            return CanHandle(toMakeFrom as Variable);
+        }
         public virtual bool CanHandle(Variable variable) =>
             variable is ColorVariable;
 
@@ -13,7 +21,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {
@@ -80,5 +88,39 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
             }
         }
+
+        public virtual SaveDataUnit Encode()
+        {
+            VariableSaveData saveData = EncodeToUnit(ToMakeFrom as Variable);
+            if (saveData == null)
+            {
+                Debug.LogError($"Failed to encode {ToMakeFrom} as VariableSaveData in {this.GetType().Name}.");
+                return null;
+            }
+
+            SaveDataUnit unit = saveData.Serialized();
+            return unit;
+        }
+
+        public IList<SaveDataUnit> EncodeMulti(IList<object> multipleToMakeFrom)
+        {
+            IList<SaveDataUnit> result = new List<SaveDataUnit>();
+            foreach (Variable varElem in multipleToMakeFrom)
+            {
+                if (CanHandle(varElem))
+                {
+                    SaveDataUnit unit = EncodeToUnit(varElem).Serialized();
+                    result.Add(unit);
+                }
+                else
+                {
+                    Debug.LogWarning($"Variable type {varElem.GetType()} is not supported for encoding in {this.GetType().Name}.");
+                }
+            }
+
+            return result;
+        }
+
+        
     }
 }

@@ -24,6 +24,8 @@ namespace Amanita.SaveSystemTests
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
             PrepVars();
             block = flowchart.FindBlock("TestBlock");
+            blockEncoder = ScriptableObject.CreateInstance<BlockSaveEncoder>();
+            blockSaveData = blockEncoder.EncodeToUnit(block);
         }
 
         protected GameObject varStateTestPrefab;
@@ -56,6 +58,8 @@ namespace Amanita.SaveSystemTests
         protected Vector2Variable twoDPosVar = null;
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
+        protected BlockSaveData blockSaveData = null;
+        protected BlockSaveEncoder blockEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -66,22 +70,19 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void CorrectBlockIDEncoded()
         {
-            BlockSaveData blockSaveData = new(block);
             Assert.AreEqual(block.ItemId, blockSaveData.ItemId, "Block ID mismatch.");
         }
 
         [Test]
         public virtual void CorrectBlockNameEncoded()
         {
-            BlockSaveData blockSaveData = new(block);
             Assert.AreEqual(block.BlockName, blockSaveData.BlockName, "Block name mismatch.");
         }
 
         [Test]
         public virtual void CorrectBlockNameDEcoded()
         {
-            BlockSaveData blockSaveData = new(block);
-            SerializedSaveData serializedData = blockSaveData.Serialized();
+            SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.BlockName, deserializedBlock.BlockName, "Serialized Block name mismatch.");
         }
@@ -90,8 +91,8 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator CorrectBlockIDDEcoded()
         {
             yield return new WaitForSeconds(0.1f);
-            BlockSaveData blockSaveData = new(block);
-            SerializedSaveData serializedData = blockSaveData.Serialized();
+            blockSaveData = blockEncoder.EncodeToUnit(block);
+            SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
         }
@@ -101,7 +102,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            BlockSaveData blockSaveData = new(block);
+            blockSaveData = blockEncoder.EncodeToUnit(block);
             Assert.AreEqual(block.ActiveCommand.ItemId, blockSaveData.ActiveCommandId, "Active command ID mismatch.");
         }
 
@@ -110,8 +111,8 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            BlockSaveData blockSaveData = new(block);
-            SerializedSaveData serializedData = blockSaveData.Serialized();
+            blockSaveData = blockEncoder.EncodeToUnit(block);
+            SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
         }
@@ -121,7 +122,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            BlockSaveData blockSaveData = new(block);
+            blockSaveData = blockEncoder.EncodeToUnit(block);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, blockSaveData.ActiveCommandIndex, "Active command index mismatch.");
         }
 
@@ -130,8 +131,8 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            BlockSaveData blockSaveData = new(block);
-            SerializedSaveData serializedData = blockSaveData.Serialized();
+            blockSaveData = blockEncoder.EncodeToUnit(block);
+            SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
         }
@@ -140,8 +141,8 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator CorrectBlockSaveDataSerialized()
         {
             yield return new WaitForSeconds(0.1f);
-            BlockSaveData beforeSerializing = new(block);
-            SerializedSaveData serializedData = beforeSerializing.Serialized();
+            BlockSaveData beforeSerializing = blockEncoder.EncodeToUnit(block);
+            SaveDataUnit serializedData = beforeSerializing.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             
             Assert.IsNotNull(deserializedBlock, "Deserialized Block is null.");
