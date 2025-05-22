@@ -1,4 +1,3 @@
-using Fungus;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -25,6 +24,7 @@ namespace Amanita.SaveSys
     where TSaveData : SaveData
     {
         
+        public abstract void Apply(TSaveData saveData);
         public abstract void Apply(IList<TSaveData> saveData);
         public override bool CanApply(SaveData saveData)
         {

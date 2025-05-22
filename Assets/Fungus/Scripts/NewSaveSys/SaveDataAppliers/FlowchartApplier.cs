@@ -22,7 +22,7 @@ namespace Amanita.SaveSys
 
         protected IList<Flowchart> allFlowcharts;
 
-        protected virtual void Apply(FlowchartSaveData saveData)
+        public override void Apply(FlowchartSaveData saveData)
         {
             Flowchart flowchart = FindFlowchartReferredToBy(saveData);
             Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)

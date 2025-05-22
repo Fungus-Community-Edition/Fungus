@@ -7,14 +7,13 @@ namespace Amanita.SaveSys
 {
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
-        public override void Apply(IList<MyceliaudioSaveData> saveData)
+        public override void Apply(MyceliaudioSaveData saveData)
         {
             AudioSystem audioSys = AudioSystem.S;
-            MyceliaudioSaveData firstSaveData = saveData[0];
             ApplyAudioSettings();
             void ApplyAudioSettings()
             {
-                VolumeSettings volSettings = firstSaveData.VolumeSettings;
+                VolumeSettings volSettings = saveData.VolumeSettings;
                 if (volSettings == null)
                 {
                     Debug.LogWarning("Volume settings are null.");
@@ -30,12 +29,9 @@ namespace Amanita.SaveSys
                 // We can't serialize the audio clips themselves (that'd make the
                 // save data waaaay too big), and thus we need to fetch them based
                 // on the clip name. 
-                // We are assuming that the clip name is unique and that it is
-                // in a Resources/Audio/BGM folder. Of course, for flexibility's sake,
-                // we will also search by the clip's last saved path.
-                PlayAudioArgs audioArgs = firstSaveData.PlayAudioArgs;
+                PlayAudioArgs audioArgs = saveData.PlayAudioArgs;
 
-                string mainClipName = firstSaveData.PlayAudioArgs.MainClipName;
+                string mainClipName = saveData.PlayAudioArgs.MainClipName;
 
                 IList<AudioClip> allAudioClips = Resources.LoadAll<AudioClip>("Audio/BGM");
                 AudioClip toPlay = (from elem in allAudioClips
@@ -49,7 +45,14 @@ namespace Amanita.SaveSys
                     audioSys.Play(audioArgs);
                 }
             }
-
+        }
+        
+        public override void Apply(IList<MyceliaudioSaveData> saveData)
+        {
+            foreach (var elem in saveData)
+            {
+                Apply(elem);
+            }
         }
     }
 }

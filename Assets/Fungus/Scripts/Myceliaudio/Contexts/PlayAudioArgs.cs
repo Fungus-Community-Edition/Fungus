@@ -26,19 +26,12 @@ namespace Amanita.Myceliaudio
             get { return _mainClip; }
             set
             {
-                if (value != null && value.loadType == AudioClipLoadType.DecompressOnLoad)
-                {
-                    Debug.LogWarning("PlayAudioArgs: Clip is set to DecompressOnLoad. This may cause performance issues.");
-                }
                 _mainClip = value;
+                _mainClipName = string.Empty;
 
                 if (value != null)
                 {
                     _mainClipName = value.name;
-                }
-                else
-                {
-                    _mainClipName = string.Empty;
                 }
             }
         }
