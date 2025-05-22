@@ -1,0 +1,14 @@
+SaveDataTypes encompass different types of game state. For example: BlockSaveData holds the state of a Block,
+VariableSaveData holds the state of a Variable, etc. CompositeSaveData is a collection of these, getting written
+to and read from save files on disk.
+
+SaveMetaData is used to store metadata about the save file, such as the version of the game state, the date it was saved,
+and any other relevant information. This metadata is useful for managing save files and ensuring compatibility
+between different versions of the game. It's also very useful for when you want to display some part
+of a playthrough's state in the UI, such as the date and time of the last save.
+
+Codecs are used to encode and decode the game state data. They are responsible for
+converting the game state into a format that can be saved and loaded.
+
+Appliers are used to (as the name suggests) apply the saved game state data to the game objects. They take 
+the codecs' decode results and apply them to the game objects in the scene.

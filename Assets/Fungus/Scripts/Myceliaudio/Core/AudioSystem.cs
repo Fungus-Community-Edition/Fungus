@@ -43,13 +43,22 @@ namespace Amanita.Myceliaudio
 
             RegisterTrackManagers();
 
-            AttachSelfToFungusManager();
-            void AttachSelfToFungusManager()
+            bool shouldAttachSelfToManager = FungusManager.Instance != null;
+            if (shouldAttachSelfToManager)
             {
-                GameObject managerGO = FungusManager.Instance.gameObject;
-                this.transform.SetParent(managerGO.transform, false);
-            }
+                AttachSelfToFungusManager();
+                void AttachSelfToFungusManager()
+                {
 
+                    GameObject managerGO = FungusManager.Instance.gameObject;
+                    this.transform.SetParent(managerGO.transform, false);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("FungusManager instance is null or destroyed. Not attaching AudioSystem to it.");
+            }
+            
             DontDestroyOnLoad(this.gameObject);
         }
 
