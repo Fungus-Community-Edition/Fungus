@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using AmanitaVar = Amanita.Variable;
 
 namespace Amanita.SaveSys
 {
-    public class EncoderRegistry : MonoBehaviour
+    public class EncoderRegistry
     {
         private static readonly List<IVarEncoder> savers = new()
         {
@@ -26,5 +27,33 @@ namespace Amanita.SaveSys
 
         public static IVarEncoder GetEncoder(string typeName)
             => savers.Find(s => s.CanHandle(typeName));
+
+        public static void RegisterEncoder(IVarEncoder encoder)
+        {
+            if (encoder == null)
+            {
+                Debug.LogError("EncoderRegistry: Attempted to register a null encoder.");
+                return;
+            }
+
+            if (savers.Contains(encoder))
+            {
+                Debug.LogWarning($"EncoderRegistry: Encoder {encoder.GetType().Name} is already registered.");
+                return;
+            }
+
+            savers.Add(encoder);
+        }
+
+        public static void UNregisterEncoder(IVarEncoder encoder)
+        {
+            if (encoder == null)
+            {
+                Debug.LogError("EncoderRegistry: Attempted to register a null encoder.");
+                return;
+            }
+
+            savers.Remove(encoder);
+        }
     }
 }
