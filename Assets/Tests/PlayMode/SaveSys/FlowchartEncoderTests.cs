@@ -19,6 +19,7 @@ namespace Amanita.SaveSystemTests
             PrepScene();
             flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
             flowchartSaveData = flowchartSaveEncoder.Encode(flowchart);
+            blockSaveEncoder = ScriptableObject.CreateInstance<BlockSaveEncoder>();
         }
 
         protected virtual void PrepScene()
@@ -34,6 +35,7 @@ namespace Amanita.SaveSystemTests
         protected Flowchart flowchart;
         protected FlowchartSaveEncoder flowchartSaveEncoder;
         protected FlowchartSaveData flowchartSaveData;
+        protected BlockSaveEncoder blockSaveEncoder;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -83,7 +85,7 @@ namespace Amanita.SaveSystemTests
 
             foreach (Block block in blocksToSave)
             {
-                BlockSaveData blockSaveData = new(block);
+                BlockSaveData blockSaveData = blockSaveEncoder.Encode(block);
                 bool correctBlockName = blockSaveData.BlockName == block.BlockName;
                 bool correctItemId = blockSaveData.ItemId == block.ItemId;
                 bool correctActiveCommandId = blockSaveData.ActiveCommandId == block.ActiveCommand.ItemId;

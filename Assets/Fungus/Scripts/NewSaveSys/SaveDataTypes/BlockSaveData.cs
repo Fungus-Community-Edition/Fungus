@@ -36,19 +36,6 @@ namespace Amanita.SaveSys
 
         }
 
-        public BlockSaveData(Block toCreateFrom)
-        {
-            // We assume that the Block was indeed executing at this point.
-            ItemId = toCreateFrom.ItemId;
-            BlockName = toCreateFrom.BlockName;
-            
-            if (toCreateFrom.ActiveCommand != null)
-            {
-                ActiveCommandId = toCreateFrom.ActiveCommand.ItemId;
-                ActiveCommandIndex = toCreateFrom.ActiveCommand.CommandIndex;
-            }
-        }
-
         public override SerializedSaveData Serialized()
         {
             var dataAsJson = JsonUtility.ToJson(this, true);

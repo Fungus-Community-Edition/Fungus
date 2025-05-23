@@ -1,14 +1,26 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Amanita.SaveSys
 {
     public class FlowchartSaveEncoder : SaveEncoder<FlowchartSaveData, Flowchart>
     {
+
+        protected virtual void OnEnable()
+        {
+            if (blockEncoder == null)
+            {
+                blockEncoder = CreateInstance<BlockSaveEncoder>();
+            }
+        }
+
+        protected BlockSaveEncoder blockEncoder;
+
         public override FlowchartSaveData Encode(Flowchart toCreateFrom)
         {
             IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
-            IList<BlockSaveData> blockSaves = SaveBlocks(toCreateFrom);
+            IList<BlockSaveData> blockSaves = blockEncoder.Encode(toCreateFrom);
             // TODO: Save the state of certain commands (such as Conversation)
 
 
@@ -22,7 +34,6 @@ namespace Amanita.SaveSys
 
             return saveData;
         }
-
 
         protected virtual IList<VariableSaveData> SaveVars(Flowchart toCreateFrom)
         {
@@ -49,15 +60,6 @@ namespace Amanita.SaveSys
             return savedVars;
         }
 
-        protected virtual IList<BlockSaveData> SaveBlocks(Flowchart toCreateFrom)
-        {
-            IList<BlockSaveData> savedBlocks = new List<BlockSaveData>();
-            foreach (Block block in toCreateFrom.GetExecutingBlocks())
-            {
-                BlockSaveData blockSave = new(block);
-                savedBlocks.Add(blockSave);
-            }
-            return savedBlocks;
-        }
     }
+
 }
