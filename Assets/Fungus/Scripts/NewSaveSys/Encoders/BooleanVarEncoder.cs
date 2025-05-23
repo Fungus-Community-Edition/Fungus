@@ -2,8 +2,10 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class BooleanVarEncoder : IVarEncoder
+    public class BooleanVarEncoder : IVarEncoder, ISaveEncoder<VariableSaveData, Variable>
     {
+        public int Priority => 0;
+
         public virtual bool CanHandle(Variable variable) =>
             variable is BooleanVariable;
         public virtual bool CanHandle(string typeName) =>
@@ -58,5 +60,6 @@ namespace Amanita.SaveSys
             }
             booleanVar.Value = value;
         }
+
     }
 }

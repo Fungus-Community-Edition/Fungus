@@ -2,8 +2,9 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarEncoder : IVarEncoder
+    public class ColorVarEncoder : IVarEncoder, ISaveEncoder<VariableSaveData, Variable>
     {
+        public virtual int Priority => 0;
         public virtual bool CanHandle(Variable variable) =>
             variable is ColorVariable;
 

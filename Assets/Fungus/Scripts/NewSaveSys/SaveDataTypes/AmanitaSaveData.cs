@@ -14,6 +14,7 @@ namespace Amanita.SaveSys
         public virtual IList<SaveData> AllSaves { get; set; } = new List<SaveData>();
         [SerializeField] protected List<FlowchartData> flowchartSaves = new List<FlowchartData>();
         // ... Myceliaudio state
+        [SerializeField] protected MyceliaudioSaveData myceliaudioSave = new MyceliaudioSaveData();
 
         public override SerializedSaveData Serialized()
         {
