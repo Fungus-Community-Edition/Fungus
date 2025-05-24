@@ -1,4 +1,4 @@
-﻿namespace Fungus
+﻿namespace Amanita
 {
 
 	// Some CSV utilities cobbled together from stack overflow answers

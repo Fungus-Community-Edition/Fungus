@@ -1,4 +1,3 @@
-using Fungus;
 using System;
 using UnityEngine;
 
@@ -27,7 +26,7 @@ namespace Amanita.SaveSys
         // back to a float, we get the exact same value.
         // We want to decode things as accurately as possible, so...
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {

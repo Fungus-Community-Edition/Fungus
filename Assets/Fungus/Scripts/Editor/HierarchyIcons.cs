@@ -1,13 +1,12 @@
 ﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Static class that hooks into the hierachy changed and item gui callbacks to put
@@ -23,7 +22,7 @@ namespace Fungus
     public class HierarchyIcons
     {
         // the fungus mushroom icon
-        static Texture2D TextureIcon { get { return Fungus.EditorUtils.FungusEditorResources.FungusMushroom; } }
+        static Texture2D TextureIcon { get { return Amanita.EditorUtils.AmanitaEditorResources.FungusMushroom; } }
 
         //sorted list of the GO instance IDs that have flowcharts on them
         static List<int> flowchartIDs = new List<int>();
@@ -46,7 +45,7 @@ namespace Fungus
         {
             flowchartIDs.Clear();
 
-            if (EditorUtils.FungusEditorPreferences.hideMushroomInHierarchy)
+            if (EditorUtils.AmanitaEditorPreferences.hideMushroomInHierarchy)
                 return;
 
         #if UNITY_6000
@@ -68,7 +67,7 @@ namespace Fungus
                 initalHierarchyCheckFlag = false;
             }
 
-            if (EditorUtils.FungusEditorPreferences.hideMushroomInHierarchy)
+            if (EditorUtils.AmanitaEditorPreferences.hideMushroomInHierarchy)
                 return;
 
             // place the icon to the left of the element

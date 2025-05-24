@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace Fungus
+namespace Amanita
 {
     public class TweenArgs : System.EventArgs
     {

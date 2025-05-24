@@ -7,7 +7,7 @@ using System;
 using System.Collections;
 using MoonSharp.Interpreter;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Types of display operations supported by portraits.

@@ -5,7 +5,7 @@
 using UnityEditor;
 using System.IO;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     public class LuaMenuItems 
     {

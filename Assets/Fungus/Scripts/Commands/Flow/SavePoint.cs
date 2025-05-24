@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     [CommandInfo("Flow",
                  "Save Point", 

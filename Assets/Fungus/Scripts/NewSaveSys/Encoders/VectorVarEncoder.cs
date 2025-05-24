@@ -1,4 +1,3 @@
-using Fungus;
 using UnityEngine;
 using System;
 
@@ -75,7 +74,7 @@ namespace Amanita.SaveSys
             }
             Decode(variable, saveData.Value);
         }
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             string data = EncodeToString(variable);
             if (string.IsNullOrEmpty(data))

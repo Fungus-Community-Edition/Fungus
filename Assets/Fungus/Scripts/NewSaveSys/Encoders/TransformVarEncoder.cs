@@ -1,6 +1,5 @@
 using UnityEngine;
-using Fungus;
-using FungusVar = Fungus.Variable;
+using AmanitaVar = Amanita.Variable;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace Amanita.SaveSys
 {
     public class TransformVarEncoder : IVarEncoder
     {
-        public virtual bool CanHandle(FungusVar variable)
+        public virtual bool CanHandle(AmanitaVar variable)
         {
             return variable is TransformVariable;
         }
@@ -23,7 +22,7 @@ namespace Amanita.SaveSys
             return CanHandle(saveData.VarTypeName);
         }
 
-        public virtual VariableSaveData Encode(FungusVar variable)
+        public virtual VariableSaveData EncodeToUnit(AmanitaVar variable)
         {
             VariableSaveData result = new()
             {
@@ -35,7 +34,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual string EncodeToString(FungusVar variable)
+        public virtual string EncodeToString(AmanitaVar variable)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)
@@ -52,7 +51,7 @@ namespace Amanita.SaveSys
             return json;
         }
 
-        public virtual void Decode(FungusVar variable, string data)
+        public virtual void Decode(AmanitaVar variable, string data)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)
@@ -109,7 +108,7 @@ namespace Amanita.SaveSys
             return whatWeFound;
         }
 
-        public virtual void Decode(FungusVar variable, VariableSaveData saveData)
+        public virtual void Decode(AmanitaVar variable, VariableSaveData saveData)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)

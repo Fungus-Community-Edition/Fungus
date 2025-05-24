@@ -1,4 +1,3 @@
-using Fungus;
 using UnityEngine;
 
 namespace Amanita.Myceliaudio

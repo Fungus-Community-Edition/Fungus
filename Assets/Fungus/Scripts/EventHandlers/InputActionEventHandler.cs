@@ -6,7 +6,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.

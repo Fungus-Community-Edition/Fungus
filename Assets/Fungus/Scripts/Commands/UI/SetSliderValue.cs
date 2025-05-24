@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Sets or Gets the value property of a slider object.

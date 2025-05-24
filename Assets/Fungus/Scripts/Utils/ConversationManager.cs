@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Text;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Helper class to manage parsing and executing the conversation format.

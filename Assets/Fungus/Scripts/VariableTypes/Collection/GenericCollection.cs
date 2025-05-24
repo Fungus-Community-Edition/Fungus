@@ -6,17 +6,17 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// The meat of the Fungus Collection. Internally uses a List of given type, simplest example
     /// being IntCollection. Provides some type specific additions to the base Collection for
     /// increasing speed and safety.
     ///
-    /// Uses Promote methods to convert from objects or other collection or Fungus.Variable types
+    /// Uses Promote methods to convert from objects or other collection or Amanita.Variable types
     /// being passed in, will attempt to do compatability for you, such as if you give an
-    /// IntCollection an int or a Fungus.IntVariable, either works as the Promote is aware
-    /// of Fungus.VariableBase<T>. Will also allow mixing some operations between
+    /// IntCollection an int or a Amanita.IntVariable, either works as the Promote is aware
+    /// of Amanita.VariableBase<T>. Will also allow mixing some operations between
     /// GenericCollection<T>, T[], and List<T>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -293,11 +293,11 @@ namespace Fungus
             //element type only works for arrays, need to use getgenerictype with ilist<>T
             if (o is System.Array)
             {
-                return ote is T || ote is Fungus.VariableBase<T>;
+                return ote is T || ote is Amanita.VariableBase<T>;
             }
             else if (o is System.Collections.IList && otgs.Length > 0)
             {
-                return otgs[0] == typeof(T) || otgs[0].IsSubclassOf(typeof(Fungus.VariableBase<T>));
+                return otgs[0] == typeof(T) || otgs[0].IsSubclassOf(typeof(Amanita.VariableBase<T>));
             }
             else
             {

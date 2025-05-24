@@ -3,7 +3,7 @@
 
 using UnityEditor;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class SaveMenuItems 
     {

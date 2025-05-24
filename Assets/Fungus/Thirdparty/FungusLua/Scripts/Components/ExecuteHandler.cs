@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     [Flags]
     public enum ExecuteMethod

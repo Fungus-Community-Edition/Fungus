@@ -1,16 +1,16 @@
-using FungusVar = Fungus.Variable;
+using AmanitaVar = Amanita.Variable;
 
 namespace Amanita.SaveSys
 {
     public interface IVarEncoder
     {
-        bool CanHandle(FungusVar variable);
+        bool CanHandle(AmanitaVar variable);
         bool CanHandle(string typeName);
         bool CanHandle(VariableSaveData variable);
-        string EncodeToString(FungusVar variable);
-        void Decode(FungusVar variable, string data);
-        void Decode(FungusVar variable, VariableSaveData data);
-        VariableSaveData Encode(FungusVar varable);
+        string EncodeToString(AmanitaVar variable);
+        void Decode(AmanitaVar variable, string data);
+        void Decode(AmanitaVar variable, VariableSaveData data);
+        VariableSaveData EncodeToUnit(AmanitaVar varable);
     }
 
 

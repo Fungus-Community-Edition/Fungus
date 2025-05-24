@@ -40,7 +40,7 @@ using UnityEngine;
 
 // Chris: Some libraries like PlayMaker include a bundled version of iTween.
 // I've put our version of iTween in the Fungus namespace to avoid name collisions.
-namespace Fungus
+namespace Amanita
 {
 
 /// <summary>

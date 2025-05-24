@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
@@ -100,7 +100,7 @@ namespace Fungus
                     {
                         if (instance == null)
                         {
-                            FungusManager prefab = Resources.Load<FungusManager>(FungusConstants.PathToFungusManagerPrefab);
+                            FungusManager prefab = Resources.Load<FungusManager>(AmanitaConstants.PathToFungusManagerPrefab);
                             instance = Instantiate(prefab);
                             instance.gameObject.name = prefab.name; // We don't want "Clone" in the name.
                             DontDestroyOnLoad(instance.gameObject);

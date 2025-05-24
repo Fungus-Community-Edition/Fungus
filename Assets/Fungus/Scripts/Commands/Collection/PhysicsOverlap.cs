@@ -2,8 +2,9 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
+using UnityPhysics = UnityEngine.Physics;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     ///
@@ -64,15 +65,15 @@ namespace Fungus
                 switch (shape)
                 {
                     case Shape.Box:
-                        resColliders = Physics.OverlapBox(position1.Value, boxHalfExtends.Value, boxOrientation.Value, layerMask.value, queryTriggerInteraction);
+                        resColliders = UnityPhysics.OverlapBox(position1.Value, boxHalfExtends.Value, boxOrientation.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     case Shape.Sphere:
-                        resColliders = Physics.OverlapSphere(position1.Value, radius.Value, layerMask.value, queryTriggerInteraction);
+                        resColliders = UnityPhysics.OverlapSphere(position1.Value, radius.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     case Shape.Capsule:
-                        resColliders = Physics.OverlapCapsule(position1.Value, capsulePosition2.Value, radius.Value, layerMask.value, queryTriggerInteraction);
+                        resColliders = UnityPhysics.OverlapCapsule(position1.Value, capsulePosition2.Value, radius.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     default:

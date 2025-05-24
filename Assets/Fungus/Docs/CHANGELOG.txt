@@ -5,8 +5,8 @@ Unreleased
 ======
 
 ## Added
- - Fungus.EventHandler to respond to UI.Slider value change.
- - Colour Tints for FlowchartWindow Block icons and the BlockInspector CommandList. Found in FungusEditorPreferences.
+ - Amanita.EventHandler to respond to UI.Slider value change.
+ - Colour Tints for FlowchartWindow Block icons and the BlockInspector CommandList. Found in AmanitaEditorPreferences.
  - Commands and Variables for Character, AudioSource, AudioClip, AudioMixer, MixerGroups, and Snapshots.
  - Fungus now has a MainAudioMixer that is used by all audio requiring systems, will allow for audio options menu and mixer effects on all sounds.
  - Characters can now specify an AudioSource to use to voice their AudioClips
@@ -144,7 +144,7 @@ v3.13.0
 - CameraManager and View now use Tween types.
 - Dragable EventHandlers now support an array of target dragables. Thanks to SarveshBajaj
 - Flowchart GetVariables by type. Thanks to cg-tespy
-- A null FungusVariables will now report their string value as Null instead of an empty string.
+- A null AmanitaVariables will now report their string value as Null instead of an empty string.
 - Develop updated to Unity 2019.3.13
 - Demo scenes rebuilt in minimum supported Unity version.
 - Block selector now orders blocks by name.
@@ -168,7 +168,7 @@ v3.12.0
 - Variable referencers can be seen logged to the console
 - Added a custom script importer for lua files. Thanks to Matthew Barnes
 - Added Asmdefs
-- Fungus Editor Prefs button to locate FungusEditorResources and changelog
+- Fungus Editor Prefs button to locate AmanitaEditorResources and changelog
 
 ## Fixed
 
@@ -245,7 +245,7 @@ v3.11.0 {#v3.11.0}
 
 - SetSprite: changes the image on the SpriteRenderer of one or more GameObjects 
 - SetUIImage: changes the image on the Image of one or more GameObjects (Joerg Burbach)
-- Commands to store FungusVariable.ToString into a StringVariable and to parse a string into an Int or Float FungusVariable 
+- Commands to store AmanitaVariable.ToString into a StringVariable and to parse a string into an Int or Float AmanitaVariable 
 
 ## Fixed
 
@@ -370,10 +370,10 @@ v3.7.0 {#v3_7_0}
 Many thanks to maintainer Steve Halliwell for all the amazing new functionality in this release!
 
 ## Added
-- Added Playground examples showing 3 simple arcade games made using Fungus
+- Added Playground examples showing 3 simple arcade games made using Amanita
 - Added Rigidbody2D variable type 
 - Added Vector3 FungusCommands - Fields, Normalise, Convert to Vector2, Arithetic 
-- Added TransformProperty FungusCommand. Get and Set a transform's fields and properties. Does not currently support rotation, localRotation nor the Mat4x4 commands as we do not have the appropriate FungusVariables to store them in 
+- Added TransformProperty FungusCommand. Get and Set a transform's fields and properties. Does not currently support rotation, localRotation nor the Mat4x4 commands as we do not have the appropriate AmanitaVariables to store them in 
 - Added FungusCommand to Reload Current Scene 
 - Added Rigidbody2D FungusCommands - AddForce, AddTorque, StopMotion 
 - Added Input GetAxis fungusCommand, fetch Input.GetAxis and store in a FloatData 
@@ -395,7 +395,7 @@ Many thanks to maintainer Steve Halliwell for all the amazing new functionality 
 - SaveManager now uses json files in a FungusSaves sub directory for all platforms but webplayer & webgl which still use playerprefs
 - GetCommandInfo returns the highest priority CommandInfo to better support multiple names while maintaining what is shown in the inspector
 - Allow multiple CommandInfos to be added to a class SpawnObject can now also be found under GameObject/Instantiate
-- Changed Fungus icon loading to use FungusEditorResources
+- Changed Fungus icon loading to use AmanitaEditorResources
 
 ## Fixed
 - Fixed typo in BlockEditor.BlockField() #633 
@@ -471,7 +471,7 @@ Thanks to contributor [sp-francisco-ruiz](https://github.com/sp-francisco-ruiz):
 - Flowchart’s SelectedBlock property now refers to the active selected block rather than the sole selected block.
 - Updated coding standard with backwards compatibility & contributing notes
 - Flowchart window now zoom in/out by mouse cursor or center rather than upper left corner
-- All editor textures are now be accessible as properties in FungusEditorResources. 
+- All editor textures are now be accessible as properties in AmanitaEditorResources. 
 - Use Tools -> Fungus -> Utilities -> UpdateEditorResourcesScript to automatically update these editor textures
 - Increased height of multi-line text box for StringDataMulti
 - Updated curves, connection points, and grid background rendering with better approach
@@ -522,7 +522,7 @@ v3.4.0 {#v3_4_0}
 ## Fixed
 
 - Fixed Command properties not copied when copying commands #546
-- Fixed PODTypeFactory and FungusPrefs classes are not registered #549
+- Fixed PODTypeFactory and AmanitaPrefs classes are not registered #549
 - Fixed for compile errors on .NET Core scripting backend
 - Fixed LuaBindings registered types in example scenes
 - Fixed MoonSharp warning when not building for an AOT platform
@@ -557,14 +557,14 @@ v3.3.0 {#v3_3_0}
 - Documented all public members for API docs.
 - All serialized fields are now protected, exposed via public properties as needed.
 - Moved all enums to namespace scope.
-- Moved global constants to FungusConstants static class.
+- Moved global constants to AmanitaConstants static class.
 - Moved editor resources to the main resources folder
-- Fungus editor code moved to Fungus.EditorUtils namespace
+- Fungus editor code moved to Amanita.EditorUtils namespace
 - Convert singletons to use a single FungusManager singleton #540
 - Renamed CameraController to CameraManager and MusicController to MusicManager
 - Changed float constant comparisons to use Mathf.Approximately
 - Added #region Public members to all non-editor classes
-- StringFormatter, TextTagParser and FungusPrefs classes are now static
+- StringFormatter, TextTagParser and AmanitaPrefs classes are now static
 - Merged MenuDialog extension methods (used for Lua) with main MenuDialog class.
 - Change all public methods to use virtual
 - Removed all unnecessary using statements.
@@ -648,7 +648,7 @@ v3.0.0 {#v3_0_0}
 ======
 
 Major release with powerful new Lua scripting support and many small improvements and fixes.
-This release should be backwards compatible with projects created using Fungus 2. If you have any upgrading issues let us know on the forum.
+This release should be backwards compatible with projects created using Amanita 2. If you have any upgrading issues let us know on the forum.
 
 Many thanks to the amazing Fungus community for all the suggestions, bug reports and encouragement!
 
@@ -667,7 +667,7 @@ Awesome github contributors:
     - LuaScript: Runs Lua code from a text file or from a string property.
     - LuaStore: Stores variables in a global table which persists across scene loads.
     - FungusModule: A set of utility functions for scripting Unity and Fungus from Lua.
-    - FungusPrefs: An improved version of PlayerPrefs that can be easily used from Lua.
+    - AmanitaPrefs: An improved version of PlayerPrefs that can be easily used from Lua.
     - ExecuteHandler: Listens for any standard Unity event and calls a method on a component in the gameobject. #247
     - ExecuteLua command: Run some Lua script in a Fungus command. Return values can be stored in Fungus variables.
     - PODTypeFactory: Utility factory class for instantiating Plain-Old-Data (POD) types like Color, Vector3, etc.
@@ -748,7 +748,7 @@ v2.4.0 {#v2_4_0}
     - LuaScript: Runs Lua code from a text file or from a string property.
     - LuaStore: Stores variables in a global table which persists across scene loads.
     - FungusModule: A set of utility functions for scripting Unity and Fungus from Lua.
-    - FungusPrefs: An improved version of PlayerPrefs that can be easily used from Lua.
+    - AmanitaPrefs: An improved version of PlayerPrefs that can be easily used from Lua.
     - ExecuteHandler: Listens for any standard Unity event and calls a method on a component in the gameobject. #247
     - ExecuteLua command: Run some Lua script in a Fungus command. Return values can be stored in Fungus variables.
     - PODTypeFactory: Utility factory class for instantiating Plain-Old-Data (POD) types like Color, Vector3, etc.

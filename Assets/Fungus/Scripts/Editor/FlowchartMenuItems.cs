@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class FlowchartMenuItems
     {
@@ -18,7 +18,7 @@ namespace Fungus.EditorUtils
             var flowchart = go.GetComponent<Flowchart>();
             if (flowchart != null)
             {
-                flowchart.Version = FungusConstants.CurrentVersion;
+                flowchart.Version = AmanitaConstants.CurrentVersion;
             }
 
             // Only the first created Flowchart in the scene should have a default GameStarted block

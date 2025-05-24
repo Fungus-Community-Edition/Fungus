@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Searchable Popup Window for selecting Event type, used by block editor
@@ -62,7 +62,7 @@ namespace Fungus.EditorUtils
                     var obsAttr = item.GetCustomAttribute<System.ObsoleteAttribute>();
 
                     var fliStr = (info.Category.Length > 0 ? info.Category + CATEGORY_CHAR : "")
-                        + (obsAttr != null ? FungusConstants.UIPrefixForDeprecated_RichText : "")
+                        + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
                         + info.EventHandlerName;
                     allItems.Add(new FilteredListItem(i, fliStr, info.HelpText));
                 }
@@ -82,7 +82,7 @@ namespace Fungus.EditorUtils
 
         static public void DoEventHandlerPopUp(Rect position, string currentHandlerName, Block block, int width, int height)
         {
-            if (!FungusEditorPreferences.useLegacyMenus)
+            if (!AmanitaEditorPreferences.useLegacyMenus)
             {
                 //new method
                 EventSelectorPopupWindowContent win = new EventSelectorPopupWindowContent(currentHandlerName, block, width, height);

@@ -1,5 +1,4 @@
 using UnityEngine;
-using Fungus;
 
 namespace Amanita.SaveSys
 {
@@ -19,7 +18,7 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(Variable variable) => ((StringVariable)variable).Value;
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {

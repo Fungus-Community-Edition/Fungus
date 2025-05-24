@@ -5,7 +5,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Set the interactable state of selectable objects.

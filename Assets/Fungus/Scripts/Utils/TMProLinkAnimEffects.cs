@@ -5,7 +5,7 @@ using UnityEngine;
 
 #if UNITY_2018_1_OR_NEWER
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Samples and helpers for creating TMProLink animations

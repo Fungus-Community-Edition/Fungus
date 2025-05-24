@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Detects mouse clicks and touches on a Game Object, and sends an event to all Flowchart event handlers in the scene.

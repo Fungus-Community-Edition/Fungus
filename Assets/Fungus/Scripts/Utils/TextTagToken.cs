@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Supported token types for use in Say / Write text.

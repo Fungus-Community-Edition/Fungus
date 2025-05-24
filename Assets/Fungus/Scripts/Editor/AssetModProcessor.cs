@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Prevents saving of selected blocks and commands to avoid version control conflicts.

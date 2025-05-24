@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Supported modes for clicking through a Say Dialog.
@@ -71,7 +71,7 @@ namespace Fungus
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(FungusConstants.EventSystemPrefabName);
+                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
                 if (prefab != null)
                 {
                     GameObject go = Instantiate(prefab) as GameObject;

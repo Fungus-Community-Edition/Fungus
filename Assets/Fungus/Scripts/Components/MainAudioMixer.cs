@@ -4,7 +4,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Central access point for the expected default, main mixer within the project. Primarily expected to be used by 
@@ -19,7 +19,7 @@ namespace Fungus
 
         public virtual void Init()
         {
-            Mixer = Resources.Load(FungusConstants.FungusAudioMixer) as AudioMixer;
+            Mixer = Resources.Load(AmanitaConstants.FungusAudioMixer) as AudioMixer;
             MusicGroup = Mixer.FindMatchingGroups("Music")[0];
             SFXGroup = Mixer.FindMatchingGroups("SFX")[0];
             VoiceGroup = Mixer.FindMatchingGroups("Voice")[0];

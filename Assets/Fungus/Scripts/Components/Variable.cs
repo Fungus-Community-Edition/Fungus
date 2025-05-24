@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Standard comparison operators.
@@ -88,7 +88,7 @@ namespace Fungus
 
         public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
         {
-            VariableTypes = AllVariableTypes.AllFungusVarTypes;
+            VariableTypes = AllVariableTypes.AllAmanitaVarTypes;
         }
 
         public VariablePropertyAttribute (string defaultText, params System.Type[] variableTypes) 

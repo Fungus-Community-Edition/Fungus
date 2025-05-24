@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Stops an active iTween by name.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Fungus
+namespace Amanita
 {
     public interface ITween 
     {

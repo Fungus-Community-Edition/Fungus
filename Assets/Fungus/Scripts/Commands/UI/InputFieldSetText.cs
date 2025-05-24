@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Fungus
+namespace Amanita
 {
     [CommandInfo("UI",
         "InputFieldSetText",

@@ -8,9 +8,9 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Fungus.Lua;
+using Amanita.Lua;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -22,7 +22,7 @@ namespace Fungus
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
         [HideInInspector]
-        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Fungus.
+        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
 
         [HideInInspector]
         [SerializeField] protected Vector2 scrollPos;
@@ -138,7 +138,7 @@ namespace Fungus
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(FungusConstants.EventSystemPrefabName);
+                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
                 if (prefab != null)
                 {
                     GameObject go = Instantiate(prefab) as GameObject;
@@ -185,7 +185,7 @@ namespace Fungus
 
         protected virtual void UpdateVersion()
         {
-            if (version == FungusConstants.CurrentVersion)
+            if (version == AmanitaConstants.CurrentVersion)
             {
                 // No need to update
                 return;
@@ -199,11 +199,11 @@ namespace Fungus
                 IUpdateable u = component as IUpdateable;
                 if (u != null)
                 {
-                    u.UpdateToVersion(version, FungusConstants.CurrentVersion);
+                    u.UpdateToVersion(version, AmanitaConstants.CurrentVersion);
                 }
             }
 
-            version = FungusConstants.CurrentVersion;
+            version = AmanitaConstants.CurrentVersion;
         }
 
         protected virtual void CheckItemIds()
@@ -711,7 +711,7 @@ namespace Fungus
             // No empty keys allowed
             if (baseKey.Length == 0)
             {
-                baseKey = FungusConstants.DefaultBlockName;
+                baseKey = AmanitaConstants.DefaultBlockName;
             }
 
             var blocks = GetComponents<Block>();

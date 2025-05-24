@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// The block will execute when the game starts playing.

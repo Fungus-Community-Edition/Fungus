@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Remove all items from collection that are also in RHS and add all the items in RHS that are not already 

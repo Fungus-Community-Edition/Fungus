@@ -4,16 +4,16 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the AnyVaraibleAndDataPair, shows only the matching data for the targeted variable
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Fungus.AnyVariableAndDataPair))]
+    [CustomPropertyDrawer(typeof(Amanita.AnyVariableAndDataPair))]
     public class AnyVariableAndDataPairDrawer : PropertyDrawer
     {
-        public Fungus.Flowchart lastFlowchart;
+        public Amanita.Flowchart lastFlowchart;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

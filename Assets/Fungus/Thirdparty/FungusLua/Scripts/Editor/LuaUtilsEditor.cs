@@ -5,7 +5,7 @@
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {   
     [CustomEditor (typeof(LuaUtils))]
     public class LuaUtilsEditor : Editor 

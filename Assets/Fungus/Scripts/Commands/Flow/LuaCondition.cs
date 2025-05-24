@@ -3,9 +3,9 @@
 
 using UnityEngine;
 using MoonSharp.Interpreter;
-using Fungus.Lua;
+using Amanita.Lua;
 
-namespace Fungus
+namespace Amanita
 {
 	public class LuaCondition : Condition 
 	{

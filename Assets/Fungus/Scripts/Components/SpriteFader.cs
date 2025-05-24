@@ -4,7 +4,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Transitions a sprite from its current color to a target color.

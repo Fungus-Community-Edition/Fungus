@@ -7,7 +7,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// The Save History is a list of previously created Save Points, sorted chronologically.

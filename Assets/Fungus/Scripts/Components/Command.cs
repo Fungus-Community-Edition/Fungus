@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {   
     /// <summary>
     /// Attribute class for Fungus commands.

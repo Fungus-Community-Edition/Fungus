@@ -3,9 +3,9 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Abstract base class for TweenUI commands.

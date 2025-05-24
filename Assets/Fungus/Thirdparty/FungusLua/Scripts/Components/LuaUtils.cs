@@ -9,9 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
-using Fungus.Lua.JSON;
+using Amanita.Lua.JSON;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Options for using the Lua FungusModule.
@@ -19,7 +19,7 @@ namespace Fungus.Lua
     public enum FungusModuleOptions
     {
         UseGlobalVariables, // Fungus helper items will be available as global variables.
-        UseFungusVariable,  // Fungus helper items will be available in the 'fungus' global variable.
+        UseAmanitaVariable,  // Fungus helper items will be available in the 'fungus' global variable.
         NoFungusModule      // The fungus helper module will not be loaded.
     }
 
@@ -87,8 +87,8 @@ namespace Fungus.Lua
         protected virtual void InitTypes()
         {
             // Always register these FungusLua utilities
-            LuaEnvironment.RegisterType("Fungus.PODTypeFactory");
-            LuaEnvironment.RegisterType("Fungus.FungusPrefs");
+            LuaEnvironment.RegisterType("Amanita.PODTypeFactory");
+            LuaEnvironment.RegisterType("Amanita.AmanitaPrefs");
 
             foreach (TextAsset textFile in registerTypes)
             {
@@ -200,7 +200,7 @@ namespace Fungus.Lua
             // Static classes
             fungusTable["time"] = UserData.CreateStatic(typeof(Time));
             fungusTable["playerprefs"] = UserData.CreateStatic(typeof(PlayerPrefs));
-            fungusTable["prefs"] = UserData.CreateStatic(typeof(FungusPrefs));
+            fungusTable["prefs"] = UserData.CreateStatic(typeof(AmanitaPrefs));
             fungusTable["factory"] = UserData.CreateStatic(typeof(PODTypeFactory));
 
             // Lua Environment and Lua Utils components

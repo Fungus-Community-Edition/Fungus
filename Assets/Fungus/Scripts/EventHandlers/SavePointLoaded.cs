@@ -4,7 +4,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Fungus
+namespace Amanita
 {
     [EventHandlerInfo("Scene",
                       "Save Point Loaded",

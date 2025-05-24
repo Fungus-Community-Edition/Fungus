@@ -5,7 +5,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Events;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Supported types of method invocation.

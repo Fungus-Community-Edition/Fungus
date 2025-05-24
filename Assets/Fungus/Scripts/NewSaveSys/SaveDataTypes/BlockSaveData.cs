@@ -1,5 +1,4 @@
 using UnityEngine;
-using Fungus;
 
 namespace Amanita.SaveSys
 {
@@ -37,30 +36,17 @@ namespace Amanita.SaveSys
 
         }
 
-        public BlockSaveData(Block toCreateFrom)
-        {
-            // We assume that the Block was indeed executing at this point.
-            ItemId = toCreateFrom.ItemId;
-            BlockName = toCreateFrom.BlockName;
-            
-            if (toCreateFrom.ActiveCommand != null)
-            {
-                ActiveCommandId = toCreateFrom.ActiveCommand.ItemId;
-                ActiveCommandIndex = toCreateFrom.ActiveCommand.CommandIndex;
-            }
-        }
-
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
             var dataAsJson = JsonUtility.ToJson(this, true);
-            SerializedSaveData data = new(TypeName, dataAsJson);
+            SaveDataUnit data = new(TypeName, dataAsJson);
             return data;
         }
 
-        public new static BlockSaveData DeserializeFrom(SerializedSaveData item)
+        public new static BlockSaveData DeserializeFrom(SaveDataUnit item)
         {
             ValidateSerializedData(item, nameof(BlockSaveData));
-            BlockSaveData data = JsonUtility.FromJson<BlockSaveData>(item.Data);
+            BlockSaveData data = JsonUtility.FromJson<BlockSaveData>(item.Content);
             return data;
         }
 

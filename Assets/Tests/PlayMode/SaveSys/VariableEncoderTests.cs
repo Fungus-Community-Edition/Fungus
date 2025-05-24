@@ -1,9 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.SaveSys;
-using Fungus;
-using System.Collections.Generic;
-using System;
 using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
@@ -104,8 +101,8 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedScoreStr = expectedScore.ToString();
             string expectedEncodedFastestTimeStr = expectedFastestTime.ToString(roundTripFormat);
 
-            VariableSaveData encodedScoreVarData = numericEncoder.Encode(scoreVar);
-            VariableSaveData encodedFastestTimeVarData = numericEncoder.Encode(fastestTimeVar);
+            VariableSaveData encodedScoreVarData = numericEncoder.EncodeToUnit(scoreVar);
+            VariableSaveData encodedFastestTimeVarData = numericEncoder.EncodeToUnit(fastestTimeVar);
 
             bool encodedScoreSuccess = expectedEncodedScoreStr.Equals(encodedScoreVarData.Value);
             bool encodedFastestTimeSuccess = expectedEncodedFastestTimeStr.Equals(encodedFastestTimeVarData.Value);
@@ -142,8 +139,8 @@ namespace Amanita.SaveSystemTests
             int expectedScore = scoreVar.Value;
             float expectedFastestTime = fastestTimeVar.Value;
 
-            VariableSaveData encodedScoreVarData = numericEncoder.Encode(scoreVar);
-            VariableSaveData encodedFastestTimeData = numericEncoder.Encode(fastestTimeVar);
+            VariableSaveData encodedScoreVarData = numericEncoder.EncodeToUnit(scoreVar);
+            VariableSaveData encodedFastestTimeData = numericEncoder.EncodeToUnit(fastestTimeVar);
 
             // Alter the values to help us make sure that the encoding and decoding works
             scoreVar.Value += 123;
@@ -184,7 +181,7 @@ namespace Amanita.SaveSystemTests
         {
             bool expectedNewPlayer = newPlayerVar.Value;
             string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
-            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            VariableSaveData encodedNewPlayerData = booleanEncoder.EncodeToUnit(newPlayerVar);
             bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerData.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
@@ -193,7 +190,7 @@ namespace Amanita.SaveSystemTests
         public virtual void BooleanEncoder_DEcodingWorks_VarSaveData()
         {
             bool expectedNewPlayer = newPlayerVar.Value;
-            VariableSaveData encodedNewPlayerData = booleanEncoder.Encode(newPlayerVar);
+            VariableSaveData encodedNewPlayerData = booleanEncoder.EncodeToUnit(newPlayerVar);
             newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
             booleanEncoder.Decode(newPlayerVar, encodedNewPlayerData);
             bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
@@ -228,8 +225,8 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
             string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
 
-            VariableSaveData encodedTwoDPosData = vectorEncoder.Encode(twoDPosVar);
-            VariableSaveData encodedThreeDPosData = vectorEncoder.Encode(threeDPosVar);
+            VariableSaveData encodedTwoDPosData = vectorEncoder.EncodeToUnit(twoDPosVar);
+            VariableSaveData encodedThreeDPosData = vectorEncoder.EncodeToUnit(threeDPosVar);
 
             bool encodedTwoDPosSuccess = expectedEncodedTwoDPosStr.Equals(encodedTwoDPosData.Value);
             bool encodedThreeDPosSuccess = expectedEncodedThreeDPosStr.Equals(encodedThreeDPosData.Value);
@@ -268,8 +265,8 @@ namespace Amanita.SaveSystemTests
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
 
-            VariableSaveData twoDPosData = vectorEncoder.Encode(twoDPosVar);
-            VariableSaveData threeDPosData = vectorEncoder.Encode(threeDPosVar);
+            VariableSaveData twoDPosData = vectorEncoder.EncodeToUnit(twoDPosVar);
+            VariableSaveData threeDPosData = vectorEncoder.EncodeToUnit(threeDPosVar);
 
             twoDPosVar.Value += Vector2.right * 123;
             threeDPosVar.Value += Vector3.right * 3429785;
@@ -303,7 +300,7 @@ namespace Amanita.SaveSystemTests
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
             string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
-            VariableSaveData encodedColorVarData = colorEncoder.Encode(colorVar);
+            VariableSaveData encodedColorVarData = colorEncoder.EncodeToUnit(colorVar);
             bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorVarData.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
@@ -328,7 +325,7 @@ namespace Amanita.SaveSystemTests
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
-            VariableSaveData encodedColorVarData = colorEncoder.Encode(colorVar);
+            VariableSaveData encodedColorVarData = colorEncoder.EncodeToUnit(colorVar);
             colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
             colorEncoder.Decode(colorVar, encodedColorVarData);
             bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
@@ -350,7 +347,7 @@ namespace Amanita.SaveSystemTests
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            VariableSaveData encodedStringVarData = stringEncoder.Encode(stringVar);
+            VariableSaveData encodedStringVarData = stringEncoder.EncodeToUnit(stringVar);
             bool encodedStringSuccess = expectedString.Equals(encodedStringVarData.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
@@ -372,7 +369,7 @@ namespace Amanita.SaveSystemTests
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            VariableSaveData encodedStringVarData = stringEncoder.Encode(stringVar);
+            VariableSaveData encodedStringVarData = stringEncoder.EncodeToUnit(stringVar);
             stringVar.Value += " Good bye, cruel world!";
             stringEncoder.Decode(stringVar, encodedStringVarData);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
@@ -396,7 +393,7 @@ namespace Amanita.SaveSystemTests
             Transform expectedTrans = transformVar.Value;
             TransformState expectedState = TransformState.From(expectedTrans);
             string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
-            VariableSaveData encodedTransVarData = transformEncoder.Encode(transformVar);
+            VariableSaveData encodedTransVarData = transformEncoder.EncodeToUnit(transformVar);
             bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransVarData.Value);
             Assert.IsTrue(encodedTransSuccess);
         }
@@ -463,7 +460,7 @@ namespace Amanita.SaveSystemTests
             Quaternion expectedRot = expectedTrans.rotation;
             Vector3 expectedScale = expectedTrans.localScale;
 
-            VariableSaveData encodedTransVarData = transformEncoder.Encode(transformVar);
+            VariableSaveData encodedTransVarData = transformEncoder.EncodeToUnit(transformVar);
 
             transformVar.Value.position += Vector3.right * 123;
             transformVar.Value.rotation *= Quaternion.Euler(0, 90, 0);

@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Parses a string for special Fungus text tags.

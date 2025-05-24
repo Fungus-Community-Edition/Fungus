@@ -2,11 +2,11 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using System.Collections.Generic;
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Static cache of all fungus variable types, used by commands that are designed to work on
-    /// any and all variable types supported by Fungus.
+    /// any and all variable types supported by Amanita.
     ///
     /// New types created need to be added to the list below and also to AnyVariableData and
     /// AnyVaraibleAndDataPair
@@ -18,7 +18,7 @@ namespace Fungus
             Any
         }
 
-        public static readonly System.Type[] AllFungusVarTypes = new System.Type[]
+        public static readonly System.Type[] AllAmanitaVarTypes = new System.Type[]
         {
             typeof(AnimatorVariable),
             typeof(AudioSourceVariable),
@@ -151,9 +151,9 @@ namespace Fungus
         public class TypeActions
         {
             public TypeActions(string dataPropName,
-                               System.Func<AnyVariableAndDataPair, Fungus.CompareOperator, bool> comparer,
+                               System.Func<AnyVariableAndDataPair, Amanita.CompareOperator, bool> comparer,
                                System.Func<AnyVariableAndDataPair, string> desccription,
-                               System.Action<AnyVariableAndDataPair, Fungus.SetOperator> set
+                               System.Action<AnyVariableAndDataPair, Amanita.SetOperator> set
                               )
             {
                 DataPropName = dataPropName;
@@ -165,9 +165,9 @@ namespace Fungus
             // used in AnyVaraibleAndDataPair Drawer to show the correct aspect of the AnyVariableData in the editor
             public string DataPropName { get; set; }
 
-            public System.Func<AnyVariableAndDataPair, Fungus.CompareOperator, bool> CompareFunc;
+            public System.Func<AnyVariableAndDataPair, Amanita.CompareOperator, bool> CompareFunc;
             public System.Func<AnyVariableAndDataPair, string> DescFunc;
-            public System.Action<AnyVariableAndDataPair, Fungus.SetOperator> SetFunc;
+            public System.Action<AnyVariableAndDataPair, Amanita.SetOperator> SetFunc;
         }
 
         [VariableProperty(AllVariableTypes.VariableAny.Any)]

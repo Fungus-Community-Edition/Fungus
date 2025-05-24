@@ -4,9 +4,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Fungus.Sfxr;
+using Amanita.Sfxr;
 
-﻿namespace Fungus 
+﻿namespace Amanita 
 {
     /// <summary>
     /// Plays a usfxr synth sound. Use the usfxr editor [Tools > Fungus > Utilities > Generate usfxr Sound Effects] to create the SettingsString. Set a ParentTransform if using positional sound. See https://github.com/zeh/usfxr for more information about usfxr.

@@ -2,8 +2,9 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
+using UnityPhysics = UnityEngine.Physics;
 
-namespace Fungus
+namespace Amanita
 {
     [CommandInfo("Physics",
                  "Cast",
@@ -69,19 +70,19 @@ namespace Fungus
                 switch (castType)
                 {
                     case CastType.Ray:
-                        resHits = Physics.RaycastAll(position1.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
+                        resHits = UnityPhysics.RaycastAll(position1.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     case CastType.Sphere:
-                        resHits = Physics.SphereCastAll(position1.Value, radius.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
+                        resHits = UnityPhysics.SphereCastAll(position1.Value, radius.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     case CastType.Box:
-                        resHits = Physics.BoxCastAll(position1.Value, boxHalfExtends.Value, direction.Value, boxOrientation.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
+                        resHits = UnityPhysics.BoxCastAll(position1.Value, boxHalfExtends.Value, direction.Value, boxOrientation.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     case CastType.Capsule:
-                        resHits = Physics.CapsuleCastAll(position1.Value, capsulePosition2.Value, radius.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
+                        resHits = UnityPhysics.CapsuleCastAll(position1.Value, capsulePosition2.Value, radius.Value, direction.Value, maxDistance.Value, layerMask.value, queryTriggerInteraction);
                         break;
 
                     default:

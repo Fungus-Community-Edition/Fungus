@@ -2,9 +2,9 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Applies a camera shake effect to the main camera.

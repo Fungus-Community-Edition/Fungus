@@ -7,13 +7,13 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
 using MoonSharp.Interpreter;
-using Fungus.Lua;
+using Amanita.Lua;
 using System;
 
 #if ENABLE_INPUT_SYSTEM
 #endif
 
-namespace Fungus
+namespace Amanita
 {
 	/// <summary>
 	/// Presents multiple choice buttons to the players.
@@ -56,7 +56,7 @@ namespace Fungus
 				{
 					Debug.LogWarning("No EventSystem found in the scene. Auto-spawning one from prefab.");
 					// Auto spawn an Event System from the prefab
-					GameObject prefab = Resources.Load<GameObject>(FungusConstants.EventSystemPrefabName);
+					GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
 					if (prefab != null)
 					{
 						GameObject go = Instantiate(prefab);

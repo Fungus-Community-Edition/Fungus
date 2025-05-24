@@ -6,7 +6,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor (typeof(SaveMenu), true)]
     public class SaveMenuEditor : Editor 

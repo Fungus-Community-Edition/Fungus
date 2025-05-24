@@ -4,7 +4,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Call TransitionTo on given Snapshot.

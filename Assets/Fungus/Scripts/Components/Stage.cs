@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
-using Fungus.DentedPixel;
+using Amanita.DentedPixel;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Define a set of screen positions where character sprites can be displayed and controls portraits.

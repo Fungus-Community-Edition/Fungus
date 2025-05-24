@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
 	internal static class MouseButton
 	{

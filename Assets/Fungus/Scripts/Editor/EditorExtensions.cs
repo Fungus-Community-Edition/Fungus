@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     public static class EditorExtensions
     {

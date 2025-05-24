@@ -1,5 +1,4 @@
-﻿using Fungus;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -29,60 +28,33 @@ namespace Amanita.SaveSys
         public virtual IList<VariableSaveData> SavedVars
         {
             get => savedVars;
+            set
+            {
+                savedVars.Clear();
+                savedVars.AddRange(value);
+            }
         }
 
         public virtual IList<BlockSaveData> SavedBlocks
         {
             get => savedBlocks;
-        }
-
-        public FlowchartSaveData(Flowchart toCreateFrom)
-        {
-            uniqueID = toCreateFrom.UniqueId;
-            flowchartName = toCreateFrom.name;
-            SaveVars(toCreateFrom);
-            SaveBlocks(toCreateFrom);
-
-            // TODO: Save the state of certain commands (such as Conversation)
-
-        }
-
-        protected virtual void SaveVars(Flowchart toCreateFrom)
-        {
-            foreach (Variable varEl in toCreateFrom.Variables)
+            set
             {
-                IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varEl);
-                if (forThisVar == null)
-                {
-                    Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");
-                    continue;
-                }
-
-                VariableSaveData varSave = forThisVar.Encode(varEl);
-                if (varSave == null)
-                {
-                    Debug.LogError($"Failed to encode variable: {varEl.name}");
-                    continue;
-                }
-
-                savedVars.Add(varSave);
+                savedBlocks.Clear();
+                savedBlocks.AddRange(value);
             }
         }
 
-        protected virtual void SaveBlocks(Flowchart toCreateFrom)
+        public FlowchartSaveData()
         {
-            foreach (Block block in toCreateFrom.GetExecutingBlocks())
-            {
-                BlockSaveData blockSave = new(block);
-                savedBlocks.Add(blockSave);
-            }
+            // Default constructor for serialization
         }
 
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
             string json = JsonUtility.ToJson(this, true);
             string typeName = GetType().Name;
-            SerializedSaveData newItem = new(typeName, json);
+            SaveDataUnit newItem = new(typeName, json);
             return newItem;
         }
 

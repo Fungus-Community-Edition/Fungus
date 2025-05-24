@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine.InputSystem;
 #endif
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Handles how MenuDialogs respond to input.

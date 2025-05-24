@@ -1,21 +1,19 @@
 ﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the BlockReference, allows for more easily selecting a target block in external c#
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Fungus.BlockReference))]
+    [CustomPropertyDrawer(typeof(Amanita.BlockReference))]
     public class BlockReferenceDrawer : PropertyDrawer
     {
-        public Fungus.Flowchart lastFlowchart;
+        public Amanita.Flowchart lastFlowchart;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -24,7 +22,7 @@ namespace Fungus.EditorUtils
             position.height = EditorGUIUtility.singleLineHeight;
             var block = property.FindPropertyRelative("block");
 
-            Fungus.Block b = block.objectReferenceValue as Fungus.Block;
+            Amanita.Block b = block.objectReferenceValue as Amanita.Block;
 
             if (block.objectReferenceValue != null && lastFlowchart == null)
             {
@@ -34,10 +32,10 @@ namespace Fungus.EditorUtils
                 }
             }
 
-            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Fungus.Flowchart), true) as Fungus.Flowchart;
+            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Amanita.Flowchart), true) as Amanita.Flowchart;
             position.y += EditorGUIUtility.singleLineHeight;
             if (lastFlowchart != null)
-                b = Fungus.EditorUtils.BlockEditor.BlockField(position, new GUIContent("None"), lastFlowchart, b);
+                b = Amanita.EditorUtils.BlockEditor.BlockField(position, new GUIContent("None"), lastFlowchart, b);
             else
                 EditorGUI.PrefixLabel(position, new GUIContent("Flowchart Required"));
 

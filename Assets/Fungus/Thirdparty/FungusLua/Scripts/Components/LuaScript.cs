@@ -5,7 +5,7 @@ using UnityEngine;
 using MoonSharp.Interpreter;
 using Debug = UnityEngine.Debug;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     /// <summary>
     /// Executes Lua script defined in a string property or in an external file.

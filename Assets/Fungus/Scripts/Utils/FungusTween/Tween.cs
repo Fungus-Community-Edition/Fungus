@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Fungus
+namespace Amanita
 {
     public class Tween<T> : ITween
     {

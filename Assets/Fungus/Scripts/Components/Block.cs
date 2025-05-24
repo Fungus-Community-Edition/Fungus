@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Execution state of a Block.
@@ -320,7 +320,7 @@ namespace Fungus
                 command.IsExecuting = true;
                 // This icon timer is managed by the FlowchartWindow class, but we also need to
                 // set it here in case a command starts and finishes execution before the next window update.
-                command.ExecutingIconTimer = Time.realtimeSinceStartup + FungusConstants.ExecutingIconFadeTime;
+                command.ExecutingIconTimer = Time.realtimeSinceStartup + AmanitaConstants.ExecutingIconFadeTime;
                 BlockSignals.DoCommandExecute(this, command, i, commandList.Count);
 
 #if UNITY_EDITOR

@@ -8,7 +8,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Fungus.Lua
+namespace Amanita.Lua
 {
     [Serializable]
     public class DropDownControl<T>

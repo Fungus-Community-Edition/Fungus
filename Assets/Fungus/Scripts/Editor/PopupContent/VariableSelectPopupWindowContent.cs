@@ -1,14 +1,13 @@
 ﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Reflection;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Show the variable selection window as a searchable popup
@@ -53,7 +52,7 @@ namespace Fungus.EditorUtils
                     var obsAttr = item.GetCustomAttribute<System.ObsoleteAttribute>();
 
                     var fliStr = (variableInfo.Category.Length > 0 ? variableInfo.Category + CATEGORY_CHAR : "")
-                        + (obsAttr != null ? FungusConstants.UIPrefixForDeprecated_RichText : "")
+                        + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
                         + variableInfo.VariableType;
                     allItems.Add(new FilteredListItem(i, fliStr));
                 }
@@ -70,7 +69,7 @@ namespace Fungus.EditorUtils
         static public void DoAddVariable(Rect position, string currentHandlerName, Flowchart flowchart)
         {
             curFlowchart = flowchart;
-            if (!FungusEditorPreferences.useLegacyMenus)
+            if (!AmanitaEditorPreferences.useLegacyMenus)
             {
                 //new method
                 VariableSelectPopupWindowContent win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);

@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// A simple efficient event dispatcher with logging support.

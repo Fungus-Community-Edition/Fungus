@@ -1,14 +1,14 @@
 ﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// Extension of IList for Fungus collections and support for associated commands.
     ///
     /// Built upon objects being passed in and returned as the base starting point.
     /// The inherited classes may wish to provided typed access to underlying container,
-    /// this is what the Fungus.GenericCollection does.
+    /// this is what the Amanita.GenericCollection does.
     /// </summary>
     public interface IFungusCollection : System.Collections.IList
     {

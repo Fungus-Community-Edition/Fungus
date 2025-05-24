@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Fungus
+namespace Amanita
 {
     /// <summary>
     /// A Character that can be used in dialogue via the Say, Conversation and Portrait commands.
