@@ -44,7 +44,7 @@ namespace Amanita.SaveSys
         {
             { SaveDirectoryType.DataPath, Application.dataPath },
             { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-            // { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
+            { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
         };
     }
 
@@ -64,6 +64,6 @@ namespace Amanita.SaveSys
         Null,
         DataPath,
         PersistentDataPath,
-        //StreamingAssetsPath,
+        StreamingAssetsPath,
     }
 }

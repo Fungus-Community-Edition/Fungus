@@ -47,13 +47,66 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        [Ignore("")]
-        public virtual void WritesSaveToDisk()
+        public virtual void WritesSaveToDisk_BasePathInAssetsFolder()
         {
-            string savePath = Application.persistentDataPath + "/save.json";
-            MyceliaudioSaveData saveData = new MyceliaudioSaveData();
-            AmanitaSaveData mainSaveData = new AmanitaSaveData();
-            Assert.IsTrue(System.IO.File.Exists(savePath), "Save file was not created.");
+            SaveWriteArgs writeArgs = new SaveWriteArgs
+            {
+                SaveName = "TestSave",
+                SlotNumber = 0,
+                SaveData = new AmanitaSaveData(),
+                SaveDirectory = SaveDirectoryType.DataPath
+            };
+
+            string savePrefix = saveWriter.SavePrefix;
+            string fileExtension = saveWriter.FileExtension;
+            string fileName = string.Format(fileNameFormat, savePrefix,
+                writeArgs.SlotNumber, fileExtension);
+            string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.SaveDirectory];
+            string fullPath = System.IO.Path.Combine(baseDirectory, fileName);
+            saveWriter.WriteOneToDisk(writeArgs);
+            Assert.IsTrue(System.IO.File.Exists(fullPath), "Save file was not created.");
+        }
+
+        protected const string fileNameFormat = "{0}_0{1}.{2}";
+
+        [Test]
+        public virtual void WritesSaveToDisk_BasePersistentDataPath()
+        {
+            SaveWriteArgs writeArgs = new SaveWriteArgs
+            {
+                SaveName = "TestSave",
+                SlotNumber = 0,
+                SaveData = new AmanitaSaveData(),
+                SaveDirectory = SaveDirectoryType.PersistentDataPath
+            };
+            string savePrefix = saveWriter.SavePrefix;
+            string fileExtension = saveWriter.FileExtension;
+            string fileName = string.Format(fileNameFormat, savePrefix,
+                writeArgs.SlotNumber, fileExtension);
+            string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.SaveDirectory];
+            string fullPath = System.IO.Path.Combine(baseDirectory, fileName);
+            saveWriter.WriteOneToDisk(writeArgs);
+            Assert.IsTrue(System.IO.File.Exists(fullPath), "Save file was not created.");
+        }
+
+        [Test]
+        public virtual void WritesSaveToDisk_BaseStreamingAssetsPath()
+        {
+            SaveWriteArgs writeArgs = new SaveWriteArgs
+            {
+                SaveName = "TestSave",
+                SlotNumber = 0,
+                SaveData = new AmanitaSaveData(),
+                SaveDirectory = SaveDirectoryType.StreamingAssetsPath
+            };
+            string savePrefix = saveWriter.SavePrefix;
+            string fileExtension = saveWriter.FileExtension;
+            string fileName = string.Format(fileNameFormat, savePrefix,
+                writeArgs.SlotNumber, fileExtension);
+            string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.SaveDirectory];
+            string fullPath = System.IO.Path.Combine(baseDirectory, fileName);
+            saveWriter.WriteOneToDisk(writeArgs);
+            Assert.IsTrue(System.IO.File.Exists(fullPath), "Save file was not created.");
         }
     }
 }

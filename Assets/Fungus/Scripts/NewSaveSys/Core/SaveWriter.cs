@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
@@ -13,7 +14,7 @@ namespace Amanita.SaveSys
     {
         [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
-        protected System.Text.Encoding actualEncoding;
+        protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
         /// Invoked when this particular SaveWriter writes AmanitaSaveData.
