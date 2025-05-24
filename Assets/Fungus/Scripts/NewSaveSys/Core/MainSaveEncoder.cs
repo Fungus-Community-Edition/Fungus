@@ -3,19 +3,31 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class MainSaveEncoder : SaveEncoder, ISaveEncoder
+    public class MainSaveEncoder : MonoBehaviour, ISaveEncoder
     {
+        public virtual int Priority => 0;
+        public virtual bool NeedsInput => false;
 
-        new public virtual AmanitaSaveData Encode(object toMakeFrom)
+        public object ToMakeFrom { get; set; } = null;
+
+        [SerializeField] protected List<SaveEncoder> subEncoders = new List<SaveEncoder>();
+
+        public virtual SaveDataUnit EncodeToUnit(object toMakeFrom)
+        {
+            AmanitaSaveData result = Encode(toMakeFrom);
+            return result.Serialized();
+        }
+
+        public virtual AmanitaSaveData Encode(object toMakeFrom)
         {
             AmanitaSaveData result = new AmanitaSaveData();
-            foreach (var encoder in subEncoders as IEnumerable<ISaveEncoder>)
+            foreach (var encoder in subEncoders)
             {
                 // Some sub encoders are not supposed to take in any particular input;
                 // they fetch the input themselves from the scene or other sources.
                 if (encoder.CanHandle(toMakeFrom))
                 {
-                    SaveDataUnit unit = encoder.Encode(toMakeFrom);
+                    SaveDataUnit unit = null; // encoder.EncodeToUnit(toMakeFrom);
                     result.Add(unit);
                 }
             }
@@ -23,23 +35,19 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public IList<SaveDataUnit> EncodeMulti(IList<object> toMakeFrom)
-        {
-            throw new System.NotImplementedException();
-        }
-
-
         public SaveDataUnit Encode(AmanitaSaveData toMakeFrom = null)
         {
             throw new System.NotImplementedException();
         }
 
-        SaveDataUnit ISaveEncoder.Encode(object toMakeFrom)
-        {
-            return Encode(toMakeFrom as AmanitaSaveData);
-        }
+        
 
         public IList<SaveDataUnit> EncodeMulti(object toMakeFrom = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public SaveDataUnit Encode()
         {
             throw new System.NotImplementedException();
         }

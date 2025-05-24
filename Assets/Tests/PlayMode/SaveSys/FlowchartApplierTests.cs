@@ -16,7 +16,7 @@ namespace Amanita.SaveSystemTests
         {
             PrepScene();
             flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
-            flowchartSaveData = flowchartSaveEncoder.Encode(flowchart);
+            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
         }
 
@@ -112,7 +112,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator ReexecutesBlocks()
         {
             yield return new WaitForSeconds(0.1f);
-            flowchartSaveData = flowchartSaveEncoder.Encode(flowchart);
+            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
             flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time

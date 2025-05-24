@@ -6,6 +6,9 @@ namespace Amanita.SaveSys
     {
         public int Priority => 0;
 
+        public object ToMakeFrom { get; set; }
+        public virtual bool NeedsInput => true;
+
         public virtual bool CanHandle(object toMakeFrom) =>
             CanHandle(toMakeFrom as Variable);
         public virtual bool CanHandle(Variable variable) =>
@@ -15,7 +18,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {
@@ -63,9 +66,9 @@ namespace Amanita.SaveSys
             booleanVar.Value = value;
         }
 
-        public virtual SaveDataUnit Encode(object toMakeFrom = null)
+        public virtual SaveDataUnit EncodeToUnit(object toMakeFrom = null)
         {
-            VariableSaveData varSave = Encode(toMakeFrom as Variable);
+            VariableSaveData varSave = EncodeToUnit(toMakeFrom as Variable);
             if (varSave == null)
             {
                 Debug.LogError($"Failed to encode {nameof(BooleanVariable)}.");
@@ -76,5 +79,9 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        public SaveDataUnit Encode()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

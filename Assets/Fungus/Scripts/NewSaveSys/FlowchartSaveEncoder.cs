@@ -19,7 +19,7 @@ namespace Amanita.SaveSys
 
         protected BlockSaveEncoder blockEncoder;
 
-        public override FlowchartSaveData Encode(Flowchart toCreateFrom)
+        public override FlowchartSaveData EncodeToUnit(Flowchart toCreateFrom)
         {
             IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
             IList<BlockSaveData> blockSaves = blockEncoder.EncodeMulti(toCreateFrom);
@@ -49,7 +49,7 @@ namespace Amanita.SaveSys
                     continue;
                 }
 
-                VariableSaveData varSave = forThisVar.Encode(varEl);
+                VariableSaveData varSave = forThisVar.EncodeToUnit(varEl);
                 if (varSave == null)
                 {
                     Debug.LogError($"Failed to encode variable: {varEl.name}");

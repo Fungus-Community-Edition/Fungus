@@ -10,7 +10,7 @@ namespace Amanita.SaveSys
         string EncodeToString(AmanitaVar variable);
         void Decode(AmanitaVar variable, string data);
         void Decode(AmanitaVar variable, VariableSaveData data);
-        VariableSaveData Encode(AmanitaVar varable);
+        VariableSaveData EncodeToUnit(AmanitaVar varable);
     }
 
 

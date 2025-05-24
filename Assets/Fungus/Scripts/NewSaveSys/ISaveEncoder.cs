@@ -6,7 +6,18 @@ namespace Amanita.SaveSys
     public interface ISaveEncoder
     {
         int Priority { get; }
-        SaveDataUnit Encode(System.Object toMakeFrom);
+
+        /// <summary>
+        /// Some encoders may not need any input, so this is optional.
+        /// </summary>
+        System.Object ToMakeFrom { get; set; }
+        bool NeedsInput { get; }
+        SaveDataUnit Encode();
+        
+    }
+
+    public interface ISaveEncoderHandleCheck
+    {
         bool CanHandle(System.Object toMakeFrom);
         bool CanHandle(string typeName);
     }
@@ -23,7 +34,7 @@ namespace Amanita.SaveSys
     /// </summary>
     public interface ISaveEncoder<TInput, TOutput> : ISaveEncoder
     {
-        TOutput Encode(TInput from);
+        TOutput EncodeToUnit(TInput from);
     }
 
     public interface IMultiSaveEncoder<TOutput> : ISaveEncoder<TOutput>

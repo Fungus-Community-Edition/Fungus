@@ -20,20 +20,20 @@ namespace Amanita.SaveSys
         public virtual IList<BlockSaveData> EncodeMulti(Flowchart withTheBlocks)
         {
             IList<BlockSaveData> blockSaves = withTheBlocks.GetExecutingBlocks()
-                .Select(block => Encode(block))
+                .Select(block => EncodeToUnit(block))
                 .ToList();
             return blockSaves;
         }
 
-        public virtual IList<BlockSaveData> Encode(IList<Block> toCreateFrom)
+        public virtual IList<BlockSaveData> EncodeToUnit(IList<Block> toCreateFrom)
         {
             List<BlockSaveData> blockSaves = toCreateFrom
-                .Select(block => Encode(block))
+                .Select(block => EncodeToUnit(block))
                 .ToList();
             return blockSaves;
         }
 
-        public override BlockSaveData Encode(Block toCreateFrom)
+        public override BlockSaveData EncodeToUnit(Block toCreateFrom)
         {
             // We assume that the Block was indeed executing at this point.
             int itemId = toCreateFrom.ItemId;

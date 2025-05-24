@@ -2,12 +2,15 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public abstract class SaveEncoder : ScriptableObject, ISaveEncoder
+    public abstract class SaveEncoder : ScriptableObject, ISaveEncoder, ISaveEncoderHandleCheck
     {
         [SerializeField] protected int priority = 0;
         [SerializeField] protected SaveEncoder[] subEncoders = new SaveEncoder[0];
 
-        public int Priority => priority;
+        public virtual int Priority => priority;
+        public virtual bool NeedsInput => false;
+
+        public virtual object ToMakeFrom { get; set; } = null;
 
         public virtual bool CanHandle(object toMakeFrom)
         {
@@ -19,15 +22,9 @@ namespace Amanita.SaveSys
             return typeName == nameof(Flowchart);
         }
 
-        public virtual object Encode()
+        public virtual SaveDataUnit Encode()
         {
             Debug.LogError($"Encode() not implemented in {GetType().Name}.");
-            return null;
-        }
-
-        public virtual SaveDataUnit Encode(object toMakeFrom = null)
-        {
-            Debug.LogError($"EncodeAsUnit() not implemented in {GetType().Name}.");
             return null;
         }
 
@@ -37,8 +34,7 @@ namespace Amanita.SaveSys
         ISaveEncoder<TInput, TOutput>
         where TOutput : SaveData
     {
-        public abstract TOutput Encode(TInput from);
-
+        public abstract TOutput EncodeToUnit(TInput from);
     }
 
 }

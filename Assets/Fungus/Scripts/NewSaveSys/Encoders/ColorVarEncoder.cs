@@ -5,7 +5,9 @@ namespace Amanita.SaveSys
 {
     public class ColorVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
     {
+        public virtual System.Object ToMakeFrom { get; set; } = null;
         public virtual int Priority => 0;
+        public virtual bool NeedsInput => true;
         public bool CanHandle(object toMakeFrom)
         {
             return CanHandle(toMakeFrom as Variable);
@@ -19,7 +21,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData Encode(Variable variable)
+        public virtual VariableSaveData EncodeToUnit(Variable variable)
         {
             VariableSaveData result = new()
             {
@@ -87,12 +89,12 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual SaveDataUnit Encode(object toMakeFrom = null)
+        public virtual SaveDataUnit Encode()
         {
-            VariableSaveData saveData = Encode(toMakeFrom as Variable);
+            VariableSaveData saveData = EncodeToUnit(ToMakeFrom as Variable);
             if (saveData == null)
             {
-                Debug.LogError($"Failed to encode {toMakeFrom} as VariableSaveData in {this.GetType().Name}.");
+                Debug.LogError($"Failed to encode {ToMakeFrom} as VariableSaveData in {this.GetType().Name}.");
                 return null;
             }
 
@@ -100,14 +102,14 @@ namespace Amanita.SaveSys
             return unit;
         }
 
-        public IList<SaveDataUnit> EncodeMulti(IList<object> toMakeFrom)
+        public IList<SaveDataUnit> EncodeMulti(IList<object> multipleToMakeFrom)
         {
             IList<SaveDataUnit> result = new List<SaveDataUnit>();
-            foreach (Variable varElem in toMakeFrom)
+            foreach (Variable varElem in multipleToMakeFrom)
             {
                 if (CanHandle(varElem))
                 {
-                    SaveDataUnit unit = Encode(varElem).Serialized();
+                    SaveDataUnit unit = EncodeToUnit(varElem).Serialized();
                     result.Add(unit);
                 }
                 else

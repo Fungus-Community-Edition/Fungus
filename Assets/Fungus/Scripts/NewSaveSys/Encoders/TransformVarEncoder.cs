@@ -22,7 +22,7 @@ namespace Amanita.SaveSys
             return CanHandle(saveData.VarTypeName);
         }
 
-        public virtual VariableSaveData Encode(AmanitaVar variable)
+        public virtual VariableSaveData EncodeToUnit(AmanitaVar variable)
         {
             VariableSaveData result = new()
             {
