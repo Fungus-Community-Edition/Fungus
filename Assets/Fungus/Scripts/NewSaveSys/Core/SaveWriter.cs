@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
@@ -14,6 +15,7 @@ namespace Amanita.SaveSys
     {
         [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
+        
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
@@ -36,7 +38,12 @@ namespace Amanita.SaveSys
         public virtual bool WriteOneToDisk(SaveWriteArgs args)
         {
             // Safety.
-            string saveFolder = SaveSystem.SaveDirectoryPaths[args.SaveDirectory];
+            string saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
+
+            if (relativeSavePath.Count() > 0)
+            {
+                saveFolder = Path.Combine(saveFolder, relativeSavePath);
+            }
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
             SaveData saveData = args.SaveData;
