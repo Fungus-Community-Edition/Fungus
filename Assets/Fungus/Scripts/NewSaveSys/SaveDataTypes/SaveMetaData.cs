@@ -73,10 +73,10 @@ namespace Amanita.SaveSys
             UpdateTimeStampStructure();
         }
 
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
             string json = JsonUtility.ToJson(this, true);
-            SerializedSaveData result = new(TypeName, json);
+            SaveDataUnit result = new(TypeName, json);
             return result;
         }
 
@@ -99,10 +99,10 @@ namespace Amanita.SaveSys
             UpdateTimeStampString();
         }
 
-        public static new SaveMetaData DeserializeFrom(SerializedSaveData item)
+        public static new SaveMetaData DeserializeFrom(SaveDataUnit item)
         {
             SaveMetaData result = new SaveMetaData();
-            JsonUtility.FromJsonOverwrite(item.Data, result);
+            JsonUtility.FromJsonOverwrite(item.Content, result);
             result.OnDeserialize();
             return result;
         }

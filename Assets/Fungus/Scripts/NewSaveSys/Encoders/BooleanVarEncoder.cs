@@ -2,10 +2,12 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class BooleanVarEncoder : IVarEncoder, ISaveEncoder<VariableSaveData, Variable>
+    public class BooleanVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
     {
         public int Priority => 0;
 
+        public virtual bool CanHandle(object toMakeFrom) =>
+            CanHandle(toMakeFrom as Variable);
         public virtual bool CanHandle(Variable variable) =>
             variable is BooleanVariable;
         public virtual bool CanHandle(string typeName) =>
@@ -59,6 +61,19 @@ namespace Amanita.SaveSys
                 return;
             }
             booleanVar.Value = value;
+        }
+
+        public virtual SaveDataUnit Encode(object toMakeFrom = null)
+        {
+            VariableSaveData varSave = Encode(toMakeFrom as Variable);
+            if (varSave == null)
+            {
+                Debug.LogError($"Failed to encode {nameof(BooleanVariable)}.");
+                return null;
+            }
+
+            SaveDataUnit result = varSave.Serialized();
+            return result;
         }
 
     }

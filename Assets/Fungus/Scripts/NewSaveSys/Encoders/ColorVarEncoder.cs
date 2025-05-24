@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarEncoder : IVarEncoder, ISaveEncoder<VariableSaveData, Variable>
+    public class ColorVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
     {
         public virtual int Priority => 0;
+        public bool CanHandle(object toMakeFrom)
+        {
+            return CanHandle(toMakeFrom as Variable);
+        }
         public virtual bool CanHandle(Variable variable) =>
             variable is ColorVariable;
 
@@ -81,5 +86,39 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
             }
         }
+
+        public virtual SaveDataUnit Encode(object toMakeFrom = null)
+        {
+            VariableSaveData saveData = Encode(toMakeFrom as Variable);
+            if (saveData == null)
+            {
+                Debug.LogError($"Failed to encode {toMakeFrom} as VariableSaveData in {this.GetType().Name}.");
+                return null;
+            }
+
+            SaveDataUnit unit = saveData.Serialized();
+            return unit;
+        }
+
+        public IList<SaveDataUnit> EncodeMulti(IList<object> toMakeFrom)
+        {
+            IList<SaveDataUnit> result = new List<SaveDataUnit>();
+            foreach (Variable varElem in toMakeFrom)
+            {
+                if (CanHandle(varElem))
+                {
+                    SaveDataUnit unit = Encode(varElem).Serialized();
+                    result.Add(unit);
+                }
+                else
+                {
+                    Debug.LogWarning($"Variable type {varElem.GetType()} is not supported for encoding in {this.GetType().Name}.");
+                }
+            }
+
+            return result;
+        }
+
+        
     }
 }

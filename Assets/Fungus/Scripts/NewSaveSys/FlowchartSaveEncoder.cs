@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class FlowchartSaveEncoder : SaveEncoder<FlowchartSaveData, Flowchart>
+    [CreateAssetMenu(fileName = "FlowchartSaveEncoder",
+        menuName = "Amanita/SaveSys/FlowchartSaveEncoder")]
+    public class FlowchartSaveEncoder : SaveEncoder<Flowchart, FlowchartSaveData>
     {
 
         protected virtual void OnEnable()
@@ -20,7 +22,7 @@ namespace Amanita.SaveSys
         public override FlowchartSaveData Encode(Flowchart toCreateFrom)
         {
             IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
-            IList<BlockSaveData> blockSaves = blockEncoder.Encode(toCreateFrom);
+            IList<BlockSaveData> blockSaves = blockEncoder.EncodeMulti(toCreateFrom);
             // TODO: Save the state of certain commands (such as Conversation)
 
 

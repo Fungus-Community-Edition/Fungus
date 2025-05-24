@@ -11,16 +11,40 @@ namespace Amanita.SaveSys
     [System.Serializable]
     public class AmanitaSaveData : SaveData
     {
-        public virtual IList<SaveData> AllSaves { get; set; } = new List<SaveData>();
-        [SerializeField] protected List<FlowchartData> flowchartSaves = new List<FlowchartData>();
-        // ... Myceliaudio state
-        [SerializeField] protected MyceliaudioSaveData myceliaudioSave = new MyceliaudioSaveData();
+        [SerializeField] protected List<SaveDataUnit> units = new List<SaveDataUnit>();
+        public virtual IList<SaveDataUnit> Units { get { return units; } }
+        // ^For pretty much everything that is to be saved. Flowchart state, Myceliaudio's state, etc.
 
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
             string json = JsonUtility.ToJson(this, true);
-            SerializedSaveData result = new SerializedSaveData(TypeName, json);
+            SaveDataUnit result = new SaveDataUnit(TypeName, json);
             return result;
+        }
+
+        public virtual void Add(SaveDataUnit unit)
+        {
+            if (unit == null)
+            {
+                Debug.LogError("Cannot add a null SaveDataUnit to AmanitaSaveData.");
+                return;
+            }
+            Units.Add(unit);
+        }
+
+        public virtual void RemoveUnit(SaveDataUnit unit)
+        {
+            if (unit == null)
+            {
+                Debug.LogError("Cannot remove a null SaveDataUnit from AmanitaSaveData.");
+                return;
+            }
+            Units.Remove(unit);
+        }
+
+        public virtual void ClearAllUnits()
+        {
+            Units.Clear();
         }
     }
 }

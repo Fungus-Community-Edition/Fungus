@@ -3,11 +3,21 @@ using UnityEngine;
 using System.Linq;
 
 namespace Amanita.SaveSys
-{ 
-
-    public class BlockSaveEncoder : SaveEncoder<BlockSaveData, Block>
+{
+    [CreateAssetMenu(fileName = "BlockSaveEncoder", menuName = "Amanita/SaveSys/Encoders/BlockSaveEncoder")]
+    public class BlockSaveEncoder : SaveEncoder<Block, BlockSaveData>,
+        IMultiSaveEncoder<Flowchart, BlockSaveData>
     {
-        public virtual IList<BlockSaveData> Encode(Flowchart withTheBlocks)
+        public override bool CanHandle(object toMakeFrom)
+        {
+            return CanHandle(toMakeFrom.GetType().Name);
+        }
+
+        public override bool CanHandle(string typeName)
+        {
+            return typeName == nameof(Flowchart);
+        }
+        public virtual IList<BlockSaveData> EncodeMulti(Flowchart withTheBlocks)
         {
             IList<BlockSaveData> blockSaves = withTheBlocks.GetExecutingBlocks()
                 .Select(block => Encode(block))
@@ -50,7 +60,6 @@ namespace Amanita.SaveSys
 
             return blockSave;
         }
-
 
     }
 }

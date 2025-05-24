@@ -6,28 +6,37 @@ namespace Amanita.SaveSys
     public interface ISaveEncoder
     {
         int Priority { get; }
+        SaveDataUnit Encode(System.Object toMakeFrom);
+        bool CanHandle(System.Object toMakeFrom);
+        bool CanHandle(string typeName);
     }
 
-    public interface ISaveEncoder<TSaveDataOutput>: ISaveEncoder
-        where TSaveDataOutput : SaveData
+    public interface ISaveEncoder<TInput>: ISaveEncoder
+        where TInput : class
     {
-        TSaveDataOutput Encode();
+        SaveDataUnit Encode(TInput toMakeFrom = null);
+        bool CanHandle(TInput toMakeFrom);
     }
 
     /// <summary>
     /// Creates SaveData out of an object passed to it.
     /// </summary>
-    public interface ISaveEncoder<TSaveDataOutput, TMakeFrom> : ISaveEncoder
-        where TSaveDataOutput : SaveData
+    public interface ISaveEncoder<TInput, TOutput> : ISaveEncoder
     {
-        TSaveDataOutput Encode(TMakeFrom from);
+        TOutput Encode(TInput from);
     }
 
-    public interface IMultiSaveEncoder<TSaveDataOutput> : ISaveEncoder<TSaveDataOutput>
-        where TSaveDataOutput : SaveData
+    public interface IMultiSaveEncoder<TOutput> : ISaveEncoder<TOutput>
+        where TOutput : SaveData
     {
-        IList<TSaveDataOutput> EncodeMulti();
+        IList<TOutput> EncodeMulti();
     }
 
-    
+    public interface IMultiSaveEncoder<TInput, TOutput>
+        where TOutput : SaveData
+    {
+        IList<TOutput> EncodeMulti(TInput toMakeFrom);
+    }
+
+
 }

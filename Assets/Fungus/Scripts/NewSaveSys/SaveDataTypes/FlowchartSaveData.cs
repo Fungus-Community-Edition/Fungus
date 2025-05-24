@@ -50,11 +50,11 @@ namespace Amanita.SaveSys
             // Default constructor for serialization
         }
 
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
             string json = JsonUtility.ToJson(this, true);
             string typeName = GetType().Name;
-            SerializedSaveData newItem = new(typeName, json);
+            SaveDataUnit newItem = new(typeName, json);
             return newItem;
         }
 

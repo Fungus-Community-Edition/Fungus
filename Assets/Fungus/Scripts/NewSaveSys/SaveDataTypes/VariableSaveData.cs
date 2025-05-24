@@ -46,12 +46,12 @@ namespace Amanita.SaveSys
             this.value = value;
         }
 
-        public override SerializedSaveData Serialized()
+        public override SaveDataUnit Serialized()
         {
-            SerializedSaveData serializedSaveData = new()
+            SaveDataUnit serializedSaveData = new()
             {
                 DataTypeName = TypeName,
-                Data = JsonUtility.ToJson(this, true)
+                Content = JsonUtility.ToJson(this, true)
             };
             return serializedSaveData;
         }
@@ -63,10 +63,10 @@ namespace Amanita.SaveSys
             value = "null"
         };
 
-        public static new VariableSaveData DeserializeFrom(SerializedSaveData item)
+        public static new VariableSaveData DeserializeFrom(SaveDataUnit item)
         {
             ValidateSerializedData(item, nameof(VariableSaveData));
-            VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Data);
+            VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Content);
             return data;
         }
     }

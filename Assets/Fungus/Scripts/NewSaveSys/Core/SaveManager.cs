@@ -45,7 +45,7 @@ namespace Amanita.SaveSys
             throw new System.NotImplementedException();
         }
 
-        public void SaveToSlot(int slotIndex, SerializedSaveData[] saveDataItems)
+        public void SaveToSlot(int slotIndex, SaveDataUnit[] saveDataItems)
         {
             // Serialize and save to file or PlayerPrefs, include metadata
         }
