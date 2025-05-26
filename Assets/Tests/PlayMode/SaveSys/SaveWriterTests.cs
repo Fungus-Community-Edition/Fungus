@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using Amanita.SaveSys;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.TestTools;
@@ -91,6 +91,7 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
+        #region Successful writes
         [Test]
         public virtual void WritesSaveToDisk_BasePersistentDataPath()
         {
@@ -171,8 +172,9 @@ namespace Amanita.SaveSystemTests
             CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
         }
 
+        #endregion
 
-
+        #region Rejection tests
         [Test]
         public virtual void WritesSaveToDisk_AnyPath_RejectNullSaveData()
         {
@@ -272,6 +274,64 @@ namespace Amanita.SaveSystemTests
             Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgs),
                 "Expected ArgumentNullException when trying to write with null relative path.");
         }
+        #endregion
 
+
+        [Test]
+        public virtual void WriteAllToDisk_AllSuccessful()
+        {
+            // It is implemented, though. Take a look at the SaveWriter class.
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+        
+            bool allWritten = saveWriter.WriteAllToDisk(multipleThingsToWrite);
+            Assert.IsTrue(allWritten, "Not all saves were written successfully.");
+        }
+
+        protected IList<SaveWriteArgs> multipleThingsToWrite = new List<SaveWriteArgs>
+            {
+                new SaveWriteArgs
+                {
+                    SaveName = "TestSave1",
+                    SlotNumber = 0,
+                    SaveData = new AmanitaSaveData(),
+                    BaseSaveDirectory = SaveDirectoryType.DataPath
+                },
+                new SaveWriteArgs
+                {
+                    SaveName = "TestSave2",
+                    SlotNumber = 1,
+                    SaveData = new AmanitaSaveData(),
+                    BaseSaveDirectory = SaveDirectoryType.PersistentDataPath
+                },
+                new SaveWriteArgs
+                {
+                    SaveName = "TestSave3",
+                    SlotNumber = 2,
+                    SaveData = new AmanitaSaveData(),
+                    BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath
+                }
+            };
+
+        [Test]
+        public virtual void WriteAllToDisk_PartialSuccess()
+        {
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+        
+            // Let's say the first one fails for some reason
+            IList<SaveWriteArgs> withOneNull = new List<SaveWriteArgs>(multipleThingsToWrite);
+            withOneNull[1] = null; // Intentionally null to simulate failure
+            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(withOneNull),
+                "Expected NullReferenceException when trying to write a null SaveWriteArgs.");
+        }
+
+        [Test]
+        public virtual void WriteAllToDisk_RejectNullList()
+        {
+            // It is implemented, though. Take a look at the SaveWriter class.
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+        
+            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
+                "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
+        }
     }
 }
