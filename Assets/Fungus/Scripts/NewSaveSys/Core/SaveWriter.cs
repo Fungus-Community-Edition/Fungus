@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
@@ -13,7 +15,8 @@ namespace Amanita.SaveSys
     {
         [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
-        protected System.Text.Encoding actualEncoding;
+        
+        protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
         /// Invoked when this particular SaveWriter writes AmanitaSaveData.
@@ -35,17 +38,25 @@ namespace Amanita.SaveSys
         public virtual bool WriteOneToDisk(SaveWriteArgs args)
         {
             // Safety.
-            string saveFolder = SaveSystem.SaveDirectoryPaths[args.SaveDirectory];
+            Validate(args);
+
+            string saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
+
+            if (relativeSavePath.Count() > 0)
+            {
+                saveFolder = Path.Combine(saveFolder, relativeSavePath);
+            }
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
             SaveData saveData = args.SaveData;
-            var dataToWrite = JsonUtility.ToJson(saveData, true);
+            string stringDataToWrite = JsonUtility.ToJson(saveData, true);
+            // ^Might want to write a float array in the future, but for now, we just write the JSON string.
             string fileName = string.Format(fileNameFormat, savePrefix, args.SlotNumber, fileExtension);
             var filePath = string.Format(filePathFormat, saveFolder, fileName);
 
             // For now, we won't worry about encryption
             if (!writeEncrypted)
-                File.WriteAllText(filePath, dataToWrite, actualEncoding);
+                File.WriteAllText(filePath, stringDataToWrite, actualEncoding);
 
             else
             {
@@ -55,7 +66,7 @@ namespace Amanita.SaveSys
                     // Note: The binary-writing is not yet secure.
                     using Stream fileStream = File.Open(filePath, FileMode.Create);
                     using BinaryWriter writer = new BinaryWriter(fileStream, actualEncoding);
-                    writer.Write(dataToWrite);
+                    writer.Write(stringDataToWrite);
                 }
             }
 
@@ -63,6 +74,69 @@ namespace Amanita.SaveSys
 
         }
 
+        /// <summary>
+        /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.
+        /// </summary>
+        /// <param name="writeArgs"></param>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        protected virtual bool Validate(SaveWriteArgs writeArgs)
+        {
+            string errorMessage = string.Empty;
+            System.Exception exception = null;
+            
+            bool isNull = writeArgs.SaveData == null;
+            if (isNull)
+            {
+                errorMessage += "SaveData is null. Cannot write to disk.\n";
+                exception = new System.ArgumentNullException(nameof(writeArgs.SaveData), errorMessage);
+                throw exception;
+            }
+
+            bool validSaveName = !string.IsNullOrEmpty(writeArgs.SaveName);
+            if (string.IsNullOrEmpty(writeArgs.SaveName))
+            {
+                errorMessage += "SaveName is null or empty. Cannot write to disk.\n";
+                exception = new System.ArgumentNullException(nameof(writeArgs.SaveName), errorMessage);
+                throw exception;
+            }
+
+            bool validBaseDirectory = SaveSystem.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
+            if (!validBaseDirectory)
+            {
+                errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a valid SaveDirectoryType.\n";
+                exception = new System.ArgumentException(errorMessage, nameof(writeArgs.BaseSaveDirectory));
+                throw exception;
+            }
+
+            bool validSaveNumber = writeArgs.SlotNumber >= 0;
+            if (!validSaveNumber)
+            {
+                errorMessage += "SlotNumber is negative. Cannot write to disk.\n";
+                exception = new System.ArgumentOutOfRangeException(nameof(writeArgs.SlotNumber), errorMessage);
+                throw exception;
+            }
+
+            bool validRelativeDirectory = !string.IsNullOrEmpty(relativeSavePath);
+            if (!validRelativeDirectory)
+            {
+                errorMessage += "RelativeSavePath is null or empty. Cannot write to disk.\n";
+                exception = new System.ArgumentNullException(nameof(relativeSavePath), errorMessage);
+                throw exception;
+            }
+
+
+            bool didWeSucceed = !isNull && validSaveName &&
+                validBaseDirectory && validSaveNumber &&
+                validRelativeDirectory;
+
+            if (!didWeSucceed)
+            {
+                throw exception;
+            }
+
+            return didWeSucceed;
+        }
 
         /// <summary>
         /// Writes all the save datas to the passed save directory, returning true if successful,

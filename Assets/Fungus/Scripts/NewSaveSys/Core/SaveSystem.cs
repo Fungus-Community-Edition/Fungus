@@ -12,6 +12,7 @@ namespace Amanita.SaveSys
         [Tooltip("In WebGL, things will be saved to PlayerPrefs due to the file system limitations web browsers have. In which case, this field won't make a difference.")]
         [SerializeField] protected SaveDirectoryType saveDirectoryType = SaveDirectoryType.DataPath;
         
+        public virtual SaveDirectoryType SaveDirectoryType { get { return saveDirectoryType; } }
 
         protected virtual void Awake()
         {
@@ -39,13 +40,18 @@ namespace Amanita.SaveSys
             saveManager.DeleteSave(saveName);
         }
 
-        public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths = 
-            new Dictionary<SaveDirectoryType, string>
+        public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;
+
+        public static void InitPaths()
         {
-            { SaveDirectoryType.DataPath, Application.dataPath },
-            { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-            // { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
-        };
+            SaveDirectoryPaths =
+            new Dictionary<SaveDirectoryType, string>
+            {
+                { SaveDirectoryType.DataPath, Application.dataPath },
+                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
+                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
+            };
+        }
     }
 
     [System.Serializable]
@@ -54,7 +60,7 @@ namespace Amanita.SaveSys
         public string SaveName { get; set; } = string.Empty;
         public virtual int SlotNumber { get; set; } = 0;
         public SaveData SaveData { get; set; }
-        public SaveDirectoryType SaveDirectory { get; set; } = SaveDirectoryType.DataPath;
+        public SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
         public SaveWriteArgs() { }
 
     }
@@ -64,6 +70,6 @@ namespace Amanita.SaveSys
         Null,
         DataPath,
         PersistentDataPath,
-        //StreamingAssetsPath,
+        StreamingAssetsPath,
     }
 }
