@@ -13,7 +13,6 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor
     {
-        [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
         public virtual bool WriteEncrypted
         {
@@ -43,12 +42,12 @@ namespace Amanita.SaveSys
         /// Writes all the save datas to the passed save directory, returning true if successful,
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteAllToDisk(IList<SaveWriteArgs> args)
+        public virtual bool WriteAllToDisk(IList<SaveWriteRequest> args)
         {
             bool didWeSucceed = default;
             for (int i = 0; i < args.Count; i++)
             {
-                SaveWriteArgs currentArgs = args[i];
+                SaveWriteRequest currentArgs = args[i];
                 didWeSucceed = WriteOneToDisk(currentArgs);
                 if (!didWeSucceed)
                 {
@@ -63,7 +62,7 @@ namespace Amanita.SaveSys
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteOneToDisk(SaveWriteArgs args)
+        public virtual bool WriteOneToDisk(SaveWriteRequest args)
         {
             // Safety.
             Validate(args);
@@ -106,6 +105,20 @@ namespace Amanita.SaveSys
                 }
             }
 
+            AnnounceResults();
+            void AnnounceResults()
+            {
+                SaveWriteResults results = new SaveWriteResults
+                {
+                    FilePath = filePath,
+                    FileName = fileName,
+                    SaveData = args.SaveData as AmanitaSaveData,
+                    Success = true,
+                    ErrorMessage = string.Empty,
+                    Request = args
+                };
+                SaveSysSignals.AmanitaSaveWritten.Invoke(results);
+            }
             return true;
 
         }
@@ -116,7 +129,7 @@ namespace Amanita.SaveSys
         /// <param name="writeArgs"></param>
         /// <param name="exception"></param>
         /// <returns></returns>
-        protected virtual bool Validate(SaveWriteArgs writeArgs)
+        protected virtual bool Validate(SaveWriteRequest writeArgs)
         {
             string errorMessage = string.Empty;
             System.Exception exception = null;
