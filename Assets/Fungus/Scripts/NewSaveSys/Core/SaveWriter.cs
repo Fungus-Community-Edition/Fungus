@@ -13,9 +13,13 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor
     {
-        [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
-        
+        public virtual bool WriteEncrypted
+        {
+            get => writeEncrypted;
+            set => writeEncrypted = value;
+        }
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
@@ -23,8 +27,6 @@ namespace Amanita.SaveSys
         /// Params: saveData, filePath, fileName
         /// </summary>
         public UnityAction<AmanitaSaveData, string, string> AmanitaSaveWritten = delegate { };
-        protected const string fileNameFormat = "{0}_0{1}.{2}";
-        protected const string filePathFormat = "{0}/{1}";
 
         protected virtual void OnEnable()
         {
@@ -32,44 +34,100 @@ namespace Amanita.SaveSys
         }
 
         /// <summary>
+        /// Writes all the save datas to the passed save directory, returning true if successful,
+        /// false otherwise.
+        /// </summary>
+        public virtual bool WriteAllToDisk(IList<SaveWriteRequest> args)
+        {
+            bool didWeSucceed = default;
+            for (int i = 0; i < args.Count; i++)
+            {
+                SaveWriteRequest currentArgs = args[i];
+                didWeSucceed = WriteOneToDisk(currentArgs);
+                if (!didWeSucceed)
+                {
+                    break;
+                }
+            }
+
+            return didWeSucceed;
+        }
+
+        /// <summary>
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteOneToDisk(SaveWriteArgs args)
+        public virtual bool WriteOneToDisk(SaveWriteRequest request)
         {
             // Safety.
-            Validate(args);
+            Validate(request);
 
-            string saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
+            string saveFolder = string.Empty, mainStringDataToWrite = string.Empty,
+                metaStringDataToWrite = string.Empty, fileName = string.Empty,
+                filePath = string.Empty;
 
-            if (relativeSavePath.Count() > 0)
+            RegisterAndEnsureFullPath();
+            void RegisterAndEnsureFullPath()
             {
-                saveFolder = Path.Combine(saveFolder, relativeSavePath);
+                saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+
+                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
+                if (thereIsRelativePathToConsider)
+                {
+                    saveFolder = Path.Combine(saveFolder, relativeSavePath);
+                }
+                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+
+                fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
+                filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
-            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            SaveData saveData = args.SaveData;
-            string stringDataToWrite = JsonUtility.ToJson(saveData, true);
-            // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-            string fileName = string.Format(fileNameFormat, savePrefix, args.SlotNumber, fileExtension);
-            var filePath = string.Format(filePathFormat, saveFolder, fileName);
+            DecideTextToWrite();
+            void DecideTextToWrite()
+            {
+                SaveMetaData meta = request.SaveMetaData;
+                metaStringDataToWrite = JsonUtility.ToJson(meta, true);
 
+                SaveData saveData = request.SaveData;
+                mainStringDataToWrite = JsonUtility.ToJson(saveData, true);
+                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
+                
+            }
+
+            string everythingToWrite = $"{metaStringDataToWrite}{ReadWriteDelimiter}{mainStringDataToWrite}";
             // For now, we won't worry about encryption
             if (!writeEncrypted)
-                File.WriteAllText(filePath, stringDataToWrite, actualEncoding);
+            {
+                File.WriteAllText(filePath, everythingToWrite, actualEncoding);
+            }
 
             else
             {
                 WriteAsEncrypted();
                 void WriteAsEncrypted()
                 {
-                    // Note: The binary-writing is not yet secure.
-                    using Stream fileStream = File.Open(filePath, FileMode.Create);
-                    using BinaryWriter writer = new BinaryWriter(fileStream, actualEncoding);
-                    writer.Write(stringDataToWrite);
+                    byte key = 0xAA;
+                    byte[] encryptedData = actualEncoding.GetBytes(everythingToWrite)
+                        .Select(b => (byte)(b ^ key))
+                        .ToArray(); // Simple XOR encryption to prevent casual snooping.
+                    File.WriteAllBytes(filePath, encryptedData);
                 }
             }
 
+            AnnounceResults();
+            void AnnounceResults()
+            {
+                SaveWriteResults results = new SaveWriteResults
+                {
+                    FilePath = filePath,
+                    FileName = fileName,
+                    SaveData = request.SaveData as AmanitaSaveData,
+                    Success = true,
+                    ErrorMessage = string.Empty,
+                    Request = request
+                };
+                SaveSysSignals.AmanitaSaveWritten.Invoke(results);
+            }
             return true;
 
         }
@@ -80,7 +138,7 @@ namespace Amanita.SaveSys
         /// <param name="writeArgs"></param>
         /// <param name="exception"></param>
         /// <returns></returns>
-        protected virtual bool Validate(SaveWriteArgs writeArgs)
+        protected virtual bool Validate(SaveWriteRequest writeArgs)
         {
             string errorMessage = string.Empty;
             System.Exception exception = null;
@@ -138,25 +196,7 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        /// <summary>
-        /// Writes all the save datas to the passed save directory, returning true if successful,
-        /// false otherwise.
-        /// </summary>
-        public virtual bool WriteAllToDisk(IList<SaveWriteArgs> args)
-        {
-            bool didWeSucceed = default;
-            for (int i = 0; i < args.Count; i++)
-            {
-                SaveWriteArgs currentArgs = args[i];
-                didWeSucceed = WriteOneToDisk(currentArgs);
-                if (!didWeSucceed)
-                {
-                    break;
-                }
-            }
-
-            return didWeSucceed;
-        }
+        
 
     }
 }

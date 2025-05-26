@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Amanita.SaveSys
 {
@@ -7,7 +8,7 @@ namespace Amanita.SaveSys
     /// Think of this as the equivalent to the old SaveDataItem class.
     /// </summary>
     [System.Serializable]
-    public class SaveDataUnit
+    public class SaveDataUnit : IEquatable<SaveDataUnit>
     {
         [SerializeField] protected string dataType;
         [SerializeField] protected string content;
@@ -28,6 +29,12 @@ namespace Amanita.SaveSys
         {
             this.dataType = dataType;
             this.content = data;
+        }
+
+        public virtual bool Equals(SaveDataUnit other)
+        {
+            return this.dataType == other.dataType &&
+                this.content == other.content;
         }
 
     }

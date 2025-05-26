@@ -18,7 +18,7 @@ namespace Amanita.SaveSystemTests
         {
             PrepScene();
             flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
-            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
+            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
             blockSaveEncoder = ScriptableObject.CreateInstance<BlockSaveEncoder>();
         }
 
@@ -75,7 +75,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator FlowchartSaveData_Constructor_SetsSavedBlocks()
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
-            flowchartSaveData = flowchartSaveEncoder.EncodeToUnit(flowchart);
+            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
             IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
                                                   where elem.SaveExecutionState
                                                   select elem).ToList();
@@ -85,7 +85,7 @@ namespace Amanita.SaveSystemTests
 
             foreach (Block block in blocksToSave)
             {
-                BlockSaveData blockSaveData = blockSaveEncoder.EncodeToUnit(block);
+                BlockSaveData blockSaveData = blockSaveEncoder.EncodeToSave(block);
                 bool correctBlockName = blockSaveData.BlockName == block.BlockName;
                 bool correctItemId = blockSaveData.ItemId == block.ItemId;
                 bool correctActiveCommandId = blockSaveData.ActiveCommandId == block.ActiveCommand.ItemId;

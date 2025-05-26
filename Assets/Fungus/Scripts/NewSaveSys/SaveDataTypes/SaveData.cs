@@ -6,6 +6,7 @@ namespace Amanita.SaveSys
     [Serializable]
     public abstract class SaveData
     {
+        public SaveData() { }
         public abstract SaveDataUnit Serialized();
 
         /// <summary>

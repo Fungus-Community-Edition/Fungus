@@ -13,7 +13,7 @@ namespace Amanita
     /// It knows how to encode / decode concrete game classes like Flowchart and FlowchartData.
     /// To extend the save system to handle other data types, just modify or subclass this component.
     /// </summary>
-    public class SaveData : MonoBehaviour
+    public class SaveDataOld : MonoBehaviour
     {
         protected const string FlowchartDataKey = "FlowchartData";
 

@@ -54,17 +54,6 @@ namespace Amanita.SaveSys
         }
     }
 
-    [System.Serializable]
-    public class SaveWriteArgs : EventArgs
-    {
-        public string SaveName { get; set; } = string.Empty;
-        public virtual int SlotNumber { get; set; } = 0;
-        public SaveData SaveData { get; set; }
-        public SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
-        public SaveWriteArgs() { }
-
-    }
-
     public enum SaveDirectoryType
     {
         Null,

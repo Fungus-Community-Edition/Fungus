@@ -16,7 +16,7 @@ namespace Amanita.SaveSystemTests
         protected virtual void PrepMetaData()
         {
             expectedTypeName = metaData.TypeName;
-            expectedSaveVer = 3.32789f;
+            expectedSaveVer = "3.32789f";
             expectedTimeStamp = DateTime.UtcNow.ToString("o");
 
             metaData.SaveVersion = expectedSaveVer;
@@ -29,8 +29,7 @@ namespace Amanita.SaveSystemTests
         SaveMetaData metaData = new SaveMetaData();
         protected SaveDataUnit serializedMetaData;
         protected SaveMetaData deserializedMetaData;
-        protected string expectedTypeName, expectedTimeStamp;
-        float expectedSaveVer;
+        protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
 
         [TearDown]
         public virtual void DoTearDown()
