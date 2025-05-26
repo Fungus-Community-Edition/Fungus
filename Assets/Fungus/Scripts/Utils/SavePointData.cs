@@ -68,7 +68,7 @@ namespace Amanita
 
             // Look for a SaveData component in the scene to populate the save data items.
         #if UNITY_6000
-            var saveData = GameObject.FindFirstObjectByType<SaveData>();
+            var saveData = GameObject.FindFirstObjectByType<SaveDataOld>();
         #else
             var saveData = GameObject.FindObjectOfType<SaveData>();
         #endif
@@ -102,7 +102,7 @@ namespace Amanita
 
                 // Look for a SaveData component in the scene to process the save data items.
             #if UNITY_6000
-                var saveData = GameObject.FindFirstObjectByType<SaveData>();
+                var saveData = GameObject.FindFirstObjectByType<SaveDataOld>();
             #else
                 var saveData = GameObject.FindObjectOfType<SaveData>();
             #endif

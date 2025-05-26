@@ -15,7 +15,12 @@ namespace Amanita.SaveSys
     {
         [Tooltip("Does not yet work.")]
         [SerializeField] protected bool writeEncrypted = false;
-        
+        public virtual bool WriteEncrypted
+        {
+            get => writeEncrypted;
+            set => writeEncrypted = value;
+        }
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
@@ -26,9 +31,32 @@ namespace Amanita.SaveSys
         protected const string fileNameFormat = "{0}_0{1}.{2}";
         protected const string filePathFormat = "{0}/{1}";
 
+        public virtual string FileNameFormat => fileNameFormat;
+        public virtual string FilePathFormat => filePathFormat;
+
         protected virtual void OnEnable()
         {
             
+        }
+
+        /// <summary>
+        /// Writes all the save datas to the passed save directory, returning true if successful,
+        /// false otherwise.
+        /// </summary>
+        public virtual bool WriteAllToDisk(IList<SaveWriteArgs> args)
+        {
+            bool didWeSucceed = default;
+            for (int i = 0; i < args.Count; i++)
+            {
+                SaveWriteArgs currentArgs = args[i];
+                didWeSucceed = WriteOneToDisk(currentArgs);
+                if (!didWeSucceed)
+                {
+                    break;
+                }
+            }
+
+            return didWeSucceed;
         }
 
         /// <summary>
@@ -40,19 +68,26 @@ namespace Amanita.SaveSys
             // Safety.
             Validate(args);
 
-            string saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
+            string saveFolder = string.Empty, stringDataToWrite = string.Empty,
+                fileName = string.Empty, filePath = string.Empty;
 
-            if (relativeSavePath.Count() > 0)
+            DecideDirectoriesAndSuch();
+            void DecideDirectoriesAndSuch()
             {
-                saveFolder = Path.Combine(saveFolder, relativeSavePath);
-            }
-            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+                saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
 
-            SaveData saveData = args.SaveData;
-            string stringDataToWrite = JsonUtility.ToJson(saveData, true);
-            // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-            string fileName = string.Format(fileNameFormat, savePrefix, args.SlotNumber, fileExtension);
-            var filePath = string.Format(filePathFormat, saveFolder, fileName);
+                if (relativeSavePath.Count() > 0)
+                {
+                    saveFolder = Path.Combine(saveFolder, relativeSavePath);
+                }
+                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+
+                SaveData saveData = args.SaveData;
+                stringDataToWrite = JsonUtility.ToJson(saveData, true);
+                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
+                fileName = string.Format(fileNameFormat, savePrefix, args.SlotNumber, fileExtension);
+                filePath = string.Format(filePathFormat, saveFolder, fileName);
+            }
 
             // For now, we won't worry about encryption
             if (!writeEncrypted)
@@ -63,10 +98,11 @@ namespace Amanita.SaveSys
                 WriteAsEncrypted();
                 void WriteAsEncrypted()
                 {
-                    // Note: The binary-writing is not yet secure.
-                    using Stream fileStream = File.Open(filePath, FileMode.Create);
-                    using BinaryWriter writer = new BinaryWriter(fileStream, actualEncoding);
-                    writer.Write(stringDataToWrite);
+                    byte key = 0xAA;
+                    byte[] encryptedData = actualEncoding.GetBytes(stringDataToWrite)
+                        .Select(b => (byte)(b ^ key))
+                        .ToArray(); // Simple XOR encryption to prevent casual snooping.
+                    File.WriteAllBytes(filePath, encryptedData);
                 }
             }
 
@@ -138,25 +174,7 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        /// <summary>
-        /// Writes all the save datas to the passed save directory, returning true if successful,
-        /// false otherwise.
-        /// </summary>
-        public virtual bool WriteAllToDisk(IList<SaveWriteArgs> args)
-        {
-            bool didWeSucceed = default;
-            for (int i = 0; i < args.Count; i++)
-            {
-                SaveWriteArgs currentArgs = args[i];
-                didWeSucceed = WriteOneToDisk(currentArgs);
-                if (!didWeSucceed)
-                {
-                    break;
-                }
-            }
-
-            return didWeSucceed;
-        }
+        
 
     }
 }

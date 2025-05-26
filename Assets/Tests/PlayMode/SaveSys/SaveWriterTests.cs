@@ -1,10 +1,13 @@
-using NUnit.Framework;
-using UnityEngine;
-using System.Collections.Generic;
-using Amanita.SaveSys;
-using UnityObject = UnityEngine.Object;
-using UnityEngine.TestTools;
 using Amanita.Myceliaudio;
+using Amanita.SaveSys;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.TestTools;
+using Encoding = System.Text.Encoding;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
@@ -333,5 +336,76 @@ namespace Amanita.SaveSystemTests
             Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
                 "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
         }
+
+        // Now a test for file content verification would be nice, but that would require reading the file back and checking its contents. Let's set that test to be ignored for now.
+        [Test]
+        public virtual void VerifyFileContent_AfterWrite()
+        {
+            Assert.Ignore("File content verification test is not implemented yet.");
+        }
+
+        [Test]
+        public virtual void WriteEncryted_Success()
+        {
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+            // ^Since it might get set to null by other tests, we need to reset it
+            saveWriter.WriteEncrypted = true; // Set to true to test encrypted writing
+            
+            SaveWriteArgs writeArgs = new SaveWriteArgs
+            {
+                SaveName = "TestSaveEncrypted",
+                SlotNumber = 0,
+                SaveData = new AmanitaSaveData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+
+            string expectedJsonText = JsonUtility.ToJson(writeArgs.SaveData, true);
+            byte key = 0xAA;
+            byte[] expectedEncryptedData = utf8.GetBytes(expectedJsonText)
+                .Select(b => (byte)(b ^ key)).ToArray(); // Simple XOR encryption for testing
+
+            CommonSaveWriteTest(writeArgs);
+
+            string saveFolder = string.Empty, stringDataToWrite = string.Empty,
+                fileName = string.Empty, filePath = string.Empty,
+                savePrefix = saveWriter.SavePrefix, fileExtension = saveWriter.FileExtension,
+                filePathFormat = saveWriter.FilePathFormat;
+            string relativeSavePath = saveWriter.RelativeSavePath;
+            DecideDirectoriesAndSuch();
+            void DecideDirectoriesAndSuch()
+            {
+                saveFolder = SaveSystem.SaveDirectoryPaths[writeArgs.BaseSaveDirectory];
+
+                if (relativeSavePath.Count() > 0)
+                {
+                    saveFolder = Path.Combine(saveFolder, relativeSavePath);
+                }
+                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+
+                SaveData saveData = writeArgs.SaveData;
+                stringDataToWrite = JsonUtility.ToJson(saveData, true);
+                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
+                fileName = string.Format(fileNameFormat, savePrefix, writeArgs.SlotNumber, fileExtension);
+                filePath = string.Format(filePathFormat, saveFolder, fileName);
+            }
+            string decryptedString = string.Empty;
+            ReadAndDecrypt();
+            void ReadAndDecrypt()
+            {
+                // Read the encrypted file
+                byte[] encryptedData = File.ReadAllBytes(filePath);
+                // Decrypt it
+                byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key)).ToArray();
+                // Convert it back to string
+                decryptedString = utf8.GetString(decryptedData);
+            }
+            
+            // Verify the content
+            Assert.AreEqual(expectedJsonText, decryptedString, "Decrypted content does not match the expected JSON text.");
+
+        }
+
+        protected static Encoding utf8 = Encoding.UTF8;
+
     }
 }
