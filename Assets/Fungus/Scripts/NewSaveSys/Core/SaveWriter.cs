@@ -88,7 +88,7 @@ namespace Amanita.SaveSys
                 SaveMetaData meta = request.SaveMetaData;
                 metaStringDataToWrite = JsonUtility.ToJson(meta, true);
 
-                SaveData saveData = request.SaveData;
+                SaveData saveData = request.MainSaveData;
                 mainStringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
                 
@@ -121,7 +121,7 @@ namespace Amanita.SaveSys
                 {
                     FilePath = filePath,
                     FileName = fileName,
-                    SaveData = request.SaveData as AmanitaSaveData,
+                    SaveData = request.MainSaveData as AmanitaSaveData,
                     Success = true,
                     ErrorMessage = string.Empty,
                     Request = request
@@ -143,11 +143,11 @@ namespace Amanita.SaveSys
             string errorMessage = string.Empty;
             System.Exception exception = null;
             
-            bool isNull = writeArgs.SaveData == null;
+            bool isNull = writeArgs.MainSaveData == null;
             if (isNull)
             {
                 errorMessage += "SaveData is null. Cannot write to disk.\n";
-                exception = new System.ArgumentNullException(nameof(writeArgs.SaveData), errorMessage);
+                exception = new System.ArgumentNullException(nameof(writeArgs.MainSaveData), errorMessage);
                 throw exception;
             }
 

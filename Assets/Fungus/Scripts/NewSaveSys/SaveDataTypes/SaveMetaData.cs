@@ -16,6 +16,7 @@ namespace Amanita.SaveSys
         // ^To let players personalize their saves and get a better sense
         // of ownership over their progress
         [SerializeField] protected string saveID = string.Empty;
+        [SerializeField] protected int slotNumber = 0;
         [SerializeField] protected string saveVersion = string.Empty;
         [SerializeField] protected string utcTimeStamp = string.Empty;
 
@@ -25,6 +26,11 @@ namespace Amanita.SaveSys
             set { name = value; }
         }
         public string SaveID => saveID;
+        public virtual int SlotNumber
+        {
+            get { return slotNumber; }
+            set { slotNumber = value; }
+        }
         public string SaveVersion
         {
             get { return saveVersion; }

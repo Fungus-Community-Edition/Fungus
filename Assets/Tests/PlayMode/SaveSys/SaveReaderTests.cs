@@ -63,7 +63,7 @@ namespace Amanita.SaveSystemTests
         {
             SaveName = "TestSave",
             SlotNumber = 0,
-            SaveData = new AmanitaSaveData(),
+            MainSaveData = new AmanitaSaveData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
@@ -72,7 +72,7 @@ namespace Amanita.SaveSystemTests
         {
             saveWriter.WriteOneToDisk(writeReq);
 
-            AmanitaSaveData expectedMainSaveData = writeReq.SaveData as AmanitaSaveData;
+            AmanitaSaveData expectedMainSaveData = writeReq.MainSaveData as AmanitaSaveData;
 
             AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
