@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
-    public class SaveReadingTests
+    public class SaveReaderTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -17,6 +17,8 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
+            saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+            saveReader = ScriptableObject.CreateInstance<SaveReader>();
         }
 
         protected virtual void PrepScene()
@@ -30,6 +32,8 @@ namespace Amanita.SaveSystemTests
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
+        protected SaveWriter saveWriter;
+        protected SaveReader saveReader;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -37,9 +41,19 @@ namespace Amanita.SaveSystemTests
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
-        public virtual void SavesToDisk()
+        protected SaveWriteRequest writeArgs = new SaveWriteRequest
         {
+            SaveName = "TestSave",
+            SlotNumber = 0,
+            SaveData = new AmanitaSaveData(),
+            BaseSaveDirectory = SaveDirectoryType.DataPath
+        };
 
+        [Test]
+        [Ignore("")]
+        public virtual void ReadsMetadataProperly()
+        {
+            
         }
 
     }

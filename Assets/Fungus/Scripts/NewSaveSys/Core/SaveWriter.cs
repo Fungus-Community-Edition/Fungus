@@ -27,11 +27,6 @@ namespace Amanita.SaveSys
         /// Params: saveData, filePath, fileName
         /// </summary>
         public UnityAction<AmanitaSaveData, string, string> AmanitaSaveWritten = delegate { };
-        protected const string fileNameFormat = "{0}_0{1}.{2}";
-        protected const string filePathFormat = "{0}/{1}";
-
-        public virtual string FileNameFormat => fileNameFormat;
-        public virtual string FilePathFormat => filePathFormat;
 
         protected virtual void OnEnable()
         {
@@ -62,35 +57,49 @@ namespace Amanita.SaveSys
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteOneToDisk(SaveWriteRequest args)
+        public virtual bool WriteOneToDisk(SaveWriteRequest request)
         {
             // Safety.
-            Validate(args);
+            Validate(request);
 
-            string saveFolder = string.Empty, stringDataToWrite = string.Empty,
-                fileName = string.Empty, filePath = string.Empty;
+            string saveFolder = string.Empty, mainStringDataToWrite = string.Empty,
+                metaStringDataToWrite = string.Empty, fileName = string.Empty,
+                filePath = string.Empty;
 
-            DecideDirectoriesAndSuch();
-            void DecideDirectoriesAndSuch()
+            RegisterAndEnsureFullPath();
+            void RegisterAndEnsureFullPath()
             {
-                saveFolder = SaveSystem.SaveDirectoryPaths[args.BaseSaveDirectory];
+                saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
 
-                if (relativeSavePath.Count() > 0)
+                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
+                if (thereIsRelativePathToConsider)
                 {
                     saveFolder = Path.Combine(saveFolder, relativeSavePath);
                 }
                 Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-                SaveData saveData = args.SaveData;
-                stringDataToWrite = JsonUtility.ToJson(saveData, true);
-                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-                fileName = string.Format(fileNameFormat, savePrefix, args.SlotNumber, fileExtension);
+                fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
 
+            DecideTextToWrite();
+            void DecideTextToWrite()
+            {
+                SaveMetaData meta = request.SaveMetaData;
+                metaStringDataToWrite = JsonUtility.ToJson(meta, true);
+
+                SaveData saveData = request.SaveData;
+                mainStringDataToWrite = JsonUtility.ToJson(saveData, true);
+                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
+                
+            }
+
+            string everythingToWrite = $"{metaStringDataToWrite}{ReadWriteDelimiter}{mainStringDataToWrite}";
             // For now, we won't worry about encryption
             if (!writeEncrypted)
-                File.WriteAllText(filePath, stringDataToWrite, actualEncoding);
+            {
+                File.WriteAllText(filePath, everythingToWrite, actualEncoding);
+            }
 
             else
             {
@@ -98,7 +107,7 @@ namespace Amanita.SaveSys
                 void WriteAsEncrypted()
                 {
                     byte key = 0xAA;
-                    byte[] encryptedData = actualEncoding.GetBytes(stringDataToWrite)
+                    byte[] encryptedData = actualEncoding.GetBytes(everythingToWrite)
                         .Select(b => (byte)(b ^ key))
                         .ToArray(); // Simple XOR encryption to prevent casual snooping.
                     File.WriteAllBytes(filePath, encryptedData);
@@ -112,10 +121,10 @@ namespace Amanita.SaveSys
                 {
                     FilePath = filePath,
                     FileName = fileName,
-                    SaveData = args.SaveData as AmanitaSaveData,
+                    SaveData = request.SaveData as AmanitaSaveData,
                     Success = true,
                     ErrorMessage = string.Empty,
-                    Request = args
+                    Request = request
                 };
                 SaveSysSignals.AmanitaSaveWritten.Invoke(results);
             }

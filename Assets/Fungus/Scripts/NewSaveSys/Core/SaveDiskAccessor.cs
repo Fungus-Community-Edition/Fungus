@@ -20,5 +20,13 @@ namespace Amanita.SaveSys
 
         public virtual string DefaultRelativeSavePath => "Saves/";
 
+        protected string fileNameFormat = "{0}_0{1}.{2}";
+        protected string filePathFormat = "{0}/{1}";
+
+        public virtual string FileNameFormat => fileNameFormat;
+        public virtual string FilePathFormat => filePathFormat;
+
+        public static string ReadWriteDelimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
+
     }
 }

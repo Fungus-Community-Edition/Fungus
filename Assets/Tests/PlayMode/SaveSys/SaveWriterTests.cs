@@ -69,6 +69,7 @@ namespace Amanita.SaveSystemTests
             SaveName = "TestSave",
             SlotNumber = 0,
             SaveData = new AmanitaSaveData(),
+            SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
@@ -79,7 +80,7 @@ namespace Amanita.SaveSystemTests
             string fileName = string.Format(fileNameFormat, SavePrefix,
                 writeArgs.SlotNumber, FileExtension);
             string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.BaseSaveDirectory];
-            string fullPath;
+            string fullPath; // So we can judge the results
 
             if (string.IsNullOrEmpty(relativePath))
             {
@@ -256,6 +257,7 @@ namespace Amanita.SaveSystemTests
                     SaveName = "TestSave1",
                     SlotNumber = 0,
                     SaveData = new AmanitaSaveData(),
+                    SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.DataPath
                 },
                 new SaveWriteRequest
@@ -263,6 +265,7 @@ namespace Amanita.SaveSystemTests
                     SaveName = "TestSave2",
                     SlotNumber = 1,
                     SaveData = new AmanitaSaveData(),
+                    SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.PersistentDataPath
                 },
                 new SaveWriteRequest
@@ -270,6 +273,7 @@ namespace Amanita.SaveSystemTests
                     SaveName = "TestSave3",
                     SlotNumber = 2,
                     SaveData = new AmanitaSaveData(),
+                    SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath
                 }
             };
@@ -309,10 +313,14 @@ namespace Amanita.SaveSystemTests
                 SaveName = "TestSaveContentVerification",
                 SlotNumber = 0,
                 SaveData = new AmanitaSaveData(),
+                SaveMetaData = new SaveMetaData { },
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedJsonText = JsonUtility.ToJson(writeArgs.SaveData, true);
+            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
+            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.SaveData, true);
+
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
             CommonSaveWriteTest(writeArgs);
 
             string jsonText = ReadAndVerifyContent();
@@ -345,10 +353,14 @@ namespace Amanita.SaveSystemTests
                 SaveName = "TestSaveEncrypted",
                 SlotNumber = 0,
                 SaveData = new AmanitaSaveData(),
+                SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedJsonText = JsonUtility.ToJson(writeArgs.SaveData, true);
+            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
+            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.SaveData, true);
+
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
             byte key = 0xAA;
             byte[] expectedEncryptedData = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key)).ToArray(); // Simple XOR encryption for testing

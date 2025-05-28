@@ -12,12 +12,20 @@ namespace Amanita.SaveSys
     /// </summary>
     public class SaveMetaData : SaveData, IEquatable<SaveMetaData>
     {
+        [SerializeField] protected string name = string.Empty;
+        // ^To let players personalize their saves and get a better sense
+        // of ownership over their progress
         [SerializeField] protected string saveID = string.Empty;
-        [SerializeField] protected float saveVersion = 1;
+        [SerializeField] protected string saveVersion = "1.0.0";
         [SerializeField] protected string utcTimeStamp = string.Empty;
 
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
         public string SaveID => saveID;
-        public float SaveVersion
+        public string SaveVersion
         {
             get { return saveVersion; }
             set { saveVersion = value; }
@@ -78,6 +86,13 @@ namespace Amanita.SaveSys
             string json = JsonUtility.ToJson(this, true);
             SaveDataUnit result = new(TypeName, json);
             return result;
+        }
+
+        public SaveMetaData()
+        {
+            this.saveID = System.Guid.NewGuid().ToString();
+            this.timeStamp = DateTime.UtcNow;
+            UpdateTimeStampString();
         }
 
         public SaveMetaData(string saveID = null, DateTime timeStamp = default)
