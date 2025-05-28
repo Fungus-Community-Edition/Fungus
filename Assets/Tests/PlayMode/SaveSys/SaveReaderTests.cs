@@ -16,6 +16,7 @@ namespace Amanita.SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            SaveSystem.InitPaths();
             PrepScene();
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
@@ -41,7 +42,7 @@ namespace Amanita.SaveSystemTests
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
-        protected SaveWriteRequest writeArgs = new SaveWriteRequest
+        protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
             SaveName = "TestSave",
             SlotNumber = 0,
@@ -50,10 +51,20 @@ namespace Amanita.SaveSystemTests
         };
 
         [Test]
-        [Ignore("")]
         public virtual void ReadsMetadataProperly()
         {
-            
+            saveWriter.WriteOneToDisk(writeReq);
+
+            SaveReadRequest readReq = new SaveReadRequest
+            {
+                SlotNumber = writeReq.SlotNumber,
+                BaseSaveDirectory = writeReq.BaseSaveDirectory,
+            };
+
+            SaveMetaData expectedSaveMetaData = writeReq.SaveMetaData;
+
+            SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
+            Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
         }
 
     }

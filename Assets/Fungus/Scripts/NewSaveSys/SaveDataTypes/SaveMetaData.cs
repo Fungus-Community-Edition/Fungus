@@ -16,7 +16,7 @@ namespace Amanita.SaveSys
         // ^To let players personalize their saves and get a better sense
         // of ownership over their progress
         [SerializeField] protected string saveID = string.Empty;
-        [SerializeField] protected string saveVersion = "1.0.0";
+        [SerializeField] protected string saveVersion = string.Empty;
         [SerializeField] protected string utcTimeStamp = string.Empty;
 
         public string Name
@@ -92,7 +92,18 @@ namespace Amanita.SaveSys
         {
             this.saveID = System.Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
+
+            MakeSureWeHaveSaveVersion();
+
             UpdateTimeStampString();
+        }
+
+        protected virtual void MakeSureWeHaveSaveVersion()
+        {
+            if (string.IsNullOrEmpty(this.SaveVersion))
+            {
+                SaveVersion = Application.version;
+            }
         }
 
         public SaveMetaData(string saveID = null, DateTime timeStamp = default)
@@ -111,6 +122,7 @@ namespace Amanita.SaveSys
                 this.timeStamp = DateTime.UtcNow;
             }
 
+            MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
         }
 
