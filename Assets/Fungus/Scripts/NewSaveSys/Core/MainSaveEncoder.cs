@@ -14,13 +14,13 @@ namespace Amanita.SaveSys
 
         public virtual SaveDataUnit EncodeToUnit(object toMakeFrom)
         {
-            AmanitaSaveData result = Encode(toMakeFrom);
+            CompositeSaveData result = Encode(toMakeFrom);
             return result.Serialized();
         }
 
-        public virtual AmanitaSaveData Encode(object toMakeFrom)
+        public virtual CompositeSaveData Encode(object toMakeFrom)
         {
-            AmanitaSaveData result = new AmanitaSaveData();
+            CompositeSaveData result = new CompositeSaveData();
             foreach (var encoder in subEncoders)
             {
                 // Some sub encoders are not supposed to take in any particular input;
@@ -35,7 +35,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public SaveDataUnit Encode(AmanitaSaveData toMakeFrom = null)
+        public SaveDataUnit Encode(CompositeSaveData toMakeFrom = null)
         {
             throw new System.NotImplementedException();
         }

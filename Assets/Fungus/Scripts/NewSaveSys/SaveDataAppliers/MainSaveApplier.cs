@@ -6,7 +6,7 @@ namespace Amanita.SaveSys
     {
         [SerializeField] protected SaveDataApplier[] subAppliers;
 
-        public virtual void Apply(AmanitaSaveData saveData)
+        public virtual void Apply(CompositeSaveData saveData)
         {
             foreach (var applierEl in subAppliers)
             {

@@ -14,6 +14,7 @@ namespace Amanita.SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            Debug.Log("Some log message");
             PrepScene();
             flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
             flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);

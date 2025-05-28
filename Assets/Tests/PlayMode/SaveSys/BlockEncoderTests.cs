@@ -24,7 +24,8 @@ namespace Amanita.SaveSystemTests
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
             PrepVars();
             block = flowchart.FindBlock("TestBlock");
-            blockEncoder = ScriptableObject.CreateInstance<BlockSaveEncoder>();
+            string pathToEncoder = "SaveEncoders/BlockSaveEncoder";
+            blockEncoder = Resources.Load<BlockSaveEncoder>(pathToEncoder);
             blockSaveData = blockEncoder.EncodeToSave(block);
         }
 
