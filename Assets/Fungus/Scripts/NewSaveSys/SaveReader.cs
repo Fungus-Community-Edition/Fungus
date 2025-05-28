@@ -21,28 +21,9 @@ namespace Amanita.SaveSys
 
         public virtual SaveMetaData ReadMetadataFromDisk(SaveReadRequest request)
         {
-            string saveFolder, fileName, filePath;
-
-            GetAndPrepSaveFolderPath();
-            void GetAndPrepSaveFolderPath()
-            {
-                saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
-                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
-                if (thereIsRelativePathToConsider)
-                {
-                    saveFolder = Path.Combine(saveFolder, relativeSavePath);
-                }
-
-                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
-            }
-
-            GetFileNameAndPath();
-            void GetFileNameAndPath()
-            {
-                fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
-                filePath = string.Format(filePathFormat, saveFolder, fileName);
-            }
-
+            string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            GetFileNameAndPath(request, saveFolderPath, out string filePath);
+            
             SaveMetaData result = null;
             // We assume that the metadata and main data are written as separate strings
             if (!readEncrypted)
@@ -60,10 +41,46 @@ namespace Amanita.SaveSys
 
             return result;
         }
-    
+
+        protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
+        {
+            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+            bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
+            if (thereIsRelativePathToConsider)
+            {
+                saveFolder = Path.Combine(saveFolder, relativeSavePath);
+            }
+
+            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+            return saveFolder;
+        }
+
+        protected virtual void GetFileNameAndPath(SaveReadRequest request, string saveFolderPath, out string filePath)
+        {
+            string fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
+            filePath = string.Format(filePathFormat, saveFolderPath, fileName);
+        }
+
         public virtual AmanitaSaveData ReadMainSaveDataFromDisk(SaveReadRequest request)
         {
-            throw new NotImplementedException();
+            string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            GetFileNameAndPath(request, saveFolderPath, out string filePath);
+
+            AmanitaSaveData result = null;
+            // We assume that the metadata and main data are written as separate strings
+            if (!readEncrypted)
+            {
+                string wholeText = File.ReadAllText(filePath);
+                IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
+                string jsonForMainSaveData = splitIntoJsons[1];
+                result = JsonUtility.FromJson<AmanitaSaveData>(jsonForMainSaveData);
+            }
+            else
+            {
+                throw new NotImplementedException("Didn't implement reading encrypted data yet.");
+            }
+
+            return result;
         }
     }
 

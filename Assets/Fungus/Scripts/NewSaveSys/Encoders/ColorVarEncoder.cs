@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarEncoder : IVarEncoder, ISaveEncoder<Variable, VariableSaveData>
+    public class ColorVarEncoder : IVarEncoder
     {
         public virtual System.Object ToMakeFrom { get; set; } = null;
         public virtual int Priority => 0;
@@ -21,7 +21,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData EncodeToUnit(Variable variable)
+        public virtual VariableSaveData EncodeToSave(Variable variable)
         {
             VariableSaveData result = new()
             {
@@ -89,9 +89,9 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual SaveDataUnit Encode()
+        public virtual SaveDataUnit EncodeToUnit()
         {
-            VariableSaveData saveData = EncodeToUnit(ToMakeFrom as Variable);
+            VariableSaveData saveData = EncodeToSave(ToMakeFrom as Variable);
             if (saveData == null)
             {
                 Debug.LogError($"Failed to encode {ToMakeFrom} as VariableSaveData in {this.GetType().Name}.");
@@ -102,14 +102,14 @@ namespace Amanita.SaveSys
             return unit;
         }
 
-        public IList<SaveDataUnit> EncodeMulti(IList<object> multipleToMakeFrom)
+        public IList<SaveDataUnit> EncodeMultiSaves(IList<object> multipleToMakeFrom)
         {
             IList<SaveDataUnit> result = new List<SaveDataUnit>();
             foreach (Variable varElem in multipleToMakeFrom)
             {
                 if (CanHandle(varElem))
                 {
-                    SaveDataUnit unit = EncodeToUnit(varElem).Serialized();
+                    SaveDataUnit unit = EncodeToSave(varElem).Serialized();
                     result.Add(unit);
                 }
                 else

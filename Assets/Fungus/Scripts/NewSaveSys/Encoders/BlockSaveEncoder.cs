@@ -17,23 +17,23 @@ namespace Amanita.SaveSys
         {
             return typeName == nameof(Flowchart);
         }
-        public virtual IList<BlockSaveData> EncodeMulti(Flowchart withTheBlocks)
+        public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
         {
             IList<BlockSaveData> blockSaves = withTheBlocks.GetExecutingBlocks()
-                .Select(block => EncodeToUnit(block))
+                .Select(block => EncodeToSave(block))
                 .ToList();
             return blockSaves;
         }
 
-        public virtual IList<BlockSaveData> EncodeToUnit(IList<Block> toCreateFrom)
+        public virtual IList<BlockSaveData> EncodeToMultiSaves(IList<Block> toCreateFrom)
         {
             List<BlockSaveData> blockSaves = toCreateFrom
-                .Select(block => EncodeToUnit(block))
+                .Select(block => EncodeToSave(block))
                 .ToList();
             return blockSaves;
         }
 
-        public override BlockSaveData EncodeToUnit(Block toCreateFrom)
+        public override BlockSaveData EncodeToSave(Block toCreateFrom)
         {
             // We assume that the Block was indeed executing at this point.
             int itemId = toCreateFrom.ItemId;
@@ -61,5 +61,16 @@ namespace Amanita.SaveSys
             return blockSave;
         }
 
+        public override SaveDataUnit EncodeToUnit(Block from)
+        {
+            BlockSaveData blockSaveData = EncodeToSave(from);
+            SaveDataUnit result = blockSaveData.Serialized();
+            return result;
+        }
+
+        public override SaveDataUnit EncodeToUnit()
+        {
+            return EncodeToUnit(ToMakeFrom);
+        }
     }
 }

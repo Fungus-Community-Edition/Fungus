@@ -74,7 +74,7 @@ namespace Amanita.SaveSys
             }
             Decode(variable, saveData.Value);
         }
-        public virtual VariableSaveData EncodeToUnit(Variable variable)
+        public virtual VariableSaveData EncodeToSave(Variable variable)
         {
             string data = EncodeToString(variable);
             if (string.IsNullOrEmpty(data))

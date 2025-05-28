@@ -26,7 +26,7 @@ namespace Amanita.SaveSys
         // back to a float, we get the exact same value.
         // We want to decode things as accurately as possible, so...
 
-        public virtual VariableSaveData EncodeToUnit(Variable variable)
+        public virtual VariableSaveData EncodeToSave(Variable variable)
         {
             VariableSaveData result = new()
             {
