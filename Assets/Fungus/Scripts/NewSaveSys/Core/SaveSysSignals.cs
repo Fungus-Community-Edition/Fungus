@@ -5,6 +5,6 @@ namespace Amanita.SaveSys
 {
     public static class SaveSysSignals
     {
-        public static UnityAction<AmanitaSaveData, string, string> AmanitaSaveWritten = delegate { };
+        public static UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
     }
 }
