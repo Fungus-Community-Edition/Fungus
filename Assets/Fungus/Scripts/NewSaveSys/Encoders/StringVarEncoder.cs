@@ -18,7 +18,7 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(Variable variable) => ((StringVariable)variable).Value;
 
-        public virtual VariableSaveData EncodeToUnit(Variable variable)
+        public virtual VariableSaveData EncodeToSave(Variable variable)
         {
             VariableSaveData result = new()
             {

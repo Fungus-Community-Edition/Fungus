@@ -20,6 +20,11 @@ namespace Amanita.SaveSystemTests
             PrepScene();
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
+            readReq = new SaveReadRequest
+            {
+                SlotNumber = writeReq.SlotNumber,
+                BaseSaveDirectory = writeReq.BaseSaveDirectory,
+            };
         }
 
         protected virtual void PrepScene()
@@ -35,11 +40,23 @@ namespace Amanita.SaveSystemTests
         protected Flowchart flowchart;
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
+        protected SaveReadRequest readReq;
 
         [TearDown]
         public virtual void DoTearDown()
         {
             UnityObject.DestroyImmediate(varStateTestScene);
+        }
+
+        [Test]
+        public virtual void ReadsMetadataProperly()
+        {
+            saveWriter.WriteOneToDisk(writeReq);
+
+            SaveMetaData expectedSaveMetaData = writeReq.SaveMetaData;
+
+            SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
+            Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
         }
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
@@ -51,20 +68,15 @@ namespace Amanita.SaveSystemTests
         };
 
         [Test]
-        public virtual void ReadsMetadataProperly()
+        public virtual void ReadsMainSaveDataProperly()
         {
             saveWriter.WriteOneToDisk(writeReq);
 
-            SaveReadRequest readReq = new SaveReadRequest
-            {
-                SlotNumber = writeReq.SlotNumber,
-                BaseSaveDirectory = writeReq.BaseSaveDirectory,
-            };
+            AmanitaSaveData expectedMainSaveData = writeReq.SaveData as AmanitaSaveData;
 
-            SaveMetaData expectedSaveMetaData = writeReq.SaveMetaData;
+            AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+            Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
 
-            SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
-            Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
         }
 
     }

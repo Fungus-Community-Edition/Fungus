@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 
@@ -19,20 +18,45 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
+            PrepVars();
+            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
+            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveWriter.RelativeSavePath = string.Empty;
             SaveSystem.InitPaths();
+
+            flowchartSaveEncoder.ToMakeFrom = flowchart;
+            SaveDataUnit unit = flowchartSaveData.Serialized();
+            AmanitaSaveData mainSaveData = new AmanitaSaveData()
+            {
+
+            };
+            writeArgs = new SaveWriteRequest
+            {
+                SaveName = "TestSave",
+                SlotNumber = 0,
+                SaveData = new AmanitaSaveData(),
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
         }
+
+        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartApplier flowchartApplier;
+        protected FlowchartSaveData flowchartSaveData = null;
 
         protected virtual void PrepScene()
         {
             varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
             varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
             playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
+            flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
             audioSys = AudioSystem.S;
             applier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
         }
 
+        protected Flowchart flowchart;
         protected GameObject varStateTestPrefab;
         protected GameObject varStateTestScene;
 
@@ -44,6 +68,31 @@ namespace Amanita.SaveSystemTests
         protected AudioSystem audioSys;
         protected MyceliaudioApplier applier;
         protected SaveWriter saveWriter;
+
+        protected virtual void PrepVars()
+        {
+            nameVar = (StringVariable)flowchart.GetVariable("name");
+            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
+            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
+            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
+            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+
+            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
+            stringVar.Value = "Hello, World!";
+            flowchart.Variables.Add(stringVar);
+
+            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
+        }
+
+        protected StringVariable nameVar = null;
+        protected IntegerVariable scoreVar = null;
+        protected BooleanVariable newPlayerVar = null;
+        protected FloatVariable fastestTimeVar = null;
+        protected Vector3Variable threeDPosVar = null;
+        protected Vector2Variable twoDPosVar = null;
+        protected StringVariable stringVar = null;
+        protected TransformVariable transformVar = null;
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }

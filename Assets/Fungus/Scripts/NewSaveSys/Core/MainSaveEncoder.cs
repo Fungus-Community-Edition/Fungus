@@ -47,7 +47,7 @@ namespace Amanita.SaveSys
             throw new System.NotImplementedException();
         }
 
-        public SaveDataUnit Encode()
+        public SaveDataUnit EncodeToUnit()
         {
             throw new System.NotImplementedException();
         }

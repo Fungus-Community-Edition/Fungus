@@ -22,19 +22,30 @@ namespace Amanita.SaveSys
             return typeName == nameof(Flowchart);
         }
 
-        public virtual SaveDataUnit Encode()
-        {
-            Debug.LogError($"Encode() not implemented in {GetType().Name}.");
-            return null;
-        }
+        /// <summary>
+        /// Make sure to override this, not calling the base
+        /// </summary>
+        public abstract SaveDataUnit EncodeToUnit();
 
     }
 
     public abstract class SaveEncoder<TInput, TOutput> : SaveEncoder,
         ISaveEncoder<TInput, TOutput>
+        where TInput: class
         where TOutput : SaveData
     {
-        public abstract TOutput EncodeToUnit(TInput from);
+        public virtual new TInput ToMakeFrom
+        {
+            get => base.ToMakeFrom as TInput;
+            set => base.ToMakeFrom = value;
+        }
+
+        public abstract TOutput EncodeToSave(TInput from);
+
+        /// <summary>
+        /// Make sure to override this, not calling the base
+        /// </summary>
+        public abstract SaveDataUnit EncodeToUnit(TInput from);
     }
 
 }

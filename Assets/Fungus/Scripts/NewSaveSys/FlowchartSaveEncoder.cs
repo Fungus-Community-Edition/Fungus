@@ -8,6 +8,11 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSys/FlowchartSaveEncoder")]
     public class FlowchartSaveEncoder : SaveEncoder<Flowchart, FlowchartSaveData>
     {
+        public new Flowchart ToMakeFrom
+        {
+            get { return (Flowchart)base.ToMakeFrom; }
+            set { base.ToMakeFrom = value; }
+        }
 
         protected virtual void OnEnable()
         {
@@ -19,10 +24,10 @@ namespace Amanita.SaveSys
 
         protected BlockSaveEncoder blockEncoder;
 
-        public override FlowchartSaveData EncodeToUnit(Flowchart toCreateFrom)
+        public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
             IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
-            IList<BlockSaveData> blockSaves = blockEncoder.EncodeMulti(toCreateFrom);
+            IList<BlockSaveData> blockSaves = blockEncoder.EncodeToMultiSave(toCreateFrom);
             // TODO: Save the state of certain commands (such as Conversation)
 
 
@@ -49,7 +54,7 @@ namespace Amanita.SaveSys
                     continue;
                 }
 
-                VariableSaveData varSave = forThisVar.EncodeToUnit(varEl);
+                VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
                 if (varSave == null)
                 {
                     Debug.LogError($"Failed to encode variable: {varEl.name}");
@@ -60,6 +65,18 @@ namespace Amanita.SaveSys
             }
 
             return savedVars;
+        }
+
+        public override SaveDataUnit EncodeToUnit()
+        {
+            return EncodeToUnit(ToMakeFrom);
+        }
+
+        public override SaveDataUnit EncodeToUnit(Flowchart from)
+        {
+            FlowchartSaveData saveData = EncodeToSave(from);
+            SaveDataUnit result = saveData.Serialized();
+            return result;
         }
 
     }
