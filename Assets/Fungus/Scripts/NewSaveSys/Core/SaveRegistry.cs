@@ -33,10 +33,9 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual IList<SaveMetaData> GetMultiSaveMetas(IEnumerable<int> multiSlotsToGetFrom)
+        public virtual IList<ISaveMetaData> GetMultiSaveMetas(IEnumerable<int> multiSlotsToGetFrom)
         {
-            IList<SaveMetaData> metasFound = new List<SaveMetaData>();
-
+            IList<ISaveMetaData> metasFound = new List<ISaveMetaData>();
             foreach (int slot in multiSlotsToGetFrom)
             {
                 if (_savePairs.TryGetValue(slot, out SaveDataSet dataSet))
@@ -61,7 +60,7 @@ namespace Amanita.SaveSys
             Debug.LogWarning($"Could not find {dataType} assigned to Slot {slot}. Possible causes:\n- The slot was never assigned anything\n- The file the slot corresponds to was deleted.");
         }
 
-        public virtual SaveMetaData GetSaveMeta(int slotToGetFrom)
+        public virtual ISaveMetaData GetSaveMeta(int slotToGetFrom)
         {
             bool foundMeta = _savePairs.TryGetValue(slotToGetFrom, out SaveDataSet dataSet);
 
@@ -73,18 +72,18 @@ namespace Amanita.SaveSys
             return dataSet?.Meta;
         }
 
-        public virtual IList<SaveMetaData> GetAllSaveMetas()
+        public virtual IList<ISaveMetaData> GetAllSaveMetas()
         {
             // Thanks to the safety checks, the metas we have registered
             // should all be valid. Thus, no need to check the validity here
-            IList<SaveMetaData> result = (from elem in _savePairs.Values
+            IList<ISaveMetaData> result = (from elem in _savePairs.Values
                                           select elem.Meta).ToList();
             return result;
         }
 
-        public virtual IList<SaveData> GetMultiMainSaves(IEnumerable<int> multiSlotsToGetFrom)
+        public virtual IList<ISaveData> GetMultiMainSaves(IEnumerable<int> multiSlotsToGetFrom)
         {
-            IList<SaveData> savesFound = (from int slotNum in multiSlotsToGetFrom
+            IList<ISaveData> savesFound = (from int slotNum in multiSlotsToGetFrom
                                           where GetMainSave(slotNum) != null
                                           select GetMainSave(slotNum)).ToList();
 
@@ -107,27 +106,27 @@ namespace Amanita.SaveSys
 
         }
 
-        public virtual SaveData GetMainSave(int slotToGetFrom)
+        public virtual ISaveData GetMainSave(int slotToGetFrom)
         {
-            SaveData result = null;
+            ISaveData result = null;
 
             if (_savePairs.ContainsKey(slotToGetFrom))
             {
-                result = _savePairs[slotToGetFrom].MainData;
+                result = _savePairs[slotToGetFrom].MainState;
             }
             else
             {
-                ReportMissingSlotWarning(slotToGetFrom, nameof(SaveData));
+                ReportMissingSlotWarning(slotToGetFrom, nameof(ISaveData));
             }
 
             return result;
         }
 
-        public virtual IList<SaveData> GetAllMainSaves()
+        public virtual IList<ISaveData> GetAllMainSaves()
         {
-            IList<SaveData> savesFound = (from elem in _savePairs.Values
-                                          where elem.MainData != null
-                                          select elem.MainData).ToList();
+            IList<ISaveData> savesFound = (from elem in _savePairs.Values
+                                          where elem.MainState != null
+                                          select elem.MainState).ToList();
             return savesFound;
         }
 
@@ -140,7 +139,7 @@ namespace Amanita.SaveSys
         public virtual bool HasMainSaveInSlot(int slotNumber)
         {
             return HasSaveInSlot(slotNumber) && 
-                _savePairs[slotNumber].MainData != null;
+                _savePairs[slotNumber].MainState != null;
         }
 
         public virtual bool HasSavesInAll(IEnumerable<int> slotsToConsider)
@@ -158,14 +157,14 @@ namespace Amanita.SaveSys
         /// <summary>
         /// If that save is NOT assigned to a slot, this returns -1
         /// </summary>
-        public virtual int GetSlotNumberOf(SaveData mainData)
+        public virtual int GetSlotNumberOf(ISaveData mainData)
         {
             int slotNumber = -1;
 
             foreach (int key in _savePairs.Keys)
             {
                 SaveDataSet value = _savePairs[key];
-                if (value.MainData == mainData)
+                if (value.MainState == mainData)
                 {
                     slotNumber = value.Meta.SlotNumber;
                     break;

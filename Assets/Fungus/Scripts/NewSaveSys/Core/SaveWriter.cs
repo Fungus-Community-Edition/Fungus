@@ -85,10 +85,10 @@ namespace Amanita.SaveSys
             DecideTextToWrite();
             void DecideTextToWrite()
             {
-                SaveMetaData meta = request.SaveMetaData;
+                SaveMetaData meta = (SaveMetaData)request.SaveMetaData;
                 metaStringDataToWrite = JsonUtility.ToJson(meta, true);
 
-                SaveData saveData = request.MainSaveData;
+                SaveData saveData = (SaveData)request.MainSaveData;
                 mainStringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
                 

@@ -6,13 +6,13 @@ namespace Amanita.SaveSys
     /// </summary>
     public class SaveDataSet
     {
-        public SaveDataSet(SaveMetaData meta, SaveData mainData = null)
+        public SaveDataSet(ISaveMetaData meta, ISaveData mainData = null)
         {
             Meta = meta;
-            MainData = mainData;
+            MainState = mainData;
         }
 
-        public virtual SaveMetaData Meta
+        public virtual ISaveMetaData Meta
         {
             get
             {
@@ -31,9 +31,9 @@ namespace Amanita.SaveSys
 
             }
         }
-        protected SaveMetaData _meta;
+        protected ISaveMetaData _meta;
 
-        public virtual SaveData MainData { get; set; }
+        public virtual ISaveData MainState { get; set; }
         public virtual int SlotNumber { get { return Meta.SlotNumber; } }
 
     }

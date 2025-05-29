@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Amanita.SaveSys
 {
     [Serializable]
-    public abstract class SaveData
+    public abstract class SaveData : ISaveData
     {
         public SaveData() { }
         public abstract SaveDataUnit Serialized();
@@ -58,7 +58,6 @@ namespace Amanita.SaveSys
     public interface ISaveData
     {
         void OnDeserialize();
-
         string TypeName { get; }
     }
 

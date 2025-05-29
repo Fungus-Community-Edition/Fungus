@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Amanita.SaveSys
 {
@@ -13,7 +14,7 @@ namespace Amanita.SaveSys
     public class AmanitaSaveData : SaveData, IEquatable<AmanitaSaveData>
     {
         [SerializeField] protected List<SaveDataUnit> units = new List<SaveDataUnit>();
-        public virtual IList<SaveDataUnit> Units { get { return units; } }
+        public virtual IList<ISaveDataUnit> Units { get { return units.Cast<ISaveDataUnit>().ToList(); ; } }
         // ^For pretty much everything that is to be saved. Flowchart state, Myceliaudio's state, etc.
 
         public override SaveDataUnit Serialized()
@@ -23,7 +24,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual void Add(SaveDataUnit unit)
+        public virtual void Add(ISaveDataUnit unit)
         {
             if (unit == null)
             {
@@ -33,7 +34,7 @@ namespace Amanita.SaveSys
             Units.Add(unit);
         }
 
-        public virtual void RemoveUnit(SaveDataUnit unit)
+        public virtual void RemoveUnit(ISaveDataUnit unit)
         {
             if (unit == null)
             {

@@ -432,7 +432,7 @@ namespace Amanita.SaveSystemTests
                 }
                 Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-                SaveData saveData = writeArgs.MainSaveData;
+                SaveData saveData = (SaveData)writeArgs.MainSaveData;
                 stringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
                 fileName = string.Format(fileNameFormat, savePrefix, writeArgs.SlotNumber, fileExtension);

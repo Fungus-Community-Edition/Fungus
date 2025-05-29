@@ -8,6 +8,7 @@ using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
+    [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor
     {
         [SerializeField] protected bool readEncrypted = false;
@@ -70,13 +71,28 @@ namespace Amanita.SaveSys
             // We assume that the metadata and main data are written as separate strings
             if (!readEncrypted)
             {
-                string wholeText = File.ReadAllText(filePath);
-                IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
-                string jsonForMainSaveData = splitIntoJsons[1];
-                result = JsonUtility.FromJson<AmanitaSaveData>(jsonForMainSaveData);
+                result = ReadRaw();
+                AmanitaSaveData ReadRaw()
+                {
+                    AmanitaSaveData result;
+                    string wholeText = File.ReadAllText(filePath);
+                    IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
+                    string jsonForMainSaveData = splitIntoJsons[1];
+                    result = JsonUtility.FromJson<AmanitaSaveData>(jsonForMainSaveData);
+                    return result;
+                }
             }
             else
             {
+                AmanitaSaveData ReadEncrypted()
+                {
+                    AmanitaSaveData result;
+                    string wholeText = File.ReadAllText(filePath);
+                    // Expected to be a byte array encoded by the default save writer
+
+
+                    throw new NotImplementedException();
+                }
                 throw new NotImplementedException("Didn't implement reading encrypted data yet.");
             }
 

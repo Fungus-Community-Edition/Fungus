@@ -10,7 +10,7 @@ namespace Amanita.SaveSys
     /// For things that you'd want to show in the Save Slot UI or things that you'd otherwise
     /// not really consider part of the save's main state.
     /// </summary>
-    public class SaveMetaData : SaveData, IEquatable<SaveMetaData>
+    public class SaveMetaData : SaveData, ISaveMetaData, IEquatable<SaveMetaData>
     {
         [SerializeField] protected string name = string.Empty;
         // ^To let players personalize their saves and get a better sense
@@ -154,5 +154,15 @@ namespace Amanita.SaveSys
                 utcTimeStamp == other.utcTimeStamp;
         }
 
+    }
+
+    // For stuff that probably all save meta data should have
+    public interface ISaveMetaData
+    {
+        string SaveID { get; }
+        int SlotNumber { get; }
+        string SaveVersion { get; }
+        DateTime TimeStamp { get; }
+        
     }
 }

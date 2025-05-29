@@ -1,11 +1,13 @@
-using NUnit.Framework;
-using UnityEngine;
-using System.Collections;
 using Amanita.SaveSys;
+using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
-using UnityObject = UnityEngine.Object;
+using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.TestTools;
+using Encoding = System.Text.Encoding;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
@@ -53,7 +55,7 @@ namespace Amanita.SaveSystemTests
         {
             saveWriter.WriteOneToDisk(writeReq);
 
-            SaveMetaData expectedSaveMetaData = writeReq.SaveMetaData;
+            SaveMetaData expectedSaveMetaData = (SaveMetaData)writeReq.SaveMetaData;
 
             SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
             Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
@@ -68,16 +70,33 @@ namespace Amanita.SaveSystemTests
         };
 
         [Test]
-        public virtual void ReadsMainSaveDataProperly()
+        public virtual void ReadsMainSaveDataProperly_NONEncrypted()
         {
+            saveWriter.WriteEncrypted = false;
             saveWriter.WriteOneToDisk(writeReq);
 
             AmanitaSaveData expectedMainSaveData = writeReq.MainSaveData as AmanitaSaveData;
-
             AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
 
         }
+
+        [Test]
+        public virtual void ReadsMainSaveDataProperly_Encrypted()
+        {
+            saveWriter.WriteEncrypted = true;
+            saveWriter.WriteOneToDisk(writeReq);
+
+            AmanitaSaveData expectedMainSaveData = writeReq.MainSaveData as AmanitaSaveData;
+            AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+
+            Assert.AreEqual(expectedMainSaveData, whatWeGot, "The (encrypted) main save data was not read from disk properly.");
+
+        }
+
+        protected Encoding utf8 = Encoding.UTF8;
+        protected const string fileNameFormat = "{0}_0{1}.{2}";
 
     }
 }
