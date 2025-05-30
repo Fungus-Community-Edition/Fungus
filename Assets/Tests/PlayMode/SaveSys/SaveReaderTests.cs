@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
@@ -27,6 +28,10 @@ namespace Amanita.SaveSystemTests
                 SlotNumber = writeReq.SlotNumber,
                 BaseSaveDirectory = writeReq.BaseSaveDirectory,
             };
+
+            waitToYield = new WaitForSeconds(waitTime);
+            string pathToEncoder = "SaveEncoders/FlowchartSaveEncoder";
+            flowchartSaveEncoder = Resources.Load<FlowchartSaveEncoder>(pathToEncoder);
         }
 
         protected virtual void PrepScene()
@@ -40,9 +45,15 @@ namespace Amanita.SaveSystemTests
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
+        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveData flowchartSaveData;
+        protected BlockSaveEncoder blockSaveEncoder;
+
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected SaveReadRequest readReq;
+        float waitTime = 0.1f;
+        WaitForSeconds waitToYield;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -50,46 +61,65 @@ namespace Amanita.SaveSystemTests
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
-        [Test]
-        public virtual void ReadsMetadataProperly()
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMetadataProperly_NONEncrypted()
         {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
             saveWriter.WriteOneToDisk(writeReq);
 
             SaveMetaData expectedSaveMetaData = (SaveMetaData)writeReq.SaveMetaData;
 
-            SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
+            SaveMetaData whatWeGot = (SaveMetaData) saveReader.ReadMetadataFromDisk(readReq);
             Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
+        }
+
+        protected virtual IEnumerator CommonSetup()
+        {
+            yield return waitToYield;
+            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+            mainSave.Add(flowchartSaveData.Serialized());
         }
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
             SaveName = "TestSave",
             SlotNumber = 0,
-            MainSaveData = new AmanitaSaveData(),
+            MainState = new CompositeSaveData(),
+            SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
-        [Test]
-        public virtual void ReadsMainSaveDataProperly_NONEncrypted()
+        [UnityTest]
+        public virtual IEnumerator ReadsMainSaveDataProperly_NONEncrypted()
         {
-            saveWriter.WriteEncrypted = false;
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
             saveWriter.WriteOneToDisk(writeReq);
 
-            AmanitaSaveData expectedMainSaveData = writeReq.MainSaveData as AmanitaSaveData;
-            AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+            CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
+            CompositeSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
 
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
 
         }
 
-        [Test]
-        public virtual void ReadsMainSaveDataProperly_Encrypted()
+        [UnityTest]
+        public virtual IEnumerator ReadsMainSaveDataProperly_Encrypted()
         {
-            saveWriter.WriteEncrypted = true;
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
             saveWriter.WriteOneToDisk(writeReq);
 
-            AmanitaSaveData expectedMainSaveData = writeReq.MainSaveData as AmanitaSaveData;
-            AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+            CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
+            CompositeSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
 
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The (encrypted) main save data was not read from disk properly.");
 

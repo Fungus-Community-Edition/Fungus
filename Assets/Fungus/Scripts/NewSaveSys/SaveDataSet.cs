@@ -4,7 +4,7 @@ namespace Amanita.SaveSys
     /// This should always be assigned a meta, but not always a main. Better to
     /// read mains from disk on demand rather than right on system startup.
     /// </summary>
-    public class SaveDataSet
+    public class SaveDataSet : ISaveDataSet
     {
         public SaveDataSet(ISaveMetaData meta, ISaveData mainData = null)
         {
@@ -36,5 +36,11 @@ namespace Amanita.SaveSys
         public virtual ISaveData MainState { get; set; }
         public virtual int SlotNumber { get { return Meta.SlotNumber; } }
 
+    }
+
+    public interface ISaveDataSet
+    {
+        ISaveMetaData Meta { get; }
+        ISaveData MainState { get; }
     }
 }

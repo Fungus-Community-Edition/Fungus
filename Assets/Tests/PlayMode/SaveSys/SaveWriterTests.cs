@@ -28,7 +28,7 @@ namespace Amanita.SaveSystemTests
 
             flowchartSaveEncoder.ToMakeFrom = flowchart;
             SaveDataUnit unit = flowchartSaveData.Serialized();
-            AmanitaSaveData mainSaveData = new AmanitaSaveData()
+            CompositeSaveData mainSaveData = new CompositeSaveData()
             {
 
             };
@@ -36,7 +36,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
@@ -117,7 +117,7 @@ namespace Amanita.SaveSystemTests
         {
             SaveName = "TestSave",
             SlotNumber = 0,
-            MainSaveData = new AmanitaSaveData(),
+            MainState = new CompositeSaveData(),
             SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
@@ -203,7 +203,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainSaveData = null, // Intentionally null to test rejection.
+                MainState = null, // Intentionally null to test rejection.
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
@@ -226,7 +226,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = null, // Intentionally null to test rejection.
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
@@ -246,7 +246,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = -1, // Intentionally negative to test rejection.
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
@@ -266,7 +266,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
             };
             Assert.Throws<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
@@ -305,7 +305,7 @@ namespace Amanita.SaveSystemTests
                 {
                     SaveName = "TestSave1",
                     SlotNumber = 0,
-                    MainSaveData = new AmanitaSaveData(),
+                    MainState = new CompositeSaveData(),
                     SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.DataPath
                 },
@@ -313,7 +313,7 @@ namespace Amanita.SaveSystemTests
                 {
                     SaveName = "TestSave2",
                     SlotNumber = 1,
-                    MainSaveData = new AmanitaSaveData(),
+                    MainState = new CompositeSaveData(),
                     SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.PersistentDataPath
                 },
@@ -321,7 +321,7 @@ namespace Amanita.SaveSystemTests
                 {
                     SaveName = "TestSave3",
                     SlotNumber = 2,
-                    MainSaveData = new AmanitaSaveData(),
+                    MainState = new CompositeSaveData(),
                     SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath
                 }
@@ -361,13 +361,13 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSaveContentVerification",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 SaveMetaData = new SaveMetaData { },
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
             string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainSaveData, true);
+            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
             CommonSaveWriteTest(writeArgs);
@@ -393,6 +393,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void VerifyFileContent_Encrypted_AfterWrite()
         {
+            
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
             // ^Since it might get set to null by other tests, we need to reset it
             saveWriter.WriteEncrypted = true; // Set to true to test encrypted writing
@@ -401,13 +402,13 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSaveEncrypted",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
             string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainSaveData, true);
+            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
             byte key = 0xAA;
@@ -432,7 +433,7 @@ namespace Amanita.SaveSystemTests
                 }
                 Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-                SaveData saveData = (SaveData)writeArgs.MainSaveData;
+                SaveData saveData = (SaveData)writeArgs.MainState;
                 stringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
                 fileName = string.Format(fileNameFormat, savePrefix, writeArgs.SlotNumber, fileExtension);
@@ -445,7 +446,8 @@ namespace Amanita.SaveSystemTests
                 // Read the encrypted file
                 byte[] encryptedData = File.ReadAllBytes(filePath);
                 // Decrypt it
-                byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key)).ToArray();
+                byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key))
+                    .ToArray();
                 // Convert it back to string
                 decryptedString = utf8.GetString(decryptedData);
             }
@@ -551,7 +553,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainSaveData = null, // Intentionally null to test rejection.
+                MainState = null, // Intentionally null to test rejection.
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
@@ -576,7 +578,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = null, // Intentionally null to test rejection.
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
@@ -600,7 +602,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = -1, // Intentionally negative to test rejection.
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
@@ -624,7 +626,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
             };
             Assert.Throws<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
@@ -675,7 +677,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSaveDirectoryCreation",
                 SlotNumber = 0,
-                MainSaveData = new AmanitaSaveData(),
+                MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 

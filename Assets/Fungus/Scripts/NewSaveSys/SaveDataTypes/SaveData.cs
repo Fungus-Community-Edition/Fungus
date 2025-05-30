@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -7,6 +8,7 @@ namespace Amanita.SaveSys
     public abstract class SaveData : ISaveData
     {
         public SaveData() { }
+
         public abstract SaveDataUnit Serialized();
 
         /// <summary>

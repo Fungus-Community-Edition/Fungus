@@ -39,7 +39,7 @@ namespace Amanita.SaveSystemTests
         protected FlowchartApplier flowchartApplier;
         protected FlowchartSaveData flowchartSaveData = null;
         protected SaveMetaData metaData = new SaveMetaData();
-        protected AmanitaSaveData mainSaveData = new AmanitaSaveData();
+        protected CompositeSaveData mainSaveData = new CompositeSaveData();
 
         protected virtual void PrepScene()
         {
@@ -97,7 +97,6 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        //[Ignore("")]
         public virtual void ReturnsExpectedBytes()
         {
             try
@@ -129,9 +128,25 @@ namespace Amanita.SaveSystemTests
         protected Encoding utf8 = Encoding.UTF8;
 
         [Test]
-        public virtual void SomeTest()
+        public virtual void RejectsNullInput()
         {
-            Debug.Log("This is some test");
+            Assert.Throws<System.NullReferenceException>(() => { encryptor.GetOutput(null); },
+                "Does not reject null input.");
+        }
+
+        [Test]
+        public virtual void RejectsNonSaveDataSetInput()
+        {
+            Assert.Throws<System.ArgumentException>(() => { encryptor.GetOutput(varStateTestScene); },
+                $"Accepted a scene as input when it shouldn't.");
+            Assert.Throws<System.ArgumentException>(() => { encryptor.GetOutput(flowchartApplier); },
+                "Accepted a FlowchartApplier when it shouldn't.");
+            Assert.Throws<System.ArgumentException>(() => { encryptor.GetOutput(encryptor); },
+                "Accepted itself when it shouldn't.");
+            Assert.Throws<System.ArgumentException>(() => { encryptor.GetOutput(saveDataSet.Meta); },
+                "Accepted the metadata itself when it should've been in another container.");
+            Assert.Throws<System.ArgumentException>(() => { encryptor.GetOutput(saveDataSet.MainState); },
+                "Accepted the main state itself when it should've been in another container.");
         }
     }
 }

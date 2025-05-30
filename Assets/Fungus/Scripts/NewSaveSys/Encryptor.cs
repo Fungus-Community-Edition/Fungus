@@ -16,7 +16,29 @@ namespace Amanita.SaveSys
     {
         public virtual object GetOutput(object input)
         {
-            Validate(input);
+            SaveDataSet dataSet = input as SaveDataSet;
+            Validate();
+            void Validate()
+            {
+                string errorMessage = string.Empty;
+                System.Exception exception = null;
+
+                if (input == null)
+                {
+                    errorMessage = "Null input given to encryptor.";
+                    exception = new System.NullReferenceException(errorMessage);
+                }
+                else if (input is not SaveDataSet)
+                {
+                    errorMessage = "Encryptor given wrong variety of input.";
+                    exception = new System.ArgumentException(errorMessage);
+                }
+
+                if (exception != null)
+                {
+                    throw exception;
+                }
+            }
 
             string fullJson = GetFullTextToEncrypt();
             string GetFullTextToEncrypt()
@@ -34,40 +56,12 @@ namespace Amanita.SaveSys
                 byte[] result = Encoding.GetBytes(fullJson)
                     .Select(b => (byte)(b ^ key))
                     .ToArray();
-
-                string logMessage = $"What should be a byte array is actually a {result.GetType().FullName}";
-                Console.WriteLine(logMessage);
-               Debug.Log(logMessage);
                 return result;
             }
-            
+
             return endResult;
         }
 
-        protected virtual void Validate(object input)
-        {
-            dataSet = input as SaveDataSet;
-            string errorMessage = string.Empty;
-            System.Exception exception = null;
-
-            if (input == null)
-            {
-                errorMessage = "Null input given to encryptor.";
-                exception = new System.NullReferenceException(errorMessage);
-            }
-            else if (input is not SaveDataSet)
-            {
-                errorMessage = "Encryptor given wrong variety of input.";
-                exception = new System.ArgumentException(errorMessage);
-            }
-
-            if (exception != null)
-            {
-                throw exception;
-            }
-        }
-
-        protected SaveDataSet dataSet;
         protected static string Delimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
 
         protected virtual Encoding Encoding => Encoding.UTF8;
