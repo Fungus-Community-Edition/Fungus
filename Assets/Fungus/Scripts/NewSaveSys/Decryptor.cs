@@ -36,17 +36,15 @@ namespace Amanita.SaveSys
 
         protected string DecryptIntoPlainJson(object input)
         {
-            Validate(input, out string rawString, out bool isAlreadyFullJson);
+            Validate(input, out byte[] rawBytes, out bool writtenAsPlainText);
             string plainJson;
 
-            if (isAlreadyFullJson)
+            if (writtenAsPlainText)
             {
-                plainJson = rawString;
+                plainJson = Encoding.GetString(rawBytes);
             }
             else
             {
-                byte[] rawBytes = Encoding.GetBytes(rawString);
-
                 byte key = 0xAA;
                 // ^We assume that the original encryption was UTF8 outputting
                 // a byte array with the bytes shifted by this exact key.
@@ -64,7 +62,7 @@ namespace Amanita.SaveSys
         /// Checks if the input is legit. If so, it sets the passed objArray to
         /// what we expected it to be to begin with. Otherwise, throws exceptions.
         /// </summary>
-        protected virtual void Validate(object input, out string rawString, out bool isAlreadyFullJson)
+        protected virtual void Validate(object input, out byte[] rawBytes, out bool writtenAsPlainText)
         {
             object[] objArray = input as object[];
             string errorMessage;
@@ -81,7 +79,7 @@ namespace Amanita.SaveSys
 
             else if (objArray == null ||
                 objArray.Length != expectedInputArgCount ||
-                objArray[0] is not string ||
+                objArray[0] is not byte[] ||
                 objArray[1] is not bool)
             {
                 errorMessage = "Decryptor given wrong variety of input.";
@@ -93,8 +91,8 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            rawString = (string)objArray[0];
-            isAlreadyFullJson = (bool)objArray[1];
+            rawBytes = (byte[])objArray[0];
+            writtenAsPlainText = (bool)objArray[1];
         }
 
         protected static int expectedInputArgCount = 2;

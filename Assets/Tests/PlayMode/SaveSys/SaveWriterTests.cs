@@ -443,12 +443,9 @@ namespace Amanita.SaveSystemTests
             ReadAndDecrypt();
             void ReadAndDecrypt()
             {
-                // Read the encrypted file
                 byte[] encryptedData = File.ReadAllBytes(filePath);
-                // Decrypt it
                 byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key))
                     .ToArray();
-                // Convert it back to string
                 decryptedString = utf8.GetString(decryptedData);
             }
 

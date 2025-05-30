@@ -91,10 +91,10 @@ namespace Amanita.SaveSys
             string saveFolderPath = GetAndPrepSaveFolderPath(request);
             GetFullFilePath(request, saveFolderPath, out string filePath);
 
-            string wholeText = File.ReadAllText(filePath);
-            bool isAlreadyJson = !readEncrypted;
-            // ^We assume it is json, anyway.
-            object[] infoForDecryptor = new object[] { wholeText, isAlreadyJson };
+            bool writtenAsPlainText = !readEncrypted;
+
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
             
