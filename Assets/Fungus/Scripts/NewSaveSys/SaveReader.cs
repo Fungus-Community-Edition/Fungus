@@ -47,24 +47,35 @@ namespace Amanita.SaveSys
         public virtual ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request)
         {
             string saveFolderPath = GetAndPrepSaveFolderPath(request);
-            GetFullFilePath(request, saveFolderPath, out string fullFilePath);
-            
-            ISaveMetaData result = null;
-            string wholeText = File.ReadAllText(fullFilePath);
-            // We assume that the metadata and main data are written as separate strings
-            if (!readEncrypted)
-            {
-                IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
-                string jsonForMetadata = splitIntoJsons[0];
-                // We don't care about the main data in this func, so we'll ignore it
-                result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
-            }
-            else
-            {
-                result = usableDecryptor.DecryptMeta(wholeText);
-            }
+            GetFullFilePath(request, saveFolderPath, out string filePath);
 
+            bool writtenAsPlainText = !readEncrypted;
+
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
+
+            SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(infoForDecryptor);
             return result;
+
+            //string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            //GetFullFilePath(request, saveFolderPath, out string fullFilePath);
+
+            //ISaveMetaData result = null;
+            //string wholeText = File.ReadAllText(fullFilePath);
+            //// We assume that the metadata and main data are written as separate strings
+            //if (!readEncrypted)
+            //{
+            //    IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
+            //    string jsonForMetadata = splitIntoJsons[0];
+            //    // We don't care about the main data in this func, so we'll ignore it
+            //    result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+            //}
+            //else
+            //{
+            //    result = usableDecryptor.DecryptMeta(wholeText);
+            //}
+
+            //return result;
         }
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)

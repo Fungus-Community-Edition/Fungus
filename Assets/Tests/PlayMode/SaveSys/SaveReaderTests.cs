@@ -1,5 +1,6 @@
 using Amanita.SaveSys;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -95,6 +96,21 @@ namespace Amanita.SaveSystemTests
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMetadataProperly_Encrypted()
+        {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
+            saveWriter.WriteOneToDisk(writeReq);
+
+            SaveMetaData expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
+
+            SaveMetaData whatWeGot = (SaveMetaData)(saveReader.ReadMetadataFromDisk(readReq));
+            Assert.AreEqual(expectedMeta, whatWeGot, "The save meta datas do not match.");
+        }
+
         [UnityTest]
         public virtual IEnumerator ReadsMainSaveDataProperly_NONEncrypted()
         {
@@ -127,6 +143,9 @@ namespace Amanita.SaveSystemTests
 
         protected Encoding utf8 = Encoding.UTF8;
         protected const string fileNameFormat = "{0}_0{1}.{2}";
+
+        
+
 
     }
 }

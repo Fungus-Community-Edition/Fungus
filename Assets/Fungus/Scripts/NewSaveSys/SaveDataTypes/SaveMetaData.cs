@@ -17,7 +17,7 @@ namespace Amanita.SaveSys
         // of ownership over their progress
         [SerializeField] protected string saveID = string.Empty;
         [SerializeField] protected int slotNumber = 0;
-        [SerializeField] protected string saveVersion = string.Empty;
+        [SerializeField] protected string saveVersion = "null";
         [SerializeField] protected string utcTimeStamp = string.Empty;
 
         public string Name
@@ -25,7 +25,20 @@ namespace Amanita.SaveSys
             get { return name; }
             set { name = value; }
         }
-        public string SaveID => saveID;
+        public string SaveID
+        {
+            get { return saveID; }
+            protected set
+            {
+                string toApply = value;
+
+                if (toApply.Length > IDAndVersionLengthCap)
+                {
+                    toApply = toApply[..IDAndVersionLengthCap];
+                }
+                saveID = toApply;
+            }
+        }
         public virtual int SlotNumber
         {
             get { return slotNumber; }
@@ -34,12 +47,27 @@ namespace Amanita.SaveSys
         public string SaveVersion
         {
             get { return saveVersion; }
-            set { saveVersion = value; }
+            set
+            {
+                string toApply = value;
+
+                if (string.IsNullOrEmpty(toApply))
+                {
+                    string errorMessage = "Cannot pass a null or empty save version to meta data.";
+                    throw new System.ArgumentException(errorMessage);
+                }
+
+                if (toApply.Length > IDAndVersionLengthCap)
+                {
+                    toApply = toApply[..IDAndVersionLengthCap];
+                }
+                saveVersion = toApply;
+            }
         }
         public string UTCTimeStamp
         {
             get { return utcTimeStamp; }
-            set
+            protected set
             {
                 utcTimeStamp = value;
                 UpdateTimeStampStructure();
@@ -98,9 +126,9 @@ namespace Amanita.SaveSys
         {
             this.saveID = System.Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
+            this.saveVersion = "1.0.0";
 
             MakeSureWeHaveSaveVersion();
-
             UpdateTimeStampString();
         }
 
@@ -112,13 +140,14 @@ namespace Amanita.SaveSys
             }
         }
 
-        public SaveMetaData(string saveID = null, DateTime timeStamp = default)
+        public SaveMetaData(string saveID = null, DateTime timeStamp = default,
+            string saveVersion = "_")
         {
             this.saveID = saveID;
 
-            if (string.IsNullOrEmpty(this.saveID))
+            if (string.IsNullOrEmpty(saveID))
             {
-                this.saveID = System.Guid.NewGuid().ToString();
+                this.SaveID = System.Guid.NewGuid().ToString();
             }
 
             this.timeStamp = timeStamp;
@@ -128,9 +157,12 @@ namespace Amanita.SaveSys
                 this.timeStamp = DateTime.UtcNow;
             }
 
+            this.saveVersion = saveVersion;
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
         }
+
+        public static int IDAndVersionLengthCap { get; } = 300;
 
         public static new SaveMetaData DeserializeFrom(SaveDataUnit item)
         {
@@ -154,6 +186,11 @@ namespace Amanita.SaveSys
                 utcTimeStamp == other.utcTimeStamp;
         }
 
+        public static SaveMetaData CreateFrom(ISaveMetaData other)
+        {
+            SaveMetaData result = new SaveMetaData(other.SaveID, other.TimeStamp);
+            return result;
+        }
     }
 
     // For stuff that probably all save meta data should have

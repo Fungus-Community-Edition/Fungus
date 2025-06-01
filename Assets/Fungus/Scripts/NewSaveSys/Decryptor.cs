@@ -53,6 +53,12 @@ namespace Amanita.SaveSys
                 plainJson = Encoding.GetString(originalBytes);
             }
 
+            bool shouldRemoveBOMAtTheStart = !string.IsNullOrEmpty(plainJson) && plainJson[0] == '\uFEFF';
+            if (shouldRemoveBOMAtTheStart)
+            {
+                plainJson = plainJson[1..];
+            }
+
             return plainJson;
         }
 
@@ -141,13 +147,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-    }
-
-    public interface IDecryptor
-    {
-        ISaveMetaData DecryptMeta(object input);
-        ISaveData DecryptMainState(object input);
-        ISaveDataSet DecryptWholeSet(object input);
     }
 
 }
