@@ -1,12 +1,14 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace Amanita.SaveSys
 {
     [Serializable]
-    public abstract class SaveData
+    public abstract class SaveData : ISaveData
     {
         public SaveData() { }
+
         public abstract SaveDataUnit Serialized();
 
         /// <summary>
@@ -58,7 +60,6 @@ namespace Amanita.SaveSys
     public interface ISaveData
     {
         void OnDeserialize();
-
         string TypeName { get; }
     }
 

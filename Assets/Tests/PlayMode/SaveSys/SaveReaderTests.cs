@@ -1,11 +1,15 @@
-using NUnit.Framework;
-using UnityEngine;
-using System.Collections;
 using Amanita.SaveSys;
+using NUnit.Framework;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityObject = UnityEngine.Object;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.TestTools;
+using Encoding = System.Text.Encoding;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
@@ -25,6 +29,10 @@ namespace Amanita.SaveSystemTests
                 SlotNumber = writeReq.SlotNumber,
                 BaseSaveDirectory = writeReq.BaseSaveDirectory,
             };
+
+            waitToYield = new WaitForSeconds(waitTime);
+            string pathToEncoder = "SaveEncoders/FlowchartSaveEncoder";
+            flowchartSaveEncoder = Resources.Load<FlowchartSaveEncoder>(pathToEncoder);
         }
 
         protected virtual void PrepScene()
@@ -38,9 +46,15 @@ namespace Amanita.SaveSystemTests
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
+        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveData flowchartSaveData;
+        protected BlockSaveEncoder blockSaveEncoder;
+
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected SaveReadRequest readReq;
+        float waitTime = 0.1f;
+        WaitForSeconds waitToYield;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -48,34 +62,141 @@ namespace Amanita.SaveSystemTests
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
-        [Test]
-        public virtual void ReadsMetadataProperly()
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMetadataProperly_NONEncrypted()
         {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
             saveWriter.WriteOneToDisk(writeReq);
 
-            SaveMetaData expectedSaveMetaData = writeReq.SaveMetaData;
+            SaveMetaData expectedSaveMetaData = (SaveMetaData)writeReq.SaveMetaData;
 
-            SaveMetaData whatWeGot = saveReader.ReadMetadataFromDisk(readReq);
+            SaveMetaData whatWeGot = (SaveMetaData) saveReader.ReadMetadataFromDisk(readReq);
             Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
+        }
+
+        protected virtual IEnumerator CommonSetup()
+        {
+            yield return waitToYield;
+            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+            mainSave.Add(flowchartSaveData.Serialized());
         }
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
             SaveName = "TestSave",
             SlotNumber = 0,
-            SaveData = new AmanitaSaveData(),
+            MainState = new CompositeSaveData(),
+            SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
-        [Test]
-        public virtual void ReadsMainSaveDataProperly()
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMetadataProperly_Encrypted()
         {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
             saveWriter.WriteOneToDisk(writeReq);
 
-            AmanitaSaveData expectedMainSaveData = writeReq.SaveData as AmanitaSaveData;
+            SaveMetaData expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
 
-            AmanitaSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+            SaveMetaData whatWeGot = (SaveMetaData)(saveReader.ReadMetadataFromDisk(readReq));
+            Assert.AreEqual(expectedMeta, whatWeGot, "The save meta datas do not match.");
+        }
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMainSaveDataProperly_NONEncrypted()
+        {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
+            saveWriter.WriteOneToDisk(writeReq);
+
+            CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
+            CompositeSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
+
+        }
+
+        [UnityTest]
+        public virtual IEnumerator ReadsMainSaveDataProperly_Encrypted()
+        {
+            yield return CommonSetup();
+
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
+            saveWriter.WriteOneToDisk(writeReq);
+
+            CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
+            CompositeSaveData whatWeGot = saveReader.ReadMainSaveDataFromDisk(readReq);
+
+            Assert.AreEqual(expectedMainSaveData, whatWeGot, "The (encrypted) main save data was not read from disk properly.");
+
+        }
+
+        protected Encoding utf8 = Encoding.UTF8;
+        protected const string fileNameFormat = "{0}_0{1}.{2}";
+
+        [UnityTest]
+        public virtual IEnumerator ReadingMetadata_ReportsMissingFile()
+        {
+            yield return CommonSetup();
+
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 99;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            Assert.Throws<FileNotFoundException>(() => saveReader.ReadMetadataFromDisk(requestForNonexistentFile));
+
+        }
+
+        protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
+        {
+            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+            bool thereIsRelativePathToConsider = RelativeSavePath.Count() > 0;
+            if (thereIsRelativePathToConsider)
+            {
+                saveFolder = Path.Combine(saveFolder, RelativeSavePath);
+            }
+
+            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+            return saveFolder;
+        }
+
+        protected virtual string RelativeSavePath { get { return saveReader.RelativeSavePath; } }
+
+        protected virtual void GetFullFilePath(SaveReadRequest request, string saveFolderPath,
+            out string filePath)
+        {
+            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber, FileExtension);
+            filePath = string.Format(FilePathFormat, saveFolderPath, fileName);
+        }
+
+        protected virtual string SavePrefix { get { return saveReader.SavePrefix; } }
+        protected virtual string FileExtension { get { return saveReader.FileExtension; } }
+        protected virtual string FilePathFormat { get { return saveReader.FilePathFormat; } }
+
+        [UnityTest]
+        public virtual IEnumerator ReadingMainContent_ReportsMissingFile()
+        {
+            yield return CommonSetup();
+
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 99;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            Assert.Throws<FileNotFoundException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile));
 
         }
 

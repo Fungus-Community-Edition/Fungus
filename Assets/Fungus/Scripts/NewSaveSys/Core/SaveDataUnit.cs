@@ -8,7 +8,7 @@ namespace Amanita.SaveSys
     /// Think of this as the equivalent to the old SaveDataItem class.
     /// </summary>
     [System.Serializable]
-    public class SaveDataUnit : IEquatable<SaveDataUnit>
+    public class SaveDataUnit : ISaveDataUnit, IEquatable<SaveDataUnit>
     {
         [SerializeField] protected string dataType;
         [SerializeField] protected string content;
@@ -25,6 +25,8 @@ namespace Amanita.SaveSys
             set => content = value;
         }
 
+        object ISaveDataUnit.Content { get => content; set => content = value.ToString(); }
+
         public SaveDataUnit(string dataType = "", string data = "")
         {
             this.dataType = dataType;
@@ -37,5 +39,16 @@ namespace Amanita.SaveSys
                 this.content == other.content;
         }
 
+    }
+
+    public interface ISaveDataUnit
+    {
+        string DataTypeName { get; }
+        object Content { get; set; }
+    }
+
+    public interface ISaveDataUnit<TContent> : ISaveDataUnit
+    {
+        new TContent Content { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
+    [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor
     {
         [SerializeField] protected bool readEncrypted = false;
@@ -17,29 +18,52 @@ namespace Amanita.SaveSys
             set => readEncrypted = value;
         }
 
+        [SerializeField] protected ScriptableObject decryptor;
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
-        public virtual SaveMetaData ReadMetadataFromDisk(SaveReadRequest request)
+        protected virtual void OnEnable()
         {
-            string saveFolderPath = GetAndPrepSaveFolderPath(request);
-            GetFileNameAndPath(request, saveFolderPath, out string filePath);
-            
-            SaveMetaData result = null;
-            // We assume that the metadata and main data are written as separate strings
-            if (!readEncrypted)
+            PrepDefaultDecryptor();
+            void PrepDefaultDecryptor()
             {
-                string wholeText = File.ReadAllText(filePath);
-                IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
-                string jsonForMetadata = splitIntoJsons[0];
-                // We don't care about the main data in this func, so we'll ignore it
-                result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
-            }
-            else
-            {
-                throw new NotImplementedException("Didn't implement reading encrypted data yet.");
+                if (defaultDecryptor == null)
+                {
+                    defaultDecryptor = CreateInstance<Decryptor>();
+                }
             }
 
+            if (decryptor == null)
+            {
+                decryptor = defaultDecryptor;
+            }
+
+            usableDecryptor = decryptor as IDecryptor;
+        }
+
+        protected Decryptor defaultDecryptor;
+        protected IDecryptor usableDecryptor;
+
+        public virtual ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request)
+        {
+            string filePath = GetFullFilePath(request);
+            Validate(filePath);
+
+            bool writtenAsPlainText = !readEncrypted;
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
+
+            SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(infoForDecryptor);
             return result;
+        }
+
+        protected virtual string GetFullFilePath(SaveReadRequest request)
+        {
+            string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            string fileName = string.Format(fileNameFormat, savePrefix,
+                request.SlotNumber, fileExtension);
+            string filePath = string.Format(filePathFormat, saveFolderPath, fileName);
+            return filePath;
         }
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
@@ -55,32 +79,39 @@ namespace Amanita.SaveSys
             return saveFolder;
         }
 
-        protected virtual void GetFileNameAndPath(SaveReadRequest request, string saveFolderPath, out string filePath)
+        protected virtual void Validate(string filePath)
         {
-            string fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
-            filePath = string.Format(filePathFormat, saveFolderPath, fileName);
+            if (!File.Exists(filePath))
+            {
+                string fileName = Path.GetFileName(filePath);
+                string errorMessage = $"Cannot read metadata of file {fileName}, because it is just like Santa Claus: it doesn't exist";
+                throw new FileNotFoundException(errorMessage);
+            }
         }
 
-        public virtual AmanitaSaveData ReadMainSaveDataFromDisk(SaveReadRequest request)
+        public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request)
         {
-            string saveFolderPath = GetAndPrepSaveFolderPath(request);
-            GetFileNameAndPath(request, saveFolderPath, out string filePath);
+            string filePath = GetFullFilePath(request);
+            Validate(filePath);
 
-            AmanitaSaveData result = null;
-            // We assume that the metadata and main data are written as separate strings
-            if (!readEncrypted)
-            {
-                string wholeText = File.ReadAllText(filePath);
-                IList<string> splitIntoJsons = wholeText.Split(new string[] { ReadWriteDelimiter }, StringSplitOptions.None);
-                string jsonForMainSaveData = splitIntoJsons[1];
-                result = JsonUtility.FromJson<AmanitaSaveData>(jsonForMainSaveData);
-            }
-            else
-            {
-                throw new NotImplementedException("Didn't implement reading encrypted data yet.");
-            }
+            bool writtenAsPlainText = !readEncrypted;
 
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
+
+            CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
+            
             return result;
+        }
+
+        protected virtual void OnValidate()
+        {
+            bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
+            if (wrongTypeOfSOAssigned)
+            {
+                decryptor = defaultDecryptor;
+                Debug.LogError($"Tried to assign a Scriptable Object that does not implement IDecryptor. Reverting to default.");
+            }
         }
     }
 
@@ -88,6 +119,15 @@ namespace Amanita.SaveSys
     {
         public virtual int SlotNumber { get; set; } = 0;
         public virtual SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
-        public SaveReadRequest() { }
+        public SaveReadRequest()
+        {
+
+        }
+
+        public SaveReadRequest(SaveReadRequest other)
+        {
+            this.SlotNumber = other.SlotNumber;
+            BaseSaveDirectory = other.BaseSaveDirectory;
+        }
     }
 }

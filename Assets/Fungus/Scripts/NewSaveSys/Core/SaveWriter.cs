@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
@@ -20,18 +21,34 @@ namespace Amanita.SaveSys
             set => writeEncrypted = value;
         }
 
+        [SerializeField] protected ScriptableObject encryptor;
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
-        /// Invoked when this particular SaveWriter writes AmanitaSaveData.
+        /// Invoked when this particular SaveWriter writes CompositeSaveData.
         /// Params: saveData, filePath, fileName
         /// </summary>
-        public UnityAction<AmanitaSaveData, string, string> AmanitaSaveWritten = delegate { };
+        public UnityAction<CompositeSaveData, string, string> AmanitaSaveWritten = delegate { };
 
         protected virtual void OnEnable()
         {
-            
+            EnsureWeHaveBackupEncryptor();
+            void EnsureWeHaveBackupEncryptor()
+            {
+                if (defaultEncryptor == null)
+                {
+                    defaultEncryptor = CreateInstance<Encryptor>();
+                }
+            }
+
+            if (encryptor == null)
+            {
+                encryptor = CreateInstance<Encryptor>();
+            }
         }
+
+        protected Encryptor defaultEncryptor;
 
         /// <summary>
         /// Writes all the save datas to the passed save directory, returning true if successful,
@@ -62,8 +79,7 @@ namespace Amanita.SaveSys
             // Safety.
             Validate(request);
 
-            string saveFolder = string.Empty, mainStringDataToWrite = string.Empty,
-                metaStringDataToWrite = string.Empty, fileName = string.Empty,
+            string saveFolder = string.Empty, fileName = string.Empty,
                 filePath = string.Empty;
 
             RegisterAndEnsureFullPath();
@@ -82,34 +98,39 @@ namespace Amanita.SaveSys
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
 
-            DecideTextToWrite();
-            void DecideTextToWrite()
-            {
-                SaveMetaData meta = request.SaveMetaData;
-                metaStringDataToWrite = JsonUtility.ToJson(meta, true);
-
-                SaveData saveData = request.SaveData;
-                mainStringDataToWrite = JsonUtility.ToJson(saveData, true);
-                // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-                
-            }
-
-            string everythingToWrite = $"{metaStringDataToWrite}{ReadWriteDelimiter}{mainStringDataToWrite}";
-            // For now, we won't worry about encryption
             if (!writeEncrypted)
             {
-                File.WriteAllText(filePath, everythingToWrite, actualEncoding);
+                WriteFullJsonTextToFile();
+                void WriteFullJsonTextToFile()
+                {
+                    string metaTextToWrite;
+                    string mainStateTextToWrite;
+
+                    DecideTextToWrite();
+                    
+                    void DecideTextToWrite()
+                    {
+                        ISaveMetaData meta = request.SaveMetaData;
+                        metaTextToWrite = JsonUtility.ToJson(meta, true);
+
+                        ISaveData saveData = request.MainState;
+                        mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
+                    }
+
+                    string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}{mainStateTextToWrite}";
+                    File.WriteAllText(filePath, everythingToWrite, actualEncoding);
+                }
             }
 
             else
             {
                 WriteAsEncrypted();
+                
                 void WriteAsEncrypted()
                 {
-                    byte key = 0xAA;
-                    byte[] encryptedData = actualEncoding.GetBytes(everythingToWrite)
-                        .Select(b => (byte)(b ^ key))
-                        .ToArray(); // Simple XOR encryption to prevent casual snooping.
+                    SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
+                    IEncryptor correctEncryptor = encryptor as IEncryptor;
+                    byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
                     File.WriteAllBytes(filePath, encryptedData);
                 }
             }
@@ -121,7 +142,7 @@ namespace Amanita.SaveSys
                 {
                     FilePath = filePath,
                     FileName = fileName,
-                    SaveData = request.SaveData as AmanitaSaveData,
+                    SaveData = request.MainState as CompositeSaveData,
                     Success = true,
                     ErrorMessage = string.Empty,
                     Request = request
@@ -135,19 +156,16 @@ namespace Amanita.SaveSys
         /// <summary>
         /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.
         /// </summary>
-        /// <param name="writeArgs"></param>
-        /// <param name="exception"></param>
-        /// <returns></returns>
         protected virtual bool Validate(SaveWriteRequest writeArgs)
         {
             string errorMessage = string.Empty;
             System.Exception exception = null;
             
-            bool isNull = writeArgs.SaveData == null;
+            bool isNull = writeArgs.MainState == null;
             if (isNull)
             {
                 errorMessage += "SaveData is null. Cannot write to disk.\n";
-                exception = new System.ArgumentNullException(nameof(writeArgs.SaveData), errorMessage);
+                exception = new System.ArgumentNullException(nameof(writeArgs.MainState), errorMessage);
                 throw exception;
             }
 
@@ -183,7 +201,6 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-
             bool didWeSucceed = !isNull && validSaveName &&
                 validBaseDirectory && validSaveNumber &&
                 validRelativeDirectory;
@@ -194,6 +211,16 @@ namespace Amanita.SaveSys
             }
 
             return didWeSucceed;
+        }
+
+        protected virtual void OnValidate()
+        {
+            bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
+            if (wrongTypeOfSOAssigned)
+            {
+                encryptor = defaultEncryptor;
+                Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
+            }
         }
 
         

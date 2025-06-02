@@ -6,8 +6,9 @@ namespace Amanita.SaveSys
 { 
     public class SaveSystem : MonoBehaviour
     {
-        [SerializeField] protected SaveEncoder[] encoders = new SaveEncoder[0];
+        [SerializeField] protected SaveEncoder[] mainEncoders = new SaveEncoder[0];
         [SerializeField] protected SaveWriter saveWriter = null;
+        [SerializeField] protected SaveReader saveReader = null;
 
         [Tooltip("In WebGL, things will be saved to PlayerPrefs due to the file system limitations web browsers have. In which case, this field won't make a difference.")]
         [SerializeField] protected SaveDirectoryType saveDirectoryType = SaveDirectoryType.DataPath;
@@ -16,10 +17,20 @@ namespace Amanita.SaveSys
 
         protected virtual void Awake()
         {
-            if (saveWriter == null)
+            CheckForSaveWriterAndReader();
+            void CheckForSaveWriterAndReader()
             {
-                Debug.LogWarning("SaveWriter is not set. Going with the default.");
-                saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+                if (saveWriter == null)
+                {
+                    Debug.LogWarning("SaveWriter is not set. Going with the default.");
+                    saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+                }
+
+                if (saveReader == null)
+                {
+                    Debug.LogWarning("SaveReader is not set. Going with the default.");
+                    saveReader = ScriptableObject.CreateInstance<SaveReader>();
+                }
             }
         }
 
@@ -27,7 +38,7 @@ namespace Amanita.SaveSys
 
         public virtual void RegisterSave(string saveName, SaveData saveData)
         {
-            saveManager.RegisterSave(saveName, saveData);
+            
         }
 
         public virtual void LoadSave(string saveName)
