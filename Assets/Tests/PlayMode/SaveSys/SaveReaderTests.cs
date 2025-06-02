@@ -39,7 +39,14 @@ namespace Amanita.SaveSystemTests
 
             CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
 
+            SaveSysSignals.AmanitaSaveWritten += OnSaveWritten;
+        }
 
+        protected IList<string> writtenFilePaths = new List<string>();
+
+        protected virtual void OnSaveWritten(SaveWriteResults results)
+        {
+            writtenFilePaths.Add(results.FilePath);
         }
 
         protected virtual void PrepScene()
@@ -66,6 +73,24 @@ namespace Amanita.SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
+            GetRidOfJunkSaves();
+            
+            void GetRidOfJunkSaves()
+            {
+                foreach (string filePath in writtenFilePaths)
+                {
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                        string pathToMetaFile = filePath + ".meta";
+                        File.Delete(pathToMetaFile);
+                    }
+                }
+
+            }
+
+            writtenFilePaths.Clear();
+            SaveSysSignals.AmanitaSaveWritten -= OnSaveWritten;
             writeReq.MainState = new CompositeSaveData { };
             UnityObject.DestroyImmediate(varStateTestScene);
         }
@@ -159,7 +184,7 @@ namespace Amanita.SaveSystemTests
         }
 
         protected Encoding utf8 = Encoding.UTF8;
-        protected const string fileNameFormat = "{0}_0{1}.{2}";
+        protected const string fileNameFormat = "{0}_{1}.{2}";
 
         [UnityTest]
         public virtual IEnumerator ReadingMetadata_ReportsMissingFile()
@@ -194,7 +219,7 @@ namespace Amanita.SaveSystemTests
         protected virtual void GetFullFilePath(SaveReadRequest request, string saveFolderPath,
             out string filePath)
         {
-            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber, FileExtension);
+            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber.ToString("D3"), FileExtension);
             filePath = string.Format(FilePathFormat, saveFolderPath, fileName);
         }
 
@@ -222,20 +247,21 @@ namespace Amanita.SaveSystemTests
         {
             yield return CommonSetup();
 
-            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
-            requestForNonexistentFile.SlotNumber = 71;
+            SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
+            reqForMalformedFile.SlotNumber = 71;
 
-            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
-            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+            string saveFolderPath = GetAndPrepSaveFolderPath(reqForMalformedFile);
+            GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
+            writtenFilePaths.Add(filePath);
             File.WriteAllText(filePath, randomJunk);
 
             string errorMessage = string.Empty;
             try
             {
-                saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile);
+                saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
             }
             catch (ArgumentException ex)
             {
@@ -243,10 +269,12 @@ namespace Amanita.SaveSystemTests
             }
             finally
             {
-                Assert.Throws<ArgumentException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile), "Does not throw an argument exception upon reading invalid content");
+                Assert.Throws<ArgumentException>(() => saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile), "Does not throw an argument exception upon reading invalid content");
                 bool isAboutJson = errorMessage.ToLower().Contains("json");
 
                 Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
+
+                File.Delete(filePath);
             }
         }
 
@@ -255,20 +283,21 @@ namespace Amanita.SaveSystemTests
         {
             yield return CommonSetup();
 
-            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
-            requestForNonexistentFile.SlotNumber = 345;
+            SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
+            reqForMalformedFile.SlotNumber = 345;
 
-            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
-            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+            string saveFolderPath = GetAndPrepSaveFolderPath(reqForMalformedFile);
+            GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
             File.WriteAllText(filePath, randomJunk);
 
+            writtenFilePaths.Add(filePath);
             string errorMessage = string.Empty;
             try
             {
-                saveReader.ReadMetadataFromDisk(requestForNonexistentFile);
+                saveReader.ReadMetadataFromDisk(reqForMalformedFile);
             }
             catch (ArgumentException ex)
             {
@@ -276,12 +305,96 @@ namespace Amanita.SaveSystemTests
             }
             finally
             {
-                Assert.Throws<ArgumentException>(() => saveReader.ReadMetadataFromDisk(requestForNonexistentFile), "Does not throw an argument exception upon reading invalid content");
+                
+                Assert.Throws<ArgumentException>(() => saveReader.ReadMetadataFromDisk(reqForMalformedFile), "Does not throw an argument exception upon reading invalid content");
                 bool isAboutJson = errorMessage.ToLower().Contains("json");
 
                 Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
+                File.Delete(filePath);
             }
         }
 
+        [Test]
+        public virtual void RecognizesRequiredBaseSaveDirectories()
+        {
+            SaveReadRequest copyReq = new SaveReadRequest(readReq);
+            copyReq.BaseSaveDirectory = SaveDirectoryType.DataPath;
+
+            string pathFound = saveReader.GetSavePath(copyReq);
+            StringAssert.StartsWith(Application.dataPath, pathFound, $"App data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
+
+            copyReq.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
+            pathFound = saveReader.GetSavePath(copyReq);
+            StringAssert.StartsWith(Application.persistentDataPath, pathFound, $"App persistent data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
+
+            copyReq.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
+            pathFound = saveReader.GetSavePath(copyReq);
+            StringAssert.StartsWith(Application.streamingAssetsPath, pathFound, $"App streaming data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
+
+        }
+
+
+
+        // No need for these two tests below. The json checks basically cover what
+        // these two would.
+        //[Test]
+        //public virtual IEnumerator ReportUnexpectedlyEncryptedFiles()
+        //{
+        //    yield return CommonSetup();
+
+        //    Assert.Ignore();
+        //}
+        //[UnityTest]
+        //public virtual IEnumerator ReportUnexpectedlyUnencryptedFiles()
+        //{
+        //    yield return CommonSetup();
+
+        //    saveReader.ReadEncrypted = true;
+        //    saveWriter.WriteEncrypted = false;
+        //    saveWriter.WriteOneToDisk(writeReq);
+
+        //    Assert.Ignore();
+
+        //}
+
+
+        [Test]
+        public virtual void KnowsCorrectSaveFileNamesForPaths()
+        {
+            SaveReadRequest copyReq = new SaveReadRequest(readReq);
+
+            IList<int> validSlotNumbers = new int[] { 1, 6, 12, 33, 64 };
+            foreach (int slotNumber in validSlotNumbers)
+            {
+                copyReq.SlotNumber = slotNumber;
+
+                string path = saveReader.GetSavePath(copyReq);
+                string expectedEnd = string.Format(fileNameFormat, saveReader.SavePrefix, slotNumber.ToString("D3"), saveReader.FileExtension);
+
+                StringAssert.EndsWith(expectedEnd, path, $"File name for slot {copyReq.SlotNumber} is wrong.");
+            }
+            
+        }
+
+        [UnityTest]
+
+        public virtual IEnumerator ReadsNonDefaultMetadata()
+        {
+            yield return CommonSetup();
+            SaveWriteRequest withCustomMeta = new SaveWriteRequest(writeReq);
+            SaveMetaData metaBefore = (SaveMetaData)withCustomMeta.SaveMetaData;
+            metaBefore.Name = "BlastOff";
+            metaBefore.TimeStamp = new DateTime(2025, 12, 31).ToUniversalTime();
+
+            saveWriter.WriteEncrypted = saveReader.ReadEncrypted = false;
+            saveWriter.WriteOneToDisk(writeReq);
+
+            SaveReadRequest otherReadReq = new SaveReadRequest(readReq);
+            otherReadReq.SlotNumber = metaBefore.SlotNumber;
+
+            var metaAfter = (SaveMetaData)saveReader.ReadMetadataFromDisk(otherReadReq);
+            Assert.AreEqual(metaBefore, metaAfter);
+
+        }
     }
 }

@@ -61,7 +61,7 @@ namespace Amanita.SaveSys
         {
             string saveFolderPath = GetAndPrepSaveFolderPath(request);
             string fileName = string.Format(fileNameFormat, savePrefix,
-                request.SlotNumber, fileExtension);
+                request.SlotNumber.ToString("D3"), fileExtension);
             string filePath = string.Format(filePathFormat, saveFolderPath, fileName);
             return filePath;
         }
@@ -101,6 +101,12 @@ namespace Amanita.SaveSys
 
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
             
+            return result;
+        }
+
+        public virtual string GetSavePath(SaveReadRequest request)
+        {
+            string result = GetFullFilePath(request);
             return result;
         }
 

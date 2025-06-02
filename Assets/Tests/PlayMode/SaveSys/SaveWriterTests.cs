@@ -107,7 +107,7 @@ namespace Amanita.SaveSystemTests
         public virtual void WritesSaveToDisk_BaseDataPath()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
-            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+            saveWriter.RelativeSavePath = "";
             // ^Since it might get set to null by other tests, we need to reset it
 
             CommonSaveWriteTest(writeArgs);
@@ -122,12 +122,17 @@ namespace Amanita.SaveSystemTests
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
-        protected const string fileNameFormat = "{0}_0{1}.{2}";
+        protected string FileNameFormat { get { return saveWriter.FileNameFormat; } }
 
         protected virtual void CommonSaveWriteTest(SaveWriteRequest writeArgs, string relativePath = "")
         {
-            string fileName = string.Format(fileNameFormat, SavePrefix,
-                writeArgs.SlotNumber, FileExtension);
+            if (string.IsNullOrEmpty(relativePath))
+            {
+                relativePath = saveWriter.RelativeSavePath;
+            }
+
+            string fileName = string.Format(FileNameFormat, SavePrefix,
+                writeArgs.SlotNumber.ToString("D3"), FileExtension);
             string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.BaseSaveDirectory];
             string fullPath; // So we can judge the results
 
@@ -380,7 +385,7 @@ namespace Amanita.SaveSystemTests
                 {
                     saveFolder = Path.Combine(saveFolder, saveWriter.RelativeSavePath);
                 }
-                string fileName = string.Format(fileNameFormat, saveWriter.SavePrefix, writeArgs.SlotNumber, saveWriter.FileExtension);
+                string fileName = string.Format(FileNameFormat, saveWriter.SavePrefix, writeArgs.SlotNumber.ToString("D3"), saveWriter.FileExtension);
                 string filePath = Path.Combine(saveFolder, fileName);
                 // Read the file content
                 return File.ReadAllText(filePath, utf8);
@@ -436,7 +441,7 @@ namespace Amanita.SaveSystemTests
                 SaveData saveData = (SaveData)writeArgs.MainState;
                 stringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-                fileName = string.Format(fileNameFormat, savePrefix, writeArgs.SlotNumber, fileExtension);
+                fileName = string.Format(FileNameFormat, savePrefix, writeArgs.SlotNumber.ToString("D3"), fileExtension);
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
             string decryptedString = string.Empty;

@@ -15,13 +15,26 @@ namespace Amanita.SaveSys
         public virtual string RelativeSavePath
         {
             get => relativeSavePath;
-            set => relativeSavePath = value;
+            set
+            {
+                relativeSavePath = value;
+
+                if (string.IsNullOrEmpty(relativeSavePath))
+                {
+                    relativeSavePath = "/";
+                }
+
+                if (relativeSavePath[0] != '/')
+                {
+                    relativeSavePath = '/' + relativeSavePath;
+                }
+            }
         }
 
         public virtual string DefaultRelativeSavePath => "Saves/";
 
-        protected string fileNameFormat = "{0}_0{1}.{2}";
-        protected string filePathFormat = "{0}/{1}";
+        protected string fileNameFormat = "{0}_{1}.{2}";
+        protected string filePathFormat = "{0}{1}"; // We expect a / or \ at the end of {0}
 
         public virtual string FileNameFormat => fileNameFormat;
         public virtual string FilePathFormat => filePathFormat;

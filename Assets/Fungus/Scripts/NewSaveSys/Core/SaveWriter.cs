@@ -29,7 +29,7 @@ namespace Amanita.SaveSys
         /// Invoked when this particular SaveWriter writes CompositeSaveData.
         /// Params: saveData, filePath, fileName
         /// </summary>
-        public UnityAction<CompositeSaveData, string, string> AmanitaSaveWritten = delegate { };
+        public UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
 
         protected virtual void OnEnable()
         {
@@ -87,14 +87,21 @@ namespace Amanita.SaveSys
             {
                 saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
 
-                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
+                // Need to make sure we have that slash at the end
+                if (!saveFolder.EndsWith("/") && !saveFolder.EndsWith("\\"))
+                {
+                    saveFolder += "\\";
+                }
+
+                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 1;
                 if (thereIsRelativePathToConsider)
                 {
                     saveFolder = Path.Combine(saveFolder, relativeSavePath);
                 }
                 Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-                fileName = string.Format(fileNameFormat, savePrefix, request.SlotNumber, fileExtension);
+                fileName = string.Format(fileNameFormat, savePrefix,
+                    request.SlotNumber.ToString("D3"), fileExtension);
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
 
@@ -147,6 +154,8 @@ namespace Amanita.SaveSys
                     ErrorMessage = string.Empty,
                     Request = request
                 };
+
+                AmanitaSaveWritten(results);
                 SaveSysSignals.AmanitaSaveWritten.Invoke(results);
             }
             return true;
@@ -193,17 +202,8 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool validRelativeDirectory = !string.IsNullOrEmpty(relativeSavePath);
-            if (!validRelativeDirectory)
-            {
-                errorMessage += "RelativeSavePath is null or empty. Cannot write to disk.\n";
-                exception = new System.ArgumentNullException(nameof(relativeSavePath), errorMessage);
-                throw exception;
-            }
-
             bool didWeSucceed = !isNull && validSaveName &&
-                validBaseDirectory && validSaveNumber &&
-                validRelativeDirectory;
+                validBaseDirectory && validSaveNumber;
 
             if (!didWeSucceed)
             {
@@ -221,9 +221,12 @@ namespace Amanita.SaveSys
                 encryptor = defaultEncryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
             }
-        }
 
-        
+            if (string.IsNullOrEmpty(relativeSavePath))
+            {
+                relativeSavePath = "/";
+            }
+        }
 
     }
 }
