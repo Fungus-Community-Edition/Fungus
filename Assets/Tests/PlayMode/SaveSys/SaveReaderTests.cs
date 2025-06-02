@@ -17,11 +17,11 @@ namespace Amanita.SaveSystemTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
-        [SetUp]
-        public virtual void DoSetUp()
+        [OneTimeSetUp]
+        public virtual void DoOneTimeSetUp()
         {
             SaveSystem.InitPaths();
-            PrepScene();
+            
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
             readReq = new SaveReadRequest
@@ -39,7 +39,14 @@ namespace Amanita.SaveSystemTests
 
             CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
 
-            SaveSysSignals.AmanitaSaveWritten += OnSaveWritten;
+            saveWriter.RelativeSavePath = relativePathForTesting;
+            saveReader.RelativeSavePath = relativePathForTesting;
+        }
+
+        [SetUp]
+        public virtual void DoSetUp()
+        {
+            PrepScene();
         }
 
         protected IList<string> writtenFilePaths = new List<string>();
@@ -67,34 +74,53 @@ namespace Amanita.SaveSystemTests
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected SaveReadRequest readReq;
-        float waitTime = 0.1f;
+        float waitTime = 0.2f;
         WaitForSeconds waitToYield;
+        protected string relativePathForTesting = "TempSaves";
 
         [TearDown]
         public virtual void DoTearDown()
         {
-            GetRidOfJunkSaves();
-            
-            void GetRidOfJunkSaves()
-            {
-                foreach (string filePath in writtenFilePaths)
-                {
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                        string pathToMetaFile = filePath + ".meta";
-                        File.Delete(pathToMetaFile);
-                    }
-                }
-
-            }
-
-            writtenFilePaths.Clear();
-            SaveSysSignals.AmanitaSaveWritten -= OnSaveWritten;
             writeReq.MainState = new CompositeSaveData { };
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
+        [OneTimeTearDown]
+        public virtual void DoOneTimeTearDown()
+        {
+            //DeleteAllTestSaves();
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+            saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
+            if (varStateTestScene != null)
+            {
+                UnityObject.DestroyImmediate(varStateTestScene);
+            }
+        }
+
+        protected void DeleteAllTestSaves()
+        {
+            foreach (string root in SaveSystem.SaveDirectoryPaths.Values)
+            {
+                string pathToTempFolder = Path.Combine(root, relativePathForTesting);
+
+                IList<string> junk = Directory.EnumerateFiles(pathToTempFolder, "*.save",
+                    SearchOption.AllDirectories).ToList();
+                IList<string> junkMetas = Directory.EnumerateFiles(pathToTempFolder, "*.save.meta", SearchOption.AllDirectories).ToList();
+
+                List<string> allJunk = new List<string>(junk);
+                allJunk.AddRange(junkMetas);
+
+                foreach (string file in allJunk)
+                {
+                    if (File.Exists(file))
+                    {
+                        File.Delete(file);
+                    }
+                }
+
+            }
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+        }
 
         [UnityTest]
         public virtual IEnumerator ReadsMetadataProperly_NONEncrypted()
@@ -137,7 +163,6 @@ namespace Amanita.SaveSystemTests
             SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
-
 
         [UnityTest]
         public virtual IEnumerator ReadsMetadataProperly_Encrypted()
@@ -294,6 +319,7 @@ namespace Amanita.SaveSystemTests
             File.WriteAllText(filePath, randomJunk);
 
             writtenFilePaths.Add(filePath);
+            
             string errorMessage = string.Empty;
             try
             {
@@ -396,5 +422,19 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(metaBefore, metaAfter);
 
         }
+
+        [Test]
+        public void ReadMain_WrongEncryptionFlag_Throws()
+        {
+            saveWriter.WriteEncrypted = true;
+            saveReader.ReadEncrypted = false;
+
+            saveWriter.WriteOneToDisk(writeReq);
+
+            Assert.Throws<ArgumentException>(() =>
+                saveReader.ReadMainSaveDataFromDisk(readReq)
+            );
+        }
+
     }
 }

@@ -24,9 +24,9 @@ namespace Amanita.SaveSys
                     relativeSavePath = "/";
                 }
 
-                if (relativeSavePath[0] != '/')
+                if (!relativeSavePath.EndsWith('/') && !relativeSavePath.EndsWith("\\")) 
                 {
-                    relativeSavePath = '/' + relativeSavePath;
+                    relativeSavePath += "/";
                 }
             }
         }
