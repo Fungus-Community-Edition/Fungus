@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSystemTests
 {
@@ -153,6 +153,17 @@ namespace Amanita.SaveSystemTests
             Assert.Throws<System.ArgumentException>(() => testMeta.SaveVersion = null, "Did not throw an argument exception");
         }
 
+        [Test] public virtual void Metadata_RejectsNegativeSlotNumbers()
+        {
+            SaveMetaData toAssignNegativeSlotNumbers = SaveMetaData.CreateFrom(metaData);
+
+            IList<int> negativeNums = new int[] { -1, -3, -3249, -3459780, -2589 };
+
+            foreach (var numEl in negativeNums)
+            {
+                Assert.Throws<ArgumentException>(() => toAssignNegativeSlotNumbers.SlotNumber = numEl, $"Allowed negative slot number {numEl}");
+            }
+        }
 
     }
 }

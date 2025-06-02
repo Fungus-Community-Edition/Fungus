@@ -42,7 +42,16 @@ namespace Amanita.SaveSys
         public virtual int SlotNumber
         {
             get { return slotNumber; }
-            set { slotNumber = value; }
+            set
+            {
+                slotNumber = value;
+
+                if (slotNumber < 0)
+                {
+                    string errorMessage = $"Cannot assign a negative slot number to meta data";
+                    throw new ArgumentException(errorMessage);
+                }
+            }
         }
         public string SaveVersion
         {

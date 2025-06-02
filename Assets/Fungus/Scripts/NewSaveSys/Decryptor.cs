@@ -107,6 +107,7 @@ namespace Amanita.SaveSys
         {
             IList<string> splitIntoJsons = fullPlainJson.Split(delimiterArr, StringSplitOptions.None);
             string jsonForMetadata = splitIntoJsons[0];
+
             ISaveMetaData result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
             return result;
         }
@@ -122,6 +123,17 @@ namespace Amanita.SaveSys
         protected virtual ISaveData DecryptMainState(string fullPlainJson)
         {
             IList<string> splitIntoJsons = fullPlainJson.Split(delimiterArr, StringSplitOptions.None);
+
+            ValidateSplit();
+            void ValidateSplit()
+            {
+                if (splitIntoJsons.Count < 2)
+                {
+                    string errorMessage = "Invalid json passed.";
+                    throw new System.ArgumentException(errorMessage);
+                }
+            }
+
             string jsonForMainState = splitIntoJsons[1];
             ISaveData result = JsonUtility.FromJson<CompositeSaveData>(jsonForMainState);
             return result;

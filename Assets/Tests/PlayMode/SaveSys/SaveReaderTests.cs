@@ -33,6 +33,13 @@ namespace Amanita.SaveSystemTests
             waitToYield = new WaitForSeconds(waitTime);
             string pathToEncoder = "SaveEncoders/FlowchartSaveEncoder";
             flowchartSaveEncoder = Resources.Load<FlowchartSaveEncoder>(pathToEncoder);
+
+            pathToEncoder = "SaveEncoders/BlockSaveEncoder";
+            blockSaveEncoder = Resources.Load<BlockSaveEncoder>(pathToEncoder);
+
+            CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
+
+
         }
 
         protected virtual void PrepScene()
@@ -59,6 +66,7 @@ namespace Amanita.SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
+            writeReq.MainState = new CompositeSaveData { };
             UnityObject.DestroyImmediate(varStateTestScene);
         }
 
@@ -84,7 +92,16 @@ namespace Amanita.SaveSystemTests
             // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
             CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-            mainSave.Add(flowchartSaveData.Serialized());
+            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+            mainSave.Add(encodedFlowchartSave);
+
+            IList<BlockSaveData> blockSaves = blockSaveEncoder.EncodeToMultiSave(flowchart);
+            foreach (var blockSave in blockSaves)
+            {
+                SaveDataUnit saveDataUnit = blockSave.Serialized();
+                mainSave.Add(saveDataUnit);
+            }
+
         }
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
@@ -198,6 +215,72 @@ namespace Amanita.SaveSystemTests
 
             Assert.Throws<FileNotFoundException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile));
 
+        }
+
+        [UnityTest]
+        public virtual IEnumerator ReadingMainContent_ReportsBadJsonOnMalformedData()
+        {
+            yield return CommonSetup();
+
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 71;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
+
+            File.WriteAllText(filePath, randomJunk);
+
+            string errorMessage = string.Empty;
+            try
+            {
+                saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile);
+            }
+            catch (ArgumentException ex)
+            {
+                errorMessage = ex.Message;
+            }
+            finally
+            {
+                Assert.Throws<ArgumentException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile), "Does not throw an argument exception upon reading invalid content");
+                bool isAboutJson = errorMessage.ToLower().Contains("json");
+
+                Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
+            }
+        }
+
+        [UnityTest]
+        public virtual IEnumerator ReadingMeta_ReportsBadJsonOnMalformedData()
+        {
+            yield return CommonSetup();
+
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 345;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
+
+            File.WriteAllText(filePath, randomJunk);
+
+            string errorMessage = string.Empty;
+            try
+            {
+                saveReader.ReadMetadataFromDisk(requestForNonexistentFile);
+            }
+            catch (ArgumentException ex)
+            {
+                errorMessage = ex.Message;
+            }
+            finally
+            {
+                Assert.Throws<ArgumentException>(() => saveReader.ReadMetadataFromDisk(requestForNonexistentFile), "Does not throw an argument exception upon reading invalid content");
+                bool isAboutJson = errorMessage.ToLower().Contains("json");
+
+                Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
+            }
         }
 
     }
