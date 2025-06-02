@@ -143,14 +143,16 @@ namespace Amanita.SaveSys
         public SaveMetaData(string saveID = null, DateTime timeStamp = default,
             string saveVersion = "_")
         {
-            this.saveID = saveID;
-
             if (string.IsNullOrEmpty(saveID))
             {
                 this.SaveID = System.Guid.NewGuid().ToString();
             }
+            else
+            {
+                this.SaveID = saveID;
+            }
 
-            this.timeStamp = timeStamp;
+                this.timeStamp = timeStamp;
 
             if (this.timeStamp == default)
             {

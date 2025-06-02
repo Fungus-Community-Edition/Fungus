@@ -144,8 +144,61 @@ namespace Amanita.SaveSystemTests
         protected Encoding utf8 = Encoding.UTF8;
         protected const string fileNameFormat = "{0}_0{1}.{2}";
 
-        
+        [UnityTest]
+        public virtual IEnumerator ReadingMetadata_ReportsMissingFile()
+        {
+            yield return CommonSetup();
 
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 99;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            Assert.Throws<FileNotFoundException>(() => saveReader.ReadMetadataFromDisk(requestForNonexistentFile));
+
+        }
+
+        protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
+        {
+            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+            bool thereIsRelativePathToConsider = RelativeSavePath.Count() > 0;
+            if (thereIsRelativePathToConsider)
+            {
+                saveFolder = Path.Combine(saveFolder, RelativeSavePath);
+            }
+
+            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+            return saveFolder;
+        }
+
+        protected virtual string RelativeSavePath { get { return saveReader.RelativeSavePath; } }
+
+        protected virtual void GetFullFilePath(SaveReadRequest request, string saveFolderPath,
+            out string filePath)
+        {
+            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber, FileExtension);
+            filePath = string.Format(FilePathFormat, saveFolderPath, fileName);
+        }
+
+        protected virtual string SavePrefix { get { return saveReader.SavePrefix; } }
+        protected virtual string FileExtension { get { return saveReader.FileExtension; } }
+        protected virtual string FilePathFormat { get { return saveReader.FilePathFormat; } }
+
+        [UnityTest]
+        public virtual IEnumerator ReadingMainContent_ReportsMissingFile()
+        {
+            yield return CommonSetup();
+
+            SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
+            requestForNonexistentFile.SlotNumber = 99;
+
+            string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
+            GetFullFilePath(requestForNonexistentFile, saveFolderPath, out string filePath);
+
+            Assert.Throws<FileNotFoundException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile));
+
+        }
 
     }
 }
