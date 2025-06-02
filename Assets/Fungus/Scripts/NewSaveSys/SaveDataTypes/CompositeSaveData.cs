@@ -1,4 +1,3 @@
-using Amanita.SaveSys;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,13 @@ namespace Amanita.SaveSys
     {
         [SerializeField] protected List<SaveDataUnit> units = new List<SaveDataUnit>();
 
+        public CompositeSaveData() { }
+
+        public CompositeSaveData(IList<SaveDataUnit> startingUnits)
+        {
+            units.AddRange(startingUnits);
+        }
+
         public virtual IReadOnlyList<SaveDataUnit> Units => units;
 
         public virtual void Add(SaveDataUnit unit)
@@ -26,6 +32,11 @@ namespace Amanita.SaveSys
             units.Add(unit);
         }
 
+        public virtual void AddRange(IList<SaveDataUnit> toAdd)
+        {
+            units.AddRange(toAdd);
+        }
+
         public virtual void Remove(SaveDataUnit unit)
         {
             if (unit == null)
@@ -34,6 +45,15 @@ namespace Amanita.SaveSys
                 return;
             }
             units.Remove(unit);
+        }
+
+        public virtual void RemoveRange(IList<SaveDataUnit> toRemove)
+        {
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                SaveDataUnit currentUnitToRemove = toRemove[i];
+                Remove(currentUnitToRemove);
+            }
         }
 
         public virtual void Clear()

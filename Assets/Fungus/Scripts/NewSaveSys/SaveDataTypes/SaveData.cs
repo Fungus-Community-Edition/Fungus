@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Amanita.SaveSys

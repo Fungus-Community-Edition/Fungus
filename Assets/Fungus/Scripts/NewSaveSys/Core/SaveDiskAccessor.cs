@@ -9,19 +9,35 @@ namespace Amanita.SaveSys
         [Tooltip("Just for flavor.")]
         [SerializeField] protected string fileExtension = "save";
         [SerializeField] protected string relativeSavePath = "Saves/";
+        [SerializeField] protected string saveNumberFormat = "D2";
 
         public virtual string SavePrefix => savePrefix;
         public virtual string FileExtension => fileExtension;
         public virtual string RelativeSavePath
         {
             get => relativeSavePath;
-            set => relativeSavePath = value;
+            set
+            {
+                relativeSavePath = value;
+
+                if (string.IsNullOrEmpty(relativeSavePath))
+                {
+                    relativeSavePath = "/";
+                }
+
+                if (!relativeSavePath.EndsWith('/') && !relativeSavePath.EndsWith("\\")) 
+                {
+                    relativeSavePath += "/";
+                }
+            }
         }
+
+        public virtual string SaveNumberFormat => saveNumberFormat;
 
         public virtual string DefaultRelativeSavePath => "Saves/";
 
-        protected string fileNameFormat = "{0}_0{1}.{2}";
-        protected string filePathFormat = "{0}/{1}";
+        protected string fileNameFormat = "{0}_{1}.{2}";
+        protected string filePathFormat = "{0}{1}"; // We expect a / or \ at the end of {0}
 
         public virtual string FileNameFormat => fileNameFormat;
         public virtual string FilePathFormat => filePathFormat;

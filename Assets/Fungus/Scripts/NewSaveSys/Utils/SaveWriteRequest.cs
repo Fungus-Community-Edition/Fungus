@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Amanita.SaveSys
 {
@@ -13,6 +12,15 @@ namespace Amanita.SaveSys
         public ISaveMetaData SaveMetaData { get; set; }
         public SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
         public SaveWriteRequest() { }
+
+        public SaveWriteRequest(SaveWriteRequest other)
+        {
+            SaveName = other.SaveName;
+            SlotNumber = other.SlotNumber;
+            MainState = other.MainState;
+            SaveMetaData = other.SaveMetaData;
+            BaseSaveDirectory = other.BaseSaveDirectory;
+        }
 
     }
 

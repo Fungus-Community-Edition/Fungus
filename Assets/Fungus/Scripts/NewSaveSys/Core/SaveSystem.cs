@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +5,8 @@ namespace Amanita.SaveSys
 { 
     public class SaveSystem : MonoBehaviour
     {
-        [SerializeField] protected SaveEncoder[] mainEncoders = new SaveEncoder[0];
+
+        [SerializeField] protected ScriptableObject[] mainEncoders = new ScriptableObject[] { };
         [SerializeField] protected SaveWriter saveWriter = null;
         [SerializeField] protected SaveReader saveReader = null;
 
@@ -32,13 +32,46 @@ namespace Amanita.SaveSys
                     saveReader = ScriptableObject.CreateInstance<SaveReader>();
                 }
             }
+
+            ValidateEncoders();
+            void ValidateEncoders()
+            {
+                for (int i = 0; i < mainEncoders.Length; i++)
+                {
+                    ScriptableObject currentMain = mainEncoders[i];
+                    bool isValid = currentMain is IMainSaveCodec;
+                    string encoderName = string.Empty;
+                    if (currentMain != null)
+                    {
+                        encoderName = currentMain.name;
+                    }
+                    if (!isValid)
+                    {
+                        string errorMessage = $"Main encoder {encoderName} is not a valid one. Make sure that everything in the mainEncoders list implements IMainSaveEncoder.";
+                        throw new System.InvalidOperationException(errorMessage);
+                    }
+                }
+            }
+
+            saveManager.SaveDirType = saveDirectoryType;
+
+            IList<IMainSaveCodec> validatedEncoders = new List<IMainSaveCodec>();
+            for (int i = 0; i < mainEncoders.Length; i++)
+            {
+                ScriptableObject currentMain = mainEncoders[i];
+                validatedEncoders.Add(currentMain as IMainSaveCodec);
+            }
+
+            saveManager.RegisterMultiMainEncoders(validatedEncoders);
+            saveManager.SaveWriter = saveWriter;
+            saveManager.SaveReader = saveReader;
         }
 
         protected SaveManager saveManager = new SaveManager();
 
-        public virtual void RegisterSave(string saveName, SaveData saveData)
+        public virtual void RegisterSave(CompositeSaveData save)
         {
-            
+
         }
 
         public virtual void LoadSave(string saveName)

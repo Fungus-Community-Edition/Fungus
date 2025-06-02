@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3700386577042591853}
   - component: {fileID: 8582508292496010883}
   m_Layer: 0
-  m_Name: SaveWriterTests 1
+  m_Name: SaveSysMonoBehaviourTests
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,8 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08b9849f8a798aa499abfc1010f99dd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  encoders: []
-  saveWriter: {fileID: 0}
+  mainEncoders:
+  - {fileID: 11400000, guid: edbafabae260b9446aa606094cc7bf10, type: 2}
+  saveWriter: {fileID: 11400000, guid: 5a38a96ed57453f4586a2033a52d52a7, type: 2}
+  saveReader: {fileID: 11400000, guid: da5f96b9a39be1a4daab2c0732fe758e, type: 2}
   saveDirectoryType: 1
 --- !u!1 &2918351469272193397
 GameObject:

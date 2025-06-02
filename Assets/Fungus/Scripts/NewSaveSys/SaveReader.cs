@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
@@ -61,7 +59,7 @@ namespace Amanita.SaveSys
         {
             string saveFolderPath = GetAndPrepSaveFolderPath(request);
             string fileName = string.Format(fileNameFormat, savePrefix,
-                request.SlotNumber, fileExtension);
+                request.SlotNumber.ToString(SaveNumberFormat), fileExtension);
             string filePath = string.Format(filePathFormat, saveFolderPath, fileName);
             return filePath;
         }
@@ -101,6 +99,12 @@ namespace Amanita.SaveSys
 
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
             
+            return result;
+        }
+
+        public virtual string GetSavePath(SaveReadRequest request)
+        {
+            string result = GetFullFilePath(request);
             return result;
         }
 
