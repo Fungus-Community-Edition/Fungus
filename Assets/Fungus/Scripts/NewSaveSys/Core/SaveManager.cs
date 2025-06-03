@@ -86,6 +86,9 @@ namespace Amanita.SaveSys
             
             SaveMetaData meta = CreateMetaFor(slotNum);
 
+            SaveDataSet newSet = new SaveDataSet(meta, mainState);
+            registry.AddSave(newSet);
+
             PrepWriteRequest();
             void PrepWriteRequest()
             {
