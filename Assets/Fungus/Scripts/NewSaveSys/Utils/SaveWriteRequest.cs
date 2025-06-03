@@ -14,6 +14,23 @@ namespace Amanita.SaveSys
         public SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
         public SaveWriteRequest() { }
 
+        public SaveWriteRequest(SaveWriteRequest other)
+        {
+            SaveName = other.SaveName;
+            SlotNumber = other.SlotNumber;
+            MainState = other.MainState;
+            SaveMetaData = other.SaveMetaData;
+            BaseSaveDirectory = other.BaseSaveDirectory;
+        }
+
+    }
+
+    public interface ISaveWriteRequest
+    {
+        int SlotNumber { get; set; }
+        public ISaveData MainState { get; set; }
+        public ISaveMetaData SaveMetaData { get; set; }
+        public SaveDirectoryType BaseSaveDirectory { get; set; }
     }
 
     public interface ISaveWriteRequest

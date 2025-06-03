@@ -32,13 +32,18 @@ namespace Amanita.SaveSys
                     saveReader = ScriptableObject.CreateInstance<SaveReader>();
                 }
             }
+
+            saveManager.SaveDirType = saveDirectoryType;
+            saveManager.RegisterMultiMainEncoders(mainEncoders);
+            saveManager.SaveWriter = saveWriter;
+            saveManager.SaveReader = saveReader;
         }
 
         protected SaveManager saveManager = new SaveManager();
 
-        public virtual void RegisterSave(string saveName, SaveData saveData)
+        public virtual void RegisterSave(CompositeSaveData save)
         {
-            
+
         }
 
         public virtual void LoadSave(string saveName)

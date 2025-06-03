@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Tests/Resources/ScenePrefabs/SaveSysMonoBehaviourTests.prefab.meta
+guid: 41fa4a4e58eedca4682d4b2f510d90b1
+PrefabImporter:
+========
+guid: 146f4261d2013b14b96a096ac723fd0d
+DefaultImporter:
+>>>>>>>> newSaveSystem:Assets/saveData_000.save.meta
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
