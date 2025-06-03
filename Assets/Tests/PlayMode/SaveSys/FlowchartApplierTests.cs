@@ -16,7 +16,7 @@ namespace Amanita.SaveSystemTests
         {
             Debug.Log("Some log message");
             PrepScene();
-            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
+            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
             flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
         }
@@ -60,7 +60,7 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
 
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveCodec flowchartSaveEncoder;
         protected FlowchartApplier flowchartApplier;
         protected FlowchartSaveData flowchartSaveData = null;
 

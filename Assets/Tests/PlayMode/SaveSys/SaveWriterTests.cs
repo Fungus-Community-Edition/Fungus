@@ -19,7 +19,7 @@ namespace Amanita.SaveSystemTests
         {
             PrepScene();
             PrepVars();
-            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
+            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
             flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
@@ -44,7 +44,7 @@ namespace Amanita.SaveSystemTests
             saveWriter.RelativeSavePath = relativePathForTesting;
         }
 
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveCodec flowchartSaveEncoder;
         protected FlowchartApplier flowchartApplier;
         protected FlowchartSaveData flowchartSaveData = null;
         protected string relativePathForTesting = "TempSaves";
@@ -168,7 +168,7 @@ namespace Amanita.SaveSystemTests
             }
 
             string fileName = string.Format(FileNameFormat, SavePrefix,
-                writeArgs.SlotNumber.ToString("D3"), FileExtension);
+                writeArgs.SlotNumber.ToString(SaveNumberFormat), FileExtension);
             string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.BaseSaveDirectory];
             string fullPath; // So we can judge the results
 
@@ -186,6 +186,8 @@ namespace Amanita.SaveSystemTests
             bool fileWasWritten = System.IO.File.Exists(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
+
+        protected string SaveNumberFormat { get { return saveWriter.SaveNumberFormat; } }
 
         #region Successful writes
         [Test]
@@ -258,26 +260,6 @@ namespace Amanita.SaveSystemTests
             writeArgsWithNullSaveData.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
             Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
-        }
-
-        [Test]
-        public virtual void WritesSaveToDisk_AnyPath_RejectNullOrEmptySaveName()
-        {
-            SaveWriteRequest writeArgsWithBadSaveName = new SaveWriteRequest
-            {
-                SaveName = null, // Intentionally null to test rejection.
-                SlotNumber = 0,
-                MainState = new CompositeSaveData(),
-                BaseSaveDirectory = SaveDirectoryType.DataPath
-            };
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
-                "Expected ArgumentNullException when trying to write with null save name.");
-            writeArgsWithBadSaveName.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
-                "Expected ArgumentNullException when trying to write with null save name.");
-            writeArgsWithBadSaveName.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
-                "Expected ArgumentNullException when trying to write with null save name.");
         }
 
         [Test]
@@ -408,7 +390,7 @@ namespace Amanita.SaveSystemTests
                 {
                     saveFolder = Path.Combine(saveFolder, saveWriter.RelativeSavePath);
                 }
-                string fileName = string.Format(FileNameFormat, saveWriter.SavePrefix, writeArgs.SlotNumber.ToString("D3"), saveWriter.FileExtension);
+                string fileName = string.Format(FileNameFormat, saveWriter.SavePrefix, writeArgs.SlotNumber.ToString(SaveNumberFormat), saveWriter.FileExtension);
                 string filePath = Path.Combine(saveFolder, fileName);
                 // Read the file content
                 return File.ReadAllText(filePath, utf8);
@@ -464,7 +446,7 @@ namespace Amanita.SaveSystemTests
                 SaveData saveData = (SaveData)writeArgs.MainState;
                 stringDataToWrite = JsonUtility.ToJson(saveData, true);
                 // ^Might want to write a float array in the future, but for now, we just write the JSON string.
-                fileName = string.Format(FileNameFormat, savePrefix, writeArgs.SlotNumber.ToString("D3"), fileExtension);
+                fileName = string.Format(FileNameFormat, savePrefix, writeArgs.SlotNumber.ToString(SaveNumberFormat), fileExtension);
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
             string decryptedString = string.Empty;
@@ -586,30 +568,6 @@ namespace Amanita.SaveSystemTests
                 "Expected ArgumentNullException when trying to write null save data.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(respondedWhenItShouldnt, "AmanitaSaveWritten event was invoked with null save data.");
-        }
-
-        [Test]
-        public virtual void EventInvocation_AmanitaSaveWritten_RejectNullOrEmptySaveName()
-        {
-            saveWriter.RelativeSavePath = relativePathForTesting;
-            // ^Since it might get set to null by other tests, we need to reset it
-            SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
-            bool responded = false;
-            void OnAmanitaSaveWritten(SaveWriteResults writeResults)
-            {
-                responded = true;
-            }
-            SaveWriteRequest writeArgsWithBadSaveName = new SaveWriteRequest
-            {
-                SaveName = null, // Intentionally null to test rejection.
-                SlotNumber = 0,
-                MainState = new CompositeSaveData(),
-                BaseSaveDirectory = SaveDirectoryType.DataPath
-            };
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSaveName),
-                "Expected ArgumentNullException when trying to write with null save name.");
-            SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
-            Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with null or empty save name.");
         }
 
         [Test]

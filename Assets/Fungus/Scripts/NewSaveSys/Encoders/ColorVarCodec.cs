@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarEncoder : IVarEncoder
+    public class ColorVarCodec : IVarCodec
     {
         public virtual System.Object ToMakeFrom { get; set; } = null;
         public virtual int Priority => 0;

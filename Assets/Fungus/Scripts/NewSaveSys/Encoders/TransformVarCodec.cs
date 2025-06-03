@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
-    public class TransformVarEncoder : IVarEncoder
+    public class TransformVarCodec : IVarCodec
     {
         public virtual bool CanHandle(AmanitaVar variable)
         {

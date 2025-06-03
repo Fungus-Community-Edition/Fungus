@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class NumericVarEncoder : IVarEncoder
+    public class NumericVarCodec : IVarCodec
     {
         public virtual bool CanHandle(Variable variable) =>
             variable is IntegerVariable || variable is FloatVariable;

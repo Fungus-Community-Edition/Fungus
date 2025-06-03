@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
-    public class BlockEncoderTests
+    public class BlockCodecTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -24,9 +24,9 @@ namespace Amanita.SaveSystemTests
             flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
             PrepVars();
             block = flowchart.FindBlock("TestBlock");
-            string pathToEncoder = "SaveEncoders/BlockSaveEncoder";
-            blockEncoder = Resources.Load<BlockSaveEncoder>(pathToEncoder);
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            string pathToCodec = "SaveCodecs/BlockSaveCodec";
+            blockCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
+            blockSaveData = blockCodec.EncodeToSave(block);
         }
 
         protected GameObject varStateTestPrefab;
@@ -60,7 +60,7 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
         protected BlockSaveData blockSaveData = null;
-        protected BlockSaveEncoder blockEncoder;
+        protected BlockSaveCodec blockCodec;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -92,7 +92,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator CorrectBlockIDDEcoded()
         {
             yield return new WaitForSeconds(0.1f);
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            blockSaveData = blockCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
@@ -103,7 +103,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            blockSaveData = blockCodec.EncodeToSave(block);
             Assert.AreEqual(block.ActiveCommand.ItemId, blockSaveData.ActiveCommandId, "Active command ID mismatch.");
         }
 
@@ -112,7 +112,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            blockSaveData = blockCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
@@ -123,7 +123,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            blockSaveData = blockCodec.EncodeToSave(block);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, blockSaveData.ActiveCommandIndex, "Active command index mismatch.");
         }
 
@@ -132,7 +132,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
-            blockSaveData = blockEncoder.EncodeToSave(block);
+            blockSaveData = blockCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
@@ -142,7 +142,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator CorrectBlockSaveDataSerialized()
         {
             yield return new WaitForSeconds(0.1f);
-            BlockSaveData beforeSerializing = blockEncoder.EncodeToSave(block);
+            BlockSaveData beforeSerializing = blockCodec.EncodeToSave(block);
             SaveDataUnit serializedData = beforeSerializing.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             

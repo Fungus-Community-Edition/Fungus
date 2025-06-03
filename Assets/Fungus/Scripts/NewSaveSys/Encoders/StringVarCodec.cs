@@ -6,7 +6,7 @@ namespace Amanita.SaveSys
     /// This class is responsible for encoding and decoding string data types.
     /// </summary>
     [System.Serializable]
-    public class StringVarEncoder : IVarEncoder
+    public class StringVarCodec : IVarCodec
     {
         public virtual bool CanHandle(Variable variable) =>
             variable is StringVariable;

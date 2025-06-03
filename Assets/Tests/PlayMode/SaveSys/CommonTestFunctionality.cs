@@ -45,11 +45,11 @@ namespace Amanita.SaveSystemTests
             };
 
             waitToYield = new WaitForSeconds(waitTime);
-            string pathToEncoder = "SaveEncoders/FlowchartSaveEncoder";
-            flowchartSaveEncoder = Resources.Load<FlowchartSaveEncoder>(pathToEncoder);
+            string pathToEncoder = "SaveCodecs/FlowchartSaveCodec";
+            flowchartSaveEncoder = Resources.Load<FlowchartSaveCodec>(pathToEncoder);
 
-            pathToEncoder = "SaveEncoders/BlockSaveEncoder";
-            blockSaveEncoder = Resources.Load<BlockSaveEncoder>(pathToEncoder);
+            pathToEncoder = "SaveCodecs/BlockSaveCodec";
+            blockSaveEncoder = Resources.Load<BlockSaveCodec>(pathToEncoder);
 
             CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
 
@@ -83,9 +83,9 @@ namespace Amanita.SaveSystemTests
         protected GameObject testScene;
 
         protected Flowchart flowchart;
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveCodec flowchartSaveEncoder;
         protected FlowchartSaveData flowchartSaveData;
-        protected BlockSaveEncoder blockSaveEncoder;
+        protected BlockSaveCodec blockSaveEncoder;
 
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;

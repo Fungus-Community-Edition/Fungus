@@ -5,7 +5,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
-    public class VariableEncoderTests
+    public class VariableCodecTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -13,7 +13,7 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
-            PrepEncoders();
+            PrepCodecs();
         }
 
         protected virtual void PrepScene()
@@ -54,17 +54,17 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
 
-        protected virtual void PrepEncoders()
+        protected virtual void PrepCodecs()
         {
-            numericEncoder = EncoderRegistry.GetEncoder(nameof(IntegerVariable));
-            booleanEncoder = EncoderRegistry.GetEncoder(nameof(BooleanVariable));
-            vectorEncoder = EncoderRegistry.GetEncoder(nameof(Vector2Variable));
-            colorEncoder = EncoderRegistry.GetEncoder(nameof(ColorVariable));
-            stringEncoder = EncoderRegistry.GetEncoder(nameof(StringVariable));
-            transformEncoder = EncoderRegistry.GetEncoder(nameof(TransformVariable));
+            numericCodec = CodecRegistry.GetCodec(nameof(IntegerVariable));
+            booleanCodec = CodecRegistry.GetCodec(nameof(BooleanVariable));
+            vectorCodec = CodecRegistry.GetCodec(nameof(Vector2Variable));
+            colorCodec = CodecRegistry.GetCodec(nameof(ColorVariable));
+            stringCodec = CodecRegistry.GetCodec(nameof(StringVariable));
+            transformCodec = CodecRegistry.GetCodec(nameof(TransformVariable));
         }
 
-        protected IVarEncoder numericEncoder, booleanEncoder, vectorEncoder, colorEncoder, stringEncoder, transformEncoder;
+        protected IVarCodec numericCodec, booleanCodec, vectorCodec, colorCodec, stringCodec, transformCodec;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -73,15 +73,15 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void NumericEncoder_EncodingWorks_String()
+        public virtual void NumericCodec_EncodingWorks_String()
         {
             int expectedScore = scoreVar.Value;
             float expectedFastestTime = fastestTimeVar.Value;
             string expectedEncodedScoreStr = expectedScore.ToString();
             string expectedEncodedFastestTimeStr = expectedFastestTime.ToString(roundTripFormat);
 
-            string encodedScoreStr = numericEncoder.EncodeToString(scoreVar);
-            string encodedFastestTimeStr = numericEncoder.EncodeToString(fastestTimeVar);
+            string encodedScoreStr = numericCodec.EncodeToString(scoreVar);
+            string encodedFastestTimeStr = numericCodec.EncodeToString(fastestTimeVar);
 
             bool encodedScoreSuccess = expectedEncodedScoreStr.Equals(encodedScoreStr);
             bool encodedFastestTimeSuccess = expectedEncodedFastestTimeStr.Equals(encodedFastestTimeStr);
@@ -93,7 +93,7 @@ namespace Amanita.SaveSystemTests
         protected static string roundTripFormat = "R";
 
         [Test]
-        public virtual void NumericEncoder_EncodingWorks_VarSaveData()
+        public virtual void NumericCodec_EncodingWorks_VarSaveData()
         {
             int expectedScore = scoreVar.Value;
             float expectedFastestTime = fastestTimeVar.Value;
@@ -101,8 +101,8 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedScoreStr = expectedScore.ToString();
             string expectedEncodedFastestTimeStr = expectedFastestTime.ToString(roundTripFormat);
 
-            VariableSaveData encodedScoreVarData = numericEncoder.EncodeToSave(scoreVar);
-            VariableSaveData encodedFastestTimeVarData = numericEncoder.EncodeToSave(fastestTimeVar);
+            VariableSaveData encodedScoreVarData = numericCodec.EncodeToSave(scoreVar);
+            VariableSaveData encodedFastestTimeVarData = numericCodec.EncodeToSave(fastestTimeVar);
 
             bool encodedScoreSuccess = expectedEncodedScoreStr.Equals(encodedScoreVarData.Value);
             bool encodedFastestTimeSuccess = expectedEncodedFastestTimeStr.Equals(encodedFastestTimeVarData.Value);
@@ -111,20 +111,20 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void NumericEncoder_DEcodingWorks_String()
+        public virtual void NumericCodec_DEcodingWorks_String()
         {
             int expectedScore = scoreVar.Value;
             float expectedFastestTime = fastestTimeVar.Value;
 
-            string encodedScoreStr = numericEncoder.EncodeToString(scoreVar);
-            string encodedFastestTimeStr = numericEncoder.EncodeToString(fastestTimeVar);
+            string encodedScoreStr = numericCodec.EncodeToString(scoreVar);
+            string encodedFastestTimeStr = numericCodec.EncodeToString(fastestTimeVar);
 
             // Alter the values to help us make sure that the encoding and decoding works
             scoreVar.Value += 123;
             fastestTimeVar.Value += 3429785;
 
-            numericEncoder.Decode(scoreVar, encodedScoreStr);
-            numericEncoder.Decode(fastestTimeVar, encodedFastestTimeStr);
+            numericCodec.Decode(scoreVar, encodedScoreStr);
+            numericCodec.Decode(fastestTimeVar, encodedFastestTimeStr);
 
             bool scoreEncodeSuccess = expectedScore.Equals(scoreVar.Value);
             bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
@@ -134,20 +134,20 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void NumericEncoder_DEcodingWorks_VarSaveData()
+        public virtual void NumericCodec_DEcodingWorks_VarSaveData()
         {
             int expectedScore = scoreVar.Value;
             float expectedFastestTime = fastestTimeVar.Value;
 
-            VariableSaveData encodedScoreVarData = numericEncoder.EncodeToSave(scoreVar);
-            VariableSaveData encodedFastestTimeData = numericEncoder.EncodeToSave(fastestTimeVar);
+            VariableSaveData encodedScoreVarData = numericCodec.EncodeToSave(scoreVar);
+            VariableSaveData encodedFastestTimeData = numericCodec.EncodeToSave(fastestTimeVar);
 
             // Alter the values to help us make sure that the encoding and decoding works
             scoreVar.Value += 123;
             fastestTimeVar.Value += 3429785;
 
-            numericEncoder.Decode(scoreVar, encodedScoreVarData);
-            numericEncoder.Decode(fastestTimeVar, encodedFastestTimeData);
+            numericCodec.Decode(scoreVar, encodedScoreVarData);
+            numericCodec.Decode(fastestTimeVar, encodedFastestTimeData);
 
             bool scoreEncodeSuccess = expectedScore.Equals(scoreVar.Value);
             bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
@@ -156,49 +156,49 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void BooleanEncoder_EncodingWorks_String()
+        public virtual void BooleanCodec_EncodingWorks_String()
         {
             bool expectedNewPlayer = newPlayerVar.Value;
             string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
-            string encodedNewPlayerStr = booleanEncoder.EncodeToString(newPlayerVar);
+            string encodedNewPlayerStr = booleanCodec.EncodeToString(newPlayerVar);
             bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerStr);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
-        public virtual void BooleanEncoder_DEcodingWorks_String()
+        public virtual void BooleanCodec_DEcodingWorks_String()
         {
             bool expectedNewPlayer = newPlayerVar.Value;
-            string encodedNewPlayerStr = booleanEncoder.EncodeToString(newPlayerVar);
+            string encodedNewPlayerStr = booleanCodec.EncodeToString(newPlayerVar);
             newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanEncoder.Decode(newPlayerVar, encodedNewPlayerStr);
+            booleanCodec.Decode(newPlayerVar, encodedNewPlayerStr);
             bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
-        public virtual void BooleanEncoder_EncodingWorks_VarSaveData()
+        public virtual void BooleanCodec_EncodingWorks_VarSaveData()
         {
             bool expectedNewPlayer = newPlayerVar.Value;
             string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
-            VariableSaveData encodedNewPlayerData = booleanEncoder.EncodeToSave(newPlayerVar);
+            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(newPlayerVar);
             bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerData.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
-        public virtual void BooleanEncoder_DEcodingWorks_VarSaveData()
+        public virtual void BooleanCodec_DEcodingWorks_VarSaveData()
         {
             bool expectedNewPlayer = newPlayerVar.Value;
-            VariableSaveData encodedNewPlayerData = booleanEncoder.EncodeToSave(newPlayerVar);
+            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(newPlayerVar);
             newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanEncoder.Decode(newPlayerVar, encodedNewPlayerData);
+            booleanCodec.Decode(newPlayerVar, encodedNewPlayerData);
             bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
-        public virtual void VectorEncoder_EncodingWorks_String()
+        public virtual void VectorCodec_EncodingWorks_String()
         {
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
@@ -206,8 +206,8 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
             string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
 
-            string encodedTwoDPosStr = vectorEncoder.EncodeToString(twoDPosVar);
-            string encodedThreeDPosStr = vectorEncoder.EncodeToString(threeDPosVar);
+            string encodedTwoDPosStr = vectorCodec.EncodeToString(twoDPosVar);
+            string encodedThreeDPosStr = vectorCodec.EncodeToString(threeDPosVar);
 
             bool encodedTwoDPosSuccess = expectedEncodedTwoDPosStr.Equals(encodedTwoDPosStr);
             bool encodedThreeDPosSuccess = expectedEncodedThreeDPosStr.Equals(encodedThreeDPosStr);
@@ -217,7 +217,7 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void VectorEncoder_EncodingWorks_VarSaveData()
+        public virtual void VectorCodec_EncodingWorks_VarSaveData()
         {
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
@@ -225,8 +225,8 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
             string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
 
-            VariableSaveData encodedTwoDPosData = vectorEncoder.EncodeToSave(twoDPosVar);
-            VariableSaveData encodedThreeDPosData = vectorEncoder.EncodeToSave(threeDPosVar);
+            VariableSaveData encodedTwoDPosData = vectorCodec.EncodeToSave(twoDPosVar);
+            VariableSaveData encodedThreeDPosData = vectorCodec.EncodeToSave(threeDPosVar);
 
             bool encodedTwoDPosSuccess = expectedEncodedTwoDPosStr.Equals(encodedTwoDPosData.Value);
             bool encodedThreeDPosSuccess = expectedEncodedThreeDPosStr.Equals(encodedThreeDPosData.Value);
@@ -236,7 +236,7 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void VectorEncoder_DECodingWorks_String()
+        public virtual void VectorCodec_DECodingWorks_String()
         {
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
@@ -244,14 +244,14 @@ namespace Amanita.SaveSystemTests
             string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
             string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
 
-            string encodedTwoDPosStr = vectorEncoder.EncodeToString(twoDPosVar);
-            string encodedThreeDPosStr = vectorEncoder.EncodeToString(threeDPosVar);
+            string encodedTwoDPosStr = vectorCodec.EncodeToString(twoDPosVar);
+            string encodedThreeDPosStr = vectorCodec.EncodeToString(threeDPosVar);
 
             twoDPosVar.Value += Vector2.right * 123;
             threeDPosVar.Value += Vector3.right * 3429785;
 
-            vectorEncoder.Decode(twoDPosVar, encodedTwoDPosStr);
-            vectorEncoder.Decode(threeDPosVar, encodedThreeDPosStr);
+            vectorCodec.Decode(twoDPosVar, encodedTwoDPosStr);
+            vectorCodec.Decode(threeDPosVar, encodedThreeDPosStr);
 
             bool encodedTwoDPosSuccess = expectedTwoDPos.Equals(twoDPosVar.Value);
             bool encodedThreeDPosSuccess = expectedThreeDPos.Equals(threeDPosVar.Value);
@@ -260,19 +260,19 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void VectorEncoder_DECodingWorks_VarSaveData()
+        public virtual void VectorCodec_DECodingWorks_VarSaveData()
         {
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
 
-            VariableSaveData twoDPosData = vectorEncoder.EncodeToSave(twoDPosVar);
-            VariableSaveData threeDPosData = vectorEncoder.EncodeToSave(threeDPosVar);
+            VariableSaveData twoDPosData = vectorCodec.EncodeToSave(twoDPosVar);
+            VariableSaveData threeDPosData = vectorCodec.EncodeToSave(threeDPosVar);
 
             twoDPosVar.Value += Vector2.right * 123;
             threeDPosVar.Value += Vector3.right * 3429785;
 
-            vectorEncoder.Decode(twoDPosVar, twoDPosData);
-            vectorEncoder.Decode(threeDPosVar, threeDPosData);
+            vectorCodec.Decode(twoDPosVar, twoDPosData);
+            vectorCodec.Decode(threeDPosVar, threeDPosData);
 
             bool encodedTwoDPosSuccess = expectedTwoDPos.Equals(twoDPosVar.Value);
             bool encodedThreeDPosSuccess = expectedThreeDPos.Equals(threeDPosVar.Value);
@@ -281,125 +281,125 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void ColorEncoder_EncodingWorks_String()
+        public virtual void ColorCodec_EncodingWorks_String()
         {
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
 
             string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
-            string encodedColorStr = colorEncoder.EncodeToString(colorVar);
+            string encodedColorStr = colorCodec.EncodeToString(colorVar);
             bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorStr);
             Assert.IsTrue(encodedColorSuccess);
         }
 
         [Test]
-        public virtual void ColorEncoder_EncodingWorks_VarSaveData()
+        public virtual void ColorCodec_EncodingWorks_VarSaveData()
         {
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
             string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
-            VariableSaveData encodedColorVarData = colorEncoder.EncodeToSave(colorVar);
+            VariableSaveData encodedColorVarData = colorCodec.EncodeToSave(colorVar);
             bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorVarData.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
 
         [Test]
-        public virtual void ColorEncoder_DEcodingWorks_String()
+        public virtual void ColorCodec_DEcodingWorks_String()
         {
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
 
-            string encodedColorStr = colorEncoder.EncodeToString(colorVar);
+            string encodedColorStr = colorCodec.EncodeToString(colorVar);
             colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
-            colorEncoder.Decode(colorVar, encodedColorStr);
+            colorCodec.Decode(colorVar, encodedColorStr);
             bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
 
         [Test]
-        public virtual void ColorEncoder_DEcodingWorks_VarSaveData()
+        public virtual void ColorCodec_DEcodingWorks_VarSaveData()
         {
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
-            VariableSaveData encodedColorVarData = colorEncoder.EncodeToSave(colorVar);
+            VariableSaveData encodedColorVarData = colorCodec.EncodeToSave(colorVar);
             colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
-            colorEncoder.Decode(colorVar, encodedColorVarData);
+            colorCodec.Decode(colorVar, encodedColorVarData);
             bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
 
         [Test]
-        public virtual void StringEncoder_EncodingWorks_String()
+        public virtual void StringCodec_EncodingWorks_String()
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            string encodedString = stringEncoder.EncodeToString(stringVar);
+            string encodedString = stringCodec.EncodeToString(stringVar);
             bool encodedStringSuccess = expectedString.Equals(encodedString);
             Assert.IsTrue(encodedStringSuccess);
         }
 
         [Test]
-        public virtual void StringEncoder_EncodingWorks_VarSaveData()
+        public virtual void StringCodec_EncodingWorks_VarSaveData()
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            VariableSaveData encodedStringVarData = stringEncoder.EncodeToSave(stringVar);
+            VariableSaveData encodedStringVarData = stringCodec.EncodeToSave(stringVar);
             bool encodedStringSuccess = expectedString.Equals(encodedStringVarData.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
 
         [Test]
-        public virtual void StringEncoder_DEcodingWorks_String()
+        public virtual void StringCodec_DEcodingWorks_String()
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            string encodedString = stringEncoder.EncodeToString(stringVar);
+            string encodedString = stringCodec.EncodeToString(stringVar);
             stringVar.Value += " Good bye, cruel world!";
-            stringEncoder.Decode(stringVar, encodedString);
+            stringCodec.Decode(stringVar, encodedString);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
 
         [Test]
-        public virtual void StringEncoder_DEcodingWorks_VarSaveData()
+        public virtual void StringCodec_DEcodingWorks_VarSaveData()
         {
             string expectedString = "Hello, World!";
             stringVar.Value = expectedString;
-            VariableSaveData encodedStringVarData = stringEncoder.EncodeToSave(stringVar);
+            VariableSaveData encodedStringVarData = stringCodec.EncodeToSave(stringVar);
             stringVar.Value += " Good bye, cruel world!";
-            stringEncoder.Decode(stringVar, encodedStringVarData);
+            stringCodec.Decode(stringVar, encodedStringVarData);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
 
         [Test]
-        public virtual void TransformEncoder_EncodingWorks_String()
+        public virtual void TransformCodec_EncodingWorks_String()
         {
             Transform expectedTrans = transformVar.Value;
             TransformState expectedState = TransformState.From(expectedTrans);
             string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
-            string encodedTransStr = transformEncoder.EncodeToString(transformVar);
+            string encodedTransStr = transformCodec.EncodeToString(transformVar);
             bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransStr);
             Assert.IsTrue(encodedTransSuccess);
         }
 
         [Test]
-        public virtual void TransformEncoder_EncodingWorks_VarSaveData()
+        public virtual void TransformCodec_EncodingWorks_VarSaveData()
         {
             Transform expectedTrans = transformVar.Value;
             TransformState expectedState = TransformState.From(expectedTrans);
             string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
-            VariableSaveData encodedTransVarData = transformEncoder.EncodeToSave(transformVar);
+            VariableSaveData encodedTransVarData = transformCodec.EncodeToSave(transformVar);
             bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransVarData.Value);
             Assert.IsTrue(encodedTransSuccess);
         }
 
         [Test]
-        public virtual void TransformEncoder_DEcodingWorks_String()
+        public virtual void TransformCodec_DEcodingWorks_String()
         {
             Transform expectedTrans = transformVar.Value; // Should NOT be null at this point
             string expectedName = expectedTrans.name;
@@ -413,13 +413,13 @@ namespace Amanita.SaveSystemTests
             Quaternion expectedRot = expectedTrans.rotation;
             Vector3 expectedScale = expectedTrans.localScale;
 
-            string encodedTransStr = transformEncoder.EncodeToString(transformVar);
+            string encodedTransStr = transformCodec.EncodeToString(transformVar);
             transformVar.Value.position += Vector3.right * 123;
             transformVar.Value.rotation *= Quaternion.Euler(0, 90, 0);
             transformVar.Value.localScale += Vector3.one * 0.5f;
             transformVar.Value = null;
 
-            transformEncoder.Decode(transformVar, encodedTransStr);
+            transformCodec.Decode(transformVar, encodedTransStr);
             // Part of the decoding process is applying the position, rotation and such
             // to the transform. Thus, we won't need to apply it here.
             Transform decodedTrans = transformVar.Value;
@@ -446,7 +446,7 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void TransformEncoder_DEcodingWorks_VarSaveData()
+        public virtual void TransformCodec_DEcodingWorks_VarSaveData()
         {
             Transform expectedTrans = transformVar.Value; // Should NOT be null at this point
             string expectedName = expectedTrans.name;
@@ -460,14 +460,14 @@ namespace Amanita.SaveSystemTests
             Quaternion expectedRot = expectedTrans.rotation;
             Vector3 expectedScale = expectedTrans.localScale;
 
-            VariableSaveData encodedTransVarData = transformEncoder.EncodeToSave(transformVar);
+            VariableSaveData encodedTransVarData = transformCodec.EncodeToSave(transformVar);
 
             transformVar.Value.position += Vector3.right * 123;
             transformVar.Value.rotation *= Quaternion.Euler(0, 90, 0);
             transformVar.Value.localScale += Vector3.one * 0.5f;
             transformVar.Value = null;
 
-            transformEncoder.Decode(transformVar, encodedTransVarData);
+            transformCodec.Decode(transformVar, encodedTransVarData);
             // Part of the decoding process is applying the position, rotation and such
             // to the transform. Thus, we won't need to apply it here.
             Transform decodedTrans = transformVar.Value;

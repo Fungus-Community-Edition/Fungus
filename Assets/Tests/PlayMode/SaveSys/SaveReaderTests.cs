@@ -31,11 +31,11 @@ namespace Amanita.SaveSystemTests
             };
 
             waitToYield = new WaitForSeconds(waitTime);
-            string pathToEncoder = "SaveEncoders/FlowchartSaveEncoder";
-            flowchartSaveEncoder = Resources.Load<FlowchartSaveEncoder>(pathToEncoder);
+            string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
+            flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
 
-            pathToEncoder = "SaveEncoders/BlockSaveEncoder";
-            blockSaveEncoder = Resources.Load<BlockSaveEncoder>(pathToEncoder);
+            pathToCodec = "SaveCodecs/BlockSaveCodec";
+            blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
 
             CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
 
@@ -60,9 +60,9 @@ namespace Amanita.SaveSystemTests
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveCodec flowchartSaveCodec;
         protected FlowchartSaveData flowchartSaveData;
-        protected BlockSaveEncoder blockSaveEncoder;
+        protected BlockSaveCodec blockSaveCodec;
 
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
@@ -132,14 +132,14 @@ namespace Amanita.SaveSystemTests
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
-            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
             CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
             SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
             mainSave.Add(encodedFlowchartSave);
 
-            IList<BlockSaveData> blockSaves = blockSaveEncoder.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
             foreach (var blockSave in blockSaves)
             {
                 SaveDataUnit saveDataUnit = blockSave.Serialized();
@@ -237,7 +237,7 @@ namespace Amanita.SaveSystemTests
         protected virtual void GetFullFilePath(SaveReadRequest request, string saveFolderPath,
             out string filePath)
         {
-            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber.ToString("D3"), FileExtension);
+            string fileName = string.Format(fileNameFormat, SavePrefix, request.SlotNumber.ToString(saveReader.SaveNumberFormat), FileExtension);
             filePath = string.Format(FilePathFormat, saveFolderPath, fileName);
         }
 
@@ -385,7 +385,7 @@ namespace Amanita.SaveSystemTests
                 copyReq.SlotNumber = slotNumber;
 
                 string path = saveReader.GetSavePath(copyReq);
-                string expectedEnd = string.Format(fileNameFormat, saveReader.SavePrefix, slotNumber.ToString("D3"), saveReader.FileExtension);
+                string expectedEnd = string.Format(fileNameFormat, saveReader.SavePrefix, slotNumber.ToString(saveReader.SaveNumberFormat), saveReader.FileExtension);
 
                 StringAssert.EndsWith(expectedEnd, path, $"File name for slot {copyReq.SlotNumber} is wrong.");
             }

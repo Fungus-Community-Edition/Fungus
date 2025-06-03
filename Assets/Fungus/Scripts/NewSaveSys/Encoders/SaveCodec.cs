@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public abstract class SaveEncoder : ScriptableObject, ISaveEncoder, ISaveEncoderHandleCheck
+    public abstract class SaveCodec : ScriptableObject, ISaveCodec, ISaveCodecHandleCheck
     {
         [SerializeField] protected int priority = 0;
-        [SerializeField] protected SaveEncoder[] subEncoders = new SaveEncoder[0];
+        [SerializeField] protected SaveCodec[] subCodecs = new SaveCodec[0];
 
-        public virtual int Priority => priority;
+        public virtual int Order => priority;
         public virtual bool NeedsInput => false;
 
         public virtual object ToMakeFrom { get; set; } = null;
@@ -38,7 +38,7 @@ namespace Amanita.SaveSys
 
     }
 
-    public abstract class SaveEncoder<TInput, TOutput> : SaveEncoder,
+    public abstract class SaveCodec<TInput, TOutput> : SaveCodec,
         ISaveEncoder<TInput, TOutput>
         where TInput: class
         where TOutput : SaveData

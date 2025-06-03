@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
-    public class FlowchartEncoderTests
+    public class FlowchartCodecTests
     {
         protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
@@ -17,9 +17,9 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
-            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
-            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
-            blockSaveEncoder = ScriptableObject.CreateInstance<BlockSaveEncoder>();
+            flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+            blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>();
         }
 
         protected virtual void PrepScene()
@@ -33,9 +33,9 @@ namespace Amanita.SaveSystemTests
         protected GameObject varStateTestScene;
 
         protected Flowchart flowchart;
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
+        protected FlowchartSaveCodec flowchartSaveCodec;
         protected FlowchartSaveData flowchartSaveData;
-        protected BlockSaveEncoder blockSaveEncoder;
+        protected BlockSaveCodec blockSaveCodec;
 
         [TearDown]
         public virtual void DoTearDown()
@@ -60,7 +60,7 @@ namespace Amanita.SaveSystemTests
         {
             foreach (Variable var in flowchart.Variables)
             {
-                IVarEncoder forThisVar = EncoderRegistry.GetEncoder(var);
+                IVarCodec forThisVar = CodecRegistry.GetCodec(var);
                 if (forThisVar == null)
                 {
                     continue;
@@ -75,7 +75,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator FlowchartSaveData_Constructor_SetsSavedBlocks()
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
-            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
                                                   where elem.SaveExecutionState
                                                   select elem).ToList();
@@ -85,7 +85,7 @@ namespace Amanita.SaveSystemTests
 
             foreach (Block block in blocksToSave)
             {
-                BlockSaveData blockSaveData = blockSaveEncoder.EncodeToSave(block);
+                BlockSaveData blockSaveData = blockSaveCodec.EncodeToSave(block);
                 bool correctBlockName = blockSaveData.BlockName == block.BlockName;
                 bool correctItemId = blockSaveData.ItemId == block.ItemId;
                 bool correctActiveCommandId = blockSaveData.ActiveCommandId == block.ActiveCommand.ItemId;

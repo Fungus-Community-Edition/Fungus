@@ -5,8 +5,8 @@ using System.Linq;
 namespace Amanita.SaveSys
 {
     [CreateAssetMenu(fileName = "BlockSaveEncoder", menuName = "Amanita/SaveSys/Encoders/BlockSaveEncoder")]
-    public class BlockSaveEncoder : SaveEncoder<Block, BlockSaveData>,
-        IMultiSaveEncoder<Flowchart, BlockSaveData>
+    public class BlockSaveCodec : SaveCodec<Block, BlockSaveData>,
+        IMultiSaveCodec<Flowchart, BlockSaveData>
     {
         public override bool CanHandle(object toMakeFrom)
         {

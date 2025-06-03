@@ -1,6 +1,3 @@
-using Amanita.SaveSys;
-using UnityEngine;
-
 namespace Amanita.SaveSys
 {
     public interface IDecryptor
