@@ -19,7 +19,10 @@ namespace Amanita.SaveSys
         }
         public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
         {
-            IList<BlockSaveData> blockSaves = withTheBlocks.GetExecutingBlocks()
+            IList<Block> blocksToConsider = (from elem in withTheBlocks.GetExecutingBlocks()
+                                             where elem.SaveExecutionState == true
+                                             select elem).ToList();
+            IList<BlockSaveData> blockSaves = blocksToConsider
                 .Select(block => EncodeToSave(block))
                 .ToList();
             return blockSaves;
@@ -71,6 +74,11 @@ namespace Amanita.SaveSys
         public override SaveDataUnit EncodeToUnit()
         {
             return EncodeToUnit(ToMakeFrom);
+        }
+
+        public override IList<SaveDataUnit> FindAndEncodeAll()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

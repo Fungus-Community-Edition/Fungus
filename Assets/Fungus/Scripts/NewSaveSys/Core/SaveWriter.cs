@@ -101,7 +101,7 @@ namespace Amanita.SaveSys
                 Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
                 fileName = string.Format(fileNameFormat, savePrefix,
-                    request.SlotNumber.ToString("D3"), fileExtension);
+                    request.SlotNumber.ToString(SaveNumberFormat), fileExtension);
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
 
@@ -178,14 +178,6 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool validSaveName = !string.IsNullOrEmpty(writeArgs.SaveName);
-            if (string.IsNullOrEmpty(writeArgs.SaveName))
-            {
-                errorMessage += "SaveName is null or empty. Cannot write to disk.\n";
-                exception = new System.ArgumentNullException(nameof(writeArgs.SaveName), errorMessage);
-                throw exception;
-            }
-
             bool validBaseDirectory = SaveSystem.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
             if (!validBaseDirectory)
             {
@@ -202,8 +194,7 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool didWeSucceed = !isNull && validSaveName &&
-                validBaseDirectory && validSaveNumber;
+            bool didWeSucceed = !isNull && validBaseDirectory && validSaveNumber;
 
             if (!didWeSucceed)
             {

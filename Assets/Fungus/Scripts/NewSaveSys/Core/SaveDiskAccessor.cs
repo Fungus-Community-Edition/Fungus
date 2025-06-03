@@ -9,6 +9,7 @@ namespace Amanita.SaveSys
         [Tooltip("Just for flavor.")]
         [SerializeField] protected string fileExtension = "save";
         [SerializeField] protected string relativeSavePath = "Saves/";
+        [SerializeField] protected string saveNumberFormat = "D2";
 
         public virtual string SavePrefix => savePrefix;
         public virtual string FileExtension => fileExtension;
@@ -30,6 +31,8 @@ namespace Amanita.SaveSys
                 }
             }
         }
+
+        public virtual string SaveNumberFormat => saveNumberFormat;
 
         public virtual string DefaultRelativeSavePath => "Saves/";
 

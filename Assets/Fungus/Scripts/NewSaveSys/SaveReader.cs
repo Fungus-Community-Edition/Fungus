@@ -61,7 +61,7 @@ namespace Amanita.SaveSys
         {
             string saveFolderPath = GetAndPrepSaveFolderPath(request);
             string fileName = string.Format(fileNameFormat, savePrefix,
-                request.SlotNumber.ToString("D3"), fileExtension);
+                request.SlotNumber.ToString(SaveNumberFormat), fileExtension);
             string filePath = string.Format(filePathFormat, saveFolderPath, fileName);
             return filePath;
         }

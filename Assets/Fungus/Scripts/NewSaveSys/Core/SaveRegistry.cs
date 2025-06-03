@@ -174,6 +174,10 @@ namespace Amanita.SaveSys
             return slotNumber;
         }
         
+        public virtual IList<int> GetOccupiedSlots()
+        {
+            return _savePairs.Keys.ToArray();
+        }
     }
 
 }

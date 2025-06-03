@@ -49,13 +49,6 @@ namespace Amanita.SaveSystemTests
             PrepScene();
         }
 
-        protected IList<string> writtenFilePaths = new List<string>();
-
-        protected virtual void OnSaveWritten(SaveWriteResults results)
-        {
-            writtenFilePaths.Add(results.FilePath);
-        }
-
         protected virtual void PrepScene()
         {
             varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
@@ -88,7 +81,7 @@ namespace Amanita.SaveSystemTests
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
-            //DeleteAllTestSaves();
+            DeleteAllTestSaves();
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
             saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
             if (varStateTestScene != null)
@@ -280,7 +273,6 @@ namespace Amanita.SaveSystemTests
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
-            writtenFilePaths.Add(filePath);
             File.WriteAllText(filePath, randomJunk);
 
             string errorMessage = string.Empty;
@@ -317,8 +309,6 @@ namespace Amanita.SaveSystemTests
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
             File.WriteAllText(filePath, randomJunk);
-
-            writtenFilePaths.Add(filePath);
             
             string errorMessage = string.Empty;
             try

@@ -10,7 +10,7 @@ namespace Amanita.SaveSys
     {
         public new Flowchart ToMakeFrom
         {
-            get { return (Flowchart)base.ToMakeFrom; }
+            get { return base.ToMakeFrom; }
             set { base.ToMakeFrom = value; }
         }
 
@@ -30,7 +30,6 @@ namespace Amanita.SaveSys
             IList<BlockSaveData> blockSaves = blockEncoder.EncodeToMultiSave(toCreateFrom);
             // TODO: Save the state of certain commands (such as Conversation)
 
-
             FlowchartSaveData saveData = new()
             {
                 UniqueId = toCreateFrom.UniqueId,
@@ -44,27 +43,31 @@ namespace Amanita.SaveSys
 
         protected virtual IList<VariableSaveData> SaveVars(Flowchart toCreateFrom)
         {
-            IList<VariableSaveData> savedVars = new List<VariableSaveData>();
-            foreach (Variable varEl in toCreateFrom.Variables)
+            IList<VariableSaveData> result = new List<VariableSaveData>();
+
+            if (toCreateFrom.SaveVariables)
             {
-                IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varEl);
-                if (forThisVar == null)
+                foreach (Variable varEl in toCreateFrom.Variables)
                 {
-                    Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");
-                    continue;
-                }
+                    IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varEl);
+                    if (forThisVar == null)
+                    {
+                        Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");
+                        continue;
+                    }
 
-                VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
-                if (varSave == null)
-                {
-                    Debug.LogError($"Failed to encode variable: {varEl.name}");
-                    continue;
-                }
+                    VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
+                    if (varSave == null)
+                    {
+                        Debug.LogError($"Failed to encode variable: {varEl.name}");
+                        continue;
+                    }
 
-                savedVars.Add(varSave);
+                    result.Add(varSave);
+                }
             }
 
-            return savedVars;
+            return result;
         }
 
         public override SaveDataUnit EncodeToUnit()
@@ -79,6 +82,25 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        public override IList<SaveDataUnit> FindAndEncodeAll()
+        {
+            IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+
+            allFlowcharts = (from elem in allFlowcharts
+                             where elem.SaveVariables
+                             select elem).ToList();
+
+            IList<SaveDataUnit> results = new List<SaveDataUnit>();
+
+            for (int i = 0; i < allFlowcharts.Count; i++)
+            {
+                Flowchart currentFlowchart = allFlowcharts[i];
+                SaveDataUnit newUnit = EncodeToUnit(currentFlowchart);
+                results.Add(newUnit);
+            }
+
+            return results;
+        }
     }
 
 }
