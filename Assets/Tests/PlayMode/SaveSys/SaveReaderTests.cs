@@ -13,108 +13,8 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
-    public class SaveReaderTests
+    public class SaveReaderTests : CommonTestFunctionality
     {
-        protected string toVarStateTests = "ScenePrefabs/VarStateTests";
-
-        [OneTimeSetUp]
-        public virtual void DoOneTimeSetUp()
-        {
-            SaveSystem.InitPaths();
-            
-            saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
-            saveReader = ScriptableObject.CreateInstance<SaveReader>();
-            readReq = new SaveReadRequest
-            {
-                SlotNumber = writeReq.SlotNumber,
-                BaseSaveDirectory = writeReq.BaseSaveDirectory,
-            };
-
-            waitToYield = new WaitForSeconds(waitTime);
-            string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
-            flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
-
-            pathToCodec = "SaveCodecs/BlockSaveCodec";
-            blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
-
-            CompositeSaveData compSave = (CompositeSaveData)writeReq.MainState;
-
-            saveWriter.RelativeSavePath = relativePathForTesting;
-            saveReader.RelativeSavePath = relativePathForTesting;
-        }
-
-        [SetUp]
-        public virtual void DoSetUp()
-        {
-            PrepScene();
-        }
-
-        protected virtual void PrepScene()
-        {
-            varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
-            varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
-            flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
-        }
-
-        protected GameObject varStateTestPrefab;
-        protected GameObject varStateTestScene;
-
-        protected Flowchart flowchart;
-        protected FlowchartSaveCodec flowchartSaveCodec;
-        protected FlowchartSaveData flowchartSaveData;
-        protected BlockSaveCodec blockSaveCodec;
-
-        protected SaveWriter saveWriter;
-        protected SaveReader saveReader;
-        protected SaveReadRequest readReq;
-        float waitTime = 0.2f;
-        WaitForSeconds waitToYield;
-        protected string relativePathForTesting = "TempSaves";
-
-        [TearDown]
-        public virtual void DoTearDown()
-        {
-            writeReq.MainState = new CompositeSaveData { };
-            UnityObject.DestroyImmediate(varStateTestScene);
-        }
-
-        [OneTimeTearDown]
-        public virtual void DoOneTimeTearDown()
-        {
-            DeleteAllTestSaves();
-            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
-            saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
-            if (varStateTestScene != null)
-            {
-                UnityObject.DestroyImmediate(varStateTestScene);
-            }
-        }
-
-        protected void DeleteAllTestSaves()
-        {
-            foreach (string root in SaveSystem.SaveDirectoryPaths.Values)
-            {
-                string pathToTempFolder = Path.Combine(root, relativePathForTesting);
-
-                IList<string> junk = Directory.EnumerateFiles(pathToTempFolder, "*.save",
-                    SearchOption.AllDirectories).ToList();
-                IList<string> junkMetas = Directory.EnumerateFiles(pathToTempFolder, "*.save.meta", SearchOption.AllDirectories).ToList();
-
-                List<string> allJunk = new List<string>(junk);
-                allJunk.AddRange(junkMetas);
-
-                foreach (string file in allJunk)
-                {
-                    if (File.Exists(file))
-                    {
-                        File.Delete(file);
-                    }
-                }
-
-            }
-            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
-        }
-
         [UnityTest]
         public virtual IEnumerator ReadsMetadataProperly_NONEncrypted()
         {
@@ -129,33 +29,6 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
         }
 
-        protected virtual IEnumerator CommonSetup()
-        {
-            yield return waitToYield;
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            // ^We are expecting the flowchart encoder to use the block encoder as a sub
-
-            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-            mainSave.Add(encodedFlowchartSave);
-
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-            foreach (var blockSave in blockSaves)
-            {
-                SaveDataUnit saveDataUnit = blockSave.Serialized();
-                mainSave.Add(saveDataUnit);
-            }
-
-        }
-
-        protected SaveWriteRequest writeReq = new SaveWriteRequest
-        {
-            SaveName = "TestSave",
-            SlotNumber = 0,
-            MainState = new CompositeSaveData(),
-            SaveMetaData = new SaveMetaData(),
-            BaseSaveDirectory = SaveDirectoryType.DataPath
-        };
 
         [UnityTest]
         public virtual IEnumerator ReadsMetadataProperly_Encrypted()
