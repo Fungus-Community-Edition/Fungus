@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
@@ -53,13 +54,13 @@ namespace Amanita.SaveSys
         /// Writes all the save datas to the passed save directory, returning true if successful,
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteAllToDisk(IList<SaveWriteRequest> args)
+        public virtual async Task<bool> WriteAllToDisk(IList<SaveWriteRequest> args)
         {
             bool didWeSucceed = default;
             for (int i = 0; i < args.Count; i++)
             {
                 SaveWriteRequest currentArgs = args[i];
-                didWeSucceed = WriteOneToDisk(currentArgs);
+                didWeSucceed = await WriteOneToDisk(currentArgs);
                 if (!didWeSucceed)
                 {
                     break;
@@ -69,75 +70,65 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
+        protected string debugSaveFolder, debugFilePath;
         /// <summary>
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual bool WriteOneToDisk(SaveWriteRequest request)
+        public virtual async Task<bool> WriteOneToDisk(SaveWriteRequest request)
         {
             // Safety.
             Validate(request);
 
-            string saveFolder = string.Empty, fileName = string.Empty,
+            string saveFolder = GetFolderToAccess(request.BaseSaveDirectory),
+                numFormatted = request.SlotNumber.ToString(SaveNumberFormat),
+                fileName = string.Empty,
                 filePath = string.Empty;
 
-            RegisterAndEnsureFullPath();
-            void RegisterAndEnsureFullPath()
+            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
+
+            fileName = string.Format(fileNameFormat, savePrefix,
+                    numFormatted, fileExtension);
+            filePath = saveFolder + fileName;
+            debugSaveFolder = saveFolder;
+
+            debugFilePath = filePath;
+
+            await DoTheWriting().ConfigureAwait(false);
+            async Task DoTheWriting()
             {
-                saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
-
-                // Need to make sure we have that slash at the end
-                if (!saveFolder.EndsWith("/") && !saveFolder.EndsWith("\\"))
+                if (!writeEncrypted)
                 {
-                    saveFolder += "\\";
-                }
-
-                bool thereIsRelativePathToConsider = relativeSavePath.Count() > 1;
-                if (thereIsRelativePathToConsider)
-                {
-                    saveFolder = Path.Combine(saveFolder, relativeSavePath);
-                }
-                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
-
-                fileName = string.Format(fileNameFormat, savePrefix,
-                    request.SlotNumber.ToString(SaveNumberFormat), fileExtension);
-                filePath = string.Format(filePathFormat, saveFolder, fileName);
-            }
-
-            if (!writeEncrypted)
-            {
-                WriteFullJsonTextToFile();
-                void WriteFullJsonTextToFile()
-                {
-                    string metaTextToWrite;
-                    string mainStateTextToWrite;
-
-                    DecideTextToWrite();
-                    
-                    void DecideTextToWrite()
+                    await WriteFullJsonTextToFile();
+                    async Task WriteFullJsonTextToFile()
                     {
-                        ISaveMetaData meta = request.SaveMetaData;
-                        metaTextToWrite = JsonUtility.ToJson(meta, true);
+                        string metaTextToWrite, mainStateTextToWrite;
 
-                        ISaveData saveData = request.MainState;
-                        mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
+                        DecideTextToWrite();
+                        void DecideTextToWrite()
+                        {
+                            ISaveMetaData meta = request.SaveMetaData;
+                            metaTextToWrite = JsonUtility.ToJson(meta, true);
+
+                            ISaveData saveData = request.MainState;
+                            mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
+                        }
+
+                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}{mainStateTextToWrite}";
+                        await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
                     }
-
-                    string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}{mainStateTextToWrite}";
-                    File.WriteAllText(filePath, everythingToWrite, actualEncoding);
                 }
-            }
 
-            else
-            {
-                WriteAsEncrypted();
-                
-                void WriteAsEncrypted()
+                else
                 {
-                    SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
-                    IEncryptor correctEncryptor = encryptor as IEncryptor;
-                    byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
-                    File.WriteAllBytes(filePath, encryptedData);
+                    await WriteAsEncrypted();
+                    async Task WriteAsEncrypted()
+                    {
+                        SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
+                        IEncryptor correctEncryptor = encryptor as IEncryptor;
+                        byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
+                        await File.WriteAllBytesAsync(filePath, encryptedData);
+                    }
                 }
             }
 
@@ -157,8 +148,8 @@ namespace Amanita.SaveSys
                 AmanitaSaveWritten(results);
                 SaveSysSignals.AmanitaSaveWritten.Invoke(results);
             }
-            return true;
 
+            return true;
         }
 
         /// <summary>

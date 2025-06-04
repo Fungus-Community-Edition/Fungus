@@ -1,26 +1,29 @@
-using Amanita.Myceliaudio;
+using System.Collections;
 using Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
+using System;
 
 namespace Amanita.SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {
         
-        [Test]
-        public virtual void WritesSaveToDisk_BaseDataPath()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BaseDataPath()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
             saveWriter.RelativeSavePath = "";
             // ^Since it might get set to null by other tests, we need to reset it
 
-            CommonSaveWriteTest(writeArgs);
+            yield return CommonSaveWriteTest(writeArgs);
         }
 
         protected SaveWriteRequest writeArgs = new SaveWriteRequest
@@ -34,7 +37,8 @@ namespace Amanita.SaveSystemTests
 
         protected string FileNameFormat { get { return saveWriter.FileNameFormat; } }
 
-        protected virtual void CommonSaveWriteTest(SaveWriteRequest writeArgs, string relativePath = "")
+        protected virtual IEnumerator CommonSaveWriteTest(SaveWriteRequest writeArgs,
+            string relativePath = "")
         {
             if (string.IsNullOrEmpty(relativePath))
             {
@@ -46,76 +50,79 @@ namespace Amanita.SaveSystemTests
             string baseDirectory = SaveSystem.SaveDirectoryPaths[writeArgs.BaseSaveDirectory];
             string fullPath; // So we can judge the results
 
-            if (string.IsNullOrEmpty(relativePath) || relativePath.Length < 2)
-            {
-                fullPath = System.IO.Path.Combine(baseDirectory, fileName);
-            }
-            else
-            {
-                fullPath = System.IO.Path.Combine(baseDirectory, relativePath, fileName);
-            }
-
-            saveWriter.WriteOneToDisk(writeArgs);
+            fullPath = Path.Combine(baseDirectory, relativePath, fileName);
+            
+            Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
+            yield return WaitFor(writeTask);
 
             bool fileWasWritten = System.IO.File.Exists(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
+        string debugSaveFolder;
+
+        protected IEnumerator WaitFor(Task writeTask)
+        {
+            yield return new WaitUntil(() => writeTask.IsCompleted);
+        }
         protected string SaveNumberFormat { get { return saveWriter.SaveNumberFormat; } }
 
         #region Successful writes
-        [Test]
-        public virtual void WritesSaveToDisk_BasePersistentDataPath()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BasePersistentDataPath()
         {
+            saveWriter.RelativeSavePath = "";
             writeArgs.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
-            CommonSaveWriteTest(writeArgs);
+            yield return CommonSaveWriteTest(writeArgs);
         }
 
-        [Test]
-        public virtual void WritesSaveToDisk_BaseStreamingAssetsPath()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BaseStreamingAssetsPath()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
-            CommonSaveWriteTest(writeArgs);
+            yield return CommonSaveWriteTest(writeArgs);
         }
 
         // We can worry about PlayerPrefs later, if we need to.
 
-        [Test]
-        public virtual void WritesSaveToDisk_BaseDataPath_RelativePathIncluded()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BaseDataPath_RelativePathIncluded()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
 
-            CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
+            yield return CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
         }
 
-        [Test]
-        public virtual void WritesSaveToDisk_BasePersistentDataPath_RelativePathIncluded()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BasePersistentDataPath_RelativePathIncluded()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             writeArgs.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
+            yield return CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
         }
 
-        [Test]
-        public virtual void WritesSaveToDisk_BaseStreamingAssetsPath_RelativePathIncluded()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_BaseStreamingAssetsPath_RelativePathIncluded()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             writeArgs.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
 
-            CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
+            yield return CommonSaveWriteTest(writeArgs, saveWriter.RelativeSavePath);
         }
 
         #endregion
 
         #region Rejection tests
-        [Test]
-        public virtual void WritesSaveToDisk_AnyPath_RejectNullSaveData()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_AnyPath_RejectNullSaveData()
         {
+            yield return null;
+
             SaveWriteRequest writeArgsWithNullSaveData = new SaveWriteRequest
             {
                 SaveName = "TestSave",
@@ -124,21 +131,22 @@ namespace Amanita.SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
 
             writeArgsWithNullSaveData.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
 
             writeArgsWithNullSaveData.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
         }
 
-        [Test]
-        public virtual void WritesSaveToDisk_AnyPath_RejectNegativeSlotNumber()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_AnyPath_RejectNegativeSlotNumber()
         {
+            yield return null;
             SaveWriteRequest writeArgsWithBadSlotNumber = new SaveWriteRequest
             {
                 SaveName = "TestSave",
@@ -146,19 +154,20 @@ namespace Amanita.SaveSystemTests
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
             writeArgsWithBadSlotNumber.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
             writeArgsWithBadSlotNumber.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
         }
 
-        [Test]
-        public virtual void WritesSaveToDisk_AnyPath_RejectInvalidBaseDirectory()
+        [UnityTest]
+        public virtual IEnumerator WritesSaveToDisk_AnyPath_RejectInvalidBaseDirectory()
         {
+            yield return null;
             SaveWriteRequest writeArgsWithBadBaseDirectory = new SaveWriteRequest
             {
                 SaveName = "TestSave",
@@ -166,7 +175,7 @@ namespace Amanita.SaveSystemTests
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
             };
-            Assert.Throws<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
+            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
                 "Expected ArgumentException when trying to write with invalid base directory.");
         }
 
@@ -174,12 +183,13 @@ namespace Amanita.SaveSystemTests
 
         #endregion
 
-        [Test]
-        public virtual void WriteAllToDisk_AllSuccessful()
+        [UnityTest]
+        public virtual IEnumerator WriteAllToDisk_AllSuccessful()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
-
-            bool allWritten = saveWriter.WriteAllToDisk(multipleThingsToWrite);
+            yield return null;
+            Task<bool> writeTask = saveWriter.WriteAllToDisk(multipleThingsToWrite);
+            yield return WaitFor(writeTask);
+            bool allWritten = writeTask.Result;
             Assert.IsTrue(allWritten, "Not all saves were written successfully.");
         }
 
@@ -212,32 +222,40 @@ namespace Amanita.SaveSystemTests
             };
 
         [Test]
-        public virtual void WriteAllToDisk_PartialSuccess()
+        public virtual async Task WriteAllToDisk_PartialSuccess()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
-
             // Let's say the first one fails for some reason
-            IList<SaveWriteRequest> withOneNull = new List<SaveWriteRequest>(multipleThingsToWrite);
-            withOneNull[1] = null; // Intentionally null to simulate failure
-            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(withOneNull),
-                "Expected NullReferenceException when trying to write a null SaveWriteArgs.");
+            IList<SaveWriteRequest> withOneNull = new List<SaveWriteRequest>(multipleThingsToWrite)
+            {
+                [1] = null // Intentionally null to simulate failure
+            };
+            bool threwIt = false;
+            try
+            {
+                Task writeTask = saveWriter.WriteAllToDisk(withOneNull);
+                await writeTask.ConfigureAwait(false);
+            }
+            catch (NullReferenceException e)
+            {
+                threwIt = true;
+            }
+            finally
+            {
+                Assert.IsTrue(threwIt, "Expected NullReferenceException when trying to write a null SaveWriteArgs.");
+            }
         }
 
         [Test]
         public virtual void WriteAllToDisk_RejectNullList()
         {
-            // It is implemented, though. Take a look at the SaveWriter class.
-            saveWriter.RelativeSavePath = relativePathForTesting;
-
-            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
                 "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
         }
 
         // Now a test for file content verification would be nice, but that would require reading the file back and checking its contents. Let's set that test to be ignored for now.
-        [Test]
-        public virtual void VerifyFileContent_NONEncrypted_AfterWrite()
+        [UnityTest]
+        public virtual IEnumerator VerifyFileContent_NONEncrypted_AfterWrite()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
             // ^Since it might get set to null by other tests, we need to reset it
             saveWriter.WriteEncrypted = false;
 
@@ -245,7 +263,7 @@ namespace Amanita.SaveSystemTests
             {
                 SaveName = "TestSaveContentVerification",
                 SlotNumber = 0,
-                MainState = new CompositeSaveData(),
+                MainState = MainSave,
                 SaveMetaData = new SaveMetaData { },
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
@@ -254,7 +272,7 @@ namespace Amanita.SaveSystemTests
             string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
-            CommonSaveWriteTest(writeArgs);
+            yield return CommonSaveWriteTest(writeArgs);
 
             string jsonText = ReadAndVerifyContent();
             string ReadAndVerifyContent()
@@ -274,11 +292,11 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(expectedJsonText, jsonText, "File content does not match the expected JSON text.");
         }
 
-        [Test]
-        public virtual void VerifyFileContent_Encrypted_AfterWrite()
+        [UnityTest]
+        public virtual IEnumerator VerifyFileContent_Encrypted_AfterWrite()
         {
             
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             saveWriter.WriteEncrypted = true; // Set to true to test encrypted writing
 
@@ -299,7 +317,7 @@ namespace Amanita.SaveSystemTests
             byte[] expectedEncryptedData = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key)).ToArray(); // Simple XOR encryption for testing
 
-            CommonSaveWriteTest(writeArgs);
+            yield return CommonSaveWriteTest(writeArgs);
 
             string saveFolder = string.Empty, stringDataToWrite = string.Empty,
                 fileName = string.Empty, filePath = string.Empty,
@@ -324,14 +342,17 @@ namespace Amanita.SaveSystemTests
                 filePath = string.Format(filePathFormat, saveFolder, fileName);
             }
             string decryptedString = string.Empty;
-            ReadAndDecrypt();
-            void ReadAndDecrypt()
+
+            Task readTask = ReadAndDecrypt();
+            async Task ReadAndDecrypt()
             {
-                byte[] encryptedData = File.ReadAllBytes(filePath);
+                Task <byte[]> readTask = File.ReadAllBytesAsync(filePath);
+                byte[] encryptedData = await readTask;
                 byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key))
                     .ToArray();
                 decryptedString = utf8.GetString(decryptedData);
             }
+            yield return WaitFor(readTask);
 
             // Verify the content
             Assert.AreEqual(expectedJsonText, decryptedString, "Decrypted content does not match the expected JSON text.");
@@ -340,10 +361,10 @@ namespace Amanita.SaveSystemTests
 
         protected static Encoding utf8 = Encoding.UTF8;
 
-        [Test]
-        public virtual void EventInvocation_AmanitaSaveWritten()
+        [UnityTest]
+        public virtual IEnumerator EventInvocation_AmanitaSaveWritten()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
 
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
@@ -356,16 +377,17 @@ namespace Amanita.SaveSystemTests
                 Assert.IsNotNull(writeResults.FileName, "File name should not be null.");
             }
 
-            saveWriter.WriteOneToDisk(writeArgs);
+            Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
+            yield return WaitFor(writeTask);
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsTrue(responded, "AmanitaSaveWritten event was not invoked after writing save data.");
 
         }
 
-        [Test]
-        public virtual void EventInvocation_AmanitaSaveWritten_MultipleWrites()
+        [UnityTest]
+        public virtual IEnumerator EventInvocation_AmanitaSaveWritten_MultipleWrites()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -376,7 +398,9 @@ namespace Amanita.SaveSystemTests
                 Assert.IsNotNull(writeResults.FilePath, "File path should not be null.");
                 Assert.IsNotNull(writeResults.FileName, "File name should not be null.");
             }
-            saveWriter.WriteAllToDisk(multipleThingsToWrite);
+
+            Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
+            yield return WaitFor(writeTask);
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsTrue(responded, "AmanitaSaveWritten event was not invoked after writing multiple saves.");
 
@@ -385,7 +409,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_NoWrites()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -403,7 +427,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullWriteArgs()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool respondedWhenItShouldnt = false;
@@ -412,7 +436,7 @@ namespace Amanita.SaveSystemTests
                 respondedWhenItShouldnt = true;
             }
 
-            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteOneToDisk(null),
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteOneToDisk(null),
                 "Expected NullReferenceException when trying to write null SaveWriteArgs.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(respondedWhenItShouldnt, "AmanitaSaveWritten event was invoked with null write args.");
@@ -421,7 +445,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullSaveData()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool respondedWhenItShouldnt = false;
@@ -438,7 +462,7 @@ namespace Amanita.SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            Assert.Throws<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(respondedWhenItShouldnt, "AmanitaSaveWritten event was invoked with null save data.");
@@ -447,7 +471,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNegativeSlotNumber()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -462,7 +486,7 @@ namespace Amanita.SaveSystemTests
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with negative slot number.");
@@ -471,7 +495,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectInvalidBaseDirectory()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -486,7 +510,7 @@ namespace Amanita.SaveSystemTests
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
             };
-            Assert.Throws<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
+            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
                 "Expected ArgumentException when trying to write with invalid base directory.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with invalid base directory.");
@@ -495,7 +519,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullList()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -503,7 +527,7 @@ namespace Amanita.SaveSystemTests
             {
                 responded = true;
             }
-            Assert.Throws<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
                 "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with null list of SaveWriteArgs.");
@@ -512,7 +536,7 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void DirectoryCreation_OnWrite()
         {
-            saveWriter.RelativeSavePath = relativePathForTesting;
+            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveWriteRequest writeArgsForSaveDirectoryCreation = new SaveWriteRequest
             {

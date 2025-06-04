@@ -44,6 +44,7 @@ namespace Amanita.SaveSystemTests
             PrepNewPathsForTesting();
             void PrepNewPathsForTesting()
             {
+                baseSavePaths = new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
                 Dictionary<SaveDirectoryType, string> newPaths = new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
                 foreach (var keyEl in SaveSystem.SaveDirectoryPaths.Keys)
                 {
@@ -59,8 +60,8 @@ namespace Amanita.SaveSystemTests
                 }
             }
 
-            saveWriter.RelativeSavePath = relativePathForTesting;
-            saveReader.RelativeSavePath = relativePathForTesting;
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+            saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
 
             waitToYield = new WaitForSeconds(waitTime);
             metaData.SaveVersion = "1.2.3";
@@ -70,6 +71,8 @@ namespace Amanita.SaveSystemTests
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
         }
+
+        protected IDictionary<SaveDirectoryType, string> baseSavePaths;
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
