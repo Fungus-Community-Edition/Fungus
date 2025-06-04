@@ -26,7 +26,7 @@ namespace Amanita.SaveSystemTests
             // Since we're working with a manager other than the one belonging to the SaveSystem singleton
             manager.SaveWriter = saveWriter;
             manager.SaveReader = saveReader;
-            manager.RegisterMainEncoder(flowchartSaveEncoder);
+            manager.RegisterMainEncoder(flowchartSaveCodec);
         }
 
         protected AmanitaSaveManager manager = new AmanitaSaveManager();
