@@ -207,5 +207,8 @@ namespace Amanita.SaveSystemTests
 
         }
 
+        protected string SavePrefix { get { return saveWriter.SavePrefix; } }
+        protected string FileExtension { get { return saveWriter.FileExtension; } }
+
     }
 }

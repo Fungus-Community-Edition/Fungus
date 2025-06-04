@@ -9,40 +9,8 @@ using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
-    public class FlowchartCodecTests
+    public class FlowchartCodecTests : CommonTestFunctionality
     {
-        protected string toVarStateTests = "ScenePrefabs/VarStateTests";
-
-        [SetUp]
-        public virtual void DoSetUp()
-        {
-            PrepScene();
-            flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>();
-        }
-
-        protected virtual void PrepScene()
-        {
-            varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
-            varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
-            flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
-        }
-
-        protected GameObject varStateTestPrefab;
-        protected GameObject varStateTestScene;
-
-        protected Flowchart flowchart;
-        protected FlowchartSaveCodec flowchartSaveCodec;
-        protected FlowchartSaveData flowchartSaveData;
-        protected BlockSaveCodec blockSaveCodec;
-
-        [TearDown]
-        public virtual void DoTearDown()
-        {
-            UnityObject.DestroyImmediate(varStateTestScene);
-        }
-
         [Test]
         public virtual void FlowchartSaveData_Constructor_SetsUniqueId()
         {
