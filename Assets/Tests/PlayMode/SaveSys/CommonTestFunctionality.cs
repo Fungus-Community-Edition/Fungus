@@ -84,7 +84,6 @@ namespace Amanita.SaveSystemTests
         public virtual void DoSetUp()
         {
             PrepScene();
-
             RegisterSaveData();
             void RegisterSaveData()
             {
@@ -118,6 +117,7 @@ namespace Amanita.SaveSystemTests
             testScenePrefab = Resources.Load<GameObject>(PathToTestScene);
             testScene = UnityObject.Instantiate(testScenePrefab);
             flowchart = testScene.GetComponentInChildren<Flowchart>();
+            PrepVars();
         }
 
         protected GameObject testScenePrefab;
@@ -142,6 +142,31 @@ namespace Amanita.SaveSystemTests
         protected FlowchartApplier flowchartApplier;
         protected MyceliaudioApplier audioApplier;
         protected AudioSystem AudioSys { get { return AudioSystem.S; } }
+
+        protected StringVariable nameVar = null;
+        protected IntegerVariable scoreVar = null;
+        protected BooleanVariable newPlayerVar = null;
+        protected FloatVariable fastestTimeVar = null;
+        protected Vector3Variable threeDPosVar = null;
+        protected Vector2Variable twoDPosVar = null;
+        protected StringVariable stringVar = null;
+        protected TransformVariable transformVar = null;
+
+        protected virtual void PrepVars()
+        {
+            nameVar = (StringVariable)flowchart.GetVariable("name");
+            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
+            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
+            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
+            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+
+            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
+            stringVar.Value = "Hello, World!";
+            flowchart.Variables.Add(stringVar);
+
+            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
+        }
 
         [TearDown]
         public virtual void DoTearDown()
@@ -206,6 +231,9 @@ namespace Amanita.SaveSystemTests
             }
 
         }
+
+        protected string SavePrefix { get { return saveWriter.SavePrefix; } }
+        protected string FileExtension { get { return saveWriter.FileExtension; } }
 
     }
 }
