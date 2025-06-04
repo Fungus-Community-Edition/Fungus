@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -69,19 +70,19 @@ namespace Amanita.SaveSys
 
         protected SaveManager saveManager = new SaveManager();
 
-        public virtual void RegisterSave(CompositeSaveData save)
+        public virtual Task SaveTo(int slotNum)
         {
-
+            return saveManager.SaveTo(slotNum);
         }
 
-        public virtual void LoadSave(string saveName)
+        public virtual Task<CompositeSaveData> LoadSave(int slotNum)
         {
-            saveManager.LoadSave(saveName);
+            return saveManager.LoadSave(slotNum);
         }
 
-        public virtual void DeleteSave(string saveName)
+        public virtual Task DeleteSave(int slotNum)
         {
-            saveManager.DeleteSave(saveName);
+            return saveManager.DeleteSave(slotNum);    
         }
 
         public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;

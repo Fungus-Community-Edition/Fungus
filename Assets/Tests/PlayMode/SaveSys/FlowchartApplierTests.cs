@@ -31,14 +31,6 @@ namespace Amanita.SaveSystemTests
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }
 
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
 
         [Test]
         public virtual void AppliesVarStates()

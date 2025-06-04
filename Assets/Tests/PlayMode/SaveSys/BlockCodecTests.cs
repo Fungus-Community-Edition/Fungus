@@ -19,30 +19,7 @@ namespace Amanita.SaveSystemTests
 
         protected Block block;
 
-        protected virtual void PrepVars()
-        {
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
-            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
-            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
-            stringVar.Value = "Hello, World!";
-            flowchart.Variables.Add(stringVar);
-
-            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
-        }
-
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
         protected BlockSaveData blockSaveData = null;
 
         [Test]

@@ -7,19 +7,10 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public interface ISaveManager
-    {
-        Task SaveAsync(int slotNumber);
-        Task<CompositeSaveData> LoadAsync(int slot);
-
-        IList<int> GetOccupiedSlots();
-        void DeleteSlot(int slot);
-        bool SlotExists(int slot);
-    }
-
-
     public class SaveManager : ISaveManager
     {
+        protected const int MaxSlots = 5; // Or make this configurable
+
         public SaveManager()
         {
             registry = new SaveRegistry();
@@ -60,46 +51,70 @@ namespace Amanita.SaveSys
         public virtual SaveWriter SaveWriter { get; set; }
         public virtual SaveReader SaveReader { get; set; }
 
-        public virtual void RegisterAndWriteSave(int slotNum, string saveName = "")
+        public virtual async Task SaveTo(int slotNum)
         {
-            CompositeSaveData mainState = CreateMainState();
-            CompositeSaveData CreateMainState()
-            {
-                IList<SaveDataUnit> unitsNeeded = GetUnitsForGameState();
-                IList<SaveDataUnit> GetUnitsForGameState()
-                {
-                    IList<SaveDataUnit> units = new List<SaveDataUnit>();
+            await Save(slotNum, "");
+        }
 
-                    for (int i = 0; i < _mainEncoders.Count; i++)
+        public virtual async Task Save(int slotNum, string saveName)
+        {
+            Validate(slotNum, registerAndWriteOp);
+            await Process();
+            async Task Process()
+            {
+                CompositeSaveData mainState = CreateMainState();
+                CompositeSaveData CreateMainState()
+                {
+                    IList<SaveDataUnit> unitsNeeded = GetUnitsForGameState();
+                    IList<SaveDataUnit> GetUnitsForGameState()
                     {
-                        IMainSaveCodec currentEncoder = _mainEncoders[i];
-                        IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
-                        units.AddRange(newUnits);
+                        IList<SaveDataUnit> units = new List<SaveDataUnit>();
+
+                        for (int i = 0; i < _mainEncoders.Count; i++)
+                        {
+                            IMainSaveCodec currentEncoder = _mainEncoders[i];
+                            IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
+                            units.AddRange(newUnits);
+                        }
+
+                        return units;
                     }
 
-                    return units;
+                    CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
+                    return mainState;
                 }
 
-                CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
-                return mainState;
+                SaveMetaData meta = CreateMetaFor(slotNum);
+
+                SaveDataSet newSet = new SaveDataSet(meta, mainState);
+                registry.AddSave(newSet);
+
+                // And now with the current state of the game all nice and recorded...
+                PrepWriteRequest();
+                void PrepWriteRequest()
+                {
+                    writeRequest.SaveMetaData = meta;
+                    writeRequest.SlotNumber = slotNum;
+                    writeRequest.SaveName = saveName;
+                    writeRequest.BaseSaveDirectory = SaveDirType;
+                    writeRequest.MainState = mainState;
+                }
+
+                await Task.Run(() => SaveWriter.WriteOneToDisk(writeRequest));
+                
             }
-            
-            SaveMetaData meta = CreateMetaFor(slotNum);
+        }
 
-            SaveDataSet newSet = new SaveDataSet(meta, mainState);
-            registry.AddSave(newSet);
+        protected static string registerAndWriteOp = "registerOrWrite";
+        
 
-            PrepWriteRequest();
-            void PrepWriteRequest()
+        protected virtual void Validate(int slotNum, string operation)
+        {
+            if (slotNum < 0)
             {
-                writeRequest.SaveMetaData = meta;
-                writeRequest.SlotNumber = slotNum;
-                writeRequest.SaveName = saveName;
-                writeRequest.BaseSaveDirectory = SaveDirType;
-                writeRequest.MainState = mainState;
+                string errorMessage = $"Cannot {operation} a save with a negative slot number.";
+                throw new ArgumentOutOfRangeException(nameof(slotNum), slotNum, errorMessage);
             }
-
-            SaveWriter.WriteOneToDisk(writeRequest);
         }
 
         protected virtual SaveMetaData CreateMetaFor(int slot)
@@ -117,39 +132,25 @@ namespace Amanita.SaveSys
 
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
-        public virtual void LoadSave(string saveName)
+        public virtual async Task<CompositeSaveData> LoadSave(int slotNum)
         {
+            Validate(slotNum, loadOp);
             throw new NotImplementedException();
         }
 
-        public virtual void DeleteSave(string saveName)
+        protected static string loadOp = "load";
+
+        public virtual async Task DeleteSave(int slotNum)
         {
+            Validate(slotNum, deleteOp);
             throw new NotImplementedException();
         }
 
-        protected const int MaxSlots = 5; // Or make this configurable
+        protected static string deleteOp = "delete";
 
-        public virtual List<SaveSlot> GetAllSlots()
+        public virtual IList<SaveSlot> GetAllSlots()
         {
             // Load all slot files or PlayerPrefs keys, return as list
-            throw new NotImplementedException();
-        }
-
-        public virtual void SaveToSlot(int slotIndex, SaveDataUnit[] saveDataItems)
-        {
-            // Serialize and save to file or PlayerPrefs, include metadata
-            throw new NotImplementedException();
-        }
-
-        public virtual SaveSlot LoadFromSlot(int slotIndex)
-        {
-            // Load and deserialize slot data
-            throw new System.NotImplementedException();
-        }
-
-        public virtual void DeleteSlot(int slotIndex)
-        {
-            // Remove slot data from storage
             throw new NotImplementedException();
         }
 
@@ -161,29 +162,6 @@ namespace Amanita.SaveSys
         public virtual bool SlotExists(int slot)
         {
             return registry.HasSaveInSlot(slot);
-        }
-
-        public virtual async Task SaveAsync(int slotNum)
-        {
-            // Register the current game state, then request a write
-            
-            // Implementation sketch
-            //var req = new SaveWriteRequest
-            //{
-            //    SlotNumber = slot,
-            //    MainState = data,
-            //    SaveMetaData = meta,
-            //    BaseSaveDirectory = _baseDir,
-            //    RelativePath = _relPath
-            //};
-            //await Task.Run(() => _writer.WriteOneToDisk(req));
-
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<CompositeSaveData> LoadAsync(int slot)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -203,13 +181,6 @@ namespace Amanita.SaveSys
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
         // ^Better to cache this than create a new request every time client code
         // wants to know the path of a save.
-    }
-
-    public class SaveRegistrationRequest
-    {
-        public virtual SaveMetaData SaveMetaData { get; set; }
-        public virtual SaveData MainSaveData { get; set; }
-        public virtual int SlotNumber { get; set; }
     }
 
 }

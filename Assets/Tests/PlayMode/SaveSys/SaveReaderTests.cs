@@ -114,8 +114,6 @@ namespace Amanita.SaveSystemTests
             filePath = string.Format(FilePathFormat, saveFolderPath, fileName);
         }
 
-        protected virtual string SavePrefix { get { return saveReader.SavePrefix; } }
-        protected virtual string FileExtension { get { return saveReader.FileExtension; } }
         protected virtual string FilePathFormat { get { return saveReader.FilePathFormat; } }
 
         [UnityTest]
