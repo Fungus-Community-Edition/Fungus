@@ -1,3 +1,4 @@
+using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
@@ -5,10 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 
@@ -25,6 +23,7 @@ namespace Amanita.SaveSystemTests
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
+            encryptor = ScriptableObject.CreateInstance<Encryptor>();
 
             readReq = new SaveReadRequest
             {
@@ -64,6 +63,11 @@ namespace Amanita.SaveSystemTests
             saveReader.RelativeSavePath = relativePathForTesting;
 
             waitToYield = new WaitForSeconds(waitTime);
+            metaData.SaveVersion = "1.2.3";
+
+            playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
+            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
+            audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
         }
 
@@ -99,7 +103,14 @@ namespace Amanita.SaveSystemTests
                     mainSave.Add(saveDataUnit);
                 }
 
+                saveDataSet = new SaveDataSet(metaData, mainSave);
+
             }
+        }
+
+        protected virtual CompositeSaveData MainSave
+        {
+            get { return (CompositeSaveData) writeReq.MainState; }
         }
 
         protected virtual void PrepScene()
@@ -123,6 +134,14 @@ namespace Amanita.SaveSystemTests
         float waitTime = 0.2f;
         WaitForSeconds waitToYield;
         protected string relativePathForTesting = "TempSaves";
+        protected Encryptor encryptor;
+        protected SaveDataSet saveDataSet;
+        protected SaveMetaData metaData = new SaveMetaData();
+        protected PlayAudioArgsSO playAudioArgsSO;
+        protected string pathToAudioArgsSO = "testClip";
+        protected FlowchartApplier flowchartApplier;
+        protected MyceliaudioApplier audioApplier;
+        protected AudioSystem AudioSys { get { return AudioSystem.S; } }
 
         [TearDown]
         public virtual void DoTearDown()
