@@ -2,7 +2,7 @@ using AmanitaVar = Amanita.Variable;
 
 namespace Amanita.SaveSys
 {
-    public interface IVarEncoder
+    public interface IVarCodec
     {
         bool CanHandle(AmanitaVar variable);
         bool CanHandle(string typeName);

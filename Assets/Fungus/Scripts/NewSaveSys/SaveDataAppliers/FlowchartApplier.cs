@@ -46,7 +46,7 @@ namespace Amanita.SaveSys
             {
                 foreach (VariableSaveData varSaveData in saveData.SavedVars)
                 {
-                    IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varSaveData);
+                    IVarCodec forThisVar = CodecRegistry.GetCodec(varSaveData);
                     if (forThisVar == null)
                     {
                         Debug.LogWarning($"No serializer found for variable type: {varSaveData.GetType().Name}");

@@ -7,11 +7,12 @@ using System.Collections.Generic;
 
 namespace Amanita.SaveSystemTests
 {
-    public class MetadataTests
+    public class MetadataTests : CommonTestFunctionality
     {
         [SetUp]
-        public virtual void DoSetUp()
+        public override void DoSetUp()
         {
+            base.DoSetUp();
             PrepMetaData();
         }
 
@@ -32,12 +33,6 @@ namespace Amanita.SaveSystemTests
         protected SaveDataUnit serializedMetaData;
         protected SaveMetaData deserializedMetaData;
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
-
-        [TearDown]
-        public virtual void DoTearDown()
-        {
-
-        }
 
         [Test]
         public virtual void Metadata_TypeNameSerializedProperly()

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "FlowchartSaveEncoder",
-        menuName = "Amanita/SaveSys/FlowchartSaveEncoder")]
-    public class FlowchartSaveEncoder : SaveEncoder<Flowchart, FlowchartSaveData>
+    [CreateAssetMenu(fileName = "FlowchartCodec",
+        menuName = "Amanita/SaveSys/Codecs/FlowchartSaveCodec")]
+    public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec
     {
         public new Flowchart ToMakeFrom
         {
@@ -18,11 +18,11 @@ namespace Amanita.SaveSys
         {
             if (blockEncoder == null)
             {
-                blockEncoder = CreateInstance<BlockSaveEncoder>();
+                blockEncoder = CreateInstance<BlockSaveCodec>();
             }
         }
 
-        protected BlockSaveEncoder blockEncoder;
+        protected BlockSaveCodec blockEncoder;
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
@@ -49,7 +49,7 @@ namespace Amanita.SaveSys
             {
                 foreach (Variable varEl in toCreateFrom.Variables)
                 {
-                    IVarEncoder forThisVar = EncoderRegistry.GetEncoder(varEl);
+                    IVarCodec forThisVar = CodecRegistry.GetCodec(varEl);
                     if (forThisVar == null)
                     {
                         Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");

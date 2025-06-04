@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class BooleanVarEncoder : IVarEncoder
+    public class BooleanVarCodec : IVarCodec
     {
         public int Priority => 0;
 

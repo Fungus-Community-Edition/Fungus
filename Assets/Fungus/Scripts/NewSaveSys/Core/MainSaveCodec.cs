@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
-    public class MainSaveEncoder : MonoBehaviour, ISaveEncoder
+    public class MainSaveCodec : MonoBehaviour, ISaveCodec
     {
-        public virtual int Priority => 0;
+        public virtual int Order => 0;
         public virtual bool NeedsInput => false;
 
         public object ToMakeFrom { get; set; } = null;
 
-        [SerializeField] protected List<SaveEncoder> subEncoders = new List<SaveEncoder>();
+        [SerializeField] protected List<SaveCodec> subEncoders = new List<SaveCodec>();
 
         public virtual SaveDataUnit EncodeToUnit(object toMakeFrom)
         {
@@ -48,6 +48,11 @@ namespace Amanita.SaveSys
         }
 
         public SaveDataUnit EncodeToUnit()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IList<SaveDataUnit> FindAndEncodeAll()
         {
             throw new System.NotImplementedException();
         }

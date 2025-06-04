@@ -7,33 +7,13 @@ using UnityEngine.TestTools;
 
 namespace Amanita.SaveSystemTests
 {
-    public class FlowchartApplierTests
+    public class FlowchartApplierTests : CommonTestFunctionality
     {
-        protected string toVarStateTests = "ScenePrefabs/VarStateTests";
-
-        [SetUp]
-        public virtual void DoSetUp()
+        protected override void PrepScene()
         {
-            Debug.Log("Some log message");
-            PrepScene();
-            flowchartSaveEncoder = ScriptableObject.CreateInstance<FlowchartSaveEncoder>();
-            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
-            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
-        }
-
-        protected virtual void PrepScene()
-        {
-            varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
-            varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
-            flowchart = varStateTestScene.GetComponentInChildren<Flowchart>();
-            
+            base.PrepScene();
             PrepVars();
         }
-
-        protected GameObject varStateTestPrefab;
-        protected GameObject varStateTestScene;
-
-        protected Flowchart flowchart;
 
         protected virtual void PrepVars()
         {
@@ -59,16 +39,6 @@ namespace Amanita.SaveSystemTests
         protected Vector2Variable twoDPosVar = null;
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
-
-        protected FlowchartSaveEncoder flowchartSaveEncoder;
-        protected FlowchartApplier flowchartApplier;
-        protected FlowchartSaveData flowchartSaveData = null;
-
-        [TearDown]
-        public virtual void DoTearDown()
-        {
-            UnityObject.DestroyImmediate(varStateTestScene);
-        }
 
         [Test]
         public virtual void AppliesVarStates()
@@ -113,7 +83,7 @@ namespace Amanita.SaveSystemTests
         public virtual IEnumerator ReexecutesBlocks()
         {
             yield return new WaitForSeconds(0.1f);
-            flowchartSaveData = flowchartSaveEncoder.EncodeToSave(flowchart);
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time

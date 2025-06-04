@@ -26,7 +26,7 @@ namespace Amanita.SaveSystemTests
             // Since we're working with a manager other than the one belonging to the SaveSystem singleton
             manager.SaveWriter = saveWriter;
             manager.SaveReader = saveReader;
-            manager.RegisterMainEncoder(flowchartSaveEncoder);
+            manager.RegisterMainEncoder(flowchartSaveCodec);
         }
 
         protected AmanitaSaveManager manager = new AmanitaSaveManager();
@@ -36,9 +36,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return CommonSetup();
 
-            IList<int> slots = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
-            
-            foreach (int slot in slots)
+            foreach (int slot in testSlotNums)
             {
                 manager.RegisterAndWriteSave(slot);
                 readReq.SlotNumber = slot;
@@ -47,6 +45,19 @@ namespace Amanita.SaveSystemTests
                 bool itWasWritten = File.Exists(expectedPath);
                 Assert.IsTrue(itWasWritten, $"Save at slot {slot} does not exist");
             }
+
+        }
+
+        protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
+
+        [UnityTest]
+        public virtual IEnumerator RegistersWrittenSavesProperly()
+        {
+            yield return WritesSaveToAppropriateSlots();
+
+            var occupiedSlots = manager.GetOccupiedSlots();
+            bool success = occupiedSlots.SequenceEqual(testSlotNums);
+            Assert.IsTrue(success, "Save Manager did not register the slots properly.");
 
         }
     }

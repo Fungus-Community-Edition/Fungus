@@ -43,7 +43,7 @@ namespace Amanita.SaveSys
             }
         }
         
-        public virtual void RegisterMultiMainEncoders(IList<SaveEncoder> encoders)
+        public virtual void RegisterMultiMainEncoders(IList<IMainSaveCodec> encoders)
         {
             for (int i = 0; i < encoders.Count; i++)
             {
@@ -51,12 +51,12 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void RegisterMainEncoder(SaveEncoder encoder)
+        public virtual void RegisterMainEncoder(IMainSaveCodec encoder)
         {
             _mainEncoders.Add(encoder);
         }
 
-        protected IList<SaveEncoder> _mainEncoders = new List<SaveEncoder>();
+        protected IList<IMainSaveCodec> _mainEncoders = new List<IMainSaveCodec>();
         public virtual SaveWriter SaveWriter { get; set; }
         public virtual SaveReader SaveReader { get; set; }
 
@@ -72,7 +72,7 @@ namespace Amanita.SaveSys
 
                     for (int i = 0; i < _mainEncoders.Count; i++)
                     {
-                        SaveEncoder currentEncoder = _mainEncoders[i];
+                        IMainSaveCodec currentEncoder = _mainEncoders[i];
                         IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
                         units.AddRange(newUnits);
                     }
@@ -85,6 +85,9 @@ namespace Amanita.SaveSys
             }
             
             SaveMetaData meta = CreateMetaFor(slotNum);
+
+            SaveDataSet newSet = new SaveDataSet(meta, mainState);
+            registry.AddSave(newSet);
 
             PrepWriteRequest();
             void PrepWriteRequest()
