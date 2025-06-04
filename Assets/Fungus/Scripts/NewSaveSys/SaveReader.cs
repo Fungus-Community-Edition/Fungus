@@ -57,10 +57,12 @@ namespace Amanita.SaveSys
 
         protected virtual string GetFullFilePath(SaveReadRequest request)
         {
-            string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            string saveFolderPath = GetFolderToAccess(request.BaseSaveDirectory);
+            //string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            string numFormatted = request.SlotNumber.ToString(saveNumberFormat);
             string fileName = string.Format(fileNameFormat, savePrefix,
-                request.SlotNumber.ToString(SaveNumberFormat), fileExtension);
-            string filePath = string.Format(filePathFormat, saveFolderPath, fileName);
+                numFormatted, fileExtension);
+            string filePath = saveFolderPath + fileName;
             return filePath;
         }
 
