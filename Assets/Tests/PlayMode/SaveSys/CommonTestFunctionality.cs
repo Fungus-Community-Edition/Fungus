@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
@@ -44,6 +45,7 @@ namespace Amanita.SaveSystemTests
             PrepNewPathsForTesting();
             void PrepNewPathsForTesting()
             {
+                baseSavePaths = new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
                 Dictionary<SaveDirectoryType, string> newPaths = new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
                 foreach (var keyEl in SaveSystem.SaveDirectoryPaths.Keys)
                 {
@@ -59,8 +61,8 @@ namespace Amanita.SaveSystemTests
                 }
             }
 
-            saveWriter.RelativeSavePath = relativePathForTesting;
-            saveReader.RelativeSavePath = relativePathForTesting;
+            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
+            saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
 
             waitToYield = new WaitForSeconds(waitTime);
             metaData.SaveVersion = "1.2.3";
@@ -70,6 +72,14 @@ namespace Amanita.SaveSystemTests
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
         }
+
+        protected IEnumerator WaitFor(Task writeTask)
+        {
+            yield return new WaitUntil(() => writeTask.IsCompleted);
+        }
+
+
+        protected IDictionary<SaveDirectoryType, string> baseSavePaths;
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
@@ -145,7 +155,7 @@ namespace Amanita.SaveSystemTests
 
         protected StringVariable nameVar = null;
         protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
+        protected BooleanVariable isNewPlayerVar = null;
         protected FloatVariable fastestTimeVar = null;
         protected Vector3Variable threeDPosVar = null;
         protected Vector2Variable twoDPosVar = null;
@@ -156,7 +166,7 @@ namespace Amanita.SaveSystemTests
         {
             nameVar = (StringVariable)flowchart.GetVariable("name");
             scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
             fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
@@ -178,7 +188,10 @@ namespace Amanita.SaveSystemTests
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
-            DeleteAllTestSaves();
+            if (ShouldDeleteTestSavesAtEnd)
+            {
+                DeleteAllTestSaves();
+            }
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
             saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
             if (testScene != null)
@@ -187,11 +200,13 @@ namespace Amanita.SaveSystemTests
             }
         }
 
+        protected virtual bool ShouldDeleteTestSavesAtEnd => true;
+
         protected void DeleteAllTestSaves()
         {
             foreach (string root in SaveSystem.SaveDirectoryPaths.Values)
             {
-                string pathToTempFolder = Path.Combine(root, relativePathForTesting);
+                string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
 
                 IList<string> junk = Directory.EnumerateFiles(pathToTempFolder, "*.save",
                     SearchOption.AllDirectories).ToList();
@@ -213,9 +228,9 @@ namespace Amanita.SaveSystemTests
         }
 
 
-        protected virtual IEnumerator CommonSetup()
+        protected virtual async Task CommonSetupAsync()
         {
-            yield return waitToYield;
+            await Task.Delay(1000);
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
@@ -230,6 +245,30 @@ namespace Amanita.SaveSystemTests
                 mainSave.Add(saveDataUnit);
             }
 
+        }
+
+        protected virtual IEnumerator CommonSetup()
+        {
+            yield return waitToYield;
+
+            PrepAndRegisterSaveData();
+            void PrepAndRegisterSaveData()
+            {
+                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+                // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                mainSave.Add(encodedFlowchartSave);
+
+                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                foreach (var blockSave in blockSaves)
+                {
+                    SaveDataUnit saveDataUnit = blockSave.Serialized();
+                    mainSave.Add(saveDataUnit);
+                }
+            }
+            
         }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }

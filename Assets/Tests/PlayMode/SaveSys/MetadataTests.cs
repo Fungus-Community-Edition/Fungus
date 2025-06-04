@@ -29,7 +29,6 @@ namespace Amanita.SaveSystemTests
             deserializedMetaData = SaveMetaData.DeserializeFrom(serializedMetaData);
         }
 
-        SaveMetaData metaData = new SaveMetaData();
         protected SaveDataUnit serializedMetaData;
         protected SaveMetaData deserializedMetaData;
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;

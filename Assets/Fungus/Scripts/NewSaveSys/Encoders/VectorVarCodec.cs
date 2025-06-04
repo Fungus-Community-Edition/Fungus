@@ -93,5 +93,55 @@ namespace Amanita.SaveSys
 
             return result;
         }
+
+        public virtual T DecodeTo<T>(string data)
+        {
+            T result = default;
+            string[] parts;
+            float x = 0, y = 0, z = 0;
+            bool isVecTwo = typeof(T) == typeof(Vector2);
+            bool isVecThree = typeof(T) == typeof(Vector3);
+            bool validTypeArg = isVecThree || isVecTwo;
+
+            if (!validTypeArg)
+            {
+                string errorMessage = $"Cannot decode to type {typeof(T).Name}. Only Vector2 and Vector3 are supported.";
+                throw new InvalidCastException(errorMessage);
+            }
+
+            parts = data.Split(',');
+
+            if (typeof(T) == typeof(Vector2))
+            {
+                if (parts.Length != 2)
+                {
+                    string errorMessage = $"Invalid Vector2 format: {data}. Expected format: 'x,y' where x and y are floats.";
+                    throw new FormatException(errorMessage);
+                }
+            }
+            else if (typeof(T) == typeof(Vector3))
+            {
+                if (parts.Length != 3)
+                {
+                    string errorMessage = $"Invalid Vector3 format: {data}. Expected format: 'x,y,z' where x, y, and z are floats.";
+                    throw new FormatException(errorMessage);
+                }
+            }
+
+            x = float.Parse(parts[0]);
+            y = float.Parse(parts[1]);
+
+            if (isVecThree)
+            {
+                z = float.Parse(parts[2]);
+                result = (T)(object)new Vector3(x, y, z);
+            }
+            else if (isVecTwo)
+            {
+                result = (T)(object)new Vector2(x, y);
+            }
+
+            return result;
+        }
     }
 }

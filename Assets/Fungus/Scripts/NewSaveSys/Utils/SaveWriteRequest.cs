@@ -22,6 +22,15 @@ namespace Amanita.SaveSys
             BaseSaveDirectory = other.BaseSaveDirectory;
         }
 
+        public virtual void Clear()
+        {
+            SaveName = string.Empty;
+            SlotNumber = 0;
+            MainState = null;
+            SaveMetaData = null;
+            BaseSaveDirectory = SaveDirectoryType.DataPath;
+        }
+
     }
 
     public interface ISaveWriteRequest

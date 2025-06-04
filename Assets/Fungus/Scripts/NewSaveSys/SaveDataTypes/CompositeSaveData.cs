@@ -73,6 +73,23 @@ namespace Amanita.SaveSys
             SaveDataUnit unit = new SaveDataUnit(TypeName, jsonText);
             return unit;
         }
+
+        public virtual SaveDataUnit GetSingle<T>()
+        {
+            string typeName = typeof(T).Name;
+            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName == typeName);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the list of save data units of the specified type.
+        /// </summary>
+        public virtual IList<SaveDataUnit> GetMulti<T>()
+        {
+            IList<SaveDataUnit> result;
+            result = units.Where(unit => unit.DataTypeName == nameof(T)).ToList();
+            return result;
+        }
     }
 
     public interface ICompositeSaveData : ISaveData

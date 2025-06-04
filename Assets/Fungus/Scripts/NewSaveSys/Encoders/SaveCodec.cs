@@ -39,7 +39,7 @@ namespace Amanita.SaveSys
     }
 
     public abstract class SaveCodec<TInput, TOutput> : SaveCodec,
-        ISaveEncoder<TInput, TOutput>
+        ISaveCodec<TInput, TOutput>
         where TInput: class
         where TOutput : SaveData
     {

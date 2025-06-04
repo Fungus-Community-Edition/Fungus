@@ -112,9 +112,9 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void BooleanCodec_EncodingWorks_String()
         {
-            bool expectedNewPlayer = newPlayerVar.Value;
+            bool expectedNewPlayer = isNewPlayerVar.Value;
             string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
-            string encodedNewPlayerStr = booleanCodec.EncodeToString(newPlayerVar);
+            string encodedNewPlayerStr = booleanCodec.EncodeToString(isNewPlayerVar);
             bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerStr);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
@@ -122,20 +122,20 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void BooleanCodec_DEcodingWorks_String()
         {
-            bool expectedNewPlayer = newPlayerVar.Value;
-            string encodedNewPlayerStr = booleanCodec.EncodeToString(newPlayerVar);
-            newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanCodec.Decode(newPlayerVar, encodedNewPlayerStr);
-            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
+            bool expectedNewPlayer = isNewPlayerVar.Value;
+            string encodedNewPlayerStr = booleanCodec.EncodeToString(isNewPlayerVar);
+            isNewPlayerVar.Value = !isNewPlayerVar.Value; // Change the value to make sure we decode correctly
+            booleanCodec.Decode(isNewPlayerVar, encodedNewPlayerStr);
+            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(isNewPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 
         [Test]
         public virtual void BooleanCodec_EncodingWorks_VarSaveData()
         {
-            bool expectedNewPlayer = newPlayerVar.Value;
+            bool expectedNewPlayer = isNewPlayerVar.Value;
             string expectedEncodedNewPlayerStr = expectedNewPlayer.ToString();
-            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(newPlayerVar);
+            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(isNewPlayerVar);
             bool encodedNewPlayerSuccess = expectedEncodedNewPlayerStr.Equals(encodedNewPlayerData.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
@@ -143,11 +143,11 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void BooleanCodec_DEcodingWorks_VarSaveData()
         {
-            bool expectedNewPlayer = newPlayerVar.Value;
-            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(newPlayerVar);
-            newPlayerVar.Value = !newPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanCodec.Decode(newPlayerVar, encodedNewPlayerData);
-            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(newPlayerVar.Value);
+            bool expectedNewPlayer = isNewPlayerVar.Value;
+            VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(isNewPlayerVar);
+            isNewPlayerVar.Value = !isNewPlayerVar.Value; // Change the value to make sure we decode correctly
+            booleanCodec.Decode(isNewPlayerVar, encodedNewPlayerData);
+            bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(isNewPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
 

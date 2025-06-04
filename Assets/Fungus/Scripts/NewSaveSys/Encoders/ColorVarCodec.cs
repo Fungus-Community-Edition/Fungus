@@ -121,6 +121,27 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
+        public virtual T DecodeTo<T>(string data)
+        {
+            if (typeof(T) != typeof(Color))
+            {
+                string errorMessage = $"Cannot decode to type {typeof(T)}. Only Color is supported.";
+                throw new System.InvalidCastException(errorMessage);
+            }
+
+            string[] colorComponents = data.Split(',');
+            if (colorComponents.Length != 4)
+            {
+                string errorMessage = $"Invalid color data format: {data}. Expected format: 'r,g,b,a' where r, g, b, a are floats.";
+                throw new System.FormatException(errorMessage);
+            }
+            float r = float.Parse(colorComponents[0]);
+            float g = float.Parse(colorComponents[1]);
+            float b = float.Parse(colorComponents[2]);
+            float a = float.Parse(colorComponents[3]);
+            T result = (T)(object)new Color(r, g, b, a);
+            return result;
+        }
+
     }
 }

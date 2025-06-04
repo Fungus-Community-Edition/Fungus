@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using System.Linq;
 
 namespace Amanita.SaveSys
 { 
@@ -17,6 +19,15 @@ namespace Amanita.SaveSys
 
         protected virtual void Awake()
         {
+            if (_s != null && _s != this)
+            {
+                Debug.LogWarning("SaveSystem already exists. Destroying the new one.");
+                Destroy(this.gameObject);
+                return;
+            }
+
+            _s = this;
+
             CheckForSaveWriterAndReader();
             void CheckForSaveWriterAndReader()
             {
@@ -36,52 +47,71 @@ namespace Amanita.SaveSys
             ValidateEncoders();
             void ValidateEncoders()
             {
-                for (int i = 0; i < mainEncoders.Length; i++)
+                IList<ScriptableObject> invalidEncoders =   (from elem in mainEncoders
+                                                            where !(elem is IMainSaveCodec)
+                                                            where elem != null
+                                                            select elem).ToList();
+                for (int i = 0; i < invalidEncoders.Count; i++)
                 {
-                    ScriptableObject currentMain = mainEncoders[i];
-                    bool isValid = currentMain is IMainSaveCodec;
-                    string encoderName = string.Empty;
-                    if (currentMain != null)
-                    {
-                        encoderName = currentMain.name;
-                    }
-                    if (!isValid)
-                    {
-                        string errorMessage = $"Main encoder {encoderName} is not a valid one. Make sure that everything in the mainEncoders list implements IMainSaveEncoder.";
-                        throw new System.InvalidOperationException(errorMessage);
-                    }
+                    ScriptableObject currentInvalid = invalidEncoders[i];
+
+                    string encoderName = currentInvalid.name;
+                    string errorMessage = $"Main encoder {encoderName} is not a valid one. Make sure that everything in the mainEncoders list implements IMainSaveCodec.";
+                    Debug.LogError(errorMessage);
                 }
             }
 
-            saveManager.SaveDirType = saveDirectoryType;
+            IList<IMainSaveCodec> validatedEncoders = (from elem in mainEncoders
+                                                       where elem is IMainSaveCodec
+                                                       select elem as IMainSaveCodec).ToList();
 
-            IList<IMainSaveCodec> validatedEncoders = new List<IMainSaveCodec>();
-            for (int i = 0; i < mainEncoders.Length; i++)
+            PrepSaveManager();
+            void PrepSaveManager()
             {
-                ScriptableObject currentMain = mainEncoders[i];
-                validatedEncoders.Add(currentMain as IMainSaveCodec);
+                FileSaveRepository repo = new FileSaveRepository();
+                repo.Init(saveReader, saveWriter);
+                saveRepo = repo;
+                saveManager = new SaveManager(saveRepo)
+                {
+                    SaveRelativePath = "/Saves",
+                    SaveDirType = saveDirectoryType,
+                };
+                saveManager.RegisterMultiMainCodecs(validatedEncoders);
             }
-
-            saveManager.RegisterMultiMainEncoders(validatedEncoders);
-            saveManager.SaveWriter = saveWriter;
-            saveManager.SaveReader = saveReader;
         }
 
-        protected SaveManager saveManager = new SaveManager();
-
-        public virtual void RegisterSave(CompositeSaveData save)
+        public static SaveSystem S
         {
+            get
+            {
+                if (_s == null)
+                {
+                    GameObject holder = new GameObject("SaveSystem");
+                    _s = holder.AddComponent<SaveSystem>();
+                }
 
+                return _s;
+            }
+        }
+        protected static SaveSystem _s;
+
+        protected ISaveRepository saveRepo;
+
+        protected SaveManager saveManager;
+
+        public virtual Task SaveTo(int slotNum)
+        {
+            return saveManager.SaveTo(slotNum);
         }
 
-        public virtual void LoadSave(string saveName)
+        public virtual Task<CompositeSaveData> LoadSave(int slotNum)
         {
-            saveManager.LoadSave(saveName);
+            return saveRepo.LoadMainSaveAsync(slotNum);
         }
 
-        public virtual void DeleteSave(string saveName)
+        public virtual void DeleteSave(int slotNum)
         {
-            saveManager.DeleteSave(saveName);
+            saveManager.DeleteSave(slotNum);    
         }
 
         public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;

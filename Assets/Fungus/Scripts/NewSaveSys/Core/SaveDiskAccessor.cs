@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -8,7 +10,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected string savePrefix = "saveData";
         [Tooltip("Just for flavor.")]
         [SerializeField] protected string fileExtension = "save";
-        [SerializeField] protected string relativeSavePath = "Saves/";
+        [SerializeField] protected string relativeSavePath = "/Saves/";
         [SerializeField] protected string saveNumberFormat = "D2";
 
         public virtual string SavePrefix => savePrefix;
@@ -25,7 +27,8 @@ namespace Amanita.SaveSys
                     relativeSavePath = "/";
                 }
 
-                if (!relativeSavePath.EndsWith('/') && !relativeSavePath.EndsWith("\\")) 
+                bool endsWithDash = relativeSavePath.EndsWith('/') || relativeSavePath.EndsWith("\\");
+                if (!endsWithDash) 
                 {
                     relativeSavePath += "/";
                 }
@@ -43,6 +46,25 @@ namespace Amanita.SaveSys
         public virtual string FilePathFormat => filePathFormat;
 
         public static string ReadWriteDelimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
+
+        protected virtual string GetFolderToAccess(SaveDirectoryType directoryType)
+        {
+            string baseDir = SaveSystem.SaveDirectoryPaths[directoryType];
+            string result = string.Empty;
+            bool thereIsRelativePathToConsider = relativeSavePath.Count() > 1;
+
+            if (thereIsRelativePathToConsider)
+            {
+                result = Path.Combine(baseDir, RelativeSavePath);
+            }
+
+            if (!result.EndsWith("/") && !result.EndsWith("\\"))
+            {
+                result += "\\";
+            }
+
+            return result;
+        }
 
     }
 }
