@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using FileEncoding = System.Text.Encoding;
 
@@ -42,13 +43,13 @@ namespace Amanita.SaveSys
         protected Decryptor defaultDecryptor;
         protected IDecryptor usableDecryptor;
 
-        public virtual ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request)
+        public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request)
         {
             string filePath = GetFullFilePath(request);
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
-            byte[] rawBytes = File.ReadAllBytes(filePath);
+            byte[] rawBytes = await File.ReadAllBytesAsync(filePath);
             object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
             SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(infoForDecryptor);
@@ -57,8 +58,8 @@ namespace Amanita.SaveSys
 
         protected virtual string GetFullFilePath(SaveReadRequest request)
         {
-            string saveFolderPath = GetFolderToAccess(request.BaseSaveDirectory);
-            //string saveFolderPath = GetAndPrepSaveFolderPath(request);
+            string saveFolderPath = FileUtils.GetPathToFolder(request.BaseSaveDirectory, RelativeSavePath);
+            
             string numFormatted = request.SlotNumber.ToString(saveNumberFormat);
             string fileName = string.Format(fileNameFormat, savePrefix,
                 numFormatted, fileExtension);
@@ -89,14 +90,14 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request)
+        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request)
         {
             string filePath = GetFullFilePath(request);
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
 
-            byte[] rawBytes = File.ReadAllBytes(filePath);
+            byte[] rawBytes = await File.ReadAllBytesAsync(filePath);
             object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);

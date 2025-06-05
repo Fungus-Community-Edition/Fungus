@@ -61,10 +61,6 @@ namespace Amanita.SaveSystemTests
 
         string debugSaveFolder;
 
-        protected IEnumerator WaitFor(Task writeTask)
-        {
-            yield return new WaitUntil(() => writeTask.IsCompleted);
-        }
         protected string SaveNumberFormat { get { return saveWriter.SaveNumberFormat; } }
 
         #region Successful writes
@@ -564,5 +560,12 @@ namespace Amanita.SaveSystemTests
             saveWriter.WriteOneToDisk(writeArgsForSaveDirectoryCreation);
             Assert.IsTrue(Directory.Exists(saveFolder), "Directory was not created after writing.");
         }
+
+        [Test]
+        public virtual async Task AtomicOperation_TempSaveWhenOverwriting()
+        {
+            Assert.Ignore();
+        }
+    
     }
 }

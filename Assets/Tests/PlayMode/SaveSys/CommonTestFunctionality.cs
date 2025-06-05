@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
@@ -71,6 +72,12 @@ namespace Amanita.SaveSystemTests
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
         }
+
+        protected IEnumerator WaitFor(Task writeTask)
+        {
+            yield return new WaitUntil(() => writeTask.IsCompleted);
+        }
+
 
         protected IDictionary<SaveDirectoryType, string> baseSavePaths;
 
@@ -215,6 +222,25 @@ namespace Amanita.SaveSystemTests
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
         }
 
+
+        protected virtual async Task CommonSetupAsync()
+        {
+            await Task.Delay(1000);
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+            // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+            mainSave.Add(encodedFlowchartSave);
+
+            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+            foreach (var blockSave in blockSaves)
+            {
+                SaveDataUnit saveDataUnit = blockSave.Serialized();
+                mainSave.Add(saveDataUnit);
+            }
+
+        }
 
         protected virtual IEnumerator CommonSetup()
         {

@@ -36,7 +36,7 @@ namespace Amanita.SaveSys
     /// <summary>
     /// Creates SaveData out of an object passed to it.
     /// </summary>
-    public interface ISaveEncoder<TInput, TOutput> : ISaveCodec<TInput>
+    public interface ISaveCodec<TInput, TOutput> : ISaveCodec<TInput>
         where TInput : class
         where TOutput : SaveData
     {
