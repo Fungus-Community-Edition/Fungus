@@ -1,6 +1,6 @@
-using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using FileEncoding = System.Text.Encoding;
@@ -43,13 +43,14 @@ namespace Amanita.SaveSys
         protected Decryptor defaultDecryptor;
         protected IDecryptor usableDecryptor;
 
-        public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request)
+        public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request,
+            CancellationToken cancelToken = default)
         {
             string filePath = GetFullFilePath(request);
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
-            byte[] rawBytes = await File.ReadAllBytesAsync(filePath);
+            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
             object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
             SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(infoForDecryptor);
@@ -90,14 +91,15 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request)
+        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request,
+            CancellationToken cancelToken = default)
         {
             string filePath = GetFullFilePath(request);
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
 
-            byte[] rawBytes = await File.ReadAllBytesAsync(filePath);
+            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
             object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
@@ -122,19 +124,5 @@ namespace Amanita.SaveSys
         }
     }
 
-    public class SaveReadRequest : EventArgs
-    {
-        public virtual int SlotNumber { get; set; } = 0;
-        public virtual SaveDirectoryType BaseSaveDirectory { get; set; } = SaveDirectoryType.DataPath;
-        public SaveReadRequest()
-        {
-
-        }
-
-        public SaveReadRequest(SaveReadRequest other)
-        {
-            this.SlotNumber = other.SlotNumber;
-            BaseSaveDirectory = other.BaseSaveDirectory;
-        }
-    }
+    
 }
