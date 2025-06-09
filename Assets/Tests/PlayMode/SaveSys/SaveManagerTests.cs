@@ -11,6 +11,7 @@ using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
+using System.ComponentModel;
 
 
 namespace Amanita.SaveSystemTests
@@ -49,19 +50,34 @@ namespace Amanita.SaveSystemTests
 
     public class SaveManagerTests : CommonTestFunctionality
     {
+        //protected override bool ShouldDeleteTestSavesAtEnd => false;
         protected override string PathToTestScene => "ScenePrefabs/SaveSysMonoBehaviourTests";
+
+        [OneTimeSetUp]
         public override void DoOneTimeSetUp()
         {
             base.DoOneTimeSetUp();
-            readReq.BaseSaveDirectory = manager.SaveDirType;
-
-            // Since we're working with a manager other than the one belonging to the SaveSystem singleton
-            manager.SaveWriter = saveWriter;
-            manager.SaveReader = saveReader;
-            manager.RegisterMainEncoder(flowchartSaveCodec);
         }
 
-        protected AmanitaSaveManager manager = new AmanitaSaveManager();
+        [SetUp]
+        public override void DoSetUp()
+        {
+            base.DoSetUp();
+
+            // We need to make sure that the scene is set up before the
+            // manager is
+            FileSaveRepository saveRepository = new FileSaveRepository();
+            saveRepository.Init(saveReader, saveWriter);
+            // Since we're working with a manager other than the one belonging to the SaveSystem singleton
+            manager = new AmanitaSaveManager(saveRepository);
+            //manager.SaveWriter = saveWriter;
+            //manager.SaveReader = saveReader;
+            manager.RegisterMainCodec(flowchartSaveCodec);
+
+            readReq.BaseSaveDirectory = manager.SaveDirType;
+        }
+
+        protected AmanitaSaveManager manager;
 
         [UnityTest]
         public virtual IEnumerator WritingToSlots()
@@ -70,11 +86,12 @@ namespace Amanita.SaveSystemTests
 
             foreach (int slot in testSlotNums)
             {
+                readReq.SlotNumber = slot;
+                string expectedPath = saveReader.GetSavePath(readReq);
                 Task saveTask = manager.SaveTo(slot);
 
                 yield return new WaitUntil(() => saveTask.IsCompleted);
-                readReq.SlotNumber = slot;
-                string expectedPath = saveReader.GetSavePath(readReq);
+                
 
                 bool itWasWritten = File.Exists(expectedPath);
                 Assert.IsTrue(itWasWritten, $"Save at slot {slot} does not exist");
@@ -147,7 +164,7 @@ namespace Amanita.SaveSystemTests
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() =>
                 {
-                    manager.LoadSave(slot).GetAwaiter().GetResult();
+                    manager.LoadMain(slot).GetAwaiter().GetResult();
                 });
             }
 

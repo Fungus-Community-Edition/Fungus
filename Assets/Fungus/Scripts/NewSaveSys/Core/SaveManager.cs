@@ -11,6 +11,13 @@ namespace Amanita.SaveSys
     {
         protected const int MaxSlots = 5; // Or make this configurable
 
+        public SaveManager(ISaveRepository saveRepo) : this()
+        {
+            this.saveRepo = saveRepo;
+        }
+
+        protected ISaveRepository saveRepo;
+
         public SaveManager()
         {
             registry = new SaveRegistry();
@@ -34,20 +41,20 @@ namespace Amanita.SaveSys
             }
         }
         
-        public virtual void RegisterMultiMainEncoders(IList<IMainSaveCodec> encoders)
+        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> encoders)
         {
             for (int i = 0; i < encoders.Count; i++)
             {
-                RegisterMainEncoder(encoders[i]);
+                RegisterMainCodec(encoders[i]);
             }
         }
 
-        public virtual void RegisterMainEncoder(IMainSaveCodec encoder)
+        public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            _mainEncoders.Add(encoder);
+            _mainCodecs.Add(codec);
         }
 
-        protected IList<IMainSaveCodec> _mainEncoders = new List<IMainSaveCodec>();
+        protected IList<IMainSaveCodec> _mainCodecs = new List<IMainSaveCodec>();
         public virtual SaveWriter SaveWriter { get; set; }
         public virtual SaveReader SaveReader { get; set; }
 
@@ -70,9 +77,9 @@ namespace Amanita.SaveSys
                     {
                         IList<SaveDataUnit> units = new List<SaveDataUnit>();
 
-                        for (int i = 0; i < _mainEncoders.Count; i++)
+                        for (int i = 0; i < _mainCodecs.Count; i++)
                         {
-                            IMainSaveCodec currentEncoder = _mainEncoders[i];
+                            IMainSaveCodec currentEncoder = _mainCodecs[i];
                             IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
                             units.AddRange(newUnits);
                         }
@@ -100,7 +107,8 @@ namespace Amanita.SaveSys
                     writeRequest.MainState = mainState;
                 }
 
-                await Task.Run(() => SaveWriter.WriteOneToDisk(writeRequest));
+                await saveRepo.SaveAsync(newSet);
+                //await Task.Run(() => SaveWriter.WriteOneToDisk(writeRequest));
                 
             }
         }
@@ -132,13 +140,21 @@ namespace Amanita.SaveSys
 
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
-        public virtual async Task<CompositeSaveData> LoadSave(int slotNum)
+        public virtual async Task<CompositeSaveData> LoadMain(int slotNum)
         {
             Validate(slotNum, loadOp);
-            throw new NotImplementedException();
+            CompositeSaveData mainData = await saveRepo.LoadMainSaveAsync(slotNum);
+            return mainData;
         }
 
         protected static string loadOp = "load";
+
+        public virtual async Task<ISaveMetaData> LoadMeta(int slotNum)
+        {
+            Validate(slotNum, loadOp);
+            ISaveMetaData meta = await saveRepo.LoadMetaDataAsync(slotNum);
+            return meta;
+        }
 
         public virtual async Task DeleteSave(int slotNum)
         {

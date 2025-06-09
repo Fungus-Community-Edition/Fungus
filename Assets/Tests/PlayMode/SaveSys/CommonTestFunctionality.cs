@@ -188,7 +188,10 @@ namespace Amanita.SaveSystemTests
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
-            DeleteAllTestSaves();
+            if (ShouldDeleteTestSavesAtEnd)
+            {
+                DeleteAllTestSaves();
+            }
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
             saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
             if (testScene != null)
@@ -197,11 +200,13 @@ namespace Amanita.SaveSystemTests
             }
         }
 
+        protected virtual bool ShouldDeleteTestSavesAtEnd => true;
+
         protected void DeleteAllTestSaves()
         {
             foreach (string root in SaveSystem.SaveDirectoryPaths.Values)
             {
-                string pathToTempFolder = Path.Combine(root, relativePathForTesting);
+                string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
 
                 IList<string> junk = Directory.EnumerateFiles(pathToTempFolder, "*.save",
                     SearchOption.AllDirectories).ToList();
@@ -245,20 +250,25 @@ namespace Amanita.SaveSystemTests
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
-            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-            mainSave.Add(encodedFlowchartSave);
-
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-            foreach (var blockSave in blockSaves)
+            PrepAndRegisterSaveData();
+            void PrepAndRegisterSaveData()
             {
-                SaveDataUnit saveDataUnit = blockSave.Serialized();
-                mainSave.Add(saveDataUnit);
-            }
+                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+                // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
+                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                mainSave.Add(encodedFlowchartSave);
+
+                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                foreach (var blockSave in blockSaves)
+                {
+                    SaveDataUnit saveDataUnit = blockSave.Serialized();
+                    mainSave.Add(saveDataUnit);
+                }
+            }
+            
         }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
