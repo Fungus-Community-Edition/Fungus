@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using static Amanita.Vector3Arithmetic;
 
 namespace Amanita.SaveSys
 {
@@ -55,8 +56,6 @@ namespace Amanita.SaveSys
         }
 
         protected IList<IMainSaveCodec> _mainCodecs = new List<IMainSaveCodec>();
-        public virtual SaveWriter SaveWriter { get; set; }
-        public virtual SaveReader SaveReader { get; set; }
 
         public virtual async Task SaveTo(int slotNum)
         {
@@ -65,7 +64,11 @@ namespace Amanita.SaveSys
 
         public virtual async Task Save(int slotNum, string saveName)
         {
-            Validate(slotNum, registerAndWriteOp);
+            if (!Validate(slotNum, registerAndWriteOp))
+            {
+                return;
+            }
+
             await Process();
             async Task Process()
             {
@@ -113,15 +116,23 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected static string registerAndWriteOp = "registerOrWrite";
+        protected static string registerAndWriteOp = "register or write";
         
-        protected virtual void Validate(int slotNum, string operation)
+        protected virtual bool Validate(int slotNum, string operation)
         {
+            bool result;
             if (slotNum < 0)
             {
                 string errorMessage = $"Cannot {operation} a save with a negative slot number.";
-                throw new ArgumentOutOfRangeException(nameof(slotNum), slotNum, errorMessage);
+                Debug.LogWarning(errorMessage);
+                result = false;
             }
+            else
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         protected virtual SaveMetaData CreateMetaFor(int slot)
@@ -141,7 +152,11 @@ namespace Amanita.SaveSys
 
         public virtual async Task<CompositeSaveData> LoadMain(int slotNum)
         {
-            Validate(slotNum, loadOp);
+            if (!Validate(slotNum, loadOp))
+            {
+                return null;
+            }
+            
             CompositeSaveData mainData = await saveRepo.LoadMainSaveAsync(slotNum);
             return mainData;
         }
@@ -150,15 +165,33 @@ namespace Amanita.SaveSys
 
         public virtual async Task<ISaveMetaData> LoadMeta(int slotNum)
         {
-            Validate(slotNum, loadOp);
+            if (!Validate(slotNum, loadOp))
+            {
+                return null;
+            }
             ISaveMetaData meta = await saveRepo.LoadMetaDataAsync(slotNum);
             return meta;
         }
 
-        public virtual async Task DeleteSave(int slotNum)
+        public virtual void DeleteSave(int slotNum)
         {
-            Validate(slotNum, deleteOp);
-            throw new NotImplementedException();
+            if (slotNum < 0)
+            {
+                string errorMessage = $"Cannot delete a save with a negative slot number.";
+                Debug.LogWarning(errorMessage);
+                return;
+            }
+            
+            if (!SlotExists(slotNum))
+            {
+                string warningMessage = $"Cannot delete save in slot {slotNum} because it does not exist.";
+                Debug.LogWarning(warningMessage);
+                return;
+            }
+
+            string pathToSaveFile = GetPathTo(slotNum);
+            File.Delete(pathToSaveFile);
+            registry.RemoveSave(slotNum);
         }
 
         protected static string deleteOp = "delete";
@@ -187,9 +220,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual string GetPathTo(int slot)
         {
-            reqForPathFinding.BaseSaveDirectory = SaveDirType;
-            reqForPathFinding.SlotNumber = slot;
-            string result = SaveReader.GetSavePath(reqForPathFinding);
+            string result = saveRepo.GetPathTo(slot);
             return result;
         }
 

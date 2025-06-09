@@ -80,10 +80,21 @@ namespace Amanita.SaveSys
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// Returns the path to the save file for the given slot number.
+        /// </summary>
         public string GetPathTo(int slot)
         {
-            throw new System.NotImplementedException();
+            forPathFinding.SlotNumber = slot;
+            string result = saveReader.GetSavePath(forPathFinding);
+            return result;
         }
+
+        protected SaveReadRequest forPathFinding = new SaveReadRequest
+        {
+            BaseSaveDirectory = SaveSystem.S.SaveDirectoryType,
+            SlotNumber = 0 // Default slot number, can be changed later
+        };
     }
 
     public interface ISaveRepository

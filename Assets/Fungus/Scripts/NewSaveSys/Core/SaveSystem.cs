@@ -70,12 +70,11 @@ namespace Amanita.SaveSys
             {
                 FileSaveRepository repo = new FileSaveRepository();
                 repo.Init(saveReader, saveWriter);
-                saveManager = new SaveManager(repo)
+                saveRepo = repo;
+                saveManager = new SaveManager(saveRepo)
                 {
                     SaveRelativePath = "/Saves",
                     SaveDirType = saveDirectoryType,
-                    SaveWriter = saveWriter,
-                    SaveReader = saveReader
                 };
                 saveManager.RegisterMultiMainCodecs(validatedEncoders);
             }
@@ -96,7 +95,7 @@ namespace Amanita.SaveSys
         }
         protected static SaveSystem _s;
 
-        protected ISaveRepository saveRepo = new FileSaveRepository();
+        protected ISaveRepository saveRepo;
 
         protected SaveManager saveManager;
 
@@ -110,9 +109,9 @@ namespace Amanita.SaveSys
             return saveRepo.LoadMainSaveAsync(slotNum);
         }
 
-        public virtual Task DeleteSave(int slotNum)
+        public virtual void DeleteSave(int slotNum)
         {
-            return saveManager.DeleteSave(slotNum);    
+            saveManager.DeleteSave(slotNum);    
         }
 
         public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;

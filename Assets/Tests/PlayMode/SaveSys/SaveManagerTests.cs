@@ -8,10 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
-using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
-using System.ComponentModel;
 
 
 namespace Amanita.SaveSystemTests
@@ -91,7 +90,7 @@ namespace Amanita.SaveSystemTests
                 Task saveTask = manager.SaveTo(slot);
 
                 yield return new WaitUntil(() => saveTask.IsCompleted);
-                
+
 
                 bool itWasWritten = File.Exists(expectedPath);
                 Assert.IsTrue(itWasWritten, $"Save at slot {slot} does not exist");
@@ -101,19 +100,18 @@ namespace Amanita.SaveSystemTests
 
         protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
 
-        [UnityTest]
-        public virtual IEnumerator WritingToSlots_HandleInvalidSlotNums()
+        [Test]
+        public virtual async Task WritingToSlots_HandleInvalidSlotNums()
         {
-            yield return CommonSetup();
+            await CommonSetupAsync();
 
             SaveWriteRequest invalidReq = new SaveWriteRequest(writeReq);
 
             foreach (int slot in invalidSlotNums)
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() =>
-                {
-                    manager.SaveTo(slot).GetAwaiter().GetResult();
-                });
+                string expectedLogMessage = $"Cannot register or write a save with a negative slot number.";
+                LogAssert.Expect(LogType.Warning, expectedLogMessage);
+                await manager.SaveTo(slot);
             }
 
         }
@@ -131,43 +129,44 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        [UnityTest]
-        public virtual IEnumerator DeletionFromSlots_HandlingEmptySlots()
+        [Test]
+        public virtual async Task DeletingSlots_HandlingEmptySlots()
         {
-            yield return CommonSetup();
+            DeleteAllTestSaves(); // So we can be sure all slots are empty
+            await CommonSetupAsync();
 
-            // Best to make sure that the system silently just does nothing in these
-            // cases
-            Assert.Ignore("");
+            foreach (int slot in testSlotNums)
+            {
+                string expectedLogMessage = $"Cannot delete save in slot {slot} because it does not exist.";
+                LogAssert.Expect(LogType.Warning, expectedLogMessage);
+                manager.DeleteSave(slot);
+            }
         }
 
         [UnityTest]
-        public virtual IEnumerator DeletionFromSlots_HandlingInvalidSlotNums()
+        public virtual IEnumerator DeletingSlots_HandlingInvalidSlotNums()
         {
             yield return CommonSetup();
 
             foreach (int slot in invalidSlotNums)
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() =>
-                {
-                    manager.DeleteSave(slot).GetAwaiter().GetResult();
-                });
+                string expectedLogMessage = $"Cannot delete a save with a negative slot number.";
+                LogAssert.Expect(LogType.Warning, expectedLogMessage);
+                manager.DeleteSave(slot);
             }
         }
 
-        [UnityTest]
-        public virtual IEnumerator LoadingFromSlots_HandleInvalidSlotNums()
+        [Test]
+        public virtual async Task LoadingSlots_HandleInvalidSlotNums()
         {
-            yield return CommonSetup();
+            await CommonSetupAsync();
 
             foreach (int slot in invalidSlotNums)
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() =>
-                {
-                    manager.LoadMain(slot).GetAwaiter().GetResult();
-                });
+                string expectedLogMessage = $"Cannot load a save with a negative slot number.";
+                LogAssert.Expect(LogType.Warning, expectedLogMessage);
+                await manager.LoadMain(slot);
             }
-
         }
 
         [Test]
@@ -211,7 +210,7 @@ namespace Amanita.SaveSystemTests
                 await manager.SaveTo(slot);
 
                 // Now to fetch the save data and check that it matches the expected values
-                
+
                 CompositeSaveData mainState = manager.GetMainFrom(slot);
                 SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
 
@@ -271,6 +270,20 @@ namespace Amanita.SaveSystemTests
 
         }
 
+        [Test]
+        public virtual async Task DeletingSlots()
+        {
+            await CommonSetupAsync();
+            await WriteToSlotsAsync();
+            foreach (int slot in testSlotNums)
+            {
+                manager.DeleteSave(slot);
+                bool doesItExist = File.Exists(saveReader.GetSavePath(readReq));
+                Assert.IsFalse(doesItExist, $"Save at slot {slot} was not deleted.");
+            }
+            var occupiedSlots = manager.GetOccupiedSlots();
+            Assert.IsEmpty(occupiedSlots, "Save Manager did not clear the occupied slots after deletion.");
 
+        }
     }
 }
