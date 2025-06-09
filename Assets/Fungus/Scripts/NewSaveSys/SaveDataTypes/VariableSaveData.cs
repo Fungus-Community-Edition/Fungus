@@ -37,7 +37,11 @@ namespace Amanita.SaveSys
         /// <summary>
         /// Alias for the Key property.
         /// </summary>
-        public virtual string VarName => key;
+        public virtual string VarName
+        {
+            get => Key;
+            set => Key = value;
+        }
 
         public VariableSaveData(string uniqueID = "", string key = "", string value = "")
         {

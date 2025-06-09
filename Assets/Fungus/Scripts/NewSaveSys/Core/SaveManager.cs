@@ -115,7 +115,6 @@ namespace Amanita.SaveSys
 
         protected static string registerAndWriteOp = "registerOrWrite";
         
-
         protected virtual void Validate(int slotNum, string operation)
         {
             if (slotNum < 0)
@@ -197,6 +196,12 @@ namespace Amanita.SaveSys
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
         // ^Better to cache this than create a new request every time client code
         // wants to know the path of a save.
+    
+        public virtual CompositeSaveData GetMainFrom(int slot)
+        {
+            CompositeSaveData mainData = (CompositeSaveData) registry.GetMainSave(slot);
+            return mainData;
+        }
     }
 
 }

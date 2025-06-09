@@ -65,6 +65,22 @@ namespace Amanita.SaveSys
             booleanVar.Value = value;
         }
 
+        public virtual T DecodeTo<T>(string data)
+        {
+            if (typeof(T) != typeof(bool))
+            {
+                throw new System.InvalidCastException($"Cannot decode to type {typeof(T).Name} from boolean data.");
+            }
+
+            bool value = false;
+            if (!bool.TryParse(data, out value))
+            {
+                Debug.LogError($"Failed to decode boolean value from string: {data}");
+                return default;
+            }
+            return (T)(object)value;
+        }
+
 
     }
 }

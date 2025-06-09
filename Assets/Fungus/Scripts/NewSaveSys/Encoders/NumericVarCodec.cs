@@ -71,5 +71,24 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in NumericVarEncoder.");
             }
         }
+
+        public virtual T DecodeTo<T>(string data)
+        {
+            T result = default;
+            if (typeof(T) == typeof(int))
+            {
+                result = (T)(object)int.Parse(data);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                result = (T)(object)float.Parse(data, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Type {typeof(T)} is not supported for decoding in NumericVarEncoder.");
+            }
+
+            return result;
+        }
     }
 }

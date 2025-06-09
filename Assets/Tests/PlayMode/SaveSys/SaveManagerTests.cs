@@ -171,28 +171,104 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual void ReturningCorrectPathsToSaves()
+        public virtual async Task ReturningSlotsBasedOnWriteOrder()
         {
-            Assert.Ignore();
+            await WriteToSlotsAsync();
+
+            bool success = manager.GetOccupiedSlots().SequenceEqual(testSlotNums);
+            Assert.IsTrue(success, "Save Manager did not return the correct slots after writing.");
+        }
+
+        protected virtual async Task WriteToSlotsAsync()
+        {
+            foreach (int slot in testSlotNums)
+            {
+                await manager.SaveTo(slot);
+            }
         }
 
         [Test]
-        public virtual void ReturningCorrectSlots()
+        public virtual async Task OverwritingSlots()
         {
-            // Make sure that things are returned in the corrected order, and that
-            // the order correctly reflects changes after consecutive operations
-            // like writes and deletions.
-            Assert.Ignore();
-        }
+            await CommonSetupAsync();
+            await WriteToSlotsAsync();
 
-        [UnityTest]
-        public virtual IEnumerator OverwritingSlots()
-        {
-            yield return CommonSetup();
-            
-            // After overwriting, make sure to load it and check that the game state
-            // reflects the newer save.
-            Assert.Ignore();
+            // Now change the game state before we overwriting the saves
+            // This is to ensure that the save data is different from the previous saves
+            // and that the overwriting works as expected.
+
+            string expectedNameVarValue = nameVar.Value + "3we4to789y3458t";
+            int expectedScoreVarValue = scoreVar.Value + 1000;
+            bool expectedIsNewPlayerVarValue = !isNewPlayerVar.Value;
+            float expectedFastestTimeVarValue = fastestTimeVar.Value + 10f;
+            Vector3 expectedThreeDPosVarValue = threeDPosVar.Value + new Vector3(1, 2, 3);
+            Vector2 expectedTwoDPosVarValue = twoDPosVar.Value + new Vector2(1, 2);
+            string expectedStringVarValue = stringVar.Value + "new string value";
+
+            foreach (int slot in testSlotNums)
+            {
+                ChangeGameState();
+                await manager.SaveTo(slot);
+
+                // Now to fetch the save data and check that it matches the expected values
+                
+                CompositeSaveData mainState = manager.GetMainFrom(slot);
+                SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
+
+                FlowchartSaveData flowchartSave = flowchartSaveCodec.DecodeFrom(forFlowchart);
+
+                CheckTheValues();
+                void CheckTheValues()
+                {
+                    string actualNameVarValue = flowchartSave.GetVarValue<string>(nameVar.Key);
+                    Assert.AreEqual(expectedNameVarValue, actualNameVarValue, $"Name variable value mismatch for slot {slot}.");
+
+                    int actualScoreVarValue = flowchartSave.GetVarValue<int>(scoreVar.Key);
+                    Assert.AreEqual(expectedScoreVarValue, actualScoreVarValue, $"Score variable value mismatch for slot {slot}.");
+
+                    bool actualIsNewPlayerVarValue = flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key);
+                    Assert.AreEqual(expectedIsNewPlayerVarValue, actualIsNewPlayerVarValue, $"IsNewPlayer variable value mismatch for slot {slot}.");
+
+                    float actualFastestTimeVarValue = flowchartSave.GetVarValue<float>(fastestTimeVar.Key);
+                    Assert.AreEqual(expectedFastestTimeVarValue, actualFastestTimeVarValue, $"FastestTime variable value mismatch for slot {slot}.");
+
+                    Vector3 actualThreeDPosVarValue = flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key);
+                    Assert.AreEqual(expectedThreeDPosVarValue, actualThreeDPosVarValue, $"3D Position variable value mismatch for slot {slot}.");
+
+                    Vector2 actualTwoDPosVarValue = flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key);
+                    Assert.AreEqual(expectedTwoDPosVarValue, actualTwoDPosVarValue, $"2D Position variable value mismatch for slot {slot}.");
+
+                    string actualStringVarValue = flowchartSave.GetVarValue<string>(stringVar.Key);
+                    Assert.AreEqual(expectedStringVarValue, actualStringVarValue, $"String variable value mismatch for slot {slot}.");
+                }
+
+                SetExpectedValuesForNextIteration();
+                void SetExpectedValuesForNextIteration()
+                {
+                    expectedNameVarValue += "next";
+                    expectedScoreVarValue += 1000;
+                    expectedIsNewPlayerVarValue = !expectedIsNewPlayerVarValue;
+                    expectedFastestTimeVarValue += 10f;
+                    expectedThreeDPosVarValue += new Vector3(1, 2, 3);
+                    expectedTwoDPosVarValue += new Vector2(1, 2);
+                    expectedStringVarValue += "next string value";
+                }
+
+
+            }
+
+            void ChangeGameState()
+            {
+                nameVar.Value = expectedNameVarValue;
+                scoreVar.Value = expectedScoreVarValue;
+                isNewPlayerVar.Value = expectedIsNewPlayerVarValue;
+                fastestTimeVar.Value = expectedFastestTimeVarValue;
+                threeDPosVar.Value = expectedThreeDPosVarValue;
+                twoDPosVar.Value = expectedTwoDPosVarValue;
+                stringVar.Value = expectedStringVarValue;
+            }
+
+
         }
 
 

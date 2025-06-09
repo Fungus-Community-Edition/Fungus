@@ -155,7 +155,7 @@ namespace Amanita.SaveSystemTests
 
         protected StringVariable nameVar = null;
         protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
+        protected BooleanVariable isNewPlayerVar = null;
         protected FloatVariable fastestTimeVar = null;
         protected Vector3Variable threeDPosVar = null;
         protected Vector2Variable twoDPosVar = null;
@@ -166,7 +166,7 @@ namespace Amanita.SaveSystemTests
         {
             nameVar = (StringVariable)flowchart.GetVariable("name");
             scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
             fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");

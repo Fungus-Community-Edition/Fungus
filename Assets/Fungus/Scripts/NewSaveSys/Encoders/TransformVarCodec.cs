@@ -124,6 +124,21 @@ namespace Amanita.SaveSys
             }
             Decode(variable, saveData.Value);
         }
+
+        public virtual T DecodeTo<T>(string data)
+        {
+            if (typeof(T) == typeof(Transform))
+            {
+                TransformState state = JsonUtility.FromJson<TransformState>(data);
+                state.OnDeserialize();
+                return (T)(object)FindTheRightTransformBasedOn(state);
+            }
+            else
+            {
+                Debug.LogError($"TransformVarEncoder: Cannot decode to type {typeof(T).Name}");
+                return default;
+            }
+        }
     }
 
     [System.Serializable]
