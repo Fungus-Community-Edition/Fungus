@@ -101,6 +101,23 @@ namespace Amanita.SaveSys
 
             return results;
         }
+    
+        public virtual FlowchartSaveData DecodeFrom(SaveDataUnit unit)
+        {
+            if (unit == null)
+            {
+                Debug.LogError("Cannot decode from a null SaveDataUnit.");
+                return null;
+            }
+            FlowchartSaveData saveData = JsonUtility.FromJson<FlowchartSaveData>(unit.Content);
+            if (saveData == null)
+            {
+                Debug.LogError($"Failed to decode {unit.DataTypeName} to FlowchartSaveData.");
+                return null;
+            }
+            return saveData;
+        }
+
     }
 
 }

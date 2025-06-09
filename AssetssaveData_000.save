@@ -1,9 +1,16 @@
 ﻿{
     "name": "",
+<<<<<<<< HEAD:Assets/saveData_000.save
+    "saveID": "2f611ef1-1efb-4622-82cc-00d23a7be76e",
+    "slotNumber": 0,
+    "saveVersion": "1.0.0",
+    "utcTimeStamp": "2025-06-02T18:19:20.4163118Z"
+========
     "saveID": "ac8cf38f-4e53-4ce4-bb0b-4542e5c701ae",
     "slotNumber": 0,
     "saveVersion": "1.0.0",
     "utcTimeStamp": "2025-06-02T17:03:15.0228964Z"
+>>>>>>>> newSaveSystem:AssetssaveData_000.save
 }
 
 <<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>

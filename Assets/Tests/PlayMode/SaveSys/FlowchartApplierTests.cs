@@ -19,7 +19,7 @@ namespace Amanita.SaveSystemTests
         {
             nameVar = (StringVariable)flowchart.GetVariable("name");
             scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            newPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
+            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
             fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
@@ -31,21 +31,13 @@ namespace Amanita.SaveSystemTests
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }
 
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable newPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
 
         [Test]
         public virtual void AppliesVarStates()
         {
             string expectedNameVarValue = nameVar.Value;
             int expectedScoreVarValue = scoreVar.Value;
-            bool expectedNewPlayerVarValue = newPlayerVar.Value;
+            bool expectedNewPlayerVarValue = isNewPlayerVar.Value;
             float expectedFastestTimeVarValue = fastestTimeVar.Value;
             Vector3 expectedThreeDPosVarValue = threeDPosVar.Value;
             Vector2 expectedTwoDPosVarValue = twoDPosVar.Value;
@@ -56,7 +48,7 @@ namespace Amanita.SaveSystemTests
             // can see if they were applied correctly.
             nameVar.Value = "Not Hello, World!";
             scoreVar.Value = 0;
-            newPlayerVar.Value = false;
+            isNewPlayerVar.Value = false;
             fastestTimeVar.Value = -10.0f;
             threeDPosVar.Value = new Vector3(0.0f, 0.0f, 0.0f);
             twoDPosVar.Value = new Vector2(0.0f, 0.0f);
@@ -67,7 +59,7 @@ namespace Amanita.SaveSystemTests
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
-            bool appliedCorrectNewPlayer = newPlayerVar.Value == expectedNewPlayerVarValue;
+            bool appliedCorrectNewPlayer = isNewPlayerVar.Value == expectedNewPlayerVarValue;
             bool appliedCorrectFastestTime = fastestTimeVar.Value == expectedFastestTimeVarValue;
             bool appliedCorrectThreeDPos = threeDPosVar.Value == expectedThreeDPosVarValue;
             bool appliedCorrectTwoDPos = twoDPosVar.Value == expectedTwoDPosVarValue;

@@ -4,22 +4,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using static Amanita.Vector3Arithmetic;
 
 namespace Amanita.SaveSys
 {
-    public interface ISaveManager
-    {
-        Task SaveAsync(int slotNumber);
-        Task<CompositeSaveData> LoadAsync(int slot);
-
-        IList<int> GetOccupiedSlots();
-        void DeleteSlot(int slot);
-        bool SlotExists(int slot);
-    }
-
-
     public class SaveManager : ISaveManager
     {
+        protected const int MaxSlots = 5; // Or make this configurable
+
+        public SaveManager(ISaveRepository saveRepo) : this()
+        {
+            this.saveRepo = saveRepo;
+        }
+
+        protected ISaveRepository saveRepo;
+
         public SaveManager()
         {
             registry = new SaveRegistry();
@@ -43,63 +42,97 @@ namespace Amanita.SaveSys
             }
         }
         
-        public virtual void RegisterMultiMainEncoders(IList<IMainSaveCodec> encoders)
+        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> encoders)
         {
             for (int i = 0; i < encoders.Count; i++)
             {
-                RegisterMainEncoder(encoders[i]);
+                RegisterMainCodec(encoders[i]);
             }
         }
 
-        public virtual void RegisterMainEncoder(IMainSaveCodec encoder)
+        public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            _mainEncoders.Add(encoder);
+            _mainCodecs.Add(codec);
         }
 
-        protected IList<IMainSaveCodec> _mainEncoders = new List<IMainSaveCodec>();
-        public virtual SaveWriter SaveWriter { get; set; }
-        public virtual SaveReader SaveReader { get; set; }
+        protected IList<IMainSaveCodec> _mainCodecs = new List<IMainSaveCodec>();
 
-        public virtual void RegisterAndWriteSave(int slotNum, string saveName = "")
+        public virtual async Task SaveTo(int slotNum)
         {
-            CompositeSaveData mainState = CreateMainState();
-            CompositeSaveData CreateMainState()
-            {
-                IList<SaveDataUnit> unitsNeeded = GetUnitsForGameState();
-                IList<SaveDataUnit> GetUnitsForGameState()
-                {
-                    IList<SaveDataUnit> units = new List<SaveDataUnit>();
+            await Save(slotNum, "");
+        }
 
-                    for (int i = 0; i < _mainEncoders.Count; i++)
+        public virtual async Task Save(int slotNum, string saveName)
+        {
+            if (!Validate(slotNum, registerAndWriteOp))
+            {
+                return;
+            }
+
+            await Process();
+            async Task Process()
+            {
+                CompositeSaveData mainState = CreateMainState();
+                CompositeSaveData CreateMainState()
+                {
+                    IList<SaveDataUnit> unitsNeeded = GetUnitsForGameState();
+                    IList<SaveDataUnit> GetUnitsForGameState()
                     {
-                        IMainSaveCodec currentEncoder = _mainEncoders[i];
-                        IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
-                        units.AddRange(newUnits);
+                        IList<SaveDataUnit> units = new List<SaveDataUnit>();
+
+                        for (int i = 0; i < _mainCodecs.Count; i++)
+                        {
+                            IMainSaveCodec currentEncoder = _mainCodecs[i];
+                            IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
+                            units.AddRange(newUnits);
+                        }
+
+                        return units;
                     }
 
-                    return units;
+                    CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
+                    return mainState;
                 }
 
-                CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
-                return mainState;
+                SaveMetaData meta = CreateMetaFor(slotNum);
+
+                SaveDataSet newSet = new SaveDataSet(meta, mainState);
+                registry.AddSave(newSet);
+
+                // And now with the current state of the game all nice and recorded...
+                PrepWriteRequest();
+                void PrepWriteRequest()
+                {
+                    writeRequest.SaveMetaData = meta;
+                    writeRequest.SlotNumber = slotNum;
+                    writeRequest.SaveName = saveName;
+                    writeRequest.BaseSaveDirectory = SaveDirType;
+                    writeRequest.MainState = mainState;
+                }
+
+                await saveRepo.SaveAsync(newSet);
+                //await Task.Run(() => SaveWriter.WriteOneToDisk(writeRequest));
+                
             }
-            
-            SaveMetaData meta = CreateMetaFor(slotNum);
+        }
 
-            SaveDataSet newSet = new SaveDataSet(meta, mainState);
-            registry.AddSave(newSet);
-
-            PrepWriteRequest();
-            void PrepWriteRequest()
+        protected static string registerAndWriteOp = "register or write";
+        
+        protected virtual bool Validate(int slotNum, string operation)
+        {
+            bool result;
+            if (slotNum < 0)
             {
-                writeRequest.SaveMetaData = meta;
-                writeRequest.SlotNumber = slotNum;
-                writeRequest.SaveName = saveName;
-                writeRequest.BaseSaveDirectory = SaveDirType;
-                writeRequest.MainState = mainState;
+                string errorMessage = $"Cannot {operation} a save with a negative slot number.";
+                Debug.LogWarning(errorMessage);
+                result = false;
+            }
+            else
+            {
+                result = true;
             }
 
-            SaveWriter.WriteOneToDisk(writeRequest);
+            return result;
         }
 
         protected virtual SaveMetaData CreateMetaFor(int slot)
@@ -117,39 +150,55 @@ namespace Amanita.SaveSys
 
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
-        public virtual void LoadSave(string saveName)
+        public virtual async Task<CompositeSaveData> LoadMain(int slotNum)
         {
-            throw new NotImplementedException();
+            if (!Validate(slotNum, loadOp))
+            {
+                return null;
+            }
+            
+            CompositeSaveData mainData = await saveRepo.LoadMainSaveAsync(slotNum);
+            return mainData;
         }
 
-        public virtual void DeleteSave(string saveName)
+        protected static string loadOp = "load";
+
+        public virtual async Task<ISaveMetaData> LoadMeta(int slotNum)
         {
-            throw new NotImplementedException();
+            if (!Validate(slotNum, loadOp))
+            {
+                return null;
+            }
+            ISaveMetaData meta = await saveRepo.LoadMetaDataAsync(slotNum);
+            return meta;
         }
 
-        protected const int MaxSlots = 5; // Or make this configurable
+        public virtual void DeleteSave(int slotNum)
+        {
+            if (slotNum < 0)
+            {
+                string errorMessage = $"Cannot delete a save with a negative slot number.";
+                Debug.LogWarning(errorMessage);
+                return;
+            }
+            
+            if (!SlotExists(slotNum))
+            {
+                string warningMessage = $"Cannot delete save in slot {slotNum} because it does not exist.";
+                Debug.LogWarning(warningMessage);
+                return;
+            }
 
-        public virtual List<SaveSlot> GetAllSlots()
+            string pathToSaveFile = GetPathTo(slotNum);
+            File.Delete(pathToSaveFile);
+            registry.RemoveSave(slotNum);
+        }
+
+        protected static string deleteOp = "delete";
+
+        public virtual IList<SaveSlot> GetAllSlots()
         {
             // Load all slot files or PlayerPrefs keys, return as list
-            throw new NotImplementedException();
-        }
-
-        public virtual void SaveToSlot(int slotIndex, SaveDataUnit[] saveDataItems)
-        {
-            // Serialize and save to file or PlayerPrefs, include metadata
-            throw new NotImplementedException();
-        }
-
-        public virtual SaveSlot LoadFromSlot(int slotIndex)
-        {
-            // Load and deserialize slot data
-            throw new System.NotImplementedException();
-        }
-
-        public virtual void DeleteSlot(int slotIndex)
-        {
-            // Remove slot data from storage
             throw new NotImplementedException();
         }
 
@@ -163,29 +212,6 @@ namespace Amanita.SaveSys
             return registry.HasSaveInSlot(slot);
         }
 
-        public virtual async Task SaveAsync(int slotNum)
-        {
-            // Register the current game state, then request a write
-            
-            // Implementation sketch
-            //var req = new SaveWriteRequest
-            //{
-            //    SlotNumber = slot,
-            //    MainState = data,
-            //    SaveMetaData = meta,
-            //    BaseSaveDirectory = _baseDir,
-            //    RelativePath = _relPath
-            //};
-            //await Task.Run(() => _writer.WriteOneToDisk(req));
-
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<CompositeSaveData> LoadAsync(int slot)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Returns (what at least would be) the path to the save of the 
         /// specified slot. This function does not take into account 
@@ -194,22 +220,19 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual string GetPathTo(int slot)
         {
-            reqForPathFinding.BaseSaveDirectory = SaveDirType;
-            reqForPathFinding.SlotNumber = slot;
-            string result = SaveReader.GetSavePath(reqForPathFinding);
+            string result = saveRepo.GetPathTo(slot);
             return result;
         }
 
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
         // ^Better to cache this than create a new request every time client code
         // wants to know the path of a save.
-    }
-
-    public class SaveRegistrationRequest
-    {
-        public virtual SaveMetaData SaveMetaData { get; set; }
-        public virtual SaveData MainSaveData { get; set; }
-        public virtual int SlotNumber { get; set; }
+    
+        public virtual CompositeSaveData GetMainFrom(int slot)
+        {
+            CompositeSaveData mainData = (CompositeSaveData) registry.GetMainSave(slot);
+            return mainData;
+        }
     }
 
 }

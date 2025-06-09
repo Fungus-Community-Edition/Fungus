@@ -60,5 +60,18 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
             }
         }
+
+        public virtual T DecodeTo<T>(string data)
+        {
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)data;
+            }
+            else
+            {
+                Debug.LogError($"Cannot decode string to type {typeof(T).Name}.");
+                return default;
+            }
+        }
     }
 }

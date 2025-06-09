@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/TempSaves.meta
-guid: 3e0739f9587c2694a807a55c772da565
-========
+<<<<<<<< HEAD:Assets/StreamingAssets/TempSaves.meta
 guid: 0f6cae8eba728d24d842695ffe3eb8b6
->>>>>>>> newSaveSystem:Assets/StreamingAssets/TempSaves.meta
+========
+guid: 23ad499d059e9894580b5fa9555e66aa
+>>>>>>>> newSaveSystem:Assets/StreamingAssets/TempSaves/Saves.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
