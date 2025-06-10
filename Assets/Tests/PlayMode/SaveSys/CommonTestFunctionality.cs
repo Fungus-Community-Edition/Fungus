@@ -71,6 +71,8 @@ namespace Amanita.SaveSystemTests
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
+            
+
         }
 
         protected IEnumerator WaitFor(Task writeTask)
@@ -268,7 +270,7 @@ namespace Amanita.SaveSystemTests
                     mainSave.Add(saveDataUnit);
                 }
             }
-            
+
         }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }

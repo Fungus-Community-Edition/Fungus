@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
@@ -9,20 +10,32 @@ namespace Amanita.SaveSys
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
-        public override void Apply(IList<FlowchartSaveData> saveDatas)
+        public override async Task ApplyMulti(IList<SaveData> datas)
+        {
+            IList<FlowchartSaveData> flowchartDatas = (from data in datas
+                                                  where data is FlowchartSaveData
+                                                  select data as FlowchartSaveData).ToList();
+
+            await ApplyMulti(flowchartDatas);
+        }
+
+        public override async Task ApplyMulti(IList<FlowchartSaveData> saveDatas)
         {
             allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
 
             foreach (FlowchartSaveData saveData in saveDatas)
             {
-                Apply(saveData);
+                await Apply(saveData);
             }
+
         }
 
         protected IList<Flowchart> allFlowcharts;
 
-        public override void Apply(FlowchartSaveData saveData)
+        public override Task Apply(FlowchartSaveData saveData)
         {
+            allFlowcharts ??= FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+
             Flowchart flowchart = FindFlowchartReferredToBy(saveData);
             Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)
             {
@@ -38,7 +51,7 @@ namespace Amanita.SaveSys
             if (flowchart == null)
             {
                 Debug.LogWarning($"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.");
-                return;
+                return null;
             }
 
             ApplyVarStates();
@@ -123,7 +136,7 @@ namespace Amanita.SaveSys
                 
             }
 
-            
+            return Task.CompletedTask;
         }
 
         protected virtual Flowchart FindFlowchartById(string id)
@@ -142,5 +155,9 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        public override Task Apply(SaveData saveData)
+        {
+            return Apply(saveData as FlowchartSaveData);
+        }
     }
 }

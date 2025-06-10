@@ -17,6 +17,13 @@ namespace Amanita.SaveSys
         {
             return typeName == nameof(Flowchart);
         }
+
+        public override SaveData DecodeFrom(SaveDataUnit unit)
+        {
+            BlockSaveData result = JsonUtility.FromJson<BlockSaveData>(unit.Content);
+            return result;
+        }
+
         public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
         {
             IList<Block> blocksToConsider = (from elem in withTheBlocks.GetExecutingBlocks()

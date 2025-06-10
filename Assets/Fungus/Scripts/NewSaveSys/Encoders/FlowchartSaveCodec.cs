@@ -102,7 +102,7 @@ namespace Amanita.SaveSys
             return results;
         }
     
-        public virtual FlowchartSaveData DecodeFrom(SaveDataUnit unit)
+        public override SaveData DecodeFrom(SaveDataUnit unit)
         {
             if (unit == null)
             {
@@ -118,6 +118,10 @@ namespace Amanita.SaveSys
             return saveData;
         }
 
+        public override bool CanHandle(string typeName)
+        {
+            return typeName == nameof(Flowchart) || typeName == nameof(FlowchartSaveData);
+        }
     }
 
 }

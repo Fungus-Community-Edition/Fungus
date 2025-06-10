@@ -2,12 +2,13 @@ using Amanita.Myceliaudio;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
-        public override void Apply(MyceliaudioSaveData saveData)
+        public override Task Apply(MyceliaudioSaveData saveData)
         {
             AudioSystem audioSys = AudioSystem.S;
             ApplyAudioSettings();
@@ -45,13 +46,20 @@ namespace Amanita.SaveSys
                     audioSys.Play(audioArgs);
                 }
             }
-        }
         
-        public override void Apply(IList<MyceliaudioSaveData> saveData)
+            return Task.CompletedTask;
+        }
+
+        public override Task Apply(SaveData saveData)
+        {
+            return Apply(saveData as MyceliaudioSaveData);
+        }
+
+        public override async Task ApplyMulti(IList<MyceliaudioSaveData> saveData)
         {
             foreach (var elem in saveData)
             {
-                Apply(elem);
+                await Apply(elem);
             }
         }
     }

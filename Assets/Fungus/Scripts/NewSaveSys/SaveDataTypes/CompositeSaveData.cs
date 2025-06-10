@@ -90,6 +90,7 @@ namespace Amanita.SaveSys
             result = units.Where(unit => unit.DataTypeName == nameof(T)).ToList();
             return result;
         }
+
     }
 
     public interface ICompositeSaveData : ISaveData

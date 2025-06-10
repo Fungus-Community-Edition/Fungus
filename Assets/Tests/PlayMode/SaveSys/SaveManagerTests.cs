@@ -170,6 +170,67 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
+        public virtual async Task LoadingSlots_TransitionsToCorrectScene()
+        {
+            Assert.Ignore();
+
+        }
+
+        [Test]
+        public virtual async Task LoadingSlots_CorrectGameStateApplied()
+        {
+            await CommonSetupAsync();
+
+            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
+            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
+
+            foreach (var slot in testSlotNums)
+            {
+                // Need these to help check if the right game state is applied
+                string expectedNameVarValue = nameVar.Value;
+                int expectedScoreVarValue = scoreVar.Value;
+                bool expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+                float expectedFastestTimeVarValue = fastestTimeVar.Value;
+                Vector3 expectedThreeDPosVarValue = threeDPosVar.Value;
+                Vector2 expectedTwoDPosVarValue = twoDPosVar.Value;
+                string expectedStringVarValue = stringVar.Value;
+
+                // To help us see if the state's loaded correctly
+                await manager.SaveTo(slot);
+
+                // Change the game state to something else
+                // so we can check if the loading works correctly
+                nameVar.Value = "New Name After Save";
+                scoreVar.Value = 9999;
+                isNewPlayerVar.Value = false;
+                fastestTimeVar.Value = 123.45f;
+                threeDPosVar.Value = new Vector3(10, 20, 30);
+                twoDPosVar.Value = new Vector2(5, 10);
+                stringVar.Value = "New String Value After Save";
+
+                readReq.SlotNumber = slot;
+                CompositeSaveData mainState = await manager.LoadMain(slot);
+                Assert.IsNotNull(mainState, "Main save data is null after loading.");
+                Assert.AreEqual(nameVar.Value, expectedNameVarValue,
+                    $"Name variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(scoreVar.Value, expectedScoreVarValue,
+                    $"Score variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(isNewPlayerVar.Value, expectedIsNewPlayerVarValue,
+                    $"IsNewPlayer variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(fastestTimeVar.Value, expectedFastestTimeVarValue,
+                    $"FastestTime variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(threeDPosVar.Value, expectedThreeDPosVarValue,
+                    $"3D Position variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(twoDPosVar.Value, expectedTwoDPosVarValue,
+                    $"2D Position variable value mismatch after loading slot {slot}.");
+                Assert.AreEqual(stringVar.Value, expectedStringVarValue,
+                    $"String variable value mismatch after loading slot {slot}.");
+            }
+            
+        }
+
+
+        [Test]
         public virtual async Task ReturningSlotsBasedOnWriteOrder()
         {
             await WriteToSlotsAsync();
@@ -214,7 +275,7 @@ namespace Amanita.SaveSystemTests
                 CompositeSaveData mainState = manager.GetMainFrom(slot);
                 SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
 
-                FlowchartSaveData flowchartSave = flowchartSaveCodec.DecodeFrom(forFlowchart);
+                FlowchartSaveData flowchartSave = (FlowchartSaveData) flowchartSaveCodec.DecodeFrom(forFlowchart);
 
                 CheckTheValues();
                 void CheckTheValues()

@@ -41,7 +41,6 @@ namespace Amanita.SaveSys
         }
 
         
-
         public IList<SaveDataUnit> EncodeMulti(object toMakeFrom = null)
         {
             throw new System.NotImplementedException();
@@ -53,6 +52,21 @@ namespace Amanita.SaveSys
         }
 
         public IList<SaveDataUnit> FindAndEncodeAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanHandle(object toMakeFrom)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanHandle(string typeName)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public SaveData DecodeFrom(SaveDataUnit unit)
         {
             throw new System.NotImplementedException();
         }

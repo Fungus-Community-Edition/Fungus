@@ -3,6 +3,7 @@
 using System.Globalization;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Amanita.SaveSys
 {
@@ -19,6 +20,8 @@ namespace Amanita.SaveSys
         [SerializeField] protected int slotNumber = 0;
         [SerializeField] protected string saveVersion = "null";
         [SerializeField] protected string utcTimeStamp = string.Empty;
+        [SerializeField] protected string sceneName = string.Empty;
+        [SerializeField] protected int sceneBuildIndex = -1;
 
         public string Name
         {
@@ -83,6 +86,16 @@ namespace Amanita.SaveSys
             }
         }
 
+        public virtual string SceneName
+        {
+            get { return sceneName; }
+        }
+
+        public virtual int SceneBuildIndex
+        {
+            get { return sceneBuildIndex; }
+        }
+
         protected virtual void UpdateTimeStampStructure()
         {
             IFormatProvider provider = CultureInfo.InvariantCulture;
@@ -139,6 +152,7 @@ namespace Amanita.SaveSys
 
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
+            RegisterCurrentSceneInfo();
         }
 
         protected virtual void MakeSureWeHaveSaveVersion()
@@ -187,6 +201,12 @@ namespace Amanita.SaveSys
         {
             base.OnDeserialize();
             UpdateTimeStampStructure();
+        }
+
+        public virtual void RegisterCurrentSceneInfo()
+        {
+            sceneName = SceneManager.GetActiveScene().name;
+            sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
         }
 
         public virtual bool Equals(SaveMetaData other)

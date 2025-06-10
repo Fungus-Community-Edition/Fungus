@@ -5,12 +5,18 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using static Amanita.Vector3Arithmetic;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 namespace Amanita.SaveSys
 {
     public class SaveManager : ISaveManager
     {
         protected const int MaxSlots = 5; // Or make this configurable
+
+        public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
+
+        public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
         public SaveManager(ISaveRepository saveRepo) : this()
         {
@@ -52,10 +58,10 @@ namespace Amanita.SaveSys
 
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            _mainCodecs.Add(codec);
+            mainCodecs.Add(codec);
         }
 
-        protected IList<IMainSaveCodec> _mainCodecs = new List<IMainSaveCodec>();
+        protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
 
         public virtual async Task SaveTo(int slotNum)
         {
@@ -80,9 +86,9 @@ namespace Amanita.SaveSys
                     {
                         IList<SaveDataUnit> units = new List<SaveDataUnit>();
 
-                        for (int i = 0; i < _mainCodecs.Count; i++)
+                        for (int i = 0; i < mainCodecs.Count; i++)
                         {
-                            IMainSaveCodec currentEncoder = _mainCodecs[i];
+                            IMainSaveCodec currentEncoder = mainCodecs[i];
                             IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
                             units.AddRange(newUnits);
                         }
@@ -156,12 +162,93 @@ namespace Amanita.SaveSys
             {
                 return null;
             }
+
+            Scene sceneToLoad = default;
+            CompositeSaveData mainData = null;
+
+            await BeforeLoadPrep();
+            async Task BeforeLoadPrep()
+            {
+                Task<CompositeSaveData> loadMainSaveTask = saveRepo.LoadMainSaveAsync(slotNum);
+                Task<Scene> decideSceneTask = DecideSceneToLoad();
+                async Task<Scene> DecideSceneToLoad()
+                {
+                    SaveMetaData meta = (SaveMetaData)await LoadMeta(slotNum);
+                    Scene sceneToLoad = SceneManager.GetSceneByName(meta.SceneName);
+                    if (!sceneToLoad.IsValid())
+                    {
+                        sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
+                    }
+                    return sceneToLoad;
+                }
+
+                Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
+                await ExecuteHandlers(BeforeSceneLoadAsync);
+                await Task.WhenAll(loadMainSaveTask, decideSceneTask, beforeSceneLoadHandlerTask);
+
+                sceneToLoad = decideSceneTask.Result;
+                mainData = loadMainSaveTask.Result;
+            }
             
-            CompositeSaveData mainData = await saveRepo.LoadMainSaveAsync(slotNum);
+            // Might be good to call upon a SceneLoader here, but for now we'll
+            // just load the scene ourselves
+
+            await SceneManager.LoadSceneAsync(sceneToLoad.name, LoadSceneMode.Single);
+
+            await ApplyDataToScene();
+            async Task ApplyDataToScene()
+            {
+                IList<SaveData> decodedSaveData = GetDecodedData();
+                IList<SaveData> GetDecodedData()
+                {
+                    IList<SaveData> result = new List<SaveData>();
+                    foreach (var unitEl in mainData.Units)
+                    {
+                        string typeName = unitEl.DataTypeName;
+                        IMainSaveCodec codecForThisUnit = mainCodecs.FirstOrDefault(codec => codec.CanHandle(typeName));
+
+                        if (codecForThisUnit != null)
+                        {
+                            SaveData decodedSave = codecForThisUnit.DecodeFrom(unitEl);
+                            result.Add(decodedSave);
+                        }
+                    }
+                    return result;
+                }
+
+                var appliers = SaveSystem.S.SaveDataAppliers;
+
+                foreach (ISaveDataApplier applier in appliers)
+                {
+                    IList<SaveData> datasItCanWorkWith = (from elem in decodedSaveData
+                                                         where applier.CanApply(elem)
+                                                         select elem).ToList();
+                    if (datasItCanWorkWith.Count == 0)
+                    {
+                        continue;
+                    }
+                    
+                    await applier.ApplyMulti(datasItCanWorkWith);
+                }
+
+            }
+
+            await ExecuteHandlers(AfterSceneLoadAsync);
+
             return mainData;
         }
 
         protected static string loadOp = "load";
+
+        protected static async Task ExecuteHandlers(Func<Task> hasHandlers)
+        {
+            var invocationList = hasHandlers.GetInvocationList();
+
+            foreach (var handler in invocationList.Cast<Func<Task>>())
+            {
+                await handler();
+            }
+        }
 
         public virtual async Task<ISaveMetaData> LoadMeta(int slotNum)
         {

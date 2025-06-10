@@ -55,7 +55,7 @@ namespace Amanita.SaveSystemTests
             stringVar.Value = "Not Hello, World!";
             transformVar.Value = null;
 
-            flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
+            flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
@@ -76,7 +76,7 @@ namespace Amanita.SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f);
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            flowchartApplier.Apply(new FlowchartSaveData[] { flowchartSaveData });
+            flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
 

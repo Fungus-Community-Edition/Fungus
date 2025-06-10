@@ -23,7 +23,7 @@ namespace Amanita.SaveSystemTests
 
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
-            audioApplier.Apply(new MyceliaudioSaveData[] { saveData });
+            audioApplier.ApplyMulti(new MyceliaudioSaveData[] { saveData });
             yield return wait; ;
             AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             bool playingCorrectClip = clipPlaying == playAudioArgsSO.MainClip;

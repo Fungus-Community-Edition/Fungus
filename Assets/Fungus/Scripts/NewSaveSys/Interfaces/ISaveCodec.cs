@@ -15,6 +15,12 @@ namespace Amanita.SaveSys
         System.Object ToMakeFrom { get; set; }
         bool NeedsInput { get; }
         SaveDataUnit EncodeToUnit();
+        SaveData DecodeFrom(SaveDataUnit unit);
+
+        // To help client code see if this codec can handle the type of object the client
+        // wants to pass to it.
+        bool CanHandle(System.Object toMakeFrom);
+        bool CanHandle(string typeName);
 
     }
 
@@ -25,6 +31,7 @@ namespace Amanita.SaveSys
     public interface IMainSaveCodec : ISaveCodec
     {
         IList<SaveDataUnit> FindAndEncodeAll();
+
     }
 
     public interface ISaveCodec<TInput>: ISaveCodec
@@ -41,6 +48,7 @@ namespace Amanita.SaveSys
         where TOutput : SaveData
     {
         TOutput EncodeToSave(TInput from);
+        TOutput DecodeFrom(SaveDataUnit unit);
     }
 
     public interface IMultiSaveCodec<TOutput> : ISaveCodec<TOutput>
