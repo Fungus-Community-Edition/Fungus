@@ -31,15 +31,26 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(Variable toEncode)
         {
+            // Try direct cast first
             BooleanVariable booleanVar = toEncode as BooleanVariable;
-            if (booleanVar == null)
+            if (booleanVar != null)
             {
-                Debug.LogError($"Variable type {toEncode.GetType()} is not supported for encoding in {this.GetType().Name}.");
-                return string.Empty;
+                return booleanVar.Value.ToString();
             }
-            bool value = booleanVar.Value;
-            string encodedValue = value.ToString();
-            return encodedValue;
+
+            // Fallback: check type name and use reflection
+            if (toEncode.GetType().Name == "BooleanVariable")
+            {
+                var valueProp = toEncode.GetType().GetProperty("Value");
+                if (valueProp != null)
+                {
+                    var value = valueProp.GetValue(toEncode);
+                    return value?.ToString() ?? string.Empty;
+                }
+            }
+
+            Debug.LogError($"Variable type {toEncode.GetType()} is not supported for encoding in {this.GetType().Name}.");
+            return string.Empty;
         }
 
         public virtual void Decode(Variable variable, VariableSaveData saveData)

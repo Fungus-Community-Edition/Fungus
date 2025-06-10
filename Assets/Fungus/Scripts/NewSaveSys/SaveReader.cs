@@ -46,7 +46,7 @@ namespace Amanita.SaveSys
         public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            string filePath = GetFullFilePath(request);
+            string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this); //GetFullFilePath(request);
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
@@ -68,19 +68,6 @@ namespace Amanita.SaveSys
             return filePath;
         }
 
-        protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
-        {
-            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
-            bool thereIsRelativePathToConsider = relativeSavePath.Count() > 0;
-            if (thereIsRelativePathToConsider)
-            {
-                saveFolder = Path.Combine(saveFolder, relativeSavePath);
-            }
-
-            Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
-            return saveFolder;
-        }
-
         protected virtual void Validate(string filePath)
         {
             if (!File.Exists(filePath))
@@ -98,7 +85,6 @@ namespace Amanita.SaveSys
             Validate(filePath);
 
             bool writtenAsPlainText = !readEncrypted;
-
             byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
             object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
 
@@ -113,8 +99,9 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)
             {

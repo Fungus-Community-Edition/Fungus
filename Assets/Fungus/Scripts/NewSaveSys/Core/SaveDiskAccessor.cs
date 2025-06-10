@@ -27,17 +27,28 @@ namespace Amanita.SaveSys
                     relativeSavePath = "/";
                 }
 
-                bool endsWithDash = relativeSavePath.EndsWith('/') || relativeSavePath.EndsWith("\\");
-                if (!endsWithDash) 
-                {
-                    relativeSavePath += "/";
-                }
+                EnsureRelativePathInRightFormat();
+            }
+        }
+
+        protected virtual void EnsureRelativePathInRightFormat()
+        {
+            bool isJustDash = relativeSavePath == "/" || relativeSavePath == "\\";
+            if (isJustDash)
+            {
+                relativeSavePath = DefaultRelativeSavePath;
+            }
+
+            bool startsWithDash = relativeSavePath.StartsWith('/') || relativeSavePath.StartsWith("\\");
+            if (startsWithDash)
+            {
+                relativeSavePath = relativeSavePath.TrimStart('/', '\\');
             }
         }
 
         public virtual string SaveNumberFormat => saveNumberFormat;
 
-        public virtual string DefaultRelativeSavePath => "Saves/";
+        public virtual string DefaultRelativeSavePath => "Saves";
 
         protected string fileNameFormat = "{0}_{1}.{2}";
         protected string filePathFormat = "{0}{1}"; // We expect a / or \ at the end of {0}
@@ -49,21 +60,17 @@ namespace Amanita.SaveSys
 
         protected virtual string GetFolderToAccess(SaveDirectoryType directoryType)
         {
-            string baseDir = SaveSystem.SaveDirectoryPaths[directoryType];
-            string result = string.Empty;
-            bool thereIsRelativePathToConsider = relativeSavePath.Count() > 1;
-
-            if (thereIsRelativePathToConsider)
-            {
-                result = Path.Combine(baseDir, RelativeSavePath);
-            }
-
-            if (!result.EndsWith("/") && !result.EndsWith("\\"))
-            {
-                result += "\\";
-            }
-
+            string result = FileUtils.GetPathToFolder(directoryType, RelativeSavePath);
             return result;
+        }
+
+        protected virtual void OnValidate()
+        {
+            if (string.IsNullOrEmpty(relativeSavePath))
+            {
+                relativeSavePath = DefaultRelativeSavePath;
+            }
+            EnsureRelativePathInRightFormat();
         }
 
     }

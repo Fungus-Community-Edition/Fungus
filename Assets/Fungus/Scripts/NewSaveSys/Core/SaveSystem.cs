@@ -8,7 +8,7 @@ namespace Amanita.SaveSys
     public class SaveSystem : MonoBehaviour
     {
 
-        [SerializeField] protected ScriptableObject[] mainEncoders = new ScriptableObject[] { };
+        [SerializeField] protected ScriptableObject[] mainCodecs = new ScriptableObject[] { };
         [SerializeField] protected SaveWriter saveWriter = null;
         [SerializeField] protected SaveReader saveReader = null;
 
@@ -17,6 +17,34 @@ namespace Amanita.SaveSys
         
         public virtual SaveDirectoryType SaveDirectoryType { get { return saveDirectoryType; } }
 
+        public virtual void RegisterSaveDataApplier(ISaveDataApplier applier)
+        {
+            if (applier == null)
+            {
+                Debug.LogError("Cannot register a null ISaveDataApplier.");
+                return;
+            }
+            if (!SaveDataAppliers.Contains(applier))
+            {
+                SaveDataAppliers.Add(applier);
+            }
+        }
+
+        public virtual IList<ISaveDataApplier> SaveDataAppliers { get; set; } = new List<ISaveDataApplier>();
+
+        public virtual void UnregisterSaveDataApplier(ISaveDataApplier applier)
+        {
+            if (applier == null)
+            {
+                Debug.LogError("Cannot unregister a null ISaveDataApplier.");
+                return;
+            }
+            if (SaveDataAppliers.Contains(applier))
+            {
+                SaveDataAppliers.Remove(applier);
+            }
+        }
+        
         protected virtual void Awake()
         {
             if (_s != null && _s != this)
@@ -27,6 +55,9 @@ namespace Amanita.SaveSys
             }
 
             _s = this;
+
+            DontDestroyOnLoad(this.gameObject);
+            InitPaths();
 
             CheckForSaveWriterAndReader();
             void CheckForSaveWriterAndReader()
@@ -44,16 +75,16 @@ namespace Amanita.SaveSys
                 }
             }
 
-            ValidateEncoders();
-            void ValidateEncoders()
+            ValidateCodecs();
+            void ValidateCodecs()
             {
-                IList<ScriptableObject> invalidEncoders =   (from elem in mainEncoders
+                IList<ScriptableObject> invalidCodecs =   (from elem in mainCodecs
                                                             where !(elem is IMainSaveCodec)
                                                             where elem != null
                                                             select elem).ToList();
-                for (int i = 0; i < invalidEncoders.Count; i++)
+                for (int i = 0; i < invalidCodecs.Count; i++)
                 {
-                    ScriptableObject currentInvalid = invalidEncoders[i];
+                    ScriptableObject currentInvalid = invalidCodecs[i];
 
                     string encoderName = currentInvalid.name;
                     string errorMessage = $"Main encoder {encoderName} is not a valid one. Make sure that everything in the mainEncoders list implements IMainSaveCodec.";
@@ -61,7 +92,7 @@ namespace Amanita.SaveSys
                 }
             }
 
-            IList<IMainSaveCodec> validatedEncoders = (from elem in mainEncoders
+            IList<IMainSaveCodec> validatedCodecs = (from elem in mainCodecs
                                                        where elem is IMainSaveCodec
                                                        select elem as IMainSaveCodec).ToList();
 
@@ -76,8 +107,10 @@ namespace Amanita.SaveSys
                     SaveRelativePath = "/Saves",
                     SaveDirType = saveDirectoryType,
                 };
-                saveManager.RegisterMultiMainCodecs(validatedEncoders);
+                saveManager.RegisterMultiMainCodecs(validatedCodecs);
             }
+        
+        
         }
 
         public static SaveSystem S
@@ -94,6 +127,20 @@ namespace Amanita.SaveSys
             }
         }
         protected static SaveSystem _s;
+
+        // For unit-testing purposes, we allow the SaveDirectoryPaths to be set manually.
+        // Also, we can't set this in the static constructor because Unity's Application class
+        // is not initialized at that point, so we have to do it in a method that can be called later.
+        public static void InitPaths()
+        {
+            SaveDirectoryPaths =
+            new Dictionary<SaveDirectoryType, string>
+            {
+                { SaveDirectoryType.DataPath, Application.dataPath },
+                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
+                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
+            };
+        }
 
         protected ISaveRepository saveRepo;
 
@@ -116,16 +163,7 @@ namespace Amanita.SaveSys
 
         public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;
 
-        public static void InitPaths()
-        {
-            SaveDirectoryPaths =
-            new Dictionary<SaveDirectoryType, string>
-            {
-                { SaveDirectoryType.DataPath, Application.dataPath },
-                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
-            };
-        }
+        
     }
 
     public enum SaveDirectoryType

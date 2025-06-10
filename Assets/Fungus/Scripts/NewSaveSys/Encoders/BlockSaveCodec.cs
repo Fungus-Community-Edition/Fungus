@@ -17,6 +17,13 @@ namespace Amanita.SaveSys
         {
             return typeName == nameof(Flowchart);
         }
+
+        public override SaveData DecodeFrom(SaveDataUnit unit)
+        {
+            BlockSaveData result = JsonUtility.FromJson<BlockSaveData>(unit.Content);
+            return result;
+        }
+
         public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
         {
             IList<Block> blocksToConsider = (from elem in withTheBlocks.GetExecutingBlocks()
@@ -47,10 +54,6 @@ namespace Amanita.SaveSys
             {
                 activeCommandId = toCreateFrom.ActiveCommand.ItemId;
                 activeCommandIndex = toCreateFrom.ActiveCommand.CommandIndex;
-            }
-            else
-            {
-                Debug.LogWarning($"Block {blockName} does not have an active command.");
             }
 
             BlockSaveData blockSave = new()
