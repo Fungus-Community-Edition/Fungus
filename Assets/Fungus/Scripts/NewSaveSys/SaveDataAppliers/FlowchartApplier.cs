@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amanita.Collections;
 
 namespace Amanita.SaveSys
 {
@@ -30,12 +31,23 @@ namespace Amanita.SaveSys
 
         }
 
-        protected IList<Flowchart> allFlowcharts;
+        protected virtual void OnValidate()
+        {
+            if (allFlowcharts != null)
+            {
+                allFlowcharts = allFlowcharts.Where(fc => fc != null).ToList();
+            }
+        }
+
+        protected IList<Flowchart> allFlowcharts = new List<Flowchart>();
 
         public override Task Apply(FlowchartSaveData saveData)
         {
-            allFlowcharts ??= FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-
+            if (allFlowcharts.Count == 0 || allFlowcharts.Contains(null))
+            {
+                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+            }
+            
             Flowchart flowchart = FindFlowchartReferredToBy(saveData);
             Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)
             {

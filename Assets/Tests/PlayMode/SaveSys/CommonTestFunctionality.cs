@@ -32,16 +32,6 @@ namespace Amanita.SaveSystemTests
                 BaseSaveDirectory = writeReq.BaseSaveDirectory,
             };
 
-            LoadCodecs();
-            void LoadCodecs()
-            {
-                string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
-                flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
-
-                pathToCodec = "SaveCodecs/BlockSaveCodec";
-                blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
-            }
-
             PrepNewPathsForTesting();
             void PrepNewPathsForTesting()
             {
@@ -71,7 +61,6 @@ namespace Amanita.SaveSystemTests
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
-            
 
         }
 
@@ -92,16 +81,29 @@ namespace Amanita.SaveSystemTests
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
-        [SetUp]
+        //[SetUp]
         public virtual void DoSetUp()
         {
+            
             PrepScene();
+            LoadCodecs();
+            void LoadCodecs()
+            {
+                string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
+                //flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
+                flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
+
+                pathToCodec = "SaveCodecs/BlockSaveCodec";
+                //blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
+                blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
+            }
             RegisterSaveData();
             void RegisterSaveData()
             {
                 CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
                 mainSave.Clear();
 
+                flowchartSaveCodec.ToMakeFrom = flowchart;
                 flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
 
                 SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
@@ -127,9 +129,22 @@ namespace Amanita.SaveSystemTests
         protected virtual void PrepScene()
         {
             testScenePrefab = Resources.Load<GameObject>(PathToTestScene);
+            if (testScenePrefab == null)
+                throw new Exception($"Could not load prefab at {PathToTestScene} from Resources.");
+
             testScene = UnityObject.Instantiate(testScenePrefab);
-            flowchart = testScene.GetComponentInChildren<Flowchart>();
+            flowchart = testScene.GetComponentInChildren<Flowchart>(true);
+            if (flowchart == null)
+                throw new Exception("Flowchart component not found in test scene prefab.");
+
             PrepVars();
+            initNameVal = nameVar.Value;
+            initScoreVal = scoreVar.Value;
+            initIsNewPlayerVal = isNewPlayerVar.Value;
+            initFastestTimeVal = fastestTimeVar.Value;
+            initThreeDPosVal = threeDPosVar.Value;
+            initTwoDPosVal = twoDPosVar.Value;
+            initStringVal = stringVar.Value;
         }
 
         protected GameObject testScenePrefab;
@@ -164,6 +179,14 @@ namespace Amanita.SaveSystemTests
         protected StringVariable stringVar = null;
         protected TransformVariable transformVar = null;
 
+        protected string initNameVal;
+        protected int initScoreVal;
+        protected bool initIsNewPlayerVal;
+        protected float initFastestTimeVal;
+        protected Vector3 initThreeDPosVal;
+        protected Vector2 initTwoDPosVal;
+        protected string initStringVal;
+
         protected virtual void PrepVars()
         {
             nameVar = (StringVariable)flowchart.GetVariable("name");
@@ -180,11 +203,21 @@ namespace Amanita.SaveSystemTests
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }
 
+        protected virtual void ResetVarsToInitVals()
+        {
+
+        }
+
         [TearDown]
         public virtual void DoTearDown()
         {
             writeReq.MainState = new CompositeSaveData { };
             UnityObject.DestroyImmediate(testScene);
+
+            if (SaveSystem.S != null)
+            {
+                UnityObject.DestroyImmediate(SaveSystem.S.gameObject);
+            }
         }
 
         [OneTimeTearDown]
@@ -229,33 +262,56 @@ namespace Amanita.SaveSystemTests
             saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
         }
 
-
         protected virtual async Task CommonSetupAsync()
         {
-            await Task.Delay(1000);
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            // ^We are expecting the flowchart encoder to use the block encoder as a sub
+            DoSetUp();
+            await Task.Delay(1000).ConfigureAwait(false);
 
-            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-            mainSave.Add(encodedFlowchartSave);
-
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-            foreach (var blockSave in blockSaves)
+            PrepAndRegisterSaveData();
+            void PrepAndRegisterSaveData()
             {
-                SaveDataUnit saveDataUnit = blockSave.Serialized();
-                mainSave.Add(saveDataUnit);
+                if (flowchart == null)
+                {
+                    flowchart = UnityObject.FindFirstObjectByType<Flowchart>();
+                    if (flowchart == null)
+                    {
+                        throw new Exception("No Flowchart found in the scene.");
+                    }
+                }
+                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+                // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                mainSave.Add(encodedFlowchartSave);
+
+                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                foreach (var blockSave in blockSaves)
+                {
+                    SaveDataUnit saveDataUnit = blockSave.Serialized();
+                    mainSave.Add(saveDataUnit);
+                }
             }
+
 
         }
 
         protected virtual IEnumerator CommonSetup()
         {
+            DoSetUp();
             yield return waitToYield;
 
             PrepAndRegisterSaveData();
             void PrepAndRegisterSaveData()
             {
+                if (flowchart == null)
+                {
+                    flowchart = UnityObject.FindFirstObjectByType<Flowchart>();
+                    if (flowchart == null)
+                    {
+                        throw new Exception("No Flowchart found in the scene.");
+                    }
+                }
                 flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
                 // ^We are expecting the flowchart encoder to use the block encoder as a sub
 

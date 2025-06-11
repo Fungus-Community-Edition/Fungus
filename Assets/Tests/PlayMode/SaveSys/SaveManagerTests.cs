@@ -58,7 +58,7 @@ namespace Amanita.SaveSystemTests
             base.DoOneTimeSetUp();
         }
 
-        [SetUp]
+        //[SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
@@ -100,10 +100,10 @@ namespace Amanita.SaveSystemTests
 
         protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
 
-        [Test]
-        public virtual async Task WritingToSlots_HandleInvalidSlotNums()
+        [UnityTest]
+        public virtual IEnumerator WritingToSlots_HandleInvalidSlotNums()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             SaveWriteRequest invalidReq = new SaveWriteRequest(writeReq);
 
@@ -111,7 +111,8 @@ namespace Amanita.SaveSystemTests
             {
                 string expectedLogMessage = $"Cannot register or write a save with a negative slot number.";
                 LogAssert.Expect(LogType.Warning, expectedLogMessage);
-                await manager.SaveTo(slot);
+                Task saveTask = manager.SaveTo(slot);
+                yield return new WaitUntil(() => saveTask.IsCompleted);
             }
 
         }
@@ -129,11 +130,11 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        [Test]
-        public virtual async Task DeletingSlots_HandlingEmptySlots()
+        [UnityTest]
+        public virtual IEnumerator DeletingSlots_HandlingEmptySlots()
         {
             DeleteAllTestSaves(); // So we can be sure all slots are empty
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             foreach (int slot in testSlotNums)
             {
@@ -156,16 +157,17 @@ namespace Amanita.SaveSystemTests
             }
         }
 
-        [Test]
-        public virtual async Task LoadingSlots_HandleInvalidSlotNums()
+        [UnityTest]
+        public virtual IEnumerator LoadingSlots_HandleInvalidSlotNums()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             foreach (int slot in invalidSlotNums)
             {
                 string expectedLogMessage = $"Cannot load a save with a negative slot number.";
                 LogAssert.Expect(LogType.Warning, expectedLogMessage);
-                await manager.LoadMain(slot);
+                Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
+                yield return new WaitUntil(() => loadTask.IsCompleted);
             }
         }
 
@@ -176,10 +178,10 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        [Test]
-        public virtual async Task LoadingSlots_CorrectGameStateApplied()
+        [UnityTest]
+        public virtual IEnumerator LoadingSlots_CorrectGameStateApplied()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
             SaveSystem.S.RegisterSaveDataApplier(audioApplier);
@@ -196,10 +198,10 @@ namespace Amanita.SaveSystemTests
                 string expectedStringVarValue = stringVar.Value;
 
                 // To help us see if the state's loaded correctly
-                await manager.SaveTo(slot);
+                Task saveTask = manager.SaveTo(slot);
+                saveTask.ConfigureAwait(false);
+                yield return new WaitUntil(() => saveTask.IsCompleted);
 
-                // Change the game state to something else
-                // so we can check if the loading works correctly
                 nameVar.Value = "New Name After Save";
                 scoreVar.Value = 9999;
                 isNewPlayerVar.Value = false;
@@ -209,7 +211,9 @@ namespace Amanita.SaveSystemTests
                 stringVar.Value = "New String Value After Save";
 
                 readReq.SlotNumber = slot;
-                CompositeSaveData mainState = await manager.LoadMain(slot);
+                Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
+                yield return new WaitUntil(() => loadTask.IsCompleted);
+                CompositeSaveData mainState = loadTask.Result;
                 Assert.IsNotNull(mainState, "Main save data is null after loading.");
                 Assert.AreEqual(nameVar.Value, expectedNameVarValue,
                     $"Name variable value mismatch after loading slot {slot}.");
@@ -230,10 +234,11 @@ namespace Amanita.SaveSystemTests
         }
 
 
-        [Test]
-        public virtual async Task ReturningSlotsBasedOnWriteOrder()
+        [UnityTest]
+        public virtual IEnumerator ReturningSlotsBasedOnWriteOrder()
         {
-            await WriteToSlotsAsync();
+            Task slotWriteTask = WriteToSlotsAsync();
+            yield return new WaitUntil(() => slotWriteTask.IsCompleted);
 
             bool success = manager.GetOccupiedSlots().SequenceEqual(testSlotNums);
             Assert.IsTrue(success, "Save Manager did not return the correct slots after writing.");
@@ -247,15 +252,13 @@ namespace Amanita.SaveSystemTests
             }
         }
 
-        [Test]
-        public virtual async Task OverwritingSlots()
+        [UnityTest]
+        public virtual IEnumerator OverwritingSlots()
         {
-            await CommonSetupAsync();
-            await WriteToSlotsAsync();
-
-            // Now change the game state before we overwriting the saves
-            // This is to ensure that the save data is different from the previous saves
-            // and that the overwriting works as expected.
+            yield return CommonSetup();
+            Task writeTask = WriteToSlotsAsync();
+            writeTask.ConfigureAwait(false);
+            yield return new WaitUntil(() => writeTask.IsCompleted);
 
             string expectedNameVarValue = nameVar.Value + "3we4to789y3458t";
             int expectedScoreVarValue = scoreVar.Value + 1000;
@@ -268,7 +271,19 @@ namespace Amanita.SaveSystemTests
             foreach (int slot in testSlotNums)
             {
                 ChangeGameState();
-                await manager.SaveTo(slot);
+                void ChangeGameState()
+                {
+                    nameVar.Value = expectedNameVarValue;
+                    scoreVar.Value = expectedScoreVarValue;
+                    isNewPlayerVar.Value = expectedIsNewPlayerVarValue;
+                    fastestTimeVar.Value = expectedFastestTimeVarValue;
+                    threeDPosVar.Value = expectedThreeDPosVarValue;
+                    twoDPosVar.Value = expectedTwoDPosVarValue;
+                    stringVar.Value = expectedStringVarValue;
+                }
+                
+                Task saveTask = manager.SaveTo(slot);
+                yield return new WaitUntil(() => saveTask.IsCompleted);
 
                 // Now to fetch the save data and check that it matches the expected values
 
@@ -317,25 +332,16 @@ namespace Amanita.SaveSystemTests
 
             }
 
-            void ChangeGameState()
-            {
-                nameVar.Value = expectedNameVarValue;
-                scoreVar.Value = expectedScoreVarValue;
-                isNewPlayerVar.Value = expectedIsNewPlayerVarValue;
-                fastestTimeVar.Value = expectedFastestTimeVarValue;
-                threeDPosVar.Value = expectedThreeDPosVarValue;
-                twoDPosVar.Value = expectedTwoDPosVarValue;
-                stringVar.Value = expectedStringVarValue;
-            }
-
-
         }
 
-        [Test]
-        public virtual async Task DeletingSlots()
+        [UnityTest]
+        public virtual IEnumerator DeletingSlots()
         {
-            await CommonSetupAsync();
-            await WriteToSlotsAsync();
+            yield return CommonSetup();
+            Task writeTask = WriteToSlotsAsync();
+            writeTask.ConfigureAwait(false);
+            yield return new WaitUntil(() => writeTask.IsCompleted);
+
             foreach (int slot in testSlotNums)
             {
                 manager.DeleteSave(slot);

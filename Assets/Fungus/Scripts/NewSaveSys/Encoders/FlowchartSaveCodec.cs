@@ -16,18 +16,18 @@ namespace Amanita.SaveSys
 
         protected virtual void OnEnable()
         {
-            if (blockEncoder == null)
+            if (blockCodec == null)
             {
-                blockEncoder = CreateInstance<BlockSaveCodec>();
+                blockCodec = CreateInstance<BlockSaveCodec>();
             }
         }
 
-        protected BlockSaveCodec blockEncoder;
+        protected BlockSaveCodec blockCodec;
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
             IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
-            IList<BlockSaveData> blockSaves = blockEncoder.EncodeToMultiSave(toCreateFrom);
+            IList<BlockSaveData> blockSaves = blockCodec.EncodeToMultiSave(toCreateFrom);
             // TODO: Save the state of certain commands (such as Conversation)
 
             FlowchartSaveData saveData = new()
@@ -87,7 +87,7 @@ namespace Amanita.SaveSys
             IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
 
             allFlowcharts = (from elem in allFlowcharts
-                             where elem.SaveVariables
+                             where elem.SaveVariables == true
                              select elem).ToList();
 
             IList<SaveDataUnit> results = new List<SaveDataUnit>();
@@ -122,6 +122,7 @@ namespace Amanita.SaveSys
         {
             return typeName == nameof(Flowchart) || typeName == nameof(FlowchartSaveData);
         }
+
     }
 
 }
