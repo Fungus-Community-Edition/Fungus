@@ -4,37 +4,17 @@ using Amanita.SaveSys;
 using UnityObject = UnityEngine.Object;
 using System.Collections;
 using UnityEngine.TestTools;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSystemTests
 {
     public class FlowchartApplierTests : CommonTestFunctionality
     {
-        protected override void PrepScene()
+
+        [UnityTest]
+        public virtual IEnumerator AppliesVarStates()
         {
-            base.PrepScene();
-            PrepVars();
-        }
-
-        protected virtual void PrepVars()
-        {
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
-            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
-            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
-
-            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
-            stringVar.Value = "Hello, World!";
-            flowchart.Variables.Add(stringVar);
-
-            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
-        }
-
-
-        [Test]
-        public virtual void AppliesVarStates()
-        {
+            yield return CommonSetup();
             string expectedNameVarValue = nameVar.Value;
             int expectedScoreVarValue = scoreVar.Value;
             bool expectedNewPlayerVarValue = isNewPlayerVar.Value;
@@ -55,7 +35,8 @@ namespace Amanita.SaveSystemTests
             stringVar.Value = "Not Hello, World!";
             transformVar.Value = null;
 
-            flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            Task applyTask = flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            yield return new WaitUntil(() => applyTask.IsCompleted);
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
@@ -74,9 +55,11 @@ namespace Amanita.SaveSystemTests
         [UnityTest]
         public virtual IEnumerator ReexecutesBlocks()
         {
+            yield return CommonSetup();
             yield return new WaitForSeconds(0.1f);
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            Task applyTask = flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            yield return new WaitUntil(() => applyTask.IsCompleted);
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
 
