@@ -372,22 +372,24 @@ namespace Amanita.SaveSystemTests
         public IEnumerator OverwritingSlots()
         {
             yield return CommonSetup();
-            Task writeTask = WriteToSlotsAsync();
-            writeTask.ConfigureAwait(false);
-            yield return new WaitUntil(() => writeTask.IsCompleted);
 
-            string expectedNameVarValue = nameVar.Value + "3we4to789y3458t";
-            int expectedScoreVarValue = scoreVar.Value + 1000;
-            bool expectedIsNewPlayerVarValue = !isNewPlayerVar.Value;
-            float expectedFastestTimeVarValue = fastestTimeVar.Value + 10f;
-            Vector3 expectedThreeDPosVarValue = threeDPosVar.Value + new Vector3(1, 2, 3);
-            Vector2 expectedTwoDPosVarValue = twoDPosVar.Value + new Vector2(1, 2);
-            string expectedStringVarValue = stringVar.Value + "new string value";
+            // These expected values are the ones we want to overwrite the 
+            // old initial values with
+            string expectedNameVarValue = nameVar.Value + "tcvw4fyw789g8";
+            int expectedScoreVarValue = scoreVar.Value + 128;
+            bool expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+            float expectedFastestTimeVarValue = fastestTimeVar.Value / 2;
+            Vector3 expectedThreeDPosVarValue = threeDPosVar.Value + new Vector3(11, 22, 33);
+            Vector2 expectedTwoDPosVarValue = twoDPosVar.Value + new Vector2(2, 8);
+            string expectedStringVarValue = stringVar.Value + "eoty vwg8";
+
+            Task writeTask = WriteToSlotsAsync(); // The slots that we will be overwriting
+            yield return new WaitUntil(() => writeTask.IsCompleted);
 
             foreach (int slot in testSlotNums)
             {
-                ChangeGameState();
-                void ChangeGameState()
+                ChangeGameStateToExpected();
+                void ChangeGameStateToExpected()
                 {
                     nameVar.Value = expectedNameVarValue;
                     scoreVar.Value = expectedScoreVarValue;
@@ -402,11 +404,16 @@ namespace Amanita.SaveSystemTests
                 yield return new WaitUntil(() => saveTask.IsCompleted);
 
                 // Now to fetch the save data and check that it matches the expected values
-
                 CompositeSaveData mainState = manager.GetMainFrom(slot);
-                SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
+                IList<SaveDataUnit> allFcUnits = mainState.GetMulti<FlowchartSaveData>();
+                IList<FlowchartSaveData> allFcSaves = flowchartSaveCodec.DecodeMultiFrom(allFcUnits)
+                    .Where((res) => res is FlowchartSaveData)
+                    .Cast<FlowchartSaveData>()
+                    .ToList();
 
-                FlowchartSaveData flowchartSave = (FlowchartSaveData) flowchartSaveCodec.DecodeFrom(forFlowchart);
+                FlowchartSaveData flowchartSave = allFcSaves.Where((data) => data.FlowchartName == flowchart.name)
+                    .FirstOrDefault();
+                Assert.IsNotNull(flowchartSave, $"Couldn't find the right flowchart save data for slot {slot}");
 
                 CheckTheValues();
                 void CheckTheValues()

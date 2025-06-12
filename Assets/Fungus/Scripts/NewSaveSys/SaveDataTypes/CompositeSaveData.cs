@@ -93,7 +93,7 @@ namespace Amanita.SaveSys
         }
 
         /// <summary>
-        /// Returns the list of save data units of the specified type.
+        /// Returns a list of all SaveDataUnits of the specified type that this has.
         /// </summary>
         public virtual IList<SaveDataUnit> GetMulti<T>() where T: ISaveData
         {

@@ -21,6 +21,25 @@ namespace Amanita.SaveSystemTests
         public virtual void DoOneTimeSetUp()
         {
             SaveSystem.InitPaths();
+
+            saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+            saveReader = ScriptableObject.CreateInstance<SaveReader>();
+            encryptor = ScriptableObject.CreateInstance<Encryptor>();
+
+            readReq = new SaveReadRequest
+            {
+                SlotNumber = writeReq.SlotNumber,
+                BaseSaveDirectory = writeReq.BaseSaveDirectory,
+            };
+
+            waitToYield = new WaitForSeconds(waitTime);
+            metaData.SaveVersion = "1.2.3";
+
+            playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
+            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
+            audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
+
+
         }
 
         protected IEnumerator WaitFor(Task writeTask)
@@ -31,28 +50,6 @@ namespace Amanita.SaveSystemTests
         
         public virtual void DoSetUp()
         {
-            FormerOneTimeSetUp();
-            void FormerOneTimeSetUp()
-            {
-                saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
-                saveReader = ScriptableObject.CreateInstance<SaveReader>();
-                encryptor = ScriptableObject.CreateInstance<Encryptor>();
-
-                readReq = new SaveReadRequest
-                {
-                    SlotNumber = writeReq.SlotNumber,
-                    BaseSaveDirectory = writeReq.BaseSaveDirectory,
-                };
-
-                waitToYield = new WaitForSeconds(waitTime);
-                metaData.SaveVersion = "1.2.3";
-
-                playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
-                flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
-                audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
-
-            }
-
             LoadCodecs();
             void LoadCodecs()
             {
