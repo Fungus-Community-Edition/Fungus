@@ -338,7 +338,7 @@ namespace Amanita.SaveSystemTests
 
         protected IEnumerator Load(int slot)
         {
-            loadTask = manager.LoadMain(slot);
+            loadTask = manager.LoadMain(slot, false);
             yield return new WaitUntil(() => loadTask.IsCompleted);
             if (loadTask.IsFaulted)
             {

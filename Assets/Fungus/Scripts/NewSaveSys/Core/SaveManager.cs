@@ -159,7 +159,10 @@ namespace Amanita.SaveSys
 
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
-        public virtual async Task<CompositeSaveData> LoadMain(int slotNum)
+        /// <summary>
+        /// If loadScene is true, this will load the scene specified in the save metadata.
+        /// </summary>
+        public virtual async Task<CompositeSaveData> LoadMain(int slotNum, bool loadScene = true)
         {
             if (!Validate(slotNum, loadOp))
             {
@@ -192,11 +195,22 @@ namespace Amanita.SaveSys
                 sceneToLoad = decideSceneTask.Result;
                 mainData = loadMainSaveTask.Result;
             }
-            
+
             // Might be good to call upon a SceneLoader here, but for now we'll
             // just load the scene ourselves
 
-            await SceneManager.LoadSceneAsync(sceneToLoad.name, LoadSceneMode.Single);
+            if (loadScene)
+            {
+                if (!sceneToLoad.IsValid())
+                {
+                    string errorMessage = $"Cannot load scene {sceneToLoad.name} because it is not valid. " +
+                                          $"Please check the save metadata for slot {slotNum}.";
+                    Debug.LogError(errorMessage);
+                    return null;
+                }
+
+                await SceneManager.LoadSceneAsync(sceneToLoad.name, LoadSceneMode.Single);
+            }
 
             await ApplyDataToScene();
             async Task ApplyDataToScene()
