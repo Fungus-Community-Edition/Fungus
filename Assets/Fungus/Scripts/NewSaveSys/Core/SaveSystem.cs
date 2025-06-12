@@ -57,6 +57,7 @@ namespace Amanita.SaveSys
             _s = this;
 
             DontDestroyOnLoad(this.gameObject);
+            InitPaths();
 
             CheckForSaveWriterAndReader();
             void CheckForSaveWriterAndReader()
@@ -127,6 +128,20 @@ namespace Amanita.SaveSys
         }
         protected static SaveSystem _s;
 
+        // For unit-testing purposes, we allow the SaveDirectoryPaths to be set manually.
+        // Also, we can't set this in the static constructor because Unity's Application class
+        // is not initialized at that point, so we have to do it in a method that can be called later.
+        public static void InitPaths()
+        {
+            SaveDirectoryPaths =
+            new Dictionary<SaveDirectoryType, string>
+            {
+                { SaveDirectoryType.DataPath, Application.dataPath },
+                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
+                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
+            };
+        }
+
         protected ISaveRepository saveRepo;
 
         protected SaveManager saveManager;
@@ -148,16 +163,7 @@ namespace Amanita.SaveSys
 
         public static IDictionary<SaveDirectoryType, string> SaveDirectoryPaths;
 
-        public static void InitPaths()
-        {
-            SaveDirectoryPaths =
-            new Dictionary<SaveDirectoryType, string>
-            {
-                { SaveDirectoryType.DataPath, Application.dataPath },
-                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
-            };
-        }
+        
     }
 
     public enum SaveDirectoryType

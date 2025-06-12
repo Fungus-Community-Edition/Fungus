@@ -58,7 +58,10 @@ namespace Amanita.SaveSys
 
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            mainCodecs.Add(codec);
+            if (!mainCodecs.Contains(codec))
+            {
+                mainCodecs.Add(codec);
+            }
         }
 
         protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
@@ -319,6 +322,11 @@ namespace Amanita.SaveSys
         {
             CompositeSaveData mainData = (CompositeSaveData) registry.GetMainSave(slot);
             return mainData;
+        }
+
+        public virtual void ClearSaveData()
+        {
+            registry.Clear();
         }
     }
 
