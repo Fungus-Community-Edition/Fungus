@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
@@ -181,11 +182,70 @@ namespace Amanita.SaveSystemTests
             foreach (int slot in testSlotNums)
             {
                 yield return CommonSetup();
-                yield return LoadSlotAndCheckGameState(slot);
+               
+                yield return SaveTo(slot);
+                ChangeGameState();
+                yield return Load(slot);
+
+                CompositeSaveData mainState = loadTask.Result; 
+                // ^Since IEnumerators can't have ref or out params, we need to fetch things like this
+                Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
+
+                // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching
+                // a flowchart save from mainState, we might not get the one we're looking for.
+                // Hence the need to search all the FC saves and find the one we want.
+                IList<SaveDataUnit> fcUnits = mainState.GetMulti<FlowchartSaveData>();
+                Assert.IsNotEmpty(fcUnits, $"No Flowchart save data found in main state for slot {slot}.");
+                IList<SaveData> baseDecodedDatas = flowchartSaveCodec.DecodeMultiFrom(fcUnits);
+                IList<FlowchartSaveData> flowchartSaves = baseDecodedDatas
+                    .Where(d => d is FlowchartSaveData)
+                    .Cast<FlowchartSaveData>()
+                    .ToList();
+                Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data decoded from main state for slot {slot}.");
+
+                FlowchartSaveData hasStateWeWantToCheck = flowchartSaves.FirstOrDefault(fc => fc.FlowchartName == flowchart.name);
+                Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
+
+                CheckGameState(slot, hasStateWeWantToCheck);
                 DoTearDown();
             }
-            
-            
+
+            void ChangeGameState()
+            {
+                nameVar.Value = "New Name After Save";
+                scoreVar.Value += 260;
+                isNewPlayerVar.Value = !isNewPlayerVar.Value;
+                fastestTimeVar.Value += 123.45f;
+                threeDPosVar.Value += new Vector3(10, 20, 30);
+                twoDPosVar.Value += new Vector2(5, 10);
+                stringVar.Value = "New String Value After Save";
+            }
+
+            void CheckGameState(int slot, FlowchartSaveData flowchartSave)
+            {
+                Assert.AreEqual(nameVar.Value, flowchartSave.GetVarValue<string>(nameVar.Key),
+                    $"Name variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(scoreVar.Value, flowchartSave.GetVarValue<int>(scoreVar.Key),
+                    $"Score variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(isNewPlayerVar.Value, flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key),
+                    $"IsNewPlayer variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(fastestTimeVar.Value, flowchartSave.GetVarValue<float>(fastestTimeVar.Key),
+                    $"FastestTime variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(threeDPosVar.Value, flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key),
+                    $"3D Position variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(twoDPosVar.Value, flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key),
+                    $"2D Position variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(stringVar.Value, flowchartSave.GetVarValue<string>(stringVar.Key),
+                    $"String variable value mismatch for slot {slot}.");
+            }
+
+
             //manager.ClearSaveData();
             //ResetVarsToInitVals();
             //Debug.Log($"LoadingSlots_CorrectGameStateApplied: Slot {slot}");
@@ -266,35 +326,28 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        protected IEnumerator LoadSlotAndCheckGameState(int slot)
+        protected IEnumerator SaveTo(int slot)
         {
-            readReq.SlotNumber = slot;
-            Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
+            Task saveTask = manager.SaveTo(slot);
+            yield return new WaitUntil(() => saveTask.IsCompleted);
+            if (saveTask.IsFaulted)
+            {
+                Assert.Fail($"Failed to save to slot {slot}: {saveTask.Exception}");
+            }
+        }
+
+        protected IEnumerator Load(int slot)
+        {
+            loadTask = manager.LoadMain(slot);
             yield return new WaitUntil(() => loadTask.IsCompleted);
             if (loadTask.IsFaulted)
             {
                 Assert.Fail($"Failed to load slot {slot}: {loadTask.Exception}");
             }
-            CompositeSaveData mainState = loadTask.Result;
-            Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
-            SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
-            FlowchartSaveData flowchartSave = (FlowchartSaveData)flowchartSaveCodec.DecodeFrom(forFlowchart);
-            // Check the values of the variables
-            Assert.AreEqual(nameVar.Value, flowchartSave.GetVarValue<string>(nameVar.Key),
-                $"Name variable value mismatch for slot {slot}.");
-            Assert.AreEqual(scoreVar.Value, flowchartSave.GetVarValue<int>(scoreVar.Key),
-                $"Score variable value mismatch for slot {slot}.");
-            Assert.AreEqual(isNewPlayerVar.Value, flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key),
-                $"IsNewPlayer variable value mismatch for slot {slot}.");
-            Assert.AreEqual(fastestTimeVar.Value, flowchartSave.GetVarValue<float>(fastestTimeVar.Key),
-                $"FastestTime variable value mismatch for slot {slot}.");
-            Assert.AreEqual(threeDPosVar.Value, flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key),
-                $"3D Position variable value mismatch for slot {slot}.");
-            Assert.AreEqual(twoDPosVar.Value, flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key),
-                $"2D Position variable value mismatch for slot {slot}.");
-            Assert.AreEqual(stringVar.Value, flowchartSave.GetVarValue<string>(stringVar.Key),
-                $"String variable value mismatch for slot {slot}.");
         }
+
+        protected Task<CompositeSaveData> loadTask;
+        protected FlowchartSaveData flowchartSave;
 
         [UnityTest]
         public IEnumerator ReturningSlotsBasedOnWriteOrder()

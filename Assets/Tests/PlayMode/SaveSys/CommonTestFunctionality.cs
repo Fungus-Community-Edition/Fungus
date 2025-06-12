@@ -29,9 +29,6 @@ namespace Amanita.SaveSystemTests
 
         public virtual void DoSetUp()
         {
-            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
-            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
-
             FormerOneTimeSetUp();
             void FormerOneTimeSetUp()
             {
@@ -74,7 +71,6 @@ namespace Amanita.SaveSystemTests
                 CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
                 mainSave.Clear();
 
-                //flowchartSaveCodec.ToMakeFrom = flowchart;
                 flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
 
                 SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
@@ -90,6 +86,9 @@ namespace Amanita.SaveSystemTests
                 saveDataSet = new SaveDataSet(metaData, mainSave);
 
             }
+
+            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
+            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
         }
 
         protected SaveWriter saveWriter;

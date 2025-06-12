@@ -49,20 +49,7 @@ namespace Amanita.SaveSys
 
         protected virtual string GetFolderToAccess(SaveDirectoryType directoryType)
         {
-            string baseDir = SaveSystem.SaveDirectoryPaths[directoryType];
-            string result = string.Empty;
-            bool thereIsRelativePathToConsider = relativeSavePath.Count() > 1;
-
-            if (thereIsRelativePathToConsider)
-            {
-                result = Path.Combine(baseDir, RelativeSavePath);
-            }
-
-            if (!result.EndsWith("/") && !result.EndsWith("\\"))
-            {
-                result += "\\";
-            }
-
+            string result = FileUtils.GetPathToFolder(directoryType, RelativeSavePath);
             return result;
         }
 

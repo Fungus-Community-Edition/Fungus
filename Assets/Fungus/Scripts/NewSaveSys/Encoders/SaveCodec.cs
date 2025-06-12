@@ -21,6 +21,21 @@ namespace Amanita.SaveSys
         public abstract bool CanHandle(string typeName);
         public abstract SaveData DecodeFrom(SaveDataUnit unit);
 
+        public IList<SaveData> DecodeMultiFrom(IList<SaveDataUnit> units)
+        {
+            IList<SaveData> results = new List<SaveData>();
+            for (int i = 0; i < units.Count; i++)
+            {
+                SaveDataUnit currentUnit = units[i];
+                SaveData decodedData = DecodeFrom(currentUnit);
+                if (decodedData != null)
+                {
+                    results.Add(decodedData);
+                }
+            }
+            return results;
+        }
+        
         /// <summary>
         /// Make sure to override this, not calling the base
         /// </summary>
