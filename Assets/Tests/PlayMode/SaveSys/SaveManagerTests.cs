@@ -352,6 +352,7 @@ namespace Amanita.SaveSystemTests
         [UnityTest]
         public IEnumerator ReturningSlotsBasedOnWriteOrder()
         {
+            yield return CommonSetup();
             Task slotWriteTask = WriteToSlotsAsync();
             yield return new WaitUntil(() => slotWriteTask.IsCompleted);
 

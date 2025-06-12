@@ -20,6 +20,7 @@ namespace Amanita.SaveSystemTests
         [OneTimeSetUp]
         public virtual void DoOneTimeSetUp()
         {
+            SaveSystem.InitPaths();
         }
 
         protected IEnumerator WaitFor(Task writeTask)
@@ -27,6 +28,7 @@ namespace Amanita.SaveSystemTests
             yield return new WaitUntil(() => writeTask.IsCompleted);
         }
 
+        
         public virtual void DoSetUp()
         {
             FormerOneTimeSetUp();
