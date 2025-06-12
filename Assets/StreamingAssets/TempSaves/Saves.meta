@@ -1,6 +1,10 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/StreamingAssets/TempSaves.meta
-guid: 0f6cae8eba728d24d842695ffe3eb8b6
+<<<<<<<< HEAD:Assets/TempSaves/Saves.meta
+<<<<<<<< HEAD:Assets/StreamingAssets/TempSaves/TempSaves.meta
+guid: 5436c6ddff560c44b858cb03b475a9dc
+========
+guid: 1763171e3ebfef94ba257c4f9fdcd220
+>>>>>>>> newSaveSystem:Assets/TempSaves/Saves.meta
 ========
 guid: 23ad499d059e9894580b5fa9555e66aa
 >>>>>>>> newSaveSystem:Assets/StreamingAssets/TempSaves/Saves.meta

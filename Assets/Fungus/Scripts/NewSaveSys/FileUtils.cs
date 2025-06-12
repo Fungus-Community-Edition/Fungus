@@ -34,11 +34,8 @@ namespace Amanita.SaveSys
             }
             else
             {
-                bool endsWithADash = path.EndsWith("/") || path.EndsWith("\\");
-                if (!endsWithADash)
-                {
-                    result += "/";
-                }
+                // Remove leading and trailing slashes
+                result = path.Trim('/', '\\');
             }
 
             return result;

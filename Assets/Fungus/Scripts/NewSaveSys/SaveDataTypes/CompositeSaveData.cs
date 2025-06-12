@@ -74,22 +74,47 @@ namespace Amanita.SaveSys
             return unit;
         }
 
-        public virtual SaveDataUnit GetSingle<T>()
+        public virtual SaveDataUnit GetSingle<T>() where T : ISaveData
         {
-            string typeName = typeof(T).Name;
-            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName == typeName);
+            string typeName = typeof(T).Name.ToLower();
+            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName.ToLower() == typeName);
+            return result;
+        }
+
+        public virtual SaveDataUnit GetSingle(string typeName)
+        {
+            if (string.IsNullOrEmpty(typeName))
+            {
+                Debug.LogError("Cannot get a unit with a null or empty type name.");
+                return null;
+            }
+            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName.ToLower() == typeName.ToLower());
             return result;
         }
 
         /// <summary>
-        /// Returns the list of save data units of the specified type.
+        /// Returns a list of all SaveDataUnits of the specified type that this has.
         /// </summary>
-        public virtual IList<SaveDataUnit> GetMulti<T>()
+        public virtual IList<SaveDataUnit> GetMulti<T>() where T: ISaveData
         {
+            string typeName = typeof(T).Name.ToLower();
             IList<SaveDataUnit> result;
-            result = units.Where(unit => unit.DataTypeName == nameof(T)).ToList();
+            result = units.Where(unit => unit.DataTypeName.ToLower() == typeName).ToList();
             return result;
         }
+
+        public virtual IList<SaveDataUnit> GetMulti(string typeName)
+        {
+            if (string.IsNullOrEmpty(typeName))
+            {
+                Debug.LogError("Cannot get multiple units with a null or empty type name.");
+                return new List<SaveDataUnit>();
+            }
+            IList<SaveDataUnit> result;
+            result = units.Where(unit => unit.DataTypeName.ToLower() == typeName.ToLower()).ToList();
+            return result;
+        }
+
     }
 
     public interface ICompositeSaveData : ISaveData

@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
+    /// <summary>
+    /// Make sure that this class is NOT used outside the main thread. Unity doesn't
+    /// like it when you try to mess with Vector or Transform properties from a different thread.
+    /// </summary>
     public class TransformVarCodec : IVarCodec
     {
         public virtual bool CanHandle(AmanitaVar variable)
@@ -34,16 +38,42 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual string EncodeToString(AmanitaVar variable)
+        public virtual string EncodeToString(AmanitaVar toEncode)
         {
-            TransformVariable transformVar = variable as TransformVariable;
-            if (transformVar == null)
+            TransformVariable transformVar = toEncode as TransformVariable;
+            Transform varValue = null;
+            if (transformVar != null)
             {
-                Debug.LogError($"TransformVarEncoder: Cannot encode variable of type {variable.GetType()}");
-                return string.Empty;
+                varValue = transformVar.Value;
+            }
+            else
+            {
+                bool success = ReflectionFallback();
+                bool ReflectionFallback()
+                {
+                    if (toEncode.GetType().Name == "TransformVariable")
+                    {
+                        var valueProp = toEncode.GetType().GetProperty("Value");
+                        if (valueProp != null)
+                        {
+                            varValue = valueProp.GetValue(toEncode) as Transform;
+                        }
+                        else
+                        {
+                            Debug.LogError($"TransformVarEncoder: Cannot find Value property on {toEncode.GetType()}");
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                if (!success)
+                {
+                    Debug.LogError($"TransformVarEncoder: Cannot encode variable of type {toEncode.GetType()}");
+                    return string.Empty;
+                }
             }
 
-            TransformState stateToEncode = TransformState.From(transformVar.Value);
+            TransformState stateToEncode = TransformState.From(varValue);
             // It's fine if the state is default. We can assume that at the time of saving, the
             // variable wasn't referring to any transform.
 

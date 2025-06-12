@@ -9,6 +9,11 @@ namespace Amanita.SaveSys
     {
         protected readonly SavePairDict _savePairs = new Dictionary<int, SaveDataSet>();
 
+        public virtual void Clear()
+        {
+            _savePairs.Clear();
+        }
+
         public virtual void AddSave(SaveDataSet dataSet)
         {
             if (!_savePairs.ContainsKey(dataSet.SlotNumber))

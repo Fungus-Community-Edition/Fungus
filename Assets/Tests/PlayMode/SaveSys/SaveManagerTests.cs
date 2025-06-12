@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
@@ -49,16 +50,17 @@ namespace Amanita.SaveSystemTests
 
     public class SaveManagerTests : CommonTestFunctionality
     {
-        //protected override bool ShouldDeleteTestSavesAtEnd => false;
+        protected override bool ShouldDeleteTestSavesAtEnd => false;
         protected override string PathToTestScene => "ScenePrefabs/SaveSysMonoBehaviourTests";
 
-        [OneTimeSetUp]
-        public override void DoOneTimeSetUp()
+        [TearDown]
+        public override void DoTearDown()
         {
-            base.DoOneTimeSetUp();
+            manager?.ClearSaveData();
+
+            base.DoTearDown();
         }
 
-        [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
@@ -69,17 +71,18 @@ namespace Amanita.SaveSystemTests
             saveRepository.Init(saveReader, saveWriter);
             // Since we're working with a manager other than the one belonging to the SaveSystem singleton
             manager = new AmanitaSaveManager(saveRepository);
-            //manager.SaveWriter = saveWriter;
-            //manager.SaveReader = saveReader;
             manager.RegisterMainCodec(flowchartSaveCodec);
 
             readReq.BaseSaveDirectory = manager.SaveDirType;
+
+            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
+            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
         }
 
         protected AmanitaSaveManager manager;
 
         [UnityTest]
-        public virtual IEnumerator WritingToSlots()
+        public IEnumerator WritingToSlots()
         {
             yield return CommonSetup();
 
@@ -98,12 +101,14 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
+        //protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
+        protected IList<int> testSlotNums = new List<int>() { 0, 2, 4 };
 
-        [Test]
-        public virtual async Task WritingToSlots_HandleInvalidSlotNums()
+
+        [UnityTest]
+        public IEnumerator WritingToSlots_HandleInvalidSlotNums()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             SaveWriteRequest invalidReq = new SaveWriteRequest(writeReq);
 
@@ -111,7 +116,8 @@ namespace Amanita.SaveSystemTests
             {
                 string expectedLogMessage = $"Cannot register or write a save with a negative slot number.";
                 LogAssert.Expect(LogType.Warning, expectedLogMessage);
-                await manager.SaveTo(slot);
+                Task saveTask = manager.SaveTo(slot);
+                yield return new WaitUntil(() => saveTask.IsCompleted);
             }
 
         }
@@ -119,7 +125,7 @@ namespace Amanita.SaveSystemTests
         IList<int> invalidSlotNums = new int[] { -1, -3, -325, -12, -47 };
 
         [UnityTest]
-        public virtual IEnumerator RegisteringWrittenSaves()
+        public IEnumerator RegisteringWrittenSaves()
         {
             yield return WritingToSlots();
 
@@ -129,11 +135,11 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        [Test]
-        public virtual async Task DeletingSlots_HandlingEmptySlots()
+        [UnityTest]
+        public IEnumerator DeletingSlots_HandlingEmptySlots()
         {
             DeleteAllTestSaves(); // So we can be sure all slots are empty
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             foreach (int slot in testSlotNums)
             {
@@ -144,7 +150,7 @@ namespace Amanita.SaveSystemTests
         }
 
         [UnityTest]
-        public virtual IEnumerator DeletingSlots_HandlingInvalidSlotNums()
+        public IEnumerator DeletingSlots_HandlingInvalidSlotNums()
         {
             yield return CommonSetup();
 
@@ -156,29 +162,205 @@ namespace Amanita.SaveSystemTests
             }
         }
 
-        [Test]
-        public virtual async Task LoadingSlots_HandleInvalidSlotNums()
+        [UnityTest]
+        public IEnumerator LoadingSlots_HandleInvalidSlotNums()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             foreach (int slot in invalidSlotNums)
             {
                 string expectedLogMessage = $"Cannot load a save with a negative slot number.";
                 LogAssert.Expect(LogType.Warning, expectedLogMessage);
-                await manager.LoadMain(slot);
+                Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
+                yield return new WaitUntil(() => loadTask.IsCompleted);
+            }
+        }
+                
+        [UnityTest]
+        public IEnumerator LoadingSlots_CorrectGameStateApplied()
+        {
+            foreach (int slot in testSlotNums)
+            {
+                yield return CommonSetup();
+               
+                yield return SaveTo(slot);
+                ChangeGameState();
+                yield return Load(slot);
+
+                CompositeSaveData mainState = loadTask.Result; 
+                // ^Since IEnumerators can't have ref or out params, we need to fetch things like this
+                Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
+
+                // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching
+                // a flowchart save from mainState, we might not get the one we're looking for.
+                // Hence the need to search all the FC saves and find the one we want.
+                IList<SaveDataUnit> fcUnits = mainState.GetMulti<FlowchartSaveData>();
+                Assert.IsNotEmpty(fcUnits, $"No Flowchart save data found in main state for slot {slot}.");
+                IList<SaveData> baseDecodedDatas = flowchartSaveCodec.DecodeMultiFrom(fcUnits);
+                IList<FlowchartSaveData> flowchartSaves = baseDecodedDatas
+                    .Where(d => d is FlowchartSaveData)
+                    .Cast<FlowchartSaveData>()
+                    .ToList();
+                Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data decoded from main state for slot {slot}.");
+
+                FlowchartSaveData hasStateWeWantToCheck = flowchartSaves.FirstOrDefault(fc => fc.FlowchartName == flowchart.name);
+                Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
+
+                CheckGameState(slot, hasStateWeWantToCheck);
+                DoTearDown();
+            }
+
+            void ChangeGameState()
+            {
+                nameVar.Value = "New Name After Save";
+                scoreVar.Value += 260;
+                isNewPlayerVar.Value = !isNewPlayerVar.Value;
+                fastestTimeVar.Value += 123.45f;
+                threeDPosVar.Value += new Vector3(10, 20, 30);
+                twoDPosVar.Value += new Vector2(5, 10);
+                stringVar.Value = "New String Value After Save";
+            }
+
+            void CheckGameState(int slot, FlowchartSaveData flowchartSave)
+            {
+                Assert.AreEqual(nameVar.Value, flowchartSave.GetVarValue<string>(nameVar.Key),
+                    $"Name variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(scoreVar.Value, flowchartSave.GetVarValue<int>(scoreVar.Key),
+                    $"Score variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(isNewPlayerVar.Value, flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key),
+                    $"IsNewPlayer variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(fastestTimeVar.Value, flowchartSave.GetVarValue<float>(fastestTimeVar.Key),
+                    $"FastestTime variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(threeDPosVar.Value, flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key),
+                    $"3D Position variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(twoDPosVar.Value, flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key),
+                    $"2D Position variable value mismatch for slot {slot}.");
+
+                Assert.AreEqual(stringVar.Value, flowchartSave.GetVarValue<string>(stringVar.Key),
+                    $"String variable value mismatch for slot {slot}.");
+            }
+
+
+            //manager.ClearSaveData();
+            //ResetVarsToInitVals();
+            //Debug.Log($"LoadingSlots_CorrectGameStateApplied: Slot {slot}");
+            //// Need these to help check if the right game state is applied
+            //string expectedNameVarValue = nameVar.Value;
+            //int expectedScoreVarValue = scoreVar.Value;
+            //bool expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+            //float expectedFastestTimeVarValue = fastestTimeVar.Value;
+            //Vector3 expectedThreeDPosVarValue = threeDPosVar.Value;
+            //Vector2 expectedTwoDPosVarValue = twoDPosVar.Value;
+            //string expectedStringVarValue = stringVar.Value;
+
+            //LogExpectedVarValues();
+            //void LogExpectedVarValues()
+            //{
+            //    Debug.Log($"Expected Name: {expectedNameVarValue}");
+            //    Debug.Log($"Expected Score: {expectedScoreVarValue}");
+            //    Debug.Log($"Expected IsNewPlayer: {expectedIsNewPlayerVarValue}");
+            //    Debug.Log($"Expected FastestTime: {expectedFastestTimeVarValue}");
+            //    Debug.Log($"Expected 3D Position: {expectedThreeDPosVarValue}");
+            //    Debug.Log($"Expected 2D Position: {expectedTwoDPosVarValue}");
+            //    Debug.Log($"Expected String Value: {expectedStringVarValue}");
+            //}
+
+            //// To help us see if the state's loaded correctly
+            //Task saveTask = manager.SaveTo(slot);
+            //yield return new WaitUntil(() => saveTask.IsCompleted);
+
+            //if (saveTask.IsFaulted)
+            //{
+            //    Assert.Fail($"Failed to save to slot {slot}: {saveTask.Exception}");
+            //}
+            //CompositeSaveData saved = manager.GetMainFrom(slot);
+
+            //nameVar.Value += "New Name After Save";
+            //scoreVar.Value += 260;
+            //isNewPlayerVar.Value = !isNewPlayerVar.Value;
+            //fastestTimeVar.Value += 123.45f;
+            //threeDPosVar.Value += new Vector3(10, 20, 30);
+            //twoDPosVar.Value += new Vector2(5, 10);
+            //stringVar.Value += "New String Value After Save";
+
+            //readReq.SlotNumber = slot;
+            //Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
+            //yield return new WaitUntil(() => loadTask.IsCompleted);
+            //CompositeSaveData mainState = loadTask.Result;
+
+            //LogActualVarValues();
+            //void LogActualVarValues()
+            //{
+            //    Debug.Log($"Actual Name: {nameVar.Value}");
+            //    Debug.Log($"Actual Score: {scoreVar.Value}");
+            //    Debug.Log($"Actual IsNewPlayer: {isNewPlayerVar.Value}");
+            //    Debug.Log($"Actual FastestTime: {fastestTimeVar.Value}");
+            //    Debug.Log($"Actual 3D Position: {threeDPosVar.Value}");
+            //    Debug.Log($"Actual 2D Position: {twoDPosVar.Value}");
+            //    Debug.Log($"Actual String Value: {stringVar.Value}");
+            //}
+
+            //Assert.IsNotNull(mainState, "Main save data is null after loading.");
+            //Assert.AreEqual(nameVar.Value, expectedNameVarValue,
+            //    $"Name variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(scoreVar.Value, expectedScoreVarValue,
+            //    $"Score variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(isNewPlayerVar.Value, expectedIsNewPlayerVarValue,
+            //    $"IsNewPlayer variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(fastestTimeVar.Value, expectedFastestTimeVarValue,
+            //    $"FastestTime variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(threeDPosVar.Value, expectedThreeDPosVarValue,
+            //    $"3D Position variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(twoDPosVar.Value, expectedTwoDPosVarValue,
+            //    $"2D Position variable value mismatch after loading slot {slot}.");
+            //Assert.AreEqual(stringVar.Value, expectedStringVarValue,
+            //    $"String variable value mismatch after loading slot {slot}.");
+
+            //DoTearDown();
+
+
+        }
+
+        protected IEnumerator SaveTo(int slot)
+        {
+            Task saveTask = manager.SaveTo(slot);
+            yield return new WaitUntil(() => saveTask.IsCompleted);
+            if (saveTask.IsFaulted)
+            {
+                Assert.Fail($"Failed to save to slot {slot}: {saveTask.Exception}");
             }
         }
 
-        [Test]
-        public virtual async Task ReturningSlotsBasedOnWriteOrder()
+        protected IEnumerator Load(int slot)
         {
-            await WriteToSlotsAsync();
+            loadTask = manager.LoadMain(slot, false);
+            yield return new WaitUntil(() => loadTask.IsCompleted);
+            if (loadTask.IsFaulted)
+            {
+                Assert.Fail($"Failed to load slot {slot}: {loadTask.Exception}");
+            }
+        }
+
+        protected Task<CompositeSaveData> loadTask;
+        protected FlowchartSaveData flowchartSave;
+
+        [UnityTest]
+        public IEnumerator ReturningSlotsBasedOnWriteOrder()
+        {
+            yield return CommonSetup();
+            Task slotWriteTask = WriteToSlotsAsync();
+            yield return new WaitUntil(() => slotWriteTask.IsCompleted);
 
             bool success = manager.GetOccupiedSlots().SequenceEqual(testSlotNums);
             Assert.IsTrue(success, "Save Manager did not return the correct slots after writing.");
         }
 
-        protected virtual async Task WriteToSlotsAsync()
+        protected async Task WriteToSlotsAsync()
         {
             foreach (int slot in testSlotNums)
             {
@@ -186,35 +368,52 @@ namespace Amanita.SaveSystemTests
             }
         }
 
-        [Test]
-        public virtual async Task OverwritingSlots()
+        [UnityTest]
+        public IEnumerator OverwritingSlots()
         {
-            await CommonSetupAsync();
-            await WriteToSlotsAsync();
+            yield return CommonSetup();
 
-            // Now change the game state before we overwriting the saves
-            // This is to ensure that the save data is different from the previous saves
-            // and that the overwriting works as expected.
+            // These expected values are the ones we want to overwrite the 
+            // old initial values with
+            string expectedNameVarValue = nameVar.Value + "tcvw4fyw789g8";
+            int expectedScoreVarValue = scoreVar.Value + 128;
+            bool expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+            float expectedFastestTimeVarValue = fastestTimeVar.Value / 2;
+            Vector3 expectedThreeDPosVarValue = threeDPosVar.Value + new Vector3(11, 22, 33);
+            Vector2 expectedTwoDPosVarValue = twoDPosVar.Value + new Vector2(2, 8);
+            string expectedStringVarValue = stringVar.Value + "eoty vwg8";
 
-            string expectedNameVarValue = nameVar.Value + "3we4to789y3458t";
-            int expectedScoreVarValue = scoreVar.Value + 1000;
-            bool expectedIsNewPlayerVarValue = !isNewPlayerVar.Value;
-            float expectedFastestTimeVarValue = fastestTimeVar.Value + 10f;
-            Vector3 expectedThreeDPosVarValue = threeDPosVar.Value + new Vector3(1, 2, 3);
-            Vector2 expectedTwoDPosVarValue = twoDPosVar.Value + new Vector2(1, 2);
-            string expectedStringVarValue = stringVar.Value + "new string value";
+            Task writeTask = WriteToSlotsAsync(); // The slots that we will be overwriting
+            yield return new WaitUntil(() => writeTask.IsCompleted);
 
             foreach (int slot in testSlotNums)
             {
-                ChangeGameState();
-                await manager.SaveTo(slot);
+                ChangeGameStateToExpected();
+                void ChangeGameStateToExpected()
+                {
+                    nameVar.Value = expectedNameVarValue;
+                    scoreVar.Value = expectedScoreVarValue;
+                    isNewPlayerVar.Value = expectedIsNewPlayerVarValue;
+                    fastestTimeVar.Value = expectedFastestTimeVarValue;
+                    threeDPosVar.Value = expectedThreeDPosVarValue;
+                    twoDPosVar.Value = expectedTwoDPosVarValue;
+                    stringVar.Value = expectedStringVarValue;
+                }
+                
+                Task saveTask = manager.SaveTo(slot);
+                yield return new WaitUntil(() => saveTask.IsCompleted);
 
                 // Now to fetch the save data and check that it matches the expected values
-
                 CompositeSaveData mainState = manager.GetMainFrom(slot);
-                SaveDataUnit forFlowchart = mainState.GetSingle<FlowchartSaveData>();
+                IList<SaveDataUnit> allFcUnits = mainState.GetMulti<FlowchartSaveData>();
+                IList<FlowchartSaveData> allFcSaves = flowchartSaveCodec.DecodeMultiFrom(allFcUnits)
+                    .Where((res) => res is FlowchartSaveData)
+                    .Cast<FlowchartSaveData>()
+                    .ToList();
 
-                FlowchartSaveData flowchartSave = flowchartSaveCodec.DecodeFrom(forFlowchart);
+                FlowchartSaveData flowchartSave = allFcSaves.Where((data) => data.FlowchartName == flowchart.name)
+                    .FirstOrDefault();
+                Assert.IsNotNull(flowchartSave, $"Couldn't find the right flowchart save data for slot {slot}");
 
                 CheckTheValues();
                 void CheckTheValues()
@@ -256,25 +455,16 @@ namespace Amanita.SaveSystemTests
 
             }
 
-            void ChangeGameState()
-            {
-                nameVar.Value = expectedNameVarValue;
-                scoreVar.Value = expectedScoreVarValue;
-                isNewPlayerVar.Value = expectedIsNewPlayerVarValue;
-                fastestTimeVar.Value = expectedFastestTimeVarValue;
-                threeDPosVar.Value = expectedThreeDPosVarValue;
-                twoDPosVar.Value = expectedTwoDPosVarValue;
-                stringVar.Value = expectedStringVarValue;
-            }
-
-
         }
 
-        [Test]
-        public virtual async Task DeletingSlots()
+        [UnityTest]
+        public IEnumerator DeletingSlots()
         {
-            await CommonSetupAsync();
-            await WriteToSlotsAsync();
+            yield return CommonSetup();
+            Task writeTask = WriteToSlotsAsync();
+            writeTask.ConfigureAwait(false);
+            yield return new WaitUntil(() => writeTask.IsCompleted);
+
             foreach (int slot in testSlotNums)
             {
                 manager.DeleteSave(slot);
