@@ -150,43 +150,55 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        [Test]
-        public virtual async Task ReadingMainContent_ReportsBadJsonOnMalformedData()
+        [UnityTest]
+        public virtual IEnumerator ReadingMainContent_ReportsBadJsonOnMalformedData()
         {
-            await CommonSetupAsync();
+            yield return CommonSetup();
 
             SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
             reqForMalformedFile.SlotNumber = 71;
 
-            string saveFolderPath = GetAndPrepSaveFolderPath(reqForMalformedFile);
-            GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
+            string fileNumFormatted = reqForMalformedFile.SlotNumber.ToString(saveReader.SaveNumberFormat);
+            string fileName = string.Format(fileNameFormat, saveReader.SavePrefix,
+                fileNumFormatted, saveReader.FileExtension);
+            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, fileName, saveReader.RelativeSavePath);
+
+            //GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
-            await File.WriteAllTextAsync(filePath, randomJunk);
+            //File.WriteAllText(filePath, randomJunk);
 
-            string errorMessage = string.Empty;
-            bool throwsIt = false;
-            try
-            {
-                await saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
-            }
-            catch (ArgumentException ex)
-            {
-                errorMessage = ex.Message;
-                throwsIt = true;
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-            }
-            finally
-            {
-                bool isAboutJson = errorMessage.ToLower().Contains("json");
+            Assert.ThrowsAsync<ArgumentException>(() => saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile),
+                "Does not throw an ArgumentException upon reading invalid content");
+            //string errorMessage = string.Empty;
+            //bool throwsIt = false;
+            //try
+            //{
+            //    Task readTask = 
+            //    await 
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    errorMessage = ex.Message;
+            //    throwsIt = true;
+            //}
+            //catch (Exception ex)
+            //{
+            //    errorMessage = ex.Message;
+            //}
+            //finally
+            //{
+            //    bool isAboutJson = errorMessage.ToLower().Contains("json");
 
-                Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
-                Assert.IsTrue(throwsIt, "Does not throw an ArgumentException upon reading invalid content");
-                
+            //    Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
+            //    Assert.IsTrue(throwsIt, "Does not throw an ArgumentException upon reading invalid content");
+
+
+            //}
+
+            if (File.Exists(filePath))
+            {
                 File.Delete(filePath);
             }
         }

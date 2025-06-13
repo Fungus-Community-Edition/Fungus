@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amanita.Collections;
+using System.Threading;
 
 namespace Amanita.SaveSys
 {
@@ -66,88 +67,97 @@ namespace Amanita.SaveSys
                 return null;
             }
 
-            ApplyVarStates();
-            void ApplyVarStates()
+            var context = SynchronizationContext.Current;
+
+            // Applying the states of vars and Blocks might require tampering with things
+            // that aren't thread-safe, hence why we're using Post here to make sure that
+            // things are working on the main thread
+            context.Post(_ =>
             {
-                foreach (VariableSaveData varSaveData in saveData.SavedVars)
+                ApplyVarStates();
+                void ApplyVarStates()
                 {
-                    IVarCodec forThisVar = CodecRegistry.GetCodec(varSaveData);
-                    if (forThisVar == null)
+                    foreach (VariableSaveData varSaveData in saveData.SavedVars)
                     {
-                        Debug.LogWarning($"No serializer found for variable type: {varSaveData.GetType().Name}");
-                        continue;
-                    }
-
-                    Variable varEl = flowchart.GetVariableById(varSaveData.UniqueID);
-                    if (varEl == null)
-                    {
-                        varEl = flowchart.GetVariable(varSaveData.VarName);
-                    }
-
-                    bool stillGotNothing = varEl == null;
-                    if (stillGotNothing)
-                    {
-                        Debug.LogWarning($"Variable {varSaveData.VarName} not found in flowchart {flowchart.name}.");
-                        continue;
-                    }
-
-                    forThisVar.Decode(varEl, varSaveData);
-                }
-            }
-
-            ApplyBlockStates();
-            void ApplyBlockStates()
-            {
-                foreach (BlockSaveData blockSave in saveData.SavedBlocks)
-                {
-                    Block blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
-                    static Block FindTheRightBlock(Flowchart flowchart, BlockSaveData blockSave)
-                    {
-                        // Find the current block first by its item id, then by its name
-                        Block blockToApplyTo = flowchart.FindBlockByItemId(blockSave.ItemId);
-                        if (blockToApplyTo == null)
+                        IVarCodec forThisVar = CodecRegistry.GetCodec(varSaveData);
+                        if (forThisVar == null)
                         {
-                            blockToApplyTo = flowchart.FindBlock(blockSave.BlockName);
-                        }
-
-                        return blockToApplyTo;
-                    }
-
-                    bool stllGotNothing = blockToApplyTo == null;
-                    if (stllGotNothing)
-                    {
-                        Debug.LogWarning($"Block {blockSave.BlockName} not found in flowchart {flowchart.name}.");
-                        continue;
-                    }
-
-                    // We assume that the Block was indeed executing
-                    // at this point.
-                    bool blockWasExecuting = blockSave.ActiveCommandIndex != -1;
-                    if (blockWasExecuting)
-                    {
-                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId);
-
-                        if (commandToApplyTo == null)
-                        {
-                            commandToApplyTo = blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex);
-                        }
-
-                        bool stillNothing = commandToApplyTo == null;
-                        if (stillNothing)
-                        {
-                            Debug.LogWarning($"Command {blockSave.ActiveCommandId} not found in block {blockToApplyTo.BlockName}.");
+                            Debug.LogWarning($"No serializer found for variable type: {varSaveData.GetType().Name}");
                             continue;
                         }
 
-                        flowchart.StopBlock(blockSave.BlockName);
-                        flowchart.ExecuteBlock(blockToApplyTo, blockSave.ActiveCommandIndex);
+                        Variable varEl = flowchart.GetVariableById(varSaveData.UniqueID);
+                        if (varEl == null)
+                        {
+                            varEl = flowchart.GetVariable(varSaveData.VarName);
+                        }
 
+                        bool stillGotNothing = varEl == null;
+                        if (stillGotNothing)
+                        {
+                            Debug.LogWarning($"Variable {varSaveData.VarName} not found in flowchart {flowchart.name}.");
+                            continue;
+                        }
+
+                        forThisVar.Decode(varEl, varSaveData);
                     }
                 }
 
-                
-            }
+                ApplyBlockStates();
+                void ApplyBlockStates()
+                {
+                    foreach (BlockSaveData blockSave in saveData.SavedBlocks)
+                    {
+                        Block blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
+                        static Block FindTheRightBlock(Flowchart flowchart, BlockSaveData blockSave)
+                        {
+                            // Find the current block first by its item id, then by its name
+                            Block blockToApplyTo = flowchart.FindBlockByItemId(blockSave.ItemId);
+                            if (blockToApplyTo == null)
+                            {
+                                blockToApplyTo = flowchart.FindBlock(blockSave.BlockName);
+                            }
 
+                            return blockToApplyTo;
+                        }
+
+                        bool stllGotNothing = blockToApplyTo == null;
+                        if (stllGotNothing)
+                        {
+                            Debug.LogWarning($"Block {blockSave.BlockName} not found in flowchart {flowchart.name}.");
+                            continue;
+                        }
+
+                        // We assume that the Block was indeed executing
+                        // at this point.
+                        bool blockWasExecuting = blockSave.ActiveCommandIndex != -1;
+                        if (blockWasExecuting)
+                        {
+                            Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId);
+
+                            if (commandToApplyTo == null)
+                            {
+                                commandToApplyTo = blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex);
+                            }
+
+                            bool stillNothing = commandToApplyTo == null;
+                            if (stillNothing)
+                            {
+                                Debug.LogWarning($"Command {blockSave.ActiveCommandId} not found in block {blockToApplyTo.BlockName}.");
+                                continue;
+                            }
+
+                            flowchart.StopBlock(blockSave.BlockName);
+                            flowchart.ExecuteBlock(blockToApplyTo, blockSave.ActiveCommandIndex);
+
+                        }
+                    }
+
+
+                }
+
+            }, null);
+            
             return Task.CompletedTask;
         }
 

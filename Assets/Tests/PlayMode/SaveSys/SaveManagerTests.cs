@@ -179,10 +179,26 @@ namespace Amanita.SaveSystemTests
         [UnityTest]
         public IEnumerator LoadingSlots_CorrectGameStateApplied()
         {
+            string expectedNameVarValue;
+            int expectedScoreVarValue;
+            bool expectedIsNewPlayerVarValue;
+            float expectedFastestTimeVarValue;
+            Vector3 expectedThreeDPosVarValue;
+            Vector2 expectedTwoDPosVarValue;
+            string expectedStringVarValue;
+
             foreach (int slot in testSlotNums)
             {
                 yield return CommonSetup();
                
+                expectedNameVarValue = nameVar.Value;
+                expectedScoreVarValue = scoreVar.Value;
+                expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+                expectedFastestTimeVarValue = fastestTimeVar.Value;
+                expectedThreeDPosVarValue = threeDPosVar.Value;
+                expectedTwoDPosVarValue = twoDPosVar.Value;
+                expectedStringVarValue = stringVar.Value;
+
                 yield return SaveTo(slot);
                 ChangeGameState();
                 yield return Load(slot);
@@ -207,7 +223,6 @@ namespace Amanita.SaveSystemTests
                 Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
 
                 CheckGameState(slot, hasStateWeWantToCheck);
-                DoTearDown();
             }
 
             void ChangeGameState()
@@ -223,25 +238,32 @@ namespace Amanita.SaveSystemTests
 
             void CheckGameState(int slot, FlowchartSaveData flowchartSave)
             {
-                Assert.AreEqual(nameVar.Value, flowchartSave.GetVarValue<string>(nameVar.Key),
+                string actualNameVarValue = flowchartSave.GetVarValue<string>(nameVar.Key);
+                Assert.AreEqual(expectedNameVarValue, actualNameVarValue,
                     $"Name variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(scoreVar.Value, flowchartSave.GetVarValue<int>(scoreVar.Key),
+                int actualScoreVarValue = flowchartSave.GetVarValue<int>(scoreVar.Key);
+                Assert.AreEqual(expectedScoreVarValue, actualScoreVarValue,
                     $"Score variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(isNewPlayerVar.Value, flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key),
+                bool actualIsNewPlayerVarValue = flowchartSave.GetVarValue<bool>(isNewPlayerVar.Key);
+                Assert.AreEqual(expectedIsNewPlayerVarValue, actualIsNewPlayerVarValue,
                     $"IsNewPlayer variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(fastestTimeVar.Value, flowchartSave.GetVarValue<float>(fastestTimeVar.Key),
+                float actualFastestTimeVarValue = flowchartSave.GetVarValue<float>(fastestTimeVar.Key);
+                Assert.AreEqual(expectedFastestTimeVarValue, actualFastestTimeVarValue,
                     $"FastestTime variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(threeDPosVar.Value, flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key),
+                Vector3 actualThreeDPosVarValue = flowchartSave.GetVarValue<Vector3>(threeDPosVar.Key);
+                Assert.AreEqual(expectedThreeDPosVarValue, actualThreeDPosVarValue,
                     $"3D Position variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(twoDPosVar.Value, flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key),
+                Vector2 actualTwoDPosVarValue = flowchartSave.GetVarValue<Vector2>(twoDPosVar.Key);
+                Assert.AreEqual(expectedTwoDPosVarValue, actualTwoDPosVarValue,
                     $"2D Position variable value mismatch for slot {slot}.");
 
-                Assert.AreEqual(stringVar.Value, flowchartSave.GetVarValue<string>(stringVar.Key),
+                string actualStringVarValue = flowchartSave.GetVarValue<string>(stringVar.Key);
+                Assert.AreEqual(expectedStringVarValue, actualStringVarValue,
                     $"String variable value mismatch for slot {slot}.");
             }
 

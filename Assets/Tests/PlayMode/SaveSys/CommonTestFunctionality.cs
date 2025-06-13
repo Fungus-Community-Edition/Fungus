@@ -47,7 +47,7 @@ namespace Amanita.SaveSystemTests
             yield return new WaitUntil(() => writeTask.IsCompleted);
         }
 
-        
+        [SetUp]
         public virtual void DoSetUp()
         {
             LoadCodecs();
@@ -272,94 +272,56 @@ namespace Amanita.SaveSystemTests
             }
         }
 
-        protected virtual async Task CommonSetupAsync()
-        {
-            DoSetUp();
-            await Task.Delay(1000).ConfigureAwait(false);
-            
-            saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
-            saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
-
-            PrepAndRegisterSaveData();
-            void PrepAndRegisterSaveData()
-            {
-                if (flowchart == null)
-                {
-                    flowchart = UnityObject.FindFirstObjectByType<Flowchart>();
-                    if (flowchart == null)
-                    {
-                        throw new Exception("No Flowchart found in the scene.");
-                    }
-                }
-                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-                // ^We are expecting the flowchart encoder to use the block encoder as a sub
-
-                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                mainSave.Add(encodedFlowchartSave);
-
-                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-                foreach (var blockSave in blockSaves)
-                {
-                    SaveDataUnit saveDataUnit = blockSave.Serialized();
-                    mainSave.Add(saveDataUnit);
-                }
-            }
-
-
-        }
-
         protected virtual IEnumerator CommonSetup()
         {
-            DoSetUp();
             yield return waitToYield;
             // The SaveSystem singleton should be set up by this point, meaning that
             // SaveDirectoryPaths should be initialized.
             PrepNewPathsForTesting();
-            void PrepNewPathsForTesting()
-            {
-                Dictionary<SaveDirectoryType, string> newPaths =
-                    new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
-                foreach (var keyEl in SaveSystem.SaveDirectoryPaths.Keys)
-                {
-                    string currentVal = SaveSystem.SaveDirectoryPaths[keyEl];
-                    string newPath = Path.Combine(currentVal, relativePathForTesting);
-                    newPaths[keyEl] = newPath;
-                }
-
-                foreach (var keyEl in newPaths.Keys)
-                {
-                    string path = newPaths[keyEl];
-                    SaveSystem.SaveDirectoryPaths[keyEl] = path;
-                }
-            }
-
             PrepAndRegisterSaveData();
-            void PrepAndRegisterSaveData()
+        }
+
+        void PrepAndRegisterSaveData()
+        {
+            if (flowchart == null)
             {
+                flowchart = testScene.GetComponentInChildren<Flowchart>();
                 if (flowchart == null)
                 {
-                    flowchart = UnityObject.FindFirstObjectByType<Flowchart>();
-                    if (flowchart == null)
-                    {
-                        throw new Exception("No Flowchart found in the scene.");
-                    }
-                }
-                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-                // ^We are expecting the flowchart encoder to use the block encoder as a sub
-
-                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                mainSave.Add(encodedFlowchartSave);
-
-                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-                foreach (var blockSave in blockSaves)
-                {
-                    SaveDataUnit saveDataUnit = blockSave.Serialized();
-                    mainSave.Add(saveDataUnit);
+                    throw new Exception("No Flowchart found in the scene.");
                 }
             }
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+            // ^We are expecting the flowchart encoder to use the block encoder as a sub
 
+            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+            mainSave.Add(encodedFlowchartSave);
+
+            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+            foreach (var blockSave in blockSaves)
+            {
+                SaveDataUnit saveDataUnit = blockSave.Serialized();
+                mainSave.Add(saveDataUnit);
+            }
+        }
+
+        void PrepNewPathsForTesting()
+        {
+            Dictionary<SaveDirectoryType, string> newPaths =
+                new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
+            foreach (var keyEl in SaveSystem.SaveDirectoryPaths.Keys)
+            {
+                string currentVal = SaveSystem.SaveDirectoryPaths[keyEl];
+                string newPath = Path.Combine(currentVal, relativePathForTesting);
+                newPaths[keyEl] = newPath;
+            }
+
+            foreach (var keyEl in newPaths.Keys)
+            {
+                string path = newPaths[keyEl];
+                SaveSystem.SaveDirectoryPaths[keyEl] = path;
+            }
         }
 
         protected IDictionary<SaveDirectoryType, string> BaseSavePaths { get; set; } =
@@ -369,6 +331,14 @@ namespace Amanita.SaveSystemTests
                 { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
                 { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
             };
+
+        protected virtual async Task CommonSetupAsync()
+        {
+            await Task.Delay(1000).ConfigureAwait(false);
+
+            PrepNewPathsForTesting();
+            PrepAndRegisterSaveData();
+        }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }
