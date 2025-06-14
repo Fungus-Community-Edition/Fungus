@@ -113,8 +113,9 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)
             {
