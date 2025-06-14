@@ -1,7 +1,9 @@
+using Amanita.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -106,8 +108,44 @@ namespace Amanita.SaveSys
         {
             IList<string> splitIntoJsons = fullPlainJson.Split(delimiterArr, StringSplitOptions.None);
             string jsonForMetadata = splitIntoJsons[0];
+            ISaveMetaData result = null;
 
-            ISaveMetaData result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+            // Need to be careful with threads here due to how SaveMetaData's constructor
+            // calls stuff that is not thread-safe.
+            if (UnityThreadUtil.IsMainThread)
+            {
+                result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+            }
+            else
+            {
+                using (var countdown = new CountdownEvent(1))
+                {
+                    Exception threadException = null;
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        // We want to make sure that any exceptions get thrown back to this thread,
+                        // so we catch them here.
+                        try
+                        {
+                            result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+                        }
+                        catch (Exception ex)
+                        {
+                            threadException = ex;
+                        }
+                        finally
+                        {
+                            countdown.Signal();
+                        }
+                    });
+                    countdown.Wait();
+                    if (threadException != null)
+                    {
+                        throw threadException;
+                    }
+                }
+            }
+
             return result;
         }
 

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amanita.Collections;
+using System.Threading;
+using Amanita.Utils;
+using System;
 
 namespace Amanita.SaveSys
 {
@@ -66,7 +69,19 @@ namespace Amanita.SaveSys
                 return null;
             }
 
-            ApplyVarStates();
+            // Applying the states of vars and Blocks might require tampering with things
+            // that aren't thread-safe
+            bool onMainThread = UnityThreadUtil.IsMainThread;
+            if (onMainThread)
+            {
+                ApplyStuff();
+            }
+
+            void ApplyStuff()
+            {
+                ApplyVarStates();
+                ApplyBlockStates();
+            }
             void ApplyVarStates()
             {
                 foreach (VariableSaveData varSaveData in saveData.SavedVars)
@@ -94,8 +109,6 @@ namespace Amanita.SaveSys
                     forThisVar.Decode(varEl, varSaveData);
                 }
             }
-
-            ApplyBlockStates();
             void ApplyBlockStates()
             {
                 foreach (BlockSaveData blockSave in saveData.SavedBlocks)
@@ -145,7 +158,35 @@ namespace Amanita.SaveSys
                     }
                 }
 
-                
+
+            }
+
+            if (!onMainThread)
+            {
+                PushTheWorkToTheMainThread();
+                void PushTheWorkToTheMainThread()
+                {
+                    using (var countdown = new CountdownEvent(1))
+                    {
+                        Exception threadException = null;
+                        try
+                        {
+                            MainThreadDispatcher.Enqueue(() =>
+                            {
+                                ApplyStuff();
+                                countdown.Signal(); 
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            threadException = ex;
+                        }
+                        finally
+                        {
+                            countdown.Signal(); // To avoid deadlocks
+                        }
+                    }
+                }
             }
 
             return Task.CompletedTask;

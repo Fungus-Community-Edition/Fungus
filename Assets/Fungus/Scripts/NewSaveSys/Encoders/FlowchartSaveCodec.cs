@@ -1,5 +1,7 @@
+using Amanita.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -26,17 +28,50 @@ namespace Amanita.SaveSys
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
-            IList<VariableSaveData> varSaves = SaveVars(toCreateFrom);
-            IList<BlockSaveData> blockSaves = blockCodec.EncodeToMultiSave(toCreateFrom);
-            // TODO: Save the state of certain commands (such as Conversation)
-
-            FlowchartSaveData saveData = new()
+            // We want this whole func to run on the main thread,
+            // since it might involve Unity API calls that are not thread-safe.
+            IList<VariableSaveData> varSaves = null;
+            IList<BlockSaveData> blockSaves = null;
+            FlowchartSaveData saveData = null;
+            void EncodingProcess()
             {
-                UniqueId = toCreateFrom.UniqueId,
-                FlowchartName = toCreateFrom.name,
-                SavedVars = varSaves,
-                SavedBlocks = blockSaves,
-            };
+                varSaves = SaveVars(toCreateFrom);
+                blockSaves = blockCodec.EncodeToMultiSave(toCreateFrom);
+                // TODO: Save the state of certain commands (such as Conversation)
+
+                saveData = new()
+                {
+                    UniqueId = toCreateFrom.UniqueId,
+                    FlowchartName = toCreateFrom.name,
+                    SavedVars = varSaves,
+                    SavedBlocks = blockSaves,
+                };
+            }
+            if (UnityThreadUtil.IsMainThread)
+            {
+                EncodingProcess();
+            }
+            else
+            {
+                using (var countdown = new CountdownEvent(1))
+                {
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        if (toCreateFrom == null)
+                        {
+                            Debug.LogError("Cannot encode a null Flowchart.");
+                        }
+                        else
+                        {
+                            Debug.Log("Right before encoding process.");
+                            EncodingProcess();
+                        }
+
+                        countdown.Signal(); // Signal that we're done
+                    });
+                    countdown.Wait(); // Wait for the main thread to finish
+                }
+            }
 
             return saveData;
         }
@@ -45,9 +80,15 @@ namespace Amanita.SaveSys
         {
             IList<VariableSaveData> result = new List<VariableSaveData>();
 
-            if (toCreateFrom.SaveVariables)
+            var variables = toCreateFrom.Variables;
+            int count = variables.Count;
+            if (count == 0 || !toCreateFrom.SaveVariables)
             {
-                foreach (Variable varEl in toCreateFrom.Variables)
+                // Do nothing and just return an empty list later in this func
+            }
+            else 
+            {
+                foreach (Variable varEl in variables)
                 {
                     IVarCodec forThisVar = CodecRegistry.GetCodec(varEl);
                     if (forThisVar == null)
@@ -56,14 +97,16 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
+                    var varSave = forThisVar.EncodeToSave(varEl);
                     if (varSave == null)
                     {
                         Debug.LogError($"Failed to encode variable: {varEl.name}");
-                        continue;
+                    }
+                    else
+                    {
+                        result.Add(varSave);
                     }
 
-                    result.Add(varSave);
                 }
             }
 

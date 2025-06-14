@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 915266389070165224}
   - component: {fileID: 1226875982621518419}
   - component: {fileID: 2796803071515036501}
+  - component: {fileID: 5057925027822650426}
   m_Layer: 0
   m_Name: FungusManager
   m_TagString: Untagged
@@ -84,6 +85,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b56717c6969d8948b3707c08290eed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5057925027822650426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202650791393482862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25aa11cad0b461a418b840cb9646d86f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &996350155663403153

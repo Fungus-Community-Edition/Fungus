@@ -15,32 +15,24 @@ namespace Amanita.SaveSystemTests
 {
     public class SaveReaderTests : CommonTestFunctionality
     {
-        [UnityTest]
-        public virtual IEnumerator ReadsMetadataProperly_NONEncrypted()
+        [Test]
+        public virtual async Task ReadingMeta_Success_NONEncrypted()
         {
-            yield return CommonSetup();
-
+            await CommonSetupAsync().ConfigureAwait(false);
             saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
-
-            Task writeTask = saveWriter.WriteOneToDisk(writeReq);
-            yield return WaitFor(writeTask);
-            
-
-            SaveMetaData expectedSaveMetaData = (SaveMetaData)writeReq.SaveMetaData;
-            Task<ISaveMetaData> readTask = saveReader.ReadMetadataFromDisk(readReq);
-            yield return WaitFor(readTask);
-            SaveMetaData whatWeGot = (SaveMetaData) readTask.Result;
-            Assert.AreEqual(expectedSaveMetaData, whatWeGot, "The save meta datas do not match.");
+            await CommonSetupAsync().ConfigureAwait(false);
         }
 
-
-        [UnityTest]
-        public virtual IEnumerator ReadsMetadataProperly_Encrypted()
+        [Test]
+        public virtual async Task ReadingMeta_Success_Encrypted()
         {
-            yield return CommonSetup();
-
+            await CommonSetupAsync().ConfigureAwait(false);
             saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
+            await CommonSetupAsync().ConfigureAwait(false);
+        }
 
+        protected virtual IEnumerator CommonMetadataReadTest()
+        {
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
             yield return WaitFor(writeTask);
 
@@ -53,38 +45,52 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(expectedMeta, whatWeGot, "The save meta datas do not match.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator ReadsMainSaveDataProperly_NONEncrypted()
+        protected virtual async Task CommonMetadataReadTestAsync()
         {
-            yield return CommonSetup();
+            Task writeTask = saveWriter.WriteOneToDisk(writeReq);
+            await writeTask.ConfigureAwait(false);
+
+            SaveMetaData expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
+
+            Task<ISaveMetaData> readTask = saveReader.ReadMetadataFromDisk(readReq);
+            await readTask.ConfigureAwait(false);
+
+            SaveMetaData whatWeGot = (SaveMetaData)readTask.Result;
+            Assert.AreEqual(expectedMeta, whatWeGot, "The save meta datas do not match.");
+        }
+
+        [Test]
+        public virtual async Task ReadingMain_Success_NONEncrypted()
+        {
+            await CommonSetupAsync().ConfigureAwait(false);
 
             saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
-            yield return WaitFor(writeTask);
+            await writeTask.ConfigureAwait(false);
 
             CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
             Task<CompositeSaveData> readTask = saveReader.ReadMainSaveDataFromDisk(readReq);
-            yield return WaitFor(readTask);
+            await readTask.ConfigureAwait(false);
             CompositeSaveData whatWeGot = readTask.Result;
 
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The main save data was not read from disk properly.");
 
         }
 
-        [UnityTest]
-        public virtual IEnumerator ReadsMainSaveDataProperly_Encrypted()
+        [Test]
+        public virtual async Task ReadingMain_Success_Encrypted()
         {
-            yield return CommonSetup();
+            await CommonSetupAsync().ConfigureAwait(false);
 
             saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
-            yield return WaitFor(writeTask);
+            await writeTask.ConfigureAwait(false);
 
             CompositeSaveData expectedMainSaveData = writeReq.MainState as CompositeSaveData;
             Task<CompositeSaveData> readTask = saveReader.ReadMainSaveDataFromDisk(readReq);
-            yield return WaitFor(readTask);
+            await readTask.ConfigureAwait(false);
             CompositeSaveData whatWeGot = readTask?.Result;
 
             Assert.AreEqual(expectedMainSaveData, whatWeGot, "The (encrypted) main save data was not read from disk properly.");
@@ -95,7 +101,7 @@ namespace Amanita.SaveSystemTests
         protected const string fileNameFormat = "{0}_{1}.{2}";
 
         [Test]
-        public virtual async Task ReadingMetadata_ReportsMissingFile()
+        public virtual async Task ReadingMeta_Fail_ReportsMissingFile()
         {
             await CommonSetupAsync();
 
@@ -136,10 +142,11 @@ namespace Amanita.SaveSystemTests
         protected virtual string FilePathFormat { get { return saveReader.FilePathFormat; } }
 
         [Test]
-        public virtual async Task ReadingMainContent_ReportsMissingFile()
+        public virtual async Task ReadingMain_Fail_ReportsMissingFile()
         {
-            await CommonSetupAsync();
+            await CommonSetupAsync().ConfigureAwait(false);
 
+            Debug.Log("Reading main content reports missing file test started.");
             SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
             requestForNonexistentFile.SlotNumber = 99;
 
@@ -151,56 +158,45 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual async Task ReadingMainContent_ReportsBadJsonOnMalformedData()
+        public virtual async Task ReadingMain_Fail_ReportsBadJsonOnMalformedData()
         {
-            await CommonSetupAsync();
+            await CommonSetupAsync().ConfigureAwait(false);
 
             SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
             reqForMalformedFile.SlotNumber = 71;
 
-            string saveFolderPath = GetAndPrepSaveFolderPath(reqForMalformedFile);
-            GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
+            string fileNumFormatted = reqForMalformedFile.SlotNumber.ToString(saveReader.SaveNumberFormat);
+            string fileName = string.Format(fileNameFormat, saveReader.SavePrefix,
+                fileNumFormatted, saveReader.FileExtension);
+            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, fileName, saveReader.RelativeSavePath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
             await File.WriteAllTextAsync(filePath, randomJunk);
 
-            string errorMessage = string.Empty;
-            bool throwsIt = false;
-            try
-            {
-                await saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
-            }
-            catch (ArgumentException ex)
-            {
-                errorMessage = ex.Message;
-                throwsIt = true;
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-            }
-            finally
-            {
-                bool isAboutJson = errorMessage.ToLower().Contains("json");
+            Task readTask = saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
 
-                Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
-                Assert.IsTrue(throwsIt, "Does not throw an ArgumentException upon reading invalid content");
-                
+            string assertErrorMessage = "Does not throw an ArgumentException upon reading invalid content";
+            Assert.ThrowsAsync<ArgumentException>(() => readTask, assertErrorMessage);
+
+            if (File.Exists(filePath))
+            {
                 File.Delete(filePath);
             }
         }
 
         [Test]
-        public virtual async Task ReadingMeta_ReportsBadJsonOnMalformedData()
+        public virtual async Task ReadingMeta_Fail_ReportsBadJsonOnMalformedData()
         {
             await CommonSetupAsync().ConfigureAwait(false);
 
             SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
             reqForMalformedFile.SlotNumber = 345;
 
-            string saveFolderPath = GetAndPrepSaveFolderPath(reqForMalformedFile);
-            GetFullFilePath(reqForMalformedFile, saveFolderPath, out string filePath);
+            string fileNumFormatted = reqForMalformedFile.SlotNumber.ToString(saveReader.SaveNumberFormat);
+            string fileName = string.Format(fileNameFormat, saveReader.SavePrefix,
+                fileNumFormatted, saveReader.FileExtension);
+            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, fileName, saveReader.RelativeSavePath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
@@ -210,7 +206,7 @@ namespace Amanita.SaveSystemTests
             bool throwsIt = false;
             try
             {
-                await saveReader.ReadMetadataFromDisk(reqForMalformedFile);
+                await saveReader.ReadMetadataFromDisk(reqForMalformedFile).ConfigureAwait(false);
             }
             catch (ArgumentException ex)
             {
@@ -224,7 +220,11 @@ namespace Amanita.SaveSystemTests
                 bool isAboutJson = errorMessage.ToLower().Contains("json");
 
                 Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
-                File.Delete(filePath);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
             }
         }
 
@@ -265,11 +265,11 @@ namespace Amanita.SaveSystemTests
             
         }
 
-        [UnityTest]
+        [Test]
 
-        public virtual IEnumerator ReadsNonDefaultMetadata()
+        public virtual async Task ReadingMeta_Success_NonDefaultMetaInput()
         {
-            yield return CommonSetup();
+            await CommonSetupAsync().ConfigureAwait(false);
             SaveWriteRequest withCustomMeta = new SaveWriteRequest(writeReq);
             SaveMetaData metaBefore = (SaveMetaData)withCustomMeta.SaveMetaData;
             metaBefore.Name = "BlastOff";
@@ -278,41 +278,37 @@ namespace Amanita.SaveSystemTests
             saveWriter.WriteEncrypted = saveReader.ReadEncrypted = false;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
-            yield return WaitFor(writeTask);
+            await writeTask.ConfigureAwait(false);
 
             SaveReadRequest otherReadReq = new SaveReadRequest(readReq);
             otherReadReq.SlotNumber = metaBefore.SlotNumber;
 
             Task<ISaveMetaData> readTask = saveReader.ReadMetadataFromDisk(otherReadReq);
-            yield return WaitFor(readTask);
-            var metaAfter =  (SaveMetaData) readTask.Result;
+            await readTask.ConfigureAwait(false);
+            var metaAfter = (SaveMetaData) readTask.Result;
             Assert.AreEqual(metaBefore, metaAfter);
 
         }
 
         [Test]
-        public virtual async Task ReadMain_WrongEncryptionFlag_Throws()
+        public async Task ReadingMain_Fail_WrongEncryptionFlag()
         {
             saveWriter.WriteEncrypted = true;
             saveReader.ReadEncrypted = false;
 
-            bool throwsIt = false;
+            bool threw = false;
             try
             {
-                Task writeTask = saveWriter.WriteOneToDisk(writeReq);
-                await writeTask;
-
-                Task readTask = saveReader.ReadMainSaveDataFromDisk(readReq);
-                await readTask;
+                await saveWriter.WriteOneToDisk(writeReq);
+                await saveReader.ReadMainSaveDataFromDisk(readReq);
             }
             catch (ArgumentException)
             {
-                throwsIt = true;
+                threw = true;
             }
-            finally
-            {
-                Assert.IsTrue(throwsIt);
-            }
+
+            string assertMessage = "Does not throw an ArgumentException when reading main save data with wrong encryption flag.";
+            Assert.IsTrue(threw, assertMessage);
         }
 
     }

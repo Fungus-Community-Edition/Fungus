@@ -131,6 +131,7 @@ namespace Amanita.SaveSys
                 }
             }
 
+            Debug.Log("Right before AnnounceResults() in SaveWriter.WriteOneToDisk()");
             AnnounceResults();
             void AnnounceResults()
             {
@@ -193,8 +194,10 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
+
             bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
             if (wrongTypeOfSOAssigned)
             {

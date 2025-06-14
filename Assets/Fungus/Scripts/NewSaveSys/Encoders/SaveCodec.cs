@@ -5,10 +5,12 @@ namespace Amanita.SaveSys
 {
     public abstract class SaveCodec : ScriptableObject, ISaveCodec, ISaveCodecHandleCheck
     {
-        [SerializeField] protected int priority = 0;
+        [Tooltip("Lower number = earlier processing.")]
+        [SerializeField] protected int order = 0;
+        [Tooltip("Sub-codecs that this one can use to decode data. This list gets sorted automatically based on the order the contents would execute in.")]
         [SerializeField] protected SaveCodec[] subCodecs = new SaveCodec[0];
 
-        public virtual int Order => priority;
+        public virtual int Order => order;
         public virtual bool NeedsInput => false;
 
         public virtual object ToMakeFrom { get; set; } = null;
@@ -48,6 +50,14 @@ namespace Amanita.SaveSys
         /// <remarks>The searching and encoding processes depend on the
         /// implementation in derived classes.</remarks>
         public abstract IList<SaveDataUnit> FindAndEncodeAll();
+
+        protected virtual void OnValidate()
+        {
+            subCodecs ??= new SaveCodec[0];
+
+            // Sort the codecs by order
+            System.Array.Sort(subCodecs, (a, b) => a.Order.CompareTo(b.Order));
+        }
 
     }
 
