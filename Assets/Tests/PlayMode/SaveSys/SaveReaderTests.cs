@@ -146,7 +146,6 @@ namespace Amanita.SaveSystemTests
         {
             await CommonSetupAsync().ConfigureAwait(false);
 
-            Debug.Log("Reading main content reports missing file test started.");
             SaveReadRequest requestForNonexistentFile = new SaveReadRequest(readReq);
             requestForNonexistentFile.SlotNumber = 99;
 

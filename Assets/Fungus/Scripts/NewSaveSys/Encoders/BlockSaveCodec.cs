@@ -55,10 +55,6 @@ namespace Amanita.SaveSys
                 activeCommandId = toCreateFrom.ActiveCommand.ItemId;
                 activeCommandIndex = toCreateFrom.ActiveCommand.CommandIndex;
             }
-            else
-            {
-                Debug.LogWarning($"Block {blockName} does not have an active command.");
-            }
 
             BlockSaveData blockSave = new()
             {

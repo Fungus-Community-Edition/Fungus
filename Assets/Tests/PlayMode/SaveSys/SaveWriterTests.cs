@@ -380,7 +380,7 @@ namespace Amanita.SaveSystemTests
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
             {
-                Debug.Log("Responding to AmanitaSaveWritten event for multiple writes.");
+                Debug.Log("SaveWriterTest: Responding to AmanitaSaveWritten event for multiple writes.");
                 responded = true;
                 Assert.IsNotNull(writeResults.SaveData, "Save data should not be null.");
                 Assert.IsNotNull(writeResults.FilePath, "File path should not be null.");
