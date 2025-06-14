@@ -131,7 +131,6 @@ namespace Amanita.SaveSys
                 }
             }
 
-            Debug.Log("Right before AnnounceResults() in SaveWriter.WriteOneToDisk()");
             AnnounceResults();
             void AnnounceResults()
             {
