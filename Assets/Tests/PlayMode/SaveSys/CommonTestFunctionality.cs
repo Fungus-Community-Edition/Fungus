@@ -1,11 +1,14 @@
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
+using Amanita.Utils;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
@@ -21,6 +24,9 @@ namespace Amanita.SaveSystemTests
         public virtual void DoOneTimeSetUp()
         {
             SaveSystem.InitPaths();
+
+            FungusManager fungusManagerPrefab = Resources.Load<FungusManager>(pathToFungusManagerPrefab);
+            FungusManager fungusManager = UnityObject.Instantiate(fungusManagerPrefab);
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
@@ -44,7 +50,11 @@ namespace Amanita.SaveSystemTests
 
         protected IEnumerator WaitFor(Task writeTask)
         {
-            yield return new WaitUntil(() => writeTask.IsCompleted);
+            var taskAwaitable = writeTask.ConfigureAwait(false);
+            // ^We need it set up this way because otherwise, depending on 
+            // the task, Unity might hang indefinitely.
+            yield return taskAwaitable;
+            
         }
 
         [SetUp]
@@ -90,6 +100,7 @@ namespace Amanita.SaveSystemTests
             SaveSystem.S.RegisterSaveDataApplier(audioApplier);
         }
 
+        
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
@@ -109,6 +120,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual void PrepScene()
         {
+            
             CreateScene();
             void CreateScene()
             {
@@ -138,6 +150,7 @@ namespace Amanita.SaveSystemTests
 
         }
 
+        protected string pathToFungusManagerPrefab = "Prefabs/FungusManager";
         protected GameObject testScenePrefab;
         protected GameObject testScene;
         protected Flowchart flowchart;
@@ -242,6 +255,14 @@ namespace Amanita.SaveSystemTests
                 {
                     UnityObject.DestroyImmediate(testScene);
                 }
+
+                if (FungusManager.Instance != null)
+                {
+                    FungusManager.Instance.gameObject.SetActive(false);
+                    UnityObject.DestroyImmediate(FungusManager.Instance.gameObject);
+                }
+
+                
             }
         }
 
@@ -336,8 +357,26 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(1000).ConfigureAwait(false);
 
-            PrepNewPathsForTesting();
-            PrepAndRegisterSaveData();
+            if (UnityThreadUtil.IsMainThread)
+            {
+                PrepNewPathsForTesting();
+                PrepAndRegisterSaveData();
+            }
+            else
+            {
+                using (var countdown = new CountdownEvent(1))
+                {
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        PrepNewPathsForTesting();
+                        PrepAndRegisterSaveData();
+                        countdown.Signal();
+                    });
+
+                    countdown.Wait();
+                }
+            }
+            
         }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
