@@ -16,20 +16,9 @@ Supported Unity versions:
 
 For the sake of a better product (and how we want this to get on the Asset Store), some things just won't be backwards-compatible with the old Fungus. For things that are being removed outright, we'll work on replacements.
 
-Overhauls and Improvements
+Big Changes
 ============
-Including, but not limited to the...
-
-- Save System
-  - Slot-based
-  - Saves the states of Flowcharts
-  - Much more performant than the old ones
-- Audio System
-  - Basically an alternate implementation of [this](https://github.com/CG-Tespy/Myceliaudio)
-- Input-Handling
-  - Especially for non-mouse-and-keyboard devices
-
-**At the time of this writing, not all of the above have been implemented in the latest release version of Amanita.**
+See the [Milestones page.](https://github.com/Fungus-Community-Edition/Amanita/milestones)
 
 Support and Documentation:
 ============
