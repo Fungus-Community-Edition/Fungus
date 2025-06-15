@@ -1,76 +1,50 @@
-Fungus Community Edition
+Amanita
 ========================
-A community revival of the Fungus project. Our goal is to maintain support for newer versions of Unity, and hopefully get Fungus back on the Asset Store.
-We would also like make extensions created by community members easier to share.
+A modernized, free, community-driven, spiritual successor to [this wonderful asset package](https://github.com/snozbot/fungus/). Just like its predecessor, Amanita is designed to be easy to learn for beginners to Unity. Yes, even those with no coding experience! Our main schtick is narrative-driven games, but you can make a variety of other types of games as well with this.
+
+Installation
+============
+- Go [here](https://github.com/Fungus-Community-Edition/Fungus/releases)
+- Download the unitypackage for the version you want to use
+- Open it up in your project, making sure to import everything (demos are optional)
+
+Compatibility
+============
+Supported Unity versions:
+- Unity 6 LTS
+- Unity 2022 LTS
+
+For the sake of a better product (and how we want this to get on the Asset Store), some things just won't be backwards-compatible with the old Fungus. For things that are being removed outright, we'll work on replacements.
+
+Overhauls and Improvements
+============
+Including, but not limited to the...
+
+- Save System
+  - Slot-based
+  - Saves the states of Flowcharts
+  - Much more performant than the old ones
+- Audio System
+  - Basically an alternate implementation of [this](https://github.com/CG-Tespy/Myceliaudio)
+- Input-Handling
+  - Especially for non-mouse-and-keyboard devices
+
+**At the time of this writing, not all of the above have been implemented in the latest release version of Amanita.**
+
+Support and Documentation:
+============
+- Check both [our wiki](https://github.com/Fungus-Community-Edition/Fungus/wiki) and [that of the original](https://github.com/snozbot/fungus/wiki)
+- Albeit mainly for the old Fungus, there is also a [community run Discord server](https://discord.gg/99RqraQ).
+  - At the time of this writing, this project's maintainers hang around there pretty often. If you want help with Amanita or Fungus, feel free to ping them
+- If you find any bugs, please make sure to report them in the [Issues section](https://github.com/Fungus-Community-Edition/Fungus/issues)
+___
+
+Contributing:
+============
+Contributions are very welcome! Shout-out to [everyone who has contributed to Amanita and/or Fungus to date!](https://github.com/snozbot/fungus/graphs/contributors) <br>
+To contribute code or wiki documentation to Amanita or Fungus, please see [CONTRIBUTING](https://github.com/snozbot/fungus/blob/master/CONTRIBUTING.md).
 
 Maintainers:
 ============
 - [Evan Sklarski](https://github.com/esklarski)
 - [CG-Tespy](https://github.com/CG-Tespy)
-
-Compatibility:
-==============
-For now, we've Updated Fungus to work in:
-- Unity 6 LTS
-- Unity 2022 LTS
-- Unity 2021 LTS
-
-Previous versions back to Unity 5 _should_ be supported but no testing has been done so far. If you do, please let us know.
-
-
-___
-___
-___
-
-
-Original README:
-================
-Fungus
-======
-
-The goal of Fungus is to provide a free, open source tool for creating interactive storytelling games in Unity 3D. Fungus is designed to be easy to learn for beginners to Unity 3D, especially for people with no coding experience. For power users, it provides an intuitive, fast workflow for visual scripting and interactive storytelling. Fungus is being used to create Visual Novels, Point and Click Adventure Games, Childrens Stories, Hidden Object Games, eLearning apps and also some frankly weird stuff which defies classification :)
-
-- Maintainer: [Steve Halliwell](https://github.com/stevehalliwell)
-- Website: [fungusgames.com](https://fungusgames.com)
-- Email: funguswork@stevehalliwell.com 
-
-Fungus was originally created by [Chris Gregan](https://github.com/chrisgregan) - [@gofungus](https://twitter.com/gofungus)
-
-Installation
-============
-
-Download & installation instructions and tutorial videos are available in [the wiki](https://github.com/snozbot/fungus/wiki/installation) and the official [Fungus website](https://fungusgames.com).
-
-Support & Documentation
-=======
-
-The Fungus documentation is available on [our wiki](https://github.com/snozbot/fungus/wiki). Contributions to the wiki are very  welcome.
-
-If you have questions about Fungus, please search our forum first as someone may have had the same issue already. If you can't find an answer please start a new discussion and we'll answer you as soon as we can. Fungus is designed for beginners and we love to hear from users so please don't be shy about posting on [the forum](https://fungusgames.com/forum)!
-
-There is also a community run [Discord server](https://discord.gg/99RqraQ).
-
-You can also join into our chat room.
-[![Join the chat at https://gitter.im/snozbot/fungus](https://badges.gitter.im/snozbot/fungus.svg)](https://gitter.im/snozbot/fungus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
-Status & Branches
-=================
-
-Fungus uses a [gitflow](https://nvie.com/posts/a-successful-git-branching-model/) style setup. The default branch holds the most recent stable release. Develop is the staging ground for ongoing work and the default target of most PRs. 
-
-Develop is currently the staging ground for the next Fungus [feature release 3.14](https://github.com/snozbot/fungus/milestone/1)
-
-Contributing
-============
-
-Many thanks to everyone who has [contributed](https://github.com/snozbot/fungus/graphs/contributors) to the project to date!
-
-To contribute code or documentation to Fungus, please see [CONTRIBUTING](https://github.com/snozbot/fungus/blob/master/CONTRIBUTING.md).
-
-You can view the upcoming roadmap via the [Milestones](https://github.com/snozbot/fungus/milestones).
-
-Running the automated tests
-===========================
-
-The Unity Test Runner is used for testing some underlying elements. Far more are desired and PRs in this area would most welcome.
