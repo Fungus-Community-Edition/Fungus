@@ -35,7 +35,7 @@ Support and Documentation:
 ============
 - Check both [our wiki](https://github.com/Fungus-Community-Edition/Fungus/wiki) and [that of the original](https://github.com/snozbot/fungus/wiki)
 - Albeit mainly for the old Fungus, there is also a [community run Discord server](https://discord.gg/99RqraQ).
-  - At the time of this writing, this project's maintainers hang around there pretty often. If you want help with Amanita or Fungus, feel free to ping them
+  - At the time of this writing, this project's maintainers hang around there pretty often. If you want help with Amanita or Fungus, they might be available for that
 - If you find any bugs, please make sure to report them in the [Issues section](https://github.com/Fungus-Community-Edition/Fungus/issues)
 ___
 
