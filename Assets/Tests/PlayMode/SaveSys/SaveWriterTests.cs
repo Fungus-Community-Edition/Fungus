@@ -562,7 +562,7 @@ namespace Amanita.SaveSystemTests
             LogAssert.ignoreFailingMessages = true;
 
             saveWriter.WriteEncrypted = true;
-            await CommonFailsafeTest_KeepBackups();
+            await CommonFailsafeTest_EraseBackups();
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
@@ -571,10 +571,15 @@ namespace Amanita.SaveSystemTests
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
 
             // Overwrite: simulate by writing again
+            saveWriter.DeleteBackupsPostOverwrite = false;
             await saveWriter.WriteOneToDisk(writeArgs);
 
             // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
         }
 
         protected virtual async Task CommonFailsafeTest_KeepBackups()
@@ -586,13 +591,22 @@ namespace Amanita.SaveSystemTests
             await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
         }
 
+        protected virtual async Task CommonFailsafeTest_EraseBackups()
+        {
+            await CommonSetupAsync();
+
+            saveWriter.DeleteBackupsPostOverwrite = true;
+            // ^So we can test the backup creation
+            await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
+        }
+
         [Test]
         public async Task Failsafe_CreatesBackupBeforeOverwrite_NONEncrypted()
         {
             LogAssert.ignoreFailingMessages = true;
 
             saveWriter.WriteEncrypted = false;
-            await CommonFailsafeTest_KeepBackups();
+            await CommonFailsafeTest_EraseBackups();
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
@@ -601,10 +615,15 @@ namespace Amanita.SaveSystemTests
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
 
             // Overwrite: simulate by writing again
+            saveWriter.DeleteBackupsPostOverwrite = false;
             await saveWriter.WriteOneToDisk(writeArgs);
 
             // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
         }
 
         [Test]
