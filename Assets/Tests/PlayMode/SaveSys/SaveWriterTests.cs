@@ -559,6 +559,9 @@ namespace Amanita.SaveSystemTests
         [Test]
         public async Task Failsafe_CreatesBackupBeforeOverwrite_Encrypted()
         {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = true;
             await CommonFailsafeTest_KeepBackups();
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
@@ -577,30 +580,55 @@ namespace Amanita.SaveSystemTests
         protected virtual async Task CommonFailsafeTest_KeepBackups()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = true;
-
+            
             saveWriter.DeleteBackupsPostOverwrite = false;
             // ^So we can test the backup creation
             await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
         }
 
         [Test]
-        public async Task Failsafe_BackupRetainedOnWriteFailure_Encrypted()
+        public async Task Failsafe_CreatesBackupBeforeOverwrite_NONEncrypted()
         {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = false;
             await CommonFailsafeTest_KeepBackups();
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
 
-            // Simulate write failure by locking the file
-            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+            Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
+            Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
+
+            // Overwrite: simulate by writing again
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
+            Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
+        }
+
+        [Test]
+        public async Task Failsafe_BackupRetainedOnWriteFailure_Encrypted()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = true;
+            await CommonFailsafeTest_KeepBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
+                writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            // Simulate write failure by locking the file. We're not going for a hard lock
+            // here
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 bool writeFailed = false;
                 try
                 {
                     await saveWriter.WriteOneToDisk(writeArgs);
                 }
-                catch (Exception)
+                catch (IOException)
                 {
                     writeFailed = true;
                 }
@@ -616,7 +644,75 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public async Task Failsafe_LogsOnWriteFailure()
+        public async Task Failsafe_BackupRetainedOnWriteFailure_NONEncrypted()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = false;
+            await CommonFailsafeTest_KeepBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
+                writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            // Simulate write failure by locking the file. We're not going for a hard lock
+            // here
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                bool writeFailed = false;
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch (IOException)
+                {
+                    writeFailed = true;
+                }
+
+                // Backup should exist after failed write
+                Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
+                Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
+            }
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+        }
+
+
+        [Test]
+        public async Task Failsafe_LogsOnWriteFailure_Encrypted()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = true;
+
+            // Write initial save
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+
+            // Simulate write failure by locking the file
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
+                                    $"\nException: The process cannot access the file because it is being used by another process.";
+                LogAssert.Expect(LogType.Error, expectedErrorMessage);
+
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch
+                {
+                    // Expected
+                }
+            }
+        }
+
+
+        [Test]
+        public async Task Failsafe_LogsOnWriteFailure_NONEncrypted()
         {
             await CommonSetupAsync();
             saveWriter.WriteEncrypted = false;
@@ -629,7 +725,10 @@ namespace Amanita.SaveSystemTests
             // Simulate write failure by locking the file
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
-                LogAssert.Expect(LogType.Error, ""); // Accept any error log
+                string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
+                                    $"\nException: The process cannot access the file because it is being used by another process.";
+                LogAssert.Expect(LogType.Error, expectedErrorMessage);
 
                 try
                 {
@@ -641,6 +740,7 @@ namespace Amanita.SaveSystemTests
                 }
             }
         }
+
 
         [Test]
         public async Task AfterWrite_SuccessCompletionMarkerAdded()

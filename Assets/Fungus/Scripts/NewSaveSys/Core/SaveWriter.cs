@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
 using Amanita.Collections;
+using Amanita.IO;
 
 namespace Amanita.SaveSys
 {
@@ -111,7 +112,7 @@ namespace Amanita.SaveSys
                     // So we can create a new, updated one when appropriate
                     if (File.Exists(backupFilePath))
                     {
-                        File.Delete(backupFilePath);
+                        IOUtils.UnityFileDelete(backupFilePath);
                     }
                 }
 
@@ -122,10 +123,25 @@ namespace Amanita.SaveSys
 
                     if (areWeOverwriting)
                     {
-                        MarkFileAsBackup();
-                        void MarkFileAsBackup()
+                        PrepBackup();
+                        void PrepBackup()
                         {
-                            File.Move(filePath, backupFilePath);
+                            try
+                            {
+                                // For the sake of performance, we're renaming the file
+                                IOUtils.UnityFileMove(filePath, backupFilePath);
+                            }
+                            catch (IOException ex)
+                            {
+                                // This can happen if the file is locked by another process,
+                                // or if the file is read-only, or if the file is on a different
+                                // filesystem that doesn't support renaming.
+                                // In that case, we want to copy the file instead.
+                                Debug.LogError($"Could not move file {filePath} to backup {backupFilePath}." +
+                                    $"\nException: {ex.Message}");
+                                File.Copy(filePath, backupFilePath);
+                                throw ex;
+                            }
                         }
                     }
                 }
@@ -190,22 +206,21 @@ namespace Amanita.SaveSys
             AnnounceResults();
             void AnnounceResults()
             {
-                SaveWriteResults results = new SaveWriteResults
-                {
-                    FilePath = filePath,
-                    FileName = fileName,
-                    SaveData = request.MainState as CompositeSaveData,
-                    Success = true,
-                    ErrorMessage = string.Empty,
-                    Request = request
-                };
+                writeResults.FilePath = filePath;
+                writeResults.FileName = fileName;
+                writeResults.SaveData = request.MainState as CompositeSaveData;
+                writeResults.Success = true;
+                writeResults.ErrorMessage = string.Empty;
+                writeResults.Request = request;
 
-                AmanitaSaveWritten(results);
-                SaveSysSignals.AmanitaSaveWritten.Invoke(results);
+                AmanitaSaveWritten(writeResults);
+                SaveSysSignals.AmanitaSaveWritten.Invoke(writeResults);
             }
 
             return true;
         }
+
+        protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 
         protected string backupFileExtension = ".bak";
         public virtual string BackupFileExtension

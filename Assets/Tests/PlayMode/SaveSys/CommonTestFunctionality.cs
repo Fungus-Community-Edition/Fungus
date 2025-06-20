@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 
@@ -99,9 +100,11 @@ namespace Amanita.SaveSystemTests
             SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
             SaveSystem.S.RegisterSaveDataApplier(audioApplier);
             saveWriter.DeleteBackupsPostOverwrite = true;
+            LogAssert.ignoreFailingMessages = false;
+
         }
 
-        
+
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
