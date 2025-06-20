@@ -98,6 +98,7 @@ namespace Amanita.SaveSystemTests
 
             SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
             SaveSystem.S.RegisterSaveDataApplier(audioApplier);
+            saveWriter.DeleteBackupsPostOverwrite = true;
         }
 
         

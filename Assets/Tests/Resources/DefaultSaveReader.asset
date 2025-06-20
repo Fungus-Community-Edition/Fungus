@@ -17,4 +17,4 @@ MonoBehaviour:
   relativeSavePath: Saves/
   saveNumberFormat: D2
   readEncrypted: 0
-  decryptor: {fileID: 0}
+  decryptor: {fileID: 11400000, guid: 3a898ba32ee0242468c4d3926788fd2f, type: 2}

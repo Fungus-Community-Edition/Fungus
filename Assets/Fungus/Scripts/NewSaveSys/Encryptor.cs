@@ -9,6 +9,7 @@ namespace Amanita.SaveSys
     /// serious encryption that does more than prevent casual snooping, you'd
     /// best go with another ScriptableObject that implements IEncryptor.
     /// </summary>
+    [CreateAssetMenu(fileName = "DefaultEncryptor", menuName = "Amanita/SaveSys/DefaultEncryptor", order = 1)]
     public class Encryptor : ScriptableObject, IEncryptor
     {
         public virtual object GetOutput(object input)

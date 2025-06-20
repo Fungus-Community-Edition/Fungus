@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
+using Amanita.Collections;
 
 namespace Amanita.SaveSys
 {
@@ -22,6 +23,14 @@ namespace Amanita.SaveSys
 
         [SerializeField] protected ScriptableObject encryptor;
 
+        [SerializeField] protected bool deleteBackupsPostOverwrite = true;
+
+        public virtual bool DeleteBackupsPostOverwrite
+        {
+            get => deleteBackupsPostOverwrite;
+            set => deleteBackupsPostOverwrite = value;
+        }
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
@@ -30,8 +39,9 @@ namespace Amanita.SaveSys
         /// </summary>
         public UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             EnsureWeHaveBackupEncryptor();
             void EnsureWeHaveBackupEncryptor()
             {
@@ -80,22 +90,46 @@ namespace Amanita.SaveSys
             Validate(request);
 
             string saveFolder = GetFolderToAccess(request.BaseSaveDirectory),
-                numFormatted = request.SlotNumber.ToString(SaveNumberFormat),
-                fileName = string.Empty,
-                filePath = string.Empty;
+                numFormatted = request.SlotNumber.ToString(SaveNumberFormat);
 
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            fileName = string.Format(fileNameFormat, savePrefix,
+            string fileName = string.Format(fileNameFormat, savePrefix,
                     numFormatted, fileExtension);
-            filePath = saveFolder + fileName;
+            string filePath = saveFolder + fileName;
             debugSaveFolder = saveFolder;
 
             debugFilePath = filePath;
+            string backupFilePath = $"{filePath}{backupFileExtension}";
 
             await DoTheWriting().ConfigureAwait(false);
             async Task DoTheWriting()
             {
+                DeleteOldBackup();
+                void DeleteOldBackup()
+                {
+                    // So we can create a new, updated one when appropriate
+                    if (File.Exists(backupFilePath))
+                    {
+                        File.Delete(backupFilePath);
+                    }
+                }
+
+                PrepForOverwriting();
+                void PrepForOverwriting()
+                {
+                    bool areWeOverwriting = File.Exists(filePath);
+
+                    if (areWeOverwriting)
+                    {
+                        MarkFileAsBackup();
+                        void MarkFileAsBackup()
+                        {
+                            File.Move(filePath, backupFilePath);
+                        }
+                    }
+                }
+
                 if (!writeEncrypted)
                 {
                     await WriteFullJsonTextToFile();
@@ -113,7 +147,8 @@ namespace Amanita.SaveSys
                             mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
                         }
 
-                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}{mainStateTextToWrite}";
+                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}" +
+                            $"{mainStateTextToWrite}{CompletionMarker}";
                         await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
                     }
                 }
@@ -126,7 +161,28 @@ namespace Amanita.SaveSys
                         SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
                         IEncryptor correctEncryptor = encryptor as IEncryptor;
                         byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
+                        encryptedData = WithCompletionMarkerAdded(encryptedData);
+                        byte[] WithCompletionMarkerAdded(byte[] toAddTo)
+                        {
+                            // We need to add the completion marker (defined in the parent class)
+                            // to the end of the encrypted data.
+                            byte[] result = new byte[toAddTo.Length + completionMarkerBytes.Length];
+                            System.Buffer.BlockCopy(toAddTo, 0, result, 0, toAddTo.Length);
+                            System.Buffer.BlockCopy(completionMarkerBytes, 0, result,
+                                toAddTo.Length, completionMarkerBytes.Length);
+                            return result;
+                        }
+
                         await File.WriteAllBytesAsync(filePath, encryptedData);
+                    }
+                }
+
+                OnWritingComplete();
+                void OnWritingComplete()
+                {
+                    if (DeleteBackupsPostOverwrite && File.Exists(backupFilePath))
+                    {
+                        File.Delete(backupFilePath);
                     }
                 }
             }
@@ -150,6 +206,13 @@ namespace Amanita.SaveSys
 
             return true;
         }
+
+        protected string backupFileExtension = ".bak";
+        public virtual string BackupFileExtension
+        {
+            get => backupFileExtension;
+        }
+        protected string tempFileExtension = ".tmp";
 
         /// <summary>
         /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.

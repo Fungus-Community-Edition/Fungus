@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -13,6 +14,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected string relativeSavePath = "/Saves/";
         [SerializeField] protected string saveNumberFormat = "D2";
 
+        
         public virtual string SavePrefix => savePrefix;
         public virtual string FileExtension => fileExtension;
         public virtual string RelativeSavePath
@@ -64,6 +66,14 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        protected virtual void OnEnable()
+        {
+            if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
+            {
+                completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
+            }
+        }
+
         protected virtual void OnValidate()
         {
             if (string.IsNullOrEmpty(relativeSavePath))
@@ -71,7 +81,36 @@ namespace Amanita.SaveSys
                 relativeSavePath = DefaultRelativeSavePath;
             }
             EnsureRelativePathInRightFormat();
+
+            if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
+            {
+                completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
+            }
         }
+
+        protected byte[] completionMarkerBytes;
+        public virtual byte[] CompletionMarkerBytes
+        {
+            get
+            {
+                if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
+                {
+                    completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
+                }
+                return completionMarkerBytes;
+            }
+        }
+
+        // For checking the validity of the save files.
+        protected static string completionMarker { get; set; } = "\n<!-- Amanita Save Sys: Save Completed! -->";
+
+        public static string CompletionMarker
+        {
+            get => completionMarker;
+        }
+
+
+        
 
     }
 }

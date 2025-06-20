@@ -21,8 +21,9 @@ namespace Amanita.SaveSys
 
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             PrepDefaultDecryptor();
             void PrepDefaultDecryptor()
             {
