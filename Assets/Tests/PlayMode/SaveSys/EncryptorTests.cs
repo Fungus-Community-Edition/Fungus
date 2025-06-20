@@ -21,14 +21,19 @@ namespace Amanita.SaveSystemTests
                 string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
                 string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
 
-                string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
+                string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
 
                 byte key = 0xAA;
                 IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                     .Select(b => (byte)(b ^ key))
                     .ToArray(); // Simple XOR encryption for testing
 
-                object output = encryptor.GetOutput(saveDataSet);
+                BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest()
+                {
+                    SaveDataSet = saveDataSet,
+                    CompletionMarker = SaveDiskAccessor.CompletionMarker
+                };
+                object output = encryptor.GetOutput(encryptionRequest);
                 byte[] bytesWeGot = (byte[])output;
 
                 bool success = expectedBytes.SequenceEqual(bytesWeGot);
