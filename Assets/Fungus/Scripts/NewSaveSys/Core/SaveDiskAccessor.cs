@@ -68,10 +68,7 @@ namespace Amanita.SaveSys
 
         protected virtual void OnEnable()
         {
-            if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
-            {
-                completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
-            }
+
         }
 
         protected virtual void OnValidate()
@@ -82,35 +79,11 @@ namespace Amanita.SaveSys
             }
             EnsureRelativePathInRightFormat();
 
-            if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
-            {
-                completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
-            }
-        }
-
-        protected byte[] completionMarkerBytes;
-        public virtual byte[] CompletionMarkerBytes
-        {
-            get
-            {
-                if (completionMarkerBytes == null || completionMarkerBytes.Length == 0)
-                {
-                    completionMarkerBytes = Encoding.UTF8.GetBytes(completionMarker);
-                }
-                return completionMarkerBytes;
-            }
         }
 
         // For checking the validity of the save files.
-        protected static string completionMarker { get; set; } = "\n<!-- Amanita Save Sys: Save Completed! -->";
+        public static string CompletionMarker { get; protected set; } = "\n<!-- Amanita Save Sys: Save Completed! -->";
 
-        public static string CompletionMarker
-        {
-            get => completionMarker;
-        }
-
-
-        
 
     }
 }

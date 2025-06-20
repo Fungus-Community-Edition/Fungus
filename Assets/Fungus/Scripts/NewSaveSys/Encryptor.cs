@@ -14,7 +14,7 @@ namespace Amanita.SaveSys
     {
         public virtual object GetOutput(object input)
         {
-            SaveDataSet dataSet = input as SaveDataSet;
+            BaseEncryptionRequest inputRequest = input as BaseEncryptionRequest;
             Validate();
             void Validate()
             {
@@ -26,10 +26,30 @@ namespace Amanita.SaveSys
                     errorMessage = "Null input given to encryptor.";
                     exception = new System.NullReferenceException(errorMessage);
                 }
-                else if (input is not SaveDataSet)
+                else if (input is not BaseEncryptionRequest)
                 {
                     errorMessage = "Encryptor given wrong variety of input.";
                     exception = new System.ArgumentException(errorMessage);
+                }
+                else if (inputRequest.SaveDataSet == null)
+                {
+                    errorMessage = "Encryptor given a request with no SaveDataSet.";
+                    exception = new System.ArgumentNullException(errorMessage);
+                }
+                else if (inputRequest.SaveDataSet.Meta == null)
+                {
+                    errorMessage = "Encryptor given a request with no SaveMetaData.";
+                    exception = new System.NullReferenceException(errorMessage);
+                }
+                else if (inputRequest.SaveDataSet.MainState == null)
+                {
+                    errorMessage = "Encryptor given a request with no MainState.";
+                    exception = new System.NullReferenceException(errorMessage);
+                }
+                else if (string.IsNullOrEmpty(inputRequest.CompletionMarker))
+                {
+                    errorMessage = "Encryptor given a request with no CompletionMarker.";
+                    exception = new System.NullReferenceException(errorMessage);
                 }
 
                 if (exception != null)
@@ -38,12 +58,14 @@ namespace Amanita.SaveSys
                 }
             }
 
+            SaveDataSet dataSet = inputRequest.SaveDataSet;
+            string completionMarker = inputRequest.CompletionMarker;
             string fullJson = GetFullTextToEncrypt();
             string GetFullTextToEncrypt()
             {
                 string metaJson = JsonUtility.ToJson(dataSet.Meta, true);
                 string mainStateJson = JsonUtility.ToJson(dataSet.MainState, true);
-                string fullJson = $"{metaJson}{Delimiter}{mainStateJson}";
+                string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
                 return fullJson;
             }
             

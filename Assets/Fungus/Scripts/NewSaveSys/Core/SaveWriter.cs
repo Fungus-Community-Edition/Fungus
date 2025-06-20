@@ -175,20 +175,11 @@ namespace Amanita.SaveSys
                     async Task WriteAsEncrypted()
                     {
                         SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
+                        encryptionRequest.SaveDataSet = saveDataSet;
+                        encryptionRequest.CompletionMarker = CompletionMarker;
                         IEncryptor correctEncryptor = encryptor as IEncryptor;
-                        byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
-                        encryptedData = WithCompletionMarkerAdded(encryptedData);
-                        byte[] WithCompletionMarkerAdded(byte[] toAddTo)
-                        {
-                            // We need to add the completion marker (defined in the parent class)
-                            // to the end of the encrypted data.
-                            byte[] result = new byte[toAddTo.Length + completionMarkerBytes.Length];
-                            System.Buffer.BlockCopy(toAddTo, 0, result, 0, toAddTo.Length);
-                            System.Buffer.BlockCopy(completionMarkerBytes, 0, result,
-                                toAddTo.Length, completionMarkerBytes.Length);
-                            return result;
-                        }
-
+                        byte[] encryptedData = (byte[])correctEncryptor.GetOutput(encryptionRequest);
+                        
                         await File.WriteAllBytesAsync(filePath, encryptedData);
                     }
                 }
@@ -220,6 +211,7 @@ namespace Amanita.SaveSys
             return true;
         }
 
+        protected BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
         protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 
         protected string backupFileExtension = ".bak";
@@ -288,5 +280,11 @@ namespace Amanita.SaveSys
             }
         }
 
+    }
+
+    public class BaseEncryptionRequest
+    {
+        public virtual SaveDataSet SaveDataSet { get; set; }
+        public virtual string CompletionMarker { get; set; }
     }
 }
