@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   savePrefix: saveData
   fileExtension: save
-  relativeSavePath: /Saves/
+  relativeSavePath: Saves/
   saveNumberFormat: D2
   writeEncrypted: 0
-  encryptor: {fileID: 0}
+  encryptor: {fileID: 11400000, guid: 32d7bc6e2270e90478f9f33a724d6eaa, type: 2}

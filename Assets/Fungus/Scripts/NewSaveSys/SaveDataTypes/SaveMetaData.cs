@@ -225,7 +225,7 @@ namespace Amanita.SaveSys
     }
 
     // For stuff that probably all save meta data should have
-    public interface ISaveMetaData
+    public interface ISaveMetaData : ISaveData
     {
         string SaveID { get; }
         int SlotNumber { get; }

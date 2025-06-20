@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
+using Amanita.Collections;
+using Amanita.IO;
 
 namespace Amanita.SaveSys
 {
@@ -22,6 +24,14 @@ namespace Amanita.SaveSys
 
         [SerializeField] protected ScriptableObject encryptor;
 
+        [SerializeField] protected bool deleteBackupsPostOverwrite = true;
+
+        public virtual bool DeleteBackupsPostOverwrite
+        {
+            get => deleteBackupsPostOverwrite;
+            set => deleteBackupsPostOverwrite = value;
+        }
+
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
@@ -30,8 +40,9 @@ namespace Amanita.SaveSys
         /// </summary>
         public UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             EnsureWeHaveBackupEncryptor();
             void EnsureWeHaveBackupEncryptor()
             {
@@ -80,22 +91,61 @@ namespace Amanita.SaveSys
             Validate(request);
 
             string saveFolder = GetFolderToAccess(request.BaseSaveDirectory),
-                numFormatted = request.SlotNumber.ToString(SaveNumberFormat),
-                fileName = string.Empty,
-                filePath = string.Empty;
+                numFormatted = request.SlotNumber.ToString(SaveNumberFormat);
 
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            fileName = string.Format(fileNameFormat, savePrefix,
+            string fileName = string.Format(fileNameFormat, savePrefix,
                     numFormatted, fileExtension);
-            filePath = saveFolder + fileName;
+            string filePath = saveFolder + fileName;
             debugSaveFolder = saveFolder;
 
             debugFilePath = filePath;
+            string backupFilePath = $"{filePath}{backupFileExtension}";
 
             await DoTheWriting().ConfigureAwait(false);
             async Task DoTheWriting()
             {
+                DeleteOldBackup();
+                void DeleteOldBackup()
+                {
+                    // So we can create a new, updated one when appropriate
+                    if (File.Exists(backupFilePath))
+                    {
+                        IOUtils.UnityFileDelete(backupFilePath);
+                    }
+                }
+
+                PrepForOverwriting();
+                void PrepForOverwriting()
+                {
+                    bool areWeOverwriting = File.Exists(filePath);
+
+                    if (areWeOverwriting)
+                    {
+                        PrepBackup();
+                        void PrepBackup()
+                        {
+                            try
+                            {
+                                // For the sake of performance, we're renaming the file
+                                IOUtils.UnityFileMove(filePath, backupFilePath);
+                            }
+                            catch (IOException ex)
+                            {
+                                // This can happen if the file is locked by another process,
+                                // or if the file is read-only, or if the file is on a different
+                                // filesystem that doesn't support renaming.
+                                // In that case, we want to copy the file instead.
+                                Debug.LogError($"Could not move file {filePath} to backup {backupFilePath}." +
+                                    $"\nException: {ex.Message}");
+                                File.Copy(filePath, backupFilePath);
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+
                 if (!writeEncrypted)
                 {
                     await WriteFullJsonTextToFile();
@@ -113,7 +163,8 @@ namespace Amanita.SaveSys
                             mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
                         }
 
-                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}{mainStateTextToWrite}";
+                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}" +
+                            $"{mainStateTextToWrite}{CompletionMarker}";
                         await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
                     }
                 }
@@ -124,9 +175,21 @@ namespace Amanita.SaveSys
                     async Task WriteAsEncrypted()
                     {
                         SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
+                        encryptionRequest.SaveDataSet = saveDataSet;
+                        encryptionRequest.CompletionMarker = CompletionMarker;
                         IEncryptor correctEncryptor = encryptor as IEncryptor;
-                        byte[] encryptedData = (byte[])correctEncryptor.GetOutput(saveDataSet);
+                        byte[] encryptedData = (byte[])correctEncryptor.GetOutput(encryptionRequest);
+                        
                         await File.WriteAllBytesAsync(filePath, encryptedData);
+                    }
+                }
+
+                OnWritingComplete();
+                void OnWritingComplete()
+                {
+                    if (DeleteBackupsPostOverwrite && File.Exists(backupFilePath))
+                    {
+                        File.Delete(backupFilePath);
                     }
                 }
             }
@@ -134,22 +197,29 @@ namespace Amanita.SaveSys
             AnnounceResults();
             void AnnounceResults()
             {
-                SaveWriteResults results = new SaveWriteResults
-                {
-                    FilePath = filePath,
-                    FileName = fileName,
-                    SaveData = request.MainState as CompositeSaveData,
-                    Success = true,
-                    ErrorMessage = string.Empty,
-                    Request = request
-                };
+                writeResults.FilePath = filePath;
+                writeResults.FileName = fileName;
+                writeResults.SaveData = request.MainState as CompositeSaveData;
+                writeResults.Success = true;
+                writeResults.ErrorMessage = string.Empty;
+                writeResults.Request = request;
 
-                AmanitaSaveWritten(results);
-                SaveSysSignals.AmanitaSaveWritten.Invoke(results);
+                AmanitaSaveWritten(writeResults);
+                SaveSysSignals.AmanitaSaveWritten.Invoke(writeResults);
             }
 
             return true;
         }
+
+        protected BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
+        protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
+
+        protected string backupFileExtension = ".bak";
+        public virtual string BackupFileExtension
+        {
+            get => backupFileExtension;
+        }
+        protected string tempFileExtension = ".tmp";
 
         /// <summary>
         /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.
@@ -210,5 +280,11 @@ namespace Amanita.SaveSys
             }
         }
 
+    }
+
+    public class BaseEncryptionRequest
+    {
+        public virtual SaveDataSet SaveDataSet { get; set; }
+        public virtual string CompletionMarker { get; set; }
     }
 }

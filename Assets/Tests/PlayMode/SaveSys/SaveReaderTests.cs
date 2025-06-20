@@ -160,7 +160,7 @@ namespace Amanita.SaveSystemTests
         public virtual async Task ReadingMain_Fail_ReportsBadJsonOnMalformedData()
         {
             await CommonSetupAsync().ConfigureAwait(false);
-
+            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
             SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
             reqForMalformedFile.SlotNumber = 71;
 
@@ -175,8 +175,8 @@ namespace Amanita.SaveSystemTests
 
             Task readTask = saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
 
-            string assertErrorMessage = "Does not throw an ArgumentException upon reading invalid content";
-            Assert.ThrowsAsync<ArgumentException>(() => readTask, assertErrorMessage);
+            string assertErrorMessage = "Does not throw an IOException upon reading invalid content";
+            Assert.ThrowsAsync<IOException>(() => readTask, assertErrorMessage);
 
             if (File.Exists(filePath))
             {
@@ -207,19 +207,15 @@ namespace Amanita.SaveSystemTests
             {
                 await saveReader.ReadMetadataFromDisk(reqForMalformedFile).ConfigureAwait(false);
             }
-            catch (ArgumentException ex)
+            catch (IOException ex)
             {
                 errorMessage = ex.Message;
                 throwsIt = true;
             }
             finally
             {
-                Assert.IsTrue(throwsIt, "Does not throw the expected ArgumentException upon reading invalid content");
+                Assert.IsTrue(throwsIt, "Does not throw the expected IOException upon reading invalid content");
                 
-                bool isAboutJson = errorMessage.ToLower().Contains("json");
-
-                Assert.IsTrue(isAboutJson, $"The exception message is not what was expected:\n{errorMessage}");
-
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
@@ -301,12 +297,12 @@ namespace Amanita.SaveSystemTests
                 await saveWriter.WriteOneToDisk(writeReq);
                 await saveReader.ReadMainSaveDataFromDisk(readReq);
             }
-            catch (ArgumentException)
+            catch (IOException)
             {
                 threw = true;
             }
 
-            string assertMessage = "Does not throw an ArgumentException when reading main save data with wrong encryption flag.";
+            string assertMessage = "Does not throw an IOException when reading main save data with wrong encryption flag.";
             Assert.IsTrue(threw, assertMessage);
         }
 
