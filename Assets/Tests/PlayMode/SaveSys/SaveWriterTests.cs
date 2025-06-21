@@ -10,6 +10,7 @@ using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 using System;
+using System.Threading;
 
 namespace Amanita.SaveSystemTests
 {
@@ -53,7 +54,7 @@ namespace Amanita.SaveSystemTests
             Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
             yield return WaitFor(writeTask);
 
-            bool fileWasWritten = System.IO.File.Exists(fullPath);
+            bool fileWasWritten = File.Exists(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
@@ -75,7 +76,7 @@ namespace Amanita.SaveSystemTests
             Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
             await writeTask.ConfigureAwait(false);
 
-            bool fileWasWritten = System.IO.File.Exists(fullPath);
+            bool fileWasWritten = File.Exists(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
@@ -281,7 +282,8 @@ namespace Amanita.SaveSystemTests
             string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
             string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
 
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
+                $"{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             await CommonSaveWriteTestAsync(writeArgs);
 
             string jsonText = await ReadAndVerifyContent();
@@ -315,7 +317,8 @@ namespace Amanita.SaveSystemTests
             string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
             string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
 
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
+                $"{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             byte[] expectedEncryptedData = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key)).ToArray(); // Simple XOR encryption for testing
@@ -551,11 +554,229 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(Directory.Exists(saveFolder), "Directory was not created after writing.");
         }
 
+        // Failsafe tests
+
         [Test]
-        public virtual async Task AtomicOperation_TempSaveWhenOverwriting()
+        public async Task Failsafe_CreatesBackupBeforeOverwrite_Encrypted()
         {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = true;
+            await CommonFailsafeTest_EraseBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
+            Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
+
+            // Overwrite: simulate by writing again
+            saveWriter.DeleteBackupsPostOverwrite = false;
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
+            Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+        }
+
+        protected virtual async Task CommonFailsafeTest_KeepBackups()
+        {
+            await CommonSetupAsync();
+            
+            saveWriter.DeleteBackupsPostOverwrite = false;
+            // ^So we can test the backup creation
+            await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
+        }
+
+        protected virtual async Task CommonFailsafeTest_EraseBackups()
+        {
+            await CommonSetupAsync();
+
+            saveWriter.DeleteBackupsPostOverwrite = true;
+            // ^So we can test the backup creation
+            await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
+        }
+
+        [Test]
+        public async Task Failsafe_CreatesBackupBeforeOverwrite_NONEncrypted()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = false;
+            await CommonFailsafeTest_EraseBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
+            Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
+
+            // Overwrite: simulate by writing again
+            saveWriter.DeleteBackupsPostOverwrite = false;
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
+            Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+        }
+
+        [Test]
+        public async Task Failsafe_BackupRetainedOnWriteFailure_Encrypted()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = true;
+            await CommonFailsafeTest_KeepBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
+                writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            // Simulate write failure by locking the file. We're not going for a hard lock
+            // here
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                bool writeFailed = false;
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch (IOException)
+                {
+                    writeFailed = true;
+                }
+
+                // Backup should exist after failed write
+                Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
+                Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
+            }
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+        }
+
+        [Test]
+        public async Task Failsafe_BackupRetainedOnWriteFailure_NONEncrypted()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            saveWriter.WriteEncrypted = false;
+            await CommonFailsafeTest_KeepBackups();
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
+                writeArgs.SlotNumber, saveWriter);
+            string backupPath = filePath + saveWriter.BackupFileExtension;
+
+            // Simulate write failure by locking the file. We're not going for a hard lock
+            // here
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                bool writeFailed = false;
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch (IOException)
+                {
+                    writeFailed = true;
+                }
+
+                // Backup should exist after failed write
+                Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
+                Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
+            }
+
+            // Clean up backup for other tests
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+        }
+
+
+        [Test]
+        public async Task Failsafe_LogsOnWriteFailure_Encrypted()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = true;
+
+            // Write initial save
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+
+            // Simulate write failure by locking the file
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
+                                    $"\nException: The process cannot access the file because it is being used by another process.";
+                LogAssert.Expect(LogType.Error, expectedErrorMessage);
+
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch
+                {
+                    // Expected
+                }
+            }
+        }
+
+
+        [Test]
+        public async Task Failsafe_LogsOnWriteFailure_NONEncrypted()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = false;
+
+            // Write initial save
+            await saveWriter.WriteOneToDisk(writeArgs);
+
+            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+
+            // Simulate write failure by locking the file
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
+                                    $"\nException: The process cannot access the file because it is being used by another process.";
+                LogAssert.Expect(LogType.Error, expectedErrorMessage);
+
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgs);
+                }
+                catch
+                {
+                    // Expected
+                }
+            }
+        }
+
+
+        [Test]
+        public async Task AfterWrite_SuccessCompletionMarkerAdded()
+        {
+            // We want to add a success marker after writing a save so that on startup, we can easily check
+            // for any corrupted saves.
+
+            // Just jotting down some ideas for it here:
+            // Add a specific line at the end of the file that indicates success. Of course, 
+            // this line should not be part of the actual save data. The reader and writer
+            // should be aware of this line when doing their thing.
+            // The writer adds it, the reader checks for it.
+
+            await CommonSetupAsync();
             Assert.Ignore();
         }
-    
+
     }
+
 }
