@@ -47,17 +47,24 @@ namespace Amanita.SaveSys
         public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this); //GetFullFilePath(request);
-            Validate(filePath);
-
-            bool writtenAsPlainText = !readEncrypted;
-            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
-            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
-
-            SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(infoForDecryptor);
+            await PrepDecryptionRequest(request, cancelToken);
+            SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
             return result;
         }
 
+        protected virtual async Task PrepDecryptionRequest(SaveReadRequest request,
+            CancellationToken cancelToken = default)
+        {
+            string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this);
+            Validate(filePath);
+            bool writtenAsPlainText = !readEncrypted;
+            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
+            decryptionRequest.RawBytes = rawBytes;
+            decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
+            decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+        }
+
+        protected BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
         protected virtual string GetFullFilePath(SaveReadRequest request)
         {
             string saveFolderPath = FileUtils.GetPathToFolder(request.BaseSaveDirectory, RelativeSavePath);
@@ -82,14 +89,9 @@ namespace Amanita.SaveSys
         public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
+            await PrepDecryptionRequest(request, cancelToken);
             string filePath = GetFullFilePath(request);
-            Validate(filePath);
-
-            bool writtenAsPlainText = !readEncrypted;
-            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
-            object[] infoForDecryptor = new object[] { rawBytes, writtenAsPlainText };
-
-            CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(infoForDecryptor);
+            CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(decryptionRequest);
             
             return result;
         }
@@ -112,5 +114,11 @@ namespace Amanita.SaveSys
         }
     }
 
-    
+    public class BaseDecryptionRequest
+    {
+        public byte[] RawBytes { get; set; }
+        public bool WrittenAsPlainText { get; set; }
+        public string CompletionMarker { get; set; }
+    }
+
 }
