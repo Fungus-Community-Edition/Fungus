@@ -1,0 +1,19 @@
+There's a bit of a pipeline involved when loading save data. It's as follows:
+
+1. The SaveSystem's LoadSave method is called, with parameters such as which slot to load from.
+2. The SaveManager retrieves the relevant save data from the repository, which itself creates an instance of it
+by reading from a file or other storage medium.
+3. The save data is then processed through the registered codecs, which decode the data into usable formats.
+4. That decoded data is then passed to the SaveDataAppliers registered with the SaveManager.
+
+Of course, you can hook up your scripts to any of these steps to customize the loading process.
+For example, you might want to add a custom codec to handle a specific data format, or a custom
+SaveDataApplier to apply the loaded data in a unique way.
+
+You can also have your code respond to different parts of the process. For example, there's an event
+that executes right before any save data starts getting fetched. Why listen for that? To do things like
+fade out the screen or pause the game. Similarly, there's an event that executes right after all save
+data has been loaded, which you can use to resume the game or fade back in the screen.
+
+Note that these events are async, allowing you to perform actions that take time
+(such as the aformentioned screen fade). All without blocking the loading process.

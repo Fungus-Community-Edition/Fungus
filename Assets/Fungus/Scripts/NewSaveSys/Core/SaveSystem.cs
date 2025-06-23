@@ -153,6 +153,10 @@ namespace Amanita.SaveSys
 
         public virtual Task<CompositeSaveData> LoadSave(int slotNum)
         {
+            // Trigger the pre-fetch-any-data event
+            // Get the save data from the repo
+            // Have the codecs prep stuff for the appliers
+            // Pass things to the appliers
             return saveRepo.LoadMainSaveAsync(slotNum);
         }
 
