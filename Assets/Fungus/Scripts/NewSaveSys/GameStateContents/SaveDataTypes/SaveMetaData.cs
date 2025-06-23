@@ -231,6 +231,8 @@ namespace Amanita.SaveSys
         int SlotNumber { get; }
         string SaveVersion { get; }
         DateTime TimeStamp { get; }
+        string SceneName { get; }
+        int SceneBuildIndex { get; }
         
     }
 }

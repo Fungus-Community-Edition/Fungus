@@ -176,8 +176,8 @@ namespace Amanita.SaveSystemTests
             }
         }
                 
-        [UnityTest]
-        public IEnumerator LoadingSlots_CorrectGameStateApplied()
+        [Test]
+        public virtual async Task LoadingSlots_CorrectGameStateApplied()
         {
             string expectedNameVarValue;
             int expectedScoreVarValue;
@@ -189,7 +189,7 @@ namespace Amanita.SaveSystemTests
 
             foreach (int slot in testSlotNums)
             {
-                yield return CommonSetup();
+                await CommonSetupAsync();
                
                 expectedNameVarValue = nameVar.Value;
                 expectedScoreVarValue = scoreVar.Value;
@@ -199,12 +199,12 @@ namespace Amanita.SaveSystemTests
                 expectedTwoDPosVarValue = twoDPosVar.Value;
                 expectedStringVarValue = stringVar.Value;
 
-                yield return SaveTo(slot);
+                await manager.SaveTo(slot);
                 ChangeGameState();
-                yield return Load(slot);
 
-                CompositeSaveData mainState = loadTask.Result; 
-                // ^Since IEnumerators can't have ref or out params, we need to fetch things like this
+                CompositeSaveData mainState = await manager.LoadMain(slot, false);
+                // ^We need to make sure to avoid loading the scene here. That will just make this test run
+                // again, which is not what we want.
                 Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
 
                 // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching

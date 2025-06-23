@@ -8,10 +8,24 @@ namespace Amanita.SaveSys
     /// Think of this as the equivalent to the old SaveDataItem class.
     /// </summary>
     [System.Serializable]
-    public class SaveDataUnit : ISaveDataUnit, IEquatable<SaveDataUnit>
+    public class SaveDataUnit : ISaveDataUnit<string>, IEquatable<SaveDataUnit>
     {
+        [SerializeField] protected string key = string.Empty;
         [SerializeField] protected string dataType;
         [SerializeField] protected string content;
+
+        public virtual string Key
+        {
+            get => key;
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(Key), "Key cannot be null.");
+                }
+                key = value;
+            }
+        }
 
         public string DataTypeName
         {
@@ -25,7 +39,11 @@ namespace Amanita.SaveSys
             set => content = value;
         }
 
-        object ISaveDataUnit.Content { get => content; set => content = value.ToString(); }
+        object ISaveDataUnit.Content
+        {
+            get => content;
+            set => content = value.ToString();
+        }
 
         public SaveDataUnit(string dataType = "", string data = "")
         {
@@ -43,7 +61,19 @@ namespace Amanita.SaveSys
 
     public interface ISaveDataUnit
     {
+        /// <summary>
+        /// For identifying this unit in a collection thereof.
+        /// </summary>
+        string Key { get; set; }
+
+        /// <summary>
+        /// So you can pass this to the right codec when it's time to load state.
+        /// </summary>
         string DataTypeName { get; }
+
+        /// <summary>
+        /// The state itself.
+        /// </summary>
         object Content { get; set; }
     }
 

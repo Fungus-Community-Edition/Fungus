@@ -5,6 +5,12 @@ using SavePairDict = System.Collections.Generic.IDictionary<int, Amanita.SaveSys
 
 namespace Amanita.SaveSys
 {
+    /// <summary>
+    /// Manages a collection of save data sets in memory (as opposed to persistent storage
+    /// like hard drives), providing functionality to add, remove, and query save data
+    /// and metadata associated with specific slots. Also has some utility methods for
+    /// things like checking if a save exists in a slot or checking just what slots are occupied.
+    /// </summary>
     public class SaveRegistry
     {
         protected readonly SavePairDict _savePairs = new Dictionary<int, SaveDataSet>();

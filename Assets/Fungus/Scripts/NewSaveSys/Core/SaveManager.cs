@@ -28,13 +28,11 @@ namespace Amanita.SaveSys
         public SaveManager()
         {
             registry = new SaveRegistry();
-            serializer = new SaveSerializer();
             loader = new SaveLoader();
         }
 
         protected SaveRegistry registry;
-        protected SaveSerializer serializer;
-        protected SaveLoader loader;
+        protected SaveLoader loader = new SaveLoader();
         public SaveDirectoryType SaveDirType { get; set; } = SaveDirectoryType.DataPath;
         public virtual string SaveRelativePath { get; set; } = "/Saves";
 
@@ -48,20 +46,30 @@ namespace Amanita.SaveSys
             }
         }
         
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> encoders)
+        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
         {
-            for (int i = 0; i < encoders.Count; i++)
+            if (codecs == null || codecs.Count == 0)
             {
-                RegisterMainCodec(encoders[i]);
+                Debug.LogWarning("No main codecs provided to register.");
+                return;
+            }
+
+            for (int i = 0; i < codecs.Count; i++)
+            {
+                IMainSaveCodec currentEncoder = codecs[i];
+                if (currentEncoder == null)
+                {
+                    Debug.LogWarning($"Main codec at index {i} is null. Skipping registration.");
+                    continue;
+                }
+                RegisterMainCodec(currentEncoder);
             }
         }
 
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            if (!mainCodecs.Contains(codec))
-            {
-                mainCodecs.Add(codec);
-            }
+            mainCodecs.Add(codec);
+            loader.RegisterMainCodec(codec);
         }
 
         protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
@@ -108,20 +116,7 @@ namespace Amanita.SaveSys
                 SaveDataSet newSet = new SaveDataSet(meta, mainState);
                 registry.AddSave(newSet);
 
-                // And now with the current state of the game all nice and recorded...
-                PrepWriteRequest();
-                void PrepWriteRequest()
-                {
-                    writeRequest.SaveMetaData = meta;
-                    writeRequest.SlotNumber = slotNum;
-                    writeRequest.SaveName = saveName;
-                    writeRequest.BaseSaveDirectory = SaveDirType;
-                    writeRequest.MainState = mainState;
-                }
-
                 await saveRepo.SaveAsync(newSet);
-                //await Task.Run(() => SaveWriter.WriteOneToDisk(writeRequest));
-                
             }
         }
 
@@ -160,6 +155,7 @@ namespace Amanita.SaveSys
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
         /// <summary>
+        /// Loads the main save data from the specified slot, getting its state applied to the game.
         /// If loadScene is true, this will load the scene specified in the save metadata.
         /// </summary>
         public virtual async Task<CompositeSaveData> LoadMain(int slotNum, bool loadScene = true)
@@ -171,87 +167,82 @@ namespace Amanita.SaveSys
 
             Scene sceneToLoad = default;
             CompositeSaveData mainData = null;
+            ISaveMetaData meta = null;
 
             await BeforeLoadPrep();
             async Task BeforeLoadPrep()
             {
-                Task<CompositeSaveData> loadMainSaveTask = saveRepo.LoadMainSaveAsync(slotNum);
-                Task<Scene> decideSceneTask = DecideSceneToLoad();
+                Task<CompositeSaveData> getMainState = GetMainStateAsync();
+                async Task<CompositeSaveData> GetMainStateAsync()
+                {
+                    if (registry.HasMainSaveInSlot(slotNum))
+                    {
+                        return (CompositeSaveData)registry.GetMainSave(slotNum);
+                    }
+                    else
+                    {
+                        return await saveRepo.LoadMainSaveAsync(slotNum);
+                    }
+                }
+
+                Task<Scene> getSceneToLoad = DecideSceneToLoad();
                 async Task<Scene> DecideSceneToLoad()
                 {
-                    SaveMetaData meta = (SaveMetaData)await LoadMeta(slotNum);
+                    if (registry.HasSaveInSlot(slotNum))
+                    {
+                        meta = registry.GetSaveMeta(slotNum);
+                    }
+                    else
+                    {
+                        meta = await LoadMeta(slotNum);
+                    }
                     Scene sceneToLoad = SceneManager.GetSceneByName(meta.SceneName);
                     if (!sceneToLoad.IsValid())
                     {
                         sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
+                    }
+
+                    bool shouldLoadScene = loadScene && sceneToLoad.IsValid() && sceneToLoad != default;
+                    if (!shouldLoadScene)
+                    {
+                        sceneToLoad = SaveSysConstants.DoNotLoad;
                     }
                     return sceneToLoad;
                 }
 
                 Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
                 await ExecuteHandlers(BeforeSceneLoadAsync);
-                await Task.WhenAll(loadMainSaveTask, decideSceneTask, beforeSceneLoadHandlerTask);
+                await Task.WhenAll(getMainState, getSceneToLoad, beforeSceneLoadHandlerTask);
 
-                sceneToLoad = decideSceneTask.Result;
-                mainData = loadMainSaveTask.Result;
+                sceneToLoad = getSceneToLoad.Result;
+                mainData = getMainState.Result;
             }
 
-            // Might be good to call upon a SceneLoader here, but for now we'll
-            // just load the scene ourselves
-
-            if (loadScene)
+            bool shouldStopHere = ValidateScene(sceneToLoad) == false;
+            bool ValidateScene(Scene scene)
             {
-                if (!sceneToLoad.IsValid())
+                if (loadScene)
                 {
-                    string errorMessage = $"Cannot load scene {sceneToLoad.name} because it is not valid. " +
-                                          $"Please check the save metadata for slot {slotNum}.";
-                    Debug.LogError(errorMessage);
-                    return null;
+                    if (!sceneToLoad.Equals(SaveSysConstants.DoNotLoad) && !sceneToLoad.IsValid())
+                    {
+                        string errorMessage = $"Cannot load scene {sceneToLoad.name} because it is not valid. " +
+                                              $"Please check the save metadata for slot {slotNum}.";
+                        Debug.LogError(errorMessage);
+                        return false;
+                    }
                 }
 
-                await SceneManager.LoadSceneAsync(sceneToLoad.name, LoadSceneMode.Single);
+                return true;
             }
 
-            await ApplyDataToScene();
-            async Task ApplyDataToScene()
+            if (shouldStopHere)
             {
-                IList<SaveData> decodedSaveData = GetDecodedData();
-                IList<SaveData> GetDecodedData()
-                {
-                    IList<SaveData> result = new List<SaveData>();
-                    foreach (var unitEl in mainData.Units)
-                    {
-                        string typeName = unitEl.DataTypeName;
-                        IMainSaveCodec codecForThisUnit = mainCodecs.FirstOrDefault(codec => codec.CanHandle(typeName));
-
-                        if (codecForThisUnit != null)
-                        {
-                            SaveData decodedSave = codecForThisUnit.DecodeFrom(unitEl);
-                            result.Add(decodedSave);
-                        }
-                    }
-                    return result;
-                }
-
-                var appliers = SaveSystem.S.SaveDataAppliers;
-
-                foreach (ISaveDataApplier applier in appliers)
-                {
-                    IList<SaveData> datasItCanWorkWith = (from elem in decodedSaveData
-                                                         where applier.CanApply(elem)
-                                                         select elem).ToList();
-                    if (datasItCanWorkWith.Count == 0)
-                    {
-                        continue;
-                    }
-                    
-                    await applier.ApplyMulti(datasItCanWorkWith);
-                }
-
+                return null;
             }
+
+            await loader.LoadMain(mainData, sceneToLoad);
 
             await ExecuteHandlers(AfterSceneLoadAsync);
-
             return mainData;
         }
 

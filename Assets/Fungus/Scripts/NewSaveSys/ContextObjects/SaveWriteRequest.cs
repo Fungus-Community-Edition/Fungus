@@ -4,6 +4,9 @@ namespace Amanita.SaveSys
 {
 
     [System.Serializable]
+    /// <summary>
+    /// To be passed to SaveWriter to write a save file.
+    /// <see cref="SaveWriter"/>"/>
     public class SaveWriteRequest : EventArgs, ISaveWriteRequest
     {
         public string SaveName { get; set; } = string.Empty;
@@ -33,11 +36,4 @@ namespace Amanita.SaveSys
 
     }
 
-    public interface ISaveWriteRequest
-    {
-        int SlotNumber { get; set; }
-        public ISaveData MainState { get; set; }
-        public ISaveMetaData SaveMetaData { get; set; }
-        public SaveDirectoryType BaseSaveDirectory { get; set; }
-    }
 }

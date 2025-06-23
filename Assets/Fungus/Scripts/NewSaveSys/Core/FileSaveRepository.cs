@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
+    /// <summary>
+    /// Handles the interactions with persistent storage (the hard drives PCs have, for example)
+    /// for loading and saving game data.
+    /// </summary>
     public class FileSaveRepository : ISaveRepository
     {
         public virtual void Init(SaveReader saveReader = null, SaveWriter saveWriter = null)
@@ -99,7 +103,14 @@ namespace Amanita.SaveSys
 
     public interface ISaveRepository
     {
+        /// <summary>
+        /// Reads save data from file based on theinput, returning said data.
+        /// </summary>
         Task<CompositeSaveData> LoadMainSaveAsync(int slot);
+
+        /// <summary>
+        /// Reads only the metadata for a given slot number from file.
+        /// </summary>
         Task<ISaveMetaData> LoadMetaDataAsync(int slot);    
         Task SaveAsync(SaveDataSet saveSet);
         
