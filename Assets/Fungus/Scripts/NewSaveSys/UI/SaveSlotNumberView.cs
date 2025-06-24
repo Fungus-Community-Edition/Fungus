@@ -7,18 +7,20 @@ namespace Amanita.SaveSys
     public class SaveSlotNumberView : SaveSlotUIView
     {
         [SerializeField] protected TextMeshProUGUI slotNumberText;
-        [SerializeField] protected string numberFormat = "D2"; // Default format for slot number
+        [SerializeField] protected string prefix = "Slot # "; 
+        [SerializeField] protected string numberFormat = "D2";
 
-        public override void Refresh()
+        protected override void UpdateVisuals()
         {
-            base.Refresh();
+            base.UpdateVisuals();
             if (Meta != null && slotNumberText != null)
             {
-                slotNumberText.text = Meta.SlotNumber.ToString();
+                string numStr = Meta.SlotNumber.ToString(numberFormat);
+                slotNumberText.text = $"{prefix}{numStr}";
             }
             else
             {
-                Debug.LogWarning("Meta data or slotNumberText is null, cannot refresh Save Slot Number View.");
+                Debug.LogWarning("Meta data or slotNumberText is null. Cannot refresh Save Slot Number View.");
             }
         }
     }
