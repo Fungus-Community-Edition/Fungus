@@ -22,6 +22,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected string utcTimeStamp = string.Empty;
         [SerializeField] protected string sceneName = string.Empty;
         [SerializeField] protected int sceneBuildIndex = -1;
+        [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
 
         public string Name
         {
@@ -95,6 +96,17 @@ namespace Amanita.SaveSys
         {
             get { return sceneBuildIndex; }
         }
+
+        public virtual TimeSpan Playtime
+        {
+            get { return playtime; }
+            set
+            {
+                playtime = value;
+                timeSpanString = playtime.ToString();
+            }
+        }
+        protected TimeSpan playtime = TimeSpan.Zero;
 
         protected virtual void UpdateTimeStampStructure()
         {
@@ -203,6 +215,21 @@ namespace Amanita.SaveSys
             UpdateTimeStampStructure();
         }
 
+        protected virtual void UpdatePlaytimeStructure()
+        {
+            if (TimeSpan.TryParse(timeSpanString, out var parsedTimeSpan))
+            {
+                playtime = parsedTimeSpan;
+            }
+            else
+            {
+                string errorMessage = $"Failed to parse time span string: {timeSpanString}. " +
+                    "Setting playtime to zero.";
+                playtime = TimeSpan.Zero;
+                throw new FormatException(errorMessage);
+            }
+        }
+
         public virtual void RegisterCurrentSceneInfo()
         {
             sceneName = SceneManager.GetActiveScene().name;
@@ -233,6 +260,7 @@ namespace Amanita.SaveSys
         DateTime TimeStamp { get; }
         string SceneName { get; }
         int SceneBuildIndex { get; }
+        TimeSpan Playtime { get; }
         
     }
 }

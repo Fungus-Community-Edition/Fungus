@@ -291,7 +291,7 @@ namespace Amanita.SaveSys
 
         protected static string deleteOp = "delete";
 
-        public virtual IList<SaveSlot> GetAllSlots()
+        public virtual IList<SaveSlotNumberView> GetAllSlots()
         {
             // Load all slot files or PlayerPrefs keys, return as list
             throw new NotImplementedException();
