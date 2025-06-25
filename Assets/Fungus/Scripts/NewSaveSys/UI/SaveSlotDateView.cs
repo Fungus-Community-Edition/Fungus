@@ -1,61 +1,46 @@
 using UnityEngine;
 using TMPro;
-using System;
-using System.Globalization;
 
 namespace Amanita.SaveSys.UI
 {
     public class SaveSlotDateView : SaveSlotUIView
     {
-        [SerializeField] protected TextMeshProUGUI dateText;
-        [SerializeField] protected string dateFormat = "yyyy-MM-dd HH:mm:ss";
+        [SerializeField] protected TextMeshProUGUI dateDisplay;
+        [SerializeField] protected ScriptableObject dateFormatSO;
         
+        protected virtual void Awake()
+        {
+            DateFormat = (IDateFormat)dateFormatSO;
+
+            if (dateDisplay == null)
+            {
+                string errorMessage = "Date Display is not assigned.";
+                Debug.LogError(errorMessage);
+            }
+        }
+
         public override void Refresh()
         {
             base.Refresh();
-            if (Meta != null && dateText != null)
+            if (Meta != null && dateDisplay != null)
             {
-                dateText.text = Meta.TimeStamp.ToString(dateFormat);
+                dateDisplay.text = DateFormat.FormatDate(Meta.TimeStamp);
             }
             else
             {
-                Debug.LogWarning("Meta data or dateText is null, cannot refresh Save Slot Date View.");
+                Debug.LogWarning("Meta data or dateText is null. Cannot refresh Save Slot Date View.");
             }
         }
 
-        protected virtual void OnValidate()
+        public IDateFormat DateFormat
         {
-            EnsureWeHaveDateText();
-            void EnsureWeHaveDateText()
-            {
-                if (dateText == null)
-                {
-                    dateText = GetComponentInChildren<TextMeshProUGUI>();
-                }
-
-                bool stillGotNothing = dateText == null;
-                if (stillGotNothing)
-                {
-                    Debug.LogError("Date Text component is not assigned or found in children.");
-                }
-            }
-            
-            ValidateDateFormat();
-            void ValidateDateFormat()
-            {
-                bool formatIsValid = !string.IsNullOrEmpty(dateFormat) &&
-                DateTime.TryParseExact("2023-01-01", dateFormat,
-                null, DateTimeStyles.None, out _);
-                if (!formatIsValid)
-                {
-                    Debug.LogWarning($"Invalid date format: {dateFormat}. Using default format: {defaultDateFormat}.");
-                    dateFormat = defaultDateFormat;
-                }
-            }
-            
+            get => dateFormat;
+            set => dateFormat = value;
         }
 
-        protected static string defaultDateFormat = "yyyy-MM-dd HH:mm:ss";
+        protected IDateFormat dateFormat;
+
     }
+
     
 }

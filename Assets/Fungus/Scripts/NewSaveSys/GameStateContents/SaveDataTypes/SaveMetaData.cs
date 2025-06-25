@@ -17,7 +17,7 @@ namespace Amanita.SaveSys
         // ^To let players personalize their saves and get a better sense
         // of ownership over their progress
         [SerializeField] protected string saveID = string.Empty;
-        [SerializeField] protected int slotNumber = 0;
+        [SerializeField] protected int slotNumber = 1;
         [SerializeField] protected string saveVersion = "null";
         [SerializeField] protected string utcTimeStamp = string.Empty;
         [SerializeField] protected string sceneName = string.Empty;
@@ -50,9 +50,9 @@ namespace Amanita.SaveSys
             {
                 slotNumber = value;
 
-                if (slotNumber < 0)
+                if (slotNumber <= 0)
                 {
-                    string errorMessage = $"Cannot assign a negative slot number to meta data";
+                    string errorMessage = $"Cannot assign {value} as a slot number. We need the num to be positive.";
                     throw new ArgumentException(errorMessage);
                 }
             }

@@ -552,8 +552,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac9c6fe854a5d744994baaa3c572ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotNumberText: {fileID: 8335024119017032137}
-  numberFormat: D2
+  notes: 
+  slotNumberDisplay: {fileID: 8335024119017032137}
+  prefix: 'Slot # '
+  format: 2
 --- !u!1 &5367709459268638183
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,8 +642,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bfee03a5385db345bfbca8e2876a447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dateText: {fileID: 3568923549923723673}
-  dateFormat: yyyy-MM-dd HH:mm:ss
+  notes: 
+  dateDisplay: {fileID: 3568923549923723673}
+  dateFormatSO: {fileID: 11400000, guid: 6df9b3050080816459375f326ce1898b, type: 2}
 --- !u!1 &8244055822220054543
 GameObject:
   m_ObjectHideFlags: 0
@@ -727,8 +730,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bb7fb6f8e912634494ff750ca5f4d6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notes: 
   playtimeText: {fileID: 8330966476723624805}
-  playtimeFormat: 0
+  prefix: 'Playtime: '
+  playtimeFormat: 1
 --- !u!1 &8807453252772790769
 GameObject:
   m_ObjectHideFlags: 0

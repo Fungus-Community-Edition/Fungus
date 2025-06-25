@@ -7,6 +7,9 @@ namespace Amanita.SaveSys.UI
     /// </summary>
     public abstract class SaveSlotUIView : MonoBehaviour, ISaveSlotUIView
     {
+        [TextArea(3, 10)]
+        [SerializeField] protected string notes = string.Empty;
+
         public virtual ISaveMetaData Meta
         {
             get { return meta; }
