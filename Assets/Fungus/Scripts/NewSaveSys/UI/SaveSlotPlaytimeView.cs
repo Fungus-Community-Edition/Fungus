@@ -9,10 +9,31 @@ namespace Amanita.SaveSys.UI
         [SerializeField] protected string prefix = "Playtime: ";
         [SerializeField] protected PlaytimeFormat playtimeFormat = PlaytimeFormat.HoursMinutesSeconds;
 
+        public virtual string Prefix
+        {
+            get => prefix;
+        }
+
+        public virtual PlaytimeFormat Format
+        {
+            get => playtimeFormat;
+            set
+            {
+                playtimeFormat = value;
+                UpdateVisuals();
+            }
+        }
+
         protected override void UpdateVisuals()
         {
             string formattedPlaytime = Meta.Playtime.ToFormattedString(playtimeFormat);
-            playtimeText.text = $"{prefix}{formattedPlaytime}";
+            Text = $"{prefix}{formattedPlaytime}";
+        }
+
+        public virtual string Text
+        {
+            get => playtimeText.text;
+            protected set => playtimeText.text = value;
         }
 
     }

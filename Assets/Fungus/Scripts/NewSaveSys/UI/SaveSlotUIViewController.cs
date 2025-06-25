@@ -45,5 +45,26 @@ namespace Amanita.SaveSys.UI
         }
 
         protected IList<ISaveSlotUIView> views;
+
+        public virtual TView GetView<TView>()
+            where TView : ISaveSlotUIView
+        {
+            if (views == null || views.Count == 0)
+            {
+                Debug.LogWarning("No views found. Ensure that SaveSlotUIViewController is properly initialized.");
+                return default;
+            }
+
+            for (int i = 0; i < views.Count; i++)
+            {
+                if (views[i] is TView typedView)
+                {
+                    return typedView;
+                }
+            }
+
+            Debug.LogWarning($"No view of type {typeof(TView)} found.");
+            return default;
+        }
     }
 }
