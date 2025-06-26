@@ -1,5 +1,9 @@
 name: Manually Label Milestone Issues
 
+# give the GITHUB_TOKEN the ability to write labels on issues
+permissions:
+  issues: write
+
 on:
   workflow_dispatch:
 
@@ -13,12 +17,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: "open",
-              per_page: 100,
-            });
+            const issues = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "open",
+                per_page: 100,
+              }
+            );
 
             for (const issue of issues) {
               if (!issue.pull_request && issue.milestone) {
