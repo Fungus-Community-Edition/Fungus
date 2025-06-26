@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cff088ecfb7b384ea6d4f0819764467, type: 3}
-  m_Name: FullDateFormat_ISO-ish
+  m_Script: {fileID: 11500000, guid: 4fb057224b14dbc4da7d2965937fe2e0, type: 3}
+  m_Name: PaddedTwoDigits
   m_EditorClassIdentifier: 
-  inTextForm: yyyy-MM-dd HH:mm
+  notes: 01, 05, 08, etc
+  prefix: 
+  formatString: D2
+  postfix: 

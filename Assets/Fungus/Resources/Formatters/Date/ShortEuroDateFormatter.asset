@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cff088ecfb7b384ea6d4f0819764467, type: 3}
-  m_Name: ShortAmericanDateFormat
+  m_Name: ShortEuroDateFormatter
   m_EditorClassIdentifier: 
-  inTextForm: MM/dd/yyyy
+  inTextForm: dd/MM/yyyy
