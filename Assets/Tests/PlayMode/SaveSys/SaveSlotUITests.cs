@@ -68,7 +68,7 @@ namespace Amanita.SaveSystemTests
         protected virtual TimeSpan Playtime { get => metaData.Playtime; }
 
         [TestCaseSource(nameof(ValidSlotNumFormats))]
-        public virtual void UpdatesNumberView_Format(SlotNumFormat format)
+        public virtual void UpdatesNumberView_WithFormat(SlotNumFormat format)
         {
             numberView.Format = format;
             string numStr = SlotNumber.ToString(format);
@@ -87,14 +87,14 @@ namespace Amanita.SaveSystemTests
         }
 
         [TestCaseSource(nameof(ValidPlaytimeFormats))]
-        public void UpdatesPlaytimeView_Format(string formatInTextForm)
+        public void UpdatesPlaytimeView_WithFormat(string formatInTextForm)
         {
             PlaytimeFormatter testFormatter = ScriptableObject.CreateInstance<PlaytimeFormatter>();
-            testFormatter.InTextForm = formatInTextForm;
+            testFormatter.FormatString = formatInTextForm;
             playtimeView.Formatter = testFormatter;
 
             string playtimeStr = Playtime.ToString(formatInTextForm, false);
-            string expectedText = $"{playtimeView.Prefix}{playtimeStr}";
+            string expectedText = $"{playtimeView.Prefix}{playtimeStr}{playtimeView.Postfix}";
             Assert.AreEqual(expectedText, playtimeView.Text);
         }
 
@@ -114,17 +114,18 @@ namespace Amanita.SaveSystemTests
         }
 
         [TestCaseSource(nameof(DateFormatTestCases))]
-        public void DateFormat_StrategyOutputsExpectedString(string formatStr, DateTime date, string expected)
+        public void UpdatesDateView_WithFormat(string formatStr, DateTime date, string expected)
         {
             var formatter = ScriptableObject.CreateInstance<DateFormatter>();
             formatter.name = "TempDateFormat";
-            formatter.InTextForm = formatStr;
+            formatter.FormatString = formatStr;
             dateView.Formatter = formatter;
             typeof(DateFormatter).GetField("inTextForm", BindingFlags.NonPublic | BindingFlags.Instance)
                               ?.SetValue(formatter, formatStr);
 
             string formattedDate = formatter.FormatToText(date);
-            Assert.AreEqual(expected, formattedDate);
+            string expectedResult = $"{dateView.Prefix}{formattedDate}{dateView.Postfix}";
+            Assert.AreEqual(expected, expectedResult);
         }
 
 

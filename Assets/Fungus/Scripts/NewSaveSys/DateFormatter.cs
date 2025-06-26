@@ -6,23 +6,11 @@ using UnityEngine;
 namespace Amanita
 {
     [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Amanita/DateFormatter", order = 1)]
-    public class DateFormatter : ScriptableObject, IDateFormatter, ITextFormatter
+    public class DateFormatter : TextFormatter, IDateFormatter
     {
-        [SerializeField] protected string inTextForm = "yyyy-MM-dd HH:mm:ss";
+        protected override string DefaultFormat => "yyyy-MM-dd HH:mm:ss";
 
-        public virtual string InTextForm
-        {
-            get => inTextForm;
-            set
-            {
-                inTextForm = value;
-                OnValidate();
-            }
-        }
-
-        protected static readonly string defaultDateFormat = "yyyy-MM-dd HH:mm:ss";
-
-        public virtual string FormatToText(object toFormat)
+        public override string FormatToText(object toFormat)
         {
             if (toFormat is DateTime date)
             {
@@ -37,16 +25,17 @@ namespace Amanita
 
         public virtual string FormatDate(System.DateTime date)
         {
-            string result = date.ToString(InTextForm);
+            string dateString = date.ToString(FormatString);
+            string result = $"{Prefix}{dateString}{postfix}";
             return result;
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
-            if (string.IsNullOrEmpty(inTextForm))
+            if (string.IsNullOrEmpty(formatString))
             {
-                Debug.LogWarning("Date format string is empty or null, using default format: yyyy-MM-dd HH:mm:ss.");
-                inTextForm = "yyyy-MM-dd HH:mm:ss";
+                Debug.LogWarning($"Date format string is empty or null, using default format: {DefaultFormat}.");
+                formatString = DefaultFormat;
             }
 
             ValidateDateFormat();
@@ -54,10 +43,10 @@ namespace Amanita
             {
                 try
                 {
-                    string sample = DateTime.Now.ToString(inTextForm); // Throws if format is totally invalid
+                    string sample = DateTime.Now.ToString(formatString); // Throws if format is totally invalid
                     bool valid = DateTime.TryParseExact(
                         sample,
-                        inTextForm,
+                        formatString,
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
                         out _
@@ -70,21 +59,20 @@ namespace Amanita
                 }
                 catch (FormatException)
                 {
-                    Debug.LogWarning($"Invalid date format: {inTextForm}. Using default format: {defaultDateFormat}.");
-                    inTextForm = defaultDateFormat;
+                    Debug.LogWarning($"Invalid date format: {formatString}. Using default format: {DefaultFormat}.");
+                    formatString = DefaultFormat;
                 }
             }
-
 
         }
 
         public override string ToString()
         {
-            return $"DateFormat: {inTextForm}";
+            return $"DateFormat: {formatString}";
         }
     }
 
-    public interface IDateFormatter : ITextFormatter
+    public interface IDateFormatter : ISlotUITextFormatter
     {
         string FormatDate(DateTime date);
     }

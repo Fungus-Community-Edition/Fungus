@@ -14,6 +14,7 @@ namespace Amanita.SaveSys.UI
     {
         [SerializeField] protected TextMeshProUGUI textDisplay;
         [SerializeField] protected string prefix = string.Empty;
+        [SerializeField] protected string postfix = string.Empty;
         [SerializeField] protected ScriptableObject formatterSO;
 
         protected virtual void Awake()
@@ -24,10 +25,10 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void CacheComponentsOnAwake()
         {
-            Formatter = formatterSO as ITextFormatter;
+            Formatter = formatterSO as ISlotUITextFormatter;
         }
 
-        public virtual ITextFormatter Formatter
+        public virtual ISlotUITextFormatter Formatter
         {
             get => formatter;
             set
@@ -37,7 +38,7 @@ namespace Amanita.SaveSys.UI
             }
         }
 
-        protected ITextFormatter formatter;
+        protected ISlotUITextFormatter formatter;
 
         protected virtual void ValidateOnAwake()
         {
@@ -56,7 +57,7 @@ namespace Amanita.SaveSys.UI
         {
             base.UpdateVisuals();
             string formattedObjectAsText = formatter.FormatToText(WhatToFormat);
-            Text = $"{prefix}{formattedObjectAsText}";
+            Text = $"{prefix}{formattedObjectAsText}{Postfix}";
         }
 
         public virtual string Text
@@ -101,9 +102,21 @@ namespace Amanita.SaveSys.UI
             }
         }
 
+        public virtual string Postfix
+        {
+            get => postfix;
+            set
+            {
+                if (postfix != value)
+                {
+                    postfix = value;
+                    UpdateVisuals();
+                }
+            }
+        }
         protected virtual void OnValidate()
         {
-            bool invalidFormatterAssigned = formatter != null && formatterSO is not ITextFormatter;
+            bool invalidFormatterAssigned = formatter != null && formatterSO is not ISlotUITextFormatter;
             if (invalidFormatterAssigned)
             {
                 Debug.LogError($"FormatterSO assigned to {this.name} does not implement ITextFormatter. "
