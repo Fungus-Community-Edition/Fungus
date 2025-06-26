@@ -1,11 +1,12 @@
+using Amanita.SaveSys.UI;
 using System;
 using System.Globalization;
 using UnityEngine;
 
 namespace Amanita
 {
-    [CreateAssetMenu(fileName = "DateFormat", menuName = "Amanita/DateFormat", order = 1)]
-    public class DateFormat : ScriptableObject, IDateFormat
+    [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Amanita/DateFormatter", order = 1)]
+    public class DateFormatter : ScriptableObject, IDateFormatter, ITextFormatter
     {
         [SerializeField] protected string inTextForm = "yyyy-MM-dd HH:mm:ss";
 
@@ -21,9 +22,23 @@ namespace Amanita
 
         protected static readonly string defaultDateFormat = "yyyy-MM-dd HH:mm:ss";
 
+        public virtual string FormatToText(object toFormat)
+        {
+            if (toFormat is DateTime date)
+            {
+                return FormatDate(date);
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot format object of type {toFormat.GetType()}. Expected DateTime.");
+                return string.Empty;
+            }
+        }
+
         public virtual string FormatDate(System.DateTime date)
         {
-            return date.ToString(inTextForm);
+            string result = date.ToString(InTextForm);
+            return result;
         }
 
         protected virtual void OnValidate()
@@ -65,12 +80,13 @@ namespace Amanita
 
         public override string ToString()
         {
-            return inTextForm;
+            return $"DateFormat: {inTextForm}";
         }
     }
 
-    public interface IDateFormat
+    public interface IDateFormatter : ITextFormatter
     {
-        string FormatDate(System.DateTime date);
+        string FormatDate(DateTime date);
     }
+
 }

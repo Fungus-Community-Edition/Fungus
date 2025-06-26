@@ -1,6 +1,6 @@
 namespace Amanita
 {
-    public enum PlaytimeFormat
+    public enum PlaytimeFormatEnum
     {
         Null,                 // Reserved for null or uninitialized state
         HoursMinutesSeconds,  // e.g. 12:34:56

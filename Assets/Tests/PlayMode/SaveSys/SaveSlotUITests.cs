@@ -43,7 +43,7 @@ namespace Amanita.SaveSystemTests
 
             viewController.Meta = metaData;
 
-            playtimeFormatVals = Enum.GetValues(typeof(PlaytimeFormat));
+            playtimeFormatVals = Enum.GetValues(typeof(PlaytimeFormatEnum));
             slotNumFormatVals = Enum.GetValues(typeof(SlotNumFormat));
         }
 
@@ -87,19 +87,22 @@ namespace Amanita.SaveSystemTests
         }
 
         [TestCaseSource(nameof(ValidPlaytimeFormats))]
-        public void UpdatesPlaytimeView_Format(PlaytimeFormat format)
+        public void UpdatesPlaytimeView_Format(string formatInTextForm)
         {
-            playtimeView.Format = format;
-            string playtimeStr = Playtime.ToFormattedString(format);
+            PlaytimeFormatter testFormatter = ScriptableObject.CreateInstance<PlaytimeFormatter>();
+            testFormatter.InTextForm = formatInTextForm;
+            playtimeView.Formatter = testFormatter;
+
+            string playtimeStr = Playtime.ToString(formatInTextForm, false);
             string expectedText = $"{playtimeView.Prefix}{playtimeStr}";
             Assert.AreEqual(expectedText, playtimeView.Text);
         }
 
-        public static IEnumerable<PlaytimeFormat> ValidPlaytimeFormats()
+        public static IEnumerable<string> ValidPlaytimeFormats()
         {
-            return Enum.GetValues(typeof(PlaytimeFormat))
-                       .Cast<PlaytimeFormat>()
-                       .Where(f => f != PlaytimeFormat.Custom && f != PlaytimeFormat.Null);
+            yield return "hh:mm:ss";
+            yield return "mm:ss";
+            yield return "d.hh:mm:ss";
         }
 
         public static IEnumerable<TestCaseData> DateFormatTestCases()
@@ -113,13 +116,15 @@ namespace Amanita.SaveSystemTests
         [TestCaseSource(nameof(DateFormatTestCases))]
         public void DateFormat_StrategyOutputsExpectedString(string formatStr, DateTime date, string expected)
         {
-            var formatter = ScriptableObject.CreateInstance<DateFormat>();
+            var formatter = ScriptableObject.CreateInstance<DateFormatter>();
             formatter.name = "TempDateFormat";
             formatter.InTextForm = formatStr;
-            typeof(DateFormat).GetField("inTextForm", BindingFlags.NonPublic | BindingFlags.Instance)
+            dateView.Formatter = formatter;
+            typeof(DateFormatter).GetField("inTextForm", BindingFlags.NonPublic | BindingFlags.Instance)
                               ?.SetValue(formatter, formatStr);
 
-            Assert.AreEqual(expected, formatter.FormatDate(date));
+            string formattedDate = formatter.FormatToText(date);
+            Assert.AreEqual(expected, formattedDate);
         }
 
 

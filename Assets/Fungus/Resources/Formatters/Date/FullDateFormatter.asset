@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cff088ecfb7b384ea6d4f0819764467, type: 3}
-  m_Name: FriendlyDateFormat
+  m_Name: FullDateFormatter
   m_EditorClassIdentifier: 
-  inTextForm: "MMMM dd, yyyy \u2013 hh:mm tt"
+  inTextForm: yyyy-MM-dd HH:mm

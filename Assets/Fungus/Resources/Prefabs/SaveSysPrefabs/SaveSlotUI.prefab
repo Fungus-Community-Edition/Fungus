@@ -642,9 +642,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bfee03a5385db345bfbca8e2876a447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notes: 
-  dateDisplay: {fileID: 3568923549923723673}
-  dateFormatSO: {fileID: 11400000, guid: 6df9b3050080816459375f326ce1898b, type: 2}
+  notes: No need to add a prefix for the date
+  textDisplay: {fileID: 3568923549923723673}
+  prefix: 
+  formatterSO: {fileID: 11400000, guid: 6df9b3050080816459375f326ce1898b, type: 2}
 --- !u!1 &8244055822220054543
 GameObject:
   m_ObjectHideFlags: 0
@@ -731,9 +732,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notes: 
-  playtimeText: {fileID: 8330966476723624805}
+  textDisplay: {fileID: 8330966476723624805}
   prefix: 'Playtime: '
-  playtimeFormat: 1
+  formatterSO: {fileID: 11400000, guid: 9be81f9ef7b0999478b5fadbafc06b65, type: 2}
 --- !u!1 &8807453252772790769
 GameObject:
   m_ObjectHideFlags: 0
