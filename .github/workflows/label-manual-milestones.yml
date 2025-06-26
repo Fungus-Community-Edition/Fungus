@@ -1,0 +1,36 @@
+name: Manually Label Milestone Issues
+
+on:
+  workflow_dispatch:
+
+jobs:
+  label-issues-in-milestones:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: List issues with milestones
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            for (const issue of issues) {
+              if (!issue.pull_request && issue.milestone) {
+                const hasLabel = issue.labels.some(l => l.name === "milestoneTask");
+                if (!hasLabel) {
+                  console.log(`Adding label to #${issue.number}`);
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    labels: ["milestoneTask"]
+                  });
+                }
+              }
+            }
