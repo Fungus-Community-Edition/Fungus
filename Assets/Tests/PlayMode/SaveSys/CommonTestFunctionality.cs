@@ -81,16 +81,19 @@ namespace Amanita.SaveSystemTests
                 CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
                 mainSave.Clear();
 
-                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-
-                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                mainSave.Add(encodedFlowchartSave);
-
-                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-                foreach (var blockSave in blockSaves)
+                if (ReqFlowchart)
                 {
-                    SaveDataUnit saveDataUnit = blockSave.Serialized();
-                    mainSave.Add(saveDataUnit);
+                    flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+
+                    SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                    mainSave.Add(encodedFlowchartSave);
+
+                    IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                    foreach (var blockSave in blockSaves)
+                    {
+                        SaveDataUnit saveDataUnit = blockSave.Serialized();
+                        mainSave.Add(saveDataUnit);
+                    }
                 }
 
                 saveDataSet = new SaveDataSet(metaData, mainSave);
@@ -124,7 +127,6 @@ namespace Amanita.SaveSystemTests
 
         protected virtual void PrepScene()
         {
-            
             CreateScene();
             void CreateScene()
             {
@@ -135,21 +137,21 @@ namespace Amanita.SaveSystemTests
                 testScene = UnityObject.Instantiate(testScenePrefab);
             }
 
-            flowchart = testScene.GetComponentInChildren<Flowchart>(true);
-            if (flowchart == null)
-                throw new Exception("Flowchart component not found in test scene prefab.");
-
-            PrepVars();
-            PrepVarInitVals();
-            void PrepVarInitVals()
+            if (ReqFlowchart)
             {
-                initNameVal = nameVar.Value;
-                initScoreVal = scoreVar.Value;
-                initIsNewPlayerVal = isNewPlayerVar.Value;
-                initFastestTimeVal = fastestTimeVar.Value;
-                initThreeDPosVal = threeDPosVar.Value;
-                initTwoDPosVal = twoDPosVar.Value;
-                initStringVal = stringVar.Value;
+                PrepFlowchart();
+                PrepVars();
+                PrepVarInitVals();
+                void PrepVarInitVals()
+                {
+                    initNameVal = nameVar.Value;
+                    initScoreVal = scoreVar.Value;
+                    initIsNewPlayerVal = isNewPlayerVar.Value;
+                    initFastestTimeVal = fastestTimeVar.Value;
+                    initThreeDPosVal = threeDPosVar.Value;
+                    initTwoDPosVal = twoDPosVar.Value;
+                    initStringVal = stringVar.Value;
+                }
             }
 
         }
@@ -158,6 +160,15 @@ namespace Amanita.SaveSystemTests
         protected GameObject testScenePrefab;
         protected GameObject testScene;
         protected Flowchart flowchart;
+
+        protected virtual bool ReqFlowchart => true;
+        protected virtual void PrepFlowchart()
+        {
+            flowchart = testScene.GetComponentInChildren<Flowchart>(true);
+            if (flowchart == null)
+                throw new Exception("Flowchart component not found in test scene prefab.");
+
+        }
 
         protected virtual void PrepVars()
         {
