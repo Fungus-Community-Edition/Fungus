@@ -206,7 +206,7 @@ namespace Amanita.SaveSystemTests
         protected SaveWriteRequest writeReq = new SaveWriteRequest
         {
             SaveName = "TestSave",
-            SlotNumber = 0,
+            SlotNumber = 1,
             MainState = new CompositeSaveData(),
             SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
