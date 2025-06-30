@@ -10,6 +10,7 @@ using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
+using Amanita.UI;
 
 namespace Amanita.SaveSystemTests
 {
@@ -68,22 +69,36 @@ namespace Amanita.SaveSystemTests
         protected virtual TimeSpan Playtime { get => metaData.Playtime; }
 
         [TestCaseSource(nameof(ValidSlotNumFormats))]
-        public virtual void UpdatesNumberView_WithFormat(SlotNumFormat format)
+        public virtual void UpdatesNumberView_WithFormat(string format)
         {
-            numberView.Format = format;
-            string numStr = SlotNumber.ToString(format);
-            string expectedText = $"{numberView.Prefix}{numStr}";
+            IntegerFormatter testFormatter = ScriptableObject.CreateInstance<IntegerFormatter>();
+            testFormatter.FormatString = format;
+            numberView.Formatter = testFormatter;
+            //typeof(IntegerFormatter).GetField("formatString", BindingFlags.NonPublic | BindingFlags.Instance)
+            //                      ?.SetValue(testFormatter, format);
+
+            string numStr;
+            if (format.Equals("Roman", StringComparison.OrdinalIgnoreCase))
+            {
+                numStr = RomanNumeralConverter.ToRoman(SlotNumber);
+            }
+            else
+            {
+                numStr = SlotNumber.ToString(format);
+            }
+            string expectedText = $"{numberView.Prefix}{numStr}{numberView.Postfix}";
             Assert.AreEqual(expectedText, numberView.Text);
         }
 
         protected virtual int SlotNumber => metaData.SlotNumber;
 
-        public static IEnumerable<SlotNumFormat> ValidSlotNumFormats()
+        public static IEnumerable<string> ValidSlotNumFormats()
         {
-            return Enum.GetValues(typeof(SlotNumFormat))
-                       .Cast<SlotNumFormat>()
-                       .Where(formatEl => formatEl != SlotNumFormat.Custom &&
-                       formatEl != SlotNumFormat.Null);
+            yield return "D1"; // Default format, one digit
+            yield return "D2"; // Default format
+            yield return "D3"; // Three digits
+            yield return "Roman"; // Roman numeral format
+
         }
 
         [TestCaseSource(nameof(ValidPlaytimeFormats))]
@@ -100,9 +115,11 @@ namespace Amanita.SaveSystemTests
 
         public static IEnumerable<string> ValidPlaytimeFormats()
         {
-            yield return "hh:mm:ss";
+            yield return "ss";
             yield return "mm:ss";
+            yield return "hh:mm:ss";
             yield return "d.hh:mm:ss";
+
         }
 
         public static IEnumerable<TestCaseData> DateFormatTestCases()
@@ -120,8 +137,6 @@ namespace Amanita.SaveSystemTests
             formatter.name = "TempDateFormat";
             formatter.FormatString = formatStr;
             dateView.Formatter = formatter;
-            typeof(DateFormatter).GetField("inTextForm", BindingFlags.NonPublic | BindingFlags.Instance)
-                              ?.SetValue(formatter, formatStr);
 
             string formattedDate = formatter.FormatToText(date);
             string expectedResult = $"{dateView.Prefix}{formattedDate}{dateView.Postfix}";

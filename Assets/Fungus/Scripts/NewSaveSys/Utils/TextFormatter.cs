@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.SaveSys.UI
+namespace Amanita.UI
 {
-    public abstract class TextFormatter : ScriptableObject, ISlotUITextFormatter
+    public abstract class TextFormatter : ScriptableObject, ITextFormatter
     {
         [TextArea(3, 10)]
         [SerializeField] protected string notes = string.Empty;
@@ -35,7 +36,31 @@ namespace Amanita.SaveSys.UI
             set => postfix = value;
         }
 
-        public abstract string FormatToText(object toFormat);
+        public virtual string FormatToText(object toFormat)
+        {
+            string result = string.Empty;
+
+            if (!CanWorkWith(toFormat))
+            {
+                Debug.LogWarning($"Cannot format object of type {toFormat.GetType()}. Expected a compatible type.");
+                return result;
+            }
+
+            result = FormatAsAppropriate(toFormat);
+
+            return result;
+        }
+
+        protected virtual bool CanWorkWith(object toFormat)
+        {
+            // This method can be overridden to provide specific type checks
+            return toFormat != null;
+        }
+
+        /// <summary>
+        /// When this is called, we assume that the object is of a type that this formatter can handle.
+        /// </summary>
+        protected abstract string FormatAsAppropriate(object toFormat);
 
         protected virtual void OnValidate()
         {

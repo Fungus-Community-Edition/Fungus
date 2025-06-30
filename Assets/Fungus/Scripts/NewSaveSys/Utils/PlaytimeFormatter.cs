@@ -1,25 +1,19 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.SaveSys.UI
+namespace Amanita.UI
 {
-    [CreateAssetMenu(fileName = "NewPlaytimeFormatter", menuName = "Amanita/PlaytimeFormatter", order = 1)]
+    [CreateAssetMenu(fileName = "NewPlaytimeFormatter", menuName = "Amanita/UI/Formatters/PlaytimeFormatter", order = 1)]
     public class PlaytimeFormatter : TextFormatter, IPlaytimeFormatter
     {
-        public override string FormatToText(object toFormat)
+        protected override bool CanWorkWith(object toFormat)
         {
-            string result = string.Empty;
+            return toFormat is TimeSpan;
+        }
 
-            if (toFormat is TimeSpan playtime)
-            {
-                result = FormatPlaytime(playtime);
-            }
-            else
-            {
-                Debug.LogWarning($"Cannot format object of type {toFormat.GetType()}. Expected TimeSpan.");
-            }
-
-            return result;
+        protected override string FormatAsAppropriate(object toFormat)
+        {
+            return FormatPlaytime((TimeSpan)toFormat);
         }
 
         public virtual string FormatPlaytime(TimeSpan playtime)
@@ -40,18 +34,38 @@ namespace Amanita.SaveSys.UI
 
         protected override string DefaultFormat => "hh:mm:ss";
         // ^Note that we avoid using a capital H since TimeSpan doesn't like that
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            ValidatePlaytimeFormat();
+            void ValidatePlaytimeFormat()
+            {
+                try
+                {
+                    string sample = TimeSpan.FromHours(1).ToString(formatString, false);
+                    // ^Throws if format is totally invalid
+                    // No further validation needed since TimeSpan.ToString() handles the format string correctly.
+                }
+                catch (FormatException)
+                {
+                    Debug.LogWarning($"Invalid playtime format: {formatString}. Using default format: {DefaultFormat}.");
+                    formatString = DefaultFormat;
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// For ScriptableObjects that format objects to text form.
+    /// For ScriptableObjects that format objects to text form based on their own criteria.
     /// </summary>
-    public interface ISlotUITextFormatter
+    public interface ITextFormatter
     {
         string FormatToText(System.Object toFormat);
     }
 
-
-    public interface IPlaytimeFormatter : ISlotUITextFormatter
+    public interface IPlaytimeFormatter : ITextFormatter
     {
         string FormatPlaytime(System.TimeSpan playtime);
     }

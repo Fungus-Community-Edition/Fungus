@@ -553,9 +553,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notes: 
-  slotNumberDisplay: {fileID: 8335024119017032137}
+  textDisplay: {fileID: 8335024119017032137}
   prefix: 'Slot # '
-  format: 2
+  postfix: 
+  formatterSO: {fileID: 11400000, guid: b534e62aa9b428c4e857b41795889987, type: 2}
+  slotNumberDisplay: {fileID: 8335024119017032137}
 --- !u!1 &5367709459268638183
 GameObject:
   m_ObjectHideFlags: 0

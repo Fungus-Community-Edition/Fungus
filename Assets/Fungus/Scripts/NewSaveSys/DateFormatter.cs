@@ -3,24 +3,21 @@ using System;
 using System.Globalization;
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.UI
 {
-    [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Amanita/DateFormatter", order = 1)]
+    [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Amanita/UI/Formatters/DateFormatter", order = 1)]
     public class DateFormatter : TextFormatter, IDateFormatter
     {
         protected override string DefaultFormat => "yyyy-MM-dd HH:mm:ss";
 
-        public override string FormatToText(object toFormat)
+        protected override bool CanWorkWith(object toFormat)
         {
-            if (toFormat is DateTime date)
-            {
-                return FormatDate(date);
-            }
-            else
-            {
-                Debug.LogWarning($"Cannot format object of type {toFormat.GetType()}. Expected DateTime.");
-                return string.Empty;
-            }
+            return toFormat is DateTime;
+        }
+
+        protected override string FormatAsAppropriate(object toFormat)
+        {
+            return FormatDate((DateTime)toFormat);
         }
 
         public virtual string FormatDate(System.DateTime date)
@@ -32,11 +29,7 @@ namespace Amanita
 
         protected override void OnValidate()
         {
-            if (string.IsNullOrEmpty(formatString))
-            {
-                Debug.LogWarning($"Date format string is empty or null, using default format: {DefaultFormat}.");
-                formatString = DefaultFormat;
-            }
+            base.OnValidate();
 
             ValidateDateFormat();
             void ValidateDateFormat()
@@ -72,7 +65,7 @@ namespace Amanita
         }
     }
 
-    public interface IDateFormatter : ISlotUITextFormatter
+    public interface IDateFormatter : ITextFormatter
     {
         string FormatDate(DateTime date);
     }

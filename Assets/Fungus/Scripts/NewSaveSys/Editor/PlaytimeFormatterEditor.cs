@@ -2,9 +2,8 @@
 using UnityEditor;
 using UnityEngine;
 using System;
-using Amanita.SaveSys.UI;
 
-namespace Amanita.SaveSys.UI.EditorExt
+namespace Amanita.UI.EditorExt
 {
     [CustomEditor(typeof(PlaytimeFormatter))]
     public class PlaytimeFormatterEditor : Editor
@@ -15,16 +14,18 @@ namespace Amanita.SaveSys.UI.EditorExt
 
             var formatter = (PlaytimeFormatter)target;
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("inTextForm"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("formatString"));
 
             // Test preview using a sample TimeSpan
             TimeSpan testSpan = new TimeSpan(1, 23, 45);
             string preview;
             try
             {
-                string safeFormat = formatter.InTextForm
-                    .Replace("\\", "\\\\")  // escape backslashes
-                    .Replace(":", "\\:");    // escape colons
+                // Need to escape backslashes, colons, and dots in the format string
+                string safeFormat = formatter.FormatString
+                    .Replace("\\", "\\\\")
+                    .Replace(":", "\\:")
+                    .Replace(".", "\\.");
 
                 preview = testSpan.ToString(safeFormat);
             }

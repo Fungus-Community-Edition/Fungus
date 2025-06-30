@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using Amanita.UI;
 
 namespace Amanita.SaveSys.UI
 {
@@ -25,10 +26,10 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void CacheComponentsOnAwake()
         {
-            Formatter = formatterSO as ISlotUITextFormatter;
+            Formatter = formatterSO as ITextFormatter;
         }
 
-        public virtual ISlotUITextFormatter Formatter
+        public virtual ITextFormatter Formatter
         {
             get => formatter;
             set
@@ -38,7 +39,7 @@ namespace Amanita.SaveSys.UI
             }
         }
 
-        protected ISlotUITextFormatter formatter;
+        protected ITextFormatter formatter;
 
         protected virtual void ValidateOnAwake()
         {
@@ -116,7 +117,7 @@ namespace Amanita.SaveSys.UI
         }
         protected virtual void OnValidate()
         {
-            bool invalidFormatterAssigned = formatter != null && formatterSO is not ISlotUITextFormatter;
+            bool invalidFormatterAssigned = formatter != null && formatterSO is not ITextFormatter;
             if (invalidFormatterAssigned)
             {
                 Debug.LogError($"FormatterSO assigned to {this.name} does not implement ITextFormatter. "

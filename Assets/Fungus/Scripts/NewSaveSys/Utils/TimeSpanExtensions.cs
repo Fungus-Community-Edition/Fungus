@@ -35,9 +35,10 @@ namespace Amanita
 
         private static string EscapeTimeSpanFormat(string input)
         {
+            // Backslashes, colons, and periods need escaping
             return input
-                .Replace(@"\", @"\\")  // Escape backslashes first
-                .Replace(":", @"\:")  // Escape colons
+                .Replace(@"\", @"\\")  
+                .Replace(":", @"\:")  
                 .Replace(".", @"\.");
         }
     }
