@@ -345,14 +345,15 @@ namespace Amanita.SaveSystemTests
         void PrepNewPathsForTesting()
         {
             Dictionary<SaveDirectoryType, string> newPaths =
-                new Dictionary<SaveDirectoryType, string>(SaveSystem.SaveDirectoryPaths);
-            foreach (var keyEl in SaveSystem.SaveDirectoryPaths.Keys)
+                new Dictionary<SaveDirectoryType, string>(BaseSavePaths);
+            foreach (var keyEl in BaseSavePaths.Keys)
             {
-                string currentVal = SaveSystem.SaveDirectoryPaths[keyEl];
+                string currentVal = BaseSavePaths[keyEl];
                 string newPath = Path.Combine(currentVal, relativePathForTesting);
                 newPaths[keyEl] = newPath;
             }
 
+            
             foreach (var keyEl in newPaths.Keys)
             {
                 string path = newPaths[keyEl];

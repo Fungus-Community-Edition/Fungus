@@ -50,7 +50,7 @@ namespace Amanita.SaveSystemTests
 
     public class SaveManagerTests : CommonTestFunctionality
     {
-        protected override bool ShouldDeleteTestSavesAtEnd => false;
+        protected override bool ShouldDeleteTestSavesAtEnd => true;
         protected override string PathToTestScene => "ScenePrefabs/SaveSysMonoBehaviourTests";
 
         [TearDown]
