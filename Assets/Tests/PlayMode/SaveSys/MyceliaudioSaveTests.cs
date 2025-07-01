@@ -5,61 +5,37 @@ using Amanita.SaveSys;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.TestTools;
 using Amanita.Myceliaudio;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSystemTests
 {
-    public class MyceliaudioSaveTests
+    public class MyceliaudioSaveTests : CommonTestFunctionality
     {
-        protected string toVarStateTests = "ScenePrefabs/VarStateTests";
 
-        [SetUp]
-        public virtual void DoSetUp()
+        public override void DoOneTimeSetUp()
         {
-            PrepScene();
-
+            base.DoOneTimeSetUp();
+            quickWait = new WaitForSeconds(quickWaitTime);
+            wait = new WaitForSeconds(waitTime);
         }
 
-        protected virtual void PrepScene()
-        {
-            varStateTestPrefab = Resources.Load<GameObject>(toVarStateTests);
-            varStateTestScene = UnityObject.Instantiate(varStateTestPrefab);
-            playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
-            audioSys = AudioSystem.S;
-            applier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
-        }
-
-        protected GameObject varStateTestPrefab;
-        protected GameObject varStateTestScene;
-
-
-        protected PlayAudioArgsSO playAudioArgsSO;
-        protected string pathToAudioArgsSO = "testClip";
-
-        protected PlayAudioArgs audioArgs;
-        protected AudioSystem audioSys;
-        protected MyceliaudioApplier applier;
-
-        [TearDown]
-        public virtual void DoTearDown()
-        {
-            UnityObject.DestroyImmediate(varStateTestScene);
-        }
+        protected float quickWaitTime = 1f, waitTime = 3f;
+        protected WaitForSeconds quickWait, wait;
 
         [UnityTest]
         public virtual IEnumerator PlaysCorrectClip()
         {
-            float quickWaitTime = 1f, waitTime = 3f;
-            WaitForSeconds quickWait = new WaitForSeconds(quickWaitTime);
-            WaitForSeconds wait = new WaitForSeconds(waitTime);
-            audioSys.Play(playAudioArgsSO);
+            yield return CommonSetup();
+            
+            AudioSys.Play(playAudioArgsSO);
             MyceliaudioSaveData saveData = new MyceliaudioSaveData();
             yield return wait;
 
-            audioSys.StopPlaying(TrackGroup.BGMusic, 0);
+            AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
-            applier.Apply(new MyceliaudioSaveData[] { saveData });
-            yield return wait; ;
-            AudioClip clipPlaying = audioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
+            Task applyTask = audioApplier.ApplyMulti(new MyceliaudioSaveData[] { saveData });
+            yield return WaitFor(applyTask);
+            AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             bool playingCorrectClip = clipPlaying == playAudioArgsSO.MainClip;
             Assert.IsTrue(playingCorrectClip, "The clip playing is not the one we expected it to be.");
 
