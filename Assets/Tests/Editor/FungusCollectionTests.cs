@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Fungus.Tests
+namespace Amanita.Tests
 {
     [TestFixture]
     /// <summary>
@@ -15,8 +15,8 @@ namespace Fungus.Tests
     /// </summary>
     public class CollectionTests
     {
-        private Fungus.GameObjectCollection goCol;
-        private Fungus.IntCollection intColA, intColB;
+        private Amanita.GameObjectCollection goCol;
+        private Amanita.IntCollection intColA, intColB;
 
         [Test]
         public void AddRemove()
@@ -104,13 +104,13 @@ namespace Fungus.Tests
             Assert.IsTrue(intColA.IsCollectionCompatible(intColB));
             Assert.IsTrue(intColA.IsCollectionCompatible(new int[] { 1 }));
             Assert.IsTrue(intColA.IsCollectionCompatible(new List<int>()));
-            Assert.IsTrue(intColA.IsCollectionCompatible(new List<Fungus.IntegerVariable>()));
+            Assert.IsTrue(intColA.IsCollectionCompatible(new List<Amanita.IntegerVariable>()));
 
             Assert.IsFalse(intColA.IsElementCompatible(Vector3.up));
             Assert.IsFalse(intColA.IsCollectionCompatible(goCol));
             Assert.IsFalse(intColA.IsCollectionCompatible(new Color[] { Color.white }));
             Assert.IsFalse(intColA.IsCollectionCompatible(new List<Material>()));
-            Assert.IsFalse(intColA.IsCollectionCompatible(new List<Fungus.StringVariable>()));
+            Assert.IsFalse(intColA.IsCollectionCompatible(new List<Amanita.StringVariable>()));
         }
 
         [Test]
@@ -276,9 +276,9 @@ namespace Fungus.Tests
         [OneTimeSetUp]
         public void InitTestObjects()
         {
-            intColA = new GameObject().AddComponent<Fungus.IntCollection>();
-            intColB = new GameObject().AddComponent<Fungus.IntCollection>();
-            goCol = new GameObject().AddComponent<Fungus.GameObjectCollection>();
+            intColA = new GameObject().AddComponent<Amanita.IntCollection>();
+            intColB = new GameObject().AddComponent<Amanita.IntCollection>();
+            goCol = new GameObject().AddComponent<Amanita.GameObjectCollection>();
         }
 
         [Test]
@@ -358,7 +358,7 @@ namespace Fungus.Tests
             intColB.Clear();
         }
 
-        private void EnsureShuffledDifferent(Fungus.IntCollection col)
+        private void EnsureShuffledDifferent(Amanita.IntCollection col)
         {
             var startval = col.GetSafe(0);
             col.Shuffle();

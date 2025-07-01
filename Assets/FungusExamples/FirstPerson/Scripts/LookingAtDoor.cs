@@ -2,8 +2,9 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
+using UnityPhysics = UnityEngine.Physics;
 
-namespace Fungus.Examples
+namespace Amanita.Examples
 {
     public class LookingAtDoor : MonoBehaviour
     {
@@ -24,7 +25,7 @@ namespace Fungus.Examples
         {
             var curCounter = gazeCounter;
             RaycastHit hit;
-            if (Physics.Raycast(eye.position, eye.forward, out hit))
+            if (UnityPhysics.Raycast(eye.position, eye.forward, out hit))
             {
                 if (hit.collider == doorCol)
                 {

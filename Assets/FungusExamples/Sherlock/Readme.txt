@@ -1,4 +1,4 @@
-Huge thanks to Improbable Studios for contributing this demo and a whole bunch of cool visual novel features for Fungus.
+Huge thanks to Improbable Studios for contributing this demo and a whole bunch of cool visual novel features for Amanita.
 
 "Improbable studios is a global development staff composed of artists, writers,  programmers, and audio engineers from about 40 countries around the world. We are a non-profit organization dedicated to promoting interdisciplinary collaboration across country lines.
 http://www.improbable-studios.com

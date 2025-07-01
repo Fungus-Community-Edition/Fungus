@@ -3,7 +3,7 @@
 
 using NUnit.Framework;
 
-namespace Fungus.Tests
+namespace Amanita.Tests
 {
     [TestFixture]
     public class TextVariationSelectionTests
@@ -11,7 +11,7 @@ namespace Fungus.Tests
         [Test]
         public void SimpleSequenceSelection()
         {
-            Fungus.TextVariationHandler.ClearHistory();
+            Amanita.TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [a|b|c]";
             string startingTextA = @"This is test a";
@@ -20,20 +20,20 @@ namespace Fungus.Tests
 
             string res = string.Empty;
 
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
         }
 
         [Test]
         public void SimpleCycleSelection()
         {
-            Fungus.TextVariationHandler.ClearHistory();
+            Amanita.TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [&a|b|c]";
             string startingTextA = @"This is test a";
@@ -42,24 +42,24 @@ namespace Fungus.Tests
 
             string res = string.Empty;
 
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
         }
 
         [Test]
         public void SimpleOnceSelection()
         {
-            Fungus.TextVariationHandler.ClearHistory();
+            Amanita.TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [!a|b|c]";
             string startingTextA = @"This is test a";
@@ -69,22 +69,22 @@ namespace Fungus.Tests
 
             string res = string.Empty;
 
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextD);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextD);
         }
 
         [Test]
         public void NestedSelection()
         {
-            Fungus.TextVariationHandler.ClearHistory();
+            Amanita.TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [a||sub [~a|b]|[!b|[~c|d]]]";
             string startingTextA = @"This is test a";
@@ -97,18 +97,18 @@ namespace Fungus.Tests
 
             string res = string.Empty;
 
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextBlank);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             if (res != startingTextSubA && res != startingTextSubB)
             {
                 Assert.Fail();
             }
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
             if (res != startingTextC && res != startingTextD)
             {
                 Assert.Fail();
@@ -118,14 +118,14 @@ namespace Fungus.Tests
         [Test]
         public void SquareBracketsWithoutTypeNoImpact()
         {
-            Fungus.TextVariationHandler.ClearHistory();
+            Amanita.TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test a [of changing nothing]";
             const string expected = @"This is test a [of changing nothing]";
 
             string res = string.Empty;
 
-            res = Fungus.TextVariationHandler.SelectVariations(startingText);
+            res = Amanita.TextVariationHandler.SelectVariations(startingText);
 
             Assert.AreEqual(expected, res);
         }

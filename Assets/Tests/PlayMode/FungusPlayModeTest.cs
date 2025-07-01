@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 
-namespace Fungus.Tests
+namespace Amanita.Tests
 {
     [TestFixture]
     public class FungusPlayModeTest

@@ -3,7 +3,7 @@
 
 using UnityEngine.Assertions;
 
-namespace Fungus.EditorUtils
+namespace Amanita.EditorUtils
 {
     static public class TestUtils
     {

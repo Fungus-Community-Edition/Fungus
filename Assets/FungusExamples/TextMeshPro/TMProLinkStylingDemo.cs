@@ -5,7 +5,7 @@ using UnityEngine;
 
 #if UNITY_2018_1_OR_NEWER
 
-namespace Fungus.Examples
+namespace Amanita.Examples
 {
     /// <summary>
     /// Used in TMPro Link Anim Demo, adds a number of sample animation styles. Serves as
