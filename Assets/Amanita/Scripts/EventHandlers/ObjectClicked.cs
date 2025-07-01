@@ -34,7 +34,7 @@ namespace Amanita
 
         protected virtual void OnEnable()
         {
-            eventDispatcher = FungusManager.Instance.EventDispatcher;
+            eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
             eventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
         }

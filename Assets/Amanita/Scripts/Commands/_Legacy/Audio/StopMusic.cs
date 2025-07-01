@@ -18,7 +18,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var musicManager = FungusManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.Instance.MusicManager;
 
             musicManager.StopMusic();
 

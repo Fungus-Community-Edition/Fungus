@@ -1,14 +1,14 @@
 {
-    "name": "FungusEditorTests",
+    "name": "FungusPlayModeTests",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Fungus",
-        "FungusEditor"
+        "FungusEditor",
+        "FungusEditorTests",
+        "Amanita"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -19,5 +19,6 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

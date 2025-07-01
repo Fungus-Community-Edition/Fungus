@@ -39,7 +39,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = FungusManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
             eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
         }

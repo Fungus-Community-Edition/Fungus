@@ -36,7 +36,7 @@ namespace Amanita
                 }
             };
 
-            var musicManager = FungusManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.Instance.MusicManager;
 
             musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
 

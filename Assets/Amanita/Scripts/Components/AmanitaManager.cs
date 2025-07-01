@@ -8,9 +8,9 @@ namespace Amanita
     /// <summary>
     /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
     /// </summary>
-    public sealed class FungusManager : MonoBehaviour
+    public sealed class AmanitaManager : MonoBehaviour
     {
-        volatile static FungusManager instance;  // The keyword "volatile" is friendly to the multi-thread.
+        volatile static AmanitaManager instance;  // The keyword "volatile" is friendly to the multi-thread.
         static bool applicationIsQuitting = false;
         readonly static object _lock = new object();  // The keyword "readonly" is friendly to the multi-thread.
 
@@ -83,7 +83,7 @@ namespace Amanita
         /// <summary>
         /// Gets the FungusManager singleton instance.
         /// </summary>
-        public static FungusManager Instance
+        public static AmanitaManager Instance
         {
             get
             {
@@ -100,7 +100,7 @@ namespace Amanita
                     {
                         if (instance == null)
                         {
-                            FungusManager prefab = Resources.Load<FungusManager>(AmanitaConstants.PathToFungusManagerPrefab);
+                            AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
                             instance = Instantiate(prefab);
                             instance.gameObject.name = prefab.name; // We don't want "Clone" in the name.
                             DontDestroyOnLoad(instance.gameObject);

@@ -118,7 +118,7 @@ namespace Amanita
 
         protected virtual void OnSaveReset()
         {
-            FungusManager.Instance.NarrativeLog.Clear();
+            AmanitaManager.Instance.NarrativeLog.Clear();
             UpdateNarrativeLogText();
         }
 
@@ -135,7 +135,7 @@ namespace Amanita
         {
             if (narrativeLogView.enabled)
             {
-                var prettyHistory = FungusManager.Instance.NarrativeLog.GetPrettyHistory();
+                var prettyHistory = AmanitaManager.Instance.NarrativeLog.GetPrettyHistory();
 
                 if (prettyHistory.Length > maxCharacters)
                 {

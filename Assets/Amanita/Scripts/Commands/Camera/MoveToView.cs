@@ -67,7 +67,7 @@ namespace Amanita
                 return;
             }
 
-            var cameraManager = FungusManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.Instance.CameraManager;
 
             Vector3 targetPosition = targetView.transform.position;
             Quaternion targetRotation = targetView.transform.rotation;
@@ -88,7 +88,7 @@ namespace Amanita
 
         public override void OnStopExecuting()
         {
-            var cameraManager = FungusManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.Instance.CameraManager;
 
             cameraManager.Stop();
         }
