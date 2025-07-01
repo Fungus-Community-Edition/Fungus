@@ -78,7 +78,7 @@ namespace Amanita.EditorUtils
 
         private static AmanitaEditorResources instance;
         private static readonly string editorResourcesFolderName = "\"EditorResources\"";
-        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Fungus", "EditorResources");
+        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
         public static AmanitaEditorResources Instance
