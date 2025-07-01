@@ -208,7 +208,7 @@ namespace Amanita
                 }
                 else if(Application.isPlaying)
                 {
-                    return _globalStaicRef = FungusManager.Instance.GlobalVariables.GetOrAddVariable(Key, value, this.GetType());
+                    return _globalStaicRef = AmanitaManager.Instance.GlobalVariables.GetOrAddVariable(Key, value, this.GetType());
                 }
                 else
                 {

@@ -84,7 +84,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = FungusManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
             eventDispatcher.Raise(new DragEntered.DragEnteredEvent(this, other));
         }
@@ -96,7 +96,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = FungusManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
             eventDispatcher.Raise(new DragExited.DragExitedEvent(this, other));
         }
@@ -117,7 +117,7 @@ namespace Amanita
 
             startingPosition = transform.position;
 
-            var eventDispatcher = FungusManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
             eventDispatcher.Raise(new DragStarted.DragStartedEvent(this));
         }
@@ -150,7 +150,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = FungusManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
             bool dragCompleted = false;
 
             for (int i = 0; i < dragCompletedHandlers.Count; i++)
