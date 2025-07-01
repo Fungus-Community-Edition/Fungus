@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
+using Amanita;
 
 namespace Amanita.SaveSystemTests
 {
@@ -26,8 +27,9 @@ namespace Amanita.SaveSystemTests
         {
             SaveSystem.InitPaths();
 
-            FungusManager fungusManagerPrefab = Resources.Load<FungusManager>(pathToFungusManagerPrefab);
-            FungusManager fungusManager = UnityObject.Instantiate(fungusManagerPrefab);
+            pathToFungusManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
+            AmanitaManager fungusManagerPrefab = Resources.Load<AmanitaManager>(pathToFungusManagerPrefab);
+            AmanitaManager fungusManager = UnityObject.Instantiate(fungusManagerPrefab);
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
@@ -271,10 +273,10 @@ namespace Amanita.SaveSystemTests
                     UnityObject.DestroyImmediate(testScene);
                 }
 
-                if (FungusManager.Instance != null)
+                if (AmanitaManager.Instance != null)
                 {
-                    FungusManager.Instance.gameObject.SetActive(false);
-                    UnityObject.DestroyImmediate(FungusManager.Instance.gameObject);
+                    AmanitaManager.Instance.gameObject.SetActive(false);
+                    UnityObject.DestroyImmediate(AmanitaManager.Instance.gameObject);
                 }
 
                 

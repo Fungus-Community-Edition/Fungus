@@ -57,7 +57,7 @@ namespace Amanita
                 return;
             }
 
-            var cameraManager = FungusManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.Instance.CameraManager;
 
             cameraManager.StartSwipePan(targetCamera, viewA, viewB, duration, speedMultiplier, () => Continue() );
         }

@@ -115,7 +115,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var saveManager = FungusManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.Instance.SaveManager;
 
             saveManager.AddSavePoint(SavePointKey, SavePointDescription);
 

@@ -56,7 +56,7 @@ namespace Amanita
         {
             if (Application.isPlaying)
             {
-                eventDispatcher = FungusManager.Instance.EventDispatcher;
+                eventDispatcher = AmanitaManager.Instance.EventDispatcher;
 
                 eventDispatcher.AddListener<DragEnteredEvent>(OnDragEnteredEvent);
             }

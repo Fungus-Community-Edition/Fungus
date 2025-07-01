@@ -40,10 +40,10 @@ namespace Amanita
             audioSourceDefaultVoice = audioSources[3];
             audioSourceWriterSoundEffect = audioSources[4];
 
-            audioSourceMusic.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.MusicGroup;
-            audioSourceSoundEffect.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.SFXGroup;
+            audioSourceMusic.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.MusicGroup;
+            audioSourceSoundEffect.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.SFXGroup;
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
-            audioSourceDefaultVoice.outputAudioMixerGroup = FungusManager.Instance.MainAudioMixer.VoiceGroup;
+            audioSourceDefaultVoice.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.VoiceGroup;
             audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
 
             fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;

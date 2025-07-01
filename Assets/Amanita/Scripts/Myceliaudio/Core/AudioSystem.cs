@@ -43,14 +43,14 @@ namespace Amanita.Myceliaudio
 
             RegisterTrackManagers();
 
-            bool shouldAttachSelfToManager = FungusManager.Instance != null;
+            bool shouldAttachSelfToManager = AmanitaManager.Instance != null;
             if (shouldAttachSelfToManager)
             {
                 AttachSelfToFungusManager();
                 void AttachSelfToFungusManager()
                 {
 
-                    GameObject managerGO = FungusManager.Instance.gameObject;
+                    GameObject managerGO = AmanitaManager.Instance.gameObject;
                     this.transform.SetParent(managerGO.transform, false);
                 }
             }

@@ -43,7 +43,7 @@ namespace Amanita
                 return;
             }
 
-            var musicManager = FungusManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.Instance.MusicManager;
 
             musicManager.PlaySound(soundClip[rand], volume);
 

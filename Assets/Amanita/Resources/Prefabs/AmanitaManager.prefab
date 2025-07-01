@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2796803071515036501}
   - component: {fileID: 5057925027822650426}
   m_Layer: 0
-  m_Name: FungusManager
+  m_Name: AmanitaManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
