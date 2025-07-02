@@ -1,0 +1,19 @@
+{
+    "name": "Amanita.UsfxrEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:007db7f7a4c8f944990d71603a110f82",
+        "GUID:1e9907c628f75904faa8597007873a72"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

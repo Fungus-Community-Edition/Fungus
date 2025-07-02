@@ -34,7 +34,7 @@ namespace Amanita.SaveSystemTests
                     continue;
                 }
 
-                bool hasVarWithTheId = flowchartSaveData.SavedVars.Any(v => v.UniqueID == var.UniqueId);
+                bool hasVarWithTheId = flowchartSaveData.SavedVars.Any(v => v.ItemID == var.ItemID);
                 Assert.IsTrue(hasVarWithTheId);
             }
         }
