@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 namespace Amanita.SaveSys
 {
@@ -32,12 +33,12 @@ namespace Amanita.SaveSys
         /// </summary>
         public static ProgressMarker FindWithKey(string key)
         {
-            var markers = FindObjectsOfType<ProgressMarker>();
-            for (int i = 0; i < markers.Length; i++)
-                if (markers[i].key == key)
-                    return markers[i];
+            var markers = FindObjectsByType<ProgressMarker>(FindObjectsSortMode.None);
+            var result = (from elem in markers
+                          where elem.Key == key
+                          select elem).FirstOrDefault();
 
-            return null;
+            return result;
         }
 
         public override string GetSummary()
