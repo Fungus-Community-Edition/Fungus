@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -72,25 +73,31 @@ namespace Amanita.SaveSys
 
         protected SaveWriteRequest writeReq = new SaveWriteRequest();
 
-        public async Task<ISaveMetaData> LoadMetaDataAsync(int slot)
+        public virtual async Task<ISaveMetaData> LoadMetaDataAsync(int slot)
         {
             readRequest.SlotNumber = slot;
             var meta = await saveReader.ReadMetadataFromDisk(readRequest);
             return meta;
         }
 
-        public Task DeleteAsync(int slot)
+        /// With how fast deletion operations are, it seems we won't need this to be async
+        public virtual void Delete(int slot)
         {
-            throw new System.NotImplementedException();
+            string path = GetPathTo(slot);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                Debug.Log($"Deleted save at slot {slot}, path {path}");
+            }
         }
 
         /// <summary>
         /// Returns the path to the save file for the given slot number.
         /// </summary>
-        public string GetPathTo(int slot)
+        public virtual string GetPathTo(int slot)
         {
             forPathFinding.SlotNumber = slot;
-            string result = saveReader.GetSavePath(forPathFinding);
+            string result = FileUtils.GetPathToFile(SaveDir, slot, saveReader);
             return result;
         }
 
@@ -114,7 +121,7 @@ namespace Amanita.SaveSys
         Task<ISaveMetaData> LoadMetaDataAsync(int slot);    
         Task SaveAsync(SaveDataSet saveSet);
         
-        Task DeleteAsync(int slot);
+        void Delete(int slot);
         string GetPathTo(int slot);
     }
 

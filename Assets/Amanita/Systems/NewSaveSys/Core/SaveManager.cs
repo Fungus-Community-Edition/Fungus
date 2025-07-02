@@ -284,8 +284,7 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            string pathToSaveFile = GetPathTo(slotNum);
-            File.Delete(pathToSaveFile);
+            saveRepo.Delete(slotNum);
             registry.RemoveSave(slotNum);
         }
 
