@@ -115,19 +115,18 @@ namespace Amanita
         [SerializeField] protected string key = "";
 
         [HideInInspector]
-        [SerializeField] private string uniqueId = "";
-        public string UniqueId => uniqueId;
+        [SerializeField] private int itemID = InvalidID;
 
-#if UNITY_EDITOR
-        private void OnValidate()
+        public static readonly int InvalidID = -1;
+
+        // Non-global variables each belong to a particular Flowchart. Thus, rather
+        // than a unique string ID, it's best for them to get an int that their
+        // Flowcharts assign them.
+        public int ItemID
         {
-            if (string.IsNullOrEmpty(uniqueId))
-            {
-                uniqueId = System.Guid.NewGuid().ToString();
-                UnityEditor.EditorUtility.SetDirty(this);
-            }
+            get => itemID;
+            set => itemID = value;
         }
-#endif
 
         #region Public members
 

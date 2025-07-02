@@ -1,14 +1,14 @@
 // This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
+using Amanita.Lua;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Amanita.Lua;
 
 namespace Amanita
 {
@@ -192,6 +192,7 @@ namespace Amanita
             }
 
             // Tell all components that implement IUpdateable to update to the new version
+            // This is important for when we rework Variables and Blocks to be more lightweight
             var components = GetComponents<Component>();
             for (int i = 0; i < components.Length; i++)
             {
@@ -232,7 +233,43 @@ namespace Amanita
                 }
                 usedIds.Add(command.ItemId);
             }
+
+            UpdateNextValidVarID();
+            void UpdateNextValidVarID()
+            {
+                var varWithHighestID = Variables.OrderByDescending(x => x.ItemID).FirstOrDefault();
+                if (varWithHighestID == null)
+                {
+                    return;
+                }
+                int highestIDFound = varWithHighestID.ItemID;
+                if (nextValidVarID < highestIDFound)
+                {
+                    nextValidVarID = highestIDFound + 1;
+                }
+            }
+
+            // Due to how variables were directly added through the Variables list,
+            // and how we don't want to change all other parts of the code base so they use
+            // AddVariable... we're going with this workaround.
+            EnsureVarsHaveValidIDs();
+            void EnsureVarsHaveValidIDs()
+            {
+                var varsInNeedOfIDs = (from elem in Variables
+                                       where elem.ItemID <= 0
+                                       where elem.Scope != VariableScope.Global
+                                       select elem).ToList();
+
+                foreach (var elem in varsInNeedOfIDs)
+                {
+                    elem.ItemID = nextValidVarID;
+                    nextValidVarID++;
+                }
+            }
         }
+
+        [HideInInspector]
+        [SerializeField] protected int nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {
@@ -815,14 +852,14 @@ namespace Amanita
             return GetVariable(name);
         }
 
-        public virtual Variable GetVariableById(string uniqueId)
+        public virtual Variable GetVariableById(int id)
         {
             Variable result = (from varEl in variables
-                               where varEl.UniqueId == uniqueId
+                               where varEl.ItemID == id
                                select varEl).FirstOrDefault();
             if (result == null)
             {
-                Debug.LogWarning($"Variable with unique ID {uniqueId} not found.");
+                Debug.LogWarning($"Variable with item ID {id} not found.");
             }
 
             return result;
@@ -1477,8 +1514,13 @@ namespace Amanita
                 uniqueId = System.Guid.NewGuid().ToString();
                 UnityEditor.EditorUtility.SetDirty(this);
             }
+
+            CheckItemIds();
+
+            
         }
 #endif
+        
 
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
@@ -1511,6 +1553,8 @@ namespace Amanita
             newVar.Value = value;
             newVar.Scope = scope;
             newVar.gameObject.hideFlags = HideFlags.HideInInspector;
+            newVar.ItemID = nextValidVarID;
+            nextValidVarID++;
             variables.Add(newVar);
             return newVar;
         }
