@@ -6,7 +6,7 @@ namespace Amanita.SaveSys
     public class VariableSaveData : SaveData
     {
         [SerializeField] protected string varTypeName = string.Empty;
-        [SerializeField] protected string uniqueID = string.Empty;
+        [SerializeField] protected int itemID = Variable.InvalidID;
         [SerializeField] protected string key = string.Empty;
         [SerializeField] protected string value = string.Empty;
 
@@ -16,10 +16,10 @@ namespace Amanita.SaveSys
             set => varTypeName = value;
         }
 
-        public string UniqueID
+        public int ItemID
         {
-            get => uniqueID;
-            set => uniqueID = value;
+            get => itemID;
+            set => itemID = value;
         }
 
         public string Key
@@ -43,9 +43,9 @@ namespace Amanita.SaveSys
             set => Key = value;
         }
 
-        public VariableSaveData(string uniqueID = "", string key = "", string value = "")
+        public VariableSaveData(int itemID = -1, string key = "", string value = "")
         {
-            this.uniqueID = uniqueID;
+            this.itemID = itemID;
             this.key = key;
             this.value = value;
         }
@@ -62,7 +62,7 @@ namespace Amanita.SaveSys
 
         public static readonly VariableSaveData Null = new()
         {
-            uniqueID = "Null",
+            itemID = Variable.InvalidID,
             key = "null",
             value = "null"
         };

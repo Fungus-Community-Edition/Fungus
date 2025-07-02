@@ -26,7 +26,7 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                UniqueID = variable.UniqueId,
+                ItemID = variable.ItemID,
                 Key = variable.Key,
                 Value = EncodeToString(variable)
             };
