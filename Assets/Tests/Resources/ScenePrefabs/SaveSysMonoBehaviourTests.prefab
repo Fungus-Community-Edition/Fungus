@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3700386577042591853}
-  - component: {fileID: 8582508292496010883}
   m_Layer: 0
   m_Name: SaveSysMonoBehaviourTests
   m_TagString: Untagged
@@ -35,23 +34,6 @@ Transform:
   - {fileID: 2876114515462123125}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8582508292496010883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1560416036889391096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08b9849f8a798aa499abfc1010f99dd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCodecs:
-  - {fileID: 11400000, guid: edbafabae260b9446aa606094cc7bf10, type: 2}
-  saveWriter: {fileID: 11400000, guid: 5a38a96ed57453f4586a2033a52d52a7, type: 2}
-  saveReader: {fileID: 11400000, guid: da5f96b9a39be1a4daab2c0732fe758e, type: 2}
-  saveDirectoryType: 1
 --- !u!1 &2918351469272193397
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,6 +123,7 @@ MonoBehaviour:
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   saveVariables: 1
+  nextValidVarID: 8
   uniqueId: 05b08fbe-bc51-47c3-bab0-20deaac90bc0
 --- !u!114 &108686680755132427
 MonoBehaviour:
@@ -156,7 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: name
-  uniqueId: 54587379-4cb2-48ee-8dac-7135d7a4afd9
+  itemID: 1
   value: Alice
 --- !u!114 &2677308742917868254
 MonoBehaviour:
@@ -172,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: score
-  uniqueId: 0830d6b1-bf1d-4cc9-b6f8-a2e6ac2407ad
+  itemID: 2
   value: 132
 --- !u!114 &5708265625975436602
 MonoBehaviour:
@@ -188,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: newPlayer
-  uniqueId: 465f6c53-53d0-4949-930e-a7f059d1b00e
+  itemID: 3
   value: 1
 --- !u!114 &5717713915927640460
 MonoBehaviour:
@@ -204,7 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fastestTimeInSeconds
-  uniqueId: c70b6592-69e6-44ae-9728-fac6ead140c8
+  itemID: 4
   value: 12.348
 --- !u!114 &2894303634136426304
 MonoBehaviour:
@@ -220,7 +203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: twoDPos
-  uniqueId: 01a2aaef-0559-46b1-ab9a-57a106eccbf6
+  itemID: 5
   value: {x: 12, y: 34}
 --- !u!114 &1975970902030707167
 MonoBehaviour:
@@ -236,7 +219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: threeDPos
-  uniqueId: c20c98f7-e335-4fe6-8c84-652e48ef1479
+  itemID: 6
   value: {x: 23, y: 45, z: 78}
 --- !u!114 &5244056966308270914
 MonoBehaviour:
@@ -252,7 +235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: someTrans
-  uniqueId: 3e244e14-0fee-4ed4-aeb3-5d058f82c44f
+  itemID: 7
   value: {fileID: 2288069364643417435}
 --- !u!114 &8916456280347382107
 MonoBehaviour:

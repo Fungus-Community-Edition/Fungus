@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Amanita.SaveSys
 {
+    /// <summary>
+    /// The state for a single Block.
+    /// </summary>
     [System.Serializable]
     public class BlockSaveData : SaveData
     {

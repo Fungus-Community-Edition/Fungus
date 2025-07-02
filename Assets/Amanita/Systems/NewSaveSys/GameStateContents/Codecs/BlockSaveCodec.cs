@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
@@ -79,9 +80,5 @@ namespace Amanita.SaveSys
             return EncodeToUnit(ToMakeFrom);
         }
 
-        public override IList<SaveDataUnit> FindAndEncodeAll()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

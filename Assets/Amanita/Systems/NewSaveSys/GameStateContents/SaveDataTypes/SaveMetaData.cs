@@ -24,7 +24,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected int sceneBuildIndex = -1;
         [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
 
-        public string Name
+        public string SaveName
         {
             get { return name; }
             set { name = value; }
@@ -160,18 +160,26 @@ namespace Amanita.SaveSys
         {
             this.saveID = System.Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
-            this.saveVersion = "1.0.0";
+            this.saveVersion = NullSaveVer;
 
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
             RegisterCurrentSceneInfo();
         }
 
+        protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
+
         protected virtual void MakeSureWeHaveSaveVersion()
         {
             if (string.IsNullOrEmpty(this.SaveVersion))
             {
                 SaveVersion = Application.version;
+            }
+
+            bool noValidVer = string.IsNullOrEmpty(this.SaveVersion);
+            if (noValidVer)
+            {
+                this.saveVersion = NullSaveVer;
             }
         }
 
@@ -255,6 +263,7 @@ namespace Amanita.SaveSys
     public interface ISaveMetaData : ISaveData
     {
         string SaveID { get; }
+        string SaveName { get; set; }
         int SlotNumber { get; }
         string SaveVersion { get; }
         DateTime TimeStamp { get; }
