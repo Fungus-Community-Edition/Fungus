@@ -55,7 +55,6 @@ namespace Amanita.SaveSystemTests
         protected TimeSpan expectedPlaytime = TimeSpan.FromHours(1.5);
         protected Array playtimeFormatVals, slotNumFormatVals;
 
-
         protected override bool ReqFlowchart => false;
         public override void DoOneTimeTearDown()
         {

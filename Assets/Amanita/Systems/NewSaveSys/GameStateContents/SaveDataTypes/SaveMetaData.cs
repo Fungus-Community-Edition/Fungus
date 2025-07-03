@@ -160,18 +160,26 @@ namespace Amanita.SaveSys
         {
             this.saveID = System.Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
-            this.saveVersion = "1.0.0";
+            this.saveVersion = NullSaveVer;
 
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
             RegisterCurrentSceneInfo();
         }
 
+        protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
+
         protected virtual void MakeSureWeHaveSaveVersion()
         {
             if (string.IsNullOrEmpty(this.SaveVersion))
             {
                 SaveVersion = Application.version;
+            }
+
+            bool noValidVer = string.IsNullOrEmpty(this.SaveVersion);
+            if (noValidVer)
+            {
+                this.saveVersion = NullSaveVer;
             }
         }
 

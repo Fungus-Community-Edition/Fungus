@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,13 +11,24 @@ namespace Amanita.SaveSys
     /// <summary>
     /// Handles restoring game state.
     /// </summary>
-    public class SaveLoader
+    public class SaveLoader : ISaveLoader
     {
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> encoders)
+        public SaveLoader(IList<IMainSaveCodec> codecList)
         {
-            for (int i = 0; i < encoders.Count; i++)
+            if (codecList == null)
             {
-                RegisterMainCodec(encoders[i]);
+                string errorMessage = "Cannot initialize a SaveLoader with a null codec list.";
+                throw new ArgumentNullException(errorMessage);
+            }
+
+            this.mainCodecs = codecList;
+        }
+
+        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
+        {
+            for (int i = 0; i < codecs.Count; i++)
+            {
+                RegisterMainCodec(codecs[i]);
             }
         }
 
@@ -28,9 +40,11 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
+        protected IList<IMainSaveCodec> mainCodecs;
 
-        public virtual async Task LoadMain(CompositeSaveData mainData, Scene sceneToLoad)
+        public virtual async Task LoadMain(CompositeSaveData mainData,
+            Scene sceneToLoad,
+            CancellationToken token = default)
         {
             if (mainData == null)
             {
@@ -94,5 +108,12 @@ namespace Amanita.SaveSys
         }
 
         protected static Scene DoNotLoad { get { return SaveSysConstants.DoNotLoad; } }
+    }
+
+    public interface ISaveLoader
+    {
+        Task LoadMain(CompositeSaveData mainData,
+            Scene sceneToLoad,
+            CancellationToken token = default);
     }
 }

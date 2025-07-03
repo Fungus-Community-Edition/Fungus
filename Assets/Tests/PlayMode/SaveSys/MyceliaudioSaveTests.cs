@@ -19,7 +19,7 @@ namespace Amanita.SaveSystemTests
             wait = new WaitForSeconds(waitTime);
         }
 
-        protected float quickWaitTime = 1f, waitTime = 3f;
+        protected float quickWaitTime = 0.5f, waitTime = 1.5f;
         protected WaitForSeconds quickWait, wait;
 
         [UnityTest]

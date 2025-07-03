@@ -119,7 +119,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
         {
-            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+            string saveFolder = SaveSystem.S.SaveDirectoryPaths[request.BaseSaveDirectory];
             bool thereIsRelativePathToConsider = RelativeSavePath.Count() > 0;
             if (thereIsRelativePathToConsider)
             {

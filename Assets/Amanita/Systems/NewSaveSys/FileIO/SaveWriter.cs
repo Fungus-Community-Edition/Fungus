@@ -6,6 +6,7 @@ using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
 using Amanita.Collections;
 using Amanita.IO;
+using System.Threading;
 
 namespace Amanita.SaveSys
 {
@@ -64,7 +65,7 @@ namespace Amanita.SaveSys
         /// Writes all the save datas to the passed save directory, returning true if successful,
         /// false otherwise.
         /// </summary>
-        public virtual async Task<bool> WriteAllToDisk(IList<SaveWriteRequest> args)
+        public virtual async Task<bool> WriteAllToDisk(IList<SaveWriteRequest> args, CancellationToken token = default)
         {
             bool didWeSucceed = default;
             for (int i = 0; i < args.Count; i++)
@@ -85,7 +86,7 @@ namespace Amanita.SaveSys
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual async Task<bool> WriteOneToDisk(SaveWriteRequest request)
+        public virtual async Task<bool> WriteOneToDisk(SaveWriteRequest request, CancellationToken token = default)
         {
             // Safety.
             Validate(request);
@@ -237,7 +238,7 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool validBaseDirectory = SaveSystem.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
+            bool validBaseDirectory = SaveSystem.S.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
             if (!validBaseDirectory)
             {
                 errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a valid SaveDirectoryType.\n";

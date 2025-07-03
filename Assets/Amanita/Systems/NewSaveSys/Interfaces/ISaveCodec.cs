@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
@@ -30,7 +31,10 @@ namespace Amanita.SaveSys
     /// </summary>
     public interface IMainSaveCodec : ISaveCodec
     {
-        IList<SaveDataUnit> FindAndEncodeAll();
+        /// <summary>
+        /// The onComplete should get the results passed to it.
+        /// </summary>
+        IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null);
 
     }
 
