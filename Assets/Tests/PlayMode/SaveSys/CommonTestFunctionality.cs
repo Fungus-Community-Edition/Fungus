@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
-using Amanita;
+using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 
 namespace Amanita.SaveSystemTests
 {
@@ -25,16 +25,16 @@ namespace Amanita.SaveSystemTests
         [OneTimeSetUp]
         public virtual void DoOneTimeSetUp()
         {
-            SaveSystem.InitPaths();
+            pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
+            AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
+            AmanitaManager amanitaManager = UnityObject.Instantiate(amanitaManagerPrefab);
+            saveSys = amanitaManager.GetComponentInChildren<SaveSystem>();
 
-            pathToFungusManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
-            AmanitaManager fungusManagerPrefab = Resources.Load<AmanitaManager>(pathToFungusManagerPrefab);
-            AmanitaManager fungusManager = UnityObject.Instantiate(fungusManagerPrefab);
-
+            saveManager = saveSys.SaveManager;
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
             encryptor = ScriptableObject.CreateInstance<Encryptor>();
-
+            
             readReq = new SaveReadRequest
             {
                 SlotNumber = writeReq.SlotNumber,
@@ -48,8 +48,9 @@ namespace Amanita.SaveSystemTests
             flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
 
-
         }
+
+        protected SaveSystem saveSys;
 
         protected IEnumerator WaitFor(Task writeTask)
         {
@@ -75,48 +76,50 @@ namespace Amanita.SaveSystemTests
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
 
-            PrepScene();
-            
-            RegisterSaveData();
-            void RegisterSaveData()
+            if (ReqSceneLoad)
             {
-                CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-                mainSave.Clear();
+                PrepScene();
 
-                if (ReqFlowchart)
+                RegisterSaveData();
+                void RegisterSaveData()
                 {
-                    flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+                    CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+                    mainSave.Clear();
 
-                    SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                    mainSave.Add(encodedFlowchartSave);
-
-                    IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-                    foreach (var blockSave in blockSaves)
+                    if (ReqFlowchart)
                     {
-                        SaveDataUnit saveDataUnit = blockSave.Serialized();
-                        mainSave.Add(saveDataUnit);
+                        flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+
+                        SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                        mainSave.Add(encodedFlowchartSave);
+
+                        IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                        foreach (var blockSave in blockSaves)
+                        {
+                            SaveDataUnit saveDataUnit = blockSave.Serialized();
+                            mainSave.Add(saveDataUnit);
+                        }
                     }
+
+                    saveDataSet = new SaveDataSet(metaData, mainSave);
+
                 }
 
-                saveDataSet = new SaveDataSet(metaData, mainSave);
-
+                saveWriter.DeleteBackupsPostOverwrite = true;
             }
 
-            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
-            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
-            saveWriter.DeleteBackupsPostOverwrite = true;
-            LogAssert.ignoreFailingMessages = false;
-
+            LogAssert.ignoreFailingMessages = ShouldIgnoreFailingLogMessagesByDefault;
         }
 
-
+        protected virtual bool ReqSceneLoad => true;
+        protected virtual bool ShouldIgnoreFailingLogMessagesByDefault => false;
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
         protected SaveReadRequest readReq;
 
         WaitForSeconds waitToYield;
-        private float waitTime = 0.2f;
+        private float waitTime = 0.2f; // Note that CoreLockMode starts at the 1-second mark
         protected SaveMetaData metaData = new SaveMetaData();
 
         protected PlayAudioArgsSO playAudioArgsSO;
@@ -126,6 +129,7 @@ namespace Amanita.SaveSystemTests
 
         protected FlowchartSaveCodec flowchartSaveCodec;
         protected BlockSaveCodec blockSaveCodec;
+        protected ISaveManager saveManager;
 
         protected virtual void PrepScene()
         {
@@ -158,7 +162,7 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        protected string pathToFungusManagerPrefab = "Prefabs/FungusManager";
+        protected string pathToAmanitaManagerPrefab = "Prefabs/AmanitaManager";
         protected GameObject testScenePrefab;
         protected GameObject testScene;
         protected Flowchart flowchart;
@@ -246,7 +250,7 @@ namespace Amanita.SaveSystemTests
 
             if (SaveSystem.S != null)
             {
-                UnityObject.DestroyImmediate(SaveSystem.S.gameObject);
+                UnityObject.DestroyImmediate(saveSys.gameObject);
             }
         }
 
@@ -287,7 +291,7 @@ namespace Amanita.SaveSystemTests
 
         protected void DeleteAllTestSaves()
         {
-            foreach (string root in SaveSystem.SaveDirectoryPaths.Values)
+            foreach (string root in saveSys.SaveDirectoryPaths.Values)
             {
                 string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
 
@@ -319,29 +323,35 @@ namespace Amanita.SaveSystemTests
             PrepAndRegisterSaveData();
         }
 
-        void PrepAndRegisterSaveData()
+        protected virtual void PrepAndRegisterSaveData()
         {
-            if (flowchart == null)
+            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
+
+            if (ReqFlowchart)
             {
-                flowchart = testScene.GetComponentInChildren<Flowchart>();
                 if (flowchart == null)
                 {
-                    throw new Exception("No Flowchart found in the scene.");
+                    flowchart = testScene.GetComponentInChildren<Flowchart>();
+                    if (flowchart == null)
+                    {
+                        throw new Exception("No Flowchart found in the scene.");
+                    }
+                }
+
+                flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
+                // ^We are expecting the flowchart encoder to use the block encoder as a sub
+
+                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
+                mainSave.Add(encodedFlowchartSave);
+
+                IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+                foreach (var blockSave in blockSaves)
+                {
+                    SaveDataUnit saveDataUnit = blockSave.Serialized();
+                    mainSave.Add(saveDataUnit);
                 }
             }
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            // ^We are expecting the flowchart encoder to use the block encoder as a sub
-
-            CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
-            SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-            mainSave.Add(encodedFlowchartSave);
-
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
-            foreach (var blockSave in blockSaves)
-            {
-                SaveDataUnit saveDataUnit = blockSave.Serialized();
-                mainSave.Add(saveDataUnit);
-            }
+            
         }
 
         void PrepNewPathsForTesting()
@@ -359,7 +369,7 @@ namespace Amanita.SaveSystemTests
             foreach (var keyEl in newPaths.Keys)
             {
                 string path = newPaths[keyEl];
-                SaveSystem.SaveDirectoryPaths[keyEl] = path;
+                saveSys.SaveDirectoryPaths[keyEl] = path;
             }
         }
 
@@ -373,7 +383,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual async Task CommonSetupAsync()
         {
-            await Task.Delay(1000).ConfigureAwait(false);
+            await Task.Delay(commonSetupDelay).ConfigureAwait(false);
 
             if (UnityThreadUtil.IsMainThread)
             {
@@ -396,6 +406,8 @@ namespace Amanita.SaveSystemTests
             }
             
         }
+
+        protected int commonSetupDelay = 500; // Milliseconds
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }

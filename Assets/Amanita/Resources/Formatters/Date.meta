@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 5594c0e1b26b68f4bbde6705b2960822
+<<<<<<<< HEAD:Assets/Amanita/Resources/Formatters/Integers.meta
+guid: bf16fe52845916b4fa310df87c45a715
+========
+guid: 75cbf6f0eda95bd45b9ebb83cd722e18
+>>>>>>>> newSaveSystem:Assets/Amanita/Resources/Formatters/Date.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
