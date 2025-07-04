@@ -14,10 +14,9 @@ namespace Amanita.SaveSys
     {
         public virtual int MaxSlots { get; set; } = 100;
 
-        
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
-        public virtual IVersionProvider VersionProvider { get; protected set; } = new UnityVersionProvider();
+        public virtual IVersionProvider VersionProvider { get; protected set; }
         
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
@@ -77,10 +76,10 @@ namespace Amanita.SaveSys
 
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
-            await Save(slotNum, "", token);
+            await SaveTo(slotNum, "", token);
         }
 
-        public virtual async Task Save(int slotNum, string saveName, CancellationToken token = default)
+        public virtual async Task SaveTo(int slotNum, string saveName, CancellationToken token = default)
         {
             if (!Validate(slotNum, registerAndWriteOp))
             {
@@ -91,31 +90,8 @@ namespace Amanita.SaveSys
             async Task Process()
             {
                 CompositeSaveData mainState = await MainStateFactory.CreateMainState();
-
-
-                //CompositeSaveData mainState = CreateMainState();
-                //CompositeSaveData CreateMainState()
-                //{
-                //    IList<SaveDataUnit> unitsNeeded = GetUnitsForGameState();
-                //    IList<SaveDataUnit> GetUnitsForGameState()
-                //    {
-                //        IList<SaveDataUnit> units = new List<SaveDataUnit>();
-
-                //        for (int i = 0; i < mainCodecs.Count; i++)
-                //        {
-                //            IMainSaveCodec currentEncoder = mainCodecs[i];
-                //            IList<SaveDataUnit> newUnits = currentEncoder.FindAndEncodeAll();
-                //            units.AddRange(newUnits);
-                //        }
-
-                //        return units;
-                //    }
-
-                //    CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
-                //    return mainState;
-                //}
-
                 ISaveMetaData meta = MetaFactory.CreateMeta(slotNum);
+                meta.SaveName = saveName;
 
                 SaveDataSet newSet = new SaveDataSet(meta, mainState);
                 Registry.AddSave(newSet);
@@ -144,8 +120,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
-
         protected SaveWriteRequest writeRequest = new SaveWriteRequest();
 
         /// <summary>
@@ -160,44 +134,30 @@ namespace Amanita.SaveSys
                 return null;
             }
 
-            Scene sceneToLoad = default;
-            CompositeSaveData mainData = null;
-            ISaveMetaData meta = null;
-
-            await BeforeLoadPrep();
-            async Task BeforeLoadPrep()
+            if (!Registry.HasMainSaveInSlot(slotNum))
             {
-                Task<CompositeSaveData> getMainState = GetMainStateAsync();
-                async Task<CompositeSaveData> GetMainStateAsync()
-                {
-                    if (Registry.HasMainSaveInSlot(slotNum))
-                    {
-                        return (CompositeSaveData)Registry.GetMainSave(slotNum);
-                    }
-                    else
-                    {
-                        return await SaveRepo.LoadMainSaveAsync(slotNum, token);
-                    }
-                }
+                string errorMessage = $"Cannot load main in slot {slotNum}. No main data is assigned to it.";
+                Debug.LogWarning(errorMessage);
+                return null;
+            }
 
-                Task<Scene> getSceneToLoad = DecideSceneToLoad();
-                async Task<Scene> DecideSceneToLoad()
+            Scene sceneToLoad = default;
+            CompositeSaveData mainData = (CompositeSaveData)Registry.GetMainSave(slotNum);
+            ISaveMetaData meta = Registry.GetSaveMeta(slotNum);
+
+            await PrepBeforeLoad();
+            async Task PrepBeforeLoad()
+            {
+                Scene sceneToLoad = DecideSceneToLoad();
+                Scene DecideSceneToLoad()
                 {
-                    if (Registry.HasSaveInSlot(slotNum))
-                    {
-                        meta = Registry.GetSaveMeta(slotNum);
-                    }
-                    else
-                    {
-                        meta = await LoadMeta(slotNum, token);
-                    }
                     Scene sceneToLoad = SceneManager.GetSceneByName(meta.SceneName);
                     if (!sceneToLoad.IsValid())
                     {
                         sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
-
-                    bool shouldLoadScene = loadScene && sceneToLoad.IsValid() && sceneToLoad != default;
+                    
+                    bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
                     if (!shouldLoadScene)
                     {
                         sceneToLoad = SaveSysConstants.DoNotLoad;
@@ -206,11 +166,8 @@ namespace Amanita.SaveSys
                 }
 
                 Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
-                await ExecuteHandlers(BeforeSceneLoadAsync);
-                await Task.WhenAll(getMainState, getSceneToLoad, beforeSceneLoadHandlerTask);
+                await beforeSceneLoadHandlerTask;
 
-                sceneToLoad = getSceneToLoad.Result;
-                mainData = getMainState.Result;
             }
 
             bool shouldStopHere = ValidateScene(sceneToLoad) == false;
@@ -220,9 +177,8 @@ namespace Amanita.SaveSys
                 {
                     if (!sceneToLoad.Equals(SaveSysConstants.DoNotLoad) && !sceneToLoad.IsValid())
                     {
-                        string errorMessage = $"Cannot load scene {sceneToLoad.name} because it is not valid. " +
-                                              $"Please check the save metadata for slot {slotNum}.";
-                        Debug.LogError(errorMessage);
+                        string warningMessage = $"No valid scene found for meta: name = {meta.SceneName}, index = {meta.SceneBuildIndex}";
+                        Debug.LogWarning(warningMessage);
                         return false;
                     }
                 }
@@ -326,6 +282,11 @@ namespace Amanita.SaveSys
         public virtual void ClearSaveData()
         {
             Registry.Clear();
+        }
+    
+        public virtual void SetSaveNameFor(int slot, string newSaveName)
+        {
+            Registry.SetSaveNameFor(slot, newSaveName);
         }
     }
 

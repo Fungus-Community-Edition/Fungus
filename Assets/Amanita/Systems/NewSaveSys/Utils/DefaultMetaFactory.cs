@@ -9,12 +9,11 @@ namespace Amanita.SaveSys
 
         protected readonly IVersionProvider versionProvider;
 
-        public virtual ISaveMetaData CreateMeta(int slotNumber, string saveName = "")
+        public virtual ISaveMetaData CreateMeta(int slotNumber)
         {
             var meta = new SaveMetaData
             {
                 SlotNumber = slotNumber,
-                Name = saveName
             };
 
             string version = versionProvider.GetVersion();

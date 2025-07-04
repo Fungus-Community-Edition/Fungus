@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Linq;
 using System.Threading;
 
 namespace Amanita.SaveSys
@@ -11,7 +10,8 @@ namespace Amanita.SaveSys
         protected virtual void Awake()
         {
             // It's possible that we might not have an installer to handle this instance, so...
-            if (!initted && _s != null && _s != this)
+            bool thisIsDuplicateInstance = !initted && _s != null && _s != this;
+            if (thisIsDuplicateInstance)
             {
                 Debug.LogWarning("SaveSystem already exists. Destroying the new one.");
                 // We expect the AmanitaManager to handle the destruction here

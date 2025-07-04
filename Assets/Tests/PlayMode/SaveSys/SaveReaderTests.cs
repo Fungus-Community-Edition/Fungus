@@ -267,7 +267,7 @@ namespace Amanita.SaveSystemTests
             await CommonSetupAsync().ConfigureAwait(false);
             SaveWriteRequest withCustomMeta = new SaveWriteRequest(writeReq);
             SaveMetaData metaBefore = (SaveMetaData)withCustomMeta.SaveMetaData;
-            metaBefore.Name = "BlastOff";
+            metaBefore.SaveName = "BlastOff";
             metaBefore.TimeStamp = new DateTime(2025, 12, 31).ToUniversalTime();
 
             saveWriter.WriteEncrypted = saveReader.ReadEncrypted = false;

@@ -24,7 +24,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected int sceneBuildIndex = -1;
         [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
 
-        public string Name
+        public string SaveName
         {
             get { return name; }
             set { name = value; }
@@ -263,6 +263,7 @@ namespace Amanita.SaveSys
     public interface ISaveMetaData : ISaveData
     {
         string SaveID { get; }
+        string SaveName { get; set; }
         int SlotNumber { get; }
         string SaveVersion { get; }
         DateTime TimeStamp { get; }

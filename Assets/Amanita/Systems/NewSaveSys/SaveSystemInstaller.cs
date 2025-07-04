@@ -30,10 +30,14 @@ namespace Amanita.SaveSys
 
             S = this;
 
+            SaveWriter = saveWriter;
+            SaveReader = saveReader;
             if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
             {
                 whereSavesAreStored = SaveDirectoryType.DataPath;
             }
+
+            SaveDirectoryType = whereSavesAreStored;
 
             // We assume these are valid due to what we have OnValidate do
             IList<IMainSaveCodec> validMainCodecs = mainCodecs.Cast<IMainSaveCodec>().ToList();
@@ -83,15 +87,13 @@ namespace Amanita.SaveSys
                 // apply them through the sys
                 saveSystem.SaveDirectoryPaths = this.saveDirectoryPaths;
 
-                validAppliers = (from elem in mainAppliers
-                                where elem is ISaveDataApplier
-                                select elem as ISaveDataApplier).ToList();
-                saveSystem.RegisterSaveDataAppliersMulti(validAppliers);
-
             }
         }
 
         public static SaveSystemInstaller S { get; private set; }
+        public static SaveWriter SaveWriter { get; private set; }
+        public static SaveReader SaveReader { get; private set; }
+        public static SaveDirectoryType SaveDirectoryType { get; private set; }
         public static IMetaFactory MetaFactory { get; private set; }
         public static IMainStateFactory MainStateFactory { get; private set; }
         public static SaveRegistry Registry { get; private set; }

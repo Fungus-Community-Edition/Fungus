@@ -100,7 +100,7 @@ namespace Amanita.SaveSys
 
         public void RemoveRange(IList<ISaveDataApplier> allToRemove)
         {
-            for (int i = 0; i <= allToRemove.Count; i++)
+            for (int i = 0; i < allToRemove.Count; i++)
             {
                 var toRemove = allToRemove[i];
                 Remove(toRemove);
@@ -114,7 +114,7 @@ namespace Amanita.SaveSys
 
         public void RemoveRange(IList<IMainSaveCodec> codecs)
         {
-            for (int i = 0; i <= codecs.Count; i++)
+            for (int i = 0; i < codecs.Count; i++)
             {
                 var toRemove = codecs[i];
                 Remove(toRemove);

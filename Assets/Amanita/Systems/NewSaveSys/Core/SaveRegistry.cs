@@ -202,6 +202,20 @@ namespace Amanita.SaveSys
         {
             return _savePairs.Keys.ToArray();
         }
+    
+        public virtual void SetSaveNameFor(int slot, string newSaveName)
+        {
+            if (HasSaveInSlot(slot))
+            {
+                var meta = GetSaveMeta(slot);
+                meta.SaveName = newSaveName;
+            }
+            else
+            {
+                string warningMessage = $"Cannot set save name for slot {slot}. There is no save data assigned to it.";
+                Debug.LogWarning(warningMessage);
+            }
+        }
     }
 
 }
