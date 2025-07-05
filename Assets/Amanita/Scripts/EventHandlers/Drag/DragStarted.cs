@@ -38,7 +38,7 @@ namespace Amanita
 
         protected virtual void OnEnable()
         {
-            eventDispatcher = AmanitaManager.Instance.EventDispatcher;
+            eventDispatcher = AmanitaManager.S.EventDispatcher;
 
             eventDispatcher.AddListener<DragStartedEvent>(OnDragStartedEvent);
         }

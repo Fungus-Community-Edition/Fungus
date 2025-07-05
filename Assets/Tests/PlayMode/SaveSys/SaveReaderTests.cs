@@ -306,5 +306,13 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(threw, assertMessage);
         }
 
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
+        }
+
     }
 }

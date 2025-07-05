@@ -23,7 +23,12 @@ namespace Amanita.EditorUtils
         protected SerializedProperty hideCommandsProp;
         protected SerializedProperty luaEnvironmentProp;
         protected SerializedProperty luaBindingNameProp;
+
+        protected SerializedProperty includeInSaveProp;
+        protected SerializedProperty saveBlocksProp;
         protected SerializedProperty saveVariablesProp;
+        protected SerializedProperty loadPriorityProp;
+
 
         protected Texture2D addTexture;
 
@@ -48,7 +53,12 @@ namespace Amanita.EditorUtils
             hideCommandsProp = serializedObject.FindProperty("hideCommands");
             luaEnvironmentProp = serializedObject.FindProperty("luaEnvironment");
             luaBindingNameProp = serializedObject.FindProperty("luaBindingName");
+
+
+            includeInSaveProp = serializedObject.FindProperty("includeInSaves");
+            saveBlocksProp = serializedObject.FindProperty("saveBlocks");
             saveVariablesProp = serializedObject.FindProperty("saveVariables");
+            loadPriorityProp = serializedObject.FindProperty("loadPriority");
 
             addTexture = AmanitaEditorResources.AddSmall;
 
@@ -78,9 +88,18 @@ namespace Amanita.EditorUtils
             // Show list of commands to hide in Add Command menu
             //ReorderableListGUI.Title(new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip));
             //ReorderableListGUI.ListField(hideCommandsProp);
-            EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip), true);
+            EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName,
+                hideCommandsProp.tooltip), true);
 
-            EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName, saveVariablesProp.tooltip), true);
+            EditorGUILayout.PropertyField(includeInSaveProp, new GUIContent(includeInSaveProp.displayName,
+                includeInSaveProp.tooltip), true);
+            EditorGUILayout.PropertyField(saveBlocksProp, new GUIContent(saveBlocksProp.displayName,
+                saveBlocksProp.tooltip), true);
+            EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName,
+                saveVariablesProp.tooltip), true);
+            EditorGUILayout.PropertyField(loadPriorityProp, new GUIContent(loadPriorityProp.displayName,
+                loadPriorityProp.tooltip), true);
+
 
             if (EditorGUI.EndChangeCheck())
             {

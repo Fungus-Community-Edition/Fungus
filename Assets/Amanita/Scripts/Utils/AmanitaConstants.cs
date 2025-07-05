@@ -61,5 +61,9 @@ namespace Amanita
 #else
             "Prefabs/EventSystem";
 #endif
+
+        public const string SaveNameVarName = "saveName",
+            SaveNamePrefixVarName = "saveNamePrefix",
+            SaveNameSuffixVarName = "saveNameSuffix";
     }
 }

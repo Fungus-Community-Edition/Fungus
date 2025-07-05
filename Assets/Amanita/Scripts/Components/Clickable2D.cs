@@ -39,7 +39,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.S.EventDispatcher;
 
             eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
         }

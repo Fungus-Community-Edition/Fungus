@@ -51,10 +51,13 @@ GameObject:
   - component: {fileID: 2894303634136426304}
   - component: {fileID: 1975970902030707167}
   - component: {fileID: 5244056966308270914}
-  - component: {fileID: 8916456280347382107}
   - component: {fileID: 3080362346236546621}
   - component: {fileID: 3920365560750978494}
   - component: {fileID: 7505458795986732438}
+  - component: {fileID: 2182094343406819994}
+  - component: {fileID: 2267836562425437019}
+  - component: {fileID: 1752780474336798940}
+  - component: {fileID: 1749631385722854176}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -101,8 +104,7 @@ MonoBehaviour:
     y: 0
     width: 0
     height: 0
-  selectedBlocks:
-  - {fileID: 3080362346236546621}
+  selectedBlocks: []
   selectedCommands: []
   variables:
   - {fileID: 108686680755132427}
@@ -122,7 +124,11 @@ MonoBehaviour:
   hideCommands: []
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
   saveVariables: 1
+  loadPriority: 0
+  nextValidVarID: 8
   uniqueId: 05b08fbe-bc51-47c3-bab0-20deaac90bc0
 --- !u!114 &108686680755132427
 MonoBehaviour:
@@ -138,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: name
-  uniqueId: 54587379-4cb2-48ee-8dac-7135d7a4afd9
+  itemID: 1
   value: Alice
 --- !u!114 &2677308742917868254
 MonoBehaviour:
@@ -154,7 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: score
-  uniqueId: 0830d6b1-bf1d-4cc9-b6f8-a2e6ac2407ad
+  itemID: 2
   value: 132
 --- !u!114 &5708265625975436602
 MonoBehaviour:
@@ -170,7 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: newPlayer
-  uniqueId: 465f6c53-53d0-4949-930e-a7f059d1b00e
+  itemID: 3
   value: 1
 --- !u!114 &5717713915927640460
 MonoBehaviour:
@@ -186,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fastestTimeInSeconds
-  uniqueId: c70b6592-69e6-44ae-9728-fac6ead140c8
+  itemID: 4
   value: 12.348
 --- !u!114 &2894303634136426304
 MonoBehaviour:
@@ -202,7 +208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: twoDPos
-  uniqueId: 01a2aaef-0559-46b1-ab9a-57a106eccbf6
+  itemID: 5
   value: {x: 12, y: 34}
 --- !u!114 &1975970902030707167
 MonoBehaviour:
@@ -218,7 +224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: threeDPos
-  uniqueId: c20c98f7-e335-4fe6-8c84-652e48ef1479
+  itemID: 6
   value: {x: 23, y: 45, z: 78}
 --- !u!114 &5244056966308270914
 MonoBehaviour:
@@ -234,21 +240,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: someTrans
-  uniqueId: 3e244e14-0fee-4ed4-aeb3-5d058f82c44f
+  itemID: 7
   value: {fileID: 2288069364643417435}
---- !u!114 &8916456280347382107
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2918351469272193397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b5bf9cba49fdf84b99ba739811ef9c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueID: cbe04ab7-20d7-4b78-a4ee-8a7ba23012f1
 --- !u!114 &3080362346236546621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,8 +267,10 @@ MonoBehaviour:
   description: 
   eventHandler: {fileID: 7505458795986732438}
   commandList:
+  - {fileID: 1749631385722854176}
   - {fileID: 3920365560750978494}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &3920365560750978494
 MonoBehaviour:
@@ -319,6 +314,102 @@ MonoBehaviour:
   parentBlock: {fileID: 3080362346236546621}
   suppressBlockAutoSelect: 0
   waitForFrames: 1
+--- !u!114 &2182094343406819994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 484
+    y: 277
+    width: 240
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 2
+  blockName: NonExecutingButIncludeInSavesTrue
+  description: 
+  eventHandler: {fileID: 0}
+  commandList: []
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &2267836562425437019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 621
+    y: 488
+    width: 240
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 3
+  blockName: ExecutingButIncludeInSavesFalse
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1752780474336798940}
+  includeInSaves: 0
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1752780474336798940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 4
+  indentLevel: 0
+  _duration:
+    floatRef: {fileID: 0}
+    floatVal: 5
+  durationOLD: 0
+--- !u!114 &1749631385722854176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 5
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 2267836562425437019}
+  startLabel:
+    stringRef: {fileID: 0}
+    stringVal: 
+  startIndex: 0
+  callMode: 1
 --- !u!1 &4017282831232097748
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5887406008656426993
 Transform:
   m_ObjectHideFlags: 0

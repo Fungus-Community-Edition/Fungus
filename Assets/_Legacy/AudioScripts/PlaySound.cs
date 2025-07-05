@@ -39,7 +39,7 @@ namespace Amanita
                 return;
             }
 
-            var musicManager = AmanitaManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.S.MusicManager;
 
             musicManager.PlaySound(soundClip, volume);
 

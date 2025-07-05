@@ -29,6 +29,12 @@ namespace Amanita.SaveSys
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
+            if (!toCreateFrom.IncludeInSaves)
+            {
+                Debug.LogWarning($"Flowchart {toCreateFrom.name} is set to not be included in saves. Thus, it shall not be encoded.");
+                return null;
+            }
+
             // We want this whole func to run on the main thread,
             // since it might involve Unity API calls that are not thread-safe.
             IList<VariableSaveData> varSaves = null;
@@ -83,7 +89,7 @@ namespace Amanita.SaveSys
 
             var variables = toCreateFrom.Variables;
             int count = variables.Count;
-            if (count == 0 || !toCreateFrom.SaveVariables)
+            if (count == 0 || !toCreateFrom.IncludeInSaves)
             {
                 // Do nothing and just return an empty list later in this func
             }
@@ -142,7 +148,7 @@ namespace Amanita.SaveSys
 #endif
 
                     IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
-                                                            where elem.SaveVariables == true
+                                                            where elem.IncludeInSaves == true
                                                             select elem).ToList();
 
                     for (int i = 0; i < flowchartsToSave.Count; i++)

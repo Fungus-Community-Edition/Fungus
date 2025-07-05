@@ -118,7 +118,7 @@ namespace Amanita
 
         protected virtual void OnSaveReset()
         {
-            AmanitaManager.Instance.NarrativeLog.Clear();
+            AmanitaManager.S.NarrativeLog.Clear();
             UpdateNarrativeLogText();
         }
 
@@ -135,7 +135,7 @@ namespace Amanita
         {
             if (narrativeLogView.enabled)
             {
-                var prettyHistory = AmanitaManager.Instance.NarrativeLog.GetPrettyHistory();
+                var prettyHistory = AmanitaManager.S.NarrativeLog.GetPrettyHistory();
 
                 if (prettyHistory.Length > maxCharacters)
                 {

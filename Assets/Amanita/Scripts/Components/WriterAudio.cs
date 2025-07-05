@@ -293,9 +293,10 @@ namespace Amanita
 
         public virtual void OnGlyphWritten()
         {
-            if (playingVoiceover)
+            if (playingVoiceover || AudioSystem.S == null)
             {
                 return;
+                // If AudioSystem.S is null, chances are that it's because the application is shutting down
             }
 
             if (playBeeps && beepSounds.Count > 0)
