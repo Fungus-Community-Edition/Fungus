@@ -114,7 +114,7 @@ namespace Amanita.SaveSys
                 foreach (BlockSaveData blockSave in saveData.SavedBlocks)
                 {
                     Block blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
-                    static Block FindTheRightBlock(Flowchart flowchart, BlockSaveData blockSave)
+                    Block FindTheRightBlock(Flowchart flowchart, BlockSaveData blockSave)
                     {
                         // Find the current block first by its item id, then by its name
                         Block blockToApplyTo = flowchart.FindBlockByItemId(blockSave.ItemId);

@@ -81,7 +81,7 @@ namespace Amanita
                 return;
             }
 
-            var cameraManager = AmanitaManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.S.CameraManager;
 
             if (fadeTexture)
             {
@@ -107,7 +107,7 @@ namespace Amanita
 
         public override void OnStopExecuting()
         {
-            var cameraManager = AmanitaManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.S.CameraManager;
 
             cameraManager.Stop();
         }

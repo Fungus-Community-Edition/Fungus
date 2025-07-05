@@ -1,6 +1,7 @@
 using Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
@@ -39,32 +40,32 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(block.BlockName, deserializedBlock.BlockName, "Serialized Block name mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectBlockID_DEcoded()
+        [Test]
+        public virtual async Task CorrectBlockID_DEcoded()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(100);
             blockSaveData = blockSaveCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
             Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectActiveCommandID_ENcoded()
+        [Test]
+        public virtual async Task CorrectActiveCommandID_ENcoded()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(100);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
             Assert.AreEqual(block.ActiveCommand.ItemId, blockSaveData.ActiveCommandId, "Active command ID mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectActiveCommandID_DEcoded()
+        [Test]
+        public virtual async Task CorrectActiveCommandID_DEcoded()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(500);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
@@ -72,21 +73,21 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectActiveCommandIndex_ENcoded()
+        [Test]
+        public virtual async Task CorrectActiveCommandIndex_ENcoded()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(100);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, blockSaveData.ActiveCommandIndex, "Active command index mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectActiveCommandIndex_DEcoded()
+        [Test]
+        public virtual async Task CorrectActiveCommandIndex_DEcoded()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(100);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
             SaveDataUnit serializedData = blockSaveData.Serialized();
@@ -94,11 +95,11 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
         }
 
-        [UnityTest]
-        public virtual IEnumerator CorrectBlockSaveDataSerialized()
+        [Test]
+        public virtual async Task CorrectBlockSaveDataSerialized()
         {
-            yield return CommonSetup();
-            yield return new WaitForSeconds(0.1f);
+            await CommonSetupAsync();
+            await Task.Delay(100);
             BlockSaveData beforeSerializing = blockSaveCodec.EncodeToSave(block);
             SaveDataUnit serializedData = beforeSerializing.Serialized();
             BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);

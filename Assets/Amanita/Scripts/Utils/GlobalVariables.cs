@@ -4,23 +4,28 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEditor.SceneManagement;
 
 namespace Amanita
 {
-    /// <summary>
-    /// Storage for a collection of fungus variables that can then be accessed globally.
-    /// </summary>
-    public class GlobalVariables : MonoBehaviour
-    {
-        private Flowchart holder;
+	/// <summary>
+	/// Storage for a collection of Amanita variables that can then be accessed globally.
+	/// </summary>
+	public class GlobalVariables : MonoBehaviour
+	{
+		private Flowchart holder;
 
-        Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
+		Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
-        void Awake()
-        {
-            holder = new GameObject("GlobalVariables").AddComponent<Flowchart>();
-            holder.transform.parent = transform;
-        }
+		public virtual void Init()
+		{
+			holder = GetComponent<Flowchart>();
+
+			if (holder == null)
+			{
+				holder = this.gameObject.AddComponent<Flowchart>();
+			}
+		}
 
 		public Variable GetVariable(string variableKey)
 		{
@@ -29,37 +34,45 @@ namespace Amanita
 			return v;
 		}
 
-        public VariableBase<T> GetOrAddVariable<T>(string variableKey, T defaultvalue, Type type)
-        {
-            Variable v = null;
-            VariableBase<T> vAsT = null;
-            var res = variables.TryGetValue(variableKey, out v);
+		public VariableBase<TVarValue> GetOrAddVariable<TVarValue>(string variableKey, TVarValue defaultvalue, Type type)
+		{
+			Variable varInstance = null;
+			VariableBase<TVarValue> varAsType = null;
+			var varFound = variables.TryGetValue(variableKey, out varInstance);
 
-            if(res && v != null)
-            {
-                vAsT = v as VariableBase<T>;
+			if (varFound && varInstance != null)
+			{
+				varAsType = varInstance as VariableBase<TVarValue>;
 
-                if (vAsT != null)
-                {
-                    return vAsT;
-                }
-                else
-                {
-                    Debug.LogError("A fungus variable of name " + variableKey + " already exists, but of a different type");
-                }
-            }
-            else
-            {
-                //create the variable
-                vAsT = holder.gameObject.AddComponent(type) as VariableBase<T>;
-                vAsT.Value = defaultvalue;
-                vAsT.Key = variableKey;
-                vAsT.Scope = VariableScope.Public;
-                variables[variableKey] = vAsT;
-                holder.Variables.Add(vAsT);
-            }
+				if (varAsType != null)
+				{
+					return varAsType;
+				}
+				else
+				{
+					Debug.LogError("An Amanita variable of name " + variableKey + " already exists, but of a different type");
+				}
+			}
+			else
+			{
+				//create the variable
+				varAsType = holder.gameObject.AddComponent(type) as VariableBase<TVarValue>;
+				varAsType.Value = defaultvalue;
+				varAsType.Key = variableKey;
+				varAsType.Scope = VariableScope.Public;
+				variables[variableKey] = varAsType;
+				holder.Variables.Add(varAsType);
+			}
 
-            return vAsT;
-        }
-    }
+			return varAsType;
+		}
+
+		public virtual TVarType GetOrAddVariable<TValHeld, TVarType>(string key, TValHeld value)
+			where TVarType : VariableBase<TValHeld>
+		{
+			TVarType newVar = holder.AddVariable<TValHeld, TVarType>(key, value, VariableScope.Global);
+			variables[key] = newVar;
+			return newVar;
+		}
+	}
 }

@@ -3,6 +3,7 @@
 
 using Amanita.Lua;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,6 +84,7 @@ namespace Amanita
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
+        
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool saveVariables = true;
 
@@ -116,9 +118,16 @@ namespace Amanita
             eventSystemPresent = false;
         }
             
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             CheckEventSystem();
+
+            if (Application.IsPlaying(this))
+            {
+                AmanitaManager.EnsureExists();
+                GetAndInitVars();
+                StartCoroutine(HandleGameStartedBlock());
+            }
         }
 
         // There must be an Event System in the scene for Say and Menu input to work.
@@ -130,23 +139,58 @@ namespace Amanita
                 return;
             }
             
-        #if UNITY_6000
-            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
-        #else
+#if UNITY_6000
+            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+#else
             EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
-        #endif
+#endif
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
                 GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
                 if (prefab != null)
                 {
-                    GameObject go = Instantiate(prefab) as GameObject;
+                    GameObject go = Instantiate(prefab);
+                    eventSystem = go.GetComponent<EventSystem>();
                     go.name = "EventSystem";
                 }
+                else
+                {
+                    string errorMessage = "Event System prefab for Amanita not found.";
+                    throw new System.MissingFieldException(errorMessage);
+                }
             }
-            
+
+            eventSystem.gameObject.SetActive(true);
             eventSystemPresent = true;
+        }
+
+        protected virtual IEnumerator HandleGameStartedBlock()
+        {
+            GameStarted gsEventHandler = GetComponentInChildren<GameStarted>();
+
+            if (gsEventHandler == null)
+            {
+                yield break;
+            }
+
+            while (AmanitaManager.S == null || !AmanitaManager.S.IsInitted)
+            {
+                yield return null;
+            }
+
+            gsEventHandler.Trigger();
+            
+        }
+
+        protected virtual void GetAndInitVars()
+        {
+            variables = GetComponentsInChildren<Variable>().ToList();
+            for (int i = 0; i < variables.Count; i++)
+            {
+                var currentVar = variables[i];
+                currentVar.Init(currentVar.GetValue());
+            }
         }
 
         private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
@@ -160,9 +204,9 @@ namespace Amanita
             {
                 cachedFlowcharts.Add(this);
                 //TODO these pairs could be replaced by something static that manages all active flowcharts
-                #if UNITY_5_4_OR_NEWER
+#if UNITY_5_4_OR_NEWER
                 UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
-                #endif
+#endif
             }
 
             CheckItemIds();
@@ -176,9 +220,9 @@ namespace Amanita
         {
             cachedFlowcharts.Remove(this);
 
-            #if UNITY_5_4_OR_NEWER
+#if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-            #endif
+#endif
 
             StringSubstituter.UnregisterHandler(this);   
         }
@@ -192,7 +236,8 @@ namespace Amanita
             }
 
             // Tell all components that implement IUpdateable to update to the new version
-            // This is important for when we rework Variables and Blocks to be more lightweight
+            // This is important for when we rework Variables and Blocks to be more lightweight;
+            // might want to make the old var and Block types IUpdatables
             var components = GetComponents<Component>();
             for (int i = 0; i < components.Length; i++)
             {
@@ -358,11 +403,11 @@ namespace Amanita
         /// </summary>
         public static void BroadcastFungusMessage(string messageName)
         {
-        #if UNITY_6000
+#if UNITY_6000
             var eventHandlers = UnityEngine.Object.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
-        #else
+#else
             var eventHandlers = UnityEngine.Object.FindObjectsOfType<MessageReceived>();
-        #endif
+#endif
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
@@ -1557,6 +1602,12 @@ namespace Amanita
             nextValidVarID++;
             variables.Add(newVar);
             return newVar;
+        }
+
+        public static void ResetStaticsForTest()
+        {
+            cachedFlowcharts.Clear();
+            eventSystemPresent = false;
         }
 
     }

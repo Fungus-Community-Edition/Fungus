@@ -270,7 +270,7 @@ namespace Amanita.EditorUtils
             var prevEnabled = GUI.enabled;
             if (isGlobal && Application.isPlaying)
             {
-                var res = AmanitaManager.Instance.GlobalVariables.GetVariable(keyProp.stringValue);
+                var res = AmanitaManager.S.GlobalVariables.GetVariable(keyProp.stringValue);
                 if (res != null)
                 {
                     SerializedObject globalValue = new SerializedObject(res);

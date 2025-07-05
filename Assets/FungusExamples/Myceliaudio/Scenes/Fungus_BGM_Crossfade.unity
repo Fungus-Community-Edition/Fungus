@@ -792,6 +792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: maxFadeDur
+  itemID: 9
   value: 5
 --- !u!114 &549323052
 MonoBehaviour:
@@ -807,6 +808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: minFadeDur
+  itemID: 8
   value: 0.5
 --- !u!114 &549323053
 MonoBehaviour:
@@ -822,6 +824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingFadeDur
+  itemID: 7
   value: 2
 --- !u!114 &549323054
 MonoBehaviour:
@@ -837,6 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingMusicVol
+  itemID: 6
   value: 50
 --- !u!114 &549323055
 MonoBehaviour:
@@ -852,6 +856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingVol
+  itemID: 5
   value: 5
 --- !u!114 &549323056
 MonoBehaviour:
@@ -867,6 +872,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeChangeInterval
+  itemID: 4
   value: 0.5
 --- !u!114 &549323057
 MonoBehaviour:
@@ -882,6 +888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: volChangeInterval
+  itemID: 3
   value: 5
 --- !u!114 &549323058
 MonoBehaviour:
@@ -897,6 +904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: secondClip
+  itemID: 2
   value: {fileID: 8300000, guid: eb2cfabb9985f2f489e93a8e2b7db129, type: 3}
 --- !u!114 &549323059
 MonoBehaviour:
@@ -912,6 +920,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: firstClip
+  itemID: 1
   value: {fileID: 8300000, guid: 43aeed34af4338e40b8ac0f72263dc1d, type: 3}
 --- !u!114 &549323060
 MonoBehaviour:
@@ -960,6 +969,7 @@ MonoBehaviour:
   - {fileID: 549323069}
   - {fileID: 549323068}
   - {fileID: 549323080}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323062
 MonoBehaviour:
@@ -974,21 +984,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 1
-  scrollPos: {x: 31.85714, y: 83.22439}
+  scrollPos: {x: 5.1808662, y: 62.970222}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
   blockViewHeight: 200
-  zoom: 0.8200002
+  zoom: 0.85000014
   scrollViewRect:
     serializedVersion: 2
     x: -343
     y: -340
     width: 1114
     height: 859
-  selectedBlocks:
-  - {fileID: 549323061}
-  selectedCommands:
-  - {fileID: 549323068}
+  selectedBlocks: []
+  selectedCommands: []
   variables:
   - {fileID: 549323059}
   - {fileID: 549323058}
@@ -1016,6 +1024,9 @@ MonoBehaviour:
   hideCommands: []
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  saveVariables: 1
+  nextValidVarID: 17
+  uniqueId: 8bd9f872-5623-4e0f-82e5-41a2094bbb78
 --- !u!4 &549323063
 Transform:
   m_ObjectHideFlags: 0
@@ -1045,6 +1056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: silent
+  itemID: 12
   value: 0
 --- !u!114 &549323065
 MonoBehaviour:
@@ -1084,6 +1096,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: secondClipTrack
+  itemID: 11
   value: 1
 --- !u!114 &549323067
 MonoBehaviour:
@@ -1099,6 +1112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: firstClipTrack
+  itemID: 10
   value: 0
 --- !u!114 &549323068
 MonoBehaviour:
@@ -1120,7 +1134,10 @@ MonoBehaviour:
     track:
       integerRef: {fileID: 549323066}
       integerVal: 0
-    clip:
+    introClip:
+      audioClipRef: {fileID: 0}
+      audioClipVal: {fileID: 0}
+    mainClip:
       audioClipRef: {fileID: 549323058}
       audioClipVal: {fileID: 0}
     loop:
@@ -1162,7 +1179,10 @@ MonoBehaviour:
     track:
       integerRef: {fileID: 549323067}
       integerVal: 0
-    clip:
+    introClip:
+      audioClipRef: {fileID: 0}
+      audioClipVal: {fileID: 0}
+    mainClip:
       audioClipRef: {fileID: 549323059}
       audioClipVal: {fileID: 0}
     loop:
@@ -1222,6 +1242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: musicGroupVol
+  itemID: 14
   value: 0
 --- !u!114 &549323073
 MonoBehaviour:
@@ -1404,7 +1425,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeDur
-  value: 0
+  itemID: 13
+  value: 2
 --- !u!114 &549323075
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1497,6 +1519,7 @@ MonoBehaviour:
   - {fileID: 549323078}
   - {fileID: 549323076}
   - {fileID: 549323075}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323080
 MonoBehaviour:
@@ -1775,6 +1798,7 @@ MonoBehaviour:
   - {fileID: 549323125}
   - {fileID: 549323083}
   - {fileID: 549323082}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323086
 MonoBehaviour:
@@ -1829,6 +1853,7 @@ MonoBehaviour:
   - {fileID: 549323121}
   - {fileID: 549323116}
   - {fileID: 549323103}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323088
 MonoBehaviour:
@@ -2061,6 +2086,7 @@ MonoBehaviour:
   - {fileID: 549323090}
   - {fileID: 549323123}
   - {fileID: 549323089}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323092
 MonoBehaviour:
@@ -2293,6 +2319,7 @@ MonoBehaviour:
   - {fileID: 549323094}
   - {fileID: 549323124}
   - {fileID: 549323093}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323096
 MonoBehaviour:
@@ -2550,6 +2577,7 @@ MonoBehaviour:
   - {fileID: 549323126}
   - {fileID: 549323098}
   - {fileID: 549323097}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323101
 MonoBehaviour:
@@ -2598,6 +2626,7 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323101}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323103
 MonoBehaviour:
@@ -2690,6 +2719,7 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323105}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323107
 MonoBehaviour:
@@ -2740,6 +2770,7 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323107}
+  saveExecutionState: 1
   suppressAllAutoSelections: 0
 --- !u!114 &549323109
 MonoBehaviour:
@@ -2855,6 +2886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fullVol
+  itemID: 16
   value: 100
 --- !u!114 &549323115
 MonoBehaviour:
@@ -3351,6 +3383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: trackCurrentlyAudible
+  itemID: 15
   value: 0
 --- !u!114 &549323120
 MonoBehaviour:

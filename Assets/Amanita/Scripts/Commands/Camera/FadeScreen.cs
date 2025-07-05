@@ -38,7 +38,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var cameraManager = AmanitaManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.S.CameraManager;
             
             if (fadeTexture)
             {

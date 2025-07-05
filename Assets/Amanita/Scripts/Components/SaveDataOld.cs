@@ -37,7 +37,7 @@ namespace Amanita
                 var saveDataItem = SaveDataItem.Create(FlowchartDataKey, JsonUtility.ToJson(flowchartData));
                 saveDataItems.Add(saveDataItem);
 
-                var narrativeLogItem = SaveDataItem.Create(NarrativeLogKey, AmanitaManager.Instance.NarrativeLog.GetJsonHistory());
+                var narrativeLogItem = SaveDataItem.Create(NarrativeLogKey, AmanitaManager.S.NarrativeLog.GetJsonHistory());
                 saveDataItems.Add(narrativeLogItem);
             }
         }
@@ -69,7 +69,7 @@ namespace Amanita
 
                 if (saveDataItem.DataType == NarrativeLogKey)
                 {
-                    AmanitaManager.Instance.NarrativeLog.LoadHistory(saveDataItem.Data);
+                    AmanitaManager.S.NarrativeLog.LoadHistory(saveDataItem.Data);
                 }
             }
         }

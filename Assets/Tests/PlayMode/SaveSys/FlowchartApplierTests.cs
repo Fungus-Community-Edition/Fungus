@@ -11,10 +11,13 @@ namespace Amanita.SaveSystemTests
     public class FlowchartApplierTests : CommonTestFunctionality
     {
 
-        [UnityTest]
-        public virtual IEnumerator AppliesVarStates()
+        [Test]
+        public virtual async Task AppliesVarStates()
         {
-            yield return CommonSetup();
+            Debug.Log("At start of AppliesVarStates");
+            await CommonSetupAsync();
+            Debug.Log("Done awaiting common setup async");
+
             string expectedNameVarValue = nameVar.Value;
             int expectedScoreVarValue = scoreVar.Value;
             bool expectedNewPlayerVarValue = isNewPlayerVar.Value;
@@ -36,7 +39,7 @@ namespace Amanita.SaveSystemTests
             transformVar.Value = null;
 
             Task applyTask = flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
-            yield return new WaitUntil(() => applyTask.IsCompleted);
+            await applyTask;
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
