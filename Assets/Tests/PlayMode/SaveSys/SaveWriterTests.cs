@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
-using UnityObject = UnityEngine.Object;
 using System;
-using System.Threading;
 
 namespace Amanita.SaveSystemTests
 {

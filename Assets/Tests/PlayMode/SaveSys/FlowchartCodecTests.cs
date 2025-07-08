@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Collections;
 using Amanita.SaveSys;
 using System.Collections.Generic;
-using UnityObject = UnityEngine.Object;
 using System.Linq;
 using UnityEngine.TestTools;
 

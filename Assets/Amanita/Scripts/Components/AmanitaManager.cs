@@ -3,9 +3,6 @@
 
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
-using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Amanita

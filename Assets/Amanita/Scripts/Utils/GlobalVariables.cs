@@ -4,7 +4,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using UnityEditor.SceneManagement;
 
 namespace Amanita
 {

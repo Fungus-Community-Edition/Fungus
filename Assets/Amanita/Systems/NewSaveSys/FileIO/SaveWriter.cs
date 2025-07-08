@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
-using Amanita.Collections;
 using Amanita.IO;
 using System.Threading;
 
