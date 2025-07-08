@@ -28,7 +28,7 @@ namespace Amanita.SaveSys
         public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
         {
             IList<Block> blocksToConsider = (from elem in withTheBlocks.GetExecutingBlocks()
-                                             where elem.SaveExecutionState == true
+                                             where elem.IncludeInSaves == true
                                              select elem).ToList();
             IList<BlockSaveData> blockSaves = blocksToConsider
                 .Select(block => EncodeToSave(block))

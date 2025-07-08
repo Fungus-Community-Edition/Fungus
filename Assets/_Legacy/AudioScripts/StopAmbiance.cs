@@ -18,7 +18,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.S.MusicManager;
 
             musicManager.StopAmbiance();
 

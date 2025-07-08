@@ -56,7 +56,7 @@ namespace Amanita
         {
             if (Application.isPlaying)
             {
-                eventDispatcher = AmanitaManager.Instance.EventDispatcher;
+                eventDispatcher = AmanitaManager.S.EventDispatcher;
 
                 eventDispatcher.AddListener<DragExitedEvent>(OnDragEnteredEvent);
             }

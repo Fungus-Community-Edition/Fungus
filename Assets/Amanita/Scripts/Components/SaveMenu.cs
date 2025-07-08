@@ -91,7 +91,7 @@ namespace Amanita
                 saveMenuGroup.alpha = 0f;
             }
 
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             // Make a note of the current scene. This will be used when restarting the game.
             if (string.IsNullOrEmpty(saveManager.StartScene))
@@ -112,7 +112,7 @@ namespace Amanita
 
         protected virtual void Update()
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             // Hide the Save and Load buttons if autosave is on
 
@@ -173,7 +173,7 @@ namespace Amanita
 
         protected virtual void OnSavePointAdded(string savePointKey, string savePointDescription)
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             if (autoSave &&
                 saveManager.NumSavePoints > 0)
@@ -259,7 +259,7 @@ namespace Amanita
         /// </summary>
         public virtual void Save()
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             if (saveManager.NumSavePoints > 0)
             {
@@ -273,7 +273,7 @@ namespace Amanita
         /// </summary>
         public virtual void Load()
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             if (saveManager.SaveDataExists(saveDataKey))
             {
@@ -290,7 +290,7 @@ namespace Amanita
         {
             PlayClickSound();
 
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
             if (saveManager.NumSavePoints > 0)
             {
                 saveManager.Rewind();
@@ -305,7 +305,7 @@ namespace Amanita
         {
             PlayClickSound();
 
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
             if (saveManager.NumRewoundSavePoints > 0)
             {
                 saveManager.FastForward();
@@ -317,7 +317,7 @@ namespace Amanita
         /// </summary>
         public virtual void Restart()
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
             if (string.IsNullOrEmpty(saveManager.StartScene))
             {
                 Debug.LogError("No start scene specified");

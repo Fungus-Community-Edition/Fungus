@@ -1,7 +1,9 @@
 using Amanita.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
@@ -10,25 +12,35 @@ namespace Amanita.SaveSys
     /// </summary>
     public class SaveSystemInstaller : MonoBehaviour
     {
+        // Other modules that want to inject their own dependencies (say, for an RPG) should
+        // do so in Start. This installer will handle all the initialization for the SaveSystem Singleton,
+        // not just giving it its initial dependencies.
         [SerializeField] protected List<ScriptableObject> mainCodecs = new List<ScriptableObject>() { };
         [SerializeField] protected List<ScriptableObject> mainAppliers = new List<ScriptableObject>() { };
         [SerializeField] protected SaveWriter saveWriter = null;
         [SerializeField] protected SaveReader saveReader = null;
         [Tooltip("The base path for where the saves are stored, to be more precise. \"In WebGL, things will be saved to PlayerPrefs due to the file system limitations web browsers have. In which case, this field won't make a difference.\"")]
         [SerializeField] protected SaveDirectoryType whereSavesAreStored = SaveDirectoryType.InTheBalls;
-        
-        // Other modules that want to inject their own dependencies (say, for an RPG) should
-        // do so in Start. This installer will handle all the initialization for the SaveSystem Singleton,
-        // not just giving it its initial dependencies.
-        protected virtual void Awake()
+
+        // We have this func instead of Awake so that when the time comes to set up any
+        // global Flowcharts, the Amanita Manager will be ready. Otherwise, there's a
+        // chance that things can get screwy
+        public virtual void Init()
         {
             bool installerAlreadyThere = S != null && S != this;
-            if (installerAlreadyThere)
+            if (initted || installerAlreadyThere)
             {
-                return; // We expect the AmanitaManager to handle destroying this
+                return; // We expect the AmanitaManager to handle destroying this if needed
             }
 
+            Debug.Log("Setting SaveSystemInstaller Singleton in its Init method.");
             S = this;
+
+            var globalVars = AmanitaManager.S.GlobalVariables;
+            if (globalVars == null)
+            {
+                throw new InvalidOperationException("AmanitaManager.GlobalVariables is null. Ensure AmanitaManager.Init() has run before SaveSystemInstaller.Init().");
+            }
 
             SaveWriter = saveWriter;
             SaveReader = saveReader;
@@ -66,6 +78,15 @@ namespace Amanita.SaveSys
                     { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
                 };
 
+                // We assume that the GlobalVariables Flowchart was already initted by this point, as well
+                // as AmanitaManager.S being non-null.
+
+                var globalVars = AmanitaManager.S.GlobalVariables;
+
+                StringVariable saveNameVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNameKey, "Slot");
+                StringVariable saveNamePrefixVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNamePrefixKey, "");
+                StringVariable saveNameSuffixVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNameSuffixKey, "");
+
             }
 
             InjectDependencies();
@@ -73,24 +94,37 @@ namespace Amanita.SaveSys
             {
 #if UNITY_6000_0_OR_NEWER
                 
-                saveSystem = Object.FindFirstObjectByType<SaveSystem>();
+                saveSystem = UnityObject.FindFirstObjectByType<SaveSystem>();
 #else
-                saveSystem = Object.FindObjectOfType<SaveSystem>();
+                saveSystem = UnityObject.FindObjectOfType<SaveSystem>();
 #endif
                 // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
                 // it through that. 
 
-                saveSystem.Initialize();
+                Debug.Log("Calling SaveSystem.Init from SaveSystemInstaller");
+                saveSystem.Init();
                 saveSystem.SaveDirectoryType = whereSavesAreStored;
                 saveSystem.SaveManager = SaveManager;
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
                 saveSystem.SaveDirectoryPaths = this.saveDirectoryPaths;
+                //saveSystem.GlobalFlowchart = saveSysFlowchart;
 
             }
         }
 
-        public static SaveSystemInstaller S { get; private set; }
+        protected bool initted = false;
+
+        public static SaveSystemInstaller S
+        {
+            get { return _s; }
+            set
+            {
+                //Debug.Log($"{nameof(value)} S set to {value} at {Environment.StackTrace}");
+                _s = value;
+            }
+        }
+        protected static SaveSystemInstaller _s;
         public static SaveWriter SaveWriter { get; private set; }
         public static SaveReader SaveReader { get; private set; }
         public static SaveDirectoryType SaveDirectoryType { get; private set; }
@@ -105,6 +139,11 @@ namespace Amanita.SaveSys
         protected SaveSystem saveSystem;
 
         protected IList<ISaveDataApplier> validAppliers;
+        protected Flowchart saveSysFlowchart;
+
+        public static string SaveNameKey { get => AmanitaConstants.SaveNameVarName; }
+        public static string SaveNamePrefixKey { get => AmanitaConstants.SaveNamePrefixVarName; }
+        public static string SaveNameSuffixKey { get => AmanitaConstants.SaveNameSuffixVarName; }
 
         protected virtual void OnValidate()
         {
@@ -146,5 +185,31 @@ namespace Amanita.SaveSys
             }
         }
 
+        protected virtual void OnDestroy()
+        {
+            if (S == this)
+            {
+                S = null;
+            }
+        }
+
+        public static void ResetStaticsForTest()
+        {
+            SaveWriter = null;
+            SaveReader = null;
+            SaveDirectoryType = SaveDirectoryType.DataPath;
+            MetaFactory = null;
+            MainStateFactory = null;
+            Registry = null;
+            Loader = null;
+            SaveRepo = null;
+            SaveManager = null;
+
+            // If we reset the statics for AmanitaManger after calling this func, then this func 
+            // should work as intended
+            S = null;
+            
+            
+        }
     }
 }

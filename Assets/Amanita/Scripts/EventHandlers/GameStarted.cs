@@ -18,7 +18,7 @@ namespace Amanita
         [Tooltip("Wait for a number of frames after startup before executing the Block. Can help fix startup order issues.")]
         [SerializeField] protected int waitForFrames = 1;
 
-        protected virtual void Start()
+        public virtual void Trigger()
         {
             StartCoroutine(GameStartCoroutine());
         }
@@ -33,6 +33,14 @@ namespace Amanita
             }
 
             ExecuteBlock();
+        }
+
+        protected virtual void OnValidate()
+        {
+            if (waitForFrames <= 0)
+            {
+                waitForFrames = 1;
+            }
         }
     }
 }

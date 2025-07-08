@@ -16,37 +16,6 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
-    // Notes for async tests:
-    // Verify that after an asynchronous operation completes
-    // (e.g., saving or deletion), the file system and
-    // internal state (e.g., occupied slots) are updated appropriately.
-    //
-    // Although exact timing might be fuzzy, you can check that asynchronous
-    // operations don’t lead to race conditions (for example, by kicking off
-    // multiple async save operations concurrently and then verifying
-    // that all the data is correctly saved).
-    // If someone might trigger multiple save or delete operations
-    // concurrently, check that the internal state remains consistent
-    // (a concurrency or race condition test).
-
-    // Integration with Encoders/Decoders
-    // Test scenarios where:
-    // - Multiple encoders are registered
-    // - An encoder fails (simulate or mock an encoder exception) and verify that
-    // SaveManager handles or bubbles up that error gracefully.
-
-    // Error Conditions and Recovery
-    // Tests that simulate I/O failures can be invaluable:
-    // File System Errors: Use dependency injection or mocks (if possible) to
-    // simulate scenarios like disk full, file permission errors, or corrupted files
-    // Data Consistency on Failure: Ensure that if a write fails midway,
-    // SaveManager doesn’t leave partially written (and corrupted) states or
-    // misregister occupied slots.
-
-    // Round-Trip Consistency
-    // Write a save to disk, then load it back, and compare the in-memory state to
-    // confirm that serialization/deserialization works accurately. This ensures that
-    // the data integrity holds through the entire cycle.
 
     public class SaveManagerTests : CommonTestFunctionality
     {
@@ -428,6 +397,14 @@ namespace Amanita.SaveSystemTests
             var occupiedSlots = manager.GetOccupiedSlots();
             Assert.IsEmpty(occupiedSlots, "Save Manager did not clear the occupied slots after deletion.");
 
+        }
+
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
         }
     }
 }

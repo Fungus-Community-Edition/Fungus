@@ -130,6 +130,8 @@ namespace Amanita
 
         #region Public members
 
+        public abstract void Init(System.Object startValue);
+
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
@@ -195,19 +197,21 @@ namespace Amanita
     /// </summary>
     public abstract class VariableBase<T> : Variable
     {
+
         //caching mechanism for global static variables
         private VariableBase<T> _globalStaicRef;
         private VariableBase<T> globalStaicRef
         {
             get
             {
+
                 if (_globalStaicRef != null)
                 {
                     return _globalStaicRef;
                 }
-                else if(Application.isPlaying)
+                else if (Application.isPlaying && AmanitaManager.S != null)
                 {
-                    return _globalStaicRef = AmanitaManager.Instance.GlobalVariables.GetOrAddVariable(Key, value, this.GetType());
+                    return _globalStaicRef = AmanitaManager.S.GlobalVariables.GetOrAddVariable(Key, value, this.GetType());
                 }
                 else
                 {
@@ -268,10 +272,35 @@ namespace Amanita
                 return "Null";
         }
         
-        protected virtual void Start()
+        public override void Init(object startValue)
         {
-            // Remember the initial value so we can reset later on
-            startValue = Value;
+            if (initted)
+            {
+                return;
+            }
+
+            try
+            {
+                if (startValue == null && Value == null)
+                {
+                    return;
+                }
+
+                Init((T)startValue);
+                initted = true;
+            }
+            catch (System.Exception ex)
+            {
+                string errorMessage = $"Cannot initialize {nameof(T)} variable {this.key} with {startValue}";
+                throw new System.ArgumentException(errorMessage, ex);
+            }
+        }
+
+        protected bool initted = false;
+
+        protected virtual void Init(T startVal)
+        {
+            this.startValue = startVal;
         }
 
         //Apply to get from base system.object to T

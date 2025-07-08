@@ -777,6 +777,14 @@ namespace Amanita.SaveSystemTests
             Assert.Ignore();
         }
 
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
+        }
+
     }
 
 }

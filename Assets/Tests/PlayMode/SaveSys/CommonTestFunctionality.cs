@@ -15,6 +15,7 @@ using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
+using UnityEngine.EventSystems;
 
 namespace Amanita.SaveSystemTests
 {
@@ -25,29 +26,7 @@ namespace Amanita.SaveSystemTests
         [OneTimeSetUp]
         public virtual void DoOneTimeSetUp()
         {
-            pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
-            AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
-            AmanitaManager amanitaManager = UnityObject.Instantiate(amanitaManagerPrefab);
-            saveSys = amanitaManager.GetComponentInChildren<SaveSystem>();
-
-            saveManager = saveSys.SaveManager;
-            saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
-            saveReader = ScriptableObject.CreateInstance<SaveReader>();
-            encryptor = ScriptableObject.CreateInstance<Encryptor>();
-            
-            readReq = new SaveReadRequest
-            {
-                SlotNumber = writeReq.SlotNumber,
-                BaseSaveDirectory = writeReq.BaseSaveDirectory,
-            };
-
             waitToYield = new WaitForSeconds(waitTime);
-            metaData.SaveVersion = "1.2.3";
-
-            playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
-            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
-            audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
-
         }
 
         protected SaveSystem saveSys;
@@ -64,6 +43,44 @@ namespace Amanita.SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            ResetSingletonStatics();
+
+            PrepAmanitaManagerAndItsSubmodules();
+            void PrepAmanitaManagerAndItsSubmodules()
+            {
+                pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
+                AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
+                ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
+                AmanitaManager.S = ammyManager;
+                ammyManager.Init();
+
+                // 3. Defensive check
+                if (AmanitaManager.S != ammyManager)
+                    Debug.LogError("AmanitaManager.S was not set correctly!");
+
+                saveSys = ammyManager.GetComponentInChildren<SaveSystem>();
+                SaveSystem.S = saveSys;
+                SaveSystemInstaller installer = ammyManager.GetComponentInChildren<SaveSystemInstaller>();
+                SaveSystemInstaller.S = installer;
+
+                saveManager = saveSys.SaveManager;
+                saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+                saveReader = ScriptableObject.CreateInstance<SaveReader>();
+                encryptor = ScriptableObject.CreateInstance<Encryptor>();
+            }
+
+            metaData.SaveVersion = "1.2.3";
+
+            readReq = new SaveReadRequest
+            {
+                SlotNumber = writeReq.SlotNumber,
+                BaseSaveDirectory = writeReq.BaseSaveDirectory,
+            };
+
+            playAudioArgsSO = Resources.Load<PlayAudioArgsSO>(pathToAudioArgsSO);
+            flowchartApplier = ScriptableObject.CreateInstance<FlowchartApplier>();
+            audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
+
             LoadCodecs();
             void LoadCodecs()
             {
@@ -111,14 +128,24 @@ namespace Amanita.SaveSystemTests
             LogAssert.ignoreFailingMessages = ShouldIgnoreFailingLogMessagesByDefault;
         }
 
+        protected virtual void ResetSingletonStatics()
+        {
+            SaveSystem.ResetStaticsForTest();
+            SaveSystemInstaller.ResetStaticsForTest();
+            Flowchart.ResetStaticsForTest();
+            AmanitaManager.ResetStaticsForTest();
+            AudioSystem.ResetStaticsForTest();
+        }
+
+        GameObject toUndoDontDestroyOnLoad;
         protected virtual bool ReqSceneLoad => true;
         protected virtual bool ShouldIgnoreFailingLogMessagesByDefault => false;
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
         protected SaveReadRequest readReq;
-
-        WaitForSeconds waitToYield;
+        protected AmanitaManager ammyManager;
+        protected WaitForSeconds waitToYield;
         private float waitTime = 0.2f; // Note that CoreLockMode starts at the 1-second mark
         protected SaveMetaData metaData = new SaveMetaData();
 
@@ -245,14 +272,38 @@ namespace Amanita.SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
-            writeReq.MainState = new CompositeSaveData { };
-            UnityObject.DestroyImmediate(testScene);
+            ResetSingletonStatics();
 
-            if (SaveSystem.S != null)
+            DestroyGameObjects();
+            void DestroyGameObjects()
             {
-                UnityObject.DestroyImmediate(saveSys.gameObject);
+                UnityObject.DestroyImmediate(testScene);
+                testScene = null;
+                DestroyEventSystems();
+                void DestroyEventSystems()
+                {
+                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
+
+                    foreach (var elem in possiblyMadeByFlowchart)
+                    {
+                        UnityObject.DestroyImmediate(elem.gameObject);
+                    }
+                }
+
+                if (ammyManager != null)
+                {
+                    UnityObject.DestroyImmediate(ammyManager.gameObject);
+                    // ^This should also destroy the submodules
+                    ammyManager = null;
+                }
+
             }
+
+            writeReq.MainState = new CompositeSaveData { };
+            
         }
+
+        
 
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
@@ -277,10 +328,10 @@ namespace Amanita.SaveSystemTests
                     UnityObject.DestroyImmediate(testScene);
                 }
 
-                if (AmanitaManager.Instance != null)
+                if (AmanitaManager.S != null)
                 {
-                    AmanitaManager.Instance.gameObject.SetActive(false);
-                    UnityObject.DestroyImmediate(AmanitaManager.Instance.gameObject);
+                    AmanitaManager.S.gameObject.SetActive(false);
+                    UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
                 }
 
                 
@@ -383,7 +434,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual async Task CommonSetupAsync()
         {
-            await Task.Delay(commonSetupDelay).ConfigureAwait(false);
+            await Task.Delay(CommonSetupDelay).ConfigureAwait(false);
 
             if (UnityThreadUtil.IsMainThread)
             {
@@ -407,7 +458,13 @@ namespace Amanita.SaveSystemTests
             
         }
 
-        protected int commonSetupDelay = 500; // Milliseconds
+        protected virtual int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
+        }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }

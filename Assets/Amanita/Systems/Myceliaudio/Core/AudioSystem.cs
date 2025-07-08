@@ -1,7 +1,9 @@
 #define MYCELIAUDIO
 #define AMANITA_MYCELIAUDIO
-using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 
 namespace Amanita.Myceliaudio
 {
@@ -9,31 +11,16 @@ namespace Amanita.Myceliaudio
     {
         public static AudioSystem S
         {
-            get
-            {
-                EnsureExists();
-                return _s;
-            }
+            get => _s;
+            set => _s = value;
         }
 
-        protected static void EnsureExists()
-        {
-            // We check here to avoid creating craploads of AudioSyses from lots of
-            // AudioCommands being executed in short order
-            bool alreadySetUp = _s != null;
-            if (alreadySetUp)
-            {
-                return;
-            }
-
-            _s = AudioSystemBuilder.BuildDefault();
-        }
-
-        protected virtual void Awake()
+        public virtual void Init()
         {
             if (_s != null && _s != this)
             {
-                Destroy(this.gameObject);
+                // With how this should be part of the AmanitaManager prefab, we'll let
+                // AmanitaManager handle destroying this when appropriate
                 return;
             }
             else
@@ -41,39 +28,69 @@ namespace Amanita.Myceliaudio
                 _s = this;
             }
 
-            RegisterTrackManagers();
-
-            bool shouldAttachSelfToManager = AmanitaManager.Instance != null;
-            if (shouldAttachSelfToManager)
+            PrepSettings();
+            void PrepSettings()
             {
-                AttachSelfToFungusManager();
-                void AttachSelfToFungusManager()
-                {
+#if !UNITY_WEBGL
+                var filePath = Path.Combine(Application.dataPath, SystemSettingsFileName);
 
-                    GameObject managerGO = AmanitaManager.Instance.gameObject;
-                    this.transform.SetParent(managerGO.transform, false);
+                if (!File.Exists(filePath))
+                {
+                    systemSettings = new MyceliaudioSettings();
+                    string whatToWrite = JsonUtility.ToJson(systemSettings);
+                    File.WriteAllText(filePath, whatToWrite);
+                }
+                else
+                {
+                    string jsonString = File.ReadAllText(filePath);
+                    systemSettings = JsonUtility.FromJson<MyceliaudioSettings>(jsonString);
+                }
+#else
+            systemSettings = new MyceliaudioSettings();
+#endif
+            }
+
+            IList<TrackManager> managersFound = GetComponentsInChildren<TrackManager>();
+
+            PrepManagers();
+            void PrepManagers()
+            {
+                var masterManager = managersFound.Where((elem) => elem.Group == TrackGroup.Master).FirstOrDefault();
+                var bgMusicManager = managersFound.Where((elem) => elem.Group == TrackGroup.BGMusic).FirstOrDefault();
+                var soundFXManager = managersFound.Where((elem) => elem.Group== TrackGroup.SoundFX).FirstOrDefault();
+                var voiceManager = managersFound.Where((elem) => elem.Group == TrackGroup.Voice).FirstOrDefault();
+
+                for (int i = 0; i < managersFound.Count; i++)
+                {
+                    var managerEl = managersFound[i];
+                    managerEl.Init(managerEl.Group);
+                    // ^Since we assume this is in the AmanitaManager prefab, the manager
+                    // should already be set up with its intended group
+                }
+
+                ApplyTheVolumes();
+                void ApplyTheVolumes()
+                {
+                    masterManager.BaseVolume = VolumeSettings.master;
+                    bgMusicManager.BaseVolume = VolumeSettings.bgMusic;
+                    soundFXManager.BaseVolume = VolumeSettings.soundFX;
+                    voiceManager.BaseVolume = VolumeSettings.voice;
                 }
             }
-            else
+            RegisterTrackManagers();
+            void RegisterTrackManagers()
             {
-                Debug.LogWarning("FungusManager instance is null or destroyed. Not attaching AudioSystem to it.");
+                foreach (TrackManager managerEl in managersFound)
+                {
+                    TrackManagers[managerEl.Group] = managerEl;
+                }
             }
-            
-            DontDestroyOnLoad(this.gameObject);
         }
 
         protected static AudioSystem _s;
+        private static MyceliaudioSettings systemSettings;
+        private static VolumeSettings VolumeSettings { get { return systemSettings.Volume; } }
         protected AudioClipSplitter _clipSplitter = new AudioClipSplitter();
-
-        protected virtual void RegisterTrackManagers()
-        {
-            IList<TrackManager> managersFound = GetComponentsInChildren<TrackManager>();
-
-            foreach (TrackManager manager in managersFound)
-            {
-                TrackManagers[manager.Group] = manager;
-            }
-        }
 
         public IDictionary<TrackGroup, TrackManager> TrackManagers = new Dictionary<TrackGroup, TrackManager>();
 
@@ -223,7 +240,10 @@ namespace Amanita.Myceliaudio
 
         protected virtual void OnDestroy()
         {
-
+            if (S == this)
+            {
+                S = null;
+            }
             _clipSplitter.Clear();
         }
 
@@ -263,6 +283,12 @@ namespace Amanita.Myceliaudio
             var manager = TrackManagers[group];
             return manager.GetBaseMainClip(track);
         }
+
+        public static void ResetStaticsForTest()
+        {
+            S = null;
+        }
+
 
     }
 }

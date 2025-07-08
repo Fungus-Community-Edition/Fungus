@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Threading;
 
 namespace Amanita.SaveSys
 { 
@@ -21,16 +22,16 @@ namespace Amanita.SaveSys
 
         protected bool initted;
 
-        public virtual async void Initialize()
+        public virtual async void Init()
         {
-            if (_s != null && _s != this)
+            if (S != null && S != this)
             {
                 Debug.LogWarning("SaveSystem already exists. Destroying the new one.");
                 // We expect the AmanitaManager to handle the destruction here
                 return;
             }
 
-            _s = this;
+            S = this;
 
             initted = true;
 
@@ -43,7 +44,10 @@ namespace Amanita.SaveSys
         public static SaveSystem S
         {
             get { return _s; }
-            protected set { _s = value; }
+            set
+            {
+                _s = value;
+            }
         }
         protected static SaveSystem _s;
 
@@ -300,7 +304,140 @@ namespace Amanita.SaveSys
                 saveDirectoryPaths.Add(saveDirectoryType, path);
             }
         }
-        
+
+        public virtual Flowchart GlobalFlowchart
+        {
+            set
+            {
+                if (value == null)
+                {
+                    string warningMessage = "Cannot set SaveSystem global Flowchart to null.";
+                    Debug.LogWarning(warningMessage);
+                    return;
+                }
+
+                if (CoreLockMode)
+                {
+                    string warningMessage = "Cannot set SaveSystem global Flowchart during CoreLock mode.";
+                    Debug.LogWarning(warningMessage);
+                    return;
+                }
+
+                globalFc = value;
+                CacheSaveNameVars();
+            }
+        }
+
+        protected Flowchart globalFc;
+
+        protected virtual void CacheSaveNameVars()
+        {
+            // So we can return the right values without having to query the Flowchart
+            // with each request
+            saveNameVar = globalFc.GetVariable<StringVariable>(SaveNameKey);
+            saveNamePrefixVar = globalFc.GetVariable<StringVariable>(SaveNamePrefixKey);
+            saveNameSuffixVar = globalFc.GetVariable<StringVariable>(SaveNameSuffixKey);
+        }
+
+        protected StringVariable saveNameVar, saveNamePrefixVar, saveNameSuffixVar;
+        protected static string SaveNameKey { get => AmanitaConstants.SaveNameVarName; }
+        protected static string SaveNamePrefixKey { get => AmanitaConstants.SaveNamePrefixVarName; }
+        protected static string SaveNameSuffixKey { get => AmanitaConstants.SaveNameSuffixVarName; }
+
+        public virtual string SaveName
+        {
+            get
+            {
+                if (saveNameVar == null)
+                {
+                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveName));
+                    Debug.LogWarning(warningMessage);
+                    return string.Empty;
+                }
+
+                return saveNameVar.Value;
+            }
+            set
+            {
+                if (saveNameVar == null)
+                {
+                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveName));
+                    Debug.LogWarning(warningMessage);
+                    return;
+                }
+
+                saveNameVar.Value = value;
+            }
+        }
+
+        protected static string InaccessibleVarFormat => "Cannot get value of {0}. It's not properly registered yet.";
+        protected static string UnmutableVarFormat => "Cannot alter value of {0}. It's not properly registered yet.";
+
+        public virtual string SaveNamePrefix
+        {
+            get
+            {
+                if (saveNamePrefixVar == null)
+                {
+                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNamePrefix));
+                    Debug.LogWarning(warningMessage);
+                    return string.Empty;
+                }
+
+                return saveNamePrefixVar.Value;
+            }
+            set
+            {
+                if (saveNamePrefixVar == null)
+                {
+                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNamePrefix));
+                    Debug.LogWarning(warningMessage);
+                    return;
+                }
+
+                saveNamePrefixVar.Value = value;
+            }
+        }
+
+        public virtual string SaveNameSuffix
+        {
+            get
+            {
+                if (saveNameSuffixVar == null)
+                {
+                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNameSuffix));
+                    Debug.LogWarning(warningMessage);
+                    return string.Empty;
+                }
+
+                return saveNameSuffixVar.Value;
+            }
+            set
+            {
+                if (saveNameSuffixVar == null)
+                {
+                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNameSuffix));
+                    Debug.LogWarning(warningMessage);
+                    return;
+                }
+
+                saveNameSuffixVar.Value = value;
+            }
+        }
+
+        public static void ResetStaticsForTest()
+        {
+            S = null;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (S == this)
+            {
+                S = null;
+            }
+        }
+
     }
 
     public enum SaveDirectoryType
