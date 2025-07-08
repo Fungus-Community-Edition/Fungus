@@ -2,7 +2,6 @@ using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Utils;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,9 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
-using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 using UnityEngine.EventSystems;
 
 namespace Amanita.SaveSystemTests

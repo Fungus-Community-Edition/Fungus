@@ -1,7 +1,3 @@
-using UnityEngine;
-using TMPro;
-using System;
-
 namespace Amanita.SaveSys.UI
 {
     public class SaveSlotPlaytimeView : SaveSlotTextView
