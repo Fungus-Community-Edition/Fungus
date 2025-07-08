@@ -66,7 +66,7 @@ namespace Amanita.SaveSys
             if (flowchart == null)
             {
                 Debug.LogWarning($"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.");
-                return null;
+                return Task.CompletedTask;
             }
 
             // Applying the states of vars and Blocks might require tampering with things

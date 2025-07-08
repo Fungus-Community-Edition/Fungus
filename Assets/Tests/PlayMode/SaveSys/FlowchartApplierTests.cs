@@ -1,10 +1,12 @@
-using NUnit.Framework;
-using UnityEngine;
 using Amanita.SaveSys;
-using UnityObject = UnityEngine.Object;
+using NUnit.Framework;
 using System.Collections;
-using UnityEngine.TestTools;
+using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.TestTools;
+using System.Collections.Generic;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
@@ -71,5 +73,79 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(blockExecuted, "FlowchartApplier did not apply the block states correctly.");
 
         }
+
+        [Test]
+        public async Task Apply_WarnsAndSkips_WhenFlowchartIsMissing()
+        {
+            await CommonSetupAsync();
+
+            // Cache these before destroying anything
+            string expectedId = flowchartSaveData.UniqueId;
+            string expectedName = flowchartSaveData.FlowchartName;
+
+            RemoveAllFlowchartsFromTheScene();
+
+            // Try to apply save data for a flowchart that no longer exists
+            // Should not throw, should log a warning
+            LogAssert.Expect(LogType.Warning, $"Flowchart with ID {flowchartSaveData.UniqueId} or name {flowchartSaveData.FlowchartName} not found.");
+            await flowchartApplier.Apply(flowchartSaveData);
+
+
+        }
+
+        protected virtual void RemoveAllFlowchartsFromTheScene()
+        {
+            IList<Flowchart> toRemove = null;
+
+#if UNITY_6000_0_OR_NEWER
+            toRemove = Object.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+#else
+            toRemove = Object.FindObjectsOfType<Flowchart>();
+#endif
+            foreach (var fc in toRemove)
+            {
+                // We want to skip the FCs that are part of the AmanitaManager prefab, since that's
+                // too core to the functionality of Amanita itself
+                bool isPartOfMainManager = fc.GetComponentInParent<AmanitaManager>() != null;
+                if (isPartOfMainManager)
+                {
+                    continue;
+                }
+                Object.DestroyImmediate(fc.gameObject);
+            }
+        }
+
+        [Test]
+        public async Task Apply_WarnsAndSkips_WhenVariableIsMissing()
+        {
+            await CommonSetupAsync();
+
+            // Remove a variable from the flowchart
+            var removedVar = flowchart.Variables.FirstOrDefault();
+            Assume.That(removedVar != null, "Test scene must have at least one variable.");
+            flowchart.Variables.Remove(removedVar);
+
+            // SaveData still refers to the removed variable
+            // Should not throw, should log a warning for the missing variable
+            LogAssert.Expect(LogType.Warning, $"Variable {removedVar.Key} not found in flowchart {flowchart.name}.");
+            await flowchartApplier.Apply(flowchartSaveData);
+        }
+
+        [Test]
+        public async Task Apply_WarnsAndSkips_WhenBlockIsMissing()
+        {
+            await CommonSetupAsync();
+
+            // Remove a block from the flowchart
+            var removedBlock = flowchart.GetComponents<Block>().FirstOrDefault();
+            Assume.That(removedBlock != null, "Test scene must have at least one block.");
+            Object.DestroyImmediate(removedBlock);
+
+            // SaveData still refers to the removed block
+            // Should not throw, should log a warning for the missing block
+            LogAssert.Expect(LogType.Warning, $"Block {removedBlock.BlockName} not found in flowchart {flowchart.name}.");
+            await flowchartApplier.Apply(flowchartSaveData);
+        }
+
     }
 }
