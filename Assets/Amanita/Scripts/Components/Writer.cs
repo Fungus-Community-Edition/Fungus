@@ -821,7 +821,7 @@ namespace Amanita
         
         protected virtual void Flash(float duration)
         {
-            var cameraManager = AmanitaManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.S.CameraManager;
 
             cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
             cameraManager.Fade(1f, duration, delegate {

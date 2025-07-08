@@ -57,7 +57,7 @@ namespace Amanita
                 return;
             }
 
-            var cameraManager = AmanitaManager.Instance.CameraManager;
+            var cameraManager = AmanitaManager.S.CameraManager;
 
             cameraManager.StartSwipePan(targetCamera, viewA, viewB, duration, speedMultiplier, () => Continue() );
         }

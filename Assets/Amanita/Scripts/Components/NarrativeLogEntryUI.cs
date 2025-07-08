@@ -24,7 +24,7 @@ namespace Amanita
         protected virtual void Awake()
         {
             canvasGroup = GetComponent<CanvasGroup>();
-            var tmp = AmanitaManager.Instance.NarrativeLog;
+            var tmp = AmanitaManager.S.NarrativeLog;
             // Make sure to update the UI when new entries are added to or
             // cleared from the log.
             //using the fungusmanager to ensure that the narrativeLog is inited
@@ -82,7 +82,7 @@ namespace Amanita
 
         protected virtual void OnDestroy()
         {
-            var fManInst = AmanitaManager.Instance;
+            var fManInst = AmanitaManager.S;
             // Avoid this responding to signals when being destroyed.
             if (fManInst != null)
             {

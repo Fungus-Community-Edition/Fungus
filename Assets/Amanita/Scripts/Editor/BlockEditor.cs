@@ -143,19 +143,30 @@ namespace Amanita.EditorUtils
 				// Custom tinting
 				SerializedProperty useCustomTintProp = serializedObject.FindProperty("useCustomTint");
 				SerializedProperty tintProp = serializedObject.FindProperty("tint");
-				SerializedProperty saveExecutionStateProp = serializedObject.FindProperty("saveExecutionState");
+				SerializedProperty includeInSavesProp = serializedObject.FindProperty("includeInSaves");
+				SerializedProperty loadPriorityProp = serializedObject.FindProperty("loadPriority");
 
 				EditorGUILayout.BeginHorizontal();
 
-				useCustomTintProp.boolValue = GUILayout.Toggle(useCustomTintProp.boolValue, " Custom Tint");
+				useCustomTintProp.boolValue = GUILayout.Toggle(useCustomTintProp.boolValue, " Custom Tint",
+					GUILayout.Width(120));
 				if (useCustomTintProp.boolValue)
 				{
 					EditorGUILayout.PropertyField(tintProp, GUIContent.none);
 				}
 
-				saveExecutionStateProp.boolValue = GUILayout.Toggle(saveExecutionStateProp.boolValue, " Save Execution State", GUILayout.Width(150));
-
 				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.Space();
+
+				EditorGUILayout.BeginHorizontal();
+				includeInSavesProp.boolValue = GUILayout.Toggle(includeInSavesProp.boolValue, " Include in Saves",
+					GUILayout.Width(150));
+				EditorGUILayout.LabelField("Load Priority", GUILayout.Width(78));
+				loadPriorityProp.intValue = EditorGUILayout.IntField(loadPriorityProp.intValue, GUILayout.Width(50));
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.Space();
 
 				SerializedProperty descriptionProp = serializedObject.FindProperty("description");
 				EditorGUILayout.PropertyField(descriptionProp);

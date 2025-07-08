@@ -58,7 +58,7 @@ namespace Amanita
 
         NarrativeData history;
 
-        protected virtual void Awake()
+        public virtual void Init()
         {
             history = new NarrativeData();
             DoNarrativeCleared();

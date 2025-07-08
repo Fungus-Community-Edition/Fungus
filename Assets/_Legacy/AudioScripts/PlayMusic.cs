@@ -30,7 +30,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.S.MusicManager;
 
             float startTime = Mathf.Max(0, atTime);
             musicManager.PlayMusic(musicClip, loop, fadeDuration, startTime);

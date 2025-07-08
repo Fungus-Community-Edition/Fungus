@@ -36,7 +36,7 @@ namespace Amanita
                 }
             };
 
-            var musicManager = AmanitaManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.S.MusicManager;
 
             musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
 

@@ -185,7 +185,7 @@ namespace Amanita
 
         protected System.Action loadAction;
 
-        protected virtual void Start()
+        public virtual void Init()
         {
             // The OnSceneLoaded callback above may not be called for the initial scene load in the game,
             // so we call ExecuteStartBlock when the SaveManager starts up too.

@@ -13,7 +13,7 @@ namespace Amanita.SaveSys
         public static string GetPathToFolder(SaveDirectoryType type, string relative = "")
         {
             relative = RelativePathFormatted(relative);
-            string result = SaveSystem.SaveDirectoryPaths[type];
+            string result = SaveSystem.S.SaveDirectoryPaths[type];
 
             bool thereIsRelativePathToConsider = relative.Length > 1;
 

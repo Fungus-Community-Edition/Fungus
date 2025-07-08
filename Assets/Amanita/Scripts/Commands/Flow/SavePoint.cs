@@ -115,7 +115,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var saveManager = AmanitaManager.Instance.SaveManager;
+            var saveManager = AmanitaManager.S.SaveManager;
 
             saveManager.AddSavePoint(SavePointKey, SavePointDescription);
 

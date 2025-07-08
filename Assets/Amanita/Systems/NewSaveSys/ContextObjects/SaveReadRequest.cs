@@ -16,5 +16,11 @@ namespace Amanita.SaveSys
             this.SlotNumber = other.SlotNumber;
             BaseSaveDirectory = other.BaseSaveDirectory;
         }
+
+        public virtual void Clear()
+        {
+            SlotNumber = 0;
+            BaseSaveDirectory = SaveDirectoryType.DataPath;
+        }
     }
 }
