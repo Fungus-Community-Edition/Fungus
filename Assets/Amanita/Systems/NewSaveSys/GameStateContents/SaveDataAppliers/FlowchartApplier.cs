@@ -46,35 +46,24 @@ namespace Amanita.SaveSys
 
         public override Task Apply(FlowchartSaveData saveData)
         {
-            if (allFlowcharts.Count == 0 || allFlowcharts.Contains(null))
-            {
-                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-            }
-            
-            Flowchart flowchart = FindFlowchartReferredToBy(saveData);
-            Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)
-            {
-                Flowchart flowchart = FindFlowchartById(saveData.UniqueId);
-                if (flowchart == null)
-                {
-                    flowchart = FindFlowchartByName(saveData.FlowchartName);
-                }
-
-                return flowchart;
-            }
-
-            if (flowchart == null)
-            {
-                Debug.LogWarning($"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.");
-                return Task.CompletedTask;
-            }
-
             // Applying the states of vars and Blocks might require tampering with things
-            // that aren't thread-safe
+            // that aren't thread-safe. Also, funcs like FindObjectsByType only work on the main thread.
+            Flowchart flowchart = null;
+
+            bool flowchartFound = false;
+            string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.";
             bool onMainThread = UnityThreadUtil.IsMainThread;
             if (onMainThread)
             {
-                ApplyStuff();
+                flowchartFound = TryGetFlowchartFor(saveData, out flowchart);
+                if (!flowchartFound)
+                {
+                    Debug.LogWarning(flowchartNotFoundMessage);
+                }
+                else
+                {
+                    ApplyStuff();
+                }
             }
 
             void ApplyStuff()
@@ -168,14 +157,28 @@ namespace Amanita.SaveSys
                 {
                     using (var countdown = new CountdownEvent(1))
                     {
+                        bool lambdaEnqueued = false;
                         Exception threadException = null;
                         try
                         {
+                            Debug.Log("Right before the enqueue");
                             MainThreadDispatcher.Enqueue(() =>
                             {
-                                ApplyStuff();
-                                countdown.Signal(); 
+                                Debug.Log($"At start of pushing work to main thread");
+                                flowchartFound = TryGetFlowchartFor(saveData, out flowchart);
+                                if (!flowchartFound)
+                                {
+                                    Debug.LogWarning(flowchartNotFoundMessage);
+                                }
+                                else
+                                {
+                                    ApplyStuff();
+                                }
+                                Debug.Log($"Right before countdown.Signal when work on main thread is done");
+                                countdown.Signal();
                             });
+                            lambdaEnqueued = true;
+                            Debug.Log("Right after the enqueue");
                         }
                         catch (Exception ex)
                         {
@@ -183,13 +186,42 @@ namespace Amanita.SaveSys
                         }
                         finally
                         {
-                            countdown.Signal(); // To avoid deadlocks
+                            if (!lambdaEnqueued)
+                            {
+                                countdown.Signal(); 
+                                // ^Calling this after a successful enqueue can result in an ObjectDisposedException
+                            }
                         }
+                        countdown.Wait();
                     }
+                    
                 }
             }
 
             return Task.CompletedTask;
+        }
+
+        protected virtual bool TryGetFlowchartFor(FlowchartSaveData saveData, out Flowchart flowchart)
+        {
+            bool onMainThread = UnityThreadUtil.IsMainThread;
+            if (allFlowcharts.Count == 0 || allFlowcharts.Contains(null))
+            {
+                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+            }
+
+            flowchart = FindFlowchartReferredToBy(saveData);
+            Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)
+            {
+                Flowchart flowchart = FindFlowchartById(saveData.UniqueId);
+                if (flowchart == null)
+                {
+                    flowchart = FindFlowchartByName(saveData.FlowchartName);
+                }
+
+                return flowchart;
+            }
+
+            return flowchart != null;
         }
 
         protected virtual Flowchart FindFlowchartById(string id)
