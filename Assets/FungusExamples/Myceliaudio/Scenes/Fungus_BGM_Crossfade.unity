@@ -951,7 +951,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 205.29785
+    x: 204.12138
     y: 58.297874
     width: 67.41
     height: 40
@@ -969,7 +969,8 @@ MonoBehaviour:
   - {fileID: 549323069}
   - {fileID: 549323068}
   - {fileID: 549323080}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323062
 MonoBehaviour:
@@ -987,7 +988,7 @@ MonoBehaviour:
   scrollPos: {x: 5.1808662, y: 62.970222}
   variablesScrollPos: {x: 0, y: 0}
   variablesExpanded: 1
-  blockViewHeight: 200
+  blockViewHeight: 219
   zoom: 0.85000014
   scrollViewRect:
     serializedVersion: 2
@@ -995,7 +996,8 @@ MonoBehaviour:
     y: -340
     width: 1114
     height: 859
-  selectedBlocks: []
+  selectedBlocks:
+  - {fileID: 549323079}
   selectedCommands: []
   variables:
   - {fileID: 549323059}
@@ -1024,7 +1026,10 @@ MonoBehaviour:
   hideCommands: []
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
   saveVariables: 1
+  loadPriority: 0
   nextValidVarID: 17
   uniqueId: 8bd9f872-5623-4e0f-82e5-41a2094bbb78
 --- !u!4 &549323063
@@ -1505,8 +1510,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 491.7014
-    y: 61.19615
+    x: 490.5249
+    y: 57.666737
     width: 150.76001
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1519,7 +1524,8 @@ MonoBehaviour:
   - {fileID: 549323078}
   - {fileID: 549323076}
   - {fileID: 549323075}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323080
 MonoBehaviour:
@@ -1798,7 +1804,8 @@ MonoBehaviour:
   - {fileID: 549323125}
   - {fileID: 549323083}
   - {fileID: 549323082}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323086
 MonoBehaviour:
@@ -1853,7 +1860,8 @@ MonoBehaviour:
   - {fileID: 549323121}
   - {fileID: 549323116}
   - {fileID: 549323103}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323088
 MonoBehaviour:
@@ -2086,7 +2094,8 @@ MonoBehaviour:
   - {fileID: 549323090}
   - {fileID: 549323123}
   - {fileID: 549323089}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323092
 MonoBehaviour:
@@ -2319,7 +2328,8 @@ MonoBehaviour:
   - {fileID: 549323094}
   - {fileID: 549323124}
   - {fileID: 549323093}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323096
 MonoBehaviour:
@@ -2577,7 +2587,8 @@ MonoBehaviour:
   - {fileID: 549323126}
   - {fileID: 549323098}
   - {fileID: 549323097}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323101
 MonoBehaviour:
@@ -2626,7 +2637,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323101}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323103
 MonoBehaviour:
@@ -2719,7 +2731,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323105}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323107
 MonoBehaviour:
@@ -2770,7 +2783,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323107}
-  saveExecutionState: 1
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323109
 MonoBehaviour:
