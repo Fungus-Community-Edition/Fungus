@@ -86,12 +86,39 @@ namespace Amanita
 
         
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
+        [SerializeField] protected bool includeInSaves = true;
+
+        [Tooltip("Whether or not the execution state of this FC's Blocks should be considered for saving.")]
+        [SerializeField] protected bool saveBlocks = true;
+
+        [Tooltip("Whether or not this FC's vars should be saved or loaded.")]
         [SerializeField] protected bool saveVariables = true;
+
+        [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
+        [SerializeField] protected int loadPriority = 0;
+
+        public virtual bool IncludeInSaves
+        {
+            get { return includeInSaves; }
+            set { includeInSaves = value; }
+        }
+
+        public virtual bool SaveBlocks
+        {
+            get { return saveBlocks; }
+            set { saveBlocks = value; }
+        }
 
         public virtual bool SaveVariables
         {
             get { return saveVariables; }
             set { saveVariables = value; }
+        }
+
+        public virtual int LoadPriority
+        {
+            get { return loadPriority; }
+            set { loadPriority = value; }
         }
 
         protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();

@@ -45,12 +45,20 @@ namespace Amanita
         [SerializeField] protected List<Command> commandList = new List<Command>();
 
         [Tooltip("If true, the save system will keep track of (and when appropriate, load) this Block's execution state.")]
-        [SerializeField] protected bool saveExecutionState = true;
+        [SerializeField] protected bool includeInSaves = true;
 
-        public virtual bool SaveExecutionState
+        [SerializeField] protected int loadPriority;
+
+        public virtual bool IncludeInSaves
         {
-            get { return saveExecutionState; }
-            set { saveExecutionState = value; }
+            get { return includeInSaves; }
+            set { includeInSaves = value; }
+        }
+
+        public virtual int LoadPriority
+        {
+            get { return loadPriority; }
+            set { loadPriority = value; }
         }
 
         protected ExecutionState executionState;

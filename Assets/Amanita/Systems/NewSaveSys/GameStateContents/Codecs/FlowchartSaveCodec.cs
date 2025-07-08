@@ -83,7 +83,7 @@ namespace Amanita.SaveSys
 
             var variables = toCreateFrom.Variables;
             int count = variables.Count;
-            if (count == 0 || !toCreateFrom.SaveVariables)
+            if (count == 0 || !toCreateFrom.IncludeInSaves)
             {
                 // Do nothing and just return an empty list later in this func
             }
@@ -142,7 +142,7 @@ namespace Amanita.SaveSys
 #endif
 
                     IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
-                                                            where elem.SaveVariables == true
+                                                            where elem.IncludeInSaves == true
                                                             select elem).ToList();
 
                     for (int i = 0; i < flowchartsToSave.Count; i++)
