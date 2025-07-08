@@ -434,7 +434,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual async Task CommonSetupAsync()
         {
-            await Task.Delay(commonSetupDelay).ConfigureAwait(false);
+            await Task.Delay(CommonSetupDelay).ConfigureAwait(false);
 
             if (UnityThreadUtil.IsMainThread)
             {
@@ -458,7 +458,13 @@ namespace Amanita.SaveSystemTests
             
         }
 
-        protected int commonSetupDelay = 500; // Milliseconds
+        protected virtual int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
+        }
 
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }
