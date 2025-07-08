@@ -35,5 +35,5 @@ To contribute code or wiki documentation to Amanita or Fungus, please see [CONTR
 
 Maintainers:
 ============
-- [Evan Sklarski](https://github.com/esklarski)
-- [CG-Tespy](https://github.com/CG-Tespy)
+🧪 [CG-Tespy](https://github.com/CG-Tespy) — Lead architect, designer, and resident mycologist-in-chief.
+📁 Previous collaborators may be credited in past commits, but active development and milestone planning are presently overseen solo. We welcome new collaborators!
