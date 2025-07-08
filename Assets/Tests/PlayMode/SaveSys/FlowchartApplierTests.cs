@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
+using System;
 
 namespace Amanita.SaveSystemTests
 {
@@ -98,7 +99,7 @@ namespace Amanita.SaveSystemTests
             IList<Flowchart> toRemove = null;
 
 #if UNITY_6000_0_OR_NEWER
-            toRemove = Object.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+            toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
 #else
             toRemove = Object.FindObjectsOfType<Flowchart>();
 #endif
@@ -111,7 +112,7 @@ namespace Amanita.SaveSystemTests
                 {
                     continue;
                 }
-                Object.DestroyImmediate(fc.gameObject);
+                UnityObject.DestroyImmediate(fc.gameObject);
             }
         }
 
@@ -139,12 +140,159 @@ namespace Amanita.SaveSystemTests
             // Remove a block from the flowchart
             var removedBlock = flowchart.GetComponents<Block>().FirstOrDefault();
             Assume.That(removedBlock != null, "Test scene must have at least one block.");
-            Object.DestroyImmediate(removedBlock);
+            UnityObject.DestroyImmediate(removedBlock);
 
             // SaveData still refers to the removed block
             // Should not throw, should log a warning for the missing block
             LogAssert.Expect(LogType.Warning, $"Block {removedBlock.BlockName} not found in flowchart {flowchart.name}.");
             await flowchartApplier.Apply(flowchartSaveData);
+        }
+
+        [Test]
+        public async Task Apply_WarnsAndSkips_WhenCommandIsMissing()
+        {
+            await CommonSetupAsync();
+
+            // Find a block and its active command
+            var block = flowchart.GetComponents<Block>().FirstOrDefault(b => b.CommandList.Count > 0);
+            Assume.That(block != null, "Test scene must have at least one block with commands.");
+            var command = block.CommandList.FirstOrDefault();
+            Assume.That(command != null, "Block must have at least one command.");
+
+            // Remove all Commands from the Block. Can't just be one, since the loading logic checks
+            // for index when the one with the right ID isn't found. Fallbacks and all.
+            block.CommandList.Clear();
+
+            // Find the corresponding BlockSaveData in the save data
+            var blockSave = flowchartSaveData.SavedBlocks
+                .FirstOrDefault(bsd => bsd.ItemId == block.ItemId);
+            Assume.That(blockSave != null, "Save data must contain the block.");
+
+            // Set the save data to reference the now-missing command
+            blockSave.ActiveCommandId = command.ItemId;
+            blockSave.ActiveCommandIndex = 0;
+
+            // Should log a warning and not throw
+            LogAssert.Expect(LogType.Warning, $"Command {command.ItemId} not found in block {block.BlockName}.");
+            await flowchartApplier.Apply(flowchartSaveData);
+        }
+
+        [Test]
+        public async Task Apply_Works_WhenCalledFromBackgroundThread()
+        {
+            await CommonSetupAsync();
+
+            // Change a variable so we can verify it gets applied
+            nameVar.Value = "Changed from background thread";
+
+            // Run Apply on a background thread
+            await Task.Run(async () =>
+            {
+                await flowchartApplier.Apply(flowchartSaveData);
+            });
+
+            // The variable should be restored to its saved value
+            Assert.AreEqual(
+                flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value,
+                nameVar.Value,
+                "Variable was not restored when Apply was called from a background thread.");
+        }
+
+        [Test]
+        public async Task ApplyMulti_AppliesToMultipleFlowcharts()
+        {
+            await CommonSetupAsync();
+
+            // Create a second flowchart in the scene
+            var secondFlowchartGO = new GameObject("SecondFlowchart");
+            var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
+            //secondFlowchartGO.hideFlags = HideFlags.HideAndDontSave;
+
+            // Add a variable to the second flowchart
+            var secondVar = secondFlowchartGO.AddComponent<StringVariable>();
+            string initSecondVarVal = "initial";
+            secondVar.Key = "secondVar";
+            secondVar.Value = initSecondVarVal;
+            secondFlowchart.Variables.Add(secondVar);
+
+            FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
+
+            // Change the variable so we can verify it gets restored
+            secondVar.Value = "changed";
+
+            // Apply both save datas
+            await flowchartApplier.ApplyMulti(new[] { flowchartSaveData, secondSaveData });
+
+            // Assert both flowcharts' variables were restored
+            Assert.AreEqual(flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value, nameVar.Value,
+                "First flowchart variable was not restored.");
+            Assert.AreEqual(initSecondVarVal, secondVar.Value, "Second flowchart variable was not restored.");
+
+            // Cleanup
+            UnityObject.DestroyImmediate(secondFlowchartGO);
+        }
+
+        [Test]
+        public async Task Apply_IgnoresMissingVarsAndBlocks_WhenPartialSaveData()
+        {
+            await CommonSetupAsync();
+
+            // Change all variables and blocks to known "wrong" values
+            nameVar.Value = "WrongName";
+            scoreVar.Value = -999;
+
+            // Remove all but one variable and one block from the save data
+            var originalVars = flowchartSaveData.SavedVars.ToList();
+            var originalBlocks = flowchartSaveData.SavedBlocks.ToList();
+
+            var keptVar = flowchartSaveData.SavedVars.First();
+            var keptBlock = flowchartSaveData.SavedBlocks.First();
+
+            flowchartSaveData.SavedVars = new List<VariableSaveData> { keptVar };
+            flowchartSaveData.SavedBlocks = new List<BlockSaveData> { keptBlock };
+
+            // Change the kept variable to a unique value in the save data
+            keptVar.Value = "RestoredName";
+
+            // Apply the partial save data
+            await flowchartApplier.Apply(flowchartSaveData);
+
+            // Only the kept variable should be restored
+            Assert.AreEqual("RestoredName", nameVar.Value, "Kept variable was not restored.");
+            Assert.AreEqual(-999, scoreVar.Value, "Non-kept variable should not be changed.");
+
+            // Restore original save data for other tests
+            flowchartSaveData.SavedVars = originalVars;
+            flowchartSaveData.SavedBlocks = originalBlocks;
+        }
+
+        [Test]
+        public async Task Apply_FindsFlowchartByName_WhenIdDoesNotMatch()
+        {
+            await CommonSetupAsync();
+
+            // Change the flowchart's UniqueId so it no longer matches the save data
+            string originalId = flowchart.UniqueId;
+            typeof(Flowchart)
+                .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(flowchart, Guid.NewGuid().ToString());
+
+            // The save data still has the old ID, but the name matches
+            // Change a variable so we can verify it gets restored
+            nameVar.Value = "ChangedForNameFallback";
+
+            await flowchartApplier.Apply(flowchartSaveData);
+
+            // The variable should be restored, meaning the fallback by name worked
+            Assert.AreEqual(
+                flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value,
+                nameVar.Value,
+                "Flowchart was not found by name fallback.");
+
+            // Restore the original ID for other tests
+            typeof(Flowchart)
+                .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(flowchart, originalId);
         }
 
     }
