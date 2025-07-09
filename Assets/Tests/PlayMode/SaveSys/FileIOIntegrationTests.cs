@@ -1,4 +1,4 @@
-using Amanita.SaveSys;
+ï»¿using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -42,12 +42,14 @@ namespace Amanita.SaveSystemTests
             Assert.IsTrue(data.Equals(result));
         }
 
+        [TestCase(42, SaveDirectoryType.DataPath)]
+        [TestCase(55, SaveDirectoryType.PersistentDataPath)]
+        [TestCase(99, SaveDirectoryType.DataPath)]
+        [TestCase(39, SaveDirectoryType.StreamingAssetsPath)]
         [Test]
-        public async Task Overwrite_Behavior_CreatesAndDeletesBackup()
+        public async Task Overwrite_Behavior_CreatesAndDeletesBackup(int slotNumber, SaveDirectoryType baseDir)
         {
-            var slotNumber = 42;
             var meta = new SaveMetaData();
-            var baseDir = SaveDirectoryType.DataPath;
 
             // Ensure fresh test directory
             string savePath = FileUtils.GetPathToFile(baseDir, slotNumber, saveWriter);
@@ -55,7 +57,7 @@ namespace Amanita.SaveSystemTests
             if (File.Exists(savePath)) File.Delete(savePath);
             if (File.Exists(backupPath)) File.Delete(backupPath);
 
-            // STEP 1 — Write initial data
+            // STEP 1 â€” Write initial data
             var originalData = new CompositeSaveData();
             originalData.Add(new SaveDataUnit("State", "{\"value\":1}"));
 
@@ -70,7 +72,7 @@ namespace Amanita.SaveSystemTests
 
             Assert.IsTrue(File.Exists(savePath), "Initial file was not created.");
 
-            // STEP 2 — Overwrite with new data
+            // STEP 2 â€” Overwrite with new data
             var newData = new CompositeSaveData();
             newData.Add(new SaveDataUnit("State", "{\"value\":999}"));
 
@@ -92,7 +94,7 @@ namespace Amanita.SaveSystemTests
             string unescaped = Regex.Unescape(backupContent);
             Assert.IsTrue(unescaped.Contains("\"value\":1"), "Backup file did not preserve original content.");
 
-            // STEP 3 — Write again with deletion enabled
+            // STEP 3 â€” Write again with deletion enabled
             saveWriter.DeleteBackupsPostOverwrite = true;
             await saveWriter.WriteOneToDisk(secondWrite); // trigger overwrite
 
@@ -100,6 +102,36 @@ namespace Amanita.SaveSystemTests
         }
 
 
+        [TestCase(1, SaveDirectoryType.DataPath)]
+        [TestCase(5, SaveDirectoryType.PersistentDataPath)]
+        [TestCase(99, SaveDirectoryType.DataPath)]
+        [TestCase(39, SaveDirectoryType.StreamingAssetsPath)]
+        public async Task SmallData_RoundTrip_VariedSlots(int slotNumber, SaveDirectoryType dirType)
+        {
+            var data = new CompositeSaveData();
+            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+
+            var writeReq = new SaveWriteRequest
+            {
+                SaveName = "RT_Varied",
+                SlotNumber = slotNumber,
+                MainState = data,
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = dirType
+            };
+            await saveWriter.WriteOneToDisk(writeReq);
+
+            var readReq = new SaveReadRequest
+            {
+                SlotNumber = slotNumber,
+                BaseSaveDirectory = dirType
+            };
+            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+
+            Assert.IsTrue(data.Equals(result));
+        }
+
+        
     }
 
 }

@@ -40,6 +40,7 @@ namespace Amanita.SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            PlayerPrefs.DeleteAll();
             ResetSingletonStatics();
 
             PrepAmanitaManagerAndItsSubmodules();
