@@ -15,6 +15,7 @@ namespace Amanita.SaveSys
             {
                 SlotNumber = slotNumber,
             };
+            meta.RegisterCurrentSceneInfo();
 
             string version = versionProvider.GetVersion();
             if (!string.IsNullOrEmpty(version))

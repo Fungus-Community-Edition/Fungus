@@ -107,7 +107,7 @@ namespace Amanita.SaveSys
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
                 saveSystem.SaveDirectoryPaths = this.saveDirectoryPaths;
-                //saveSystem.GlobalFlowchart = saveSysFlowchart;
+                saveSystem.RegisterSaveDataAppliersMulti(validAppliers);
 
             }
         }
