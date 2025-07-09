@@ -90,6 +90,15 @@ namespace Amanita.SaveSystemTests
                 //blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
+            
+            writeReq = new SaveWriteRequest
+            {
+                SaveName = "TestSave",
+                SlotNumber = 1,
+                MainState = new CompositeSaveData(),
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
 
             if (ReqSceneLoad)
             {

@@ -248,7 +248,7 @@ namespace Amanita.SaveSys
             string jsonForMainState = splitIntoJsons[1];
 
             ISaveMetaData meta = JsonUtility.FromJson<SaveMetaData>(jsonForMeta);
-            ISaveData mainState = JsonUtility.FromJson<SaveData>(jsonForMainState);
+            ISaveData mainState = JsonUtility.FromJson<CompositeSaveData>(jsonForMainState);
 
             ISaveDataSet result = new SaveDataSet(meta, mainState);
             return result;
