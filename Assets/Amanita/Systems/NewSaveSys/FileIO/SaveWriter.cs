@@ -137,10 +137,11 @@ namespace Amanita.SaveSys
                                 // or if the file is read-only, or if the file is on a different
                                 // filesystem that doesn't support renaming.
                                 // In that case, we want to copy the file instead.
-                                Debug.LogError($"Could not move file {filePath} to backup {backupFilePath}." +
-                                    $"\nException: {ex.Message}");
+                                string errorMessage = $"Could not move file {filePath} to backup {backupFilePath}." +
+                                    $"\nException: {ex.Message}";
+                                Debug.LogError(errorMessage);
                                 File.Copy(filePath, backupFilePath);
-                                throw ex;
+                                throw new IOException(errorMessage);
                             }
                         }
                     }
