@@ -1,7 +1,6 @@
 using Amanita.SaveSys.UI;
 using UnityEngine;
 using TMPro;
-using System;
 
 namespace Amanita.SaveSys
 {

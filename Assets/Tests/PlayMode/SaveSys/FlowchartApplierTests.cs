@@ -41,7 +41,7 @@ namespace Amanita.SaveSystemTests
             stringVar.Value = "Not Hello, World!";
             transformVar.Value = null;
 
-            Task applyTask = flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            Task applyTask = flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData });
             await applyTask;
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
@@ -64,7 +64,7 @@ namespace Amanita.SaveSystemTests
             yield return CommonSetup();
             yield return new WaitForSeconds(0.1f);
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            Task applyTask = flowchartApplier.ApplyMulti(new FlowchartSaveData[] { flowchartSaveData });
+            Task applyTask = flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData });
             yield return new WaitUntil(() => applyTask.IsCompleted);
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
@@ -221,7 +221,7 @@ namespace Amanita.SaveSystemTests
             secondVar.Value = "changed";
 
             // Apply both save datas
-            await flowchartApplier.ApplyMulti(new[] { flowchartSaveData, secondSaveData });
+            await flowchartApplier.ApplyRange(new[] { flowchartSaveData, secondSaveData });
 
             // Assert both flowcharts' variables were restored
             Assert.AreEqual(flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value, nameVar.Value,

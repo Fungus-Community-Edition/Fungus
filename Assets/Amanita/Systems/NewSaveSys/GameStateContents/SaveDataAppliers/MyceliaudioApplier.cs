@@ -56,12 +56,5 @@ namespace Amanita.SaveSys
             return Apply(saveData as MyceliaudioSaveData);
         }
 
-        public override async Task ApplyMulti(IList<MyceliaudioSaveData> saveData)
-        {
-            foreach (var elem in saveData)
-            {
-                await Apply(elem);
-            }
-        }
     }
 }

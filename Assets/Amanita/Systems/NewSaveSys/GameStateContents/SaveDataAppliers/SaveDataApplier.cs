@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -18,18 +17,10 @@ namespace Amanita.SaveSys
         bool CanApply(SaveData saveData);
         bool CanApply(SaveDataUnit unit);
 
-        Task ApplyMulti(IList<SaveData> datas);
+        Task ApplyRange(IList<SaveData> datas);
         Task Apply(SaveData saveData);
 
     }
-
-    public interface ISaveDataApplier<TSaveData> : ISaveDataApplier
-        where TSaveData : SaveData
-    {
-        Task ApplyMulti(IList<TSaveData> saveData);
-        Task Apply(TSaveData saveData);
-    }
-
 
     public abstract class SaveDataApplier : ScriptableObject, ISaveDataApplier
     {
@@ -45,7 +36,7 @@ namespace Amanita.SaveSys
 
         public abstract bool CanApply(SaveDataUnit unit);
 
-        public virtual async Task ApplyMulti(IList<SaveData> datas)
+        public virtual async Task ApplyRange(IList<SaveData> datas)
         {
             foreach (SaveData data in datas)
             {
@@ -63,21 +54,9 @@ namespace Amanita.SaveSys
     /// <summary>
     /// For applying SaveData instances to the appropriate target objects.
     /// </summary>
-    public abstract class SaveDataApplier<TSaveData> : SaveDataApplier,
-        ISaveDataApplier<TSaveData>
+    public abstract class SaveDataApplier<TSaveData> : SaveDataApplier
     where TSaveData : SaveData
     {
-
-        public virtual async Task ApplyMulti(IList<TSaveData> saveData)
-        {
-            foreach (TSaveData data in saveData)
-            {
-                if (CanApply(data))
-                {
-                    await Apply(data);
-                }
-            }
-        }
         public abstract Task Apply(TSaveData saveData);
         
         public override bool CanApply(SaveData saveData)
@@ -90,13 +69,7 @@ namespace Amanita.SaveSys
             string typeName = typeof(TSaveData).Name;
             return unit.DataTypeName == typeName;
         }
-
-        public Task Apply(IList<TSaveData> saveData)
-        {
-            throw new System.NotImplementedException();
-        }
+        
     }
-
-
 
 }

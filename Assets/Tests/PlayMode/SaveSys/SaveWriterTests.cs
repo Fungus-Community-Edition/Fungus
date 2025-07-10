@@ -1,16 +1,15 @@
-using System.Collections;
 using Amanita.SaveSys;
 using NUnit.Framework;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
-using UnityObject = UnityEngine.Object;
-using System;
-using System.Threading;
 
 namespace Amanita.SaveSystemTests
 {
@@ -760,21 +759,174 @@ namespace Amanita.SaveSystemTests
             }
         }
 
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
+        }
 
         [Test]
-        public async Task AfterWrite_SuccessCompletionMarkerAdded()
+        public async Task OverwritesFile_WhenWritingToSameSlotTwice()
         {
-            // We want to add a success marker after writing a save so that on startup, we can easily check
-            // for any corrupted saves.
-
-            // Just jotting down some ideas for it here:
-            // Add a specific line at the end of the file that indicates success. Of course, 
-            // this line should not be part of the actual save data. The reader and writer
-            // should be aware of this line when doing their thing.
-            // The writer adds it, the reader checks for it.
-
             await CommonSetupAsync();
-            Assert.Ignore();
+            saveWriter.WriteEncrypted = false;
+
+            // First write: simple data
+            var firstUnit = new SaveDataUnit("TestType", "{\"value\":\"first\"}");
+            var firstData = new CompositeSaveData();
+            firstData.Add(firstUnit);
+
+            var firstWriteArgs = new SaveWriteRequest
+            {
+                SaveName = "OverwriteTest",
+                SlotNumber = 5,
+                MainState = firstData,
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+            await saveWriter.WriteOneToDisk(firstWriteArgs);
+
+            string filePath = FileUtils.GetPathToFile(firstWriteArgs.BaseSaveDirectory, firstWriteArgs.SlotNumber, saveWriter);
+            string firstContent = await File.ReadAllTextAsync(filePath);
+
+            // Second write: different data
+            var secondUnit = new SaveDataUnit("TestType", "{\"value\":\"second\"}");
+            var secondData = new CompositeSaveData();
+            secondData.Add(secondUnit);
+
+            var secondWriteArgs = new SaveWriteRequest
+            {
+                SaveName = "OverwriteTest",
+                SlotNumber = 5,
+                MainState = secondData,
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+            await saveWriter.WriteOneToDisk(secondWriteArgs);
+
+            string secondContent = await File.ReadAllTextAsync(filePath);
+
+            Assert.AreNotEqual(firstContent, secondContent, "File content was not overwritten.");
+            Assert.IsTrue(secondContent.Contains("second"), "Overwritten file does not contain new data.");
+        }
+
+        [Test]
+        public async Task WriteOneToDisk_LogsError_WhenFileIsLocked_ReadAllowed()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = false;
+
+            var writeArgsLocked = new SaveWriteRequest
+            {
+                SaveName = "LockedFileTest",
+                SlotNumber = 6,
+                MainState = new CompositeSaveData(),
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+            await saveWriter.WriteOneToDisk(writeArgsLocked);
+
+            string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+
+            // Lock the file by opening it with no sharing
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                string expectedError = $"Could not move file {filePath} to backup {filePath + saveWriter.BackupFileExtension}.";
+                bool threwRightError = false;
+                bool writeFailed = false;
+                LogAssert.Expect(LogType.Error, new Regex("Could not move file .* to backup .*"));
+
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgsLocked);
+                }
+                catch (IOException ioe)
+                {
+                    threwRightError = ioe.Message.Contains(expectedError);
+                    // ^The whole message should contain more than what's in expectedError (namely, 
+                    // the lower-level exception's message), hence the Contains call here
+                    writeFailed = true;
+                }
+
+                Assert.IsTrue(threwRightError, "Wrong error thrown when trying to access locked file.");
+                Assert.IsTrue(writeFailed, "Expected write to fail when file is locked.");
+            }
+        }
+
+        [Test]
+        public async Task WriteOneToDisk_LogsError_WhenFileIsLocked_FullLock()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = false;
+
+            var writeArgsLocked = new SaveWriteRequest
+            {
+                SaveName = "LockedFileTest",
+                SlotNumber = 6,
+                MainState = new CompositeSaveData(),
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+            await saveWriter.WriteOneToDisk(writeArgsLocked);
+
+            string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+
+            LogAssert.ignoreFailingMessages = true;
+            
+            using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                string expectedError = $"Could not move file {filePath} to backup {filePath + saveWriter.BackupFileExtension}.";
+                LogAssert.Expect(LogType.Error, new Regex("Could not move file .* to backup .*"));
+                bool writeFailed = false;
+
+                try
+                {
+                    await saveWriter.WriteOneToDisk(writeArgsLocked);
+                }
+                catch (IOException ioe)
+                {
+                    writeFailed = true;
+                }
+
+                Assert.IsTrue(writeFailed, "Expected write to fail when file is locked.");
+            }
+        }
+
+        [Test]
+        public async Task WritesLargeSaveData_Successfully()
+        {
+            await CommonSetupAsync();
+            saveWriter.WriteEncrypted = false;
+
+            // Create a large CompositeSaveData
+            var largeData = new CompositeSaveData();
+            for (int i = 0; i < 10000; i++)
+            {
+                var unit = new SaveDataUnit("TestType", $"{{\"index\":{i}}}");
+                largeData.Add(unit);
+            }
+
+            var largeWriteArgs = new SaveWriteRequest
+            {
+                SaveName = "LargeSaveTest",
+                SlotNumber = 7,
+                MainState = largeData,
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
+
+            await saveWriter.WriteOneToDisk(largeWriteArgs);
+
+            string filePath = FileUtils.GetPathToFile(largeWriteArgs.BaseSaveDirectory, largeWriteArgs.SlotNumber, saveWriter);
+            Assert.IsTrue(File.Exists(filePath), "Large save file was not created.");
+
+            string fileContent = await File.ReadAllTextAsync(filePath);
+
+            string unescaped = Regex.Unescape(fileContent);
+            Assert.IsTrue(unescaped.Contains("\"index\":9999"), "Large save file does not contain expected data.");
+
         }
 
         protected override int CommonSetupDelay

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using Amanita.IO;
 
 namespace Amanita.SaveSys
 {
@@ -92,6 +93,42 @@ namespace Amanita.SaveSys
             if (shouldRemoveBOMAtTheStart)
             {
                 plainJson = plainJson[1..];
+            }
+
+            // For all we know, one or both halves of the data could be corrupted. Best validate that
+            // here to avoid things getting messy
+            IList<string> splitIntoJsons = plainJson.Split(delimiterArr, StringSplitOptions.None);
+
+            ValidateSplit();
+            void ValidateSplit()
+            {
+                string errorMessage = string.Empty;
+                if (splitIntoJsons.Count < 2)
+                {
+                    errorMessage = "Invalid json passed.";
+                    throw new ArgumentException(errorMessage);
+                }
+
+                string firstSplit = splitIntoJsons[0], secondSplit = splitIntoJsons[1];
+                System.Object firstElem = new System.Object(), secondElem = new System.Object();
+                bool validMeta = JsonHelpers.TryFromJsonOverwrite(firstSplit, ref firstElem);
+                bool validMain = JsonHelpers.TryFromJsonOverwrite(secondSplit, ref secondElem);
+
+                errorMessage = string.Empty;
+                if (!validMeta)
+                {
+                    errorMessage += "Corrupted meta detected. ";
+                }
+                if (!validMain)
+                {
+                    errorMessage += "Corrupted main state detected.";
+                }
+
+                if (errorMessage != string.Empty)
+                {
+                    throw new InvalidDataException(errorMessage);
+                }
+
             }
 
             return plainJson;
@@ -206,19 +243,16 @@ namespace Amanita.SaveSys
         protected virtual ISaveData DecryptMainState(string fullPlainJson)
         {
             IList<string> splitIntoJsons = fullPlainJson.Split(delimiterArr, StringSplitOptions.None);
-
-            ValidateSplit();
-            void ValidateSplit()
-            {
-                if (splitIntoJsons.Count < 2)
-                {
-                    string errorMessage = "Invalid json passed.";
-                    throw new System.ArgumentException(errorMessage);
-                }
-            }
-
             string jsonForMainState = splitIntoJsons[1];
-            ISaveData result = JsonUtility.FromJson<CompositeSaveData>(jsonForMainState);
+            CompositeSaveData compositeSaveDataRead = new CompositeSaveData();
+            bool validJson = JsonHelpers.TryFromJsonOverwrite(jsonForMainState, ref compositeSaveDataRead);
+
+            if (!validJson)
+            {
+                string errorMessage = "Invalid json found.";
+                throw new InvalidDataException(errorMessage);
+            }
+            ISaveData result = compositeSaveDataRead;
             result.OnDeserialize();
             Validate(result);
             return result;
@@ -248,7 +282,7 @@ namespace Amanita.SaveSys
             string jsonForMainState = splitIntoJsons[1];
 
             ISaveMetaData meta = JsonUtility.FromJson<SaveMetaData>(jsonForMeta);
-            ISaveData mainState = JsonUtility.FromJson<SaveData>(jsonForMainState);
+            ISaveData mainState = JsonUtility.FromJson<CompositeSaveData>(jsonForMainState);
 
             ISaveDataSet result = new SaveDataSet(meta, mainState);
             return result;

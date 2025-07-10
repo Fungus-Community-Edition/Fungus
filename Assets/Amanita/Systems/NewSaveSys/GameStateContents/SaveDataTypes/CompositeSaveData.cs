@@ -115,6 +115,12 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        public static CompositeSaveData CreateFrom(CompositeSaveData other)
+        {
+            CompositeSaveData result = new CompositeSaveData(other.units);
+            return result;
+        }
+
     }
 
     public interface ICompositeSaveData : ISaveData

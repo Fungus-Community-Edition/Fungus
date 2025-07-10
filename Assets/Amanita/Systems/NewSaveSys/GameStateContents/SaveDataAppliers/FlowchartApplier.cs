@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amanita.Collections;
 using System.Threading;
 using Amanita.Utils;
 using System;
@@ -14,26 +13,6 @@ namespace Amanita.SaveSys
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
-        public override async Task ApplyMulti(IList<SaveData> datas)
-        {
-            IList<FlowchartSaveData> flowchartDatas = (from data in datas
-                                                  where data is FlowchartSaveData
-                                                  select data as FlowchartSaveData).ToList();
-
-            await ApplyMulti(flowchartDatas);
-        }
-
-        public override async Task ApplyMulti(IList<FlowchartSaveData> saveDatas)
-        {
-            allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-
-            foreach (FlowchartSaveData saveData in saveDatas)
-            {
-                await Apply(saveData);
-            }
-
-        }
-
         protected virtual void OnValidate()
         {
             if (allFlowcharts != null)
