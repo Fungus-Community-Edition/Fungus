@@ -40,6 +40,7 @@ namespace Amanita.SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            PlayerPrefs.DeleteAll();
             ResetSingletonStatics();
 
             PrepAmanitaManagerAndItsSubmodules();
@@ -89,6 +90,15 @@ namespace Amanita.SaveSystemTests
                 //blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
+            
+            writeReq = new SaveWriteRequest
+            {
+                SaveName = "TestSave",
+                SlotNumber = 1,
+                MainState = new CompositeSaveData(),
+                SaveMetaData = new SaveMetaData(),
+                BaseSaveDirectory = SaveDirectoryType.DataPath
+            };
 
             if (ReqSceneLoad)
             {
@@ -209,9 +219,7 @@ namespace Amanita.SaveSystemTests
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.gameObject.AddComponent<StringVariable>();
-            stringVar.Value = "Hello, World!";
-            flowchart.Variables.Add(stringVar);
+            stringVar = flowchart.AddVariable<string, StringVariable>("someStringVar", "Hello, World!");
 
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }

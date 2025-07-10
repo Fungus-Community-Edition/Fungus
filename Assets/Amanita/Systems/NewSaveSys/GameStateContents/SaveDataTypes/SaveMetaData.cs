@@ -1,7 +1,9 @@
 
 
-using System.Globalization;
+using Amanita.Utils;
 using System;
+using System.Globalization;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -164,7 +166,6 @@ namespace Amanita.SaveSys
 
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
-            RegisterCurrentSceneInfo();
         }
 
         protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
@@ -221,6 +222,7 @@ namespace Amanita.SaveSys
         {
             base.OnDeserialize();
             UpdateTimeStampStructure();
+            UpdatePlaytimeStructure();
         }
 
         protected virtual void UpdatePlaytimeStructure()
@@ -240,8 +242,32 @@ namespace Amanita.SaveSys
 
         public virtual void RegisterCurrentSceneInfo()
         {
-            sceneName = SceneManager.GetActiveScene().name;
-            sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
+            void GetTheInfo()
+            {
+                sceneName = SceneManager.GetActiveScene().name;
+                sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
+            }
+
+            bool onMainThread = UnityThreadUtil.IsMainThread;
+            if (onMainThread)
+            {
+                GetTheInfo();
+            }
+            else
+            {
+                using (var countdown = new CountdownEvent(1))
+                {
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        GetTheInfo();
+                        countdown.Signal();
+                    }
+                    );
+
+                    countdown.Wait();
+                }
+            }
+            
         }
 
         public virtual bool Equals(SaveMetaData other)

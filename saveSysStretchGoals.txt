@@ -1,0 +1,2 @@
+- Make save-naming functionality more flexible through use of a File Name Strategy
+- Compatibility with PlayerPrefs for WebGL builds

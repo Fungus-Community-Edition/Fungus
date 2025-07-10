@@ -87,6 +87,11 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
+        public static string GetPathToBackupFile(SaveDirectoryType dirType, int slot, SaveWriter writer)
+        {
+            string basePath = GetPathToFile(dirType, slot, writer);
+            return basePath + writer.BackupFileExtension;
+        }
+
     }
 }

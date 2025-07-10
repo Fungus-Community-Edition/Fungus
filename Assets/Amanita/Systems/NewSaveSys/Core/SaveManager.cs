@@ -68,7 +68,7 @@ namespace Amanita.SaveSys
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
             mainCodecs.Add(codec);
-            Loader.RegisterMainCodec(codec);
+            Loader.Add(codec);
         }
 
         protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
