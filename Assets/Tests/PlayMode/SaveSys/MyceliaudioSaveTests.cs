@@ -32,7 +32,7 @@ namespace Amanita.SaveSystemTests
 
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
-            Task applyTask = audioApplier.ApplyMulti(new MyceliaudioSaveData[] { saveData });
+            Task applyTask = audioApplier.ApplyRange(new MyceliaudioSaveData[] { saveData });
             yield return WaitFor(applyTask);
             AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             bool playingCorrectClip = clipPlaying == playAudioArgsSO.MainClip;

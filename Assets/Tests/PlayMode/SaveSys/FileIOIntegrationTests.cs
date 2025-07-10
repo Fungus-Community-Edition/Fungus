@@ -239,13 +239,12 @@ namespace Amanita.SaveSystemTests
             }, assertErrorMessage);
         }
 
-        [Test]
-        public async Task EncryptedUnicodeData_RoundTrip()
+        [Test, TestCaseSource(nameof(UnicodeTestCases))]
+        public async Task EncryptedUnicodeData_RoundTrip(string unicodeString)
         {
             saveWriter.WriteEncrypted = true;
             saveReader.ReadEncrypted = true;
 
-            var unicodeString = "こんにちは世界🌏 Привет мир 𝄞";
             var data = new CompositeSaveData();
             data.Add(new SaveDataUnit("Unicode", unicodeString));
 
@@ -266,7 +265,21 @@ namespace Amanita.SaveSystemTests
             };
             var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
 
-            Assert.IsTrue(result.Units.Any(u => u.Content == unicodeString), "Unicode data was not preserved in encrypted round-trip.");
+            Assert.IsTrue(result.Units.Any(u => u.Content == unicodeString), $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
+        }
+
+        public static IEnumerable<string> UnicodeTestCases()
+        {
+            yield return "こんにちは世界🌏 Привет мир 𝄞"; // Japanese, Russian, emoji, music symbol
+            yield return "你好，世界"; // Chinese
+            yield return "안녕하세요 세계"; // Korean
+            yield return "مرحبا بالعالم"; // Arabic
+            yield return "שלום עולם"; // Hebrew
+            yield return "😀😃😄😁😆😅😂🤣"; // Emoji sequence
+            yield return "Café naïve façade coöperate"; // Accented Latin characters
+            yield return "𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝕋𝕖𝕤𝕥"; // Mathematical/Fraktur/Double-struck
+            yield return "हैलो वर्ल्ड"; // Hindi
+            yield return "Zażółć gęślą jaźń"; // Polish diacritics
         }
 
 

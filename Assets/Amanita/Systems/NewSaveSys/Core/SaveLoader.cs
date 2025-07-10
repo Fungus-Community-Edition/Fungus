@@ -24,15 +24,15 @@ namespace Amanita.SaveSys
             this.mainCodecs = codecList;
         }
 
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
+        public virtual void AddRange(IList<IMainSaveCodec> codecs)
         {
             for (int i = 0; i < codecs.Count; i++)
             {
-                RegisterMainCodec(codecs[i]);
+                Add(codecs[i]);
             }
         }
 
-        public virtual void RegisterMainCodec(IMainSaveCodec codec)
+        public virtual void Add(IMainSaveCodec codec)
         {
             if (!mainCodecs.Contains(codec))
             {
@@ -100,7 +100,7 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    await applierEl.ApplyMulti(unitsItCanWorkWith);
+                    await applierEl.ApplyRange(unitsItCanWorkWith);
                 }
 
             }

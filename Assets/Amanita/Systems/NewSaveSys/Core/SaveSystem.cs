@@ -137,7 +137,7 @@ namespace Amanita.SaveSys
 
         public virtual IMetaFactory MetaFactory
         {
-            protected get { return SaveManager.MetaFactory; }
+            get { return SaveManager.MetaFactory; }
             set
             {
                 if (CoreLockMode)
@@ -153,7 +153,7 @@ namespace Amanita.SaveSys
 
         public virtual IMainStateFactory MainStateFactory
         {
-            protected get { return SaveManager.MainStateFactory; }
+            get { return SaveManager.MainStateFactory; }
             set
             {
                 if (CoreLockMode)
@@ -246,10 +246,15 @@ namespace Amanita.SaveSys
             return saveManager.SaveTo(slotNum);
         }
 
-        public virtual Task<CompositeSaveData> LoadSave(int slotNum, bool loadScene = true,
+        public virtual Task<CompositeSaveData> LoadMain(int slotNum, bool loadScene = true,
             CancellationToken token = default)
         {
             return saveManager.LoadMain(slotNum, loadScene, token);
+        }
+
+        public virtual Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
+        {
+            return saveManager.LoadMeta(slotNum, token);
         }
 
         public virtual void DeleteSave(int slotNum)
