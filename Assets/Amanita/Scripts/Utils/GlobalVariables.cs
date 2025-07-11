@@ -4,6 +4,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita
 {
@@ -69,9 +70,19 @@ namespace Amanita
 		public virtual TVarType GetOrAddVariable<TValHeld, TVarType>(string key, TValHeld value)
 			where TVarType : VariableBase<TValHeld>
 		{
-			TVarType newVar = holder.AddVariable<TValHeld, TVarType>(key, value, VariableScope.Global);
+			TVarType newVar = holder.AddNewVariable<TValHeld, TVarType>(key, value, VariableScope.Global);
 			variables[key] = newVar;
 			return newVar;
 		}
+
+		public Muscariable GetMuscariable(string key)
+		{
+			Muscariable theVar = null;
+			muscariables.TryGetValue(key, out theVar);
+			return theVar;
+
+		}
+
+		Dictionary<string, Muscariable> muscariables = new Dictionary<string, Muscariable>();
 	}
 }

@@ -1,11 +1,13 @@
 // This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-using UnityEditor;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.EditorUtils
 {
@@ -34,6 +36,7 @@ namespace Amanita.EditorUtils
 
         protected VariableListAdaptor variableListAdaptor;
 
+        protected UitkVariableListAdaptor uitkVarListAdaptor;
 
         public static bool FlowchartDataStale { get; set; }
 
@@ -42,6 +45,151 @@ namespace Amanita.EditorUtils
             if (NullTargetCheck()) // Check for an orphaned editor instance
                 return;
 
+            FetchSerializedProperties();
+
+            addTexture = AmanitaEditorResources.AddSmall;
+
+            uitkVarListAdaptor?.Dispose();
+            uitkVarListAdaptor = new UitkVariableListAdaptor(variablesProp, target as Flowchart);
+            variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
+        }
+
+        protected virtual void OnDisable()
+        {
+            uitkVarListAdaptor?.Dispose();
+        }
+
+        public override VisualElement CreateInspectorGUI()
+        {
+            // Root container for all UI Toolkit controls
+            var root = new VisualElement();
+            Flowchart fcTarget = (Flowchart)target;
+
+            // 1. Find the serialized 'description' property
+            FetchSerializedProperties();
+            //var descProp = serializedObject.FindProperty("description");
+
+            
+            PropertyField descField = new PropertyField(descriptionProp),
+                colorCommandsField = new PropertyField(colorCommandsProp),
+                 hideComponentsField = new PropertyField(hideComponentsProp),
+                stepPauseField = new PropertyField(stepPauseProp),
+                saveSelectionField = new PropertyField(saveSelectionProp),
+                localizationIDField = new PropertyField(localizationIdProp),
+                showLineNumbersField = new PropertyField(showLineNumbersProp),
+                luaEnvironmentField = new PropertyField(luaEnvironmentProp),
+                luaBindingNameField = new PropertyField(luaBindingNameProp),
+                hideCommandsField = new PropertyField(hideCommandsProp),
+
+                includeInSaveField = new PropertyField(includeInSaveProp),
+                saveBlocksField = new PropertyField(saveBlocksProp),
+                saveVariablesField = new PropertyField(saveVariablesProp),
+                loadPriorityField = new PropertyField(loadPriorityProp);
+
+            Foldout editorOnlyFoldout = new Foldout(), 
+                hidingFoldout = new Foldout(),
+                saveSysInvolvementFoldout = new Foldout(),
+                luaFoldout = new Foldout(),
+                varsFoldout = new Foldout();
+
+            Button openFlowchartWindowButton = new Button()
+            {
+                text = "Open Flowchart Window"
+            };
+
+            openFlowchartWindowButton.RegisterCallback<ClickEvent>((ClickEvent evt) =>
+            {
+                EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+            });
+
+            VisualElement varsUi = uitkVarListAdaptor.CreateVariablesUI();
+            var imguiArea = new IMGUIContainer(() =>
+            {
+                serializedObject.Update();
+
+                // Draw your existing list. 
+                // The width calc below mimics your old skirt offset.
+                int w = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth)
+                        - UitkVariableListAdaptor.ReorderListSkirts;
+
+                serializedObject.ApplyModifiedProperties();
+            });
+
+            PrepFields();
+            void PrepFields()
+            {
+                SetLabels();
+                void SetLabels()
+                {
+                    descField.label = "Description";
+                    colorCommandsField.label = "Color Commands";
+                    hideComponentsField.label = "Hide Components";
+                    stepPauseField.label = "Step Pause";
+                    saveSelectionField.label = "Save Selection";
+                    localizationIDField.label = "Localization ID";
+                    luaEnvironmentField.label = "Lua Environment";
+                    luaBindingNameField.label = "Lua Binding Name";
+                    hideCommandsField.label = ""; // To prevent double labeling
+
+                    includeInSaveField.label = "Include in Saves";
+                    saveBlocksField.label = "Save Blocks";
+                    saveVariablesField.label = "Save Variables";
+                    loadPriorityField.label = "Load Priority";
+                }
+
+                editorOnlyFoldout.text = "Editor Only";
+                editorOnlyFoldout.tooltip = "For most of the stuff that only matters in the editor.";
+                editorOnlyFoldout.Add(colorCommandsField);
+                editorOnlyFoldout.Add(hideComponentsField);
+                editorOnlyFoldout.Add(stepPauseField);
+                editorOnlyFoldout.Add(saveSelectionField);
+                editorOnlyFoldout.Add(hideCommandsField);
+
+                luaFoldout.text = "Lua Support";
+                luaFoldout.tooltip = "For stuff that involves using Flowcharts with Lua";
+                luaFoldout.Add(luaEnvironmentField);
+                luaFoldout.Add(luaBindingNameField);
+
+                descField.style.marginBottom = 4;
+                openFlowchartWindowButton.style.marginTop = 10;
+
+                saveSysInvolvementFoldout.text = "Save Sys Involvement";
+                saveSysInvolvementFoldout.Add(includeInSaveField);
+                saveSysInvolvementFoldout.Add(saveBlocksField);
+                saveSysInvolvementFoldout.Add(saveVariablesField);
+                saveSysInvolvementFoldout.Add(loadPriorityField);
+
+                varsFoldout.text = "Variables";
+                varsFoldout.value = fcTarget.VariablesExpanded;
+                varsFoldout.RegisterValueChangedCallback(evt => {
+                    fcTarget.VariablesExpanded = evt.newValue;
+                });
+
+                
+
+
+            }
+
+            IList<VisualElement> fields = new List<VisualElement>()
+            {
+                descField, localizationIDField, editorOnlyFoldout, luaFoldout,
+                saveSysInvolvementFoldout, openFlowchartWindowButton, varsUi,
+                imguiArea,
+            };
+
+            foreach (var elem in fields)
+            {
+                root.Add(elem);
+            }
+
+            root.Bind(serializedObject);
+
+            return root;
+        }
+
+
+        protected virtual void FetchSerializedProperties()
+        {
             descriptionProp = serializedObject.FindProperty("description");
             colorCommandsProp = serializedObject.FindProperty("colorCommands");
             hideComponentsProp = serializedObject.FindProperty("hideComponents");
@@ -59,79 +207,75 @@ namespace Amanita.EditorUtils
             saveBlocksProp = serializedObject.FindProperty("saveBlocks");
             saveVariablesProp = serializedObject.FindProperty("saveVariables");
             loadPriorityProp = serializedObject.FindProperty("loadPriority");
-
-            addTexture = AmanitaEditorResources.AddSmall;
-
-            variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
         }
 
-        public override void OnInspectorGUI() 
-        {
-            serializedObject.Update();
+        //public override void OnInspectorGUI()
+        //{
+        //    serializedObject.Update();
 
-            var flowchart = target as Flowchart;
+        //    var flowchart = target as Flowchart;
 
-            flowchart.UpdateHideFlags();
+        //    flowchart.UpdateHideFlags();
 
-            EditorGUI.BeginChangeCheck();
+        //    EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(descriptionProp);
-            EditorGUILayout.PropertyField(colorCommandsProp);
-            EditorGUILayout.PropertyField(hideComponentsProp);
-            EditorGUILayout.PropertyField(stepPauseProp);
-            EditorGUILayout.PropertyField(saveSelectionProp);
-            EditorGUILayout.PropertyField(localizationIdProp);
-            EditorGUILayout.PropertyField(showLineNumbersProp);
-            EditorGUILayout.PropertyField(luaEnvironmentProp);
-            EditorGUILayout.PropertyField(luaBindingNameProp);
+        //    EditorGUILayout.PropertyField(descriptionProp);
+        //    EditorGUILayout.PropertyField(colorCommandsProp);
+        //    EditorGUILayout.PropertyField(hideComponentsProp);
+        //    EditorGUILayout.PropertyField(stepPauseProp);
+        //    EditorGUILayout.PropertyField(saveSelectionProp);
+        //    EditorGUILayout.PropertyField(localizationIdProp);
+        //    EditorGUILayout.PropertyField(showLineNumbersProp);
+        //    EditorGUILayout.PropertyField(luaEnvironmentProp);
+        //    EditorGUILayout.PropertyField(luaBindingNameProp);
 
-            // Show list of commands to hide in Add Command menu
-            //ReorderableListGUI.Title(new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip));
-            //ReorderableListGUI.ListField(hideCommandsProp);
-            EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName,
-                hideCommandsProp.tooltip), true);
+        //    // Show list of commands to hide in Add Command menu
+        //    //ReorderableListGUI.Title(new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip));
+        //    //ReorderableListGUI.ListField(hideCommandsProp);
+        //    EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName,
+        //        hideCommandsProp.tooltip), true);
 
-            EditorGUILayout.PropertyField(includeInSaveProp, new GUIContent(includeInSaveProp.displayName,
-                includeInSaveProp.tooltip), true);
-            EditorGUILayout.PropertyField(saveBlocksProp, new GUIContent(saveBlocksProp.displayName,
-                saveBlocksProp.tooltip), true);
-            EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName,
-                saveVariablesProp.tooltip), true);
-            EditorGUILayout.PropertyField(loadPriorityProp, new GUIContent(loadPriorityProp.displayName,
-                loadPriorityProp.tooltip), true);
-
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                FlowchartDataStale = true;
-            }
+        //    EditorGUILayout.PropertyField(includeInSaveProp, new GUIContent(includeInSaveProp.displayName,
+        //        includeInSaveProp.tooltip), true);
+        //    EditorGUILayout.PropertyField(saveBlocksProp, new GUIContent(saveBlocksProp.displayName,
+        //        saveBlocksProp.tooltip), true);
+        //    EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName,
+        //        saveVariablesProp.tooltip), true);
+        //    EditorGUILayout.PropertyField(loadPriorityProp, new GUIContent(loadPriorityProp.displayName,
+        //        loadPriorityProp.tooltip), true);
 
 
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(new GUIContent("Open Flowchart Window", "Opens the Flowchart Window")))
-            {
-                EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
-            }
+        //    if (EditorGUI.EndChangeCheck())
+        //    {
+        //        FlowchartDataStale = true;
+        //    }
 
 
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.FlexibleSpace();
+        //    if (GUILayout.Button(new GUIContent("Open Flowchart Window", "Opens the Flowchart Window")))
+        //    {
+        //        EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+        //    }
 
-            serializedObject.ApplyModifiedProperties();
 
-            //Show the variables in the flowchart inspector
-            GUILayout.Space(20);
+        //    GUILayout.FlexibleSpace();
+        //    GUILayout.EndHorizontal();
 
-            DrawVariablesGUI(false, Mathf.FloorToInt(EditorGUIUtility.currentViewWidth) - VariableListAdaptor.ReorderListSkirts);
+        //    serializedObject.ApplyModifiedProperties();
 
-        }
+        //    //Show the variables in the flowchart inspector
+        //    GUILayout.Space(20);
+
+        //    DrawVariablesGUI(false, Mathf.FloorToInt(EditorGUIUtility.currentViewWidth) - VariableListAdaptor.ReorderListSkirts);
+
+        //}
 
         public virtual void DrawVariablesGUI(bool showVariableToggleButton, int w)
         {
-            var t = target as Flowchart;
+            var targFc = target as Flowchart;
 
-            if(t == null)
+            if (targFc == null)
             {
                 return;
             }
@@ -139,17 +283,17 @@ namespace Amanita.EditorUtils
             serializedObject.Update();
 
 
-            if (t.Variables.Count == 0)
+            if (targFc.Variables.Count == 0)
             {
-                t.VariablesExpanded = true;
+                targFc.VariablesExpanded = true;
                 //showVariableToggleButton = true;
             }
 
-            if (showVariableToggleButton && !t.VariablesExpanded)
+            if (showVariableToggleButton && !targFc.VariablesExpanded)
             {
-                if (GUILayout.Button ("Variables (" + t.Variables.Count + ")", GUILayout.Height(24)))
+                if (GUILayout.Button ("Variables (" + targFc.Variables.Count + ")", GUILayout.Height(24)))
                 {
-                    t.VariablesExpanded = true;
+                    targFc.VariablesExpanded = true;
                 }
 
                 // Draw disclosure triangle
@@ -162,11 +306,11 @@ namespace Amanita.EditorUtils
             {
                 // Remove any null variables from the list
                 // Can sometimes happen when upgrading to a new version of Fungus (if .meta GUID changes for a variable class)
-                for (int i = t.Variables.Count - 1; i >= 0; i--)
+                for (int i = targFc.Variables.Count - 1; i >= 0; i--)
                 {
-                    if (t.Variables[i] == null)
+                    if (targFc.Variables[i] == null)
                     {
-                        t.Variables.RemoveAt(i);
+                        targFc.Variables.RemoveAt(i);
                     }
                 }
 

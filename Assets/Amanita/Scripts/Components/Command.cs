@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
+using Amanita.VScripting;
 
 namespace Amanita
 {   
@@ -329,7 +330,12 @@ namespace Amanita
             }
 
             return localizationId;
-        }        
+        }
+
+        public bool HasReference(IVariable variable)
+        {
+            return false;
+        }
 
         #endregion
     }

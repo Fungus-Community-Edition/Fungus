@@ -2,6 +2,7 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using Amanita.Lua;
+using Amanita.VScripting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -52,6 +53,9 @@ namespace Amanita
         [HideInInspector]
         [SerializeField] protected List<Variable> variables = new List<Variable>();
 
+        [HideInInspector]
+        [SerializeField] protected List<Muscariable> muscariables = new List<Muscariable>();
+
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
         [SerializeField] protected string description = "";
@@ -84,7 +88,6 @@ namespace Amanita
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
-        
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool includeInSaves = true;
 
@@ -765,7 +768,7 @@ namespace Amanita
         /// <summary>
         /// Returns a new variable key that is guaranteed not to clash with any existing variable in the list.
         /// </summary>
-        public virtual string GetUniqueVariableKey(string originalKey, Variable ignoreVariable = null)
+        public virtual string GetUniqueVariableKey(string originalKey, IVariable ignoreVariable = null)
         {
             int suffix = 0;
             string baseKey = originalKey;
@@ -783,14 +786,19 @@ namespace Amanita
                 baseKey = "Var";
             }
 
+            List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
+
+            vars.AddRange(vars);
+            vars.AddRange(muscariables);
+
             string key = baseKey;
             while (true)
             {
                 bool collision = false;
-                for (int i = 0; i < variables.Count; i++)
+                for (int i = 0; i < vars.Count; i++)
                 {
-                    var variable = variables[i];
-                    if (variable == null || variable == ignoreVariable || variable.Key == null)
+                    var variable = vars[i];
+                    if (variable == null || (variable as Variable) == ignoreVariable || variable.Key == null)
                     {
                         continue;
                     }
@@ -808,6 +816,7 @@ namespace Amanita
                 }
             }
         }
+
 
         /// <summary>
         /// Returns a new Block key that is guaranteed not to clash with any existing Block in the Flowchart.
@@ -1509,6 +1518,23 @@ namespace Amanita
             }
         }
 
+        public virtual void DetermineSubstituteVariables(string str, List<IVariable> vars)
+        {
+            Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
+
+            // Match the regular expression pattern against a text string.
+            var results = r.Matches(str);
+            for (int i = 0; i < results.Count; i++)
+            {
+                var match = results[i];
+                var v = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                if (v != null)
+                {
+                    vars.Add(v);
+                }
+            }
+        }
+
         public virtual void DetermineSubstituteVariables(string str, List<Variable> vars)
         {
             Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
@@ -1526,6 +1552,93 @@ namespace Amanita
             }
         }
 
+        /// <summary>
+        /// Creates and returns a new Muscariable of the specified type, with this
+        /// as the parent Flowchart.
+        /// </summary>
+        public virtual TVarType AddNewMuscariable<TValueType, TVarType>(string key = "", TValueType initValue = default,
+            VariableScope scope = VariableScope.Private) where TVarType: Muscariable<TValueType>, new()
+        {
+            TVarType result = new TVarType();
+            result.Value = initValue;
+            result.Scope = scope;
+            IntegrateMuscariable(result);
+            result.Init();
+            return result;
+        }
+
+        protected int nextMuscariableID = 1;
+
+        /// <summary>
+        /// Sets up the Muscariable to belong to this Flowchart. We assume that the
+        /// input has already been initialized.
+        /// </summary>
+        /// <param name="toAdd"></param>
+        public virtual void IntegrateMuscariable(Muscariable toAdd)
+        {
+            int newId = nextMuscariableID;
+            toAdd.ItemID = newId;
+            toAdd.ParentFlowchart = this;
+            toAdd.Key = GetUniqueVariableKey(toAdd.Key);
+            muscariables.Add(toAdd);
+
+            nextMuscariableID++;
+
+            VariableAdded(toAdd);
+        }
+
+        /// <summary>
+        /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
+        /// </summary>
+        /// <param name="toRemove"></param>
+        public virtual void RemoveMuscariable(Muscariable toRemove)
+        {
+            if (muscariables.Contains(toRemove))
+            {
+                toRemove.ParentFlowchart = null;
+                muscariables.Remove(toRemove);
+                VariableRemoved(toRemove);
+            }
+
+        }
+
+        public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType: Muscariable
+        {
+            IList<TVarType> result = (from elem in muscariables
+                                      where elem.GetType().IsAssignableFrom(typeof(TVarType))
+                                      select elem).Cast<TVarType>().ToList();
+            return result;
+        }
+
+        public virtual TVarType GetMuscariableWithKey<TVarType>(string key) where TVarType : Muscariable
+        {
+            TVarType result = (from elem in muscariables
+                               where elem.Key == key
+                               select elem).Cast<TVarType>().FirstOrDefault();
+            return result;
+
+        }
+
+        public virtual int MuscariableCount { get { return muscariables.Count; } }
+
+        public virtual void RefreshVars()
+        {
+            muscariables = (from elem in muscariables
+                            where elem != null
+                            select elem).ToList();
+            variables = (from elem in variables
+                         where elem != null
+                         select elem).ToList();
+        }
+
+        public event System.Action<IVariable> VariableAdded = delegate { };
+        public event System.Action<IVariable> VariableRemoved = delegate { };
+
+        public virtual void InsertVariable(int index, Variable whatToInsert)
+        {
+            variables.Insert(index, whatToInsert);
+            VariableAdded(whatToInsert);
+        }
         #endregion
 
         #region IStringSubstituter implementation
@@ -1615,7 +1728,7 @@ namespace Amanita
         /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
         /// a unique key will be generated.
         /// </summary>
-        public virtual TVarType AddVariable<TValHeld, TVarType>(string key = default,
+        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key = default,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
             where TVarType : VariableBase<TValHeld>
@@ -1628,7 +1741,14 @@ namespace Amanita
             newVar.ItemID = nextValidVarID;
             nextValidVarID++;
             variables.Add(newVar);
+            VariableAdded(newVar);
             return newVar;
+        }
+
+        public virtual void AddVariable(Variable toAdd)
+        {
+            variables.Add(toAdd);
+            VariableAdded(toAdd);
         }
 
         public static void ResetStaticsForTest()

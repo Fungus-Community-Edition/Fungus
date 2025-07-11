@@ -1,6 +1,7 @@
 // This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
+using Amanita.VScripting;
 using UnityEngine;
 
 namespace Amanita
@@ -108,7 +109,7 @@ namespace Amanita
     /// </summary>
     [RequireComponent(typeof(Flowchart))]
     [System.Serializable]
-    public abstract class Variable : MonoBehaviour
+    public abstract class Variable : MonoBehaviour, IVariable
     {
         [SerializeField] protected VariableScope scope;
 
@@ -178,6 +179,7 @@ namespace Amanita
         /// </summary>
         public abstract object GetValue();
 
+        public virtual object Value { get; set; }
         /// <summary>
         /// Set value in inherited types via Boxed value.
         /// Not recommended for direct use, primarily intended for use in editor code.
@@ -221,7 +223,7 @@ namespace Amanita
         }
 
         [SerializeField] protected T value;
-        public virtual T Value
+        public virtual new T Value
         {
             get
             {
@@ -239,6 +241,7 @@ namespace Amanita
                 if (scope != VariableScope.Global || !Application.isPlaying)
                 {
                     this.value = value;
+                    base.Value = value;
                 }
                 else
                 {
