@@ -112,7 +112,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// Does the underlying type provide support for < <= > >=
         /// </summary>
-        public virtual bool IsComparisonSupported { get; } = false;
+        public virtual bool IsRelationalSupported { get; } = false;
 
         // Unlike the orig implementation, we are NOT required to be on Flowcharts. But we
         // have this in case client (especially editor) code cares about whether we are or not
@@ -126,7 +126,6 @@ namespace Amanita.VScripting
     }
 
     public abstract class Muscariable<T> : Muscariable, IMuscariable<T>, IEquatable<T>, IEquatable<IMuscariable<T>>
-        where T : IEquatable<T>
     {
         public override System.Type ContentType { get { return typeof(T); } }
 

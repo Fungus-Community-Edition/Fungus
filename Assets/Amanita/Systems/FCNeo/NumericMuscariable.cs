@@ -7,7 +7,7 @@ namespace Amanita.VScripting
         where T : IComparable<T>, IEquatable<T>
     {
         public override bool IsArithmeticSupported => true;
-        public override bool IsComparisonSupported => true;
+        public override bool IsRelationalSupported => true;
 
         public override void Apply(SetOperator setOperator, T toApply)
         {
@@ -106,7 +106,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 
@@ -149,7 +148,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 
@@ -180,7 +178,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 
@@ -222,7 +219,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 

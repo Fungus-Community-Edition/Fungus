@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
         public override bool IsArithmeticSupported => true;
-        public override bool IsComparisonSupported => true;
+        public override bool IsRelationalSupported => true;
 
         public virtual float X
         {
@@ -134,7 +134,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 
@@ -144,7 +143,7 @@ namespace Amanita.VScripting
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
         public override bool IsArithmeticSupported => true;
-        public override bool IsComparisonSupported => true;
+        public override bool IsRelationalSupported => true;
 
         public virtual float X
         {
@@ -232,7 +231,6 @@ namespace Amanita.VScripting
 
         public override int GetHashCode()
         {
-            // Delegate to Vector2’s hash
             return Value.GetHashCode();
         }
 
