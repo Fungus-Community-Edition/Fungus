@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
+using Amanita.VScripting;
 
 namespace Amanita.MuscariableTests
 {
