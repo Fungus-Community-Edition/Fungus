@@ -27,7 +27,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as AudioClipMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()
@@ -53,7 +54,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as AudioSourceMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()

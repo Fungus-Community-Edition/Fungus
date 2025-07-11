@@ -101,7 +101,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as IntMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()
@@ -143,7 +144,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as FloatMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()
@@ -173,7 +175,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as BoolMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()
@@ -214,7 +217,8 @@ namespace Amanita.VScripting
         public override bool Equals(object obj)
         {
             var other = obj as DoubleMuscariable;
-            return this == other;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
         }
 
         public override int GetHashCode()
