@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -8,9 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-#if UNITY_5_0 || UNITY_5_1
-using System.Reflection;
-#endif
 
 namespace Amanita.EditorUtils
 {
@@ -77,8 +71,8 @@ namespace Amanita.EditorUtils
         }
 
         private static AmanitaEditorResources instance;
-        private static readonly string editorResourcesFolderName = "\"EditorResources\"";
-        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "EditorResources");
+        private static readonly string editorResourcesFolderName = "\"_EditorResources\"";
+        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "Resources", "_EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
         public static AmanitaEditorResources Instance
@@ -142,10 +136,7 @@ namespace Amanita.EditorUtils
             var absolutePath = Application.dataPath + relativePath.Substring("Assets".Length);
             
             using (var writer = new StreamWriter(absolutePath))
-            {
-                writer.WriteLine("// This code is part of the Fungus library (https://github.com/snozbot/fungus)");
-                writer.WriteLine("// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)");
-                writer.WriteLine("");				
+            {			
                 writer.WriteLine("#pragma warning disable 0649");
                 writer.WriteLine("");
                 writer.WriteLine("using UnityEngine;");
@@ -221,14 +212,7 @@ namespace Amanita.EditorUtils
 
             serializedObject.FindProperty("updateOnReloadScripts").boolValue = false;
 
-            // The ApplyModifiedPropertiesWithoutUndo() function wasn't documented until Unity 5.2
-#if UNITY_5_0 || UNITY_5_1
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var applyMethod = typeof(SerializedObject).GetMethod("ApplyModifiedPropertiesWithoutUndo", flags);
-            applyMethod.Invoke(serializedObject, null);
-#else
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
-#endif
         }
     }
 }

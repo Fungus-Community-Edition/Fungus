@@ -1,13 +1,11 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Reflection;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Show the variable selection window as a searchable popup
@@ -66,7 +64,8 @@ namespace Amanita.EditorUtils
             AddVariable(VariableTypes[index]);
         }
 
-        static public void DoAddVariable(Rect position, string currentHandlerName, Flowchart flowchart)
+        static public void DoAddVariable(Rect position, string currentHandlerName,
+            Flowchart flowchart, System.Action onVarAdded = null)
         {
             curFlowchart = flowchart;
             if (!AmanitaEditorPreferences.useLegacyMenus)
@@ -79,7 +78,7 @@ namespace Amanita.EditorUtils
             DoOlderMenu(flowchart);
         }
 
-        static protected void DoOlderMenu(Flowchart flowchart)
+        static protected void DoOlderMenu(Flowchart flowchart, System.Action onVarAdded = null)
         {
             GenericMenu menu = new GenericMenu();
 
@@ -145,11 +144,12 @@ namespace Amanita.EditorUtils
             var existingVariable = flowchart.GetVariable(suggestedName);
             if (existingVariable != null)
             {
-                flowchart.Variables.Insert(flowchart.Variables.IndexOf(existingVariable)+1, newVariable);
+                int index = flowchart.Variables.IndexOf(existingVariable) + 1;
+                flowchart.InsertVariable(index, newVariable);
             }
             else
             {
-                flowchart.Variables.Add(newVariable);
+                flowchart.AddVariable(newVariable);
             }
 
             // Because this is an async call, we need to force prefab instances to record changes

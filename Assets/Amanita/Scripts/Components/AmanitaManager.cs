@@ -1,9 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using Amanita.Myceliaudio;
+﻿using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using UnityEngine;
+using Amanita.DialogueSys;
 
 namespace Amanita
 {
@@ -58,12 +56,7 @@ namespace Amanita
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 GlobalVariables = GetComponentInChildren<GlobalVariables>();
                 MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
-#if UNITY_5_3_OR_NEWER
-                //SaveManager = GetComponentInChildren<SaveManager>();
-                //SaveManager.Init();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-#endif
-
                 AudioSystem = GetComponentInChildren<AudioSystem>();
                 SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
             }

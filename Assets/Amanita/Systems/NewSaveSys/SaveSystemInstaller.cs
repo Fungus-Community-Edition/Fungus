@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -46,6 +47,12 @@ namespace Amanita.SaveSys
             if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
             {
                 whereSavesAreStored = SaveDirectoryType.DataPath;
+            }
+
+            if (Application.platform == RuntimePlatform.Android ||
+                Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
             }
 
             SaveDirectoryType = whereSavesAreStored;

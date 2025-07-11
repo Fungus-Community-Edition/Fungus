@@ -1,0 +1,53 @@
+using Amanita.VScripting;
+using NUnit.Framework;
+using System;
+
+namespace Amanita.MuscariableTests.DataOnly
+{
+    public class StringMuscariableTests : MuscariableTestsCommon
+    {
+
+        [Test]
+        public void StringMuscariable_AssignAndEventFires()
+        {
+            var strVar = new StringMuscariable();
+            strVar.Key = "greeting";
+            strVar.ItemID = 1;
+            strVar.Init();
+
+            string captured = null;
+            strVar.OnValueChanged += v => captured = v;
+
+            strVar.Value = SampleS;
+            Assert.AreEqual(SampleS, strVar.Value);
+            Assert.AreEqual(SampleS, captured);
+        }
+
+        [Test]
+        public void StringMuscariable_NullAssignmentAllowed()
+        {
+            var strVar = new StringMuscariable();
+            strVar.Key = "maybeNull";
+            strVar.ItemID = 2;
+            strVar.Init();
+
+            Assert.DoesNotThrow(() => strVar.Value = null);
+            Assert.IsNull(strVar.Value);
+        }
+
+        [Test]
+        public void StringMuscariable_WrongTypeThrows()
+        {
+            Muscariable baseVar = new StringMuscariable();
+            baseVar.Key = "typeTest";
+            baseVar.ItemID = 3;
+            baseVar.Init();
+
+            var ex = Assert.Throws<ArgumentException>(
+                () => baseVar.Value = 12345
+            );
+            StringAssert.Contains("cannot hold", ex.Message);
+        }
+
+    }
+}

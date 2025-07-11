@@ -144,7 +144,7 @@ v3.13.0
 - CameraManager and View now use Tween types.
 - Dragable EventHandlers now support an array of target dragables. Thanks to SarveshBajaj
 - Flowchart GetVariables by type. Thanks to cg-tespy
-- A null AmanitaVariables will now report their string value as Null instead of an empty string.
+- A null IVariableiables will now report their string value as Null instead of an empty string.
 - Develop updated to Unity 2019.3.13
 - Demo scenes rebuilt in minimum supported Unity version.
 - Block selector now orders blocks by name.
@@ -245,7 +245,7 @@ v3.11.0 {#v3.11.0}
 
 - SetSprite: changes the image on the SpriteRenderer of one or more GameObjects 
 - SetUIImage: changes the image on the Image of one or more GameObjects (Joerg Burbach)
-- Commands to store AmanitaVariable.ToString into a StringVariable and to parse a string into an Int or Float AmanitaVariable 
+- Commands to store IVariableiable.ToString into a StringVariable and to parse a string into an Int or Float IVariableiable 
 
 ## Fixed
 
@@ -373,7 +373,7 @@ Many thanks to maintainer Steve Halliwell for all the amazing new functionality 
 - Added Playground examples showing 3 simple arcade games made using Amanita
 - Added Rigidbody2D variable type 
 - Added Vector3 FungusCommands - Fields, Normalise, Convert to Vector2, Arithetic 
-- Added TransformProperty FungusCommand. Get and Set a transform's fields and properties. Does not currently support rotation, localRotation nor the Mat4x4 commands as we do not have the appropriate AmanitaVariables to store them in 
+- Added TransformProperty FungusCommand. Get and Set a transform's fields and properties. Does not currently support rotation, localRotation nor the Mat4x4 commands as we do not have the appropriate IVariableiables to store them in 
 - Added FungusCommand to Reload Current Scene 
 - Added Rigidbody2D FungusCommands - AddForce, AddTorque, StopMotion 
 - Added Input GetAxis fungusCommand, fetch Input.GetAxis and store in a FloatData 

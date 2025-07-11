@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "FungusEditor",
-        "Amanita"
+        "Amanita",
+        "Unity.PerformanceTesting"
     ],
     "includePlatforms": [
         "Editor"

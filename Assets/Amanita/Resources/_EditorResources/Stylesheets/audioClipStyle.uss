@@ -1,0 +1,10 @@
+.varRowTypeLabel 
+{
+  background-color: #434343;
+}
+
+.propertyField
+{
+	height: 100%;
+	width: 100%;
+}

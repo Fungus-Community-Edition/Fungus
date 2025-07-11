@@ -1,17 +1,14 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Amanita.VScripting;
+using Amanita.VScripting.EventHandlers;
 
 namespace Amanita.EditorUtils
 {
-#if UNITY_2019_2_OR_NEWER
-
     public static class GenerateEverythingMenuItem
     {
-        [MenuItem("Tools/Fungus/Utilities/Generate Everything Flowchart")]
+        [MenuItem("Tools/Amanita/Utilities/Generate Everything Flowchart")]
         public static void GenerateEverythingFlowchart()
         {
             var newGO = new GameObject("Flowchart w/ EVERYTHING");
@@ -72,5 +69,4 @@ namespace Amanita.EditorUtils
         }
     }
 
-#endif
 }

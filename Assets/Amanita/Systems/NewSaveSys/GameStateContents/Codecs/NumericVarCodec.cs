@@ -1,11 +1,12 @@
 using System;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
     public class NumericVarCodec : IVarCodec
     {
-        public virtual bool CanHandle(Variable variable) =>
+        public virtual bool CanHandle(IVariable variable) =>
             variable is IntegerVariable || variable is FloatVariable;
 
         public virtual bool CanHandle(string typeName) =>
@@ -14,7 +15,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual string EncodeToString(Variable variable) => variable switch
+        public virtual string EncodeToString(IVariable variable) => variable switch
         {
             IntegerVariable intVar => intVar.Value.ToString(),
             FloatVariable floatVar => floatVar.Value.ToString(roundTripFormat),
@@ -26,7 +27,7 @@ namespace Amanita.SaveSys
         // back to a float, we get the exact same value.
         // We want to decode things as accurately as possible, so...
 
-        public virtual VariableSaveData EncodeToSave(Variable variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             VariableSaveData result = new()
             {
@@ -38,7 +39,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual void Decode(Variable variable, string data)
+        public virtual void Decode(IVariable variable, string data)
         {
             if (variable is IntegerVariable intVar)
                 intVar.Value = int.Parse(data);
@@ -50,7 +51,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = saveData.VarTypeName == nameof(IntegerVariable) ||
                 saveData.VarTypeName == nameof(FloatVariable);

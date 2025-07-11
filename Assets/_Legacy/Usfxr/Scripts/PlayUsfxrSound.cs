@@ -1,12 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Amanita.Sfxr;
 
-﻿namespace Amanita 
+﻿namespace Amanita.VScripting
 {
     /// <summary>
     /// Plays a usfxr synth sound. Use the usfxr editor [Tools > Fungus > Utilities > Generate usfxr Sound Effects] to create the SettingsString. Set a ParentTransform if using positional sound. See https://github.com/zeh/usfxr for more information about usfxr.
