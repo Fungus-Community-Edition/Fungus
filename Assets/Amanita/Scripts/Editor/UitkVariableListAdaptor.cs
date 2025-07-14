@@ -43,11 +43,13 @@ namespace Amanita.EditorUtils
 
         protected virtual void RefreshListView()
         {
-            if (Selection.activeObject == TargetFlowchart)
+            GameObject selectedGO = Selection.activeGameObject;
+            bool hasOurFlowchart = selectedGO.GetComponent<Flowchart>() == TargetFlowchart;
+            if (selectedGO != null && hasOurFlowchart)
             {
                 Debug.Log("Rebuilding list view");
                 listView.itemsSource = varsList;
-                listView?.RefreshItems();
+                listView?.Rebuild(); // Since RefreshItems leads to weird bugs
             }
 
         }
@@ -164,6 +166,12 @@ namespace Amanita.EditorUtils
                     return;
                 }
             }
+
+            if (variable == null)
+            {
+                return;
+            }
+
             var flowchart = TargetFlowchart;
 
             // 1) Type
@@ -179,6 +187,10 @@ namespace Amanita.EditorUtils
             keyField.value = variable.Key;
             keyField.RegisterValueChangedCallback(evt =>
             {
+                if (variable == null)
+                {
+                    return;
+                }
                 Undo.RecordObject(variable, "Change Variable Key");
                 variable.Key = flowchart.GetUniqueVariableKey(evt.newValue, variable);
                 flowchartSO.ApplyModifiedProperties();
