@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -45,7 +44,7 @@ namespace Amanita.EditorUtils
         {
             GameObject selectedGO = Selection.activeGameObject;
             bool hasOurFlowchart = selectedGO.GetComponent<Flowchart>() == TargetFlowchart;
-            if (selectedGO != null && hasOurFlowchart)
+            if (selectedGO != null && hasOurFlowchart && varsList != null)
             {
                 Debug.Log("Rebuilding list view");
                 listView.itemsSource = varsList;

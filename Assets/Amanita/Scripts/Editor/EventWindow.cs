@@ -1,7 +1,4 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-// Adapted from: https://github.com/thecodejunkie/unity.resources/blob/master/scripts/editor/ExtendedEditorWindow.cs
+﻿// Adapted from: https://github.com/thecodejunkie/unity.resources/blob/master/scripts/editor/ExtendedEditorWindow.cs
 
 using UnityEngine;
 using UnityEditor;
@@ -9,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Amanita.EditorUtils
 {
-	internal static class MouseButton
+	public static class MouseButton
 	{
 		public const int Left = 0;
 		public const int Right = 1;
@@ -60,16 +57,16 @@ namespace Amanita.EditorUtils
 		protected virtual void OnRawMouseDrag(Event e) { }
 		protected virtual void OnRawMouseMove(Event e) { }
 		
-		protected virtual void HandleEvents(Event e)
+		protected virtual void HandleEvents(Event guiEvent)
 		{
 			EventAction handler;
-			if (rawEventTable.TryGetValue(e.rawType, out handler))
+			if (rawEventTable.TryGetValue(guiEvent.rawType, out handler))
 			{
-				handler.Invoke(e);
+				handler.Invoke(guiEvent);
 			}
-			if (eventTable.TryGetValue(e.type, out handler))
+			if (eventTable.TryGetValue(guiEvent.type, out handler))
 			{
-				handler.Invoke(e);
+				handler.Invoke(guiEvent);
 			}
 		}
 	}

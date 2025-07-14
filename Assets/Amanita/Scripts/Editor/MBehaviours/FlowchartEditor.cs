@@ -1,9 +1,4 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -42,7 +37,7 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnEnable()
         {
-            if (NullTargetCheck()) // Check for an orphaned editor instance
+            if (EraseOrphanedInstance()) // Check for an orphaned editor instance
                 return;
 
             FetchSerializedProperties();
@@ -51,7 +46,6 @@ namespace Amanita.EditorUtils
 
             uitkVarListAdaptor?.Dispose();
             uitkVarListAdaptor = new UitkVariableListAdaptor(variablesProp, target as Flowchart);
-            variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
         }
 
         protected virtual void OnDisable()
@@ -61,14 +55,10 @@ namespace Amanita.EditorUtils
 
         public override VisualElement CreateInspectorGUI()
         {
-            // Root container for all UI Toolkit controls
             var root = new VisualElement();
             Flowchart fcTarget = (Flowchart)target;
 
-            // 1. Find the serialized 'description' property
             FetchSerializedProperties();
-            //var descProp = serializedObject.FindProperty("description");
-
             
             PropertyField descField = new PropertyField(descriptionProp),
                 colorCommandsField = new PropertyField(colorCommandsProp),
@@ -106,12 +96,6 @@ namespace Amanita.EditorUtils
             var imguiArea = new IMGUIContainer(() =>
             {
                 serializedObject.Update();
-
-                // Draw your existing list. 
-                // The width calc below mimics your old skirt offset.
-                int w = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth)
-                        - UitkVariableListAdaptor.ReorderListSkirts;
-
                 serializedObject.ApplyModifiedProperties();
             });
 
@@ -165,9 +149,6 @@ namespace Amanita.EditorUtils
                     fcTarget.VariablesExpanded = evt.newValue;
                 });
 
-                
-
-
             }
 
             IList<VisualElement> fields = new List<VisualElement>()
@@ -187,7 +168,6 @@ namespace Amanita.EditorUtils
             return root;
         }
 
-
         protected virtual void FetchSerializedProperties()
         {
             descriptionProp = serializedObject.FindProperty("description");
@@ -202,139 +182,10 @@ namespace Amanita.EditorUtils
             luaEnvironmentProp = serializedObject.FindProperty("luaEnvironment");
             luaBindingNameProp = serializedObject.FindProperty("luaBindingName");
 
-
             includeInSaveProp = serializedObject.FindProperty("includeInSaves");
             saveBlocksProp = serializedObject.FindProperty("saveBlocks");
             saveVariablesProp = serializedObject.FindProperty("saveVariables");
             loadPriorityProp = serializedObject.FindProperty("loadPriority");
-        }
-
-        //public override void OnInspectorGUI()
-        //{
-        //    serializedObject.Update();
-
-        //    var flowchart = target as Flowchart;
-
-        //    flowchart.UpdateHideFlags();
-
-        //    EditorGUI.BeginChangeCheck();
-
-        //    EditorGUILayout.PropertyField(descriptionProp);
-        //    EditorGUILayout.PropertyField(colorCommandsProp);
-        //    EditorGUILayout.PropertyField(hideComponentsProp);
-        //    EditorGUILayout.PropertyField(stepPauseProp);
-        //    EditorGUILayout.PropertyField(saveSelectionProp);
-        //    EditorGUILayout.PropertyField(localizationIdProp);
-        //    EditorGUILayout.PropertyField(showLineNumbersProp);
-        //    EditorGUILayout.PropertyField(luaEnvironmentProp);
-        //    EditorGUILayout.PropertyField(luaBindingNameProp);
-
-        //    // Show list of commands to hide in Add Command menu
-        //    //ReorderableListGUI.Title(new GUIContent(hideCommandsProp.displayName, hideCommandsProp.tooltip));
-        //    //ReorderableListGUI.ListField(hideCommandsProp);
-        //    EditorGUILayout.PropertyField(hideCommandsProp, new GUIContent(hideCommandsProp.displayName,
-        //        hideCommandsProp.tooltip), true);
-
-        //    EditorGUILayout.PropertyField(includeInSaveProp, new GUIContent(includeInSaveProp.displayName,
-        //        includeInSaveProp.tooltip), true);
-        //    EditorGUILayout.PropertyField(saveBlocksProp, new GUIContent(saveBlocksProp.displayName,
-        //        saveBlocksProp.tooltip), true);
-        //    EditorGUILayout.PropertyField(saveVariablesProp, new GUIContent(saveVariablesProp.displayName,
-        //        saveVariablesProp.tooltip), true);
-        //    EditorGUILayout.PropertyField(loadPriorityProp, new GUIContent(loadPriorityProp.displayName,
-        //        loadPriorityProp.tooltip), true);
-
-
-        //    if (EditorGUI.EndChangeCheck())
-        //    {
-        //        FlowchartDataStale = true;
-        //    }
-
-
-        //    GUILayout.BeginHorizontal();
-        //    GUILayout.FlexibleSpace();
-        //    if (GUILayout.Button(new GUIContent("Open Flowchart Window", "Opens the Flowchart Window")))
-        //    {
-        //        EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
-        //    }
-
-
-        //    GUILayout.FlexibleSpace();
-        //    GUILayout.EndHorizontal();
-
-        //    serializedObject.ApplyModifiedProperties();
-
-        //    //Show the variables in the flowchart inspector
-        //    GUILayout.Space(20);
-
-        //    DrawVariablesGUI(false, Mathf.FloorToInt(EditorGUIUtility.currentViewWidth) - VariableListAdaptor.ReorderListSkirts);
-
-        //}
-
-        public virtual void DrawVariablesGUI(bool showVariableToggleButton, int w)
-        {
-            var targFc = target as Flowchart;
-
-            if (targFc == null)
-            {
-                return;
-            }
-
-            serializedObject.Update();
-
-
-            if (targFc.Variables.Count == 0)
-            {
-                targFc.VariablesExpanded = true;
-                //showVariableToggleButton = true;
-            }
-
-            if (showVariableToggleButton && !targFc.VariablesExpanded)
-            {
-                if (GUILayout.Button ("Variables (" + targFc.Variables.Count + ")", GUILayout.Height(24)))
-                {
-                    targFc.VariablesExpanded = true;
-                }
-
-                // Draw disclosure triangle
-                Rect lastRect = GUILayoutUtility.GetLastRect();
-                lastRect.x += 5;
-                lastRect.y += 5;
-                EditorGUI.Foldout(lastRect, false, "");
-            }
-            else
-            {
-                // Remove any null variables from the list
-                // Can sometimes happen when upgrading to a new version of Fungus (if .meta GUID changes for a variable class)
-                for (int i = targFc.Variables.Count - 1; i >= 0; i--)
-                {
-                    if (targFc.Variables[i] == null)
-                    {
-                        targFc.Variables.RemoveAt(i);
-                    }
-                }
-
-                variableListAdaptor.DrawVarList(w);
-            }
-
-            serializedObject.ApplyModifiedProperties();
-        }
-
-        public static List<System.Type> FindAllDerivedTypes<T>()
-        {
-            return FindAllDerivedTypes<T>(Assembly.GetAssembly(typeof(T)));
-        }
-        
-        public static List<System.Type> FindAllDerivedTypes<T>(Assembly assembly)
-        {
-            var derivedType = typeof(T);
-            return assembly
-                .GetTypes()
-                    .Where(t =>
-                           t != derivedType &&
-                           derivedType.IsAssignableFrom(t)
-                           ).ToList();
-            
         }
 
         /// <summary>
@@ -343,7 +194,7 @@ namespace Amanita.EditorUtils
         /// Once this situation occurs, the only way to fix it is to restart the Unity editor.
         /// As a workaround, this function detects if this editor is an orphan and deletes it. 
         /// </summary>
-        protected virtual bool NullTargetCheck()
+        protected virtual bool EraseOrphanedInstance()
         {
             try
             {
