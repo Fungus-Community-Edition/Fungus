@@ -2,76 +2,153 @@ using Amanita;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.EditorUtils
 {
-    public class SearchPanel
+    public class SearchPanel : IDisposable
     {
-        public VisualElement Root { get; }
-        public string Query => searchField.value;
+        // Settings
+        protected static readonly int resultItemHeight = 20, resultListHeight = 200,
+            searchFieldMarginBottom = 4;
 
-        private ToolbarSearchField searchField;
-        private ListView resultList;
-        private Block[] allBlocks;
-        private Flowchart flowchart;
-
-        public SearchPanel(Flowchart fc)
+        public SearchPanel(Flowchart toSearchFor)
         {
-            flowchart = fc;
-            allBlocks = fc.GetComponents<Block>();
+            flowchart = toSearchFor;
+            allBlocks = toSearchFor.GetComponents<Block>();
             Root = new VisualElement();
 
             BuildUI();
             RebindResults();
         }
 
-        void BuildUI()
+        protected Flowchart flowchart;
+        protected IList<Block> allBlocks;
+        public VisualElement Root { get; }
+
+        protected virtual void BuildUI()
         {
-            // 1) SearchField
-            searchField = new ToolbarSearchField();
-            searchField.style.marginBottom = 4;
-            searchField.RegisterValueChangedCallback(_ => RebindResults());
-            Root.Add(searchField);
-
-            // 2) ListView showing block names
-            resultList = new ListView
+            PrepSearchField();
+            void PrepSearchField()
             {
-                makeItem = () => new UIToolkitLabel(),
-                bindItem = (ve, i) => ((UIToolkitLabel)ve).text = flowchart.GetComponents<Block>()[i].BlockName,
-                itemsSource = new List<Block>(),
-                fixedItemHeight = 20,
-                selectionType = SelectionType.Single,
-                style =
-                {
-                    flexGrow = 1,
-                    height   = 200
-                }
-            };
-            resultList.selectionChanged += (blocks) =>
-            {
-                var selected = blocks.FirstOrDefault() as Block;
-                if (selected != null)
-                {
-                    BlockChosen(selected);
+                searchField = new ToolbarSearchField();
+                searchField.style.marginBottom = searchFieldMarginBottom;
+            }
 
-                }
-            };
-            Root.Add(resultList);
+            PrepResultList();
+            void PrepResultList()
+            {
+                resultList = new ListView
+                {
+                    itemsSource = new List<Block>(),
+                    fixedItemHeight = resultItemHeight,
+                    selectionType = SelectionType.Single,
+                    style = { height = resultListHeight }
+                };
+            }
+
+            ListenForUiEvents();
+
+            AddUIToRoot();
         }
 
+        protected ToolbarSearchField searchField;
+        protected ListView resultList; // Shows Block Names
+
+        protected virtual void ListenForUiEvents()
+        {
+            searchField.RegisterValueChangedCallback(OnSearchFieldQueryChanged);
+            searchField.RegisterCallback<FocusOutEvent>(OnSearchFieldUnfocused);
+            resultList.makeItem += MakeItemForResultList;
+            resultList.bindItem += BindBlockToResultListItem;
+            resultList.selectionChanged += OnResultListSelectionChanged;
+        }
+
+        protected virtual void OnSearchFieldQueryChanged(ChangeEvent<string> changeEvent)
+        {
+            QueryChanged?.Invoke(changeEvent.newValue);
+        }
+
+        public event Action<string> QueryChanged = delegate { };
+
+        protected virtual void OnSearchFieldUnfocused(FocusOutEvent evt)
+        {
+            Debug.Log("Search field lost focus");
+            searchField.value = string.Empty;
+            SearchFieldUnfocused(evt);
+        }
+
+        public event Action<FocusOutEvent> SearchFieldUnfocused = delegate { };
+
+        protected virtual VisualElement MakeItemForResultList()
+        {
+            return new UIToolkitLabel();
+        }
+
+        protected virtual void BindBlockToResultListItem(VisualElement element, int index)
+        {
+            UIToolkitLabel uitkLabel = (UIToolkitLabel)element;
+            allBlocks = flowchart.GetComponents<Block>();
+            IList<Block> blocksInResults = (IList<Block>)resultList.itemsSource;
+            Block currentBlock = blocksInResults[index];
+
+            if (currentBlock != null)
+            {
+                uitkLabel.text = currentBlock.BlockName;
+            }
+        }
+
+        protected virtual void OnResultListSelectionChanged(IEnumerable<object> blocks)
+        {
+            var selected = blocks.FirstOrDefault() as Block;
+            if (selected != null)
+            {
+                BlockChosen(selected);
+            }
+        }
         public event Action<Block> BlockChosen = delegate { };
 
-        void RebindResults()
+        protected virtual void AddUIToRoot()
         {
-            // 1) Get filtered list
-            IList<Block> filtered = FilterUtils.FilterBlocks(allBlocks, Query);
+            IList<VisualElement> elementsToRegister = new List<VisualElement>()
+            {
+                searchField, resultList,
+            };
 
-            // 2) Update ListView
-            resultList.itemsSource = (System.Collections.IList)filtered;
+            foreach (var element in elementsToRegister)
+            {
+                Root.Add(element);
+            }
+        }
+
+        protected virtual void RebindResults()
+        {
+            IList<Block> resultsToShow = FilterUtils.FilterBlocks(allBlocks, Query);
+
+            resultList.itemsSource = (System.Collections.IList)resultsToShow;
             resultList.RefreshItems();
+        }
+
+        public string Query => searchField.value;
+
+        public virtual void Dispose()
+        {
+            UnregisterUiCallbacks();
+            if (Root.parent != null)
+                Root.RemoveFromHierarchy();
+
+        }
+
+        protected virtual void UnregisterUiCallbacks()
+        {
+            searchField.UnregisterValueChangedCallback(OnSearchFieldQueryChanged);
+            searchField.UnregisterCallback<FocusOutEvent>(OnSearchFieldUnfocused);
+            resultList.makeItem -= MakeItemForResultList;
+            resultList.bindItem -= BindBlockToResultListItem;
+            resultList.selectionChanged -= OnResultListSelectionChanged;
         }
     }
 }

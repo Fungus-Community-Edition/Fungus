@@ -1,4 +1,4 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
+﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using System;
@@ -214,7 +214,7 @@ namespace Amanita.EditorUtils
         private string searchString = string.Empty;
         protected Rect searchRect;
         protected Rect popupRect;
-        protected List<Block> filteredBlocks = new List<Block>();
+        protected IList<Block> filteredBlocks = new List<Block>();
         protected int blockPopupSelection = -1;
         protected Vector2 popupScroll;
         protected Flowchart flowchart, prevFlowchart;
@@ -275,17 +275,24 @@ namespace Amanita.EditorUtils
             UpdateBlockCollection();
 
             Flowchart fc = GetFlowchart();
-            searchPanel = new SearchPanel(fc);
-            searchPanel.BlockChosen += CenterBlock;
-            rootVisualElement.Add(searchPanel.Root);
 
-            // Optional: tweak its layout right here
-            searchPanel.Root.style.position = Position.Absolute;
-            searchPanel.Root.style.top = 20;   // just below your toolbar
-            searchPanel.Root.style.right = 10;
-            searchPanel.Root.style.width = 200;
-            searchPanel.Root.style.height = 180;
+            WireUpUIToolkitControls();
+            void WireUpUIToolkitControls()
+            {
+                searchPanel = new SearchPanel(fc);
+                searchPanel.BlockChosen += CenterBlock;
+                rootVisualElement.Add(searchPanel.Root);
 
+                // Optional: tweak its layout right here
+                IStyle searchStyle = searchPanel.Root.style;
+                searchStyle.position = Position.Absolute;
+                searchStyle.top = 20;   // just below your toolbar
+                searchStyle.right = 10;
+                searchStyle.width = 200;
+                searchStyle.height = 180;
+
+                ListenForUiToolkitEvents();
+            }
 
             EditorApplication.update += OnEditorUpdate;
             Undo.undoRedoPerformed += Undo_ForceRepaint;
@@ -294,6 +301,19 @@ namespace Amanita.EditorUtils
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
 #endif
         }
+
+        protected virtual void ListenForUiToolkitEvents()
+        {
+            searchPanel.QueryChanged += OnSearchPanelQueryChanged;
+        }
+
+        protected virtual void OnSearchPanelQueryChanged(string newQuery)
+        {
+            searchString = newQuery;
+            UpdateFilteredBlocks();
+            Repaint();
+        }
+
 
         //cache styles here, rather than duping them for every block we may ever draw,
         // does mean any modifications made to the style when drawing must be undone as you go
@@ -344,13 +364,24 @@ namespace Amanita.EditorUtils
 #if UNITY_2017_4_OR_NEWER
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
 #endif
+            UnregisterUiToolkitCallbacks();
+
             if (searchPanel != null)
             {
-                searchPanel.BlockChosen -= CenterBlock;
                 rootVisualElement.Remove(searchPanel.Root);
+                searchPanel.Dispose();
                 searchPanel = null;
             }
 
+        }
+
+        protected virtual void UnregisterUiToolkitCallbacks()
+        {
+            if (searchPanel != null)
+            {
+                searchPanel.BlockChosen -= CenterBlock;
+                searchPanel.QueryChanged -= OnSearchPanelQueryChanged;
+            }
         }
 
 #if UNITY_2017_4_OR_NEWER
@@ -544,46 +575,57 @@ namespace Amanita.EditorUtils
 
         protected void UpdateFilteredBlocks()
         {
-            if (filterStale)
-            {
-                filterStale = false;
-                //reset all
-                for (int i = 0; filteredBlocks != null && i < filteredBlocks.Count; i++)
-                {
-                    if (filteredBlocks[i] != null)
-                    {
-                        filteredBlocks[i].FilterState = Block.FilteredState.None;
-                    }
-                }
+            // Recompute the filtered list and block.FilterState in one call
+            filteredBlocks = FilterUtils.FilterBlocks(blocks, searchString);
 
-                var nullCount = filteredBlocks.Count(x => x == null);
-                if (nullCount > 0 && nullCount != filteredBlocks.Count)
-                {
-                    Debug.LogWarning("Null block found in filteredBlocks. May be a symptom of an underlying issue");
-                }
+            // Keep popup‐selection index in range
+            blockPopupSelection = Mathf.Clamp(
+                blockPopupSelection,
+                0,
+                Mathf.Max(filteredBlocks.Count - 1, 0)
+            );
 
-                filteredBlocks.Clear();
-                
-                for (int i = 0; i < blocks.Length; i++)
-                {
-                    var item = blocks[i];
-                    if (item != null)
-                    {
-                        if(IsBlockNameMatch(item))
-                        {
-                            filteredBlocks.Add(item);
-                            item.FilterState = Block.FilteredState.Full;
-                        }
-                        else if (IsCommandContentMatch(item))
-                        {
-                            filteredBlocks.Add(item);
-                            item.FilterState = Block.FilteredState.Partial;
-                        }
-                    }
-                }
+            //if (filterStale)
+            //{
+            //    filterStale = false;
+            //    //reset all
+            //    for (int i = 0; filteredBlocks != null && i < filteredBlocks.Count; i++)
+            //    {
+            //        if (filteredBlocks[i] != null)
+            //        {
+            //            filteredBlocks[i].FilterState = Block.FilteredState.None;
+            //        }
+            //    }
 
-                blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, filteredBlocks.Count - 1);
-            }
+            //    var nullCount = filteredBlocks.Count(x => x == null);
+            //    if (nullCount > 0 && nullCount != filteredBlocks.Count)
+            //    {
+            //        Debug.LogWarning("Null block found in filteredBlocks. May be a symptom of an underlying issue");
+            //    }
+
+            //    filteredBlocks.Clear();
+
+            //    for (int i = 0; i < blocks.Length; i++)
+            //    {
+            //        var item = blocks[i];
+            //        if (item != null)
+            //        {
+            //            if(IsBlockNameMatch(item))
+            //            {
+            //                filteredBlocks.Add(item);
+            //                item.FilterState = Block.FilteredState.Full;
+            //            }
+            //            else if (IsCommandContentMatch(item))
+            //            {
+            //                filteredBlocks.Add(item);
+            //                item.FilterState = Block.FilteredState.Partial;
+            //            }
+            //        }
+            //    }
+
+            //    blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, filteredBlocks.Count - 1);
+            //}
+
         }
 
         private bool IsBlockNameMatch(Block block)
@@ -778,13 +820,13 @@ namespace Amanita.EditorUtils
 
                 //attempt to defilter previous, if due to scene change these will be null
                 //  the regular filter updates will still occur within UpdateBlockCollection
-                for (int i = 0; i < filteredBlocks.Count; i++)
-                {
-                    if (filteredBlocks[i] != null)
-                    {
-                        filteredBlocks[i].FilterState = Block.FilteredState.None;
-                    }
-                }
+                //for (int i = 0; i < filteredBlocks.Count; i++)
+                //{
+                //    if (filteredBlocks[i] != null)
+                //    {
+                //        filteredBlocks[i].FilterState = Block.FilteredState.None;
+                //    }
+                //}
 
                 UpdateBlockCollection();
 
