@@ -219,7 +219,7 @@ namespace Amanita.SaveSystemTests
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.AddVariable<string, StringVariable>("someStringVar", "Hello, World!");
+            stringVar = flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
 
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }

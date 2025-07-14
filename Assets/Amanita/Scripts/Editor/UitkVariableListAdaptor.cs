@@ -5,10 +5,12 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
+using Amanita.VScripting;
+using System;
 
 namespace Amanita.EditorUtils
 {
-    public class UitkVariableListAdaptor
+    public class UitkVariableListAdaptor : IDisposable
     {
         public Flowchart TargetFlowchart { get; }
         private SerializedProperty variablesProp;
@@ -23,6 +25,31 @@ namespace Amanita.EditorUtils
             this.variablesProp = variablesProp;
             this.flowchartSO = variablesProp.serializedObject;
             this.TargetFlowchart = flowchart;
+            ListenForEvents();
+        }
+
+        protected virtual void ListenForEvents()
+        {
+            Debug.Log("Listening for flowchart events");
+            this.TargetFlowchart.VariableAdded += OnVariableAddedOrRemoved;
+            this.TargetFlowchart.VariableRemoved += OnVariableAddedOrRemoved;
+            Undo.undoRedoPerformed += RefreshListView;
+        }
+
+        protected virtual void OnVariableAddedOrRemoved(IVariable added)
+        {
+            RefreshListView();
+        }
+
+        protected virtual void RefreshListView()
+        {
+            if (Selection.activeObject == TargetFlowchart)
+            {
+                Debug.Log("Rebuilding list view");
+                listView.itemsSource = varsList;
+                listView?.RefreshItems();
+            }
+
         }
 
         /// <summary>
@@ -35,13 +62,11 @@ namespace Amanita.EditorUtils
             var root = new Foldout { text = "Variables" };
             root.AddToClassList("variable-list-root");
 
-            // 1) Add-button (dropdown)
-            var addButton = new Button(ShowAddMenu) { text = "+ Add Variable" };
+            addButton = new Button(ShowAddMenu) { text = "+ Add Variable" };
             addButton.AddToClassList("variable-add-button");
             root.Add(addButton);
 
-            // 2) The ListView itself
-            var listView = new ListView
+            listView = new ListView
             {
                 itemsSource = varsList,
                 makeItem = MakeVariableRow,
@@ -58,6 +83,10 @@ namespace Amanita.EditorUtils
             return root;
         }
 
+        protected Button addButton;
+
+        protected ListView listView;
+
         // Called by `makeItem`
         protected virtual VisualElement MakeVariableRow()
         {
@@ -73,8 +102,7 @@ namespace Amanita.EditorUtils
                     name = "type"
                 };
 
-                // after construction mutate style:
-                typeLabel.style.width = typeLabelWidth;         // UnityEngine.UIElements.StyleLength ← implicit from float
+                typeLabel.style.width = typeLabelWidth;
                 typeLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
                 return typeLabel;
             }
@@ -87,12 +115,17 @@ namespace Amanita.EditorUtils
             {
                 var keyField = new TextField { name = "key" };
                 keyField.style.width = keyFieldWidth;
+                keyField.style.whiteSpace = WhiteSpace.NoWrap;
+                keyField.style.overflow = Overflow.Hidden;
+
                 return keyField;
             }
             row.Add(keyField);
 
             // 3. Value field (will bind to SerializedProperty of the Variable component)
             var valueField = new PropertyField { name = "value", style = { width = valueFieldWidth } };
+            valueField.style.whiteSpace = WhiteSpace.NoWrap;
+            valueField.style.overflow = Overflow.Hidden;
             row.Add(valueField);
 
             // 4. Scope enum dropdown
@@ -116,6 +149,21 @@ namespace Amanita.EditorUtils
         protected virtual void BindVariableRow(VisualElement element, int index)
         {
             var variable = varsList[index];
+
+            // Need to account for when a var was just deleted
+            while (varsList.Count > 0 && variable == null)
+            {
+                varsList.RemoveAt(index);
+                bool validIndex = index < varsList.Count;
+                if (validIndex)
+                {
+                    variable = varsList[index];
+                }
+                else
+                {
+                    return;
+                }
+            }
             var flowchart = TargetFlowchart;
 
             // 1) Type
@@ -160,10 +208,12 @@ namespace Amanita.EditorUtils
             int index = (int)row.userData;
             // Destroy component and remove from list
             var varToRemove = varsList[index];
+
             Undo.DestroyObjectImmediate(varToRemove);
 
             // Apply & refresh UI
             variablesProp.serializedObject.ApplyModifiedProperties();
+            OnVariableAddedOrRemoved(null);
             // Note: The ListView source (varsList) has mutated,
             // Unity will automatically call bindItem for visible rows.
         }
@@ -172,7 +222,31 @@ namespace Amanita.EditorUtils
         {
             // Use the same popup as IMGUI version
             // We can't get a Rect here easily, but Supply zero‐rect for DoAddVariable
-            VariableSelectPopupWindowContent.DoAddVariable(new Rect(), "", TargetFlowchart);
+            Rect rect = new Rect();
+
+            if (addButton != null)
+            {
+                rect = addButton.worldBound;
+            }
+
+            VariableSelectPopupWindowContent.DoAddVariable(rect, "", TargetFlowchart);
         }
+
+        public virtual void Dispose()
+        {
+            UnregisterCallbacks();
+        }
+
+        protected virtual void UnregisterCallbacks()
+        {
+            if (this.TargetFlowchart != null)
+            {
+                Debug.Log("No longer listening for flowchart events");
+                this.TargetFlowchart.VariableAdded -= OnVariableAddedOrRemoved;
+                this.TargetFlowchart.VariableRemoved -= OnVariableAddedOrRemoved;
+            }
+            Undo.undoRedoPerformed -= RefreshListView;
+        }
+
     }
 }

@@ -1559,16 +1559,11 @@ namespace Amanita
         public virtual TVarType AddNewMuscariable<TValueType, TVarType>(string key = "", TValueType initValue = default,
             VariableScope scope = VariableScope.Private) where TVarType: Muscariable<TValueType>, new()
         {
-            key = GetUniqueVariableKey(key);
-            int id = nextMuscariableID;
-            nextMuscariableID++;
             TVarType result = new TVarType();
-            result.Key = key;
-            result.Scope = scope;
-            result.ItemID = id;
             result.Value = initValue;
+            result.Scope = scope;
+            IntegrateMuscariable(result);
             result.Init();
-            muscariables.Add(result);
             return result;
         }
 
@@ -1588,6 +1583,8 @@ namespace Amanita
             muscariables.Add(toAdd);
 
             nextMuscariableID++;
+
+            VariableAdded(toAdd);
         }
 
         /// <summary>
@@ -1600,6 +1597,7 @@ namespace Amanita
             {
                 toRemove.ParentFlowchart = null;
                 muscariables.Remove(toRemove);
+                VariableRemoved(toRemove);
             }
 
         }
@@ -1631,6 +1629,15 @@ namespace Amanita
             variables = (from elem in variables
                          where elem != null
                          select elem).ToList();
+        }
+
+        public event System.Action<IVariable> VariableAdded = delegate { };
+        public event System.Action<IVariable> VariableRemoved = delegate { };
+
+        public virtual void InsertVariable(int index, Variable whatToInsert)
+        {
+            variables.Insert(index, whatToInsert);
+            VariableAdded(whatToInsert);
         }
         #endregion
 
@@ -1721,7 +1728,7 @@ namespace Amanita
         /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
         /// a unique key will be generated.
         /// </summary>
-        public virtual TVarType AddVariable<TValHeld, TVarType>(string key = default,
+        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key = default,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
             where TVarType : VariableBase<TValHeld>
@@ -1734,7 +1741,14 @@ namespace Amanita
             newVar.ItemID = nextValidVarID;
             nextValidVarID++;
             variables.Add(newVar);
+            VariableAdded(newVar);
             return newVar;
+        }
+
+        public virtual void AddVariable(Variable toAdd)
+        {
+            variables.Add(toAdd);
+            VariableAdded(toAdd);
         }
 
         public static void ResetStaticsForTest()

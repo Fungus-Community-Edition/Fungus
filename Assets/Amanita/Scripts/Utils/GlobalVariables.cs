@@ -70,7 +70,7 @@ namespace Amanita
 		public virtual TVarType GetOrAddVariable<TValHeld, TVarType>(string key, TValHeld value)
 			where TVarType : VariableBase<TValHeld>
 		{
-			TVarType newVar = holder.AddVariable<TValHeld, TVarType>(key, value, VariableScope.Global);
+			TVarType newVar = holder.AddNewVariable<TValHeld, TVarType>(key, value, VariableScope.Global);
 			variables[key] = newVar;
 			return newVar;
 		}

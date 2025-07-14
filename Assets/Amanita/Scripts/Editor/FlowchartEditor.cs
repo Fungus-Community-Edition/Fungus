@@ -49,8 +49,14 @@ namespace Amanita.EditorUtils
 
             addTexture = AmanitaEditorResources.AddSmall;
 
+            uitkVarListAdaptor?.Dispose();
             uitkVarListAdaptor = new UitkVariableListAdaptor(variablesProp, target as Flowchart);
             variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
+        }
+
+        protected virtual void OnDisable()
+        {
+            uitkVarListAdaptor?.Dispose();
         }
 
         public override VisualElement CreateInspectorGUI()
