@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
+    [System.Serializable]
     public class AudioClipMuscariable : Muscariable<AudioClip>
     {
         public static bool operator ==(AudioClipMuscariable a, AudioClipMuscariable b)
@@ -37,6 +38,7 @@ namespace Amanita.VScripting
         }
     }
 
+    [System.Serializable]
     public class AudioSourceMuscariable : Muscariable<AudioSource>
     {
         public static bool operator ==(AudioSourceMuscariable a, AudioSourceMuscariable b)

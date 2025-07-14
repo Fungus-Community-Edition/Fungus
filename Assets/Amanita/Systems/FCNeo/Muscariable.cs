@@ -3,18 +3,19 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    
+
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
-    public abstract class Muscariable : IMuscariable
+    [System.Serializable]
+    public abstract class Muscariable : UnityEngine.Object, IVariable
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected uint itemID = InvalidID;
+        [SerializeField] protected int itemID = InvalidID;
 
-        public static readonly uint InvalidID = 0;
+        public static readonly int InvalidID = 0;
 
         public virtual VariableScope Scope
         {
@@ -28,11 +29,21 @@ namespace Amanita.VScripting
             set => key = value;
         }
 
-        public virtual uint ItemID
+        public virtual int ItemID
         {
             get => itemID;
             set => itemID = value;
         }
+
+        public Muscariable() { }
+
+        public Muscariable(string key, int itemID, VariableScope scope)
+        {
+            this.key = key;
+            this.itemID = itemID;
+            this.scope = scope;
+        }
+
 
         public abstract System.Type ContentType { get; }
         // ^So clients can see the type even through this non-generic interface
@@ -120,11 +131,7 @@ namespace Amanita.VScripting
 
     }
 
-    public interface IMuscariable
-    {
-        System.Object Value { get; set; }
-    }
-
+    [System.Serializable]
     public abstract class Muscariable<T> : Muscariable, IMuscariable<T>, IEquatable<T>, IEquatable<IMuscariable<T>>
     {
         public override System.Type ContentType { get { return typeof(T); } }
@@ -222,11 +229,12 @@ namespace Amanita.VScripting
 
     }
 
-    public interface IMuscariable<T> : IMuscariable, IEquatable<T>
+    public interface IMuscariable<T> : IVariable<T>, IEquatable<T>
     {
         new T Value { get; set; }
     }
 
+    [System.Serializable]
     public class StringMuscariable : Muscariable<string>
     {
         public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)
@@ -238,7 +246,23 @@ namespace Amanita.VScripting
         public static bool operator !=(StringMuscariable a, StringMuscariable b)
             => a.Value != b.Value;
 
+        public override bool Equals(object obj)
+        {
+            var other = obj as StringMuscariable;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value != null ? Value.GetHashCode() : 0;
+        }
+
     }
 
+    public interface IHasKey
+    {
+        string Key { get; }
+    }
 
 }

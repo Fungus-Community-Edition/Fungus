@@ -23,6 +23,12 @@ namespace Amanita.MuscariableTests.DataOnly
             firstMaterial = new Material(shader);
             secondMaterial = new Material(shader);
 
+            firstGameObjectForAnimator = new GameObject("AnimA");
+            secondGameObjectForAnimator = new GameObject("AnimB");
+            firstAnimator = firstGameObjectForAnimator.AddComponent<Animator>();
+            secondAnimator = secondGameObjectForAnimator.AddComponent<Animator>();
+
+
         }
 
         protected Texture2D firstTex;
@@ -30,19 +36,28 @@ namespace Amanita.MuscariableTests.DataOnly
         protected Sprite firstSprite;
         protected Sprite secondSprite;
 
-        private Material firstMaterial;
-        private Material secondMaterial;
+        protected Material firstMaterial;
+        protected Material secondMaterial;
 
+        protected GameObject firstGameObjectForAnimator;
+        protected GameObject secondGameObjectForAnimator;
+        protected Animator firstAnimator;
+        protected Animator secondAnimator;
 
         [TearDown]
         public void Teardown()
         {
             UnityEngine.Object.DestroyImmediate(firstSprite);
             UnityEngine.Object.DestroyImmediate(secondSprite);
+
             UnityEngine.Object.DestroyImmediate(firstTex);
             UnityEngine.Object.DestroyImmediate(secondTex);
+
             UnityEngine.Object.DestroyImmediate(firstMaterial);
             UnityEngine.Object.DestroyImmediate(secondMaterial);
+
+            UnityEngine.Object.DestroyImmediate(firstGameObjectForAnimator);
+            UnityEngine.Object.DestroyImmediate(secondGameObjectForAnimator);
 
         }
 
@@ -309,6 +324,75 @@ namespace Amanita.MuscariableTests.DataOnly
         }
 
         #endregion
+
+        [Test]
+        public void AnimatorMuscariable_InitAndNullGuard()
+        {
+            var animVar = new AnimatorMuscariable();
+            var ex = Assert.Throws<Exception>(() => animVar.Init());
+            StringAssert.Contains("needs a valid key", ex.Message);
+            StringAssert.Contains("needs a valid ID", ex.Message);
+
+            animVar.Key = "anim";
+            animVar.ItemID = 240;
+            Assert.DoesNotThrow(() => animVar.Init());
+        }
+
+        [Test]
+        public void AnimatorMuscariable_ValueAssignmentAndEvent()
+        {
+            var animVar = new AnimatorMuscariable { Key = "anim", ItemID = 241 };
+            animVar.Init();
+
+            Animator captured = null;
+            animVar.OnValueChanged += a => captured = a;
+
+            animVar.Value = firstAnimator;
+            Assert.AreEqual(firstAnimator, animVar.Value);
+            Assert.AreEqual(firstAnimator, captured);
+        }
+
+        [Test]
+        public void AnimatorMuscariable_EqualityAndEvaluate()
+        {
+            var firstAnimVar = new AnimatorMuscariable { Key = "a", ItemID = 242, Value = firstAnimator };
+            var secondAnimVar = new AnimatorMuscariable { Key = "b", ItemID = 243, Value = firstAnimator };
+            var thirdAnimVar = new AnimatorMuscariable { Key = "c", ItemID = 244, Value = secondAnimator };
+
+            Assert.IsTrue(firstAnimVar == secondAnimVar);
+            Assert.IsFalse(firstAnimVar != secondAnimVar);
+            Assert.IsFalse(firstAnimVar == thirdAnimVar);
+            Assert.IsTrue(firstAnimVar != thirdAnimVar);
+
+            Assert.IsTrue(firstAnimVar.Evaluate(CompareOperator.Equals, firstAnimator));
+            Assert.IsFalse(firstAnimVar.Evaluate(CompareOperator.Equals, secondAnimator));
+            Assert.Throws<ArgumentException>(
+                () => firstAnimVar.Evaluate(CompareOperator.GreaterThan, firstAnimator)
+            );
+        }
+
+        [Test]
+        public void AnimatorMuscariable_NullAndDestroyedBehavior()
+        {
+            var animVar = new AnimatorMuscariable { Key = "anim", ItemID = 245 };
+            animVar.Init();
+
+            animVar.Value = null;
+            Assert.IsNull(animVar.Value);
+
+            animVar.Value = secondAnimator;
+            UnityEngine.Object.DestroyImmediate(secondAnimator);
+            Assert.IsTrue(animVar.Value == null);
+        }
+
+        [Test]
+        public void AnimatorMuscariable_WrongTypeAssignment_Throws()
+        {
+            Muscariable animVar = new AnimatorMuscariable { Key = "anim", ItemID = 246 };
+            animVar.Init();
+            Assert.Throws<ArgumentException>(() => animVar.Value = 42);
+        }
+
 
         protected const float Epsilon = 1e-5f;
     }

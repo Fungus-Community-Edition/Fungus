@@ -3,6 +3,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {
+    [System.Serializable]
     public class GameObjectMuscariable : Muscariable<GameObject>
     {
         // The Evaluate func by default only handles Equals and NotEquals. Thus, we
@@ -60,6 +61,7 @@ namespace Amanita.VScripting
         }
     }
 
+    [System.Serializable]
     public class TransformMuscariable : Muscariable<Transform>
     {
         public static bool operator ==(TransformMuscariable a, TransformMuscariable b)
@@ -91,6 +93,7 @@ namespace Amanita.VScripting
 
     // This is sort of a handle-everything else type, just like the original ObjectVariable in Fungus
     // (which also only accepted Unity objects in particular, not just any System.object)
+    [System.Serializable]
     public class UnityObjectMuscariable : Muscariable<UnityObject>
     {
         public static bool operator ==(UnityObjectMuscariable a, UnityObjectMuscariable b)

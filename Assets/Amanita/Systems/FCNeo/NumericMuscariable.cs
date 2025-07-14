@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
+    [System.Serializable]
     public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>, IComparable<NumericMuscariable<T>>
         where T : IComparable<T>, IEquatable<T>
     {
@@ -70,6 +71,7 @@ namespace Amanita.VScripting
 
     }
 
+    [System.Serializable]
     public class IntMuscariable : NumericMuscariable<int>
     {
         public static IntMuscariable operator +(IntMuscariable a, IntMuscariable b)
@@ -113,6 +115,7 @@ namespace Amanita.VScripting
 
     }
 
+    [System.Serializable]
     public class FloatMuscariable : NumericMuscariable<float>
     {
         public static FloatMuscariable operator +(FloatMuscariable a, FloatMuscariable b)
@@ -156,6 +159,7 @@ namespace Amanita.VScripting
 
     }
 
+    [System.Serializable]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
         public static bool operator ==(BoolMuscariable a, BoolMuscariable b)
@@ -186,6 +190,7 @@ namespace Amanita.VScripting
 
     }
 
+    [System.Serializable]
     public class DoubleMuscariable : NumericMuscariable<double>
     {
         public static DoubleMuscariable operator +(DoubleMuscariable a, DoubleMuscariable b)

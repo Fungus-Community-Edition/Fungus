@@ -4,6 +4,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita
 {
@@ -73,5 +74,15 @@ namespace Amanita
 			variables[key] = newVar;
 			return newVar;
 		}
+
+		public Muscariable GetMuscariable(string key)
+		{
+			Muscariable theVar = null;
+			muscariables.TryGetValue(key, out theVar);
+			return theVar;
+
+		}
+
+		Dictionary<string, Muscariable> muscariables = new Dictionary<string, Muscariable>();
 	}
 }
