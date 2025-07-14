@@ -70,7 +70,11 @@ namespace Amanita
         /// </summary>
         protected virtual void RefreshVariableCache()
         {
-            referencedVariables.Clear();
+            // Not sure why, but sometimes, this gets set to null
+            if (referencedVariables != null)
+            {
+                referencedVariables.Clear();
+            }
         }
 #endif
         #endregion Editor caches

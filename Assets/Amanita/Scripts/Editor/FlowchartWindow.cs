@@ -1,18 +1,22 @@
 // This code is part of the Fungus library (https://github.com/snozbot/fungus)
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-using UnityEngine;
-using UnityEditor;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace Amanita.EditorUtils
 {
     public class FlowchartWindow : EventWindow
     {
+        protected SearchPanel searchPanel;
+
         protected class ClipboardObject
         {
             internal SerializedObject serializedObject;
@@ -265,10 +269,22 @@ namespace Amanita.EditorUtils
             gridLineColor.a = EditorGUIUtility.isProSkin ? 0.5f : 0.25f;
 
             copyList.Clear();
-
+            
             wantsMouseMove = true; // For hover selection in block search popup  
 
             UpdateBlockCollection();
+
+            Flowchart fc = GetFlowchart();
+            searchPanel = new SearchPanel(fc);
+            searchPanel.BlockChosen += CenterBlock;
+            rootVisualElement.Add(searchPanel.Root);
+
+            // Optional: tweak its layout right here
+            searchPanel.Root.style.position = Position.Absolute;
+            searchPanel.Root.style.top = 20;   // just below your toolbar
+            searchPanel.Root.style.right = 10;
+            searchPanel.Root.style.width = 200;
+            searchPanel.Root.style.height = 180;
 
 
             EditorApplication.update += OnEditorUpdate;
@@ -328,6 +344,13 @@ namespace Amanita.EditorUtils
 #if UNITY_2017_4_OR_NEWER
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
 #endif
+            if (searchPanel != null)
+            {
+                searchPanel.BlockChosen -= CenterBlock;
+                rootVisualElement.Remove(searchPanel.Root);
+                searchPanel = null;
+            }
+
         }
 
 #if UNITY_2017_4_OR_NEWER
@@ -881,14 +904,15 @@ namespace Amanita.EditorUtils
                 GUILayout.FlexibleSpace();
 
                 // Draw search bar
-                GUI.SetNextControlName(SearchFieldName);
-                var newString = EditorGUILayout.TextField(searchString, ToolbarSearchTextFieldStyle, GUILayout.Width(150));
-                if (newString != searchString)
-                {
-                    searchString = newString;
-                    filterStale = true;
-                }
-                GUI.SetNextControlName(string.Empty);
+                //GUI.SetNextControlName(SearchFieldName);
+                //var newString = EditorGUILayout.TextField(searchString, ToolbarSearchTextFieldStyle, GUILayout.Width(150));
+                //if (newString != searchString)
+                //{
+                //    searchString = newString;
+                //    filterStale = true;
+                //}
+                //GUI.SetNextControlName(string.Empty);
+
 
                 if (e.type == EventType.Repaint)
                 {
@@ -937,10 +961,10 @@ namespace Amanita.EditorUtils
 
 
             // Draw block search popup on top of other controls
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                DrawBlockPopup(e);
-            }
+            //if (!string.IsNullOrEmpty(searchString))
+            //{
+            //    DrawBlockPopup(e);
+            //}
 
             DrawVariablesBlock(e);
         }
@@ -1560,30 +1584,42 @@ namespace Amanita.EditorUtils
         //Potentially could be faster using https://forum.unity.com/threads/how-do-i-access-the-background-image-used-for-the-animator.501876/
         protected virtual void DrawGrid()
         {
-            float width = this.position.width / flowchart.Zoom;
-            float height = this.position.height / flowchart.Zoom;
+            IList<float> xPositions = null, yPositions = null;
 
-            Handles.color = gridLineColor;
-
-            
-            float x = flowchart.ScrollPos.x % GridLineSpacingSize;
-            while (x < width)
+            GetPositions();
+            void GetPositions()
             {
-                Handles.DrawLine(new Vector2(x, 0), new Vector2(x, height));
-                x += GridLineSpacingSize;
+                xPositions = GridUtils.GetVerticalLinePositions(flowchart.ScrollPos.x,
+                    position.width / flowchart.Zoom,
+                    GridLineSpacingSize);
+                yPositions = GridUtils.GetHorizontalLinePositions(flowchart.ScrollPos.y,
+                    position.height / flowchart.Zoom,
+                    GridLineSpacingSize);
             }
-            
-            float y = (flowchart.ScrollPos.y % GridLineSpacingSize);
-            while (y < height)
+
+            DrawLines();
+            void DrawLines()
             {
-                if (y >= 0)
+                Handles.color = gridLineColor;
+                float windowWidth = this.position.width / flowchart.Zoom;
+                float windowHeight = this.position.height / flowchart.Zoom;
+
+                DrawVerticalLines();
+                void DrawVerticalLines()
                 {
-                    Handles.DrawLine(new Vector2(0, y), new Vector2(width, y));
+                    foreach (var elem in xPositions)
+                        Handles.DrawLine(new Vector2(elem, 0), new Vector2(elem, windowHeight));
                 }
-                y += GridLineSpacingSize;
-            }
 
-            Handles.color = Color.white;
+                DrawHorizontalLines();
+                void DrawHorizontalLines()
+                {
+                    foreach (var elem in yPositions)
+                        Handles.DrawLine(new Vector2(0, elem), new Vector2(windowWidth, elem));
+                }
+
+                Handles.color = Color.white;
+            }
         }
 
         protected virtual void SelectBlock(Block block)
