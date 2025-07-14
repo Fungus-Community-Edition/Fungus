@@ -36,6 +36,7 @@ namespace Amanita.EditorUtils
 
         protected VariableListAdaptor variableListAdaptor;
 
+        protected UitkVariableListAdaptor uitkVarListAdaptor;
 
         public static bool FlowchartDataStale { get; set; }
 
@@ -48,6 +49,7 @@ namespace Amanita.EditorUtils
 
             addTexture = AmanitaEditorResources.AddSmall;
 
+            uitkVarListAdaptor = new UitkVariableListAdaptor(variablesProp, target as Flowchart);
             variableListAdaptor = new VariableListAdaptor(variablesProp, target as Flowchart);
         }
 
@@ -92,6 +94,19 @@ namespace Amanita.EditorUtils
             openFlowchartWindowButton.RegisterCallback<ClickEvent>((ClickEvent evt) =>
             {
                 EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+            });
+
+            VisualElement varsUi = uitkVarListAdaptor.CreateVariablesUI();
+            var imguiArea = new IMGUIContainer(() =>
+            {
+                serializedObject.Update();
+
+                // Draw your existing list. 
+                // The width calc below mimics your old skirt offset.
+                int w = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth)
+                        - UitkVariableListAdaptor.ReorderListSkirts;
+
+                serializedObject.ApplyModifiedProperties();
             });
 
             PrepFields();
@@ -140,20 +155,11 @@ namespace Amanita.EditorUtils
 
                 varsFoldout.text = "Variables";
                 varsFoldout.value = fcTarget.VariablesExpanded;
-
-                var imguiArea = new IMGUIContainer(() =>
-                {
-                    serializedObject.Update();
-
-                    // Draw your existing list. 
-                    // The width calc below mimics your old skirt offset.
-                    int w = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth)
-                            - VariableListAdaptor.ReorderListSkirts;
-                    DrawVariablesGUI(false, w);
-
-                    serializedObject.ApplyModifiedProperties();
+                varsFoldout.RegisterValueChangedCallback(evt => {
+                    fcTarget.VariablesExpanded = evt.newValue;
                 });
-                varsFoldout.Add(imguiArea);
+
+                
 
 
             }
@@ -161,7 +167,8 @@ namespace Amanita.EditorUtils
             IList<VisualElement> fields = new List<VisualElement>()
             {
                 descField, localizationIDField, editorOnlyFoldout, luaFoldout,
-                saveSysInvolvementFoldout, openFlowchartWindowButton, varsFoldout
+                saveSysInvolvementFoldout, openFlowchartWindowButton, varsUi,
+                imguiArea,
             };
 
             foreach (var elem in fields)
