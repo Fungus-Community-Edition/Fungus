@@ -132,7 +132,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    public abstract class Muscariable<T> : Muscariable, IMuscariable<T>, IEquatable<T>, IEquatable<IMuscariable<T>>
+    public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         public override System.Type ContentType { get { return typeof(T); } }
 
@@ -222,14 +222,20 @@ namespace Amanita.VScripting
             return this.Value.Equals(other);
         }
 
-        public virtual bool Equals(IMuscariable<T> otherVar)
+        public virtual bool Equals(IVariable<T> otherVar)
         {
             return this.Value.Equals(otherVar.Value);
         }
 
     }
 
-    public interface IMuscariable<T> : IVariable<T>, IEquatable<T>
+    public interface IVariable : IHasKey
+    {
+        object Value { get; }
+        VariableScope Scope { get; }
+    }
+
+    public interface IVariable<T> : IVariable, IEquatable<T>
     {
         new T Value { get; set; }
     }
