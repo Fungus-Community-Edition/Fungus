@@ -55,6 +55,7 @@ namespace Amanita.EditorUtils
         {
             // Root container for all UI Toolkit controls
             var root = new VisualElement();
+            Flowchart fcTarget = (Flowchart)target;
 
             // 1. Find the serialized 'description' property
             FetchSerializedProperties();
@@ -77,8 +78,11 @@ namespace Amanita.EditorUtils
                 saveVariablesField = new PropertyField(saveVariablesProp),
                 loadPriorityField = new PropertyField(loadPriorityProp);
 
-            Foldout hidingFoldout = new Foldout(),
-                saveSysInvolvementFoldout = new Foldout();
+            Foldout editorOnlyFoldout = new Foldout(), 
+                hidingFoldout = new Foldout(),
+                saveSysInvolvementFoldout = new Foldout(),
+                luaFoldout = new Foldout(),
+                varsFoldout = new Foldout();
 
             Button openFlowchartWindowButton = new Button()
             {
@@ -112,11 +116,21 @@ namespace Amanita.EditorUtils
                     loadPriorityField.label = "Load Priority";
                 }
 
-                hidingFoldout.text = "What To Hide";
-                hidingFoldout.Add(hideComponentsField);
-                hidingFoldout.Add(hideCommandsField);
+                editorOnlyFoldout.text = "Editor Only";
+                editorOnlyFoldout.tooltip = "For most of the stuff that only matters in the editor.";
+                editorOnlyFoldout.Add(colorCommandsField);
+                editorOnlyFoldout.Add(hideComponentsField);
+                editorOnlyFoldout.Add(stepPauseField);
+                editorOnlyFoldout.Add(saveSelectionField);
+                editorOnlyFoldout.Add(hideCommandsField);
+
+                luaFoldout.text = "Lua Support";
+                luaFoldout.tooltip = "For stuff that involves using Flowcharts with Lua";
+                luaFoldout.Add(luaEnvironmentField);
+                luaFoldout.Add(luaBindingNameField);
 
                 descField.style.marginBottom = 4;
+                openFlowchartWindowButton.style.marginTop = 10;
 
                 saveSysInvolvementFoldout.text = "Save Sys Involvement";
                 saveSysInvolvementFoldout.Add(includeInSaveField);
@@ -124,13 +138,30 @@ namespace Amanita.EditorUtils
                 saveSysInvolvementFoldout.Add(saveVariablesField);
                 saveSysInvolvementFoldout.Add(loadPriorityField);
 
+                varsFoldout.text = "Variables";
+                varsFoldout.value = fcTarget.VariablesExpanded;
+
+                var imguiArea = new IMGUIContainer(() =>
+                {
+                    serializedObject.Update();
+
+                    // Draw your existing list. 
+                    // The width calc below mimics your old skirt offset.
+                    int w = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth)
+                            - VariableListAdaptor.ReorderListSkirts;
+                    DrawVariablesGUI(false, w);
+
+                    serializedObject.ApplyModifiedProperties();
+                });
+                varsFoldout.Add(imguiArea);
+
+
             }
 
             IList<VisualElement> fields = new List<VisualElement>()
             {
-                descField, colorCommandsField, stepPauseField,
-                saveSelectionField, localizationIDField, luaEnvironmentField, luaBindingNameField,
-                hidingFoldout, saveSysInvolvementFoldout, openFlowchartWindowButton,
+                descField, localizationIDField, editorOnlyFoldout, luaFoldout,
+                saveSysInvolvementFoldout, openFlowchartWindowButton, varsFoldout
             };
 
             foreach (var elem in fields)
