@@ -1,9 +1,5 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -15,7 +11,7 @@ namespace Amanita.EditorUtils
 {
     public class FlowchartWindow : EventWindow
     {
-        protected SearchPanel searchPanel;
+        
 
         protected class ClipboardObject
         {
@@ -31,9 +27,9 @@ namespace Amanita.EditorUtils
 
         protected class BlockCopy
         {
-            private SerializedObject block = null;
-            private List<ClipboardObject> commands = new List<ClipboardObject>();
-            private ClipboardObject eventHandler = null;
+            protected SerializedObject block = null;
+            protected List<ClipboardObject> commands = new List<ClipboardObject>();
+            protected ClipboardObject eventHandler = null;
 
             internal BlockCopy(Block block)
             {
@@ -48,7 +44,7 @@ namespace Amanita.EditorUtils
                 }
             }
 
-            private void CopyProperties(SerializedObject source, Object dest, params SerializedPropertyType[] excludeTypes)
+            protected void CopyProperties(SerializedObject source, Object dest, params SerializedPropertyType[] excludeTypes)
             {
                 var newSerializedObject = new SerializedObject(dest);
                 var prop = source.GetIterator();
@@ -119,7 +115,7 @@ namespace Amanita.EditorUtils
 
             internal bool isChangeDetected { get; set; }
 
-            private float lastFade;
+            protected float lastFade;
 
             internal void ProcessAllBlocks(Block[] blocks)
             {
@@ -176,8 +172,6 @@ namespace Amanita.EditorUtils
             }
         }
 
-
-
         public const float GridLineSpacingSize = 120;
         public const float GridObjectSnap = 20;
         public const float DefaultBlockHeight = 40;
@@ -195,19 +189,19 @@ namespace Amanita.EditorUtils
         protected readonly Color connectionColor = new Color(0.65f, 0.65f, 0.65f, 1.0f);
 
 
-        protected List<BlockCopy> copyList = new List<BlockCopy>();
+        
         public static List<Block> deleteList = new List<Block>();
         protected Vector2 startDragPosition;
         protected GUIStyle nodeStyle, descriptionStyle, handlerStyle, blockSearchPopupNormalStyle, blockSearchPopupSelectedStyle;
         protected static BlockInspector blockInspector;
         protected int forceRepaintCount;
-        protected Texture2D addTexture;
-        protected GUIContent addButtonContent;
-        protected Texture2D connectionPointTexture;
+        
+        
+        
         protected Rect selectionBox;
         protected Vector2 startSelectionBoxPosition = -Vector2.one;
         protected List<Block> mouseDownSelectionState = new List<Block>();
-        protected Color gridLineColor = Color.black;
+        
         // Context Click occurs on MouseDown which interferes with panning
         // Track right click positions manually to show menus on MouseUp
         protected Vector2 rightClickDown = -Vector2.one;
@@ -230,41 +224,41 @@ namespace Amanita.EditorUtils
         protected IList<Block> filteredBlocks = new List<Block>();
         protected int blockPopupSelection = -1;
         protected Vector2 popupScroll;
-        protected Flowchart flowchart, prevFlowchart;
+        
         protected int prevVarCount;
         protected Block[] blocks = new Block[0];
         protected Block dragBlock;
         protected bool hasDraggedSelected = false;
-        protected static FungusState fungusState;
+        
 
         static protected VariableListAdaptor variableListAdaptor;
 
-        private bool filterStale = true;
-        private bool wasControl;
-        private ExecutingBlocks executingBlocks = new ExecutingBlocks();
+        protected bool filterStale = true;
+        protected bool wasControl;
+        protected ExecutingBlocks executingBlocks = new ExecutingBlocks();
 
-        private GUIStyle toolbarSearchTextFieldStyle;
+        protected GUIStyle toolbarSearchTextFieldStyle;
         protected GUIStyle ToolbarSearchTextFieldStyle
         {
             get
             {
-                if(toolbarSearchTextFieldStyle == null)
+                if (toolbarSearchTextFieldStyle == null)
                     toolbarSearchTextFieldStyle = GUI.skin.FindStyle("ToolbarSearchTextField");
 
                 return toolbarSearchTextFieldStyle;
             }
         }
-        private GUIStyle toolbarSeachCancelButtonStyle;
-        private bool didDoubleClick;
+        protected GUIStyle toolbarSearchCancelButtonStyle;
+        protected bool didDoubleClick;
 
-        protected GUIStyle ToolbarSeachCancelButtonStyle
+        protected GUIStyle ToolbarSearchCancelButtonStyle
         {
             get
             {
-                if(toolbarSeachCancelButtonStyle == null)
-                    toolbarSeachCancelButtonStyle = GUI.skin.FindStyle("ToolbarSeachCancelButton");
+                if (toolbarSearchCancelButtonStyle == null)
+                    toolbarSearchCancelButtonStyle = GUI.skin.FindStyle("ToolbarSeachCancelButton");
 
-                return toolbarSeachCancelButtonStyle;
+                return toolbarSearchCancelButtonStyle;
             }
         }
 
@@ -285,14 +279,12 @@ namespace Amanita.EditorUtils
             
             wantsMouseMove = true; // For hover selection in block search popup  
 
-            UpdateBlockCollection();
-
-            Flowchart fc = GetFlowchart();
+            flowchart = GetFlowchart();
 
             WireUpUIToolkitControls();
             void WireUpUIToolkitControls()
             {
-                searchPanel = new SearchPanel(fc);
+                searchPanel = new SearchPanel(flowchart);
                 searchPanel.BlockChosen += CenterBlock;
                 rootVisualElement.Add(searchPanel.Root);
 
@@ -303,16 +295,100 @@ namespace Amanita.EditorUtils
                 searchStyle.right = 10;
                 searchStyle.width = 200;
                 searchStyle.height = 180;
-
-                ListenForUiToolkitEvents();
             }
 
+            UpdateBlockCollection();
+
+            ListenForEvents();
+            
+        }
+
+        protected Texture2D addTexture;
+        protected GUIContent addButtonContent;
+        protected Texture2D connectionPointTexture;
+        protected Color gridLineColor = Color.black;
+        protected List<BlockCopy> copyList = new List<BlockCopy>();
+
+        public static Flowchart GetFlowchart()
+        {
+            // Using a temp hidden object to track the active Flowchart across 
+            // serialization / deserialization when playing the game in the editor.
+
+            EnsureThereIsFungusState();
+            void EnsureThereIsFungusState()
+            {
+                if (fungusState == null)
+                {
+#if UNITY_6000
+                    fungusState = GameObject.FindFirstObjectByType<FungusState>();
+#else
+                    fungusState = GameObject.FindObjectOfType<FungusState>();
+#endif
+                    if (fungusState == null)
+                    {
+                        GameObject stateHolder = new GameObject("_FungusState");
+                        stateHolder.hideFlags = HideFlags.HideInHierarchy;
+                        fungusState = stateHolder.AddComponent<FungusState>();
+                    }
+                }
+            }
+
+            FindSelectedFlowchart();
+            void FindSelectedFlowchart()
+            {
+                GameObject selectedGo = Selection.activeGameObject;
+                if (selectedGo != null)
+                {
+                    selectedGo.TryGetComponent(out Flowchart flowchartSelected);
+                    if (flowchartSelected != null)
+                    {
+                        fungusState.SelectedFlowchart = flowchartSelected;
+                    }
+                }
+            }
+
+            DecideWhatToDoWithVarListAdaptor();
+            void DecideWhatToDoWithVarListAdaptor()
+            {
+                if (FcSelected == null)
+                {
+                    variableListAdaptor = null;
+                }
+                else if (variableListAdaptor == null || variableListAdaptor.TargetFlowchart != FcSelected)
+                {
+                    var fsSO = new SerializedObject(FcSelected);
+                    var varProp = fsSO.FindProperty("variables");
+                    variableListAdaptor = new VariableListAdaptor(varProp, FcSelected);
+                }
+            }
+
+            return fungusState.SelectedFlowchart;
+        }
+
+        protected static FungusState fungusState;
+
+        protected static Flowchart FcSelected
+        {
+            get
+            {
+                Flowchart result = null;
+                if (fungusState != null)
+                {
+                    result = fungusState.SelectedFlowchart;
+                }
+
+                return result;
+            }
+        }
+
+        protected SearchPanel searchPanel;
+
+        protected virtual void ListenForEvents()
+        {
             EditorApplication.update += OnEditorUpdate;
             Undo.undoRedoPerformed += Undo_ForceRepaint;
-
-#if UNITY_2017_4_OR_NEWER
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-#endif
+            ListenForUiToolkitEvents();
         }
 
         protected virtual void ListenForUiToolkitEvents()
@@ -370,20 +446,16 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnDisable()
         {
+            UnregisterCallbacks();
+            CleanUpSearchPanel();
+        }
+
+        protected virtual void UnregisterCallbacks()
+        {
             EditorApplication.update -= OnEditorUpdate;
             Undo.undoRedoPerformed -= Undo_ForceRepaint;
-#if UNITY_2017_4_OR_NEWER
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
-#endif
             UnregisterUiToolkitCallbacks();
-
-            if (searchPanel != null)
-            {
-                rootVisualElement.Remove(searchPanel.Root);
-                searchPanel.Dispose();
-                searchPanel = null;
-            }
-
         }
 
         protected virtual void UnregisterUiToolkitCallbacks()
@@ -395,15 +467,23 @@ namespace Amanita.EditorUtils
             }
         }
 
-#if UNITY_2017_4_OR_NEWER
-        private void EditorApplication_playModeStateChanged(PlayModeStateChange obj)
+        protected virtual void CleanUpSearchPanel()
+        {
+            if (searchPanel != null)
+            {
+                rootVisualElement.Remove(searchPanel.Root);
+                searchPanel.Dispose();
+                searchPanel = null;
+            }
+        }
+
+        protected void EditorApplication_playModeStateChanged(PlayModeStateChange obj)
         {
             //force null so it can refresh context on the other side of the context
             flowchart = null;
             prevFlowchart = null;
             blockInspector = null;
         }
-#endif
 
         protected void Undo_ForceRepaint()
         {
@@ -479,6 +559,9 @@ namespace Amanita.EditorUtils
             UpdateFilteredBlocks();
         }
 
+        protected Flowchart flowchart;
+        protected Flowchart prevFlowchart;
+
         protected virtual void OnInspectorUpdate()
         {
             if (HandleFlowchartSelectionChange()) return;
@@ -511,78 +594,45 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private bool AnyNullBLocks()
+        protected bool AnyNullBLocks()
         {
-            if (blocks == null)
-                return true;
-
-            for (int i = 0; i < blocks.Length; i++)
+            bool result = false;
+            if (blocks != null)
             {
-                if (blocks[i] == null)
-                    return true;
+                result = (from elem in blocks
+                          where elem == null
+                          select elem).Any();
             }
-
-            return false;
+            return result;
         }
 
         protected virtual void OnBecameVisible()
         {
             // Ensure that toolbar looks correct in both docked and undocked windows
             // The docked value doesn't always report correctly without the delayCall
-            EditorApplication.delayCall += () => {
-                var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                var isDockedMethod = typeof(EditorWindow).GetProperty("docked", flags).GetGetMethod(true);
-                if ((bool) isDockedMethod.Invoke(this, null))
-                {
-                    EditorZoomArea.Offset = new Vector2(2.0f, 19.0f);
-                }
-                else
-                {
-                    EditorZoomArea.Offset = new Vector2(0.0f, 22.0f);
-                }
-            };
+            EditorApplication.delayCall += OnEditorAppDelayCall;
         }
 
-        public static Flowchart GetFlowchart()
+        protected virtual void OnEditorAppDelayCall()
         {
-            // Using a temp hidden object to track the active Flowchart across 
-            // serialization / deserialization when playing the game in the editor.
-            if (fungusState == null)
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            var isDockedMethod = typeof(EditorWindow).GetProperty("docked", flags).GetGetMethod(true);
+            if ((bool)isDockedMethod.Invoke(this, null))
             {
-            #if UNITY_6000
-                fungusState = GameObject.FindFirstObjectByType<FungusState>();
-            #else
-                fungusState = GameObject.FindObjectOfType<FungusState>();
-            #endif
-                if (fungusState == null)
-                {
-                    GameObject go = new GameObject("_FungusState");
-                    go.hideFlags = HideFlags.HideInHierarchy;
-                    fungusState = go.AddComponent<FungusState>();
-                }
+                EditorZoomArea.Offset = new Vector2(2.0f, 19.0f);
             }
-
-            if (Selection.activeGameObject != null)
+            else
             {
-                var flowchartSelected = Selection.activeGameObject.GetComponent<Flowchart>();
-                if (flowchartSelected != null)
-                {
-                    fungusState.SelectedFlowchart = flowchartSelected;
-                }
+                EditorZoomArea.Offset = new Vector2(0.0f, 22.0f);
             }
-
-            if (fungusState.SelectedFlowchart == null)
-            {
-                variableListAdaptor = null;
-            }
-            else if (variableListAdaptor == null || variableListAdaptor.TargetFlowchart != fungusState.SelectedFlowchart)
-            {
-                var fsSO = new SerializedObject(fungusState.SelectedFlowchart);
-                variableListAdaptor = new VariableListAdaptor(fsSO.FindProperty("variables"), fungusState.SelectedFlowchart);
-            }
-
-            return fungusState.SelectedFlowchart;
         }
+
+        protected virtual void OnBecameInvisible()
+        {
+            EditorApplication.delayCall -= OnEditorAppDelayCall;
+        }
+
+        
 
         protected void UpdateFilteredBlocks()
         {
@@ -695,7 +745,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private void StartControlSelection()
+        protected void StartControlSelection()
         {
             mouseDownSelectionState.AddRange(flowchart.SelectedBlocks);
             flowchart.ClearSelectedBlocks();
@@ -712,19 +762,19 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private void AddMouseDownSelectionState(Block item)
+        protected void AddMouseDownSelectionState(Block item)
         {
             mouseDownSelectionState.Add(item);
             item.IsControlSelected = true;
         }
 
-        private void RemoveMouseDownSelectionState(Block item)
+        protected void RemoveMouseDownSelectionState(Block item)
         {
             mouseDownSelectionState.Remove(item);
             item.IsControlSelected = false;
         }
 
-        private void EndControlSelection()
+        protected void EndControlSelection()
         {
             //we can be called either by mouse up with control still held or because ctrl was released
             if (GetAppendModifierDown())
@@ -906,7 +956,7 @@ namespace Amanita.EditorUtils
                     popupRect.height = Mathf.Min(Mathf.Max(1,filteredBlocks.Count) * 16, position.height - 22);
                 }
 
-                if (GUILayout.Button("", ToolbarSeachCancelButtonStyle))
+                if (GUILayout.Button("", ToolbarSearchCancelButtonStyle))
                 {
                     CloseBlockPopup();
                 }
@@ -1487,7 +1537,7 @@ namespace Amanita.EditorUtils
             EditorZoomArea.End();
         }
 
-        private void DrawExecutingBlockIcon(Block b, Rect scriptViewRect, float alpha, GUIStyle style)
+        protected void DrawExecutingBlockIcon(Block b, Rect scriptViewRect, float alpha, GUIStyle style)
         {
             if (alpha <= 0)
                 return;
@@ -1512,7 +1562,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private Rect CalcFlowchartWindowViewRect()
+        protected Rect CalcFlowchartWindowViewRect()
         {
             return new Rect(0, 0, this.position.width / flowchart.Zoom, this.position.height / flowchart.Zoom);
         }
@@ -1717,7 +1767,7 @@ namespace Amanita.EditorUtils
         static readonly Vector2[] pointsB = new Vector2[4];
 
         //we only connect mids on sides to matching opposing middle side on other block
-        private struct IndexPair { public int a, b;  public IndexPair(int a, int b) { this.a = a;this.b = b; } }
+        protected struct IndexPair { public int a, b;  public IndexPair(int a, int b) { this.a = a;this.b = b; } }
         static readonly IndexPair[] closestCornerIndexPairs = new IndexPair[]
         {
             new IndexPair(){a=0,b=3 },
@@ -1806,7 +1856,7 @@ namespace Amanita.EditorUtils
             Handles.color = Color.white;
         }
 
-        private static Vector2 GetPointOnCurve(Vector2 s, Vector2 st, Vector2 e, Vector2 et, float t)
+        protected static Vector2 GetPointOnCurve(Vector2 s, Vector2 st, Vector2 e, Vector2 et, float t)
         {
             float rt = 1 - t;
             float rtt = rt * t;
@@ -2119,7 +2169,7 @@ namespace Amanita.EditorUtils
             return graphics;
         }
 
-        private void DrawBlock(Block block, Rect scriptViewRect)
+        protected void DrawBlock(Block block, Rect scriptViewRect)
         {
             float nodeWidthA = nodeStyle.CalcSize(new GUIContent(block.BlockName)).x + 10;
             
