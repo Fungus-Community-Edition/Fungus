@@ -10,53 +10,77 @@ namespace Amanita.EditorUtils
     {
         public bool Handle(Event eventToHandle, FlowchartContext ctx)
         {
+            bool consumed = false;
             switch (eventToHandle.type)
             {
                 case EventType.MouseDrag:
-                    return DragCanvas(eventToHandle, ctx);
+                    consumed = DragCanvas(eventToHandle, ctx); break;
                 case EventType.ScrollWheel:
-                    return HandleZoom(eventToHandle, ctx);
+                    consumed = HandleZoom(eventToHandle, ctx); break;
                 default:
-                    return false;
+                    break;
             }
+
+            return consumed;
         }
 
         protected bool DragCanvas(Event mouseEvent, FlowchartContext ctx)
         {
-            Debug.Log("Handling canvas-dragging/panning");
-            bool isPanTool = Tools.current == Tool.View && Tools.viewTool == ViewTool.Pan;
-            bool isZoomTool = Tools.current == Tool.View && Tools.viewTool == ViewTool.Zoom;
-            bool isAltDrag = mouseEvent.button == 0 && mouseEvent.alt;
-            bool isMiddleDrag = mouseEvent.button == 2;
-            bool isRightDrag = mouseEvent.button == 1;
-
-            if (isPanTool || isAltDrag || isMiddleDrag || isRightDrag)
+            bool consumed = false;
+            bool correctDraggingInput = IsAltDragging(mouseEvent) ||
+                IsMiddleDragging(mouseEvent) || IsRightDragging(mouseEvent);
+            if (IsPanTool || correctDraggingInput)
             {
                 ctx.Flowchart.ScrollPos += mouseEvent.delta / ctx.Flowchart.Zoom;
                 mouseEvent.Use();
-                return true;
+                consumed = true;
             }
 
-            return false;
+            return consumed;
+        }
+
+        protected virtual bool IsPanTool
+        {
+            get
+            {
+                return Tools.current == Tool.View && Tools.viewTool == ViewTool.Pan;
+            }
+        }
+
+        protected virtual bool IsAltDragging(Event mouseEvent)
+        {
+            return mouseEvent.button == 0 && mouseEvent.alt;
+        }
+
+        protected virtual bool IsMiddleDragging(Event mouseEvent)
+        {
+            return mouseEvent.button == 2;
+        }
+
+        protected virtual bool IsRightDragging(Event mouseEvent)
+        {
+            return mouseEvent.button == 1;
         }
 
         protected bool HandleZoom(Event eventToHandle, FlowchartContext ctx)
         {
-            Debug.Log("Handling zoom");
+            bool consumed = false;
             bool selectionBoxActive = ctx.SelectionBox.size != Vector2.zero;
-            if (selectionBoxActive)
-                return false; // Don't zoom when selection box is active
+            bool shouldZoom = !(IsPanTool || selectionBoxActive);
+            if (shouldZoom)
+            {
+                Vector2 zoomCenter;
+                zoomCenter.x = eventToHandle.mousePosition.x / ctx.Flowchart.Zoom / ctx.Position.width;
+                zoomCenter.y = eventToHandle.mousePosition.y / ctx.Flowchart.Zoom / ctx.Position.height;
+                zoomCenter *= ctx.Flowchart.Zoom;
 
-            Vector2 zoomCenter;
-            zoomCenter.x = eventToHandle.mousePosition.x / ctx.Flowchart.Zoom / ctx.Position.width;
-            zoomCenter.y = eventToHandle.mousePosition.y / ctx.Flowchart.Zoom / ctx.Position.height;
-            zoomCenter *= ctx.Flowchart.Zoom;
+                float zoomDelta = -eventToHandle.delta.y * 0.01f;
 
-            float zoomDelta = -eventToHandle.delta.y * 0.01f;
-
-            DoZoom(ctx, zoomDelta, zoomCenter);
-            eventToHandle.Use();
-            return true;
+                DoZoom(ctx, zoomDelta, zoomCenter);
+                eventToHandle.Use();
+                consumed = true;
+            }
+            return consumed;
         }
 
         protected void DoZoom(FlowchartContext ctx, float delta, Vector2 center)

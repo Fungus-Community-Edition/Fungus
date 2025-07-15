@@ -24,7 +24,8 @@ namespace Amanita.Tests.Editor
             fcContext = new FlowchartContext()
             {
                 Flowchart = flowchart,
-                Position = initPosition
+                Position = initPosition,
+                SelectionBox = noSelectionBox,
                 
             };
 
@@ -81,6 +82,7 @@ namespace Amanita.Tests.Editor
         protected Vector2 mousePos = new Vector2(100, 100);
         protected Event middleDragEvent;
         protected readonly int middleMouseButton = 2;
+        protected readonly Rect noSelectionBox = default;
 
         [TearDown]
         public virtual void TearDown()
@@ -184,38 +186,93 @@ namespace Amanita.Tests.Editor
         {
             Tools.current = Tool.View;
             Tools.viewTool = ViewTool.Pan;
-            flowchart.Zoom = initZoom; // The panning takes the zooming into account
+            flowchart.Zoom = initZoom;
+            // ^The panning takes the zooming into account. The more zoomed out, the 
+            // more you move the "world" (for lack of a better term)
         }
 
         [Test]
         public void IgnoresScroll_WhenNotInZoomMode()
         {
             PrepForPan(); // To make sure we're not in Zoom Mode
-            Assert.Ignore();
+
+            bool consumed = handler.Handle(upwardsScrollEvent, fcContext);
+            Assert.IsFalse(consumed, "Consumed an upwards scroll event when we should be in pan mode");
+
+            consumed = handler.Handle(downwardsScrollEvent, fcContext);
+            Assert.IsFalse(consumed, "Consumed a downwards scroll event when we should be in pan mode");
+
+            consumed = handler.Handle(hugeUpwardsScrollEvent, fcContext);
+            Assert.IsFalse(consumed, "Consumed a yuge upwards scroll event when we should be in pan mode");
+
+            consumed = handler.Handle(hugeDownwardsScrollEvent, fcContext);
+            Assert.IsFalse(consumed, "Consumed a yuge downwards scroll event when we should be in pan mode");
         }
 
         [Test]
         public void DoesNotConsumeNonScrollEvents()
         {
-            Assert.Ignore();
+            var clickEvent = new Event { type = EventType.MouseDown, button = 0 };
+            Assert.IsFalse(handler.Handle(clickEvent, fcContext));
         }
 
         [Test]
         public void PansCanvas_OnRightMouseDrag()
         {
-            Assert.Ignore();
+            PrepForPan();
+            var drag = new Event { type = EventType.MouseDrag, button = 1, delta = new Vector2(5, 5) };
+            bool consumed = handler.Handle(drag, fcContext);
+
+            Assert.IsTrue(consumed);
+            Assert.AreEqual(new Vector2(5, 5) / initZoom, flowchart.ScrollPos);
         }
 
         [Test]
         public void PansCanvas_OnAltLeftMouseDrag()
         {
-            Assert.Ignore();
+            PrepForPan();
+            var drag = new Event { type = EventType.MouseDrag, button = 0, alt = true, delta = new Vector2(-7, 3) };
+            bool consumed = handler.Handle(drag, fcContext);
+
+            Assert.IsTrue(consumed);
+            Assert.AreEqual(new Vector2(-7, 3) / initZoom, flowchart.ScrollPos);
         }
 
         [Test]
         public void DoesNotPan_WhenDragNotInPanModes()
         {
-            Assert.Ignore();
+            // Left-drag without Alt, and using default Tool.None
+            var drag = new Event { type = EventType.MouseDrag, button = 0, delta = new Vector2(8, -8) };
+            flowchart.ScrollPos = Vector2.zero;
+
+            bool consumed = handler.Handle(drag, fcContext);
+
+            Assert.IsFalse(consumed);
+            Assert.AreEqual(Vector2.zero, flowchart.ScrollPos);
         }
+
+        [Test]
+        public void IgnoresZoom_WhenSelectionBoxActive()
+        {
+            PrepForZoom();
+            // simulate an active selection box
+            fcContext.SelectionBox = new Rect(0, 0, 10, 10);
+
+            bool consumed = handler.Handle(upwardsScrollEvent, fcContext);
+            Assert.IsFalse(consumed);
+        }
+
+        [Test]
+        public void IgnoresZoom_WhenInPanTool()
+        {
+            PrepForPan();
+            //PrepForZoom();                  // puts Tools.viewTool == Zoom
+            //Tools.viewTool = ViewTool.Pan;  // switch to Pan
+
+            bool consumed = handler.Handle(upwardsScrollEvent, fcContext);
+
+            Assert.IsFalse(consumed, "Should not zoom when the Pan tool is active");
+        }
+
     }
 }
