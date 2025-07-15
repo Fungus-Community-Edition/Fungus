@@ -1,6 +1,5 @@
 // File: GridUtils.cs
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Amanita.EditorUtils
 {

@@ -494,12 +494,23 @@ namespace Amanita
             } 
         }
 
-        public virtual List<Block> SelectedBlocks { get { return selectedBlocks; } set { selectedBlocks = value; } }
+        public virtual IList<Block> SelectedBlocks
+        {
+            get
+            {
+                return selectedBlocks;
+            }
+            set
+            {
+                selectedBlocks.Clear();
+                selectedBlocks.AddRange(value);
+            }
+        }
 
         /// <summary>
         /// Currently selected command in the Flowchart editor.
         /// </summary>
-        public virtual List<Command> SelectedCommands { get { return selectedCommands; } }
+        public virtual IList<Command> SelectedCommands { get { return selectedCommands; } }
 
         /// <summary>
         /// The list of variables that can be accessed by the Flowchart.
