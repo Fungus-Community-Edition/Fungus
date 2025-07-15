@@ -77,7 +77,6 @@ namespace Amanita.EditorUtils
         protected virtual void OnSearchFieldUnfocused(FocusOutEvent evt)
         {
             Debug.Log("Search field lost focus");
-            searchField.value = string.Empty;
             SearchFieldUnfocused(evt);
         }
 
@@ -132,14 +131,17 @@ namespace Amanita.EditorUtils
             resultList.RefreshItems();
         }
 
-        public string Query => searchField.value;
+        public string Query
+        {
+            get => searchField.value;
+            set => searchField.value = value;
+        }
 
         public virtual void Dispose()
         {
             UnregisterUiCallbacks();
             if (Root.parent != null)
                 Root.RemoveFromHierarchy();
-
         }
 
         protected virtual void UnregisterUiCallbacks()

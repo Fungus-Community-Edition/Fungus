@@ -47,7 +47,7 @@ namespace Amanita.Tests.Editor
 
 
         [Test]
-        public void EmptyQuery_ReturnsAllBlocksWithNoneState()
+        public void EmptyQuery_ReturnsAllBlocksWithFullState()
         {
             DummyBlock firstBlock = holder.AddComponent<DummyBlock>();
             firstBlock.BlockName = "First";
@@ -62,8 +62,8 @@ namespace Amanita.Tests.Editor
             var result = FilterUtils.FilterBlocks(blocks, "");
 
             Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(Block.FilteredState.None, blocks[0].FilterState);
-            Assert.AreEqual(Block.FilteredState.None, blocks[1].FilterState);
+            Assert.AreEqual(Block.FilteredState.Full, blocks[0].FilterState);
+            Assert.AreEqual(Block.FilteredState.Full, blocks[1].FilterState);
         }
 
         [Test]

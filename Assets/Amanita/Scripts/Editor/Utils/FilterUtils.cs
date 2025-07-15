@@ -14,18 +14,18 @@ namespace Amanita.EditorUtils
         {
             var results = new List<Block>();
 
-            // No query → show everything (reset states to None)
+            // No query → show everything (reset states to Full)
             if (string.IsNullOrEmpty(query))
             {
                 foreach (var elem in allBlocks)
                 {
-                    elem.FilterState = Block.FilteredState.None;
+                    elem.FilterState = Block.FilteredState.Full;
                     results.Add(elem);
                 }
                 return results;
             }
 
-            string lower = query.ToLowerInvariant();
+            query = query.ToLowerInvariant();
 
             foreach (var elem in allBlocks)
             {
