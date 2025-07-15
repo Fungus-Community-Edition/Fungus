@@ -13,23 +13,24 @@ namespace Amanita.EditorUtils
 
         public FlowchartWindowInputHandler()
         {
-            handlers = new IEventHandler[]
-            {
-                new PanZoomHandler(),
-            };
         }
 
-        public virtual bool Process(Event e, FlowchartContext context)
+        protected IList<IEventHandler> handlers = new List<IEventHandler>()
+        {
+            new PanZoomHandler(),
+        };
+
+        public virtual bool Process(Event eventToProcess, FlowchartContext context)
         {
             foreach (var elem in handlers)
-                if (elem.Handle(e, context))
+                if (elem.Handle(eventToProcess, context))
                     return true;
             return false;
 
         }
 
         protected FlowchartContext currentContext;
-        protected IList<IEventHandler> handlers;
+        
 
         //protected virtual void OnMouseDown(Event mouseEvent)
         //{

@@ -11,9 +11,7 @@ namespace Amanita.EditorUtils
 {
     public class FlowchartWindow : EventWindow
     {
-        
-
-        protected class ClipboardObject
+        public class ClipboardObject
         {
             internal SerializedObject serializedObject;
             internal Type type;
@@ -25,10 +23,10 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected class BlockCopy
+        public class BlockCopy
         {
             protected SerializedObject block = null;
-            protected List<ClipboardObject> commands = new List<ClipboardObject>();
+            protected IList<ClipboardObject> commands = new List<ClipboardObject>();
             protected ClipboardObject eventHandler = null;
 
             internal BlockCopy(Block block)
@@ -59,7 +57,7 @@ namespace Amanita.EditorUtils
                 newSerializedObject.ApplyModifiedProperties();
             }
 
-            internal Block PasteBlock(FlowchartWindow flowWind ,Flowchart flowchart)
+            internal Block PasteBlock(FlowchartWindow flowWind, Flowchart flowchart)
             {
                 var newBlock = flowWind.CreateBlock(flowchart, Vector2.zero);
 
@@ -97,7 +95,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected struct BlockGraphics
+        public struct BlockGraphics
         {
             internal Color tint;
             internal Texture2D onTexture;
@@ -107,7 +105,7 @@ namespace Amanita.EditorUtils
         /// <summary>
         /// Helper class to maintain list of blocks that are currently executing when the game is running in editor
         /// </summary>
-        protected class ExecutingBlocks
+        public class ExecutingBlocks
         {
             internal List<Block> areExecuting = new List<Block>(),
                                  wereExecuting = new List<Block>(),
@@ -117,14 +115,14 @@ namespace Amanita.EditorUtils
 
             protected float lastFade;
 
-            internal void ProcessAllBlocks(Block[] blocks)
+            internal void ProcessAllBlocks(IList<Block> blocks)
             {
                 isChangeDetected = false;
                 workspace.Clear();
                 //cache these once as they can end up being called thousands of times per frame otherwise
                 var curRealTime = Time.realtimeSinceStartup;
                 var fadeTimer = curRealTime + AmanitaConstants.ExecutingIconFadeTime;
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     var b = blocks[i];
                     var bIsExec = b.IsExecuting();
@@ -172,6 +170,7 @@ namespace Amanita.EditorUtils
             }
         }
 
+        private IInputProcessor _inputProcessor;
         public const float GridLineSpacingSize = 120;
         public const float GridObjectSnap = 20;
         public const float DefaultBlockHeight = 40;
@@ -190,7 +189,7 @@ namespace Amanita.EditorUtils
 
 
         
-        public static List<Block> deleteList = new List<Block>();
+        public static IList<Block> deleteList = new List<Block>();
         protected Vector2 startDragPosition;
         protected GUIStyle nodeStyle, descriptionStyle, handlerStyle, blockSearchPopupNormalStyle, blockSearchPopupSelectedStyle;
         protected static BlockInspector blockInspector;
@@ -221,19 +220,19 @@ namespace Amanita.EditorUtils
         }
         protected Rect searchRect;
         protected Rect popupRect;
-        protected IList<Block> filteredBlocks = new List<Block>();
-        protected int blockPopupSelection = -1;
+        
+        
         protected Vector2 popupScroll;
         
         protected int prevVarCount;
-        protected Block[] blocks = new Block[0];
+        
         protected Block dragBlock;
         protected bool hasDraggedSelected = false;
         
 
         static protected VariableListAdaptor variableListAdaptor;
 
-        protected bool filterStale = true;
+        
         protected bool wasControl;
         protected ExecutingBlocks executingBlocks = new ExecutingBlocks();
 
@@ -270,6 +269,8 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnEnable()
         {
+            _inputProcessor = new FlowchartWindowInputHandler();
+
             addTexture = AmanitaEditorResources.AddSmall;
             addButtonContent = new GUIContent(addTexture, "Add a new block");
             connectionPointTexture = AmanitaEditorResources.ConnectionPoint;
@@ -298,7 +299,6 @@ namespace Amanita.EditorUtils
             }
 
             UpdateBlockCollection();
-
             ListenForEvents();
             
         }
@@ -307,7 +307,7 @@ namespace Amanita.EditorUtils
         protected GUIContent addButtonContent;
         protected Texture2D connectionPointTexture;
         protected Color gridLineColor = Color.black;
-        protected List<BlockCopy> copyList = new List<BlockCopy>();
+        protected IList<BlockCopy> copyList = new List<BlockCopy>();
 
         public static Flowchart GetFlowchart()
         {
@@ -479,7 +479,7 @@ namespace Amanita.EditorUtils
 
         protected void EditorApplication_playModeStateChanged(PlayModeStateChange obj)
         {
-            //force null so it can refresh context on the other side of the context
+            // Force null so it can refresh context on the other side of the context
             flowchart = null;
             prevFlowchart = null;
             blockInspector = null;
@@ -487,7 +487,7 @@ namespace Amanita.EditorUtils
 
         protected void Undo_ForceRepaint()
         {
-            //an undo redo may have added or removed blocks so
+            // An undo redo may have added or removed blocks, so...
             UpdateBlockCollection();
             flowchart.UpdateSelectedCache();
             Repaint();
@@ -545,19 +545,35 @@ namespace Amanita.EditorUtils
 
         protected void UpdateBlockCollection()
         {
-            flowchart = GetFlowchart();
-            if (flowchart == null)
+            GetFlowchart();
+            if (FcSelected == null)
             {
                 blocks = new Block[0];
-                filteredBlocks = new List<Block>();
+                filteredBlocks.Clear();
             }
             else
             {
-                blocks = flowchart.GetComponents<Block>();
+                blocks = FcSelected.GetComponents<Block>();
             }
             filterStale = true;
             UpdateFilteredBlocks();
         }
+
+        protected IList<Block> blocks = new Block[0];
+        protected IList<Block> filteredBlocks = new List<Block>();
+        protected bool filterStale = true;
+
+        protected void UpdateFilteredBlocks()
+        {
+            // Recompute the filtered list and block.FilterState in one call
+            filteredBlocks = FilterUtils.FilterBlocks(blocks, SearchString);
+
+            // Keep popup‐selection index in range
+            int max = Mathf.Max(filteredBlocks.Count - 1, 0);
+            blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, max);
+        }
+
+        protected int blockPopupSelection = -1;
 
         protected Flowchart flowchart;
         protected Flowchart prevFlowchart;
@@ -634,15 +650,7 @@ namespace Amanita.EditorUtils
 
         
 
-        protected void UpdateFilteredBlocks()
-        {
-            // Recompute the filtered list and block.FilterState in one call
-            filteredBlocks = FilterUtils.FilterBlocks(blocks, SearchString);
-
-            // Keep popup‐selection index in range
-            int max = Mathf.Max(filteredBlocks.Count - 1, 0);
-            blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, max);
-        }
+        
 
         protected virtual void HandleEarlyEvents(Event e) 
         {
@@ -840,6 +848,16 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnGUI()
         {
+            var ctx = new FlowchartContext
+            {
+                Flowchart = FcSelected,          
+                Position = position,            
+                SelectionBox = selectionBox      
+            };
+
+            if (_inputProcessor.Process(Event.current, ctx))
+                Event.current.Use();
+
             // TODO: avoid calling some of these methods in OnGUI because it should be possible
             // to only call them when the window is initialized or a new flowchart is selected, etc.
             if (HandleFlowchartSelectionChange()) return;
@@ -858,23 +876,29 @@ namespace Amanita.EditorUtils
 
             HandleEarlyEvents(Event.current);
 
-            // Draw background color / drop shadow
-            if (Event.current.type == EventType.Repaint)
+            DrawBackgroundColorAndDropShadow();
+            void DrawBackgroundColorAndDropShadow()
             {
-                UnityEditor.Graphs.Styles.graphBackground.Draw(
-                    new Rect(0, 17, position.width, position.height - 17), false, false, false, false
-                );
+                if (Event.current.type == EventType.Repaint)
+                {
+                    UnityEditor.Graphs.Styles.graphBackground.Draw(
+                        new Rect(0, 17, position.width, position.height - 17), false, false, false, false
+                    );
+                }
             }
-
+            
             // Draw blocks and connections
             DrawFlowchartView(Event.current);
 
-            // Draw selection box
-            if (Event.current.type == EventType.Repaint)
+            DrawSelectionBox();
+            void DrawSelectionBox()
             {
-                if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
+                if (Event.current.type == EventType.Repaint)
                 {
-                    GUI.Box(selectionBox, "", GUI.skin.FindStyle("SelectionRect"));
+                    if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
+                    {
+                        GUI.Box(selectionBox, "", GUI.skin.FindStyle("SelectionRect"));
+                    }
                 }
             }
 
@@ -1130,7 +1154,7 @@ namespace Amanita.EditorUtils
 
         protected Block GetBlockAtPoint(Vector2 point)
         {
-            for (int i = blocks.Length - 1; i > -1; --i)
+            for (int i = blocks.Count - 1; i > -1; --i)
             {
                 var block = blocks[i];
                 var rect = block._NodeRect;
@@ -1225,87 +1249,88 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected override void OnMouseDrag(Event e)
+        protected override void OnMouseDrag(Event mouseEvent)
         {
             var draggingWindow = false;
-            switch (e.button)
+            switch (mouseEvent.button)
             {
-            case MouseButton.Left:
-                // Block dragging
-                if (dragBlock != null)
-                {
-                    for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
+                case MouseButton.Left:
+                    // Block dragging
+                    if (dragBlock != null)
                     {
-                        var block = flowchart.SelectedBlocks[i];
-                        var tempRect = block._NodeRect;
-                        tempRect.position += e.delta / flowchart.Zoom;
-                        block._NodeRect = tempRect;
-                    }
-
-                    hasDraggedSelected = true;
-                    e.Use();
-                }
-                // Pan tool or alt + left click
-                else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Pan || e.alt)
-                {
-                    draggingWindow = true;
-                }
-                else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom)
-                {
-                    DoZoom(-e.delta.y * 0.01f, Vector2.one * 0.5f);
-                    e.Use();
-                }
-                // Selection box
-                else if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
-                {
-                    if (Mathf.Approximately(e.delta.magnitude, 0))
-                        break;
-                    
-                    var topLeft = Vector2.Min(startSelectionBoxPosition, e.mousePosition);
-                    var bottomRight = Vector2.Max(startSelectionBoxPosition, e.mousePosition);
-                    selectionBox = Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-
-                    Rect zoomSelectionBox = selectionBox;
-                    zoomSelectionBox.position -= flowchart.ScrollPos * flowchart.Zoom;
-                    zoomSelectionBox.position /= flowchart.Zoom;
-                    zoomSelectionBox.size /= flowchart.Zoom;
-
-
-                    for (int i = 0; i < blocks.Length; ++i)
-                    {
-                        var block = blocks[i];
-                        var doesMarqueOverlap = zoomSelectionBox.Overlaps(block._NodeRect);
-                        if (doesMarqueOverlap)
+                        for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
                         {
-                            flowchart.AddSelectedBlock(block);
+                            var block = flowchart.SelectedBlocks[i];
+                            var tempRect = block._NodeRect;
+                            tempRect.position += mouseEvent.delta / flowchart.Zoom;
+                            block._NodeRect = tempRect;
                         }
-                        else
-                        { 
-                            flowchart.DeselectBlockNoCheck(block);
-                        }
+
+                        hasDraggedSelected = true;
+                        mouseEvent.Use();
                     }
+                    //// Pan tool or alt + left click
+                    //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Pan
+                    //    || mouseEvent.alt)
+                    //{
+                    //    draggingWindow = true;
+                    //}
+                    //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom)
+                    //{
+                    //    DoZoom(-mouseEvent.delta.y * 0.01f, Vector2.one * 0.5f);
+                    //    mouseEvent.Use();
+                    //}
+                    // Selection box
+                    else if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
+                    {
+                        if (Mathf.Approximately(mouseEvent.delta.magnitude, 0))
+                            break;
+                    
+                        var topLeft = Vector2.Min(startSelectionBoxPosition, mouseEvent.mousePosition);
+                        var bottomRight = Vector2.Max(startSelectionBoxPosition, mouseEvent.mousePosition);
+                        selectionBox = Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 
-                    e.Use();
-                }
-                break;
+                        Rect zoomSelectionBox = selectionBox;
+                        zoomSelectionBox.position -= flowchart.ScrollPos * flowchart.Zoom;
+                        zoomSelectionBox.position /= flowchart.Zoom;
+                        zoomSelectionBox.size /= flowchart.Zoom;
 
-            case MouseButton.Right:
-                if (Vector2.Distance(rightClickDown, e.mousePosition) > RightClickTolerance)
-                {
-                    rightClickDown = -Vector2.one;
-                }
-                draggingWindow = true;
-                break;
 
-            case MouseButton.Middle:
-                draggingWindow = true;
-                break;
+                        for (int i = 0; i < blocks.Count; ++i)
+                        {
+                            var block = blocks[i];
+                            var doesMarqueOverlap = zoomSelectionBox.Overlaps(block._NodeRect);
+                            if (doesMarqueOverlap)
+                            {
+                                flowchart.AddSelectedBlock(block);
+                            }
+                            else
+                            { 
+                                flowchart.DeselectBlockNoCheck(block);
+                            }
+                        }
+
+                        mouseEvent.Use();
+                    }
+                    break;
+
+                case MouseButton.Right:
+                    //if (Vector2.Distance(rightClickDown, mouseEvent.mousePosition) > RightClickTolerance)
+                    //{
+                    //    rightClickDown = -Vector2.one;
+                    //}
+                    //draggingWindow = true;
+                    break;
+
+                case MouseButton.Middle:
+                    //draggingWindow = true;
+                    break;
             }
 
             if (draggingWindow)
             {
-                flowchart.ScrollPos += e.delta / flowchart.Zoom;
-                e.Use();
+                flowchart.ScrollPos += mouseEvent.delta / flowchart.Zoom;
+                mouseEvent.Use();
             }
         }
 
@@ -1491,7 +1516,7 @@ namespace Amanita.EditorUtils
                 DrawGrid();
 
                 //draw all non selected
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     var block = blocks[i];
                     if(!block.IsSelected && ! block.IsControlSelected)
@@ -1499,7 +1524,7 @@ namespace Amanita.EditorUtils
                 }
                 
                 //draw all held
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     var block = blocks[i];
                     if (block.IsControlSelected)
@@ -1507,7 +1532,7 @@ namespace Amanita.EditorUtils
                 }
 
                 //draw all selected
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     var block = blocks[i];
                     if (block.IsSelected)
@@ -1523,7 +1548,7 @@ namespace Amanita.EditorUtils
                 //cache these once as they can end up being called thousands of times per frame otherwise
                 var curRealTime = Time.realtimeSinceStartup;
 
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     var b = blocks[i];
                     DrawExecutingBlockIcon(b,
@@ -1567,9 +1592,9 @@ namespace Amanita.EditorUtils
             return new Rect(0, 0, this.position.width / flowchart.Zoom, this.position.height / flowchart.Zoom);
         }
 
-        public virtual Vector2 GetBlockCenter(Block[] blocks)
+        public virtual Vector2 GetBlockCenter(IList<Block> blocks)
         {
-            if (blocks.Length == 0)
+            if (blocks.Count == 0)
             {
                 return Vector2.zero;
             }
@@ -1577,7 +1602,7 @@ namespace Amanita.EditorUtils
             Vector2 min = blocks[0]._NodeRect.min;
             Vector2 max = blocks[0]._NodeRect.max;
 
-            for (int i = 0; i < blocks.Length; ++i)
+            for (int i = 0; i < blocks.Count; ++i)
             {
                 var block = blocks[i];
                 min.x = Mathf.Min(min.x, block._NodeRect.center.x);
@@ -1593,7 +1618,7 @@ namespace Amanita.EditorUtils
         {
             UpdateBlockCollection();
 
-            if (blocks.Length > 0)
+            if (blocks.Count > 0)
             {
                 var center = -GetBlockCenter(blocks);
                 center.x += position.width * 0.5f / flowchart.Zoom;
@@ -1863,7 +1888,7 @@ namespace Amanita.EditorUtils
             return rt * rt * rt * s + 3 * rt * rtt * st + 3 * rtt * t * et + t * t * t * e;
         }
 
-        protected void AddToDeleteList(List<Block> blocks)
+        protected void AddToDeleteList(IList<Block> blocks)
         {
             for (int i = 0; i < blocks.Count; ++i)
             {
@@ -2085,7 +2110,7 @@ namespace Amanita.EditorUtils
             case "SelectAll":
                 Undo.RecordObject(flowchart, "Selection");
                 flowchart.ClearSelectedBlocks();
-                for (int i = 0; i < blocks.Length; ++i)
+                for (int i = 0; i < blocks.Count; ++i)
                 {
                     flowchart.AddSelectedBlock(blocks[i]);
                 }
@@ -2121,7 +2146,7 @@ namespace Amanita.EditorUtils
             filterStale = true;
         }
 
-        static protected List<Block> blockGraphicsUniqueListWorkSpace = new List<Block>();
+        static protected IList<Block> blockGraphicsUniqueListWorkSpace = new List<Block>();
         static protected List<Block> blockGraphicsConnectedWorkSpace = new List<Block>();
         protected virtual BlockGraphics GetBlockGraphics(Block block)
         {
