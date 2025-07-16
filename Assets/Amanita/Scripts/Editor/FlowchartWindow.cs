@@ -837,16 +837,6 @@ namespace Amanita.EditorUtils
                 prevFlowchart = flowchart;
                 executingBlocks.ClearAll();
 
-                //attempt to defilter previous, if due to scene change these will be null
-                //  the regular filter updates will still occur within UpdateBlockCollection
-                //for (int i = 0; i < filteredBlocks.Count; i++)
-                //{
-                //    if (filteredBlocks[i] != null)
-                //    {
-                //        filteredBlocks[i].FilterState = Block.FilteredState.None;
-                //    }
-                //}
-
                 UpdateBlockCollection();
 
                 if(flowchart != null)
@@ -866,7 +856,6 @@ namespace Amanita.EditorUtils
             flowchartCtx.Position = position;
             flowchartCtx.SelectionBox = selectionBox;
             flowchartCtx.Window = this;
-
 
             if (_primaryInputProcessor.Process(Event.current, flowchartCtx))
                 Event.current.Use();

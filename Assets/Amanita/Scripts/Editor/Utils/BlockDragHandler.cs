@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -56,10 +57,8 @@ namespace Amanita.EditorUtils
                 bool onAlreadySelectedBlock = flowchartCtx.SelectedBlocks.Contains(blockHit);
                 if (blockHit != null && onAlreadySelectedBlock)
                 {
-                    // Record undo & begin drag
-                    Debug.Log("Decided on a block to drag");
-                    Undo.RegisterCompleteObjectUndo(flowchartCtx.Flowchart, startBlockDragGroupName);
                     flowchartCtx.DragBlock = blockHit;
+                    flowchartCtx.DragUndoRecorded = false;
                     flowchartCtx.HasDraggedSelected = false;
                     mouseEvent.Use();
                     consumed = true;
@@ -68,7 +67,7 @@ namespace Amanita.EditorUtils
             return consumed;
         }
 
-        public readonly string startBlockDragGroupName = "Start Block Drag";
+        public readonly string startBlockDragGroupName = "Block Drag";
 
         protected virtual bool IsLeftMouseButton(Event currentMouseEvent) => currentMouseEvent.button == 0;
 
@@ -78,10 +77,18 @@ namespace Amanita.EditorUtils
 
             if (IsLeftMouseButton(mouseEvent) && flowchartCtx.DragBlock != null)
             {
+                bool atTheStartOfADrag = !flowchartCtx.DragUndoRecorded;
+                if (atTheStartOfADrag)
+                {
+                    var blocks = flowchartCtx.SelectedBlocks.Cast<UnityEngine.Object>().ToArray();
+                    Undo.RegisterCompleteObjectUndo(blocks, startBlockDragGroupName);
+
+                    flowchartCtx.DragUndoRecorded = true;
+                }
+
                 MoveAllSelectedBlocks();
                 void MoveAllSelectedBlocks()
                 {
-                    Debug.Log("Moving all selected blocks");
                     foreach (var elem in flowchartCtx.SelectedBlocks)
                     {
                         var elemRect = elem._NodeRect;
@@ -104,22 +111,18 @@ namespace Amanita.EditorUtils
             bool consumed = false;
             if (IsLeftMouseButton(mouseEvent) && flowchartCtx.DragBlock != null)
             {
-                Undo.RecordObject(flowchartCtx.Flowchart, endBlockDragGroupName);
                 if (AmanitaEditorPreferences.useGridSnap)
                 {
                     flowchartCtx.SnapBlocksToGrid();
                 }
                 flowchartCtx.DragBlock = null;
                 flowchartCtx.HasDraggedSelected = false;
+                flowchartCtx.DragUndoRecorded = false;
                 mouseEvent.Use();
                 consumed = true;
             }
             return consumed;
         }
 
-        public readonly string endBlockDragGroupName = "Block Drag";
-
-        
-        
     }
 }

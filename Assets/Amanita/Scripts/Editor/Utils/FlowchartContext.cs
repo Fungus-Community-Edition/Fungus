@@ -23,6 +23,7 @@ namespace Amanita.EditorUtils
         public IList<Block> Blocks { get; set; }
         public Vector2 RightClickDown { get; set; }
 
+        public virtual bool DragUndoRecorded { get; set; }
         public bool DidDoubleClick { get; set; }
         public Vector2 StartDragPosition { get; set; }
 

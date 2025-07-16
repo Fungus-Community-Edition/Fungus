@@ -121,6 +121,8 @@ namespace Amanita.Tests.Editor
             {
                 mouseDownEvent = mouseDragEvent = mouseUpEvent = null;
             }
+
+            SetGridSnap(false);
         }
 
         [Test]
@@ -164,15 +166,31 @@ namespace Amanita.Tests.Editor
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
-        public virtual void MouseDown_SelectedBlock_UndoRecorded(int blockIndex)
+        public virtual void MouseDrag_FirstMovement_RecordsUndoGroup(int blockIndex)
         {
+            // Arrange
             SelectBlock(blockIndex);
             mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            fcContext.DragBlock = blocksInFlowchart[blockIndex];
 
-            bool consumed = handler.Handle(mouseDownEvent, fcContext);
-            Assert.IsTrue(consumed, "Should consume mouseDown on selected block");
-            string groupName = Undo.GetCurrentGroupName();
-            Assert.AreEqual(handler.startBlockDragGroupName, groupName, "Undo was not recorded on mouse down.");
+            // Act
+            bool consumed = handler.Handle(mouseDragEvent, fcContext);
+
+            // Assert
+            Assert.IsTrue(consumed, $"Block #{blockIndex} drag should be consumed");
+            Assert.AreEqual(
+            handler.startBlockDragGroupName,
+            Undo.GetCurrentGroupName(),
+            $"Block #{blockIndex} did not register undo on first drag"
+                    );
+
+            //string assertErrorMessage = "Should consume mouseDown on selected block";
+            //Assert.IsTrue(consumed, assertErrorMessage);
+
+            //string groupName = Undo.GetCurrentGroupName();
+            //assertErrorMessage = $"Block #{blockIndex} did not register undo on first drag";
+            //Assert.AreEqual(handler.startBlockDragGroupName, groupName, assertErrorMessage);
+
         }
 
         [Test]
@@ -246,16 +264,15 @@ namespace Amanita.Tests.Editor
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
-        public void MouseDown_SelectedBlock_RecordsUndoGroup(int blockIndex)
+        public void MouseDown_SelectedBlock_UndoGroupNotRecorded(int blockIndex)
         {
             SelectBlock(blockIndex);
             mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
 
             bool consumed = handler.Handle(mouseDownEvent, fcContext);
 
-            Assert.IsTrue(consumed);
-            Assert.AreEqual(handler.startBlockDragGroupName, Undo.GetCurrentGroupName(),
-                $"Block #{blockIndex} did not register correct undo group");
+            Assert.IsTrue(consumed, $"Block #{blockIndex} should consume MouseDown");
+            Assert.IsEmpty(Undo.GetCurrentGroupName(), $"Unexpected undo on MouseDown for block #{blockIndex}");
         }
     }
 }
