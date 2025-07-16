@@ -1,28 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
     public class FlowchartWindowInputHandler : IInputProcessor
     {
-        public const float RightClickTolerance = 5f;
-        public const float MinZoomValue = 0.25f;
-        public const float MaxZoomValue = 1f;
-        public const float GridLineSpacingSize = 120;
-        public const float GridObjectSnap = 20;
+        public static readonly float RightClickTolerance = 5f;
+        public static readonly float MinZoomValue = 0.25f;
+        public static readonly float MaxZoomValue = 1f;
+        public static readonly float GridLineSpacingSize = 120;
+        public static readonly float GridObjectSnap = 20;
 
         public FlowchartWindowInputHandler()
         {
         }
 
-        protected IList<IEventHandler> handlers = new List<IEventHandler>()
+        protected IList<IUGUIEventHandler> subhandlers = new List<IUGUIEventHandler>()
         {
+            new SelectionHandler(),
+            new BlockDragHandler(),
             new PanZoomHandler(),
         };
 
         public virtual bool Process(Event eventToProcess, FlowchartContext context)
         {
-            foreach (var elem in handlers)
+            foreach (var elem in subhandlers)
                 if (elem.Handle(eventToProcess, context))
                     return true;
             return false;
@@ -30,6 +33,21 @@ namespace Amanita.EditorUtils
         }
 
         protected FlowchartContext currentContext;
+
+        public virtual void AddSubhandler(IUGUIEventHandler toAdd)
+        {
+            subhandlers.Remove(toAdd);
+        }
+
+        public virtual void RemoveSubhandler(IUGUIEventHandler toRemove)
+        {
+            subhandlers.Remove(toRemove);
+        }
+
+        public virtual void ClearSubhandlers()
+        {
+            subhandlers.Clear();
+        }
         
 
         //protected virtual void OnMouseDown(Event mouseEvent)

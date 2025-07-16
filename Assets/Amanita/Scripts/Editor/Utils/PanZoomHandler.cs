@@ -6,7 +6,7 @@ namespace Amanita.EditorUtils
     /// <summary>
     /// For dragging the canvas and zooming the view
     /// </summary>
-    public class PanZoomHandler : IEventHandler
+    public class PanZoomHandler : IUGUIEventHandler
     {
         public bool Handle(Event eventToHandle, FlowchartContext ctx)
         {
@@ -100,7 +100,7 @@ namespace Amanita.EditorUtils
         public virtual float MaxZoom { get; set; } = 1f;
     }
 
-    public interface IEventHandler
+    public interface IUGUIEventHandler
     {
         /// <summary>
         /// Try to consume this Event. Returns true if it did something.

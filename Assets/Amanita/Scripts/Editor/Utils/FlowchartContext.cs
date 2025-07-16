@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using static Amanita.EditorUtils.FlowchartWindow;
 
@@ -39,5 +40,47 @@ namespace Amanita.EditorUtils
         public virtual IList<BlockCopy> CopyList { get; set; }
 
         public virtual FlowchartWindow Window { get; set; }
+
+        public IList<Block> HitTestables => Flowchart.GetComponents<Block>();
+
+        /// <summary>
+        /// Returns the topmost block whose NodeRect contains the given mouse position,
+        /// taking scroll‐offset and zoom into account.
+        /// </summary>
+        public Block HitTest(Vector2 mousePosition)
+        {
+            Block result = null;
+            var blocks = Flowchart.GetComponents<Block>();
+
+            // Iterate in reverse order so higher‐z blocks get hit‐tested first
+            for (int i = blocks.Length - 1; i >= 0; i--)
+            {
+                var currentBlock = blocks[i];
+                // Transform the block’s _NodeRect into window-space
+                Rect rect = currentBlock._NodeRect;
+                rect.position += Flowchart.ScrollPos;
+
+                var mousePosInFlowchartSpace = mousePosition / Flowchart.Zoom;
+
+                if (rect.Contains(mousePosInFlowchartSpace))
+                {
+                    result = currentBlock;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+
+        public virtual void SnapBlocksToGrid()
+        {
+            foreach (var elem in SelectedBlocks)
+            {
+                Undo.RecordObject(elem, "Block Position");
+                elem._NodeRect = elem._NodeRect.SnapPosition(FlowchartWindow.GridObjectSnap);
+            }
+            
+        }
     }
 }

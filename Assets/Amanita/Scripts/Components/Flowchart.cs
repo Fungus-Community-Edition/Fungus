@@ -614,12 +614,24 @@ namespace Amanita
         /// </summary>
         public virtual Block CreateBlock(Vector2 position)
         {
-            Block b = CreateBlockComponent(gameObject);
-            b._NodeRect = new Rect(position.x, position.y, 0, 0);
-            b.BlockName = GetUniqueBlockKey(b.BlockName, b);
-            b.ItemId = NextItemId();
+            Block created = CreateBlockComponent(gameObject);
+            created._NodeRect = new Rect(position.x, position.y, 0, 0);
+            created.BlockName = GetUniqueBlockKey(created.BlockName, created);
+            created.ItemId = NextItemId();
 
-            return b;
+            return created;
+        }
+
+        public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
+        {
+            IList<Block> blocksCreated = new Block[positions.Count];
+            for (int i = 0; i < positions.Count; i++)
+            {
+                Vector2 currentPos = positions[i];
+                Block newBlock = CreateBlock(currentPos);
+                blocksCreated[i] = newBlock;
+            }
+            return blocksCreated;
         }
 
         /// <summary>
@@ -1345,6 +1357,15 @@ namespace Amanita
                 }
             }
             selectedBlocks.Clear();
+        }
+
+        public virtual void AddMultiSelectedBlocks(IList<Block> toSelect)
+        {
+            for (int i = 0; i < toSelect.Count; i++)
+            {
+                var item = toSelect[i];
+                AddSelectedBlock(item);
+            }
         }
 
         /// <summary>

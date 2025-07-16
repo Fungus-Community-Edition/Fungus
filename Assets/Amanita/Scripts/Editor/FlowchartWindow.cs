@@ -170,7 +170,8 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private IInputProcessor _inputProcessor;
+        private FlowchartWindowInputHandler _primaryInputProcessor = new FlowchartWindowInputHandler(),
+            _secondaryInputProcessor = new FlowchartWindowInputHandler();
         public const float GridLineSpacingSize = 120;
         public const float GridObjectSnap = 20;
         public const float DefaultBlockHeight = 40;
@@ -269,7 +270,12 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnEnable()
         {
-            _inputProcessor = new FlowchartWindowInputHandler();
+            PrepInputProcessors();
+            void PrepInputProcessors()
+            {
+                _primaryInputProcessor = new FlowchartWindowInputHandler();
+                
+            }
 
             addTexture = AmanitaEditorResources.AddSmall;
             addButtonContent = new GUIContent(addTexture, "Add a new block");
@@ -300,8 +306,12 @@ namespace Amanita.EditorUtils
 
             UpdateBlockCollection();
             ListenForEvents();
-            
+
         }
+
+        protected IUGUIEventHandler selectionHandler = new SelectionHandler(),
+            blockDragHandler = new BlockDragHandler(),
+            panAndZoomHandler = new PanZoomHandler();
 
         protected Texture2D addTexture;
         protected GUIContent addButtonContent;
@@ -446,6 +456,8 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnDisable()
         {
+            //_primaryInputProcessor.ClearSubhandlers();
+            //_secondaryInputProcessor.ClearSubhandlers();
             UnregisterCallbacks();
             CleanUpSearchPanel();
         }
@@ -846,17 +858,21 @@ namespace Amanita.EditorUtils
             return false;
         }
 
+        protected FlowchartContext flowchartCtx = new FlowchartContext();
+
         protected virtual void OnGUI()
         {
-            var ctx = new FlowchartContext
-            {
-                Flowchart = FcSelected,          
-                Position = position,            
-                SelectionBox = selectionBox      
-            };
+            flowchartCtx.Flowchart = FcSelected;
+            flowchartCtx.Position = position;
+            flowchartCtx.SelectionBox = selectionBox;
+            flowchartCtx.Window = this;
 
-            if (_inputProcessor.Process(Event.current, ctx))
+
+            if (_primaryInputProcessor.Process(Event.current, flowchartCtx))
                 Event.current.Use();
+
+            //if (_secondaryInputProcessor.Process(Event.current, ctx))
+            //    Event.current.Use();
 
             // TODO: avoid calling some of these methods in OnGUI because it should be possible
             // to only call them when the window is initialized or a new flowchart is selected, etc.
@@ -1169,338 +1185,338 @@ namespace Amanita.EditorUtils
             return null;
         }
 
-        protected override void OnMouseDown(Event mouseEvent)
-        {
-            var hitBlock = GetBlockAtPoint(mouseEvent.mousePosition);
+        //protected override void OnMouseDown(Event mouseEvent)
+        //{
+        //    var hitBlock = GetBlockAtPoint(mouseEvent.mousePosition);
 
-            // Convert Ctrl+Left click to a right click on mac
-            if (Application.platform == RuntimePlatform.OSXEditor)
-            {
-                if (mouseEvent.button == MouseButton.Left &&
-                    mouseEvent.control)
-                {
-                    mouseEvent.button = MouseButton.Right;
-                }
-            }
+        //    // Convert Ctrl+Left click to a right click on mac
+        //    if (Application.platform == RuntimePlatform.OSXEditor)
+        //    {
+        //        if (mouseEvent.button == MouseButton.Left &&
+        //            mouseEvent.control)
+        //        {
+        //            mouseEvent.button = MouseButton.Right;
+        //        }
+        //    }
 
-            switch (mouseEvent.button)
-            {
-                case MouseButton.Left:
-                    if (!mouseEvent.alt)
-                    {
-                        if (hitBlock != null)
-                        {
-                            bool doubleClicked = mouseEvent.clickCount == 2;
-                            if (doubleClicked)
-                            {
-                                CenterBlock(hitBlock);
+        //    switch (mouseEvent.button)
+        //    {
+        //        case MouseButton.Left:
+        //            if (!mouseEvent.alt)
+        //            {
+        //                if (hitBlock != null)
+        //                {
+        //                    bool doubleClicked = mouseEvent.clickCount == 2;
+        //                    if (doubleClicked)
+        //                    {
+        //                        CenterBlock(hitBlock);
 
-                                mouseEvent.Use();
-                                didDoubleClick = true;
-                                return;
-                            }
+        //                        mouseEvent.Use();
+        //                        didDoubleClick = true;
+        //                        return;
+        //                    }
 
-                            startDragPosition = mouseEvent.mousePosition / flowchart.Zoom - flowchart.ScrollPos;
-                            Undo.RecordObject(flowchart, "Select");
+        //                    startDragPosition = mouseEvent.mousePosition / flowchart.Zoom - flowchart.ScrollPos;
+        //                    Undo.RecordObject(flowchart, "Select");
 
-                            if (GetAppendModifierDown())
-                            {
-                                //ctrl clicking blocks toggles between
-                                if (mouseDownSelectionState.Contains(hitBlock))
-                                {
-                                    RemoveMouseDownSelectionState(hitBlock);
-                                }
-                                else
-                                {
-                                    AddMouseDownSelectionState(hitBlock);
-                                }
-                            }
-                            else
-                            {
-                                if (flowchart.SelectedBlocks.Contains(hitBlock))
-                                {
-                                    SetBlockForInspector(flowchart, hitBlock);
-                                }
-                                else
-                                {
-                                    SelectBlock(hitBlock);
-                                }
+        //                    if (GetAppendModifierDown())
+        //                    {
+        //                        //ctrl clicking blocks toggles between
+        //                        if (mouseDownSelectionState.Contains(hitBlock))
+        //                        {
+        //                            RemoveMouseDownSelectionState(hitBlock);
+        //                        }
+        //                        else
+        //                        {
+        //                            AddMouseDownSelectionState(hitBlock);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        if (flowchart.SelectedBlocks.Contains(hitBlock))
+        //                        {
+        //                            SetBlockForInspector(flowchart, hitBlock);
+        //                        }
+        //                        else
+        //                        {
+        //                            SelectBlock(hitBlock);
+        //                        }
 
-                                dragBlock = hitBlock;
-                                hasDraggedSelected = false;
-                            }
+        //                        dragBlock = hitBlock;
+        //                        hasDraggedSelected = false;
+        //                    }
 
-                            mouseEvent.Use();
-                            GUIUtility.keyboardControl = 0; // Fix for textarea not refeshing (change focus)
-                        }
-                        else if (!(UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom))
-                        {
-                            startSelectionBoxPosition = mouseEvent.mousePosition;
-                            selectionBox = Rect.MinMaxRect(selectionBox.x, selectionBox.y, selectionBox.x, selectionBox.y);
-                            mouseEvent.Use();
-                        }
-                    }
-                    break;
+        //                    mouseEvent.Use();
+        //                    GUIUtility.keyboardControl = 0; // Fix for textarea not refeshing (change focus)
+        //                }
+        //                else if (!(UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom))
+        //                {
+        //                    startSelectionBoxPosition = mouseEvent.mousePosition;
+        //                    selectionBox = Rect.MinMaxRect(selectionBox.x, selectionBox.y, selectionBox.x, selectionBox.y);
+        //                    mouseEvent.Use();
+        //                }
+        //            }
+        //            break;
 
-                case MouseButton.Right:
-                    rightClickDown = mouseEvent.mousePosition;
-                    mouseEvent.Use();
-                    break;    
-            }
-        }
+        //        case MouseButton.Right:
+        //            rightClickDown = mouseEvent.mousePosition;
+        //            mouseEvent.Use();
+        //            break;    
+        //    }
+        //}
 
-        protected override void OnMouseDrag(Event mouseEvent)
-        {
-            var draggingWindow = false;
-            switch (mouseEvent.button)
-            {
-                case MouseButton.Left:
-                    // Block dragging
-                    if (dragBlock != null)
-                    {
-                        for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
-                        {
-                            var block = flowchart.SelectedBlocks[i];
-                            var tempRect = block._NodeRect;
-                            tempRect.position += mouseEvent.delta / flowchart.Zoom;
-                            block._NodeRect = tempRect;
-                        }
+        //protected override void OnMouseDrag(Event mouseEvent)
+        //{
+        //    var draggingWindow = false;
+        //    switch (mouseEvent.button)
+        //    {
+        //        case MouseButton.Left:
+        //            // Block dragging
+        //            if (dragBlock != null)
+        //            {
+        //                for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
+        //                {
+        //                    var block = flowchart.SelectedBlocks[i];
+        //                    var tempRect = block._NodeRect;
+        //                    tempRect.position += mouseEvent.delta / flowchart.Zoom;
+        //                    block._NodeRect = tempRect;
+        //                }
 
-                        hasDraggedSelected = true;
-                        mouseEvent.Use();
-                    }
-                    //// Pan tool or alt + left click
-                    //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Pan
-                    //    || mouseEvent.alt)
-                    //{
-                    //    draggingWindow = true;
-                    //}
-                    //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom)
-                    //{
-                    //    DoZoom(-mouseEvent.delta.y * 0.01f, Vector2.one * 0.5f);
-                    //    mouseEvent.Use();
-                    //}
-                    // Selection box
-                    else if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
-                    {
-                        if (Mathf.Approximately(mouseEvent.delta.magnitude, 0))
-                            break;
+        //                hasDraggedSelected = true;
+        //                mouseEvent.Use();
+        //            }
+        //            //// Pan tool or alt + left click
+        //            //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Pan
+        //            //    || mouseEvent.alt)
+        //            //{
+        //            //    draggingWindow = true;
+        //            //}
+        //            //else if (UnityEditor.Tools.current == Tool.View && UnityEditor.Tools.viewTool == ViewTool.Zoom)
+        //            //{
+        //            //    DoZoom(-mouseEvent.delta.y * 0.01f, Vector2.one * 0.5f);
+        //            //    mouseEvent.Use();
+        //            //}
+        //            // Selection box
+        //            else if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
+        //            {
+        //                if (Mathf.Approximately(mouseEvent.delta.magnitude, 0))
+        //                    break;
                     
-                        var topLeft = Vector2.Min(startSelectionBoxPosition, mouseEvent.mousePosition);
-                        var bottomRight = Vector2.Max(startSelectionBoxPosition, mouseEvent.mousePosition);
-                        selectionBox = Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+        //                var topLeft = Vector2.Min(startSelectionBoxPosition, mouseEvent.mousePosition);
+        //                var bottomRight = Vector2.Max(startSelectionBoxPosition, mouseEvent.mousePosition);
+        //                selectionBox = Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 
-                        Rect zoomSelectionBox = selectionBox;
-                        zoomSelectionBox.position -= flowchart.ScrollPos * flowchart.Zoom;
-                        zoomSelectionBox.position /= flowchart.Zoom;
-                        zoomSelectionBox.size /= flowchart.Zoom;
-
-
-                        for (int i = 0; i < blocks.Count; ++i)
-                        {
-                            var block = blocks[i];
-                            var doesMarqueOverlap = zoomSelectionBox.Overlaps(block._NodeRect);
-                            if (doesMarqueOverlap)
-                            {
-                                flowchart.AddSelectedBlock(block);
-                            }
-                            else
-                            { 
-                                flowchart.DeselectBlockNoCheck(block);
-                            }
-                        }
-
-                        mouseEvent.Use();
-                    }
-                    break;
-
-                case MouseButton.Right:
-                    //if (Vector2.Distance(rightClickDown, mouseEvent.mousePosition) > RightClickTolerance)
-                    //{
-                    //    rightClickDown = -Vector2.one;
-                    //}
-                    //draggingWindow = true;
-                    break;
-
-                case MouseButton.Middle:
-                    //draggingWindow = true;
-                    break;
-            }
-
-            if (draggingWindow)
-            {
-                flowchart.ScrollPos += mouseEvent.delta / flowchart.Zoom;
-                mouseEvent.Use();
-            }
-        }
-
-        protected override void OnRawMouseUp(Event e)
-        {
-            var hitBlock = GetBlockAtPoint(e.mousePosition);
-
-            // Convert Ctrl+Left click to a right click on mac
-            if (Application.platform == RuntimePlatform.OSXEditor)
-            {
-                if (e.button == MouseButton.Left &&
-                    e.control)
-                {
-                    e.button = MouseButton.Right;
-                }
-            }
-
-            switch (e.button)
-            {
-            case MouseButton.Left:
-                if(didDoubleClick)
-                {
-                    didDoubleClick = false;
-                    return;
-                }
+        //                Rect zoomSelectionBox = selectionBox;
+        //                zoomSelectionBox.position -= flowchart.ScrollPos * flowchart.Zoom;
+        //                zoomSelectionBox.position /= flowchart.Zoom;
+        //                zoomSelectionBox.size /= flowchart.Zoom;
 
 
-                if (dragBlock != null)
-                {
-                    for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
-                    {
-                        var block = flowchart.SelectedBlocks[i];
-                        var tempRect = block._NodeRect;
-                        var distance = e.mousePosition / flowchart.Zoom - flowchart.ScrollPos - startDragPosition;
-                        tempRect.position -= distance;
-                        block._NodeRect = tempRect;
-                        Undo.RecordObject(block, "Block Position");
-                        tempRect.position += distance;
-                        block._NodeRect = tempRect;
-                        if (AmanitaEditorPreferences.useGridSnap)
-                        {
-                            block._NodeRect = block._NodeRect.SnapPosition(GridObjectSnap);
-                        }
-                        Repaint();
-                    }
+        //                for (int i = 0; i < blocks.Count; ++i)
+        //                {
+        //                    var block = blocks[i];
+        //                    var doesMarqueOverlap = zoomSelectionBox.Overlaps(block._NodeRect);
+        //                    if (doesMarqueOverlap)
+        //                    {
+        //                        flowchart.AddSelectedBlock(block);
+        //                    }
+        //                    else
+        //                    { 
+        //                        flowchart.DeselectBlockNoCheck(block);
+        //                    }
+        //                }
 
-                    dragBlock = null;
-                }
+        //                mouseEvent.Use();
+        //            }
+        //            break;
 
-                // Check to see if selection actually changed?
-                if (selectionBox.size.x > 0 && selectionBox.size.y > 0)
-                {
-                    Undo.RecordObject(flowchart, "Select");
-                    flowchart.UpdateSelectedCache();
+        //        case MouseButton.Right:
+        //            //if (Vector2.Distance(rightClickDown, mouseEvent.mousePosition) > RightClickTolerance)
+        //            //{
+        //            //    rightClickDown = -Vector2.one;
+        //            //}
+        //            //draggingWindow = true;
+        //            break;
 
-                    EndControlSelection();
-                    //if ctrl down push them immediately back into mouse down
-                    if (GetAppendModifierDown())
-                        StartControlSelection();
+        //        case MouseButton.Middle:
+        //            //draggingWindow = true;
+        //            break;
+        //    }
 
-                    Repaint();
+        //    if (draggingWindow)
+        //    {
+        //        flowchart.ScrollPos += mouseEvent.delta / flowchart.Zoom;
+        //        mouseEvent.Use();
+        //    }
+        //}
 
-                    if (flowchart.SelectedBlock != null)
-                    {
-                        SetBlockForInspector(flowchart, flowchart.SelectedBlock);
-                    }
-                    Repaint();
-                }
-                else
-                {
-                    if (!GetAppendModifierDown() && !hasDraggedSelected)
-                    {
-                        DeselectAll();
+        //protected override void OnRawMouseUp(Event e)
+        //{
+        //    var hitBlock = GetBlockAtPoint(e.mousePosition);
 
-                        if (hitBlock != null)
-                        {
-                            SelectBlock(hitBlock);
-                        }
-                    }
-                }
+        //    // Convert Ctrl+Left click to a right click on mac
+        //    if (Application.platform == RuntimePlatform.OSXEditor)
+        //    {
+        //        if (e.button == MouseButton.Left &&
+        //            e.control)
+        //        {
+        //            e.button = MouseButton.Right;
+        //        }
+        //    }
 
-                hasDraggedSelected = false;
-                break;
+        //    switch (e.button)
+        //    {
+        //    case MouseButton.Left:
+        //        if(didDoubleClick)
+        //        {
+        //            didDoubleClick = false;
+        //            return;
+        //        }
 
-            case MouseButton.Right:
-                if (rightClickDown != -Vector2.one)
-                {
-                    var menu = new GenericMenu();
-                    var mousePosition = rightClickDown;
 
-                    // Clicked on a block
-                    if (hitBlock != null)
-                    {
-                        flowchart.AddSelectedBlock(hitBlock);
+        //        if (dragBlock != null)
+        //        {
+        //            for (int i = 0; i < flowchart.SelectedBlocks.Count; ++i)
+        //            {
+        //                var block = flowchart.SelectedBlocks[i];
+        //                var tempRect = block._NodeRect;
+        //                var distance = e.mousePosition / flowchart.Zoom - flowchart.ScrollPos - startDragPosition;
+        //                tempRect.position -= distance;
+        //                block._NodeRect = tempRect;
+        //                Undo.RecordObject(block, "Block Position");
+        //                tempRect.position += distance;
+        //                block._NodeRect = tempRect;
+        //                if (AmanitaEditorPreferences.useGridSnap)
+        //                {
+        //                    block._NodeRect = block._NodeRect.SnapPosition(GridObjectSnap);
+        //                }
+        //                Repaint();
+        //            }
 
-                        // Use a copy because flowchart.SelectedBlocks gets modified
-                        var blockList = new List<Block>(flowchart.SelectedBlocks);
-                        menu.AddItem(new GUIContent ("Copy"), false, () => Copy());
-                        menu.AddItem(new GUIContent ("Cut"), false, () => Cut());
-                        menu.AddItem(new GUIContent ("Duplicate"), false, () => Duplicate());
-                        menu.AddItem(new GUIContent ("Delete"), false, () => AddToDeleteList(blockList));
-                        menu.AddSeparator("");
-                        if(Application.isPlaying)
-                        {
-                            menu.AddItem(new GUIContent("StopAll"), false, () => StopAllBlocks());
-                            menu.AddItem(new GUIContent("Stop"), false, () => StopThisBlock(hitBlock));
-                            menu.AddItem(new GUIContent("Execute"), false, () => ExecuteThisBlock(hitBlock, false));
-                            menu.AddItem(new GUIContent("Execute (Stop All First)"), false, () => ExecuteThisBlock(hitBlock, true));
-                        }
-                        else
-                        {
-                            menu.AddDisabledItem(new GUIContent("StopAll"));//, false), () => StopAllBlocks());
-                            menu.AddDisabledItem(new GUIContent("Stop"));//, false);, () => StopThisBlock(hitBlock));
-                            menu.AddDisabledItem(new GUIContent("Execute"));//, false);, () => ExecuteThisBlock(hitBlock, false));
-                            menu.AddDisabledItem(new GUIContent("Execute (Stop All First)"));//, false);, () => ExecuteThisBlock(hitBlock, true));
-                        }
-                    }
-                    else
-                    {
-                        DeselectAll();
+        //            dragBlock = null;
+        //        }
 
-                        menu.AddItem(new GUIContent("Add Block"), false, () => CreateBlock(flowchart, mousePosition / flowchart.Zoom - flowchart.ScrollPos));
+        //        // Check to see if selection actually changed?
+        //        if (selectionBox.size.x > 0 && selectionBox.size.y > 0)
+        //        {
+        //            Undo.RecordObject(flowchart, "Select");
+        //            flowchart.UpdateSelectedCache();
 
-                        if (copyList.Count > 0)
-                        {
-                            menu.AddItem(new GUIContent("Paste"), false, () => Paste(mousePosition));
-                        }
-                        else
-                        {
-                            menu.AddDisabledItem(new GUIContent("Paste"));
-                        }
+        //            EndControlSelection();
+        //            //if ctrl down push them immediately back into mouse down
+        //            if (GetAppendModifierDown())
+        //                StartControlSelection();
 
-                        menu.AddSeparator("");
-                        if (Application.isPlaying)
-                        {
-                            menu.AddItem(new GUIContent("StopAll"), false, () => StopAllBlocks());
-                        }
-                        else
-                        {
-                            menu.AddDisabledItem(new GUIContent("StopAll"));//, false);, () => StopAllBlocks());
-                        }
-                    }
+        //            Repaint();
 
-                    var menuRect = new Rect();
-                    menuRect.position = new Vector2(mousePosition.x, mousePosition.y - 12f);
-                    menu.DropDown(menuRect);
-                    e.Use();               
-                }
-                break;
-            }
+        //            if (flowchart.SelectedBlock != null)
+        //            {
+        //                SetBlockForInspector(flowchart, flowchart.SelectedBlock);
+        //            }
+        //            Repaint();
+        //        }
+        //        else
+        //        {
+        //            if (!GetAppendModifierDown() && !hasDraggedSelected)
+        //            {
+        //                DeselectAll();
 
-            // Selection box
-            selectionBox.size = Vector2.zero;
-            selectionBox.position = -Vector2.one;
-            startSelectionBoxPosition = selectionBox.position;
-        }
+        //                if (hitBlock != null)
+        //                {
+        //                    SelectBlock(hitBlock);
+        //                }
+        //            }
+        //        }
 
-        protected override void OnScrollWheel(Event e)
-        {
-            if (selectionBox.size == Vector2.zero)
-            {
-                Vector2 zoomCenter;
-                zoomCenter.x = e.mousePosition.x / flowchart.Zoom / position.width;
-                zoomCenter.y = e.mousePosition.y / flowchart.Zoom / position.height;
-                zoomCenter *= flowchart.Zoom;
+        //        hasDraggedSelected = false;
+        //        break;
 
-                DoZoom(-e.delta.y * 0.01f, zoomCenter);
-                e.Use();
-            }
-        }
+        //    case MouseButton.Right:
+        //        if (rightClickDown != -Vector2.one)
+        //        {
+        //            var menu = new GenericMenu();
+        //            var mousePosition = rightClickDown;
+
+        //            // Clicked on a block
+        //            if (hitBlock != null)
+        //            {
+        //                flowchart.AddSelectedBlock(hitBlock);
+
+        //                // Use a copy because flowchart.SelectedBlocks gets modified
+        //                var blockList = new List<Block>(flowchart.SelectedBlocks);
+        //                menu.AddItem(new GUIContent ("Copy"), false, () => Copy());
+        //                menu.AddItem(new GUIContent ("Cut"), false, () => Cut());
+        //                menu.AddItem(new GUIContent ("Duplicate"), false, () => Duplicate());
+        //                menu.AddItem(new GUIContent ("Delete"), false, () => AddToDeleteList(blockList));
+        //                menu.AddSeparator("");
+        //                if(Application.isPlaying)
+        //                {
+        //                    menu.AddItem(new GUIContent("StopAll"), false, () => StopAllBlocks());
+        //                    menu.AddItem(new GUIContent("Stop"), false, () => StopThisBlock(hitBlock));
+        //                    menu.AddItem(new GUIContent("Execute"), false, () => ExecuteThisBlock(hitBlock, false));
+        //                    menu.AddItem(new GUIContent("Execute (Stop All First)"), false, () => ExecuteThisBlock(hitBlock, true));
+        //                }
+        //                else
+        //                {
+        //                    menu.AddDisabledItem(new GUIContent("StopAll"));//, false), () => StopAllBlocks());
+        //                    menu.AddDisabledItem(new GUIContent("Stop"));//, false);, () => StopThisBlock(hitBlock));
+        //                    menu.AddDisabledItem(new GUIContent("Execute"));//, false);, () => ExecuteThisBlock(hitBlock, false));
+        //                    menu.AddDisabledItem(new GUIContent("Execute (Stop All First)"));//, false);, () => ExecuteThisBlock(hitBlock, true));
+        //                }
+        //            }
+        //            else
+        //            {
+        //                DeselectAll();
+
+        //                menu.AddItem(new GUIContent("Add Block"), false, () => CreateBlock(flowchart, mousePosition / flowchart.Zoom - flowchart.ScrollPos));
+
+        //                if (copyList.Count > 0)
+        //                {
+        //                    menu.AddItem(new GUIContent("Paste"), false, () => Paste(mousePosition));
+        //                }
+        //                else
+        //                {
+        //                    menu.AddDisabledItem(new GUIContent("Paste"));
+        //                }
+
+        //                menu.AddSeparator("");
+        //                if (Application.isPlaying)
+        //                {
+        //                    menu.AddItem(new GUIContent("StopAll"), false, () => StopAllBlocks());
+        //                }
+        //                else
+        //                {
+        //                    menu.AddDisabledItem(new GUIContent("StopAll"));//, false);, () => StopAllBlocks());
+        //                }
+        //            }
+
+        //            var menuRect = new Rect();
+        //            menuRect.position = new Vector2(mousePosition.x, mousePosition.y - 12f);
+        //            menu.DropDown(menuRect);
+        //            e.Use();               
+        //        }
+        //        break;
+        //    }
+
+        //    // Selection box
+        //    selectionBox.size = Vector2.zero;
+        //    selectionBox.position = -Vector2.one;
+        //    startSelectionBoxPosition = selectionBox.position;
+        //}
+
+        //protected override void OnScrollWheel(Event e)
+        //{
+        //    if (selectionBox.size == Vector2.zero)
+        //    {
+        //        Vector2 zoomCenter;
+        //        zoomCenter.x = e.mousePosition.x / flowchart.Zoom / position.width;
+        //        zoomCenter.y = e.mousePosition.y / flowchart.Zoom / position.height;
+        //        zoomCenter *= flowchart.Zoom;
+
+        //        DoZoom(-e.delta.y * 0.01f, zoomCenter);
+        //        e.Use();
+        //    }
+        //}
 
         protected virtual void DrawFlowchartView(Event e)
         {
