@@ -17,13 +17,26 @@ namespace Amanita.EditorUtils
             Validate(mouseEvent);
             Validate(flowchartCtx);
 
-            switch (mouseEvent.type)
+            // Note: We only want to react to the mouse movement while the left mouse button
+            // is pressed (and while alt is NOT pressed). Checking for that here keeps us
+            // from having to check in our OnMouse funcs
+            bool weWantToReact = IsLeftMouseButton(mouseEvent) && !mouseEvent.alt;
+
+            if (weWantToReact)
             {
-                case EventType.MouseDown: return OnMouseDown(mouseEvent, flowchartCtx);
-                case EventType.MouseDrag: return OnMouseDrag(mouseEvent, flowchartCtx);
-                case EventType.MouseUp: return OnMouseButtonReleased(mouseEvent, flowchartCtx);
-                default: return false;
+                switch (mouseEvent.type)
+                {
+                    case EventType.MouseDown: return OnMouseDown(mouseEvent, flowchartCtx);
+                    case EventType.MouseDrag: return OnMouseDrag(mouseEvent, flowchartCtx);
+                    case EventType.MouseUp: return OnMouseButtonReleased(mouseEvent, flowchartCtx);
+                    default: return false;
+                }
             }
+            else
+            {
+                return false;
+            }
+
         }
 
         protected virtual void Validate(Event mouseEvent)
@@ -46,24 +59,28 @@ namespace Amanita.EditorUtils
 
         protected virtual bool OnMouseDown(Event mouseEvent, FlowchartContext flowchartCtx)
         {
-            flowchartCtx.StartDragPosition = (mouseEvent.mousePosition / flowchartCtx.Flowchart.Zoom) -
-                flowchartCtx.Flowchart.ScrollPos;
-
-            // Only left‐click (no Alt) on an already‐selected block starts a drag
             bool consumed = false;
-            if (IsLeftMouseButton(mouseEvent) && !mouseEvent.alt)
+
+            if (flowchartCtx.WeHitBlockInLastMouseDown)
             {
-                var blockHit = flowchartCtx.HitTest(mouseEvent.mousePosition);
-                bool onAlreadySelectedBlock = flowchartCtx.SelectedBlocks.Contains(blockHit);
-                if (blockHit != null && onAlreadySelectedBlock)
+                Vector2 mousePosInWindowSpace = (mouseEvent.mousePosition / flowchartCtx.Flowchart.Zoom);
+                flowchartCtx.StartDragPosition = mousePosInWindowSpace - flowchartCtx.Flowchart.ScrollPos;
+
+                var blockHit = flowchartCtx.BlockHitInLastMouseDown; 
+                if (blockHit == null)
                 {
-                    flowchartCtx.DragBlock = blockHit;
-                    flowchartCtx.DragUndoRecorded = false;
-                    flowchartCtx.HasDraggedSelected = false;
-                    mouseEvent.Use();
-                    consumed = true;
+                    string errorMessage = "Last selected mouse down registered as hitting block, yet there is none under the cursor.";
+                    throw new System.InvalidOperationException(errorMessage);
                 }
+
+                flowchartCtx.RootBlockToDrag = blockHit;
+                flowchartCtx.DragUndoRecorded = false;
+                flowchartCtx.HasDraggedSelected = false;
+                mouseEvent.Use();
+                consumed = true;
+                
             }
+            
             return consumed;
         }
 
@@ -75,7 +92,7 @@ namespace Amanita.EditorUtils
         {
             bool consumed = false;
 
-            if (IsLeftMouseButton(mouseEvent) && flowchartCtx.DragBlock != null)
+            if (flowchartCtx.RootBlockToDrag != null)
             {
                 bool atTheStartOfADrag = !flowchartCtx.DragUndoRecorded;
                 if (atTheStartOfADrag)
@@ -84,6 +101,7 @@ namespace Amanita.EditorUtils
                     Undo.RegisterCompleteObjectUndo(blocks, startBlockDragGroupName);
 
                     flowchartCtx.DragUndoRecorded = true;
+                    flowchartCtx.BlockDragOngoing = true;
                 }
 
                 MoveAllSelectedBlocks();
@@ -97,6 +115,7 @@ namespace Amanita.EditorUtils
                         elem._NodeRect = elemRect;
                     }
                 }
+
                 flowchartCtx.HasDraggedSelected = true;
                 mouseEvent.Use();
                 consumed = true;
@@ -109,18 +128,21 @@ namespace Amanita.EditorUtils
         {
             // End drag: finalize positions & optional grid‐snap
             bool consumed = false;
-            if (IsLeftMouseButton(mouseEvent) && flowchartCtx.DragBlock != null)
+
+            if (flowchartCtx.RootBlockToDrag != null)
             {
                 if (AmanitaEditorPreferences.useGridSnap)
                 {
                     flowchartCtx.SnapBlocksToGrid();
                 }
-                flowchartCtx.DragBlock = null;
+                flowchartCtx.RootBlockToDrag = null;
                 flowchartCtx.HasDraggedSelected = false;
                 flowchartCtx.DragUndoRecorded = false;
+                flowchartCtx.BlockDragOngoing = false;
                 mouseEvent.Use();
                 consumed = true;
             }
+
             return consumed;
         }
 

@@ -136,7 +136,7 @@ namespace Amanita.Tests.Editor
         public virtual void MouseDown_UnselectedBlock_NoDragBlockSet()
         {
             handler.Handle(mouseDownEvent, fcContext);
-            bool success = fcContext.DragBlock == null;
+            bool success = fcContext.RootBlockToDrag == null;
             Assert.IsTrue(success, "Drag Block was set after MouseDown on unselected Block");
         }
 
@@ -144,7 +144,9 @@ namespace Amanita.Tests.Editor
         public virtual void MouseDown_SelectedBlock_YesConsume(int blockIndex)
         {
             SelectBlock(blockIndex);
-            mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            //mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            Block blockHit = blocksInFlowchart[blockIndex];
+            fcContext.BlockHitInLastMouseDown = blockHit;
             bool consumed = handler.Handle(mouseDownEvent, fcContext);
             Assert.IsTrue(consumed, $"Block #{blockIndex} should consume MouseDown");
         }
@@ -171,7 +173,7 @@ namespace Amanita.Tests.Editor
             // Arrange
             SelectBlock(blockIndex);
             mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
-            fcContext.DragBlock = blocksInFlowchart[blockIndex];
+            fcContext.RootBlockToDrag = blocksInFlowchart[blockIndex];
 
             // Act
             bool consumed = handler.Handle(mouseDragEvent, fcContext);
@@ -198,7 +200,7 @@ namespace Amanita.Tests.Editor
         {
             flowchart.AddMultiSelectedBlocks(blocksInFlowchart);
             Block firstBlock = blocksInFlowchart[0];
-            fcContext.DragBlock = firstBlock;
+            fcContext.RootBlockToDrag = firstBlock;
 
             Vector2 expectedMovement = mouseDragEvent.delta / flowchart.Zoom;
 
@@ -250,7 +252,7 @@ namespace Amanita.Tests.Editor
             Block toDrag = blocksInFlowchart[blockIndex];
             mouseDragEvent.mousePosition = MousePositionFor(blockIndex);
             flowchart.AddSelectedBlock(toDrag);
-            fcContext.DragBlock = toDrag;
+            fcContext.RootBlockToDrag = toDrag;
             handler.Handle(mouseDragEvent, fcContext);
         }
 
@@ -260,14 +262,16 @@ namespace Amanita.Tests.Editor
             SimulateDraggingBlockAtIndex(blockIndex);
             handler.Handle(mouseUpEvent, fcContext);
             string assertErrorMessage = $"Block #{blockIndex} was not cleared after being dragged and released";
-            Assert.IsNull(fcContext.DragBlock, assertErrorMessage);
+            Assert.IsNull(fcContext.RootBlockToDrag, assertErrorMessage);
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
         public void MouseDown_SelectedBlock_UndoGroupNotRecorded(int blockIndex)
         {
             SelectBlock(blockIndex);
-            mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            //mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            Block blockHit = blocksInFlowchart[blockIndex];
+            fcContext.BlockHitInLastMouseDown = blockHit;
 
             bool consumed = handler.Handle(mouseDownEvent, fcContext);
 

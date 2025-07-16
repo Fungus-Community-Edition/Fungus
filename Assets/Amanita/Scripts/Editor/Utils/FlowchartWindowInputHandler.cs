@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.EditorUtils
 {
@@ -12,43 +13,25 @@ namespace Amanita.EditorUtils
         public static readonly float GridLineSpacingSize = 120;
         public static readonly float GridObjectSnap = 20;
 
-        public FlowchartWindowInputHandler()
+        public FlowchartWindowInputHandler(params IUGUIEventHandler[] subhandlers)
         {
+            this.subhandlers = subhandlers;
         }
 
-        protected IList<IUGUIEventHandler> subhandlers = new List<IUGUIEventHandler>()
-        {
-            new SelectionHandler(),
-            new BlockDragHandler(),
-            new PanZoomHandler(),
-        };
+        protected IList<IUGUIEventHandler> subhandlers;
 
-        public virtual bool Process(Event eventToProcess, FlowchartContext context)
+        public virtual bool Process(Event currentEv, FlowchartContext flowchartCtx)
         {
             foreach (var elem in subhandlers)
-                if (elem.Handle(eventToProcess, context))
+                if (elem.Handle(currentEv, flowchartCtx))
                     return true;
             return false;
 
         }
 
+        protected static readonly int leftMouseButton = 0;
         protected FlowchartContext currentContext;
 
-        public virtual void AddSubhandler(IUGUIEventHandler toAdd)
-        {
-            subhandlers.Remove(toAdd);
-        }
-
-        public virtual void RemoveSubhandler(IUGUIEventHandler toRemove)
-        {
-            subhandlers.Remove(toRemove);
-        }
-
-        public virtual void ClearSubhandlers()
-        {
-            subhandlers.Clear();
-        }
-        
 
         //protected virtual void OnMouseDown(Event mouseEvent)
         //{

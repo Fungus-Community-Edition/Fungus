@@ -273,7 +273,13 @@ namespace Amanita.EditorUtils
             PrepInputProcessors();
             void PrepInputProcessors()
             {
-                _primaryInputProcessor = new FlowchartWindowInputHandler();
+                _primaryInputProcessor = new FlowchartWindowInputHandler
+                    (
+                        new SingleSelectionHandler(),
+                        new BoxSelectionHandler(),
+                        new BlockDragHandler()
+                        //new PanZoomHandler()
+                    );
                 
             }
 
@@ -309,7 +315,7 @@ namespace Amanita.EditorUtils
 
         }
 
-        protected IUGUIEventHandler selectionHandler = new SelectionHandler(),
+        protected IUGUIEventHandler selectionHandler = new SingleSelectionHandler(),
             blockDragHandler = new BlockDragHandler(),
             panAndZoomHandler = new PanZoomHandler();
 
@@ -852,16 +858,33 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnGUI()
         {
-            flowchartCtx.Flowchart = FcSelected;
-            flowchartCtx.Position = position;
-            flowchartCtx.SelectionBox = selectionBox;
-            flowchartCtx.Window = this;
+            UpdateFlowchartContextBeforeInputProcess();
+            void UpdateFlowchartContextBeforeInputProcess()
+            {
+                flowchartCtx.Flowchart = FcSelected;
+                flowchartCtx.Position = position;
+                flowchartCtx.Window = this;
+
+                Event currentEv = Event.current;
+                const int leftMouseButton = 0;
+                if (currentEv.type == EventType.MouseDown && currentEv.button == leftMouseButton)
+                {
+                    flowchartCtx.SelectionBox = Rect.zero;
+                    Block blockHit = flowchartCtx.TopmostBlockOverlapping(currentEv.mousePosition);
+                    flowchartCtx.BlockHitInLastMouseDown = blockHit;
+                    string blockHitName = "null";
+
+                    if (blockHit != null)
+                    {
+                        blockHitName = blockHit.BlockName;
+                    }
+
+                    Debug.Log($"Block hit in last mouse down: {blockHitName}");
+                }
+            }
 
             if (_primaryInputProcessor.Process(Event.current, flowchartCtx))
                 Event.current.Use();
-
-            //if (_secondaryInputProcessor.Process(Event.current, ctx))
-            //    Event.current.Use();
 
             // TODO: avoid calling some of these methods in OnGUI because it should be possible
             // to only call them when the window is initialized or a new flowchart is selected, etc.
@@ -895,16 +918,23 @@ namespace Amanita.EditorUtils
             // Draw blocks and connections
             DrawFlowchartView(Event.current);
 
+            selectionBox = flowchartCtx.SelectionBox; 
+            // ^To keep it updated, since it might've changed since the last input process
             DrawSelectionBox();
             void DrawSelectionBox()
             {
-                if (Event.current.type == EventType.Repaint)
+                // After your _inputProcessor.Process(...) and your DrawFlowchartView(...)…
+                if (selectionBox.size != Vector2.zero && Event.current.type == EventType.Repaint)
                 {
-                    if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
-                    {
-                        GUI.Box(selectionBox, "", GUI.skin.FindStyle("SelectionRect"));
-                    }
+                    GUI.Box(selectionBox, "", GUI.skin.FindStyle("SelectionRect"));
                 }
+                //if (Event.current.type == EventType.Repaint)
+                //{
+                //    if (startSelectionBoxPosition.x >= 0 && startSelectionBoxPosition.y >= 0)
+                //    {
+                //        GUI.Box(selectionBox, "", GUI.skin.FindStyle("SelectionRect"));
+                //    }
+                //}
             }
 
             // Draw toolbar, search popup, and variables window
