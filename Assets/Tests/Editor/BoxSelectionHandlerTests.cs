@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Amanita.Tests.Editor
 {
-    public class SelectionBoxHandlerTests
+    public class BoxSelectionHandlerTests
     {
         FlowchartContext ctx;
         BoxSelectionHandler handler;

@@ -29,7 +29,10 @@ namespace Amanita.EditorUtils
             bool consumed = false;
             bool correctDraggingInput = IsAltDragging(mouseEvent) ||
                 IsMiddleDragging(mouseEvent) || IsRightDragging(mouseEvent);
-            if (IsPanTool || correctDraggingInput)
+            bool otherDragOngoing = ctx.BlockDragOngoing || ctx.SelectionBoxDragOngoing;
+
+            bool shouldDragCanvas = (IsPanTool || correctDraggingInput) && !otherDragOngoing;
+            if (shouldDragCanvas)
             {
                 ctx.Flowchart.ScrollPos += mouseEvent.delta / ctx.Flowchart.Zoom;
                 mouseEvent.Use();
@@ -62,22 +65,23 @@ namespace Amanita.EditorUtils
             return mouseEvent.button == 1;
         }
 
-        protected bool HandleZoom(Event eventToHandle, FlowchartContext ctx)
+        protected bool HandleZoom(Event inputEvent, FlowchartContext flowchartCtx)
         {
             bool consumed = false;
-            bool selectionBoxActive = ctx.SelectionBox.size != Vector2.zero;
+            bool selectionBoxActive = flowchartCtx.SelectionBox.size != Vector2.zero;
             bool shouldZoom = !(IsPanTool || selectionBoxActive);
             if (shouldZoom)
             {
                 Vector2 zoomCenter;
-                zoomCenter.x = eventToHandle.mousePosition.x / ctx.Flowchart.Zoom / ctx.Position.width;
-                zoomCenter.y = eventToHandle.mousePosition.y / ctx.Flowchart.Zoom / ctx.Position.height;
-                zoomCenter *= ctx.Flowchart.Zoom;
+                Vector2 mousePosInWindowSpace = inputEvent.mousePosition / flowchartCtx.Flowchart.Zoom;
+                zoomCenter.x = mousePosInWindowSpace.x / flowchartCtx.Position.width;
+                zoomCenter.y = mousePosInWindowSpace.y / flowchartCtx.Position.height;
+                zoomCenter *= flowchartCtx.Flowchart.Zoom;
 
-                float zoomDelta = -eventToHandle.delta.y * 0.01f;
+                float zoomDelta = -inputEvent.delta.y * 0.01f;
 
-                DoZoom(ctx, zoomDelta, zoomCenter);
-                eventToHandle.Use();
+                DoZoom(flowchartCtx, zoomDelta, zoomCenter);
+                inputEvent.Use();
                 consumed = true;
             }
             return consumed;
@@ -89,7 +93,7 @@ namespace Amanita.EditorUtils
             ctx.Flowchart.Zoom += delta;
             ctx.Flowchart.Zoom = Mathf.Clamp(ctx.Flowchart.Zoom, MinZoom, MaxZoom);
 
-            var deltaSize = ctx.Position.size / prevZoom - ctx.Position.size / ctx.Flowchart.Zoom;
+            var deltaSize = (ctx.Position.size / prevZoom) - (ctx.Position.size / ctx.Flowchart.Zoom);
             var offset = -Vector2.Scale(deltaSize, center);
 
             ctx.Flowchart.ScrollPos += offset;

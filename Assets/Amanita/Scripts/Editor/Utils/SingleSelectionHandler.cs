@@ -59,8 +59,6 @@ namespace Amanita.EditorUtils
                 flowchartCtx.Flowchart.AddSelectedBlock(blockHit);
             }
 
-            //flowchartCtx.Window.Repaint(); // We might not need this if we decide to let other handlers call Repaint
-            
             return consumed;
         }
 

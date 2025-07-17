@@ -41,7 +41,6 @@ namespace Amanita.EditorUtils
 
             if (mouseIsOnEmptySpace)
             {
-                
                 ctx.StartSelectionBoxPosition = inputEvent.mousePosition;
                 ctx.SelectionBox = Rect.MinMaxRect
                 (

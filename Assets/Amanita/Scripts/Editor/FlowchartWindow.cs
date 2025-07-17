@@ -275,10 +275,11 @@ namespace Amanita.EditorUtils
             {
                 _primaryInputProcessor = new FlowchartWindowInputHandler
                     (
+                        new HitDetectionHandler(),
                         new SingleSelectionHandler(),
                         new BoxSelectionHandler(),
-                        new BlockDragHandler()
-                        //new PanZoomHandler()
+                        new BlockDragHandler(),
+                        new PanZoomHandler()
                     );
                 
             }
@@ -865,22 +866,6 @@ namespace Amanita.EditorUtils
                 flowchartCtx.Position = position;
                 flowchartCtx.Window = this;
 
-                Event currentEv = Event.current;
-                const int leftMouseButton = 0;
-                if (currentEv.type == EventType.MouseDown && currentEv.button == leftMouseButton)
-                {
-                    flowchartCtx.SelectionBox = Rect.zero;
-                    Block blockHit = flowchartCtx.TopmostBlockOverlapping(currentEv.mousePosition);
-                    flowchartCtx.BlockHitInLastMouseDown = blockHit;
-                    string blockHitName = "null";
-
-                    if (blockHit != null)
-                    {
-                        blockHitName = blockHit.BlockName;
-                    }
-
-                    Debug.Log($"Block hit in last mouse down: {blockHitName}");
-                }
             }
 
             if (_primaryInputProcessor.Process(Event.current, flowchartCtx))
