@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 ﻿// Original code by Martin Ecker (http://martinecker.com)
 
 using UnityEngine;
@@ -10,6 +7,11 @@ namespace Amanita.EditorUtils
     // Helper Rect extension methods
     public static class RectExtensions
     {
+        public static Rect Shift(this Rect r, float x, float y, float w, float h)
+        {
+            return new Rect(r.x + x, r.y + y, w, h);
+        }
+
         public static Vector2 TopLeft(this Rect rect)
         {
             return new Vector2(rect.xMin, rect.yMin);

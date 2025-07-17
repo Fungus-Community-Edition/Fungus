@@ -66,10 +66,15 @@ namespace Amanita.EditorUtils
         {
             bool consumed = false;
 
-            bool hitEmptySpace = flowchartCtx.BlockHitInLastMouseDown == null;
+            Block blockHit = flowchartCtx.BlockHitInLastMouseDown;
+            bool hitEmptySpace = blockHit == null;
             if (hitEmptySpace)
             {
                 flowchartCtx.Flowchart.ClearSelectedBlocks();
+            }
+            else
+            {
+                FlowchartWindow.SetBlockForInspector(flowchartCtx.Flowchart, blockHit);
             }
 
             return consumed;

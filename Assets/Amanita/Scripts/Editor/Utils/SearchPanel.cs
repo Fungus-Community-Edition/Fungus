@@ -34,6 +34,7 @@ namespace Amanita.EditorUtils
             void PrepSearchField()
             {
                 searchField = new ToolbarSearchField();
+                searchField.name = SearchFieldName;
                 searchField.style.marginBottom = searchFieldMarginBottom;
             }
 
@@ -53,6 +54,8 @@ namespace Amanita.EditorUtils
 
             AddUIToRoot();
         }
+
+        public static readonly string SearchFieldName = "FlowchartSearchField";
 
         protected ToolbarSearchField searchField;
         protected ListView resultList; // Shows Block Names
@@ -88,6 +91,11 @@ namespace Amanita.EditorUtils
 
         protected virtual void BindBlockToResultListItem(VisualElement element, int index)
         {
+            if (flowchart == null) // This could happen right as Play Mode starts
+            {
+                return;
+            }
+
             UIToolkitLabel uitkLabel = (UIToolkitLabel)element;
             allBlocks = flowchart.GetComponents<Block>();
             IList<Block> blocksInResults = (IList<Block>)resultList.itemsSource;
@@ -128,6 +136,16 @@ namespace Amanita.EditorUtils
 
             resultList.itemsSource = (System.Collections.IList)resultsToShow;
             resultList.RefreshItems();
+        }
+
+        public virtual int ResultCount
+        {
+            get
+            {
+                if (resultList == null)
+                    return 0;
+                return resultList.childCount;
+            }
         }
 
         public string Query

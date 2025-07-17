@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Amanita.EditorUtils
 {
-    public class FlowchartWindowInputHandler : IInputProcessor
+    public class FlowchartWindowInputHandler : IInputProcessor, IDisposable
     {
         public static readonly float RightClickTolerance = 5f;
         public static readonly float MinZoomValue = 0.25f;
@@ -32,10 +32,15 @@ namespace Amanita.EditorUtils
         protected static readonly int leftMouseButton = 0;
         protected FlowchartContext currentContext;
 
+        public virtual void Dispose()
+        {
+            for (var i = 0; i < subhandlers.Count; i++)
+            {
+                var disposableHandler = subhandlers[i] as IDisposable;
+                disposableHandler?.Dispose();
+            }
+        }
 
     }
-
-
-
 
 }
