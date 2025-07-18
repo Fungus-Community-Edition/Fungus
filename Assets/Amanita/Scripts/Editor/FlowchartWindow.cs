@@ -3,14 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace Amanita.EditorUtils
 {
-    public class FlowchartWindow : EventWindow
+    public class FlowchartWindow : EventWindow, IFlowchartHost
     {
+        BlockClipboard IFlowchartHost.Clipboard => this.BlockClipboard;
+        bool IFlowchartHost.HasClipboard => this.HasClipboard;
+        Flowchart IFlowchartHost.Flowchart => this.currentFlowchart;
+        void IFlowchartHost.CreateBlock(Flowchart fc, Vector2 p) => CreateBlock(fc, p);
+        void IFlowchartHost.DeselectAll() => DeselectAll();
+        void IFlowchartHost.QueueToDelete(IList<Block> bs) => QueueToDelete(bs);
+        void IFlowchartHost.DeleteScheduledBlocks() => DeleteScheduledBlocks();
+        void IFlowchartHost.UpdateBlockCollection() => UpdateBlockCollection();
+        void IFlowchartHost.Repaint() => Repaint();
+
+
         public class ClipboardObject
         {
             internal SerializedObject serializedObject;
@@ -20,78 +32,6 @@ namespace Amanita.EditorUtils
             {
                 serializedObject = new SerializedObject(obj);
                 type = obj.GetType();
-            }
-        }
-
-        public class BlockCopy
-        {
-            protected SerializedObject block = null;
-            protected IList<ClipboardObject> commands = new List<ClipboardObject>();
-            protected ClipboardObject eventHandler = null;
-
-            internal BlockCopy(Block block)
-            {
-                this.block = new SerializedObject(block);
-                foreach (var command in block.CommandList)
-                {
-                    commands.Add(new ClipboardObject(command));
-                }
-                if (block._EventHandler != null)
-                {
-                    eventHandler = new ClipboardObject(block._EventHandler);
-                }
-            }
-
-            protected void CopyProperties(SerializedObject source, Object dest, params SerializedPropertyType[] excludeTypes)
-            {
-                var newSerializedObject = new SerializedObject(dest);
-                var prop = source.GetIterator();
-                while (prop.NextVisible(true))
-                {
-                    if (!excludeTypes.Contains(prop.propertyType))
-                    {
-                        newSerializedObject.CopyFromSerializedProperty(prop);
-                    }
-                }
-
-                newSerializedObject.ApplyModifiedProperties();
-            }
-
-            internal Block PasteBlock(FlowchartWindow flowWind, Flowchart flowchart)
-            {
-                var newBlock = flowWind.CreateBlock(flowchart, Vector2.zero);
-
-                // Copy all command serialized properties
-                // Copy references to match duplication behavior
-                foreach (var command in commands)
-                {
-                    var newCommand = Undo.AddComponent(flowchart.gameObject, command.type) as Command;
-                    CopyProperties(command.serializedObject, newCommand);
-                    newCommand.ItemId = flowchart.NextItemId();
-                    newBlock.CommandList.Add(newCommand);
-                }
-
-                // Copy event handler
-                if (eventHandler != null)
-                {
-                    var newEventHandler = Undo.AddComponent(flowchart.gameObject, eventHandler.type) as EventHandler;
-                    CopyProperties(eventHandler.serializedObject, newEventHandler);
-                    newEventHandler.ParentBlock = newBlock;
-                    newBlock._EventHandler = newEventHandler;
-                }
-
-                // Copy block properties, but do not copy references because those were just assigned
-                CopyProperties(
-                    block,
-                    newBlock,
-                    SerializedPropertyType.ObjectReference,
-                    SerializedPropertyType.Generic,
-                    SerializedPropertyType.ArraySize
-                );
-
-                newBlock.BlockName = flowchart.GetUniqueBlockKey(block.FindProperty("blockName").stringValue + " (Copy)");
-
-                return newBlock;
             }
         }
 
@@ -236,9 +176,7 @@ namespace Amanita.EditorUtils
         protected Block dragBlock;
         protected bool hasDraggedSelected = false;
 
-
         static protected VariableListAdaptor variableListAdaptor;
-
 
         protected bool wasControl;
         protected ExecutingBlocks executingBlocks = new ExecutingBlocks();
@@ -276,6 +214,8 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnEnable()
         {
+            BlockClipboard = new BlockClipboard(this);
+
             PrepInputProcessors();
             void PrepInputProcessors()
             {
@@ -286,7 +226,8 @@ namespace Amanita.EditorUtils
                         new SingleSelectionHandler(),
                         new BoxSelectionHandler(),
                         new BlockDragHandler(),
-                        new PanZoomHandler()
+                        new PanZoomHandler(),
+                        new BlockContextMenuHandler(this, new GenericMenuFactory())
                     );
 
             }
@@ -295,8 +236,6 @@ namespace Amanita.EditorUtils
             addButtonContent = new GUIContent(addTexture, "Add a new block");
             connectionPointTexture = AmanitaEditorResources.ConnectionPoint;
             gridLineColor.a = EditorGUIUtility.isProSkin ? 0.5f : 0.25f;
-
-            copyList.Clear();
 
             wantsMouseMove = true; // For hover selection in block search popup  
 
@@ -323,12 +262,14 @@ namespace Amanita.EditorUtils
 
         }
 
+        public virtual BlockClipboard BlockClipboard { get; set; }
+        public virtual bool HasClipboard => BlockClipboard != null && BlockClipboard.HasEntries;
         protected DrawGridContext drawGridCtx = new DrawGridContext();
         protected Texture2D addTexture;
         protected GUIContent addButtonContent;
         protected Texture2D connectionPointTexture;
         protected Color gridLineColor = Color.black;
-        protected IList<BlockCopy> copyList = new List<BlockCopy>();
+        protected IList<BlockClipboardEntry> copyList = new List<BlockClipboardEntry>();
 
         public static Flowchart GetFlowchart()
         {
@@ -566,7 +507,9 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected void UpdateBlockCollection()
+        public virtual int BlocksQueuedToCopy => copyList.Count;
+
+        public virtual void UpdateBlockCollection()
         {
             GetFlowchart();
             if (FcSelected == null)
@@ -790,45 +733,6 @@ namespace Amanita.EditorUtils
 
             InitStyles();
 
-            DeleteScheduledBlocks();
-            void DeleteScheduledBlocks()
-            {
-                for (int i = 0; i < deleteList.Count; ++i)
-                {
-                    var deleteBlock = deleteList[i];
-
-                    var commandList = deleteBlock.CommandList;
-                    for (int j = 0; j < commandList.Count; ++j)
-                    {
-                        Undo.DestroyObjectImmediate(commandList[j]);
-                    }
-
-                    if (deleteBlock._EventHandler != null)
-                    {
-                        Undo.DestroyObjectImmediate(deleteBlock._EventHandler);
-                    }
-
-                    if (deleteBlock.IsSelected)
-                    {
-                        // Deselect
-                        currentFlowchart.DeselectBlockNoCheck(deleteBlock);
-                    }
-
-                    Undo.DestroyObjectImmediate(deleteBlock);
-                }
-
-                if (deleteList.Count > 0)
-                {
-                    UpdateBlockCollection();
-                    // Revert to showing properties for the Flowchart
-                    Selection.activeGameObject = currentFlowchart.gameObject;
-                    currentFlowchart.ClearSelectedCommands();
-                    Repaint();
-                }
-
-                deleteList.Clear();
-            }
-
             DrawBackgroundAndGrid(Event.current);
             void DrawBackgroundAndGrid(Event guiEvent)
             {
@@ -989,6 +893,44 @@ namespace Amanita.EditorUtils
             GUIUtility.ExitGUI();
         }
 
+        public virtual void DeleteScheduledBlocks()
+        {
+            for (int i = 0; i < deleteList.Count; ++i)
+            {
+                var deleteBlock = deleteList[i];
+
+                var commandList = deleteBlock.CommandList;
+                for (int j = 0; j < commandList.Count; ++j)
+                {
+                    Undo.DestroyObjectImmediate(commandList[j]);
+                }
+
+                if (deleteBlock._EventHandler != null)
+                {
+                    Undo.DestroyObjectImmediate(deleteBlock._EventHandler);
+                }
+
+                if (deleteBlock.IsSelected)
+                {
+                    // Deselect
+                    currentFlowchart.DeselectBlockNoCheck(deleteBlock);
+                }
+
+                Undo.DestroyObjectImmediate(deleteBlock);
+            }
+
+            if (deleteList.Count > 0)
+            {
+                UpdateBlockCollection();
+                // Revert to showing properties for the Flowchart
+                Selection.activeGameObject = currentFlowchart.gameObject;
+                currentFlowchart.ClearSelectedCommands();
+                Repaint();
+            }
+
+            deleteList.Clear();
+        }
+
         protected virtual void DrawOverlay(Event guiEvent)
         {
             DrawMainToolbarGroup();
@@ -1083,6 +1025,27 @@ namespace Amanita.EditorUtils
             }
 
             DrawVariablesBlock(guiEvent);
+        }
+
+        public virtual void QueueToDelete(IList<Block> blocks)
+        {
+            for (int i = 0; i < blocks.Count; ++i)
+            {
+                var target = blocks[i];
+                QueueToDelete(target);
+            }
+        }
+
+        public virtual void QueueToDelete(Block block)
+        {
+            if (block != null && !deleteList.Contains(block))
+            {
+                deleteList.Add(block);
+            }
+            else
+            {
+                Debug.LogWarning("Tried queueing a null Block for deletion");
+            }
         }
 
         protected virtual void DrawVariablesBlock(Event guiEvent)
@@ -1270,46 +1233,9 @@ namespace Amanita.EditorUtils
             forceRepaintCount = 1;
         }
 
-        //Potentially could be faster using https://forum.unity.com/threads/how-do-i-access-the-background-image-used-for-the-animator.501876/
         protected virtual void DrawGrid()
         {
-            //gridDrawer.Draw(flowchartCtx, drawGridCtx);
-            IList<float> xPositions = null, yPositions = null;
-
-            GetPositions();
-            void GetPositions()
-            {
-                xPositions = GridUtils.GetVerticalLinePositions(currentFlowchart.ScrollPos.x,
-                    position.width / currentFlowchart.Zoom,
-                    GridLineSpacingSize);
-                yPositions = GridUtils.GetHorizontalLinePositions(currentFlowchart.ScrollPos.y,
-                    position.height / currentFlowchart.Zoom,
-                    GridLineSpacingSize);
-            }
-
-            DrawLines();
-            void DrawLines()
-            {
-                Handles.color = gridLineColor;
-                float windowWidth = this.position.width / currentFlowchart.Zoom;
-                float windowHeight = this.position.height / currentFlowchart.Zoom;
-
-                DrawVerticalLines();
-                void DrawVerticalLines()
-                {
-                    foreach (var elem in xPositions)
-                        Handles.DrawLine(new Vector2(elem, 0), new Vector2(elem, windowHeight));
-                }
-
-                DrawHorizontalLines();
-                void DrawHorizontalLines()
-                {
-                    foreach (var elem in yPositions)
-                        Handles.DrawLine(new Vector2(0, elem), new Vector2(windowWidth, elem));
-                }
-
-                Handles.color = Color.white;
-            }
+            gridDrawer.Draw(flowchartCtx, drawGridCtx);
         }
 
         protected FlowchartWindowDrawGrid gridDrawer = new FlowchartWindowDrawGrid();
@@ -1321,7 +1247,7 @@ namespace Amanita.EditorUtils
             SetBlockForInspector(currentFlowchart, block);
         }
 
-        protected virtual void DeselectAll()
+        public virtual void DeselectAll()
         {
             Undo.RecordObject(currentFlowchart, "Deselect");
             currentFlowchart.ClearSelectedCommands();
@@ -1521,14 +1447,6 @@ namespace Amanita.EditorUtils
             return rt * rt * rt * s + 3 * rt * rtt * st + 3 * rtt * t * et + t * t * t * e;
         }
 
-        protected void AddToDeleteList(IList<Block> blocks)
-        {
-            for (int i = 0; i < blocks.Count; ++i)
-            {
-                FlowchartWindow.deleteList.Add(blocks[i]);
-            }
-        }
-
         protected static void ShowBlockInspector(Flowchart flowchart)
         {
             if (blockInspector == null)
@@ -1571,133 +1489,15 @@ namespace Amanita.EditorUtils
             return (Event.current != null && Event.current.shift) || EditorGUI.actionKey;
         }
 
-        protected virtual void Copy()
+        protected override void OnExecuteCommand(Event guiEvent)
         {
-            copyList.Clear();
-
-            foreach (var block in currentFlowchart.SelectedBlocks
-                .Union(mouseDownSelectionState))
+            switch (guiEvent.commandName)
             {
-                copyList.Add(new BlockCopy(block));
-            }
-        }
-
-        protected virtual void Cut()
-        {
-            Copy();
-            Undo.RecordObject(currentFlowchart, "Cut");
-            AddToDeleteList(currentFlowchart.SelectedBlocks);
-        }
-
-        // Center is position in unscaled window space
-        protected virtual void Paste(Vector2 center, bool relative = false)
-        {
-            Undo.RecordObject(currentFlowchart, "Deselect");
-            DeselectAll();
-
-            var pasteList = new List<Block>();
-
-            foreach (var copy in copyList)
-            {
-                pasteList.Add(copy.PasteBlock(this, currentFlowchart));
-            }
-
-            var copiedCenter = GetBlockCenter(pasteList.ToArray()) + currentFlowchart.ScrollPos;
-            var delta = relative ? center : (center / currentFlowchart.Zoom - copiedCenter);
-
-            foreach (var block in pasteList)
-            {
-                var tempRect = block._NodeRect;
-                tempRect.position += delta;
-                block._NodeRect = tempRect;
-            }
-
-            UpdateBlockCollection();
-        }
-
-        protected virtual void Duplicate()
-        {
-            var tempCopyList = new List<BlockCopy>(copyList);
-            Copy();
-            Paste(new Vector2(20, 0), true);
-            copyList = tempCopyList;
-        }
-
-        protected override void OnValidateCommand(Event e)
-        {
-            if (e.type == EventType.ValidateCommand)
-            {
-                var c = e.commandName;
-                if (c == "Copy" || c == "Cut" || c == "SoftDelete" || c == "Delete" || c == "Duplicate")
-                {
-                    if (currentFlowchart.SelectedBlocks.Count > 0 || mouseDownSelectionState.Count > 0)
-                    {
-                        e.Use();
-                    }
-                }
-                else if (c == "Paste")
-                {
-                    if (copyList.Count > 0)
-                    {
-                        e.Use();
-                    }
-                }
-                else if (c == "SelectAll" || c == "Find")
-                {
-                    e.Use();
-                }
-            }
-        }
-
-        protected override void OnExecuteCommand(Event e)
-        {
-            switch (e.commandName)
-            {
-                case "Copy":
-                    Copy();
-                    e.Use();
-                    break;
-
-                case "Cut":
-                    Cut();
-                    e.Use();
-                    break;
-
-                case "Paste":
-                    Paste(position.center - position.position);
-                    e.Use();
-                    break;
-
-                case "Delete":
-                    AddToDeleteList(currentFlowchart.SelectedBlocks);
-                    e.Use();
-                    break;
-
-                case "SoftDelete":
-                    AddToDeleteList(currentFlowchart.SelectedBlocks);
-                    e.Use();
-                    break;
-
-                case "Duplicate":
-                    Duplicate();
-                    e.Use();
-                    break;
-
-                case "SelectAll":
-                    Undo.RecordObject(currentFlowchart, "Selection");
-                    currentFlowchart.ClearSelectedBlocks();
-                    for (int i = 0; i < blocks.Count; ++i)
-                    {
-                        currentFlowchart.AddSelectedBlock(blocks[i]);
-                    }
-                    e.Use();
-                    break;
-
                 case "Find":
                     blockPopupSelection = 0;
                     popupScroll = Vector2.zero;
                     EditorGUI.FocusTextInControl(SearchFieldName);
-                    e.Use();
+                    guiEvent.Use();
                     break;
             }
         }
@@ -1888,4 +1688,6 @@ namespace Amanita.EditorUtils
             DrawConnections(block);
         }
     }
+
+    
 }

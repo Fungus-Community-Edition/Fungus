@@ -44,7 +44,7 @@ namespace Amanita.EditorUtils
         {
             GameObject selectedGO = Selection.activeGameObject;
             bool hasOurFlowchart = selectedGO.GetComponent<Flowchart>() == TargetFlowchart;
-            if (selectedGO != null && hasOurFlowchart)
+            if (selectedGO != null && hasOurFlowchart && varsList != null)
             {
                 Debug.Log("Rebuilding list view");
                 listView.itemsSource = varsList;

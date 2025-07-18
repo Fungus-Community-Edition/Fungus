@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Amanita.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using static Amanita.EditorUtils.FlowchartWindow;
@@ -64,6 +65,17 @@ namespace Amanita.EditorUtils
             return result;
         }
 
+        public IList<Block> DeleteList
+        {
+            get { return deleteList; }
+            set
+            {
+                deleteList.Clear();
+                deleteList.AddRange(value);
+            }
+        }
+
+        protected IList<Block> deleteList = new List<Block>();
         public virtual void SnapBlocksToGrid()
         {
             foreach (var elem in SelectedBlocks)
