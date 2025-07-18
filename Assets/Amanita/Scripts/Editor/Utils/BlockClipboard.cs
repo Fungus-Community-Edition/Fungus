@@ -1,4 +1,5 @@
 ﻿using Amanita.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
-    public class BlockClipboard
+    public class BlockClipboard : IDisposable
     {
         readonly List<BlockClipboardEntry> _entries = new List<BlockClipboardEntry>();
 
@@ -17,13 +18,63 @@ namespace Amanita.EditorUtils
 
         public void Copy(IEnumerable<Block> blocks)
         {
+            origBlocks.Clear();
             _entries.Clear();
             IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy));
             _entries.AddRange(newEntries);
+            origBlocks.AddRange(blocks.ToList());
         }
 
+        public int EntryCount => _entries.Count;
         public bool HasEntries => _entries.Count > 0;
+        protected IList<Block> origBlocks = new List<Block>();
 
+        public virtual bool HasEntriesFor(IList<Block> blocks)
+        {
+            bool result = true;
+
+            foreach (var elem in blocks)
+            {
+                if (!HasEntryFor(elem))
+                {
+                    result = false; break;
+                }
+            }
+
+            return result;
+        }
+
+        public virtual bool HasEntryFor(Block block)
+        {
+            bool result = (from elem in origBlocks
+                           where elem.Equals(block)
+                           select elem).Any();
+            return result;
+        }
+
+        public virtual bool HasMultiEntriesWithIDs(IList<int> ids)
+        {
+            bool result = true;
+
+            for (int i = 0; i < ids.Count; i++)
+            {
+                int currentId = ids[i];
+                if (!HasEntryWithID(currentId))
+                {
+                    result = false; break;
+                }
+            }
+
+            return result;
+        }
+
+        public virtual bool HasEntryWithID(int id)
+        {
+            bool result = (from elem in origBlocks
+                           where elem.ItemId == id
+                           select elem).Any();
+            return result;
+        }
         public virtual FlowchartWindow Window { get; protected set; }
         protected virtual Flowchart Flowchart
         {
@@ -67,6 +118,13 @@ namespace Amanita.EditorUtils
 
             // 5) Refresh the window’s block cache
             Window.UpdateBlockCollection();
+        }
+    
+        public virtual void Dispose()
+        {
+            origBlocks.Clear();
+            _entries.Clear();
+            Window = null;
         }
     }
 

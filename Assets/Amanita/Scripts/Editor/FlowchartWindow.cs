@@ -408,8 +408,7 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnDisable()
         {
-            //_primaryInputProcessor.ClearSubhandlers();
-            //_secondaryInputProcessor.ClearSubhandlers();
+            BlockClipboard?.Dispose();
             UnregisterCallbacks();
             CleanUpSearchPanel();
         }

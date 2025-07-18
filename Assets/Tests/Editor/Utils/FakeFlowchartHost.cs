@@ -1,5 +1,4 @@
-﻿using Amanita;
-using Amanita.EditorUtils;
+﻿using Amanita.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,30 +15,34 @@ namespace Amanita.EditorUtils
         public Flowchart Flowchart { get; protected set; }
         public BlockClipboard Clipboard { get; set; } = new BlockClipboard(null);
         public bool HasClipboard => Clipboard.HasEntries;
-        public List<Block> Created = new List<Block>();
-        public List<Block> Queued = new List<Block>();
-
+        
         public void CreateBlock(Flowchart fc, Vector2 pos)
         {
             var newBlock = fc.CreateBlock(pos);
             // give it a visible area for hit‐testing
             newBlock._NodeRect = new Rect(pos, defaultNodeSize);
-            Created.Add(newBlock);
+            created.Add(newBlock);
             fc.AddSelectedBlock(newBlock);
 
         }
 
         protected readonly static Vector2 defaultNodeSize = new Vector2(20, 20);
+        public List<Block> Created { get { return new List<Block>(created); } }
+        protected IList<Block> created = new List<Block>();
 
         public void DeselectAll() => Flowchart.ClearSelectedBlocks();
-        public void QueueToDelete(IList<Block> blocks) => Queued.AddRange(blocks);
+
+        public void QueueToDelete(IList<Block> blocks) => queuedForDeletion.AddRange(blocks);
+        public IList<Block> QueuedForDeletion { get { return new List<Block>(queuedForDeletion); } }
+        protected IList<Block> queuedForDeletion = new List<Block>();
+
         public void DeleteScheduledBlocks()
         {
-            foreach (var block in Queued)
+            foreach (var block in QueuedForDeletion)
             {
                 GameObject.DestroyImmediate(block.gameObject);
             }
-            Queued.Clear();
+            queuedForDeletion.Clear();
         }
 
         public void UpdateBlockCollection() { /* no-op for tests */ }
@@ -48,9 +51,13 @@ namespace Amanita.EditorUtils
         public virtual void Dispose()
         {
             Clipboard = null;
-            Queued.Clear();
-            Created.Clear();
-            GameObject.DestroyImmediate(Flowchart.gameObject);
+            queuedForDeletion.Clear();
+            created.Clear();
+
+            if (Flowchart != null)
+            {
+                GameObject.DestroyImmediate(Flowchart.gameObject);
+            }
         }
     }
 

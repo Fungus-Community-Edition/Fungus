@@ -1,8 +1,9 @@
 ﻿using Amanita.EditorUtils;
 using NUnit.Framework;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using UnityEngine;
 
 namespace Amanita.Tests.Editor
 {
@@ -51,11 +52,12 @@ namespace Amanita.Tests.Editor
         [TearDown]
         public virtual void TearDown()
         {
+            rightClickEmptySpace = rightClickBlock = null;
             host.Dispose();
         }
 
         [Test]
-        public void StartsWithEmptyClipboard()
+        public virtual void StartsWithEmptyClipboard()
         {
             IContextMenu lastMenu = menuFactory.Create();
             IList<IContextMenuItem> actualItems = lastMenu.Items;
@@ -63,16 +65,25 @@ namespace Amanita.Tests.Editor
             Assert.IsTrue(noItems, "Clipboard should start empty, but doesn't.");
         }
 
-        [Test]
-        public void RightClickEmpty_ShowsAddPasteStopAll()
+        [TestCaseSource(nameof(ExpectedEmptyRightClickLabels))]
+        public virtual void RightClickEmpty_MenuContainsExpectedItem(string expectedLabel)
         {
+            expectedLabel = expectedLabel.ToLower();
             Assert.IsTrue(handler.Handle(rightClickEmptySpace, ctx), "Handler should consume the right-click");
 
             var lastMenu = menuFactory.LastMenu;
-            IList<string> items = lastMenu.Items.Select(i => i.Content.text).ToArray();
-            IList<string> expectedMenuItems = new[] { "Add", "Paste", "---", "Stop All" };
-            Assert.AreEqual(expectedMenuItems, items, "The menu doesn't show the items we expect.");
+            IList<string> items = lastMenu.Items.Select(i => i.Content.text.ToLower()).ToList();
+            bool hasTheItem = items.Contains(expectedLabel);
+            Assert.IsTrue(hasTheItem, $"Menu should contain '{expectedLabel}'.");
         }
+
+        static readonly string[] ExpectedEmptyRightClickLabels = 
+        {
+            "Add",
+            "Paste",
+            "---",
+            "Stop All"
+        };
 
         [Test]
         public virtual void RightClickEmpty_EmptyClipboard_PasteDisabled()
@@ -89,45 +100,66 @@ namespace Amanita.Tests.Editor
         }
 
         [Test]
-        public void Add_AddsAndSelectsBlock()
+        public virtual void Add_AddsAndSelectsSingleBlock()
         {
             Assert.IsTrue(handler.Handle(rightClickEmptySpace, ctx), "Handler should consume the right click");
 
-            IContextMenuItem addItem = menuFactory.LastMenu.Items.First(i => i.Content.text == "Add");
-            addItem.Callback();
+            var lastMenu = menuFactory.LastMenu;
+            IContextMenuItem addItem = (from elem in lastMenu.Items
+                                        where elem.Content.text.ToLower() == "add"
+                                        select elem).FirstOrDefault();
+            Assume.That(addItem != null, "Right-clicking empty space should give the user the Add option");
 
-            Assert.AreEqual(1, host.Created.Count);
-            Assert.Contains(host.Created[0], host.Flowchart.SelectedBlocks.ToList());
+            int blockCountBefore = host.Created.Count;
+            addItem.Callback();
+            int blockCountAfter = host.Created.Count;
+            int amountAdded = blockCountAfter - blockCountBefore;
+            bool addedJustOneBlock = amountAdded == 1;
+            Assert.IsTrue(addedJustOneBlock, $"Did not add just one Block. Amount added: {amountAdded}");
+
+            var selectedBlocks = host.Flowchart.SelectedBlocks;
+            Block addedBlock = host.Created.Last();
+            bool selectedTheAddedBlock = selectedBlocks.Contains(addedBlock);
+            Assert.IsTrue(selectedTheAddedBlock, "The added block wasn't selected");
         }
 
         [Test]
-        public void Copy_CopiesClipboard()
+        public virtual void Copy_SingleItem_CopiesClipboard()
         {
-            // arrange: make a block on the flowchart
-            var b = host.Flowchart.CreateBlock(Vector2.zero);
-            b._NodeRect = new Rect(Vector2.zero, new Vector2(20, 20));
-            host.Flowchart.AddSelectedBlock(b);
+            SelectJustOneBlock();
+            void SelectJustOneBlock()
+            {
+                host.Flowchart.ClearSelectedBlocks();
+                Assert.IsTrue(handler.Handle(rightClickBlock, ctx), "The handler should consume the right-click");
 
+                IList<Block> selectedBlocks = host.Flowchart.SelectedBlocks;
+                string errorMessage = $"We should have one block selected after right-clicking on it. "
+                    + $"Amount we have selected: {selectedBlocks.Count}. Might want to take a look at SingleSelectionHandler.";
+                Assume.That(selectedBlocks.Count == 1, errorMessage);
+            }
 
-            // tell the context we clicked *on* that block
-            ctx.BlockHitInLastMouseDown = b;
+            IContextMenuItem copyItem;
+            AssumeWeHaveTheOptionToCopy();
+            void AssumeWeHaveTheOptionToCopy()
+            {
+                var lastMenu = menuFactory.LastMenu;
+                copyItem = lastMenu.Items.First(i => i.Content.text.ToLower() == "copy");
+                Assume.That(copyItem != null, "On right-clicking a block, the Copy option should show up");
+            }
 
-            // simulate right‐click anywhere (handler will ignore mouse coords now)
-            var ev = ContextClick(10, 10);
-            bool consumed = handler.Handle(ev, ctx);
-            Assert.IsTrue(consumed, "Handler should consume context‐click");
+            CopyAndValidateTheEntry();
+            void CopyAndValidateTheEntry()
+            {
+                copyItem.Callback();
+                var clipboard = host.Clipboard;
+                int entryCount = clipboard.EntryCount;
+                bool justOneEntry = entryCount == 1;
+                Assert.IsTrue(justOneEntry, $"Clipboard should have only 1 entry. Instead it has {entryCount}.");
 
-            // act
-            handler.Handle(ev, ctx);
-
-            // now “Copy” must be in the menu
-            var menu = menuFactory.LastMenu;
-            var copyItem = menuFactory.LastMenu.Items
-                   .First(i => i.Content.text == "Copy");
-            Assert.NotNull(copyItem);
-            copyItem.Callback();
-            Assert.IsTrue(host.Clipboard.HasEntries);
-
+                Block blockExpected = ctx.TopmostBlockOverlapping(rightClickBlock.mousePosition);
+                bool entryIsForTheRightBlock = clipboard.HasEntryFor(blockExpected);
+                Assert.IsTrue(entryIsForTheRightBlock, "Clipboard does not have an entry for the right Block");
+            }
         }
 
         Event ContextClick(float x, float y)
@@ -139,28 +171,160 @@ namespace Amanita.Tests.Editor
             };
         }
 
-
         [Test]
-        public void Cut_CopiesAndQueuesForDelete()
+        public virtual void Cut_DeletesTheRightOriginals()
         {
-            var block = host.Flowchart.CreateBlock(Vector2.zero);
-            host.Flowchart.AddSelectedBlock(block);
+            string errorMessage = string.Empty;
+            CommonCutTest(out IList<Block> selectedBlocks, out IList<int> blockIDsBeforeCut);
 
-            var ev = RightClick(0, 0);
-            handler.Handle(ev, ctx);
-            var cutItem = menuFactory.LastMenu.Items
-                 .First(i => i.Content.text == "Cut");
-            cutItem.Callback();
+            bool allNulls = selectedBlocks.All(item => item == null);
+            Assert.IsTrue(allNulls, "All of the original vers of the cut blocks should be null");
 
-            Assert.IsTrue(host.Clipboard.HasEntries);
-            Assert.Contains(block, host.Queued);
+        }
+
+        protected virtual void CommonCutTest(out IList<Block> selectedBlocks, out IList<int> selectedBlockIDsBeforeCut)
+        {
+            Assert.IsTrue(handler.Handle(rightClickBlock, ctx), "Handler should consume the right-click");
+            IList<Block> localSelectedBlocks;
+            IList<int> localBlockIDsBeforeCut;
+            // ^So we can later pass to the out params with less hassle
+            string errorMessage = string.Empty;
+
+            CheckIfAtLeastOneIsSelected(out localSelectedBlocks);
+            void CheckIfAtLeastOneIsSelected(out IList<Block> selectedBlocks)
+            {
+                selectedBlocks = host.Flowchart.SelectedBlocks;
+                bool atLeastOneSelected = selectedBlocks.Count > 0;
+                errorMessage = "At least one block should be selected upon right-clicking one." +
+                    "\nThere might be an issue with SingleSelectionHandler";
+                Assume.That(atLeastOneSelected, errorMessage);
+            }
+
+            DoTheCutting();
+            void DoTheCutting()
+            {
+                localBlockIDsBeforeCut = (from elem in localSelectedBlocks
+                                     select elem.ItemId).ToList();
+                // ^Given how cutting deletes the original blocks, we need to register the IDs
+                // here so we can check that the right stuff gets queued and such
+
+                var cutItem = menuFactory.LastMenu.Items
+                     .First(i => i.Content.text.ToLower() == "cut");
+                cutItem.Callback();
+                Assert.IsTrue(host.Clipboard.HasEntries, "Clipboard has no entries after a Cut op");
+            }
+
+            selectedBlocks = localSelectedBlocks;
+            selectedBlockIDsBeforeCut = localBlockIDsBeforeCut;
+            
         }
 
         [Test]
-        public virtual void RightClickBlock_ShowsCopyCutAndDelete()
+        public virtual void Cut_RegistersCorrectCopies()
         {
+            string errorMessage = string.Empty;
+            CommonCutTest(out IList<Block> selectedBlocks, out IList<int> blockIDsBeforeCut);
+
+            CheckThatTheRightStuffWasCut();
+            void CheckThatTheRightStuffWasCut()
+            {
+                bool success = host.Clipboard.HasMultiEntriesWithIDs(blockIDsBeforeCut);
+                Assert.IsTrue(success, "Not all the right stuff was cut.");
+            }
+
+        }
+
+        [TestCaseSource(nameof(ExpectedBlockRightClickLabels))]
+        public virtual void RightClickBlock_MenuContainsExpectedItem(string expectedLabel)
+        {
+            expectedLabel = expectedLabel.ToLower();
             Assert.IsTrue(handler.Handle(rightClickBlock, ctx), "The handler should consume the right-click");
-            Assert.Ignore();
+
+            var lastMenu = menuFactory.LastMenu;
+            IList<string> items = lastMenu.Items.Select(i => i.Content.text.ToLower()).ToArray();
+            bool hasTheItem = items.Contains(expectedLabel);
+            Assert.IsTrue(hasTheItem, $"Menu should contain '{expectedLabel}'.");
         }
+
+        static readonly string[] ExpectedBlockRightClickLabels =
+        {
+            "Copy",
+            "Cut",
+            "Delete"
+        };
+
+        [Test]
+        public void RightClickEmpty_MenuItemsAreInCorrectOrder()
+        {
+            // Act: simulate right‐click on empty space
+            Assert.IsTrue(handler.Handle(rightClickEmptySpace, ctx),
+                "Handler should consume the right‐click");
+
+            var expectedLabelSequence = new List<string>
+            {
+                "Add",
+                "Paste",
+                "---",
+                "Stop All"
+            };
+
+            var lastMenu = menuFactory.LastMenu;
+            var actualSequence = lastMenu.Items
+                .Select(item => item.Content.text)
+                .ToList();
+
+            // Assert that the two lists match exactly, in order
+            CollectionAssert.AreEqual
+            (
+                expectedLabelSequence,
+                actualSequence,
+                "Context‐menu items are not in the expected order."
+            );
+        }
+
+        [Test]
+        public void RightClickEmpty_ClipboardHasStuff_PasteEnabled()
+        {
+            AddToTheClipboard();
+            void AddToTheClipboard()
+            {
+                host.Clipboard.Copy(host.Created);
+                Assume.That(host.HasClipboard, "Precondition failed: clipboard should have entries.");
+            }
+
+            CheckAccessToThePasteOption();
+            void CheckAccessToThePasteOption()
+            {
+                Assert.IsTrue(handler.Handle(rightClickEmptySpace, ctx),
+                    "Handler should consume the right‐click");
+
+                // Assert: there is a Paste item and it is enabled
+                var lastMenu = menuFactory.LastMenu;
+                var pasteOption = lastMenu.Items
+                    .First(item => item.Content.text.ToLower() == "paste");
+                Assert.IsNotNull(pasteOption, "Menu should contain a Paste option");
+                Assert.IsFalse(pasteOption.Disabled,
+                    "Paste option should be enabled when clipboard has entries");
+            }
+        }
+
+        [Test]
+        public void RightClickEmpty_DropDownRectMatchesMousePosition()
+        {
+            // Act: simulate right‐click on empty space
+            Assert.IsTrue(handler.Handle(rightClickEmptySpace, ctx),
+                "Handler should consume the right‐click");
+
+            // Inspect the rect used for the drop‐down
+            var dropDownRect = menuFactory.LastMenu.DropDownRect;
+            var expectedPos = rightClickEmptySpace.mousePosition;
+
+            // Assert: the drop‐down origin matches the mouse position
+            Assert.AreEqual(expectedPos.x, dropDownRect.x,
+                "DropDownRect.x should match the mouse x position");
+            Assert.AreEqual(expectedPos.y, dropDownRect.y,
+                "DropDownRect.y should match the mouse y position");
+        }
+
     }
 }

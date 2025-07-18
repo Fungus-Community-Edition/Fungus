@@ -24,7 +24,7 @@ namespace Amanita
     [ExecuteInEditMode]
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
-    public class Block : Node
+    public class Block : Node, IEquatable<Block>
     {
         [SerializeField] protected int itemId = -1; // Invalid flowchart item id
 
@@ -524,6 +524,14 @@ namespace Amanita
                 return null;
             }
             return commandList[index];
+        }
+
+        public virtual bool Equals(Block other)
+        {
+            return other != null &&
+                this.itemId == other.itemId &&
+                this.GetFlowchart().UniqueId == other.GetFlowchart().UniqueId &&
+                this.BlockName == other.BlockName;
         }
     }
 }

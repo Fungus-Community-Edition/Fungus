@@ -36,11 +36,18 @@ namespace Amanita.EditorUtils
             IContextMenu menu = _factory.Create();
             Vector2 mousePos = guiEvent.mousePosition;
 
+            Flowchart fc = flowchartCtx.Flowchart;
+
             // ← Prefer the pre‐populated hit if you set it in a test
             Block hitBlock = flowchartCtx.BlockHitInLastMouseDown;
             if (hitBlock == null)
             {
                 hitBlock = flowchartCtx.TopmostBlockOverlapping(mousePos); // Fallback
+                
+                if (fc.SelectedBlocks.Count == 0)
+                {
+                    fc.AddSelectedBlock(hitBlock);
+                }
             }
 
             if (hitBlock != null)

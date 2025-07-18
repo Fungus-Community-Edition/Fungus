@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static Amanita.EditorUtils.FlowchartWindow;
 
 namespace Amanita.EditorUtils
 {
@@ -65,17 +64,17 @@ namespace Amanita.EditorUtils
             return result;
         }
 
-        public IList<Block> DeleteList
+        public IList<Block> QueuedForDeletion
         {
-            get { return deleteList; }
+            get { return queuedForDeletion; }
             set
             {
-                deleteList.Clear();
-                deleteList.AddRange(value);
+                queuedForDeletion.Clear();
+                queuedForDeletion.AddRange(value);
             }
         }
 
-        protected IList<Block> deleteList = new List<Block>();
+        protected IList<Block> queuedForDeletion = new List<Block>();
         public virtual void SnapBlocksToGrid()
         {
             foreach (var elem in SelectedBlocks)

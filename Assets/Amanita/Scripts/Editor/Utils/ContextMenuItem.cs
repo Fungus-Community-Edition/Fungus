@@ -8,5 +8,6 @@ namespace Amanita.EditorUtils
         public virtual GUIContent Content { get; set; }
         public virtual bool Disabled { get; set; }
         public virtual Action Callback { get; set; }
+        public virtual string Group { get; set; }
     }
 }
