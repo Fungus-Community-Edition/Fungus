@@ -117,7 +117,7 @@ namespace Amanita.EditorUtils
                     foreach (var elem in allBlocks)
                     {
                         if (zoomBox.Overlaps(elem._NodeRect))
-                            ctx.Flowchart.AddSelectedBlock(elem);
+                            ctx.Flowchart.AddToSelection(elem);
                     }
                 }
 

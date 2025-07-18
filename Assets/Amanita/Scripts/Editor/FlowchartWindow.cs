@@ -659,7 +659,7 @@ namespace Amanita.EditorUtils
                     }
                     else
                     {
-                        currentFlowchart.AddSelectedBlock(item);
+                        currentFlowchart.AddToSelection(item);
                     }
                 }
             }
@@ -669,7 +669,7 @@ namespace Amanita.EditorUtils
                 for (int i = mouseDownSelectionState.Count - 1; i >= 0; i--)
                 {
                     var item = mouseDownSelectionState[i];
-                    currentFlowchart.AddSelectedBlock(item);
+                    currentFlowchart.AddToSelection(item);
                     RemoveMouseDownSelectionState(item);
                 }
             }
@@ -700,6 +700,11 @@ namespace Amanita.EditorUtils
 
         protected virtual void OnGUI()
         {
+            if (currentFlowchart != null)
+            {
+                Debug.Log($"UIModel.Zoom = {currentFlowchart.UIModel.Zoom}, ScrollPos = {currentFlowchart.UIModel.ScrollPos}");
+            }
+
             UpdateContexts();
             void UpdateContexts()
             {
@@ -1058,6 +1063,7 @@ namespace Amanita.EditorUtils
                 {
                     GUILayout.FlexibleSpace();
 
+                    Debug.Log($"Flowchart variables scroll pos: {currentFlowchart.VariablesScrollPos}");
                     currentFlowchart.VariablesScrollPos = GUILayout.BeginScrollView(currentFlowchart.VariablesScrollPos);
                     {
                         GUILayout.Space(8);
@@ -1262,7 +1268,7 @@ namespace Amanita.EditorUtils
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
             // Use AddSelected instead of Select for when multiple blocks are duplicated
-            flowchart.AddSelectedBlock(newBlock);
+            flowchart.AddToSelection(newBlock);
             SetBlockForInspector(flowchart, newBlock);
 
             return newBlock;

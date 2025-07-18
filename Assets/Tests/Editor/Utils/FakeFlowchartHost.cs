@@ -22,7 +22,7 @@ namespace Amanita.EditorUtils
             // give it a visible area for hit‐testing
             newBlock._NodeRect = new Rect(pos, defaultNodeSize);
             created.Add(newBlock);
-            fc.AddSelectedBlock(newBlock);
+            fc.AddToSelection(newBlock);
 
         }
 

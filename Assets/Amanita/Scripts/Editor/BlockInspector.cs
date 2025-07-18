@@ -96,7 +96,7 @@ namespace Amanita.EditorUtils
             //if there is no selection but we are drawing, fix that
             if (flowchart.SelectedBlocks.Count == 0)
             {
-                flowchart.AddSelectedBlock(block);
+                flowchart.AddToSelection(block);
             }
 
             if (activeBlockEditor == null ||

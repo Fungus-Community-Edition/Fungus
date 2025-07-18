@@ -121,7 +121,7 @@ namespace Amanita.Tests.Editor.Integration
         public void ClickOnEmpty_ClearsSelection()
         {
             // Pre-populate a selection
-            flowchart.AddSelectedBlock(blocks[0]);
+            flowchart.AddToSelection(blocks[0]);
 
             // Click at empty space (e.g. at (0,0))
             mouseDown.mousePosition = Vector2.zero;

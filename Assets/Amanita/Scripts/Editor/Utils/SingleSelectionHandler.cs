@@ -59,7 +59,7 @@ namespace Amanita.EditorUtils
                 {
                     // Record for Undo
                     Undo.RecordObject(flowchartCtx.Flowchart, recordSelectedObject);
-                    flowchartCtx.Flowchart.AddSelectedBlock(blockHit);
+                    flowchartCtx.Flowchart.AddToSelection(blockHit);
                 }
 
             }
@@ -83,7 +83,7 @@ namespace Amanita.EditorUtils
                 FlowchartWindow.SetBlockForInspector(flowchartCtx.Flowchart, blockHit);
                 if (fc.SelectedBlocks.Count == 0)
                 {
-                    fc.AddSelectedBlock(blockHit);
+                    fc.AddToSelection(blockHit);
                 }
             }
 

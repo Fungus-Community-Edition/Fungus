@@ -159,7 +159,7 @@ namespace Amanita.Tests.Editor
         protected void SelectBlock(int blockIndex)
         {
             var toSelect = blocksInFlowchart[blockIndex];
-            flowchart.AddSelectedBlock(toSelect);
+            flowchart.AddToSelection(toSelect);
         }
 
         protected Vector2 MousePositionFor(int blockIndex)
@@ -198,7 +198,7 @@ namespace Amanita.Tests.Editor
         [Test]
         public virtual void MouseDrag_ValidDragBlock_MoveAllBlocksCorrectDist()
         {
-            flowchart.AddMultiSelectedBlocks(blocksInFlowchart);
+            flowchart.AddRangeToSelection(blocksInFlowchart);
             Block firstBlock = blocksInFlowchart[0];
             fcContext.RootBlockToDrag = firstBlock;
 
@@ -251,7 +251,7 @@ namespace Amanita.Tests.Editor
         {
             Block toDrag = blocksInFlowchart[blockIndex];
             mouseDragEvent.mousePosition = MousePositionFor(blockIndex);
-            flowchart.AddSelectedBlock(toDrag);
+            flowchart.AddToSelection(toDrag);
             fcContext.RootBlockToDrag = toDrag;
             handler.Handle(mouseDragEvent, fcContext);
         }

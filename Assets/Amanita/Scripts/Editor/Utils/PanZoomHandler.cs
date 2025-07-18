@@ -26,6 +26,7 @@ namespace Amanita.EditorUtils
 
         protected bool DragCanvas(Event mouseEvent, FlowchartContext ctx)
         {
+
             bool consumed = false;
             bool correctDraggingInput = IsAltDragging(mouseEvent) ||
                 IsMiddleDragging(mouseEvent) || IsRightDragging(mouseEvent);

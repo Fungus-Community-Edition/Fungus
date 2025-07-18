@@ -46,7 +46,7 @@ namespace Amanita.EditorUtils
                 
                 if (fc.SelectedBlocks.Count == 0)
                 {
-                    fc.AddSelectedBlock(hitBlock);
+                    fc.AddToSelection(hitBlock);
                 }
             }
 

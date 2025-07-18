@@ -113,7 +113,7 @@ namespace Amanita.EditorUtils
                 var elemRect = elem._NodeRect;
                 elemRect.position += delta;
                 elem._NodeRect = elemRect;
-                Flowchart.AddSelectedBlock(elem);
+                Flowchart.AddToSelection(elem);
             }
 
             // 5) Refresh the window’s block cache
