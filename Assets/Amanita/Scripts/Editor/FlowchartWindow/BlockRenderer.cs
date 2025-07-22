@@ -254,7 +254,7 @@ namespace Amanita.EditorUtils
         public virtual float BlockMaxWidth { get; set; } = 240;
         public virtual float DefaultBlockHeight { get; set; } = 40;
         public virtual bool UseGridSnap { get { return AmanitaEditorPreferences.useGridSnap; } }
-        public virtual float GridObjectSnap { get; set; } = 20;
+        public virtual float GridObjectSnap { get { return FlowchartCtx.GridObjectSnap; } }
         public virtual GUIStyle NodeStyle { get; set; }
         public virtual GUIStyle DescriptionStyle { get; set; }
         public virtual GUIStyle HandlerStyle { get; set; }

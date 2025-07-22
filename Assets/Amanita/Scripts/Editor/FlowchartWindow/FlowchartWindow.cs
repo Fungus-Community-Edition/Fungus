@@ -646,7 +646,6 @@ namespace Amanita.EditorUtils
 
                 _drawBlockContext.FlowchartCtx = flowchartCtx;
                 _drawBlockContext.DefaultBlockHeight = 40;
-                _drawBlockContext.GridObjectSnap = 20;
                 _drawBlockContext.BlockMinWidth = 60;
                 _drawBlockContext.BlockMaxWidth = 240;
                 _nodeStyleProvider.ProvideStylesTo(_drawBlockContext);
