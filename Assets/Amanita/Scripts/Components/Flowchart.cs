@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using Amanita.Lua;
 using Amanita.VScripting;
 using System;
@@ -11,6 +8,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
+using Amanita.UI;
 
 namespace Amanita
 {
@@ -23,33 +22,20 @@ namespace Amanita
     {
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
+        // What the editor utils use to decide how to render this FC's data in the 
+        // FlowchartWindow and BlockInspector
+        public virtual FlowchartUIModel UIModel
+        {
+            get { return uiModel; }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        protected FlowchartUIModel uiModel = new FlowchartUIModel();
+
         [HideInInspector]
         [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
-
-        [HideInInspector]
-        [SerializeField] protected Vector2 scrollPos;
-
-        [HideInInspector]
-        [SerializeField] protected Vector2 variablesScrollPos;
-
-        [HideInInspector]
-        [SerializeField] protected bool variablesExpanded = true;
-
-        [HideInInspector]
-        [SerializeField] protected float blockViewHeight = 400;
-
-        [HideInInspector]
-        [SerializeField] protected float zoom = 1f;
-
-        [HideInInspector]
-        [SerializeField] protected Rect scrollViewRect;
-
-        [HideInInspector]
-        [SerializeField] protected List<Block> selectedBlocks = new List<Block>();
-
-        [HideInInspector]
-        [SerializeField] protected List<Command> selectedCommands = new List<Command>();
-
+        
         [HideInInspector]
         [SerializeField] protected List<Variable> variables = new List<Variable>();
 
@@ -100,6 +86,15 @@ namespace Amanita
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
         [SerializeField] protected int loadPriority = 0;
 
+        /// <summary>
+        /// Scroll position of Flowchart editor window.
+        /// </summary>
+        public virtual Vector2 ScrollPos
+        {
+            get => uiModel.ScrollPos;
+            set => uiModel.ScrollPos = value;
+        }
+
         public virtual bool IncludeInSaves
         {
             get { return includeInSaves; }
@@ -128,10 +123,14 @@ namespace Amanita
 
         protected static bool eventSystemPresent;
 
-        protected StringSubstituter stringSubstituer;
+        protected StringSubstituter stringSubstituter;
 
 #if UNITY_EDITOR
-        public bool SelectedCommandsStale { get; set; }
+        public bool SelectedCommandsStale
+        {
+            get => UIModel.SelectedCommandsStale;
+            set => UIModel.SelectedCommandsStale = value;
+        }
 #endif
 
         #if UNITY_5_4_OR_NEWER
@@ -150,6 +149,7 @@ namespace Amanita
             
         protected virtual void Awake()
         {
+            UIModel.Owner = this.gameObject;
             CheckEventSystem();
 
             if (Application.IsPlaying(this))
@@ -356,12 +356,6 @@ namespace Amanita
             // It shouldn't happen but it seemed to occur for a user on the forum 
             variables.RemoveAll(item => item == null);
 
-            if (selectedBlocks == null) selectedBlocks = new List<Block>();
-            if (selectedCommands == null) selectedCommands = new List<Command>();
-
-            selectedBlocks.RemoveAll(item => item == null);
-            selectedCommands.RemoveAll(item => item == null);
-
             var allVariables = GetComponents<Variable>();
             for (int i = 0; i < allVariables.Length; i++)
             {
@@ -445,72 +439,72 @@ namespace Amanita
             }
         }
 
-        /// <summary>
-        /// Scroll position of Flowchart editor window.
-        /// </summary>
-        public virtual Vector2 ScrollPos { get { return scrollPos; } set { scrollPos = value; } }
-
+        
         /// <summary>
         /// Scroll position of Flowchart variables window.
         /// </summary>
-        public virtual Vector2 VariablesScrollPos { get { return variablesScrollPos; } set { variablesScrollPos = value; } }
+        public virtual Vector2 VariablesScrollPos
+        {
+            get => uiModel.VariablesScrollPos;
+            set => uiModel.VariablesScrollPos = value;
+        }
 
         /// <summary>
-        /// Show the variables pane.
+        /// Whether or not to show the variables pane.
         /// </summary>
-        public virtual bool VariablesExpanded { get { return variablesExpanded; } set { variablesExpanded = value; } }
+        public virtual bool VariablesExpanded
+        {
+            get => uiModel.VariablesExpanded;
+            set => uiModel.VariablesExpanded = value;
+        }
 
         /// <summary>
         /// Height of command block view in inspector.
         /// </summary>
-        public virtual float BlockViewHeight { get { return blockViewHeight; } set { blockViewHeight = value; } }
+        public virtual float BlockViewHeight
+        {
+            get => uiModel.BlockViewHeight;
+            set => uiModel.BlockViewHeight = value;
+        }
 
-        /// <summary>
-        /// Zoom level of Flowchart editor window.
-        /// </summary>
-        public virtual float Zoom { get { return zoom; } set { zoom = value; } }
+        public virtual float Zoom
+        {
+            get => uiModel.Zoom;
+            set => uiModel.Zoom = value;
+        }
 
         /// <summary>
         /// Scrollable area for Flowchart editor window.
         /// </summary>
-        public virtual Rect ScrollViewRect { get { return scrollViewRect; } set { scrollViewRect = value; } }
+        public virtual Rect ScrollViewRect
+        {
+            get => uiModel.ScrollViewRect;
+            set => uiModel.ScrollViewRect = value;
+        }
 
         /// <summary>
         /// Current actively selected block in the Flowchart editor.
         /// </summary>
         public virtual Block SelectedBlock
-        { 
-            get
-            {
-                if (selectedBlocks == null || selectedBlocks.Count == 0)
-                    return null;
-
-                return selectedBlocks[0];
-            } 
-            set
-            {
-                ClearSelectedBlocks();
-                AddSelectedBlock(value);
-            } 
+        {
+            get => uiModel.SelectedBlock;
+            set => uiModel.SelectedBlock = value;
         }
 
         public virtual IList<Block> SelectedBlocks
         {
-            get
-            {
-                return selectedBlocks;
-            }
-            set
-            {
-                selectedBlocks.Clear();
-                selectedBlocks.AddRange(value);
-            }
+            get => uiModel.SelectedBlocks;
+            set => uiModel.SelectedBlocks = value;
         }
 
         /// <summary>
         /// Currently selected command in the Flowchart editor.
         /// </summary>
-        public virtual IList<Command> SelectedCommands { get { return selectedCommands; } }
+        public virtual IList<Command> SelectedCommands
+        {
+            get => uiModel.SelectedCommands;
+            set => uiModel.SelectedCommands = value;
+        }
 
         /// <summary>
         /// The list of variables that can be accessed by the Flowchart.
@@ -1317,7 +1311,7 @@ namespace Amanita
         /// </summary>
         public virtual void ClearSelectedCommands()
         {
-            selectedCommands.Clear();
+            SelectedCommands.Clear();
 #if UNITY_EDITOR
             SelectedCommandsStale = true;
 #endif
@@ -1328,9 +1322,9 @@ namespace Amanita
         /// </summary>
         public virtual void AddSelectedCommand(Command command)
         {
-            if (!selectedCommands.Contains(command))
+            if (!SelectedCommands.Contains(command))
             {
-                selectedCommands.Add(command);
+                SelectedCommands.Add(command);
 #if UNITY_EDITOR
                 SelectedCommandsStale = true;
 #endif
@@ -1342,74 +1336,35 @@ namespace Amanita
         /// </summary>
         public virtual void ClearSelectedBlocks()
         {
-            if(selectedBlocks == null)
-            {
-                selectedBlocks = new List<Block>();
-            }
-
-            for (int i = 0; i < selectedBlocks.Count; i++)
-            {
-                var item = selectedBlocks[i];
-
-                if(item != null)
-                {
-                    item.IsSelected = false;
-                }
-            }
-            selectedBlocks.Clear();
+            UIModel.ClearSelectedBlocks();
         }
 
-        public virtual void AddMultiSelectedBlocks(IList<Block> toSelect)
+        public virtual void AddRangeToSelection(IList<Block> toSelect)
         {
-            for (int i = 0; i < toSelect.Count; i++)
-            {
-                var item = toSelect[i];
-                AddSelectedBlock(item);
-            }
+            UIModel.AddRangeToSelection(toSelect);
         }
 
         /// <summary>
         /// Adds a block to the list of selected blocks.
         /// </summary>
-        public virtual void AddSelectedBlock(Block block)
-        {
-            if (!selectedBlocks.Contains(block))
-            {
-                block.IsSelected = true;
-                selectedBlocks.Add(block);
-            }
-        }
+        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
 
-        public virtual bool DeselectBlock(Block block)
-        {
-            if (selectedBlocks.Contains(block))
-            {
-                DeselectBlockNoCheck(block);
-                return true;
-            }
-            return false;
-        }
-
-        public virtual void DeselectBlockNoCheck(Block b)
-        {
-            b.IsSelected = false;
-            selectedBlocks.Remove(b);
-        }
+        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
 
         public void UpdateSelectedCache()
         {
-            selectedBlocks.Clear();
+            SelectedBlocks.Clear();
             var res = gameObject.GetComponents<Block>();
-            selectedBlocks = res.Where(x => x.IsSelected).ToList();
+            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
         }
 
         public void ReverseUpdateSelectedCache()
         {
-            for (int i = 0; i < selectedBlocks.Count; i++)
+            for (int i = 0; i < SelectedBlocks.Count; i++)
             {
-                if(selectedBlocks[i] != null)
+                if(SelectedBlocks[i] != null)
                 {
-                    selectedBlocks[i].IsSelected = true;
+                    SelectedBlocks[i].IsSelected = true;
                 }
             }
         }
@@ -1501,13 +1456,13 @@ namespace Amanita
         /// </summary>
         public virtual string SubstituteVariables(string input)
         {
-            if (stringSubstituer == null)
+            if (stringSubstituter == null)
             {
-                stringSubstituer = new StringSubstituter();
+                stringSubstituter = new StringSubstituter();
             }
 
             // Use the string builder from StringSubstituter for efficiency.
-            StringBuilder sb = stringSubstituer._StringBuilder;
+            StringBuilder sb = stringSubstituter._StringBuilder;
             sb.Length = 0;
             sb.Append(input);
 
@@ -1538,7 +1493,7 @@ namespace Amanita
             }
 
             // Now do all other substitutions in the scene
-            changed |= stringSubstituer.SubstituteStrings(sb);
+            changed |= stringSubstituter.SubstituteStrings(sb);
 
             if (changed)
             {
@@ -1726,6 +1681,16 @@ namespace Amanita
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            if (UIModel == null)
+            {
+                uiModel = new FlowchartUIModel();
+            }
+
+            if (UIModel.Owner == null)
+            {
+                UIModel.Owner = this.gameObject;
+            }
+
             if (string.IsNullOrEmpty(uniqueId))
             {
                 uniqueId = System.Guid.NewGuid().ToString();
@@ -1734,7 +1699,6 @@ namespace Amanita
 
             CheckItemIds();
 
-            
         }
 #endif
         
