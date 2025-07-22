@@ -238,7 +238,7 @@ namespace Amanita.Tests.Editor
             string assertErrorMessage = $"Block #{blockIndex} wasn't even moved after dragging";
             Assert.AreNotEqual(rectBefore, rectAfter, assertErrorMessage);
 
-            Rect snappedRectAfter = blockToDrag._NodeRect.SnapPosition(FlowchartWindow.GridObjectSnap);
+            Rect snappedRectAfter = blockToDrag._NodeRect.SnapPosition(fcContext.GridObjectSnap);
             
             assertErrorMessage = $"The snapping for Block #{blockIndex} didn't work as intended.\n" + 
                 $"Rect pos after drag: {rectAfter.position}\n" + 

@@ -85,7 +85,7 @@ namespace Amanita.EditorUtils
                     return null;
                 }
 
-                return Window.currentFlowchart;
+                return Window.Flowchart;
             }
         }
 

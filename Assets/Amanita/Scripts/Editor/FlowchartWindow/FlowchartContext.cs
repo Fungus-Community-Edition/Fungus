@@ -33,7 +33,7 @@ namespace Amanita.EditorUtils
         public virtual Rect Position { get; set; }
         public virtual Rect SelectionBox { get; set; } = default;
         public virtual IFlowchartHost FcHost { get; set; }
-
+        public virtual IList<Block> AllBlocks { get; set; }
 
         /// <summary>
         /// Returns the topmost block whose NodeRect contains the given mouse position,
@@ -80,9 +80,11 @@ namespace Amanita.EditorUtils
             foreach (var elem in SelectedBlocks)
             {
                 Undo.RecordObject(elem, "Block Position");
-                elem._NodeRect = elem._NodeRect.SnapPosition(FlowchartWindow.GridObjectSnap);
+                elem._NodeRect = elem._NodeRect.SnapPosition(GridObjectSnap);
             }
             
         }
+
+        public virtual float GridObjectSnap { get; set; } = 20;
     }
 }
