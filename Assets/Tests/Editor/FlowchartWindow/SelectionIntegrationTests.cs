@@ -7,81 +7,8 @@ using UnityEngine;
 
 namespace Amanita.Tests.Editor.Integration
 {
-    public class SelectionIntegrationTests
+    public class SelectionIntegrationTests : FlowchartWindowTestsCommon
     {
-        [SetUp]
-        public void SetUp()
-        {
-            // Create a Flowchart with three blocks at known positions
-            PrepSceneObjects();
-            void PrepSceneObjects()
-            {
-                host = new FakeFlowchartHost();
-                host.Init();
-
-                flowchart = host.Flowchart;
-                
-                blocks = new List<Block>();
-                foreach (var pos in initBlockPositions)
-                {
-                    Block newBlock = host.CreateBlock(host.Flowchart, Vector2.zero);
-                    newBlock.BlockName = $"Block @ {pos}";
-                    newBlock._NodeRect = new Rect(pos, nodeSize);
-                    blocks.Add(newBlock);
-                }
-
-                flowchart.ClearSelectedBlocks();
-
-            }
-
-            // Build handlers pipeline: single click → box → (drag would follow)
-            pipeline = new FlowchartWindowInputHandler
-            (
-                new HitDetectionHandler(),
-                new SingleSelectionHandler(),
-                new BoxSelectionHandler()
-            );
-
-            // Shared context
-            ctx = new FlowchartContext
-            {
-                Flowchart = flowchart,
-                Position = new Rect(0, 0, 200, 200),
-                FcHost = host,
-            };
-
-            // Common event templates
-            mouseDown = new Event { type = EventType.MouseDown, button = leftMouseButton };
-            mouseDrag = new Event { type = EventType.MouseDrag, button = leftMouseButton };
-            mouseReleased = new Event { type = EventType.MouseUp, button = leftMouseButton };
-        }
-
-        protected FakeFlowchartHost host;
-        protected Flowchart flowchart;
-        protected IList<Block> blocks;
-        static readonly IList<Vector2> initBlockPositions = new[] // In window space
-        {
-            new Vector2(10, 10),
-            new Vector2(50, 50),
-            new Vector2(100,100)
-        };
-        static readonly Vector2 nodeSize = new Vector2(20, 20);
-
-        protected FlowchartWindowInputHandler pipeline;
-        protected FlowchartContext ctx;
-        protected Event mouseDown, mouseDrag, mouseReleased;
-        protected static readonly int leftMouseButton = 0;
-
-
-        [TearDown]
-        public void TearDown()
-        {
-            host.Dispose();
-            //UnityObject.DestroyImmediate(fcHolder);
-            ctx = null;
-            mouseDown = mouseDrag = mouseReleased = null;
-        }
-
         /// <summary>
         /// Simulates the “pre-pass” hit test that FlowchartWindow.OnGUI does
         /// by setting BlockHitInLastMouseDown on the context.

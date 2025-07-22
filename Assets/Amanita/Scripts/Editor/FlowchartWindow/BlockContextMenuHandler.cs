@@ -71,7 +71,7 @@ namespace Amanita.EditorUtils
             if (Flowchart.SelectedBlocks.Count > 0)
             {
                 menu.AddItem(CutLabel, false, () => CutBlocks(flowchartCtx));
-                menu.AddItem(DeleteLabel, false, () => DeleteBlocks(flowchartCtx));
+                menu.AddItem(DeleteLabel, false, () => blockDeletion.Execute(flowchartCtx));
             }
             else
             {
@@ -104,6 +104,8 @@ namespace Amanita.EditorUtils
             _host.DeleteScheduledBlocks();
             flowchartCtx.ForceRepaintCount++;
         }
+
+        protected static readonly FcWindowBlockDeletion blockDeletion = new FcWindowBlockDeletion();
 
         protected virtual void RegisterEmptySpaceOptions(Event guiEvent, IContextMenu menu, FlowchartContext flowchartCtx)
         {

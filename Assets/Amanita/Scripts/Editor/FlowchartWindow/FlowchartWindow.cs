@@ -222,6 +222,9 @@ namespace Amanita.EditorUtils
                 _inputPipeline?.Dispose(); // Since we might have IDisposable subhandlers
                 _inputPipeline = new FlowchartWindowInputHandler
                     (
+                        new DeleteShortcutHandler(new FcWindowBlockDeletion(),
+                        KeyCode.Delete,
+                        new FcWindowFocusChecker()),
                         new HitDetectionHandler(),
                         new SingleSelectionHandler(),
                         new BoxSelectionHandler(),
