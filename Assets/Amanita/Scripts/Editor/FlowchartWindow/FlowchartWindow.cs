@@ -187,6 +187,7 @@ namespace Amanita.EditorUtils
         protected virtual void OnEnable()
         {
             _gridRenderer = new GridRenderer(new HandlesLineDrawer());
+            _connectionRenderer = new ConnectionRenderer(new ConnectionDrawer());
             _blockRenderer = new BlockRenderer(new DefaultBlockDrawer(), new BlockGraphicsGenerator());
 
             Clipboard = new BlockClipboard(this);
@@ -241,6 +242,7 @@ namespace Amanita.EditorUtils
         }
 
         protected GridRenderer _gridRenderer;
+        protected ConnectionRenderer _connectionRenderer;
         
         public virtual BlockClipboard Clipboard { get; set; }
         public virtual bool HasClipboard => Clipboard != null && Clipboard.HasEntries;
@@ -1057,26 +1059,29 @@ namespace Amanita.EditorUtils
             Rect scriptViewRect = CalcFlowchartWindowViewRect();
 
             EditorZoomArea.Begin(Flowchart.Zoom, scriptViewRect);
+            flowchartCtx.Flowchart = Flowchart;
+            _drawBlockContext.ViewRect = scriptViewRect;
 
             var prevCol = GUI.color;
 
             if (this.IsBeingRepainted)
             {
-                DrawAllBlocks();
-                void DrawAllBlocks()
+                DrawAllBlocksAndConnections();
+                void DrawAllBlocksAndConnections()
                 {
-                    if (_blockRenderer == null)
+                    if (_blockRenderer == null || _connectionRenderer == null)
                     {
                         return;
                     }
 
                     _blockRenderer.Render(_drawBlockContext);
-                    for (int i = 0; i < blocks.Count; ++i)
-                    {
-                        var block = blocks[i];
+                    _connectionRenderer.Render(_drawBlockContext, flowchartCtx);
+                    //for (int i = 0; i < blocks.Count; ++i)
+                    //{
+                        //var block = blocks[i];
                         //DrawBlock(block, scriptViewRect);
-                        DrawConnections(block);
-                    }
+                        //DrawConnections(block);
+                    //}
 
                 }
             }
@@ -1238,7 +1243,6 @@ namespace Amanita.EditorUtils
             {
                 return;
             }
-
 
             bool blockIsSelected = Flowchart.SelectedBlock == block;
 

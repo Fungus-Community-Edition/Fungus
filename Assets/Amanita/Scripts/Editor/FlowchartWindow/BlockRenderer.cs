@@ -1,8 +1,9 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using static TreeEditor.TreeEditorHelper;
 
 namespace Amanita.EditorUtils
 {
@@ -22,25 +23,37 @@ namespace Amanita.EditorUtils
 
         public virtual void Render(DrawBlockContext drawCtx)
         {
-            var flowchartCtx = drawCtx.FlowchartCtx;
-            var fc = flowchartCtx.Flowchart;
-            var viewRect = drawCtx.ViewRect;        // in “world” units (i.e. zoomed & scrolled space)
+            var fc = drawCtx.FlowchartCtx.Flowchart;
+            var viewRect = drawCtx.ViewRect;
 
-            for (int i = 0; i < flowchartCtx.AllBlocks.Count; i++)
+            foreach (var block in drawCtx.FlowchartCtx.AllBlocks)
             {
-                var block = flowchartCtx.AllBlocks[i];
+                // size in model-space
+                var content = new GUIContent(block.BlockName);
+                var textSize = drawCtx.NodeStyle.CalcSize(content);
+                const float pad = 10f;
 
-                var blockRect = ToWindowSpaceRect(block._NodeRect, drawCtx);
+                Rect modelRect = block._NodeRect;
+                modelRect.width = Mathf.Clamp(textSize.x + pad, drawCtx.BlockMinWidth, drawCtx.BlockMaxWidth);
+                modelRect.height = drawCtx.DefaultBlockHeight;
+                if (drawCtx.UseGridSnap)
+                    modelRect = modelRect.SnapPosition(drawCtx.GridObjectSnap);
 
-                bool isVisibleOnScreen = viewRect.Overlaps(blockRect);
-                if (!isVisibleOnScreen)
+                // scroll (no manual zoom hereâ€”EditorZoomArea handles that)
+                Rect windowRect = modelRect;
+                windowRect.position += fc.ScrollPos;
+
+                // clip
+                if (!viewRect.Overlaps(windowRect))
                     continue;
 
+                // stash it and draw
+                drawCtx.CurrentBlockWindowRect = windowRect;
                 drawCtx.Graphics = _graphicsGenerator.GenerateFor(block);
                 _drawer.Draw(block, drawCtx);
             }
         }
-    
+
         protected virtual Rect ToWindowSpaceRect(Rect baseRect, DrawBlockContext drawCtx)
         {
             Flowchart fc = drawCtx.FlowchartCtx.Flowchart;
@@ -61,61 +74,24 @@ namespace Amanita.EditorUtils
 
     public class DefaultBlockDrawer : IBlockDrawer
     {
-        public void Draw(Block block, DrawBlockContext drawCtx)
+        public void Draw(Block block, DrawBlockContext ctx)
         {
-            Debug.Log($"Drawing block {block.BlockName}");
+            var rect = ctx.CurrentBlockWindowRect;    // THIS is screen-space in zoomed coords
 
-            float blockMinWidth = drawCtx.BlockMinWidth;
-            float blockMaxWidth = drawCtx.BlockMaxWidth;
-            float defaultBlockHeight = drawCtx.DefaultBlockHeight;
-            float gridObjectSnap = drawCtx.GridObjectSnap;
+            var graphics = ctx.Graphics;
+            var style = ctx.NodeStyle;
+            var savedBg = style.normal.background;
+            var savedTxt = style.normal.textColor;
+            
+            GUIStyle nodeStyle = ctx.NodeStyle;
 
-            GUIStyle nodeStyle = drawCtx.NodeStyle,
-                descriptionStyle = drawCtx.DescriptionStyle,
-                handlerStyle = drawCtx.HandlerStyle;
-
-            Flowchart currentFlowchart = drawCtx.FlowchartCtx.Flowchart;
-            Rect scriptViewRect = drawCtx.ViewRect;
-
-            float nodeWidthPadding = 10;
-            float nodeWidthA = nodeStyle.CalcSize(new GUIContent(block.BlockName)).x + nodeWidthPadding;
-
-            block._NodeRect = DecideBlockNodeRectSize();
-            Rect DecideBlockNodeRectSize()
-            {
-                Rect result = block._NodeRect;
-                result.width = Mathf.Clamp(nodeWidthA, blockMinWidth, blockMaxWidth);
-                result.height = defaultBlockHeight;
-                if (AmanitaEditorPreferences.useGridSnap)
-                {
-                    result = result.SnapWidth(gridObjectSnap);
-                }
-                return result;
-            }
-
-
-            var graphics = drawCtx.Graphics;
-            Rect windowRelativeRect = block._NodeRect;
-            var tmpNormBg = nodeStyle.normal.background;
-
-            // Draw untinted highlight
+            // highlight
             if (block.IsSelected && !block.IsControlSelected)
             {
                 GUI.backgroundColor = Color.white;
-                nodeStyle.normal.background = graphics.onTexture;
-                GUI.Box(windowRelativeRect, "", nodeStyle);
-                nodeStyle.normal.background = tmpNormBg;
-            }
-
-            if (block.IsControlSelected && !block.IsSelected)
-            {
-                GUI.backgroundColor = Color.white;
-                nodeStyle.normal.background = graphics.onTexture;
-                var c = GUI.backgroundColor;
-                c.a = 0.5f;
-                GUI.backgroundColor = c;
-                GUI.Box(windowRelativeRect, "", nodeStyle);
-                nodeStyle.normal.background = tmpNormBg;
+                style.normal.background = graphics.onTexture;
+                GUI.Box(rect, "", style);
+                style.normal.background = savedBg;
             }
 
             // Draw tinted block; ensure text is readable
@@ -143,59 +119,25 @@ namespace Amanita.EditorUtils
 
             nodeStyle.normal.background = graphics.offTexture;
             GUI.backgroundColor = graphics.tint;
-            GUI.Box(windowRelativeRect, block.BlockName, nodeStyle);
+            GUI.Box(rect, block.BlockName, nodeStyle);
 
             GUI.backgroundColor = Color.white;
 
-            DrawDesc();
-            void DrawDesc()
+            // description
+            if (!string.IsNullOrEmpty(block.Description))
             {
-                if (block.Description.Length > 0)
-                {
-                    var content = new GUIContent(block.Description);
-                    windowRelativeRect.y += windowRelativeRect.height;
-                    windowRelativeRect.height = descriptionStyle.CalcHeight(content, windowRelativeRect.width);
-                    GUI.Label(windowRelativeRect, content, descriptionStyle);
-                }
+                var descRect = rect;
+                descRect.y += rect.height;
+                descRect.height = ctx.DescriptionStyle.CalcHeight(
+                    new GUIContent(block.Description), rect.width);
+                GUI.Label(descRect, block.Description, ctx.DescriptionStyle);
             }
 
+            // restore state
+            style.normal.textColor = savedTxt;
             GUI.backgroundColor = Color.white;
-
-            nodeStyle.normal.textColor = tmpNormTxtCol;
-            nodeStyle.normal.background = tmpNormBg;
-
-            // Draw Event Handler labels
-            DrawEventHandlerLabels();
-            void DrawEventHandlerLabels()
-            {
-                if (block._EventHandler != null)
-                {
-                    string handlerLabel = "";
-                    var eventType = block._EventHandler.GetType();
-                    EventHandlerInfoAttribute info = EventHandlerEditor.GetEventHandlerInfo(eventType);
-                    if (info != null)
-                    {
-                        ObsoleteAttribute obsAttr = eventType.GetCustomAttribute<System.ObsoleteAttribute>();
-                        if (obsAttr != null)
-                        {
-                            handlerLabel = "<" + AmanitaConstants.UIPrefixForDeprecated_RichText + info.EventHandlerName + "> ";
-                        }
-                        else
-                        {
-                            handlerLabel = "<" + info.EventHandlerName + "> ";
-                        }
-                    }
-
-                    Rect rect = new Rect(block._NodeRect);
-                    rect.height = handlerStyle.CalcHeight(new GUIContent(handlerLabel), block._NodeRect.width);
-                    rect.x += currentFlowchart.ScrollPos.x;
-                    rect.y += currentFlowchart.ScrollPos.y - rect.height;
-
-                    GUI.Label(rect, handlerLabel, handlerStyle);
-                }
-            }
         }
-
+        
         protected virtual BlockGraphics GetBlockGraphics(Block block)
         {
             var graphics = new BlockGraphics();
@@ -263,6 +205,8 @@ namespace Amanita.EditorUtils
         public virtual BlockGraphics Graphics { get; set; }
         public virtual IList<Block> AllBlocks { get { return FlowchartCtx.AllBlocks; } }
         public virtual Rect ViewRect { get; set; }
+        public Rect CurrentBlockWindowRect { get; set; }
+
     }
 
     public interface IBlockGraphicsGenerator
