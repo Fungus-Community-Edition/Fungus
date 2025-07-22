@@ -94,8 +94,9 @@ namespace Amanita.EditorUtils
         {
             // Finalize selection, clear marquee
             bool consumed = false;
+            bool releasedMouseOnValidSpot = ctx.StartSelectionBoxPosition.x >= 0;
 
-            if (ctx.StartSelectionBoxPosition.x >= 0 && ctx.SelectionBoxDragOngoing)
+            if (releasedMouseOnValidSpot && ctx.SelectionBoxDragOngoing)
             {
                 Rect zoomBox = SelectionBoxInFlowchartSpace();
                 Rect SelectionBoxInFlowchartSpace()

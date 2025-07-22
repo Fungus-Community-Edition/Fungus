@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
-    class FakeFlowchartHost : IFlowchartHost, IDisposable
+    public class FakeFlowchartHost : IFlowchartHost, IDisposable
     {
         public virtual void Init()
         {
@@ -16,14 +16,14 @@ namespace Amanita.EditorUtils
         public BlockClipboard Clipboard { get; set; } = new BlockClipboard(null);
         public bool HasClipboard => Clipboard.HasEntries;
         
-        public void CreateBlock(Flowchart fc, Vector2 pos)
+        public Block CreateBlock(Flowchart fc, Vector2 pos)
         {
             var newBlock = fc.CreateBlock(pos);
             // give it a visible area for hit‐testing
             newBlock._NodeRect = new Rect(pos, defaultNodeSize);
             created.Add(newBlock);
             fc.AddToSelection(newBlock);
-
+            return newBlock;
         }
 
         protected readonly static Vector2 defaultNodeSize = new Vector2(20, 20);

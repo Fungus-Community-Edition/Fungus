@@ -26,7 +26,6 @@ namespace Amanita.EditorUtils
                 return false;
             }
 
-            
         }
 
         protected virtual bool IsLeftMouseButton(Event inputEvent) => inputEvent.button == MouseButton.Left;
@@ -51,7 +50,6 @@ namespace Amanita.EditorUtils
                     // Need to avoid clearing when multiple blocks are selected. Otherwise, we'd
                     // be cancelling the multi select too early, keeping the user from
                     // dragging the blocks
-                    Debug.Log("Single selection handler clearing selected blocks");
                     flowchartCtx.Flowchart.ClearSelectedBlocks();
                 }
 
@@ -67,30 +65,28 @@ namespace Amanita.EditorUtils
             return consumed;
         }
 
-        protected virtual bool OnMouseReleased(Event inputEvent, FlowchartContext flowchartCtx)
+        protected virtual bool OnMouseReleased(Event inputEvent, FlowchartContext ctx)
         {
-            bool consumed = false;
-            Flowchart fc = flowchartCtx.Flowchart;
-            Block blockHit = flowchartCtx.BlockHitInLastMouseDown;
-            bool hitEmptySpace = blockHit == null;
-            var window = flowchartCtx.Window;
-            if (hitEmptySpace)
+            var fc = ctx.Flowchart;
+            var blockHit = ctx.BlockHitInLastMouseDown;
+            bool hitEmpty = blockHit == null;
+            bool hasDragRect = ctx.SelectionBox.size != Vector2.zero;
+
+            if (hitEmpty && !hasDragRect)
             {
-                flowchartCtx.Flowchart.ClearSelectedBlocks();
+                fc.ClearSelectedBlocks();
             }
-            else
+            else if (!hitEmpty)  // only when a real block was clicked
             {
-                FlowchartWindow.SetBlockForInspector(flowchartCtx.Flowchart, blockHit);
+                FlowchartWindow.SetBlockForInspector(fc, blockHit);
+
                 if (fc.SelectedBlocks.Count == 0)
-                {
                     fc.AddToSelection(blockHit);
-                }
             }
 
-            window.UpdateBlockCollection();
-            window.Repaint();
-
-            return consumed;
+            ctx.FcHost.UpdateBlockCollection();
+            ctx.FcHost.Repaint();
+            return false;
         }
     }
 }

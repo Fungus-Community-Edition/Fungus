@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
 
 namespace Amanita.Tests.Editor.Integration
 {
@@ -18,20 +16,28 @@ namespace Amanita.Tests.Editor.Integration
             PrepSceneObjects();
             void PrepSceneObjects()
             {
-                fcHolder = new GameObject("Flowchart");
-                flowchart = fcHolder.AddComponent<Flowchart>();
+                host = new FakeFlowchartHost();
+                host.Init();
+
+                flowchart = host.Flowchart;
+                
                 blocks = new List<Block>();
                 foreach (var pos in initBlockPositions)
                 {
-                    var newBlock = flowchart.CreateBlock(Vector2.zero);
+                    Block newBlock = host.CreateBlock(host.Flowchart, Vector2.zero);
+                    newBlock.BlockName = $"Block @ {pos}";
                     newBlock._NodeRect = new Rect(pos, nodeSize);
                     blocks.Add(newBlock);
                 }
+
+                flowchart.ClearSelectedBlocks();
+
             }
 
             // Build handlers pipeline: single click → box → (drag would follow)
             pipeline = new FlowchartWindowInputHandler
             (
+                new HitDetectionHandler(),
                 new SingleSelectionHandler(),
                 new BoxSelectionHandler()
             );
@@ -41,7 +47,7 @@ namespace Amanita.Tests.Editor.Integration
             {
                 Flowchart = flowchart,
                 Position = new Rect(0, 0, 200, 200),
-                Window = null // not used by these handlers
+                FcHost = host,
             };
 
             // Common event templates
@@ -50,7 +56,7 @@ namespace Amanita.Tests.Editor.Integration
             mouseReleased = new Event { type = EventType.MouseUp, button = leftMouseButton };
         }
 
-        protected GameObject fcHolder;
+        protected FakeFlowchartHost host;
         protected Flowchart flowchart;
         protected IList<Block> blocks;
         static readonly IList<Vector2> initBlockPositions = new[] // In window space
@@ -70,7 +76,8 @@ namespace Amanita.Tests.Editor.Integration
         [TearDown]
         public void TearDown()
         {
-            UnityObject.DestroyImmediate(fcHolder);
+            host.Dispose();
+            //UnityObject.DestroyImmediate(fcHolder);
             ctx = null;
             mouseDown = mouseDrag = mouseReleased = null;
         }
@@ -93,22 +100,21 @@ namespace Amanita.Tests.Editor.Integration
         [Test, TestCaseSource(nameof(BlockIndices))]
         public void ClickOnBlock_SelectsThatBlock(int blockIndex)
         {
-            // pick the 2nd block at position (50,50)
-            mouseDown.mousePosition = initBlockPositions[1];
+            mouseDown.mousePosition = initBlockPositions[blockIndex];
             PrePassHitTest(mouseDown);
 
-            // run pipeline
             bool consumed = pipeline.Process(mouseDown, ctx);
-
-            // SingleSelectionHandler never consumes, BoxSelectionHandler sees a hit->no consume
-            Assert.IsFalse(consumed);
+            string errorMessage = "The SingleSelectionHandler should never consume. When seeing a " +
+                "hit, neither should BoxSelectionHandler";
+            Assert.IsFalse(consumed, errorMessage);
 
             // Expect exactly that block to be selected
             Block blockWeExpect = blocks[blockIndex];
+            errorMessage = "Click on a single block did not make it so only that one is selected";
             CollectionAssert.AreEqual(
-                new[] { blocks[1] },
+                new[] { blockWeExpect },
                 flowchart.SelectedBlocks,
-                "Click on block did not select exactly that block"
+                errorMessage
             );
         }
 
@@ -117,55 +123,186 @@ namespace Amanita.Tests.Editor.Integration
             return Enumerable.Range(0, initBlockPositions.Count);
         }
 
-        [Test]
-        public void ClickOnEmpty_ClearsSelection()
-        {
-            // Pre-populate a selection
-            flowchart.AddToSelection(blocks[0]);
 
-            // Click at empty space (e.g. at (0,0))
-            mouseDown.mousePosition = Vector2.zero;
+        [Test, TestCaseSource(nameof(BlockIndices))]
+        public virtual void MouseDown_EmptySpace_OneBlockSelected_Clears(int blockIndex)
+        {
+            Block toSelect = blocks[blockIndex];
+            flowchart.SelectedBlock = toSelect;
+
+            mouseDown.mousePosition = emptySpace;
             PrePassHitTest(mouseDown);
 
             bool consumed = pipeline.Process(mouseDown, ctx);
-            Assert.IsTrue(consumed, "BoxSelectionHandler should consume MouseDown on empty space");
+            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
 
-            // Expect no selected blocks
-            Assert.IsEmpty(
-                flowchart.SelectedBlocks,
-                "Click on empty space should clear selection"
-            );
+            bool success = flowchart.SelectedBlocks.Count == 0;
+            Assert.IsTrue(success, "Mouse down on empty space should've cleared all blocks");
+        }
+
+        protected readonly Vector2 emptySpace = new Vector2(3, 3);
+
+        [Test]
+        public virtual void MouseDown_EmptySpace_NoBlocksSelected_NothingStillSelected()
+        {
+            mouseDown.mousePosition = emptySpace;
+            PrePassHitTest(mouseDown);
+
+            bool consumed = pipeline.Process(mouseDown, ctx);
+            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
+
+            bool success = flowchart.SelectedBlocks.Count == 0;
+            Assert.IsTrue(success, "Mouse down on empty space with no blocks selected should've left the selection empty");
         }
 
         [Test]
-        public void Marquee_SelectsAllOverlappedBlocks()
+        public virtual void MouseUp_Empty_NothingSelected_RemainsCleared()
         {
-            // Drag box from (0,0) to (60,60) → should include blocks[0] and blocks[1]
-            // 1) MouseDown at (0,0)
-            mouseDown.mousePosition = Vector2.zero;
-            PrePassHitTest(mouseDown);
-            bool downConsumed = pipeline.Process(mouseDown, ctx);
-            Assert.IsTrue(downConsumed, "BoxSelectionHandler should consume MouseDown on empty");
-
-            // 2) MouseDrag to (60,60)
-            mouseDrag.mousePosition = new Vector2(60, 60);
-            PrePassHitTest(mouseDrag); // blockHitInLastMouseDown unchanged
-            bool dragConsumed = pipeline.Process(mouseDrag, ctx);
-            Assert.IsTrue(dragConsumed, "BoxSelectionHandler should consume MouseDrag");
-
-            // 3) MouseUp at (60,60)
-            mouseReleased.mousePosition = new Vector2(60, 60);
+            mouseReleased.mousePosition = emptySpace;
             PrePassHitTest(mouseReleased);
-            bool upConsumed = pipeline.Process(mouseReleased, ctx);
-            Assert.IsTrue(upConsumed, "BoxSelectionHandler should consume MouseUp");
 
-            // Verify selection contains blocks 0 and 1 only
-            var sel = flowchart.SelectedBlocks;
-            CollectionAssert.AreEquivalent(
-                new[] { blocks[0], blocks[1] },
-                sel,
-                "Marquee should select only blocks whose rects overlap the box"
+            bool consumed = pipeline.Process(mouseDown, ctx);
+            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
+
+            bool success = flowchart.SelectedBlocks.Count == 0;
+            Assert.IsTrue(success, "Mouse release on empty space with no blocks selected should've left the selection empty");
+        }
+
+        [Test, TestCaseSource(nameof(BlockIndices))]
+        public virtual void MouseUp_Empty_OneBlockSelectedByMarquee_SelectionStays(int blockIndex)
+        {
+            Block toSelect = blocks[blockIndex];
+            Vector2 blockPos = toSelect._NodeRect.position;
+            Vector2 offset = new Vector2(1, 1);
+
+            // We need to set up the mouse positions so we don't accidentally select 
+            // multiple blocks
+            Vector2 startMousePos = blockPos - offset;
+            Vector2 endMousePos = blockPos + offset;
+            SimulateBoxSelection(startMousePos, endMousePos);
+
+            bool success = flowchart.SelectedBlock == toSelect;
+            Assert.IsTrue(success, "After the box select, only that one block should've stayed selected");
+        }
+
+        [Test]
+        public virtual void MouseDown_OnNonSelected_SelectOnlyThat()
+        {
+            Block toSelect = blocks[0];
+            SimulateSingleBlockSelection(toSelect);
+
+            toSelect = blocks[1];
+            SimulateSingleBlockSelection(toSelect);
+
+            bool success = ctx.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
+            string errorMessage = "Selecting a non-selected block should change the selection to only that block";
+            Assert.IsTrue(success, errorMessage);
+        }
+
+        [Test, TestCaseSource(nameof(BlockIndices))]
+        public virtual void MouseDown_OnAlreadySelected_SelectThatOneBlock(int blockIndex)
+        {
+            Block toSelect = blocks[blockIndex];
+            Vector2 blockPos = toSelect._NodeRect.position;
+            bool consumed = false;
+            string errorMessage = string.Empty;
+
+            SimulateSingleBlockSelection(toSelect);
+
+            consumed = pipeline.Process(mouseDown, ctx);
+            errorMessage = "With the mouse being on a block, nothing should have consumed the mouse down";
+            Assert.IsFalse(consumed, errorMessage);
+
+            errorMessage = "After clicking on an already-selected block, only that block should've been selected";
+            bool noClear = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
+            Assert.IsTrue(noClear, errorMessage);
+        }
+
+        protected void SimulateSingleBlockSelection(Block toSelect)
+        {
+            Vector2 blockPos = toSelect._NodeRect.position;
+            mouseDown.mousePosition = blockPos;
+            bool consumed = pipeline.Process(mouseDown, ctx);
+            string errorMessage = "Nothing should have consumed the mouse down, what with the mouse being on a block";
+            Assume.That(!consumed, errorMessage);
+
+            bool blockSelected = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
+            errorMessage = "Only the one block should've been selected in the prep";
+            Assume.That(blockSelected, errorMessage);
+        }
+
+        [Test, TestCaseSource(nameof(MultiSelectionCases))]
+        public void MouseDrag_Marquee_SelectsExpectedBlocks(Vector2 startMousePos,
+            Vector2 endMousePos,
+            int[] expectedIndices)
+        {
+            // 1) Perform box selection
+            SimulateBoxSelection(startMousePos, endMousePos);
+
+            // 2) Map actual selected blocks to their indices
+            var actualIndices = flowchart
+                .SelectedBlocks
+                .Select(b => blocks.IndexOf(b))
+                .OrderBy(i => i)
+                .ToArray();
+
+            // 3) Assert equivalence
+            Assert.That(
+                actualIndices,
+                Is.EquivalentTo(expectedIndices),
+                $"Expected blocks [{string.Join(",", expectedIndices)}], " +
+                $"but got [{string.Join(",", actualIndices)}]"
             );
         }
+
+        static IEnumerable<TestCaseData> MultiSelectionCases()
+        {
+            // Drag from (0,0) to (60,60) → should pick up blocks[0] & blocks[1]
+            yield return new TestCaseData(new Vector2(0, 0),
+                new Vector2(60, 60),
+                new[] { 0, 1 }
+            ).SetName("Box_0_0_to_60_60_Selects_0_and_1");
+
+            // Drag a giant marquee → selects all blocks
+            yield return new TestCaseData(new Vector2(0, 0),
+                new Vector2(200, 200),
+                new[] { 0, 1, 2 }
+            ).SetName("Box_0_0_to_200_200_Selects_All");
+
+            // Drag around only the last block → selects blocks[2] alone
+            yield return new TestCaseData(new Vector2(80, 80),
+                new Vector2(120, 120),
+                new[] { 2 }
+            ).SetName("Box_80_80_to_120_120_Selects_2");
+
+            // Drag in empty area → selects none
+            yield return new TestCaseData(new Vector2(150, 150),
+                new Vector2(180, 180),
+                new int[0]
+            ).SetName("Box_150_150_to_180_180_Selects_None");
+        }
+
+        protected virtual void SimulateBoxSelection(Vector2 startMousePos, Vector2 endMousePos)
+        {
+            mouseDown.mousePosition = emptySpace;
+            PrePassHitTest(mouseDown);
+
+            mouseDown.mousePosition = startMousePos;
+            bool consumed = pipeline.Process(mouseDown, ctx);
+            string errorMessage = "BoxSelectionHandler should've consumed the mouse up";
+            Assume.That(consumed, errorMessage);
+
+            mouseDrag.mousePosition = endMousePos;
+            mouseDrag.delta = endMousePos - startMousePos;
+            pipeline.Process(mouseDrag, ctx);
+            errorMessage = "BoxSelectionHandler should've consumed the mouse drag";
+            Assume.That(consumed, errorMessage);
+
+            mouseReleased.mousePosition = mouseDrag.mousePosition;
+            errorMessage = "BoxSelectionHandler should've consumed the mouse release";
+            pipeline.Process(mouseReleased, ctx);
+        }
+
+
     }
 }

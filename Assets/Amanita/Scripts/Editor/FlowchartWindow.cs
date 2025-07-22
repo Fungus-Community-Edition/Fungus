@@ -15,7 +15,7 @@ namespace Amanita.EditorUtils
         BlockClipboard IFlowchartHost.Clipboard => this.BlockClipboard;
         bool IFlowchartHost.HasClipboard => this.HasClipboard;
         Flowchart IFlowchartHost.Flowchart => this.currentFlowchart;
-        void IFlowchartHost.CreateBlock(Flowchart fc, Vector2 p) => CreateBlock(fc, p);
+        Block IFlowchartHost.CreateBlock(Flowchart fc, Vector2 p) => CreateBlock(fc, p);
         void IFlowchartHost.DeselectAll() => DeselectAll();
         void IFlowchartHost.QueueToDelete(IList<Block> bs) => QueueToDelete(bs);
         void IFlowchartHost.DeleteScheduledBlocks() => DeleteScheduledBlocks();
@@ -708,7 +708,7 @@ namespace Amanita.EditorUtils
             UpdateContexts();
             void UpdateContexts()
             {
-                flowchartCtx.Window = this;
+                flowchartCtx.FcHost = this;
                 flowchartCtx.Flowchart = currentFlowchart;
                 flowchartCtx.Position = position;
 

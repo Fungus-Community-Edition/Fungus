@@ -32,7 +32,7 @@ namespace Amanita.EditorUtils
         public Flowchart Flowchart { get; set; }
         public virtual Rect Position { get; set; }
         public virtual Rect SelectionBox { get; set; } = default;
-        public virtual FlowchartWindow Window { get; set; }
+        public virtual IFlowchartHost FcHost { get; set; }
 
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿using Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -23,7 +22,7 @@ namespace Amanita.Tests.Editor
             ctx = new FlowchartContext
             {
                 Flowchart = host.Flowchart,
-                Window = null      // not used by the handler
+                FcHost = null      // not used by the handler
             };
 
             rightClickEmptySpace = RightClick(whereEmptySpaceShouldBe);
