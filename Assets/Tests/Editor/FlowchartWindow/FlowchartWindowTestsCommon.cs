@@ -44,14 +44,14 @@ namespace Amanita.Tests.Editor
             ctx = new FlowchartContext
             {
                 Flowchart = flowchart,
-                Position = new Rect(0, 0, 200, 200),
+                Position = initCtxPos,
                 FcHost = host,
             };
 
             // Common event templates
-            mouseDown = new Event { type = EventType.MouseDown, button = leftMouseButton };
-            mouseDrag = new Event { type = EventType.MouseDrag, button = leftMouseButton };
-            mouseReleased = new Event { type = EventType.MouseUp, button = leftMouseButton };
+            mouseDown = new Event { type = EventType.MouseDown, button = MouseButton.Left  };
+            mouseDrag = new Event { type = EventType.MouseDrag, button = MouseButton.Left };
+            mouseReleased = new Event { type = EventType.MouseUp, button = MouseButton.Left };
         }
 
         protected FakeFlowchartHost host;
@@ -67,14 +67,17 @@ namespace Amanita.Tests.Editor
 
         protected FlowchartWindowInputHandler pipeline;
         protected FlowchartContext ctx;
+        protected static readonly Rect initCtxPos = new Rect(0, 0, 200, 200);
         protected Event mouseDown, mouseDrag, mouseReleased;
-        protected static readonly int leftMouseButton = 0;
 
         [TearDown]
         public virtual void TearDown()
         {
             host.Dispose();
-            //UnityObject.DestroyImmediate(fcHolder);
+            host = null;
+            flowchart = null;
+            blocks = null;
+            pipeline = null;
             ctx = null;
             mouseDown = mouseDrag = mouseReleased = null;
         }

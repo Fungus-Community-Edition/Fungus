@@ -7,74 +7,26 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.Tests.Editor.Integration
 {
-    public class DragIntegrationTests
+    public class DragIntegrationTests : FlowchartWindowTestsCommon
     {
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
-            // Create flowchart + 3 blocks
-            PrepSceneObjects();
-            void PrepSceneObjects()
-            {
-                fcHolder = new GameObject("fc");
-                flowchart = fcHolder.AddComponent<Flowchart>();
-                blocks = new List<Block>();
+            base.SetUp();
 
-                foreach (var pos in initBlockPositions)
-                {
-                    var newBlock = flowchart.CreateBlock(Vector2.zero);
-                    newBlock._NodeRect = new Rect(pos, nodeSize);
-                    blocks.Add(newBlock);
-                }
-            }
-
-            // Build pipeline: click select → box select → drag
             pipeline = new FlowchartWindowInputHandler(
+                new HitDetectionHandler(),
                 new SingleSelectionHandler(),
                 new BoxSelectionHandler(),
                 new BlockDragHandler()
             );
 
-            // Shared context
-            ctx = new FlowchartContext
-            {
-                Flowchart = flowchart,
-                Position = initCtxPos
-            };
-
-            // Common events
-            mouseDown = new Event { type = EventType.MouseDown, button = 0 };
-            mouseDrag = new Event { type = EventType.MouseDrag, button = 0, delta = dragDelta };
-            mouseButtonReleased = new Event { type = EventType.MouseUp, button = 0 };
+            mouseButtonReleased = new Event { type = EventType.MouseUp, button = MouseButton.Left };
+            mouseDrag = new Event { type = EventType.MouseDrag, button = MouseButton.Left, delta = dragDelta };
         }
 
-        GameObject fcHolder;
-        Flowchart flowchart;
-        IList<Block> blocks;
-        static readonly IList<Vector2> initBlockPositions = new Vector2[]{
-            new Vector2(10, 10),
-            new Vector2(50, 50),
-            new Vector2(100,100)
-        };
-        static readonly Vector2 nodeSize = new Vector2(20, 20);
-
-        FlowchartWindowInputHandler pipeline;
-
-        FlowchartContext ctx;
-        static readonly Rect initCtxPos = new Rect(0, 0, 200, 200);
-
-        Event mouseDown, mouseDrag, mouseButtonReleased;
-
-
-        Vector2 dragDelta = new Vector2(5, 7);
-
-        [TearDown]
-        public void TearDown()
-        {
-            UnityObject.DestroyImmediate(fcHolder);
-            ctx = null;
-            mouseDown = mouseDrag = mouseButtonReleased = null;
-        }
+        protected Event mouseButtonReleased;
+        protected Vector2 dragDelta = new Vector2(5, 7);
 
         /// <summary>
         /// Simulates the "pre-pass" hit test done on MouseDown only.
