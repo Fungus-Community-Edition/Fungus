@@ -173,7 +173,7 @@ namespace Amanita.Tests.Editor.Integration
         {
             Block toSelect = blocks[blockIndex];
             Vector2 blockPos = toSelect._NodeRect.position;
-            Vector2 offset = new Vector2(1, 1);
+            Vector2 offset = BoxSelectionHandler.MinThreshold * 2;
 
             // We need to set up the mouse positions so we don't accidentally select 
             // multiple blocks
@@ -218,17 +218,21 @@ namespace Amanita.Tests.Editor.Integration
             Assert.IsTrue(noClear, errorMessage);
         }
 
-        protected void SimulateSingleBlockSelection(Block toSelect)
+        protected void SimulateSingleBlockSelection(Block toSelect, bool controlClick = false)
         {
+            mouseDown.control = controlClick;
             Vector2 blockPos = toSelect._NodeRect.position;
             mouseDown.mousePosition = blockPos;
             bool consumed = pipeline.Process(mouseDown, ctx);
             string errorMessage = "Nothing should have consumed the mouse down, what with the mouse being on a block";
             Assume.That(!consumed, errorMessage);
 
-            bool blockSelected = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
-            errorMessage = "Only the one block should've been selected in the prep";
-            Assume.That(blockSelected, errorMessage);
+            if (!controlClick) // Ctrl-clicking can add to the selection, so...
+            {
+                bool blockSelected = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
+                errorMessage = "Only the one block should've been selected in the prep";
+                Assume.That(blockSelected, errorMessage);
+            }
         }
 
         [Test, TestCaseSource(nameof(MultiSelectionCases))]
@@ -303,6 +307,64 @@ namespace Amanita.Tests.Editor.Integration
             pipeline.Process(mouseReleased, ctx);
         }
 
+        [Test, TestCaseSource(nameof(BlockIndices))]
+        public virtual void MouseUp_ResetsSelectionBox(int blockIndex)
+        {
+            Block toSelect = blocks[blockIndex];
+            SimulateSingleBlockSelection(toSelect);
+            bool success = ctx.SelectionBox.size == Vector2.zero;
+            string errorMessage = "After selecting a block, mouse up should've reset the selection box";
+            Assert.IsTrue(success, errorMessage);
+        }
+
+        [Test]
+        public void CtrlClick_OnSelected_AddsToSelection()
+        {
+            Block firstBlock = blocks[0];
+            SimulateSingleBlockSelection(firstBlock);
+
+            Block secondBlock = blocks[1];
+            SimulateSingleBlockSelection(secondBlock, true);
+
+            bool justTwoBlocksSelected = flowchart.SelectedBlocks.Count == 2;
+            bool theTwoWeExpectAreSelected = justTwoBlocksSelected && flowchart.SelectedBlocks.Contains(firstBlock) 
+                && flowchart.SelectedBlocks.Contains(secondBlock);
+            Assert.IsTrue(theTwoWeExpectAreSelected, "Only the first 2 blocks should be selected");
+        }
+
+        [Test]
+        public void CtrlClick_OnSelected_RemovesFromSelection()
+        {
+            // pre-select blocks[0] and blocks[1]
+            Block firstBlock = blocks[0];
+            Block secondBlock = blocks[1];
+
+            SimulateSingleBlockSelection(firstBlock);
+            SimulateSingleBlockSelection(secondBlock, true);
+
+            bool bothBlocksSelected = flowchart.SelectedBlocks.Contains(firstBlock) &&
+                flowchart.SelectedBlocks.Contains(secondBlock);
+            Assert.IsTrue(bothBlocksSelected, "Both blocks should be selected in the prep");
+
+            SimulateSingleBlockSelection(secondBlock, true);
+            bool onlyFirstBlockSelectedNow = flowchart.SelectedBlocks.Contains(firstBlock) &&
+                flowchart.SelectedBlocks.Count == 1;
+
+            Assert.IsTrue(onlyFirstBlockSelectedNow, "Only the first Block should be selected after ctrl-clicking the second one");
+        }
+
+        [Test]
+        public void CtrlClick_EmptySpace_DoesNotClear()
+        {
+            // pre-select block[2]
+            SimulateSingleBlockSelection(blocks[2]);
+
+            var e = new Event { type = EventType.MouseUp, button = 0, control = true };
+            ctx.BlockHitInLastMouseDown = null;
+            pipeline.Process(e, ctx);
+
+            Assert.That(flowchart.SelectedBlocks, Is.EquivalentTo(new[] { blocks[2] }));
+        }
 
     }
 }

@@ -65,30 +65,51 @@ namespace Amanita.EditorUtils
             bool startedOnEmptySpace = !ctx.WeHitBlockInLastMouseDown;
             if (ctx.StartSelectionBoxPosition.x >= 0 && startedOnEmptySpace)
             {
-                ctx.SelectionBoxDragOngoing = true;
-                UpdateSelectionBoxSize(); 
-                void UpdateSelectionBoxSize()
+                // Only register the drag as starting if we've moved past a certain threshold
+                Vector2 start = ctx.StartSelectionBoxPosition;
+                Vector2 current = inputEvent.mousePosition;
+                Vector3 diff = start - current;
+                diff.x = Mathf.Abs(diff.x);
+                diff.y = Mathf.Abs(diff.y);
+                bool movedFarEnough = diff.x > MinThreshold.x && diff.y > MinThreshold.y;
+                
+                if (!ctx.SelectionBoxDragOngoing && movedFarEnough)
                 {
-                    // Naturally, based off the drag start pos and the current mouse pos
-                    Vector2 start = ctx.StartSelectionBoxPosition;
-                    Vector2 current = inputEvent.mousePosition;
-
-                    var bottomLeftCorner = Vector2.Min(start, current);
-                    var topRightCorner = Vector2.Max(start, current);
-
-                    ctx.SelectionBox = Rect.MinMaxRect
-                    (
-                        bottomLeftCorner.x, bottomLeftCorner.y,
-                        topRightCorner.x, topRightCorner.y
-                    );
+                    ctx.SelectionBoxDragOngoing = true;
                 }
 
-                inputEvent.Use();
-                consumed = true;
-            }
+                if (ctx.SelectionBoxDragOngoing)
+                {
+                    UpdateSelectionBoxSize();
+                    void UpdateSelectionBoxSize()
+                    {
+                        // Naturally, based off the drag start pos and the current mouse pos
+                        Vector2 start = ctx.StartSelectionBoxPosition;
+                        Vector2 current = inputEvent.mousePosition;
+
+                        var bottomLeftCorner = Vector2.Min(start, current);
+                        var topRightCorner = Vector2.Max(start, current);
+
+                        ctx.SelectionBox = Rect.MinMaxRect
+                        (
+                            bottomLeftCorner.x, bottomLeftCorner.y,
+                            topRightCorner.x, topRightCorner.y
+                        );
+                    }
+
+                    inputEvent.Use();
+                    consumed = true;
+                }
+
+                }
 
             return consumed;
         }
+
+        /// <summary>
+        /// Minimum movement threshold for this to start registering a box selection
+        /// </summary>
+        public static readonly Vector2 MinThreshold = new Vector2(2, 2);
 
         protected virtual bool OnMouseReleased(Event mouseEvent, FlowchartContext ctx)
         {

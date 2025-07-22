@@ -28,8 +28,8 @@ namespace Amanita.EditorUtils
 
         }
 
-        protected virtual bool IsLeftMouseButton(Event inputEvent) => inputEvent.button == MouseButton.Left;
-        protected virtual bool IsRightMouseButton(Event ev) => ev.button == MouseButton.Right;
+        protected static bool IsLeftMouseButton(Event inputEvent) => inputEvent.button == MouseButton.Left;
+        protected static bool IsRightMouseButton(Event ev) => ev.button == MouseButton.Right;
 
         protected readonly static int leftMouseButton = 0;
         public readonly static string recordSelectedObject = "Select";
@@ -45,7 +45,8 @@ namespace Amanita.EditorUtils
                 bool atMostOneBlockSelected = flowchartCtx.SelectedBlocks.Count <= 1;
                 var blockHit = flowchartCtx.BlockHitInLastMouseDown;
                 bool hitNonSelectedBlock = blockHit != null && !flowchartCtx.Flowchart.SelectedBlocks.Contains(blockHit);
-                if (atMostOneBlockSelected || hitNonSelectedBlock)
+                bool multiSelect = IsMultiSelect(inputEvent);
+                if ((atMostOneBlockSelected || hitNonSelectedBlock) && !multiSelect)
                 {
                     // Need to avoid clearing when multiple blocks are selected. Otherwise, we'd
                     // be cancelling the multi select too early, keeping the user from
@@ -53,17 +54,29 @@ namespace Amanita.EditorUtils
                     flowchartCtx.Flowchart.ClearSelectedBlocks();
                 }
 
+
                 if (flowchartCtx.WeHitBlockInLastMouseDown)
                 {
                     // Record for Undo
                     Undo.RecordObject(flowchartCtx.Flowchart, recordSelectedObject);
-                    flowchartCtx.Flowchart.AddToSelection(blockHit);
+
+                    bool alreadySelected = flowchartCtx.SelectedBlocks.Contains(blockHit);
+                    if (alreadySelected && multiSelect)
+                    {
+                        flowchartCtx.Flowchart.DeselectBlockNoCheck(blockHit);
+                    }
+                    else
+                    {
+                        flowchartCtx.Flowchart.AddToSelection(blockHit);
+                    }
                 }
 
             }
 
             return consumed;
         }
+
+        protected static bool IsMultiSelect(Event e) => IsLeftMouseButton(e) && (e.control || e.command);
 
         protected virtual bool OnMouseReleased(Event inputEvent, FlowchartContext ctx)
         {
@@ -72,7 +85,7 @@ namespace Amanita.EditorUtils
             bool hitEmpty = blockHit == null;
             bool hasDragRect = ctx.SelectionBox.size != Vector2.zero;
 
-            if (hitEmpty && !hasDragRect)
+            if (hitEmpty && !hasDragRect && !IsMultiSelect(inputEvent))
             {
                 fc.ClearSelectedBlocks();
             }
