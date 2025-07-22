@@ -1,7 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
-namespace Amanita
+
+
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.

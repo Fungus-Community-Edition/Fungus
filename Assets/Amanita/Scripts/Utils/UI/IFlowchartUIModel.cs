@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.UI
+namespace Amanita.VScripting.UI
 {
     public interface IFlowchartUIModel
     {

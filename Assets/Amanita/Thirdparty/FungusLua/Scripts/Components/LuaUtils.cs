@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
 using Amanita.Lua.JSON;
+using Amanita.DialogueSys;
 
 namespace Amanita.Lua
 {
@@ -19,7 +17,7 @@ namespace Amanita.Lua
     public enum FungusModuleOptions
     {
         UseGlobalVariables, // Fungus helper items will be available as global variables.
-        UseAmanitaVariable,  // Fungus helper items will be available in the 'fungus' global variable.
+        UseIVariableiable,  // Fungus helper items will be available in the 'fungus' global variable.
         NoFungusModule      // The fungus helper module will not be loaded.
     }
 

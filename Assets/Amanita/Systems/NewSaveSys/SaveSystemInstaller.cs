@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {

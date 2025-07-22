@@ -1,13 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(Variable), true)]
     public class VariableEditor : CommandEditor
@@ -16,8 +13,8 @@ namespace Amanita.EditorUtils
         {
             base.OnEnable();
 
-            Variable t = target as Variable;
-            t.hideFlags = HideFlags.HideInInspector;
+            Variable varTarget = target as Variable;
+            varTarget.hideFlags = HideFlags.HideInInspector;
         }
 
         public static VariableInfoAttribute GetVariableInfo(System.Type variableType)
@@ -48,7 +45,7 @@ namespace Amanita.EditorUtils
             variableKeys.Add(defaultText);
             variableObjects.Add(null);
             
-            List<Variable> variables = flowchart.Variables;
+            IList<IVariable> variables = flowchart.Variables.Cast<IVariable>().ToList();
             int index = 0;
             int selectedIndex = 0;
 
@@ -67,22 +64,22 @@ namespace Amanita.EditorUtils
                 return;
             }
 
-            foreach (Variable v in variables)
+            foreach (Variable elem in variables)
             {
                 if (filter != null)
                 {
-                    if (!filter(v))
+                    if (!filter(elem))
                     {
                         continue;
                     }
                 }
                 
-                variableKeys.Add(v.Key);
-                variableObjects.Add(v);
+                variableKeys.Add(elem.Key);
+                variableObjects.Add(elem);
                 
                 index++;
                 
-                if (v == selectedVariable)
+                if (elem == selectedVariable)
                 {
                     selectedIndex = index;
                 }

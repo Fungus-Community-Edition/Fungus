@@ -1,11 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Sets the text property on a UI Text object and/or an Input Field object.

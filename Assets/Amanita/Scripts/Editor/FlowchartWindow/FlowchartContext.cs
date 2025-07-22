@@ -1,9 +1,9 @@
-﻿using Amanita.Collections;
+using Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartContext
     {
@@ -11,6 +11,32 @@ namespace Amanita.EditorUtils
         {
             get { return Flowchart.SelectedBlocks; }
             set { Flowchart.SelectedBlocks = value; }
+        }
+
+        public int SelectedBlockCount
+        {
+            get
+            {
+                if (Flowchart == null)
+                {
+                    return 0;
+                }
+
+                return Flowchart.SelectedBlockCount;
+            }
+        }
+
+        public int SelectedCommandCount
+        {
+            get
+            {
+                if (Flowchart == null)
+                {
+                    return 0;
+                }
+
+                return Flowchart.SelectedCommandCount;
+            }
         }
 
         public virtual bool BlockDragOngoing { get; set; }
@@ -33,22 +59,22 @@ namespace Amanita.EditorUtils
         public virtual Rect Position { get; set; }
         public virtual Rect SelectionBox { get; set; } = default;
         public virtual IFlowchartHost FcHost { get; set; }
-
+        public virtual IList<Block> AllBlocks { get; set; }
 
         /// <summary>
         /// Returns the topmost block whose NodeRect contains the given mouse position,
-        /// taking scroll‐offset and zoom into account.
+        /// taking scroll-offset and zoom into account.
         /// </summary>
         public Block TopmostBlockOverlapping(Vector2 mousePosition)
         {
             Block result = null;
             var blocks = Flowchart.GetComponents<Block>();
 
-            // Iterate in reverse order so higher‐z blocks get hit‐tested first
+            // Iterate in reverse order so higher-z blocks get hit-tested first
             for (int i = blocks.Length - 1; i >= 0; i--)
             {
                 var currentBlock = blocks[i];
-                // Transform the block’s _NodeRect into window-space
+                // Transform the block�s _NodeRect into window-space
                 Rect windowSpaceRect = currentBlock._NodeRect;
                 windowSpaceRect.position += Flowchart.ScrollPos;
 
@@ -80,9 +106,11 @@ namespace Amanita.EditorUtils
             foreach (var elem in SelectedBlocks)
             {
                 Undo.RecordObject(elem, "Block Position");
-                elem._NodeRect = elem._NodeRect.SnapPosition(FlowchartWindow.GridObjectSnap);
+                elem._NodeRect = elem._NodeRect.SnapPosition(GridObjectSnap);
             }
             
         }
+
+        public virtual float GridObjectSnap { get; set; } = 20;
     }
 }

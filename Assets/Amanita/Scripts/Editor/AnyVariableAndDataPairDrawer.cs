@@ -1,16 +1,16 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the AnyVaraibleAndDataPair, shows only the matching data for the targeted variable
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Amanita.AnyVariableAndDataPair))]
+    [CustomPropertyDrawer(typeof(AnyVariableAndDataPair))]
     public class AnyVariableAndDataPairDrawer : PropertyDrawer
     {
-        public Amanita.Flowchart lastFlowchart;
+        public Flowchart lastFlowchart;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

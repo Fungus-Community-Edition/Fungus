@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -179,6 +180,8 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Failed to decode {unit.DataTypeName} to FlowchartSaveData.");
                 return null;
             }
+
+            saveData.OnDeserialize();
             return saveData;
         }
 

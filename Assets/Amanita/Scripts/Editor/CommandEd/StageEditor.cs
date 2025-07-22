@@ -1,10 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEngine;
+using Amanita.DialogueSys.Commands;
+using Amanita.DialogueSys;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(ControlStage))]
     public class StageEditor : CommandEditor
@@ -32,14 +31,14 @@ namespace Amanita.EditorUtils
         {
             serializedObject.Update();
             
-            ControlStage t = target as ControlStage;
+            ControlStage stageTarget = target as ControlStage;
 
             // Format Enum names
-            string[] displayLabels = StringFormatter.FormatEnumNames(t.Display,"<None>");
+            string[] displayLabels = StringFormatter.FormatEnumNames(stageTarget.Display,"<None>");
             displayProp.enumValueIndex = EditorGUILayout.Popup("Display", (int)displayProp.enumValueIndex, displayLabels);
 
             string replaceLabel = "Portrait Stage";
-            if (t.Display == StageDisplayType.Swap)
+            if (stageTarget.Display == StageDisplayType.Swap)
             {
                 CommandEditor.ObjectField<Stage>(replacedStageProp, 
                                                  new GUIContent("Replace", "Character to swap with"), 
@@ -57,28 +56,28 @@ namespace Amanita.EditorUtils
             }
 
             bool showOptionalFields = true;
-            Stage s = t._Stage;
+            Stage stageToWorkWith = stageTarget._Stage;
             // Only show optional portrait fields once required fields have been filled...
-            if (t._Stage != null)                // Character is selected
+            if (stageTarget._Stage != null)                // Character is selected
             {
-                if (t._Stage == null)        // If no default specified, try to get any portrait stage in the scene
+                if (stageTarget._Stage == null)        // If no default specified, try to get any portrait stage in the scene
                 {
                 #if UNITY_6000
-                    s = GameObject.FindFirstObjectByType<Stage>();
+                    stageToWorkWith = GameObject.FindFirstObjectByType<Stage>();
                 #else
                     s = GameObject.FindObjectOfType<Stage>();
                 #endif
                 }
-                if (s == null)
+                if (stageToWorkWith == null)
                 {
                     EditorGUILayout.HelpBox("No portrait stage has been set.", MessageType.Error);
                     showOptionalFields = false; 
                 }
             }
-            if (t.Display != StageDisplayType.None && showOptionalFields) 
+            if (stageTarget.Display != StageDisplayType.None && showOptionalFields) 
             {
                 EditorGUILayout.PropertyField(useDefaultSettingsProp);
-                if (!t.UseDefaultSettings)
+                if (!stageTarget.UseDefaultSettings)
                 {
                     EditorGUILayout.PropertyField(fadeDurationProp);
                 }

@@ -1,9 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Loads a saved value and stores it in a Boolean, Integer, Float or String variable. If the key is not found then the variable is not modified.

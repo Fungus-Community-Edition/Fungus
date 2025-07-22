@@ -1,0 +1,81 @@
+#VarRowRoot {
+    max-height: 35px;
+}
+
+.removeButton {
+    width: 30px;
+    border-radius: 2px;
+    padding: 0 2px 0 0;
+    margin: 2px 1px 2px 2px;
+}
+
+.varRowTypeLabel {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    color: rgb(229, 229, 229);
+    -unity-text-align: middle-left;
+    width: 75px;
+    padding: 0 0 0 2px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.keyInput {
+    background-color: rgb(26, 26, 26);
+    color: rgb(230, 230, 230);
+    border-radius: 2px;
+    padding: 0 1px 0 1px;
+    width: 150px;
+    margin: 0 1px 0 1px;
+    font-size: 18px;
+}
+
+.keyInput > #unity-text-input {
+    background-color: rgb(26, 26, 26);
+    color: rgb(230, 230, 230);
+    border-radius: 2px;
+    padding: 2px;
+    width: 150px;
+    margin: 0;
+}
+
+#ValueField {
+    width: 140px;
+    padding: 0;
+    -unity-text-align: middle-left;
+    border-radius: 2px;
+    border-color: white;
+}
+
+.scopeRoot {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    width: 75px;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    padding: 2px 0 2px 0;
+    margin: 0;
+}
+
+.scopeRoot > VisualElement {
+    height: 100%;
+    padding: 2px;
+    margin: 0;
+    border-radius: 2px;
+}
+
+.scopeRoot > VisualElement > VisualElement {
+    width: 20%;
+    height: 50%;
+    flex-shrink: 1;
+}
+
+.scopeRoot > VisualElement > TextElement {
+    width: 75%;
+    height: 100%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.boolRow {
+}

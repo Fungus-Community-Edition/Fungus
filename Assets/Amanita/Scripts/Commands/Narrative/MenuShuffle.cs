@@ -1,20 +1,17 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.DialogueSys
 {
-    /// <summary>
-    /// Shuffle the order of the items in a Fungus Menu
-    /// </summary>
-    [CommandInfo("Narrative", 
-                 "Menu Shuffle", 
+	/// <summary>
+	/// Shuffle the order of the items in a Fungus Menu
+	/// </summary>
+	[CommandInfo("Narrative", 
+				 "Menu Shuffle", 
 		"Shuffle the order of the items in a Fungus Menu")]
-    [AddComponentMenu("")]
-    [ExecuteInEditMode]
-    public class MenuShuffle : Command
-    {
+	[AddComponentMenu("")]
+	[ExecuteInEditMode]
+	public class MenuShuffle : Command
+	{
 		public enum Mode
 		{
 			Every,
@@ -26,9 +23,9 @@ namespace Amanita
 
 		private int seed = -1;
 
-        public override void OnEnter()
-        {
-            var menuDialog = MenuDialog.GetMenuDialog();
+		public override void OnEnter()
+		{
+			var menuDialog = MenuDialog.GetMenuDialog();
 
 			//if we shuffle every time or we haven't shuffled yet
 			if(shuffleMode == Mode.Every || seed == -1)
@@ -36,22 +33,22 @@ namespace Amanita
 				seed = Random.Range(0,1000000);
 			}
 
-            if (menuDialog != null)
-            {
+			if (menuDialog != null)
+			{
 				menuDialog.Shuffle(new System.Random(seed));
-            }
+			}
 
-            Continue();
-        }
+			Continue();
+		}
 
-        public override string GetSummary()
-        {
-            return shuffleMode.ToString();
-        }
+		public override string GetSummary()
+		{
+			return shuffleMode.ToString();
+		}
 
-        public override Color GetButtonColor()
-        {
-            return new Color32(184, 210, 235, 255);
-        }
-    }
+		public override Color GetButtonColor()
+		{
+			return new Color32(184, 210, 235, 255);
+		}
+	}
 }

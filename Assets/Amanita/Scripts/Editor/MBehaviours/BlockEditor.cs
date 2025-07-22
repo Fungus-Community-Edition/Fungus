@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -9,8 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Amanita.EditorUtils;
+using Amanita.VScripting.EventHandlers;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
 	[CustomEditor(typeof(Block))]
 	public class BlockEditor : Editor
@@ -25,7 +24,6 @@ namespace Amanita.EditorUtils
 		protected Texture2D duplicateIcon;
 		protected Texture2D deleteIcon;
 		
-
 		private CommandListAdaptor commandListAdaptor;
 		private SerializedProperty commandListProperty;
 
@@ -222,7 +220,7 @@ namespace Amanita.EditorUtils
 					// Copy keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Copy")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -237,7 +235,7 @@ namespace Amanita.EditorUtils
 					// Cut keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Cut")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -268,7 +266,7 @@ namespace Amanita.EditorUtils
 					// Duplicate keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Duplicate")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -284,7 +282,7 @@ namespace Amanita.EditorUtils
 					// Delete keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Delete")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -560,12 +558,12 @@ namespace Amanita.EditorUtils
 			bool showPaste = false;
 			bool showPlay = false;
 
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				showCut = true;
 				showCopy = true;
 				showDelete = true;
-				if (flowchart.SelectedCommands.Count == 1 && Application.isPlaying)
+				if (flowchart.SelectedCommandCount == 1 && Application.isPlaying)
 				{
 					showPlay = true;
 				}
@@ -734,7 +732,7 @@ namespace Amanita.EditorUtils
 
 			// Find where to paste commands in block (either at end or after last selected command)
 			int pasteIndex = flowchart.SelectedBlock.CommandList.Count;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; ++i)
 				{
@@ -867,7 +865,7 @@ namespace Amanita.EditorUtils
 
 			int firstSelectedIndex = flowchart.SelectedBlock.CommandList.Count;
 			bool firstSelectedCommandFound = false;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
 				{
@@ -906,7 +904,7 @@ namespace Amanita.EditorUtils
 			var flowchart = (Flowchart)block.GetFlowchart();
 
 			int lastSelectedIndex = -1;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
 				{
@@ -929,8 +927,6 @@ namespace Amanita.EditorUtils
 
 			Repaint();
 		}
-
-
 
 		public static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredCommandInfoAttribute(List<System.Type> menuTypes)
 		{

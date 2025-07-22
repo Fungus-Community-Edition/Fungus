@@ -1,12 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 // Snippet added by ducksonthewater, 2019-01-03 - www.ducks-on-the-water.com
 
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Changes the sprite on a SpriteRenderer.

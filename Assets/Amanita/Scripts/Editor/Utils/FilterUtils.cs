@@ -1,20 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public static class FilterUtils
     {
         /// <summary>
         /// Returns all Blocks whose name or command content contains the query.
-        /// Also sets each Block’s FilterState to Full, Partial, or None.
+        /// Also sets each Block�s FilterState to Full, Partial, or None.
         /// </summary>
         public static IList<Block> FilterBlocks(IList<Block> allBlocks, string query)
         {
             var results = new List<Block>();
 
-            // No query → show everything (reset states to Full)
+            // No query ? show everything (reset states to Full)
             if (string.IsNullOrEmpty(query))
             {
                 foreach (var elem in allBlocks)

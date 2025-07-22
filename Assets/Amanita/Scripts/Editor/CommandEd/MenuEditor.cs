@@ -1,12 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEngine;
+using AmanitaMenu = Amanita.DialogueSys.Commands.Menu;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
-    [CustomEditor (typeof(Menu))]
+    [CustomEditor (typeof(AmanitaMenu))]
     public class MenuEditor : CommandEditor 
     {
         protected SerializedProperty textProp;
@@ -52,12 +50,12 @@ namespace Amanita.EditorUtils
             const int popupWidth = 17;
             if(targetBlockProp.objectReferenceValue == null && GUILayout.Button("+",GUILayout.MaxWidth(popupWidth)))
             {
-                var fw = EditorWindow.GetWindow<FlowchartWindow>();
-                var t = (Menu)target;
-                var activeFlowchart = t.GetFlowchart();
-                var newBlock = fw.CreateBlockSuppressSelect(activeFlowchart, t.ParentBlock._NodeRect.position - Vector2.down * 60);
+                var fcWindow = EditorWindow.GetWindow<FlowchartWindow>();
+                var menuTarget = (AmanitaMenu)target;
+                var activeFlowchart = menuTarget.GetFlowchart();
+                var newBlock = fcWindow.CreateBlockSuppressSelect(activeFlowchart, menuTarget.ParentBlock._NodeRect.position - Vector2.down * 60);
                 targetBlockProp.objectReferenceValue = newBlock;
-                activeFlowchart.SelectedBlock = t.ParentBlock;
+                activeFlowchart.SelectedBlock = menuTarget.ParentBlock;
             }
             EditorGUILayout.EndHorizontal();
 

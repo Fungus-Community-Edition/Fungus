@@ -1,7 +1,5 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Amanita.VScripting;
 
 namespace Amanita.Tests
 {
@@ -13,60 +11,60 @@ namespace Amanita.Tests
         [Test]
         public void CountsAndSignals()
         {
-            Amanita.FungusPrioritySignals.OnFungusPriorityStart += FungusPrioritySignals_OnFungusPriorityStart;
-            Amanita.FungusPrioritySignals.OnFungusPriorityEnd += FungusPrioritySignals_OnFungusPriorityEnd;
-            Amanita.FungusPrioritySignals.OnFungusPriorityChange += FungusPrioritySignals_OnFungusPriorityChange;
+            FungusPrioritySignals.OnFungusPriorityStart += FungusPrioritySignals_OnFungusPriorityStart;
+            FungusPrioritySignals.OnFungusPriorityEnd += FungusPrioritySignals_OnFungusPriorityEnd;
+            FungusPrioritySignals.OnFungusPriorityChange += FungusPrioritySignals_OnFungusPriorityChange;
 
-            Assert.Zero(Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.Zero(FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.DoIncreasePriorityDepth();
+            FungusPrioritySignals.DoIncreasePriorityDepth();
             //one start, one change, no end, 1 depth
             Assert.AreEqual(0, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(1, changeCallCount);
-            Assert.AreEqual(1, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(1, FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.DoIncreasePriorityDepth();
+            FungusPrioritySignals.DoIncreasePriorityDepth();
             //one start, 2 change, no end, 2 depth
             Assert.AreEqual(0, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(2, changeCallCount);
-            Assert.AreEqual(2, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(2, FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.DoIncreasePriorityDepth();
+            FungusPrioritySignals.DoIncreasePriorityDepth();
             //one start, 3 change, no end, 3 depth
             Assert.AreEqual(0, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(3, changeCallCount);
-            Assert.AreEqual(3, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(3, FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.DoDecreasePriorityDepth();
+            FungusPrioritySignals.DoDecreasePriorityDepth();
             //one start, 4 change, no end, 2 depth
             Assert.AreEqual(0, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(4, changeCallCount);
-            Assert.AreEqual(2, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(2, FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.DoDecreasePriorityDepth();
-            Amanita.FungusPrioritySignals.DoDecreasePriorityDepth();
+            FungusPrioritySignals.DoDecreasePriorityDepth();
+            FungusPrioritySignals.DoDecreasePriorityDepth();
             //one start, 6 change, 1 end, 0 depth
             Assert.AreEqual(1, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(6, changeCallCount);
-            Assert.AreEqual(0, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(0, FungusPrioritySignals.CurrentPriorityDepth);
 
-            Amanita.FungusPrioritySignals.OnFungusPriorityStart -= FungusPrioritySignals_OnFungusPriorityStart;
-            Amanita.FungusPrioritySignals.OnFungusPriorityEnd -= FungusPrioritySignals_OnFungusPriorityEnd;
-            Amanita.FungusPrioritySignals.OnFungusPriorityChange -= FungusPrioritySignals_OnFungusPriorityChange;
+            FungusPrioritySignals.OnFungusPriorityStart -= FungusPrioritySignals_OnFungusPriorityStart;
+            FungusPrioritySignals.OnFungusPriorityEnd -= FungusPrioritySignals_OnFungusPriorityEnd;
+            FungusPrioritySignals.OnFungusPriorityChange -= FungusPrioritySignals_OnFungusPriorityChange;
 
             //unsubbed so all the same
-            Amanita.FungusPrioritySignals.DoIncreasePriorityDepth();
-            Amanita.FungusPrioritySignals.DoDecreasePriorityDepth();
+            FungusPrioritySignals.DoIncreasePriorityDepth();
+            FungusPrioritySignals.DoDecreasePriorityDepth();
             //one start, 6 change, 1 end, 0 depth
             Assert.AreEqual(1, endCallCount);
             Assert.AreEqual(1, startCallCount);
             Assert.AreEqual(6, changeCallCount);
-            Assert.AreEqual(0, Amanita.FungusPrioritySignals.CurrentPriorityDepth);
+            Assert.AreEqual(0, FungusPrioritySignals.CurrentPriorityDepth);
         }
 
         private void FungusPrioritySignals_OnFungusPriorityChange(int previousActiveDepth, int newActiveDepth)
