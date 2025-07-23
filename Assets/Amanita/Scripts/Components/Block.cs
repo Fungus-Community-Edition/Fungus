@@ -314,8 +314,8 @@ namespace Amanita
                 if (flowchart.IsActive() && !suppressSelectionChanges)
                 {
                     // Auto select a command in some situations
-                    if ((flowchart.SelectedCommands.Count == 0 && i == 0) ||
-                        (flowchart.SelectedCommands.Count == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
+                    if ((flowchart.SelectedCommandCount == 0 && i == 0) ||
+                        (flowchart.SelectedCommandCount == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
                     {
                         flowchart.ClearSelectedCommands();
                         flowchart.AddSelectedCommand(commandList[i]);

@@ -516,6 +516,16 @@ namespace Amanita
             set => uiModel.SelectedCommands = value;
         }
 
+        public virtual int SelectedCommandCount
+        {
+            get { return uiModel.CommandCount; }
+        }
+
+        public virtual int SelectedBlockCount
+        {
+            get { return uiModel.BlockCount; }
+        }
+
         /// <summary>
         /// The list of variables that can be accessed by the Flowchart.
         /// </summary>
@@ -1383,7 +1393,7 @@ namespace Amanita
 
         public void ReverseUpdateSelectedCache()
         {
-            for (int i = 0; i < SelectedBlocks.Count; i++)
+            for (int i = 0; i < SelectedBlockCount; i++)
             {
                 if(SelectedBlocks[i] != null)
                 {

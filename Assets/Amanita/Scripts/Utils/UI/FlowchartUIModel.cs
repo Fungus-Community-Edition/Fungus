@@ -183,6 +183,9 @@ namespace Amanita.UI
         {
             return _selectedBlocks.Contains(block);
         }
+
+        public virtual int CommandCount { get { return _selectedCommands.Count; } }
+        public virtual int BlockCount { get { return _selectedBlocks.Count; } }
         public virtual void CleanUp()
         {
             // To get rid of unreferenced Blocks and Commands, which should 

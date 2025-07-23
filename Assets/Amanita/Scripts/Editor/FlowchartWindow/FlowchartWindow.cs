@@ -225,9 +225,6 @@ namespace Amanita.EditorUtils
 
             Flowchart = GetFlowchart();
 
-            
-
-
             WireUpUIToolkitControls();
             void WireUpUIToolkitControls()
             {
@@ -415,8 +412,11 @@ namespace Amanita.EditorUtils
         protected void Undo_ForceRepaint()
         {
             // An undo redo may have added or removed blocks, so...
-            UpdateBlockCollection();
-            Flowchart.UpdateSelectedCache();
+            if (Flowchart != null)
+            {
+                UpdateBlockCollection();
+                Flowchart.UpdateSelectedCache();
+            }
             Repaint();
         }
 
@@ -609,6 +609,11 @@ namespace Amanita.EditorUtils
                 _drawBlockContext.ViewRect = CalcFlowchartWindowViewRect();
             }
 
+            if (HandleFlowchartSelectionChange())
+            {
+                return;
+            }
+
             if (Flowchart == null)
             {
                 DrawNoFlowchartMessage();
@@ -618,9 +623,6 @@ namespace Amanita.EditorUtils
             {
                 GUILayout.Label("No Flowchart scene object selected");
             }
-
-            if (HandleFlowchartSelectionChange()) return;
-
 
             DrawToolbarAndSearch(Event.current);
             void DrawToolbarAndSearch(Event guiEvent)
@@ -916,6 +918,11 @@ namespace Amanita.EditorUtils
 
         public Rect CalcFlowchartWindowViewRect()
         {
+            if (Flowchart == null)
+            {
+                return Rect.zero;
+            }
+
             return new Rect(0, 0, this.position.width / Flowchart.Zoom, this.position.height / Flowchart.Zoom);
         }
 

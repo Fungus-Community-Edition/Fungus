@@ -13,6 +13,32 @@ namespace Amanita.EditorUtils
             set { Flowchart.SelectedBlocks = value; }
         }
 
+        public int SelectedBlockCount
+        {
+            get
+            {
+                if (Flowchart == null)
+                {
+                    return 0;
+                }
+
+                return Flowchart.SelectedBlockCount;
+            }
+        }
+
+        public int SelectedCommandCount
+        {
+            get
+            {
+                if (Flowchart == null)
+                {
+                    return 0;
+                }
+
+                return Flowchart.SelectedCommandCount;
+            }
+        }
+
         public virtual bool BlockDragOngoing { get; set; }
         public virtual bool SelectionBoxDragOngoing { get; set; }
         public virtual bool DragUndoRecorded { get; set; }

@@ -42,7 +42,7 @@ namespace Amanita.EditorUtils
             {
                 hitBlock = flowchartCtx.TopmostBlockOverlapping(mousePos); // Fallback
                 
-                if (fc.SelectedBlocks.Count == 0)
+                if (fc.SelectedBlockCount == 0)
                 {
                     fc.AddToSelection(hitBlock);
                 }
@@ -68,7 +68,7 @@ namespace Amanita.EditorUtils
 
             // We should only allow cutting and deletion when there 
             // are any blocks selected
-            if (Flowchart.SelectedBlocks.Count > 0)
+            if (Flowchart.SelectedBlockCount > 0)
             {
                 menu.AddItem(CutLabel, false, () => CutBlocks(flowchartCtx));
                 menu.AddItem(DeleteLabel, false, () => blockDeletion.Execute(flowchartCtx));

@@ -87,14 +87,14 @@ namespace Amanita.EditorUtils
 
             var flowchart = (Flowchart)block.GetFlowchart();
 
-            if (flowchart.SelectedBlocks.Count > 1)
+            if (flowchart.SelectedBlockCount > 1)
             {
                 GUILayout.Label("Multiple blocks selected");
                 return;
             }
 
             //if there is no selection but we are drawing, fix that
-            if (flowchart.SelectedBlocks.Count == 0)
+            if (flowchart.SelectedBlockCount == 0)
             {
                 flowchart.AddToSelection(block);
             }
@@ -116,7 +116,7 @@ namespace Amanita.EditorUtils
             GUILayout.EndScrollView();
 
             Command inspectCommand = null;
-            if (flowchart.SelectedCommands.Count == 1)
+            if (flowchart.SelectedCommandCount == 1)
             {
                 inspectCommand = flowchart.SelectedCommands[0];
             }

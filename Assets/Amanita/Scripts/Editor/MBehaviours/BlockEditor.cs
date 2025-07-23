@@ -221,7 +221,7 @@ namespace Amanita.EditorUtils
 					// Copy keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Copy")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -236,7 +236,7 @@ namespace Amanita.EditorUtils
 					// Cut keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Cut")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -267,7 +267,7 @@ namespace Amanita.EditorUtils
 					// Duplicate keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Duplicate")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -283,7 +283,7 @@ namespace Amanita.EditorUtils
 					// Delete keyboard shortcut
 					if (e.type == EventType.ValidateCommand && e.commandName == "Delete")
 					{
-						if (flowchart.SelectedCommands.Count > 0)
+						if (flowchart.SelectedCommandCount > 0)
 						{
 							e.Use();
 						}
@@ -559,12 +559,12 @@ namespace Amanita.EditorUtils
 			bool showPaste = false;
 			bool showPlay = false;
 
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				showCut = true;
 				showCopy = true;
 				showDelete = true;
-				if (flowchart.SelectedCommands.Count == 1 && Application.isPlaying)
+				if (flowchart.SelectedCommandCount == 1 && Application.isPlaying)
 				{
 					showPlay = true;
 				}
@@ -733,7 +733,7 @@ namespace Amanita.EditorUtils
 
 			// Find where to paste commands in block (either at end or after last selected command)
 			int pasteIndex = flowchart.SelectedBlock.CommandList.Count;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; ++i)
 				{
@@ -866,7 +866,7 @@ namespace Amanita.EditorUtils
 
 			int firstSelectedIndex = flowchart.SelectedBlock.CommandList.Count;
 			bool firstSelectedCommandFound = false;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
 				{
@@ -905,7 +905,7 @@ namespace Amanita.EditorUtils
 			var flowchart = (Flowchart)block.GetFlowchart();
 
 			int lastSelectedIndex = -1;
-			if (flowchart.SelectedCommands.Count > 0)
+			if (flowchart.SelectedCommandCount > 0)
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
 				{

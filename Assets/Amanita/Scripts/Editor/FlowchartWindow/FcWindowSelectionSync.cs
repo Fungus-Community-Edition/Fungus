@@ -8,17 +8,21 @@ namespace Amanita.EditorUtils
 {
     public class FcWindowSelectionSync : IFcWindowComponent
     {
-        FlowchartWindow _window;
-
         public void Initialize(FlowchartWindow window)
         {
             _window = window;
         }
 
+        FlowchartWindow _window;
+
         public void OnEditorUpdate()
         {
             var fc = _window.Flowchart;
-            if (fc == null) return;
+
+            if (fc == null)
+            {
+                return;
+            }
 
             // If you switched flowcharts, we bail out
             if (_window.HandleFlowchartSelectionChange())
@@ -33,26 +37,32 @@ namespace Amanita.EditorUtils
             }
 
             // these flags get set by the BlockInspector and CommandEditor
-            if (fc.SelectedCommandsStale)
+            UpdateStaleFlagsAndRepaintAsNeeded();
+            void UpdateStaleFlagsAndRepaintAsNeeded()
             {
-                fc.SelectedCommandsStale = false;
+                if (fc.SelectedCommandsStale)
+                {
+                    fc.SelectedCommandsStale = false;
+                    _window.Repaint();
+                }
 
-                _window.Repaint();
-            }
-            if (CommandEditor.SelectedCommandDataStale)
-            {
-                CommandEditor.SelectedCommandDataStale = false;
-                _window.Repaint();
-            }
-            if (BlockEditor.SelectedBlockDataStale)
-            {
-                BlockEditor.SelectedBlockDataStale = false;
-                _window.Repaint();
-            }
-            if (FlowchartEditor.FlowchartDataStale)
-            {
-                FlowchartEditor.FlowchartDataStale = false;
-                _window.Repaint();
+                if (CommandEditor.SelectedCommandDataStale)
+                {
+                    CommandEditor.SelectedCommandDataStale = false;
+                    _window.Repaint();
+                }
+
+                if (BlockEditor.SelectedBlockDataStale)
+                {
+                    BlockEditor.SelectedBlockDataStale = false;
+                    _window.Repaint();
+                }
+
+                if (FlowchartEditor.FlowchartDataStale)
+                {
+                    FlowchartEditor.FlowchartDataStale = false;
+                    _window.Repaint();
+                }
             }
 
         }

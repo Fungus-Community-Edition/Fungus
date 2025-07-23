@@ -202,7 +202,7 @@ namespace Amanita.EditorUtils
                 {
                     highlight = flowchart.SelectedBlock.ActiveCommand.IsVariableReferenced(variable);
                 }
-                else if (!Application.isPlaying && flowchart.SelectedCommands.Count > 0)
+                else if (!Application.isPlaying && flowchart.SelectedCommandCount > 0)
                 {
                     foreach (Command selectedCommand in flowchart.SelectedCommands)
                     {
