@@ -99,7 +99,6 @@ namespace Amanita.EditorUtils
         //defines the distance between a down and up for a right click to be a click rather than a drag
         public const string SearchFieldName = "search";
 
-
         protected readonly Color connectionColor = new Color(0.65f, 0.65f, 0.65f, 1.0f);
 
         public static IList<Block> deleteList = new List<Block>();
@@ -140,7 +139,6 @@ namespace Amanita.EditorUtils
         protected Rect searchRect;
         protected Rect popupRect;
 
-
         protected Vector2 popupScroll;
 
         protected int prevVarCount;
@@ -178,7 +176,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        [MenuItem("Tools/Fungus/Flowchart Window")]
+        [MenuItem("Tools/Amanita/Flowchart Window")]
         static void Init()
         {
             GetWindow(typeof(FlowchartWindow), false, "Flowchart");
@@ -1304,5 +1302,4 @@ namespace Amanita.EditorUtils
 
     }
 
-    
 }

@@ -144,7 +144,7 @@ namespace Amanita.EditorUtils
         /// toAnchor = entry point on target node
         /// progress = normalized t parameter [0..1]
         /// </summary>
-        protected static Vector2 GetPointOnCurve(Vector2 fromAnchor, Vector2 fromControl,
+        public static Vector2 GetPointOnCurve(Vector2 fromAnchor, Vector2 fromControl,
             Vector2 toControl, Vector2 toAnchor, float progress)
         {
             float inverse = 1f - progress;
