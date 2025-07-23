@@ -1,7 +1,4 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +7,7 @@ namespace Amanita
     namespace EditorUtils
     {
         /// <summary>
-        /// Shows Fungus section in the Edit->Preferences in unity allows you to configure Fungus behaviour
+        /// Shows Amanita section in the Edit->Preferences in unity allows you to configure Amanita behaviour
         /// 
         /// ref https://docs.unity3d.com/ScriptReference/PreferenceItem.html
         /// </summary>
@@ -42,11 +39,11 @@ namespace Amanita
 
 #if UNITY_2019_1_OR_NEWER
             [SettingsProvider]
-            public static SettingsProvider CreateFungusSettingsProvider()
+            public static SettingsProvider CreateAmanitaSettingsProvider()
             {
                 // First parameter is the path in the Settings window.
                 // Second parameter is the scope of this setting: it only appears in the Project Settings window.
-                var provider = new SettingsProvider("Project/Fungus", SettingsScope.Project)
+                var provider = new SettingsProvider("Project/Amanita", SettingsScope.Project)
                 {
                     // Create the SettingsProvider and initialize its drawing (IMGUI) function in place:
                     guiHandler = (searchContext) => PreferencesGUI()
@@ -60,7 +57,7 @@ namespace Amanita
 
 #else
 
-            [PreferenceItem("Fungus")]
+            [PreferenceItem("Amanita")]
 #endif
             private static void PreferencesGUI()
             {
@@ -86,7 +83,7 @@ namespace Amanita
                     EditorGUILayout.HelpBox("AmanitaEditorResources need to be regenerated!", MessageType.Error);
                 }
 
-                if (GUILayout.Button(new GUIContent("Select Fungus Editor Resources SO", "If Fungus icons are not showing correctly you may need to reassign the references in the AmanitaEditorResources. Button below will locate it.")))
+                if (GUILayout.Button(new GUIContent("Select Amanita Editor Resources SO", "If Amanita icons are not showing correctly you may need to reassign the references in the AmanitaEditorResources. Button below will locate it.")))
                 {
                     var ids = AssetDatabase.FindAssets("t:AmanitaEditorResources");
                     if (ids.Length > 0)
@@ -103,19 +100,19 @@ namespace Amanita
 
                 if (GUILayout.Button("Open Changelog (version info)"))
                 {
-                    //From project path down, look for our Fungus\Docs\ChangeLog.txt
+                    //From project path down, look for our Amanita\Docs\ChangeLog.txt
                     var projectPath = System.IO.Directory.GetParent(Application.dataPath);
                     var fileMacthes = System.IO.Directory.GetFiles(projectPath.FullName, "CHANGELOG.txt", System.IO.SearchOption.AllDirectories);
 
                     fileMacthes = fileMacthes.Where((x) =>
                     {
                         var fileFolder = System.IO.Directory.GetParent(x);
-                        return fileFolder.Name == "Docs" && fileFolder.Parent.Name == "Fungus";
+                        return fileFolder.Name == "Docs" && fileFolder.Parent.Name == "Amanita";
                     }).ToArray();
 
                     if (fileMacthes == null || fileMacthes.Length == 0)
                     {
-                        Debug.LogWarning("Cannot locate Fungus\\Docs\\CHANGELONG.txt");
+                        Debug.LogWarning("Cannot locate Amanita\\Docs\\CHANGELONG.txt");
                     }
                     else
                     {

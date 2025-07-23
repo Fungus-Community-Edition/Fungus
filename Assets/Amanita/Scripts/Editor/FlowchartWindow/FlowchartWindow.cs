@@ -187,7 +187,8 @@ namespace Amanita.EditorUtils
         protected virtual void OnEnable()
         {
             _gridRenderer = new GridRenderer(new HandlesLineDrawer());
-            _connectionRenderer = new ConnectionRenderer(new ConnectionDrawer());
+            var connectionDrawer = new ConnectionDrawer(new ConnectionGatherer());
+            _connectionRenderer = new ConnectionRenderer(connectionDrawer);
             _blockRenderer = new BlockRenderer(new DefaultBlockDrawer(), new BlockGraphicsGenerator());
 
             Clipboard = new BlockClipboard(this);
@@ -1076,13 +1077,6 @@ namespace Amanita.EditorUtils
 
                     _blockRenderer.Render(_drawBlockContext);
                     _connectionRenderer.Render(_drawBlockContext, flowchartCtx);
-                    //for (int i = 0; i < blocks.Count; ++i)
-                    //{
-                        //var block = blocks[i];
-                        //DrawBlock(block, scriptViewRect);
-                        //DrawConnections(block);
-                    //}
-
                 }
             }
 
@@ -1195,7 +1189,6 @@ namespace Amanita.EditorUtils
             _gridRenderer.Draw(flowchartCtx, drawGridCtx);
         }
 
-
         public virtual void SelectBlock(Block block)
         {
             // Select the block and also select currently executing command
@@ -1232,174 +1225,6 @@ namespace Amanita.EditorUtils
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
             return newBlock;
-        }
-
-        //prevent every DrawConnections from allocating a new list for all of its connections
-        protected List<Block> connectedBlocksWorkSpace = new List<Block>();
-
-        protected virtual void DrawConnections(Block block)
-        {
-            if (block == null)
-            {
-                return;
-            }
-
-            bool blockIsSelected = Flowchart.SelectedBlock == block;
-
-
-            Rect scriptViewRect = CalcFlowchartWindowViewRect();
-
-            var commandList = block.CommandList;
-            foreach (var command in commandList)
-            {
-                if (command == null)
-                {
-                    continue;
-                }
-
-                bool commandIsSelected = false;
-                var selectedCommands = Flowchart.SelectedCommands;
-                foreach (var selectedCommand in selectedCommands)
-                {
-                    if (selectedCommand == command)
-                    {
-                        commandIsSelected = true;
-                        break;
-                    }
-                }
-
-                bool highlight = command.IsExecuting || (blockIsSelected && commandIsSelected);
-
-                connectedBlocksWorkSpace.Clear();
-                command.GetConnectedBlocks(ref connectedBlocksWorkSpace);
-
-                foreach (var blockB in connectedBlocksWorkSpace)
-                {
-                    if (blockB == null ||
-                        block == blockB ||
-                        !blockB.GetFlowchart().Equals(Flowchart))
-                    {
-                        continue;
-                    }
-
-                    Rect startRect = new Rect(block._NodeRect);
-                    startRect.x += Flowchart.ScrollPos.x;
-                    startRect.y += Flowchart.ScrollPos.y;
-
-                    Rect endRect = new Rect(blockB._NodeRect);
-                    endRect.x += Flowchart.ScrollPos.x;
-                    endRect.y += Flowchart.ScrollPos.y;
-
-                    Rect boundRect = new Rect();
-                    boundRect.xMin = Mathf.Min(startRect.xMin, endRect.xMin);
-                    boundRect.xMax = Mathf.Max(startRect.xMax, endRect.xMax);
-                    boundRect.yMin = Mathf.Min(startRect.yMin, endRect.yMin);
-                    boundRect.yMax = Mathf.Max(startRect.yMax, endRect.yMax);
-
-                    if (boundRect.Overlaps(scriptViewRect))
-                        DrawRectConnection(startRect, endRect, highlight);
-                }
-            }
-        }
-
-        static readonly Vector2[] pointsA = new Vector2[4];
-        static readonly Vector2[] pointsB = new Vector2[4];
-
-        //we only connect mids on sides to matching opposing middle side on other block
-        protected struct IndexPair { public int a, b; public IndexPair(int a, int b) { this.a = a; this.b = b; } }
-        static readonly IndexPair[] closestCornerIndexPairs = new IndexPair[]
-        {
-            new IndexPair(){a=0,b=3 },
-            new IndexPair(){a=3,b=0 },
-            new IndexPair(){a=1,b=2 },
-            new IndexPair(){a=2,b=1 },
-        };
-
-        //prevent alloc in DrawAAConvexPolygon
-        static readonly Vector3[] beizerWorkSpace = new Vector3[3];
-
-        protected virtual void DrawRectConnection(Rect rectA, Rect rectB, bool highlight)
-        {
-            //previous method made a lot of garbage so now we reuse the same array
-            pointsA[0] = new Vector2(rectA.xMin, rectA.center.y);
-            pointsA[1] = new Vector2(rectA.xMin + rectA.width / 2, rectA.yMin);
-            pointsA[2] = new Vector2(rectA.xMin + rectA.width / 2, rectA.yMax);
-            pointsA[3] = new Vector2(rectA.xMax, rectA.center.y);
-
-            pointsB[0] = new Vector2(rectB.xMin, rectB.center.y);
-            pointsB[1] = new Vector2(rectB.xMin + rectB.width / 2, rectB.yMin);
-            pointsB[2] = new Vector2(rectB.xMin + rectB.width / 2, rectB.yMax);
-            pointsB[3] = new Vector2(rectB.xMax, rectB.center.y);
-
-            Vector2 pointA = Vector2.zero;
-            Vector2 pointB = Vector2.zero;
-            float minDist = float.MaxValue;
-
-            //previous method compared every point to every point
-            //  we only check mathcing opposing mids
-            for (int i = 0; i < closestCornerIndexPairs.Length; i++)
-            {
-                var a = pointsA[closestCornerIndexPairs[i].a];
-                var b = pointsB[closestCornerIndexPairs[i].b];
-                float d = Vector2.Distance(a, b);
-                if (d < minDist)
-                {
-                    pointA = a;
-                    pointB = b;
-                    minDist = d;
-                }
-            }
-
-            Color color = connectionColor;
-            if (highlight)
-            {
-                color = Color.green;
-            }
-
-            Handles.color = color;
-
-            // Place control based on distance between points
-            // Weight the min component more so things don't get overly curvy
-            var diff = pointA - pointB;
-            diff.x = Mathf.Abs(diff.x);
-            diff.y = Mathf.Abs(diff.y);
-            var min = Mathf.Min(diff.x, diff.y);
-            var max = Mathf.Max(diff.x, diff.y);
-            var mod = min * 0.75f + max * 0.25f;
-
-            // Draw bezier curve connecting blocks
-            var directionA = (rectA.center - pointA).normalized;
-            var directionB = (rectB.center - pointB).normalized;
-            var controlA = pointA - directionA * mod * 0.67f;
-            var controlB = pointB - directionB * mod * 0.67f;
-            Handles.DrawBezier(pointA, pointB, controlA, controlB, color, null, 3f);
-
-            // Draw arrow on curve
-            var point = GetPointOnCurve(pointA, controlA, pointB, controlB, 0.7f);
-            var direction = (GetPointOnCurve(pointA, controlA, pointB, controlB, 0.6f) - point).normalized;
-            var perp = new Vector2(direction.y, -direction.x);
-            //reuse same array to avoid the auto alloced one in DrawAAConvexPolygon
-            beizerWorkSpace[0] = point;
-            beizerWorkSpace[1] = point + direction * 10 + perp * 5;
-            beizerWorkSpace[2] = point + direction * 10 - perp * 5;
-            Handles.DrawAAConvexPolygon(beizerWorkSpace);
-
-            var connectionPointA = pointA + directionA * 4f;
-            var connectionRectA = new Rect(connectionPointA.x - 4f, connectionPointA.y - 4f, 8f, 8f);
-            var connectionPointB = pointB + directionB * 4f;
-            var connectionRectB = new Rect(connectionPointB.x - 4f, connectionPointB.y - 4f, 8f, 8f);
-
-            GUI.DrawTexture(connectionRectA, connectionPointTexture, ScaleMode.ScaleToFit);
-            GUI.DrawTexture(connectionRectB, connectionPointTexture, ScaleMode.ScaleToFit);
-
-            Handles.color = Color.white;
-        }
-
-        protected static Vector2 GetPointOnCurve(Vector2 s, Vector2 st, Vector2 e, Vector2 et, float t)
-        {
-            float rt = 1 - t;
-            float rtt = rt * t;
-            return rt * rt * rt * s + 3 * rt * rtt * st + 3 * rtt * t * et + t * t * t * e;
         }
 
         protected static void ShowBlockInspector(Flowchart flowchart)
