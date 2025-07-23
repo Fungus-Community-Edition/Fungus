@@ -174,6 +174,15 @@ namespace Amanita.UI
 
         [field: SerializeField] public bool SelectedCommandsStale { get; set; }
 
+        public virtual bool Contains(Command command)
+        {
+            return _selectedCommands.Contains(command);
+        }
+
+        public virtual bool Contains(Block block)
+        {
+            return _selectedBlocks.Contains(block);
+        }
         public virtual void CleanUp()
         {
             // To get rid of unreferenced Blocks and Commands, which should 

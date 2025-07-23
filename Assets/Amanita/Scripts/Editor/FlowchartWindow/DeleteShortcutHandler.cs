@@ -45,8 +45,8 @@ namespace Amanita.EditorUtils
             if (selected == null || selected.Count == 0)
                 return;
 
-            ctx.FcHost.QueueToDelete(selected);
-            ctx.FcHost.DeleteScheduledBlocks();
+            FcWindowEditing windowEditing = ctx.FcHost.GetComponent<FcWindowEditing>();
+            windowEditing.QueueToDelete(selected);
             ctx.ForceRepaintCount++;
         }
 

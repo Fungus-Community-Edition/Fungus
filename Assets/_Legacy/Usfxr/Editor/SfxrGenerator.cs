@@ -67,7 +67,7 @@
 		// ================================================================================================================
 		// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
-		[MenuItem("Tools/Fungus/Utilities/Generate usfxr Sound Effects")]
+		[MenuItem("Tools/Amanita/Utilities/Generate usfxr Sound Effects")]
 		public static void Initialize()
 		{
 			var window = ScriptableObject.CreateInstance<SfxrGenerator>();

@@ -25,7 +25,6 @@ namespace Amanita.EditorUtils
 		protected Texture2D duplicateIcon;
 		protected Texture2D deleteIcon;
 		
-
 		private CommandListAdaptor commandListAdaptor;
 		private SerializedProperty commandListProperty;
 
@@ -929,8 +928,6 @@ namespace Amanita.EditorUtils
 
 			Repaint();
 		}
-
-
 
 		public static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredCommandInfoAttribute(List<System.Type> menuTypes)
 		{

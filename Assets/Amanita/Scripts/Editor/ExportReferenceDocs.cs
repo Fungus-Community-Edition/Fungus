@@ -20,7 +20,7 @@ namespace Amanita.EditorUtils
         private const string CommandRefDocPath = BaseDocPath + "command_ref/";
         private const string BaseDocPath = "./Docs/";
 
-        [MenuItem("Tools/Fungus/Utilities/Export Reference Docs")]
+        [MenuItem("Tools/Amanita/Utilities/Export Reference Docs")]
         public static void Export()
         {
             ExportCommandInfo();
@@ -177,7 +177,7 @@ This is the reference documentation for all Fungus event handlers.
             return markdown;
         }
 
-        [MenuItem("Tools/Fungus/Utilities/Convert Docs to GitHub MD")]
+        [MenuItem("Tools/Amanita/Utilities/Convert Docs to GitHub MD")]
         public static void ConvertAllToGHMD()
         {
             var files = Directory.GetFiles(BaseDocPath, "*.md", SearchOption.AllDirectories);

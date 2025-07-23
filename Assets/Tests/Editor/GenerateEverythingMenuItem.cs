@@ -11,7 +11,7 @@ namespace Amanita.EditorUtils
 
     public static class GenerateEverythingMenuItem
     {
-        [MenuItem("Tools/Fungus/Utilities/Generate Everything Flowchart")]
+        [MenuItem("Tools/Amanita/Utilities/Generate Everything Flowchart")]
         public static void GenerateEverythingFlowchart()
         {
             var newGO = new GameObject("Flowchart w/ EVERYTHING");

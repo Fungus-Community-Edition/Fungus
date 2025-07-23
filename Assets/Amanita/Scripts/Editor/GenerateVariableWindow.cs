@@ -142,10 +142,10 @@ namespace Amanita.EditorUtils
             }
         }
 
-        [MenuItem("Tools/Fungus/Utilities/Generate Fungus Varaible")]
+        [MenuItem("Tools/Amanita/Utilities/Generate Fungus Variable")]
         public static GenerateVariableWindow ShowWindow()
         {
-            var w = GetWindow(typeof(GenerateVariableWindow), true, "Generate Fungus Varaible", true);
+            var w = GetWindow(typeof(GenerateVariableWindow), true, "Generate Fungus Variable", true);
             w.Show();
             return w as GenerateVariableWindow;
         }

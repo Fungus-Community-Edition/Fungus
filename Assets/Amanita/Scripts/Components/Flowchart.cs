@@ -282,6 +282,16 @@ namespace Amanita
             version = AmanitaConstants.CurrentVersion;
         }
 
+        public virtual void RemoveFromSelection(Command command)
+        {
+            uiModel.RemoveFromSelection(command);
+        }
+
+        public virtual void RemoveFromSelection(Block block)
+        {
+            uiModel.RemoveFromSelection(block);
+        }
+
         protected virtual void CheckItemIds()
         {
             // Make sure item ids are unique and monotonically increasing.
@@ -502,7 +512,7 @@ namespace Amanita
         /// </summary>
         public virtual IList<Command> SelectedCommands
         {
-            get => uiModel.SelectedCommands;
+            get => uiModel.SelectedCommands; // Returns a copy
             set => uiModel.SelectedCommands = value;
         }
 
@@ -1311,7 +1321,7 @@ namespace Amanita
         /// </summary>
         public virtual void ClearSelectedCommands()
         {
-            SelectedCommands.Clear();
+            UIModel.ClearSelectedCommands();
 #if UNITY_EDITOR
             SelectedCommandsStale = true;
 #endif
@@ -1322,15 +1332,25 @@ namespace Amanita
         /// </summary>
         public virtual void AddSelectedCommand(Command command)
         {
-            if (!SelectedCommands.Contains(command))
+            if (!uiModel.Contains(command))
             {
-                SelectedCommands.Add(command);
+                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
+                // like SelectedCommands.Add, we call the ui model's method specifically for registering
+                // Commands.
+                UIModel.AddToSelection(command); 
 #if UNITY_EDITOR
                 SelectedCommandsStale = true;
 #endif
+                SelectedCommandAdded(command);
             }
         }
-        
+
+        /// <summary>
+        /// For when added through AddSelectedCommand (as opposed to just setting 
+        /// the SelectedCommands property or such)
+        /// </summary>
+        public event Action<Command> SelectedCommandAdded = delegate { };
+
         /// <summary>
         /// Clears the list of selected blocks.
         /// </summary>
@@ -1350,6 +1370,9 @@ namespace Amanita
         public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
 
         public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+
+        public virtual bool Contains(Block block) => UIModel.Contains(block);
+        public virtual bool Contains(Command command) => UIModel.Contains(command);
 
         public void UpdateSelectedCache()
         {

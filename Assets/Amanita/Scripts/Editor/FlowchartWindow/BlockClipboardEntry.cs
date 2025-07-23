@@ -44,7 +44,7 @@ namespace Amanita.EditorUtils
             newSerializedObject.ApplyModifiedProperties();
         }
 
-        internal Block PasteBlock(FlowchartWindow flowWind, Flowchart flowchart)
+        internal Block PasteBlock(IFlowchartHost flowWind, Flowchart flowchart)
         {
             var newBlock = flowWind.CreateBlock(flowchart, Vector2.zero);
 

@@ -100,8 +100,8 @@ namespace Amanita.EditorUtils
         protected virtual void DeleteBlocks(FlowchartContext flowchartCtx)
         {
             IList<Block> selectedBlocks = flowchartCtx.SelectedBlocks;
-            _host.QueueToDelete(selectedBlocks);
-            _host.DeleteScheduledBlocks();
+            FcWindowEditing windowEditing = _host.GetComponent<FcWindowEditing>();
+            windowEditing?.QueueToDelete(selectedBlocks);
             flowchartCtx.ForceRepaintCount++;
         }
 
