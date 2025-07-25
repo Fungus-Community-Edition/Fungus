@@ -1,24 +1,227 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Amanita.EditorUtils
 {
     public class CommandListAdaptor
     {
+        public CommandListAdaptor(Block _block, SerializedProperty arrayProperty)
+        {
+            Validate();
+            void Validate()
+            {
+                if (arrayProperty == null)
+                    throw new ArgumentNullException("Array property was null.");
+                if (!arrayProperty.isArray)
+                    throw new InvalidOperationException("Specified serialized propery is not an array.");
+            }
+
+            this._arrayProperty = arrayProperty;
+            this.block = _block;
+
+            list = new ReorderableList(arrayProperty.serializedObject, arrayProperty,
+                draggable: true, displayHeader: true,
+                displayAddButton: false, displayRemoveButton: false);
+
+            HookUpCallbacks();
+            void HookUpCallbacks()
+            {
+                list.drawHeaderCallback = DrawHeader;
+                list.drawElementCallback = DrawItem;
+                list.onSelectCallback = SelectChanged;
+            }
+
+            list.elementHeight = EditorGUIUtility.singleLineHeight + lineHeightPadding;
+        }
+
+        protected SerializedProperty _arrayProperty;
+        protected Block block;
+        protected ReorderableList list;
+        protected static readonly int lineHeightPadding = 6;
+
+        protected virtual void DrawHeader(Rect rect)
+        {
+            if (rect.width < 0) return;
+            EditorGUI.LabelField(rect, new GUIContent("Commands"));
+        }
+
+        public virtual void DrawItem(Rect position, int index, bool selected, bool focused)
+        {
+            // Before we can start drawing visual elements, we need to gather up info
+            // about how we're going to go about it. Hence the prep phase here.
+            SerializedProperty prop;
+            Command command;
+            Flowchart flowchart = null;
+            IList<Rect> indentRects = null;
+            Rect labelRect = default, summaryRect = default, iconRect = default, clickRect = default;
+            string commandName = string.Empty;
+            bool exitEarly = false;
+            PrepPhase();
+            void PrepPhase()
+            {
+                prop = _arrayProperty.GetArrayElementAtIndex(index);
+                command = prop.objectReferenceValue as Command;
+
+                if (command != null)
+                {
+                    flowchart = command.GetFlowchart();
+                }
+
+                if (command == null || flowchart == null)
+                {
+                    exitEarly = true;
+                    return;
+                }
+
+                commandName = BuildCommandNameLabel(flowchart, command);
+
+                ComputeNeededRects();
+                void ComputeNeededRects()
+                {
+                    indentRects = CalculateIndentRects(position, command.IndentLevel);
+                    labelRect = CalculateLabelRect(position, command.IndentLevel);
+                    summaryRect = CalculateSummaryRect(labelRect, commandName);
+
+                    iconRect = CalculateIconRect(labelRect, command);
+                    clickRect = position;  // covers entire row
+                }
+            }
+            
+            if (exitEarly)
+            {
+                return;
+            }
+
+            DrawTheVisuals();
+            void DrawTheVisuals()
+            {
+                foreach (var elem in indentRects) // For If-else Commands and such
+                    GUI.Box(elem, "", commandLabelStyle);
+
+                Color bgColor = DetermineBackgroundColor(flowchart, command);
+                GUI.backgroundColor = bgColor;
+                GUI.Label(labelRect, commandName, commandLabelStyle);
+                GUI.Label(summaryRect, command.GetSummary() ?? "", summaryStyle);
+
+                DrawExecutingIcon(iconRect, command);
+            }
+
+            // Reverting colors so other drawers can do their thing properly
+            GUI.backgroundColor = Color.white;
+            GUI.color = Color.white;
+        }
+
+        protected virtual List<Rect> CalculateIndentRects(Rect row, int level)
+        {
+            var result = new List<Rect>();
+
+            for (int i = 0; i < level; i++)
+            {
+                var currentIndentRect = row;
+                float howFarToIndent = i * indentSize;
+                // ^Can vary depending on how far we're nesting the relevant Commands
+                currentIndentRect.x += howFarToIndent;
+                currentIndentRect.width = indentSize + indentPadding;
+                currentIndentRect.y -= yDownwardOffset;
+                currentIndentRect.height += heightPadding;
+                result.Add(currentIndentRect);
+            }
+
+            return result;
+        }
+
+        protected static readonly float indentSize = 20, indentPadding = 1,
+            yDownwardOffset = 2, heightPadding = 5;
+
+        protected virtual Rect CalculateLabelRect(Rect row, int level)
+        {
+            Rect result = row;
+            float howFarToIndent = level * indentSize;
+            result.x += howFarToIndent;
+            result.y -= yDownwardOffset;
+            result.width -= howFarToIndent;
+            result.height += heightPadding;
+            return result;
+        }
+
+        protected virtual Rect CalculateSummaryRect(Rect labelRect, string commandName)
+        {
+            Rect result = labelRect;
+            result.x += summaryRectXOffset;
+            return result;
+        }
+
+        protected static readonly float summaryRectXOffset = 100;
+
+        protected virtual Rect CalculateIconRect(Rect labelRect, Command command)
+        {
+            Rect result = Rect.zero;
+
+            if (command.IsExecuting)
+            {
+                result = labelRect;
+                result.x += result.width - iconWidth;
+                // We want to render it as a square, so...
+                result.width = result.height = iconWidth; 
+                return result;
+            }
+
+            return result;
+        }
+
+        protected static readonly int iconWidth = 20;
+
+        protected virtual Color DetermineBackgroundColor(Flowchart flowchart, Command cmd)
+        {
+            Color result = cmd.GetButtonColor();
+
+            if (flowchart.SelectedCommands.Contains(cmd))
+            {
+                result = selectedCmdColor;
+            }
+
+            if (!cmd.enabled)
+            {
+                result = disabledCmdColor;
+            }
+
+            return result;
+        }
+
+        protected static readonly Color disabledCmdColor = Color.grey,
+            selectedCmdColor = Color.green;
+
+        protected virtual string BuildCommandNameLabel(Flowchart f, Command cmd)
+        {
+            // Get all CommandInfoAttributes on this type (won’t throw)
+            var infos = cmd.GetType()
+                           .GetCustomAttributes(typeof(CommandInfoAttribute), inherit: false)
+                           .OfType<CommandInfoAttribute>();
+
+            // Pick the first available or fall back to the GameObject’s name
+            string baseName = infos
+                .Select(attr => attr.CommandName)
+                .FirstOrDefault()
+                ?? cmd.name;
+
+            return f.ShowLineNumbers
+                ? $"{cmd.CommandIndex}: {baseName}"
+                : baseName;
+        }
+
         /// <summary>
         /// If true, scrolls to the currently selected command in the inspector when the editor is redrawn. A
         /// Automatically resets to false.
         /// </summary>
         public static bool ScrollToCommandOnDraw = false;
 
-        public void DrawCommandList()
+        public virtual void DrawCommandList()
         {
             
             if (summaryStyle == null)
@@ -63,60 +266,24 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected SerializedProperty _arrayProperty;
-
-        protected ReorderableList list;
-
-        protected Block block;
         protected GUIStyle summaryStyle, commandLabelStyle;
 
         public float fixedItemHeight;
 
-        public SerializedProperty this[int index]
+        public virtual SerializedProperty this[int index]
         {
             get { return _arrayProperty.GetArrayElementAtIndex(index); }
         }
 
-        public SerializedProperty ArrayProperty
+        public virtual SerializedProperty ArrayProperty
         {
             get { return _arrayProperty; }
-        }
-
-        public CommandListAdaptor(Block _block, SerializedProperty arrayProperty)
-        {
-            Validate();
-            void Validate()
-            {
-                if (arrayProperty == null)
-                    throw new ArgumentNullException("Array property was null.");
-                if (!arrayProperty.isArray)
-                    throw new InvalidOperationException("Specified serialized propery is not an array.");
-            }
-
-            this._arrayProperty = arrayProperty;
-            this.block = _block;
-
-            list = new ReorderableList(arrayProperty.serializedObject, arrayProperty,
-                draggable: true, displayHeader: true,
-                displayAddButton: false, displayRemoveButton: false);
-
-            list.drawHeaderCallback = DrawHeader;
-            list.drawElementCallback = DrawItem;
-            list.onSelectCallback = SelectChanged;
-
-            list.elementHeight = EditorGUIUtility.singleLineHeight + 6;
-
-            //list = new ReorderableList(arrayProperty.serializedObject, arrayProperty, true, true, false, false);
-            //list.drawHeaderCallback = DrawHeader;
-            //list.drawElementCallback = DrawItem;
-            ////list.elementHeightCallback = GetElementHeight;
-            //list.onSelectCallback = SelectChanged;
         }
 
         private void SelectChanged(ReorderableList list)
         {
             Command command = this[list.index].objectReferenceValue as Command;
-            var flowchart = (Flowchart)command.GetFlowchart();
+            var flowchart = command.GetFlowchart();
             BlockEditor.actionList.Add(delegate
             {
                 flowchart.ClearSelectedCommands();
@@ -124,133 +291,7 @@ namespace Amanita.EditorUtils
             });
         }
 
-        private void DrawHeader(Rect rect)
-        {
-            if (rect.width < 0) return;
-            EditorGUI.LabelField(rect, new GUIContent("Commands"));
-        }
-
-        public void DrawItem(Rect position, int index, bool selected, bool focused)
-        {
-            // 1) Grab our data
-            var prop = _arrayProperty.GetArrayElementAtIndex(index);
-            var command = prop.objectReferenceValue as Command;
-            var flowchart = (Flowchart)command?.GetFlowchart();
-            if (command == null || flowchart == null) return;
-            // Build the display name once
-            string commandName = BuildCommandNameLabel(flowchart, command);
-
-            // 2) Compute all the rects we need
-            IList<Rect> indentRects;
-            Rect labelRect, summaryRect, iconRect, clickRect;
-            ComputeNeededRects();
-            void ComputeNeededRects()
-            {
-                indentRects = CalculateIndentRects(position, command.IndentLevel);
-                labelRect = CalculateLabelRect(position, command.IndentLevel);
-                summaryRect = CalculateSummaryRect(labelRect, commandName);
-
-                iconRect = CalculateIconRect(labelRect, command);
-                clickRect = position;  // covers entire row
-            }
-            
-
-            // 3) Paint indentation guides
-            foreach (var r in indentRects)
-                GUI.Box(r, "", commandLabelStyle);
-
-            // 4) Paint background (tint or selection highlight)
-            Color bgColor = DetermineBackgroundColor(flowchart, command);
-            GUI.backgroundColor = bgColor;
-
-            // 5) Paint background…
-            GUI.Label(labelRect, commandName, commandLabelStyle);
-
-            // 6) Paint the summary text
-            GUI.Label(summaryRect, command.GetSummary() ?? "", summaryStyle);
-
-            // 7) Paint the small executing-icon if needed
-            DrawExecutingIcon(iconRect, command);
-
-            // 8) Handle clicks (we’ll swap in a GUI.Button next)
-            HandleClick(clickRect, flowchart, command);
-
-            // 9) Restore UI state
-            GUI.backgroundColor = Color.white;
-            GUI.color = Color.white;
-        }
-
-        // ─── Helpers ─────────────────────────────────────────────────────────────
-
-        List<Rect> CalculateIndentRects(Rect row, int level)
-        {
-            var list = new List<Rect>();
-            float indentSize = 20;
-            for (int i = 0; i < level; i++)
-            {
-                var r = row;
-                r.x += i * indentSize;
-                r.width = indentSize + 1;
-                r.y -= 2;
-                r.height += 5;
-                list.Add(r);
-            }
-            return list;
-        }
-
-        Rect CalculateLabelRect(Rect row, int level)
-        {
-            float indentSize = 20;
-            var r = row;
-            r.x += level * indentSize;
-            r.y -= 2;
-            r.width -= level * indentSize;
-            r.height += 5;
-            return r;
-        }
-
-        Rect CalculateSummaryRect(Rect labelRect, string commandName)
-        {
-            var r = labelRect;
-            r.x += summaryRectXOffset;
-            return r;
-        }
-
-        protected static readonly float summaryRectXOffset = 100;
-
-        Rect CalculateIconRect(Rect labelRect, Command command)
-        {
-            if (command.ExecutingIconTimer > Time.realtimeSinceStartup)
-            {
-                var r = labelRect;
-                r.x += r.width - 20;
-                r.width = 20;
-                r.height = 20;
-                return r;
-            }
-            return Rect.zero;
-        }
-
-        Color DetermineBackgroundColor(Flowchart f, Command cmd)
-        {
-            if (f.SelectedCommands.Contains(cmd))
-                return Color.green;
-            if (!cmd.enabled)
-                return Color.grey;
-            return cmd.GetButtonColor();
-        }
-
-        string BuildCommandNameLabel(Flowchart f, Command cmd)
-        {
-            string baseName = cmd.GetType()
-                             .GetCustomAttribute<CommandInfoAttribute>()
-                             ?.CommandName ?? cmd.name;
-            return f.ShowLineNumbers
-                ? $"{cmd.CommandIndex}: {baseName}"
-                : baseName;
-        }
-
-        void DrawExecutingIcon(Rect iconRect, Command cmd)
+        protected virtual void DrawExecutingIcon(Rect iconRect, Command cmd)
         {
             if (iconRect == Rect.zero) return;
             float alpha = (cmd.ExecutingIconTimer - Time.realtimeSinceStartup)
@@ -261,67 +302,6 @@ namespace Amanita.EditorUtils
             GUI.Label(iconRect, AmanitaEditorResources.PlaySmall);
             GUI.color = prevColor;
         }
-
-        void HandleClick(Rect clickRect, Flowchart flowchart, Command command)
-        {
-            // catches clicks on Layout, MouseDown, Repaint, etc.
-            if (GUI.Button(clickRect, GUIContent.none, GUIStyle.none))
-            {
-                // 1) Handle modifier keys
-                bool shiftHeld = Event.current.shift;
-                bool ctrlHeld = EditorGUI.actionKey;
-
-                if (!shiftHeld && !ctrlHeld)
-                {
-                    // single‐click: clear & select just this command
-                    flowchart.ClearSelectedCommands();
-                }
-
-                if (ctrlHeld)
-                {
-                    // ctrl‐click: toggle selection
-                    if (flowchart.Contains(command))
-                        flowchart.RemoveFromSelection(command);
-                    else
-                        flowchart.AddSelectedCommand(command);
-                }
-                else
-                {
-                    // either single‐click or shift‐click (shift handled below)
-                    flowchart.AddSelectedCommand(command);
-                }
-
-                if (shiftHeld && flowchart.SelectedBlock != null)
-                {
-                    // range‐select from first to this
-                    var cmds = flowchart.SelectedBlock.CommandList;
-                    int clickedIndex = command.CommandIndex;
-                    int min = Mathf.Min(cmds.IndexOf(flowchart.SelectedCommands.First()), clickedIndex);
-                    int max = Mathf.Max(cmds.IndexOf(flowchart.SelectedCommands.First()), clickedIndex);
-                    flowchart.ClearSelectedCommands();
-                    for (int i = min; i <= max; i++)
-                        flowchart.AddSelectedCommand(cmds[i]);
-                }
-
-                // 2) Scroll it into view next draw (optional)
-                ScrollToCommandOnDraw = true;
-
-                //// 3) Force the FlowchartWindow to repaint
-                //var fcWin = EditorWindow.GetWindow<FlowchartWindow>();
-                //fcWin?.Repaint();
-
-                //// 4) Force all Inspector windows to repaint so you see the green highlight
-                //var inspectorType = typeof(EditorWindow).Assembly.GetType("UnityEditor.InspectorWindow");
-                //var all = Resources.FindObjectsOfTypeAll<EditorWindow>();
-                //foreach (var w in all)
-                //    if (inspectorType != null && w.GetType() == inspectorType)
-                //        w.Repaint();
-
-                Event.current.Use();
-            }
-        }
-
-
 
     }
 }

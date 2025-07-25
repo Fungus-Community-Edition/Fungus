@@ -10,14 +10,7 @@ namespace Amanita.EditorUtils
     /// </summary>
     public class FcWindowEditing : IFcWindowComponent
     {
-        private IFlowchartHost _window;
-        private FlowchartWindowInputHandler _inputPipeline;
-        private BlockClipboard _clipboard;
-
-        // Blocks scheduled for deletion
-        private readonly List<Block> _deleteList = new List<Block>();
-
-        public void Initialize(FlowchartWindow window)
+        public virtual void Initialize(FlowchartWindow window)
         {
             _window = window;
 
@@ -37,33 +30,35 @@ namespace Amanita.EditorUtils
             window.Clipboard = _clipboard;
         }
 
-        public void OnToolbarGUI()
+        protected IFlowchartHost _window;
+        protected FlowchartWindowInputHandler _inputPipeline;
+        protected BlockClipboard _clipboard;
+
+        public virtual void OnToolbarGUI()
         {
             // No toolbar UI here; toolbar belongs in its own component.
         }
 
-        public void OnCanvasGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx)
+        public virtual void OnGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx)
         {
-            // 1) Process input events (selection, drag, pan/zoom, delete shortcut, etc.)
             if (_inputPipeline.Process(Event.current, fcCtx))
                 Event.current.Use();
 
-            // 2) Delete any blocks that were queued
-            if (_deleteList.Count > 0)
+            if (_scheduledForDeletion.Count > 0)
             {
                 DeleteScheduledBlocks();
                 _window.Repaint();
             }
         }
 
-        public void OnInspectorGUI()
+        protected readonly List<Block> _scheduledForDeletion = new List<Block>();
+
+        public virtual void OnInspectorGUI()
         {
-            // Nothing to draw in the inspector pane here
         }
 
-        public void OnEditorUpdate()
+        public virtual void OnEditorUpdate()
         {
-            // No per‐frame logic needed for editing right now
         }
 
         public virtual void QueueToDelete(IList<Block> toDelete)
@@ -77,18 +72,18 @@ namespace Amanita.EditorUtils
         /// <summary>
         /// Public API for other components (or the window) to queue a block for deletion.
         /// </summary>
-        public void QueueToDelete(Block block)
+        public virtual void QueueToDelete(Block block)
         {
-            if (block != null && !_deleteList.Contains(block))
-                _deleteList.Add(block);
+            if (block != null && !_scheduledForDeletion.Contains(block))
+                _scheduledForDeletion.Add(block);
         }
 
         /// <summary>
         /// Performs the actual destruction of queued blocks and their commands.
         /// </summary>
-        private void DeleteScheduledBlocks()
+        protected virtual void DeleteScheduledBlocks()
         {
-            foreach (var block in _deleteList)
+            foreach (var block in _scheduledForDeletion)
             {
                 // Destroy each command on the block
                 foreach (var cmd in block.CommandList)
@@ -107,7 +102,7 @@ namespace Amanita.EditorUtils
                 Undo.DestroyObjectImmediate(block);
             }
 
-            _deleteList.Clear();
+            _scheduledForDeletion.Clear();
 
             // Refresh block list and reselect the Flowchart root
             _window.UpdateBlockCollection();
@@ -115,7 +110,7 @@ namespace Amanita.EditorUtils
             _window.Flowchart.ClearSelectedCommands();
         }
 
-        public void OnInspectorUpdate()
+        public virtual void OnInspectorUpdate()
         {
             
         }

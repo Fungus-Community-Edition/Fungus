@@ -1,20 +1,25 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
+    /// <summary>
+    /// For drawing the UI elements letting you know that a Block or Command
+    /// in a Flowchart is executing.
+    /// </summary>
     public class FcWindowExecutionVisualizer : IFcWindowComponent
     {
-        public void Initialize(FlowchartWindow window)
+        public virtual void Initialize(FlowchartWindow window)
         {
             _window = window;
             _execTracker = new FlowchartWindow.ExecutingBlocks();
+            _iconStyle = new GUIStyle();
         }
 
         protected FlowchartWindow _window;
         protected FlowchartWindow.ExecutingBlocks _execTracker;
+        protected GUIStyle _iconStyle;
 
-        public void OnEditorUpdate()
+        public virtual void OnEditorUpdate()
         {
             if (Application.isPlaying)
             {
@@ -28,50 +33,47 @@ namespace Amanita.EditorUtils
             }
         }
 
-        public void OnToolbarGUI() { }
+        public virtual void OnToolbarGUI() { }
 
-        public void OnCanvasGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx)
+        public virtual void OnGUI(DrawBlockContext drawCtx, FlowchartContext flowchartContext)
         {
             if (Event.current.type != EventType.Repaint || !Application.isPlaying)
                 return;
 
             // same “world → screen” rect you used for zoom
-            Rect viewRect = _window.CalcFlowchartWindowViewRect();
+            viewRect = _window.CalcFlowchartWindowViewRect();
             var curTime = Time.realtimeSinceStartup;
-            var style = new GUIStyle();
 
-            // iterate all blocks in the context
-            foreach (var block in fcCtx.AllBlocks)
+            foreach (var block in flowchartContext.AllBlocks)
             {
                 float alpha = (block.ExecutingIconTimer - curTime)
                             / AmanitaConstants.ExecutingIconFadeTime;
 
-                DrawExecutingBlockIcon(block, viewRect, alpha, style);
+                DrawExecutingBlockIcon(block, alpha);
             }
         }
 
-        public void OnInspectorGUI() { }
+        protected Rect viewRect;
 
-        // —— helper pulled verbatim from your FlowchartWindow ——
-        void DrawExecutingBlockIcon(
-            Block executingBlock,
-            Rect viewRect,
-            float alpha,
-            GUIStyle style)
+        public virtual void OnInspectorGUI() { }
+
+        protected virtual void DrawExecutingBlockIcon(Block executingBlock,
+            float alpha)
         {
             if (alpha <= 0f)
                 return;
 
             Rect rect = new Rect(executingBlock._NodeRect);
-            rect.x += _window.Flowchart.ScrollPos.x - 37;
+            float toTheRightEdge = _window.Flowchart.ScrollPos.x - (blockWidth + horizPadding);
+            rect.x += toTheRightEdge;
             rect.y += _window.Flowchart.ScrollPos.y + 3;
-            rect.width = 34;
-            rect.height = 34;
+            rect.width = rect.height = blockWidth; // We want it to be a square
 
-            if (viewRect.Overlaps(rect))
+            bool visibleInFcWindow = viewRect.Overlaps(rect);
+            if (visibleInFcWindow)
             {
                 GUI.color = new Color(1f, 1f, 1f, alpha);
-                if (GUI.Button(rect, AmanitaEditorResources.PlayBig, style))
+                if (GUI.Button(rect, AmanitaEditorResources.PlayBig, _iconStyle))
                 {
                     _window.SelectBlock(executingBlock);
                 }
@@ -79,7 +81,9 @@ namespace Amanita.EditorUtils
             }
         }
 
-        public void OnInspectorUpdate()
+        protected static readonly float blockWidth = 34, horizPadding = 3;
+
+        public virtual void OnInspectorUpdate()
         {
             
         }

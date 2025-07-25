@@ -1,21 +1,10 @@
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
     public class FcWindowCanvas : IFcWindowComponent
     {
-        // These were originally fields on FlowchartWindow
-        private GridRenderer _gridRenderer;
-        private BlockRenderer _blockRenderer;
-        private ConnectionRenderer _connectionRenderer;
-        private DrawGridContext _drawGridCtx;
-        private DrawBlockContext _drawBlockCtx;
-        private FlowchartContext _flowchartCtx;
-        private FlowchartWindow _window;
-
-        public void Initialize(FlowchartWindow window)
+        public virtual void Initialize(FlowchartWindow window)
         {
             _window = window;
             _gridRenderer = new GridRenderer(new HandlesLineDrawer());
@@ -28,27 +17,35 @@ namespace Amanita.EditorUtils
             _flowchartCtx = window.flowchartCtx;
         }
 
-        public void OnEditorUpdate()
+        protected FlowchartWindow _window;
+        protected GridRenderer _gridRenderer;
+        protected BlockRenderer _blockRenderer;
+        protected ConnectionRenderer _connectionRenderer;
+        protected DrawGridContext _drawGridCtx;
+        protected DrawBlockContext _drawBlockCtx;
+        protected FlowchartContext _flowchartCtx;
+
+        public virtual void OnEditorUpdate()
         {
             // nothing to do per-frame on canvas
         }
 
-        public void OnToolbarGUI()
+        public virtual void OnToolbarGUI()
         {
             // no toolbar elements here
         }
 
-        public void OnCanvasGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx)
+        public virtual void OnGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx)
         {
             DrawBackgroundAndGrid();
             void DrawBackgroundAndGrid()
             {
                 if (Event.current.type == EventType.Repaint)
                 {
-                    UnityEditor.Graphs.Styles.graphBackground.Draw(
-                    new Rect(0, 17, _window.position.width, _window.position.height - 17),
-                    false, false, false, false
-                    );
+                    Rect newPos = new Rect(0, 17, _window.position.width, _window.position.height - 17);
+                    UnityEditor.Graphs.Styles.graphBackground.Draw(newPos, isHover: false, isActive: false,
+                        on: false, hasKeyboardFocus: false);
+
                     _drawGridCtx.GridLineColor = _window.gridLineColor;
                     _drawGridCtx.GridLineSpacingSize = 120;
                     _gridRenderer.Draw(_flowchartCtx, _drawGridCtx);
@@ -69,16 +66,15 @@ namespace Amanita.EditorUtils
                 _connectionRenderer.Render(_drawBlockCtx, _flowchartCtx);
             }
 
-
             EditorZoomArea.End();
         }
 
-        public void OnInspectorGUI()
+        public virtual void OnInspectorGUI()
         {
             // nothing in the inspector area
         }
 
-        public void OnInspectorUpdate()
+        public virtual void OnInspectorUpdate()
         {
         }
     }

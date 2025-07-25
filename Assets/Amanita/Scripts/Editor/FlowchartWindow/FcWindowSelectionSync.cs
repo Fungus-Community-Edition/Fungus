@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
 
 namespace Amanita.EditorUtils
 {
+    /// <summary>
+    /// To keep the FlowchartWindow and BlockInspector synced with the last Flowchart selected.
+    /// </summary>
     public class FcWindowSelectionSync : IFcWindowComponent
     {
-        public void Initialize(FlowchartWindow window)
+        public virtual void Initialize(FlowchartWindow window)
         {
             _window = window;
         }
 
-        FlowchartWindow _window;
+        protected FlowchartWindow _window;
 
-        public void OnEditorUpdate()
+        public virtual void OnEditorUpdate()
         {
             var fc = _window.Flowchart;
 
@@ -28,18 +29,16 @@ namespace Amanita.EditorUtils
             if (_window.HandleFlowchartSelectionChange())
                 return;
 
-            // detect variable‐count change
             if (fc.VariableCount != prevVarCount)
             {
                 prevVarCount = fc.VariableCount;
-
                 _window.Repaint();
             }
 
-            // these flags get set by the BlockInspector and CommandEditor
             UpdateStaleFlagsAndRepaintAsNeeded();
             void UpdateStaleFlagsAndRepaintAsNeeded()
             {
+                // These flags can get set to true by the BlockInspector and CommandEditor
                 if (fc.SelectedCommandsStale)
                 {
                     fc.SelectedCommandsStale = false;
@@ -69,16 +68,40 @@ namespace Amanita.EditorUtils
 
         protected int prevVarCount;
         public void OnToolbarGUI() { }
-        public void OnCanvasGUI(DrawBlockContext d, FlowchartContext f) { }
+        public void OnGUI(DrawBlockContext d, FlowchartContext f) { }
         public void OnInspectorGUI() { }
 
-        // — Helpers carried over from FlowchartWindow — 
-        private void ShowBlockInspector(Flowchart flowchart, Block block)
+        
+        public virtual void OnInspectorUpdate()
+        {
+            var fc = _window.Flowchart;
+
+            if (fc == null || AnyNullBlocks())
+            {
+                _window.UpdateBlockCollection();
+                _window.Repaint();
+                return;
+            }
+            
+            GameObject selectedGO = Selection.activeGameObject;
+            bool flowchartIsSelected = selectedGO != null &&
+                selectedGO.GetComponent<Flowchart>() != null;
+            if (flowchartIsSelected)
+            {
+                // To reduce conflicts with selecting assets and such, we only force the Inspector to
+                // focus on a Block when the current selected GameObject has an FC
+                ShowBlockInspector(fc, fc.SelectedBlock);
+            }
+
+        }
+        bool AnyNullBlocks() => _window.blocks.Any(b => b == null);
+
+        protected virtual void ShowBlockInspector(Flowchart flowchart, Block block)
         {
             _window.SelectBlock(block);
 
             CreateOrReuseBlockInspectorSO();
-            void CreateOrReuseBlockInspectorSO()
+            static void CreateOrReuseBlockInspectorSO()
             {
                 if (FlowchartWindow.blockInspector == null)
                 {
@@ -90,40 +113,24 @@ namespace Amanita.EditorUtils
                 EditorUtility.SetDirty(FlowchartWindow.blockInspector);
             }
 
-            Block prevSelectedBlock = flowchart.SelectedBlock;
-            flowchart.SelectedBlock = block;
-            if (prevSelectedBlock != flowchart.SelectedBlock)
+            SetBlockInspectorToTheRightBlock();
+            void SetBlockInspectorToTheRightBlock()
             {
-                flowchart.ClearSelectedCommands();
-            }
+                Block prevSelectedBlock = flowchart.SelectedBlock;
+                flowchart.SelectedBlock = block;
+                if (prevSelectedBlock != flowchart.SelectedBlock)
+                {
+                    flowchart.ClearSelectedCommands();
+                }
 
-            if (block.ActiveCommand != null)
-                flowchart.AddSelectedCommand(block.ActiveCommand);
+                if (block.ActiveCommand != null)
+                    flowchart.AddSelectedCommand(block.ActiveCommand);
 
-            FlowchartWindow.blockInspector.block = block;
-        }
-
-        public virtual void OnInspectorUpdate()
-        {
-            var fc = _window.Flowchart;
-
-            // if flowchart got cleared or blocks have gone null, rebuild
-            if (fc == null || AnyNullBlocks())
-            {
-                _window.UpdateBlockCollection();
-                _window.Repaint();
-                return;
-            }
-
-            // if nothing in the Scene is selected but a block is selected in the flowchart,
-            // make sure the BlockInspector SO is visible and pointing at it
-            if (Selection.activeGameObject == null && fc.SelectedBlock != null)
-            {
-                ShowBlockInspector(fc, (Block)fc.SelectedBlock);
+                FlowchartWindow.blockInspector.block = block;
             }
 
         }
-        bool AnyNullBlocks() => _window.blocks.Any(b => b == null);
+
 
     }
 }

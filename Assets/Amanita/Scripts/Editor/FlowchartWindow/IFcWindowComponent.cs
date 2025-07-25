@@ -7,7 +7,7 @@
 
         // Called inside OnGUI before and after zoom‐area, as needed
         void OnToolbarGUI();
-        void OnCanvasGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx);
+        void OnGUI(DrawBlockContext drawCtx, FlowchartContext fcCtx);
         void OnInspectorGUI();
 
         // Called each editor‐update

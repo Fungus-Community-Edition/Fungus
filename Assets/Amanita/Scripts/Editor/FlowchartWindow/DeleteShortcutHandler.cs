@@ -8,7 +8,7 @@ namespace Amanita.EditorUtils
         readonly FcWindowBlockDeletion _deletion;
         readonly IFocusChecker _focusChecker;
 
-        public DeleteShortcutHandler(FcWindowBlockDeletion deletion,KeyCode key,
+        public DeleteShortcutHandler(FcWindowBlockDeletion deletion, KeyCode key,
             IFocusChecker focusChecker)
         {
             _deletion = deletion;

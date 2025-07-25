@@ -100,8 +100,6 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private FlowchartWindowInputHandler _inputPipeline = new FlowchartWindowInputHandler();
-        
         public static BlockInspector blockInspector;
         protected int forceRepaintCount;
         private readonly List<IFcWindowComponent> _components = new();
@@ -197,25 +195,6 @@ namespace Amanita.EditorUtils
 
             Clipboard = new BlockClipboard(this);
 
-            PrepInputProcessors();
-            void PrepInputProcessors()
-            {
-                _inputPipeline?.Dispose(); // Since we might have IDisposable subhandlers
-                _inputPipeline = new FlowchartWindowInputHandler
-                    (
-                        new DeleteShortcutHandler(new FcWindowBlockDeletion(),
-                        KeyCode.Delete,
-                        new FcWindowFocusChecker()),
-                        new HitDetectionHandler(),
-                        new SingleSelectionHandler(),
-                        new BoxSelectionHandler(),
-                        new BlockDragHandler(),
-                        new PanZoomHandler(),
-                        new BlockContextMenuHandler(this, new GenericMenuFactory())
-                    );
-
-            }
-
             addTexture = AmanitaEditorResources.AddSmall;
             addButtonContent = new GUIContent(addTexture, "Add a new block");
             connectionPointTexture = AmanitaEditorResources.ConnectionPoint;
@@ -251,6 +230,7 @@ namespace Amanita.EditorUtils
                 _components.Add(new FcWindowEditing());
                 _components.Add(new FcWindowExecutionVisualizer());
                 _components.Add(new FcWindowSelectionSync());
+                //_components.Add(new FcWindowZoomPanComponent());
 
                 foreach (var comp in _components)
                     comp.Initialize(this);
@@ -729,7 +709,7 @@ namespace Amanita.EditorUtils
             UpdateFilteredBlocks();
 
             foreach (var comp in _components)
-                comp.OnCanvasGUI(_drawBlockContext, flowchartCtx);
+                comp.OnGUI(_drawBlockContext, flowchartCtx);
 
             DrawSelectionBox();
             void DrawSelectionBox()
@@ -780,25 +760,16 @@ namespace Amanita.EditorUtils
 
                     GUILayout.Label("", EditorStyles.toolbarButton, GUILayout.Width(8)); // Separator
 
-                    DrawScalePanel();
-                    void DrawScalePanel()
-                    {
-                        // Draw scale bar and labels
-                        GUILayout.Label("Scale", EditorStyles.miniLabel);
-                        var newZoom = GUILayout.HorizontalSlider(
-                            Flowchart.Zoom, MinZoomValue, MaxZoomValue, GUILayout.MinWidth(40), GUILayout.MaxWidth(100)
-                        );
-                        GUILayout.Label(Flowchart.Zoom.ToString("0.0#x"), EditorStyles.miniLabel, GUILayout.Width(30));
-                    }
+                    
 
-                    DrawCenterButton();
-                    void DrawCenterButton()
-                    {
-                        if (GUILayout.Button("Center", EditorStyles.toolbarButton))
-                        {
-                            CenterFlowchart();
-                        }
-                    }
+                    //DrawCenterButton();
+                    //void DrawCenterButton()
+                    //{
+                    //    if (GUILayout.Button("Center", EditorStyles.toolbarButton))
+                    //    {
+                    //        CenterFlowchart();
+                    //    }
+                    //}
 
                     GUILayout.FlexibleSpace();
 
@@ -948,7 +919,7 @@ namespace Amanita.EditorUtils
             return (min + max) * 0.5f;
         }
 
-        protected virtual void CenterFlowchart()
+        public virtual void CenterFlowchart()
         {
             UpdateBlockCollection();
 
@@ -963,7 +934,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        protected virtual void DoZoom(float delta, Vector2 center)
+        public virtual void DoZoom(float delta, Vector2 center)
         {
             var prevZoom = Flowchart.Zoom;
             Flowchart.Zoom += delta;
@@ -1029,8 +1000,16 @@ namespace Amanita.EditorUtils
 
         public static void SetBlockForInspector(Flowchart flowchart, Block block)
         {
+            bool wasAlreadyShowingThisBlock = blockInspector != null && blockInspector.block == block;
             ShowBlockInspector(flowchart);
-            flowchart.ClearSelectedCommands();
+
+            if (!wasAlreadyShowingThisBlock) 
+            {
+                // ^We need this check to make sure that when a Command is selected in the 
+                // Inspector, it's not immediately unselected
+                flowchart.ClearSelectedCommands();
+            }
+            
             if (block.ActiveCommand != null)
             {
                 flowchart.AddSelectedCommand(block.ActiveCommand);
