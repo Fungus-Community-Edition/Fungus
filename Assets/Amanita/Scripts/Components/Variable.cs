@@ -179,6 +179,8 @@ namespace Amanita.VScripting
         /// </summary>
         public abstract object GetValue();
 
+        public abstract System.Type ValueType { get; }
+
         public virtual object Value { get; set; }
         /// <summary>
         /// Set value in inherited types via Boxed value.
@@ -222,19 +224,22 @@ namespace Amanita.VScripting
             }
         }
 
+        public override System.Type ValueType => typeof(T);
+
         [SerializeField] protected T value;
         public virtual new T Value
         {
             get
             {
-                if (scope != VariableScope.Global || !Application.isPlaying)
-                {
-                    return this.value;
-                }
-                else
-                { 
-                    return globalStaicRef.value;
-                }
+                return this.value;
+                //if (scope != VariableScope.Global || !Application.isPlaying)
+                //{
+                //    return this.value;
+                //}
+                //else
+                //{ 
+                //    return globalStaicRef.value;
+                //}
             }
             set
             {
@@ -304,6 +309,7 @@ namespace Amanita.VScripting
         protected virtual void Init(T startVal)
         {
             this.startValue = startVal;
+            base.Value = startValue;
         }
 
         //Apply to get from base system.object to T

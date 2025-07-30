@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -9,11 +10,22 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Initialize(FlowchartWindow host)
         {
             window = host;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             BuildAdapter();
             BuildUI();
         }
-
+        
         protected FlowchartWindow window;
+
+        protected virtual void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.EnteredPlayMode)
+            {
+                DisposeAdapter();
+                BuildAdapter();
+                BuildUI();
+            }
+        }
 
         protected virtual void BuildAdapter()
         {
@@ -87,17 +99,25 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        private int lastVarHash = 0;
+
         public virtual void OnInspectorUpdate()
         {
             flowchartSO?.Update();
         }
 
-        #region No-ops
-
         public virtual void OnEditorUpdate()
         {
-            // Nothing needed here, since the adapter wires into Undo/Flowchart events itself
+            if (uitkAdapter == null) return;
+            int currentHash = uitkAdapter.VarsList.Aggregate(0, (acc, v) => acc ^ (v?.GetHashCode() ?? 0));
+            if (currentHash != lastVarHash)
+            {
+                uitkAdapter.RefreshListView();
+                lastVarHash = currentHash;
+            }
         }
+
+        #region No-ops
 
         public virtual void OnToolbarGUI()
         {
@@ -123,6 +143,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Dispose()
         {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             DisposeAdapter();
             container?.RemoveFromHierarchy();
             container = null;

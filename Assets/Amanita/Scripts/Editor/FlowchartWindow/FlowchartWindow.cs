@@ -383,12 +383,13 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected void EditorApplication_playModeStateChanged(PlayModeStateChange obj)
+        protected void EditorApplication_playModeStateChanged(PlayModeStateChange state)
         {
             // Force null so it can refresh context on the other side of the context
             Flowchart = null;
             prevFlowchart = null;
             blockInspector = null;
+
         }
 
         protected void Undo_ForceRepaint()
@@ -547,7 +548,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        internal bool HandleFlowchartSelectionChange()
+        public bool HandleFlowchartSelectionChange()
         {
             Flowchart = GetFlowchart();
             //target has changed, so clear the blockinspector
@@ -564,7 +565,10 @@ namespace Amanita.VScripting.EditorUtils
                 UpdateBlockCollection();
 
                 if (Flowchart != null)
+                {
+                    Flowchart.SelectedBlock = null;
                     Flowchart.ReverseUpdateSelectedCache(); //becomes reverse restore selected cache
+                }
                 //Flowchart.SelectedBlock = null;
                 Repaint();
                 return true;
