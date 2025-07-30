@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.SaveSys;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {

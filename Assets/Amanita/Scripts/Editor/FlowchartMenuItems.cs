@@ -1,14 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartMenuItems
     {
-        [MenuItem("Tools/Fungus/Create/Flowchart", false, 0)]
+        [MenuItem("Tools/Amanita/Create/Flowchart", false, 0)]
         static void CreateFlowchart()
         {
             GameObject go = SpawnPrefab("Flowchart");
@@ -34,10 +31,10 @@ namespace Amanita.EditorUtils
             }
         }
 
-        [MenuItem("Tools/Fungus/Create/Fungus Logo", false, 1000)]
+        [MenuItem("Tools/Amanita/Create/Fungus Logo", false, 1000)]
         static void CreateFungusLogo()
         {
-            SpawnPrefab("FungusLogo");
+            SpawnPrefab("Fungus Logo");
         }
 
         public static GameObject SpawnPrefab(string prefabName)

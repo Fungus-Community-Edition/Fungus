@@ -1,5 +1,5 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 ﻿using UnityEngine;
 using UnityEditor;
@@ -9,13 +9,13 @@ namespace Amanita.Lua
 {
     public class LuaMenuItems 
     {
-        [MenuItem("Tools/Fungus/Create/Lua", false, 2000)]
+        [MenuItem("Tools/Amanita/Create/Lua", false, 2000)]
         static void CreateLua()
         {
             SpawnPrefab("Prefabs/Lua", false);
         }
 
-        [MenuItem("Tools/Fungus/Create/Lua File", false, 2001)]
+        [MenuItem("Tools/Amanita/Create/Lua File", false, 2001)]
         static void CreateLuaFile()
         {
             string path = EditorUtility.SaveFilePanelInProject("Create Lua File", "script.txt", "txt", "Please select a file name for the new Lua script. Note: Lua files in Unity use the .txt extension.");
@@ -39,25 +39,25 @@ namespace Amanita.Lua
             }            
         }
 
-        [MenuItem("Tools/Fungus/Create/Lua Environment", false, 2100)]
+        [MenuItem("Tools/Amanita/Create/Lua Environment", false, 2100)]
         static void CreateLuaEnvironment()
         {
             SpawnPrefab("Prefabs/LuaEnvironment", false);
         }
 
-        [MenuItem("Tools/Fungus/Create/Lua Bindings", false, 2101)]
+        [MenuItem("Tools/Amanita/Create/Lua Bindings", false, 2101)]
         static void CreateLuaBindings()
         {
             SpawnPrefab("Prefabs/LuaBindings", false);
         }
 
-        [MenuItem("Tools/Fungus/Create/Lua Script", false, 2102)]
+        [MenuItem("Tools/Amanita/Create/Lua Script", false, 2102)]
         static void CreateLuaScript()
         {
             SpawnPrefab("Prefabs/LuaScript", false);
         }
 
-        [MenuItem("Tools/Fungus/Create/Lua Store", false, 2103)]
+        [MenuItem("Tools/Amanita/Create/Lua Store", false, 2103)]
         static void CreateLuaStore()
         {
             SpawnPrefab("Prefabs/LuaStore", false);
@@ -120,7 +120,7 @@ namespace Amanita.Lua
         /// <summary>
         /// Create an info text object which displays help info in the top left of the sceen.
         /// </summary>
-        [MenuItem("Tools/Fungus/Utilities/Info Text")]
+        [MenuItem("Tools/Amanita/Utilities/Info Text")]
         static void SpawnInfoText()
         {
             SpawnPrefab("Prefabs/InfoText", false);

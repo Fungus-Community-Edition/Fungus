@@ -5,21 +5,21 @@ namespace Amanita.EditorUtils
 {
     public class ExportPackageMenuItems : MonoBehaviour
     {
-        [MenuItem("Tools/Fungus/Utilities/Export Fungus Package")]
+        [MenuItem("Tools/Amanita/Utilities/Export Amanita Package")]
         static void ExportFungusPackageFull()
         {
-            ExportFungusPackage( new string[] {"Assets/Fungus", "Assets/FungusExamples" });
+            ExportAmanitaPackage( new string[] {"Assets/Amanita", "Assets/FungusExamples" });
         }
 
-        [MenuItem("Tools/Fungus/Utilities/Export Fungus Package - Lite")]
+        [MenuItem("Tools/Amanita/Utilities/Export Fungus Package - Lite")]
         static void ExportFungusPackageLite()
         {
-            ExportFungusPackage(new string[] { "Assets/Fungus" });
+            ExportAmanitaPackage(new string[] { "Assets/Amanita" });
         }
 
-        static void ExportFungusPackage(string[] folders)
+        static void ExportAmanitaPackage(string[] folders)
         {
-            string path = EditorUtility.SaveFilePanel("Export Fungus Package", "", "Fungus", "unitypackage");
+            string path = EditorUtility.SaveFilePanel("Export Amanita Package", "", "Amanita", "unitypackage");
             if (path.Length == 0)
             {
                 return;

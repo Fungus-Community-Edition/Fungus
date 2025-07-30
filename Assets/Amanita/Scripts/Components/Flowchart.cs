@@ -1,5 +1,4 @@
 using Amanita.Lua;
-using Amanita.VScripting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,10 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Amanita.VScripting.UI;
+using Amanita.VScripting.EventHandlers;
+using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 
-using Amanita.UI;
-
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -213,6 +213,14 @@ namespace Amanita
             
         }
 
+        public virtual void RemoveVariable(int index)
+        {
+            if (index >= 0 && index < variables.Count)
+            {
+                variables.RemoveAt(index);
+            }
+        }
+
         protected virtual void GetAndInitVars()
         {
             variables = GetComponentsInChildren<Variable>().ToList();
@@ -280,6 +288,16 @@ namespace Amanita
             }
 
             version = AmanitaConstants.CurrentVersion;
+        }
+
+        public virtual void RemoveFromSelection(Command command)
+        {
+            uiModel.RemoveFromSelection(command);
+        }
+
+        public virtual void RemoveFromSelection(Block block)
+        {
+            uiModel.RemoveFromSelection(block);
         }
 
         protected virtual void CheckItemIds()
@@ -387,7 +405,7 @@ namespace Amanita
                 }
             }
             
-            var eventHandlers = GetComponents<EventHandler>();
+            var eventHandlers = GetComponents<AmanitaEventHandler>();
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
@@ -502,14 +520,24 @@ namespace Amanita
         /// </summary>
         public virtual IList<Command> SelectedCommands
         {
-            get => uiModel.SelectedCommands;
+            get => uiModel.SelectedCommands; // Returns a copy
             set => uiModel.SelectedCommands = value;
+        }
+
+        public virtual int SelectedCommandCount
+        {
+            get { return uiModel.CommandCount; }
+        }
+
+        public virtual int SelectedBlockCount
+        {
+            get { return uiModel.BlockCount; }
         }
 
         /// <summary>
         /// The list of variables that can be accessed by the Flowchart.
         /// </summary>
-        public virtual List<Variable> Variables { get { return variables; } }
+        public virtual IList<Variable> Variables { get { return variables; } }
 
         public virtual int VariableCount { get { return variables.Count; } }
 
@@ -815,7 +843,7 @@ namespace Amanita
                 for (int i = 0; i < vars.Count; i++)
                 {
                     var variable = vars[i];
-                    if (variable == null || (variable as Variable) == ignoreVariable || variable.Key == null)
+                    if (variable == null || (variable as IVariable) == ignoreVariable || variable.Key == null)
                     {
                         continue;
                     }
@@ -948,6 +976,16 @@ namespace Amanita
         public Variable GetVariableByName(string name)
         {
             return GetVariable(name);
+        }
+
+        public virtual IVariable GetVariable(int index)
+        {
+            IVariable result = null;
+            if (variables.Count > index && index >= 0)
+            {
+                result = variables[index];
+            }
+            return result;
         }
 
         public virtual Variable GetVariableById(int id)
@@ -1283,7 +1321,7 @@ namespace Amanita
                     command.hideFlags = HideFlags.HideInInspector;
                 }
 
-                var eventHandlers = GetComponents<EventHandler>();
+                var eventHandlers = GetComponents<AmanitaEventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
                     var eventHandler = eventHandlers[i];
@@ -1311,7 +1349,7 @@ namespace Amanita
         /// </summary>
         public virtual void ClearSelectedCommands()
         {
-            SelectedCommands.Clear();
+            UIModel.ClearSelectedCommands();
 #if UNITY_EDITOR
             SelectedCommandsStale = true;
 #endif
@@ -1322,15 +1360,25 @@ namespace Amanita
         /// </summary>
         public virtual void AddSelectedCommand(Command command)
         {
-            if (!SelectedCommands.Contains(command))
+            if (!uiModel.Contains(command))
             {
-                SelectedCommands.Add(command);
+                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
+                // like SelectedCommands.Add, we call the ui model's method specifically for registering
+                // Commands.
+                UIModel.AddToSelection(command); 
 #if UNITY_EDITOR
                 SelectedCommandsStale = true;
 #endif
+                SelectedCommandAdded(command);
             }
         }
-        
+
+        /// <summary>
+        /// For when added through AddSelectedCommand (as opposed to just setting 
+        /// the SelectedCommands property or such)
+        /// </summary>
+        public event Action<Command> SelectedCommandAdded = delegate { };
+
         /// <summary>
         /// Clears the list of selected blocks.
         /// </summary>
@@ -1351,6 +1399,9 @@ namespace Amanita
 
         public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
 
+        public virtual bool Contains(Block block) => UIModel.Contains(block);
+        public virtual bool Contains(Command command) => UIModel.Contains(command);
+
         public void UpdateSelectedCache()
         {
             SelectedBlocks.Clear();
@@ -1360,7 +1411,7 @@ namespace Amanita
 
         public void ReverseUpdateSelectedCache()
         {
-            for (int i = 0; i < SelectedBlocks.Count; i++)
+            for (int i = 0; i < SelectedBlockCount; i++)
             {
                 if(SelectedBlocks[i] != null)
                 {

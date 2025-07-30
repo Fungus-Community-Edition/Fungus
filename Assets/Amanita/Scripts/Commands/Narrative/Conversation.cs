@@ -1,10 +1,8 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using Amanita.VScripting;
 
-namespace Amanita
+namespace Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Do multiple say and portrait commands in a single block of text. Format is: [character] [portrait] [stage position] [hide] [<<< | >>>] [clear | noclear] [wait | nowait] [fade | nofade] [: Story text].

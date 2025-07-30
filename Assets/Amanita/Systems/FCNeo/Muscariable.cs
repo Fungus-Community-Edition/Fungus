@@ -231,8 +231,10 @@ namespace Amanita.VScripting
 
     public interface IVariable : IHasKey
     {
+        new string Key { get; set; }
         object Value { get; }
         VariableScope Scope { get; }
+        int ItemID { get; set; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>

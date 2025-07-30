@@ -4,8 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Execution state of a Block.
@@ -37,7 +38,7 @@ namespace Amanita
         [SerializeField] protected string description = "";
 
         [Tooltip("An optional Event Handler which can execute the block when an event occurs")]
-        [SerializeField] protected EventHandler eventHandler;
+        [SerializeField] protected AmanitaEventHandler eventHandler;
 
         [SerializeField] protected List<Command> commandList = new List<Command>();
 
@@ -171,7 +172,7 @@ namespace Amanita
         /// An optional Event Handler which can execute the block when an event occurs.
         /// Note: Using the concrete class instead of the interface here because of weird editor behaviour.
         /// </summary>
-        public virtual EventHandler _EventHandler { get { return eventHandler; } set { eventHandler = value; } }
+        public virtual AmanitaEventHandler _EventHandler { get { return eventHandler; } set { eventHandler = value; } }
 
         /// <summary>
         /// The currently executing command.
@@ -314,8 +315,8 @@ namespace Amanita
                 if (flowchart.IsActive() && !suppressSelectionChanges)
                 {
                     // Auto select a command in some situations
-                    if ((flowchart.SelectedCommands.Count == 0 && i == 0) ||
-                        (flowchart.SelectedCommands.Count == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
+                    if ((flowchart.SelectedCommandCount == 0 && i == 0) ||
+                        (flowchart.SelectedCommandCount == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
                     {
                         flowchart.ClearSelectedCommands();
                         flowchart.AddSelectedCommand(commandList[i]);

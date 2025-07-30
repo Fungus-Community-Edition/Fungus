@@ -1,10 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Sets all collider (2d or 3d) components on the target objects to be active / inactive.

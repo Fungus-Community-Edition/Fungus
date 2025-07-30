@@ -1,10 +1,8 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.Tests
 {
@@ -15,8 +13,8 @@ namespace Amanita.Tests
     /// </summary>
     public class CollectionTests
     {
-        private Amanita.GameObjectCollection goCol;
-        private Amanita.IntCollection intColA, intColB;
+        private GameObjectCollection goCol;
+        private IntCollection intColA, intColB;
 
         [Test]
         public void AddRemove()
@@ -104,13 +102,13 @@ namespace Amanita.Tests
             Assert.IsTrue(intColA.IsCollectionCompatible(intColB));
             Assert.IsTrue(intColA.IsCollectionCompatible(new int[] { 1 }));
             Assert.IsTrue(intColA.IsCollectionCompatible(new List<int>()));
-            Assert.IsTrue(intColA.IsCollectionCompatible(new List<Amanita.IntegerVariable>()));
+            Assert.IsTrue(intColA.IsCollectionCompatible(new List<IntegerVariable>()));
 
             Assert.IsFalse(intColA.IsElementCompatible(Vector3.up));
             Assert.IsFalse(intColA.IsCollectionCompatible(goCol));
             Assert.IsFalse(intColA.IsCollectionCompatible(new Color[] { Color.white }));
             Assert.IsFalse(intColA.IsCollectionCompatible(new List<Material>()));
-            Assert.IsFalse(intColA.IsCollectionCompatible(new List<Amanita.StringVariable>()));
+            Assert.IsFalse(intColA.IsCollectionCompatible(new List<StringVariable>()));
         }
 
         [Test]
@@ -276,9 +274,9 @@ namespace Amanita.Tests
         [OneTimeSetUp]
         public void InitTestObjects()
         {
-            intColA = new GameObject().AddComponent<Amanita.IntCollection>();
-            intColB = new GameObject().AddComponent<Amanita.IntCollection>();
-            goCol = new GameObject().AddComponent<Amanita.GameObjectCollection>();
+            intColA = new GameObject().AddComponent<IntCollection>();
+            intColB = new GameObject().AddComponent<IntCollection>();
+            goCol = new GameObject().AddComponent<GameObjectCollection>();
         }
 
         [Test]
@@ -358,7 +356,7 @@ namespace Amanita.Tests
             intColB.Clear();
         }
 
-        private void EnsureShuffledDifferent(Amanita.IntCollection col)
+        private void EnsureShuffledDifferent(IntCollection col)
         {
             var startval = col.GetSafe(0);
             col.Shuffle();

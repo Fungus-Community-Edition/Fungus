@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityRandom = UnityEngine.Random;
 
-namespace Amanita.Collections
+namespace Collections
 {
     public static class IListExtensions
     {

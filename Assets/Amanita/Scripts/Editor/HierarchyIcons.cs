@@ -1,12 +1,10 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using Amanita.VScripting;
 
-namespace Amanita
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Static class that hooks into the hierachy changed and item gui callbacks to put

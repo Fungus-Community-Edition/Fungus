@@ -1,13 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using Amanita.VScripting.Commands.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Temp hidden object which lets us use the entire inspector window to inspect the block command list.
@@ -87,14 +85,14 @@ namespace Amanita.EditorUtils
 
             var flowchart = (Flowchart)block.GetFlowchart();
 
-            if (flowchart.SelectedBlocks.Count > 1)
+            if (flowchart.SelectedBlockCount > 1)
             {
                 GUILayout.Label("Multiple blocks selected");
                 return;
             }
 
             //if there is no selection but we are drawing, fix that
-            if (flowchart.SelectedBlocks.Count == 0)
+            if (flowchart.SelectedBlockCount == 0)
             {
                 flowchart.AddToSelection(block);
             }
@@ -116,7 +114,7 @@ namespace Amanita.EditorUtils
             GUILayout.EndScrollView();
 
             Command inspectCommand = null;
-            if (flowchart.SelectedCommands.Count == 1)
+            if (flowchart.SelectedCommandCount == 1)
             {
                 inspectCommand = flowchart.SelectedCommands[0];
             }

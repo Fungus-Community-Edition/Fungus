@@ -1,7 +1,3 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +5,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
+using Amanita.VScripting.EditorUtils;
+using Amanita.VScripting.EventHandlers;
+using Attribute = System.Attribute;
 
 namespace Amanita.EditorUtils
 {
@@ -20,7 +19,7 @@ namespace Amanita.EditorUtils
         private const string CommandRefDocPath = BaseDocPath + "command_ref/";
         private const string BaseDocPath = "./Docs/";
 
-        [MenuItem("Tools/Fungus/Utilities/Export Reference Docs")]
+        [MenuItem("Tools/Amanita/Utilities/Export Reference Docs")]
         public static void Export()
         {
             ExportCommandInfo();
@@ -177,7 +176,7 @@ This is the reference documentation for all Fungus event handlers.
             return markdown;
         }
 
-        [MenuItem("Tools/Fungus/Utilities/Convert Docs to GitHub MD")]
+        [MenuItem("Tools/Amanita/Utilities/Convert Docs to GitHub MD")]
         public static void ConvertAllToGHMD()
         {
             var files = Directory.GetFiles(BaseDocPath, "*.md", SearchOption.AllDirectories);

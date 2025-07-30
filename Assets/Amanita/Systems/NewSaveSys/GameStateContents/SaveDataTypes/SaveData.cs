@@ -17,14 +17,6 @@ namespace Amanita.SaveSys
         {
         }
 
-        /// <summary>
-        /// Meant to be overridden by subclasses.
-        /// </summary>
-        public static SaveData DeserializeFrom(SaveDataUnit item)
-        {
-            throw new NotImplementedException("Call the concrete subclass's DeserializeFrom method instead of the abstract SaveData base class.");
-        }
-
         public virtual string TypeName => GetType().Name;
 
         protected static void ValidateSerializedData(SaveDataUnit item, string expectedTypeName)

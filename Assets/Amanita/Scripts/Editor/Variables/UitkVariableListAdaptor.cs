@@ -4,21 +4,14 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
-using Amanita.VScripting;
 using System;
+using System.Linq;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
+    // Backing list for ListView
     public class UitkVariableListAdaptor : IDisposable
     {
-        public Flowchart TargetFlowchart { get; }
-        private SerializedProperty variablesProp;
-        private SerializedObject flowchartSO;
-        public static readonly int ReorderListSkirts = 50;
-
-        // Backing list for ListView
-        private List<Variable> varsList => TargetFlowchart.Variables;
-
         public UitkVariableListAdaptor(SerializedProperty variablesProp, Flowchart flowchart)
         {
             this.variablesProp = variablesProp;
@@ -26,6 +19,10 @@ namespace Amanita.EditorUtils
             this.TargetFlowchart = flowchart;
             ListenForEvents();
         }
+
+        protected SerializedProperty variablesProp;
+        protected SerializedObject flowchartSO;
+        public Flowchart TargetFlowchart { get; }
 
         protected virtual void ListenForEvents()
         {
@@ -52,6 +49,8 @@ namespace Amanita.EditorUtils
             }
 
         }
+
+        protected List<IVariable> varsList => TargetFlowchart.Variables.Cast<IVariable>().ToList();
 
         /// <summary>
         /// Builds and returns a UI Toolkit foldout containing:
@@ -94,7 +93,6 @@ namespace Amanita.EditorUtils
             var row = new VisualElement { name = "variable-row" };
             row.style.flexDirection = FlexDirection.Row;
 
-            // 1. Type label
             var typeLabel = PrepTypeLabel();
             UIToolkitLabel PrepTypeLabel()
             {
@@ -110,7 +108,6 @@ namespace Amanita.EditorUtils
 
             row.Add(typeLabel);
 
-            // 2. Key text field
             var keyField = PrepKeyField();
             TextField PrepKeyField()
             {
@@ -123,20 +120,46 @@ namespace Amanita.EditorUtils
             }
             row.Add(keyField);
 
-            // 3. Value field (will bind to SerializedProperty of the Variable component)
-            var valueField = new PropertyField { name = "value", style = { width = valueFieldWidth } };
-            valueField.style.whiteSpace = WhiteSpace.NoWrap;
-            valueField.style.overflow = Overflow.Hidden;
-            row.Add(valueField);
+            
+            PrepValueField(); // Will bind to SerializedProperty of the Variable component
+            void PrepValueField()
+            {
+                PropertyField valueField = new PropertyField
+                {
+                    name = "value",
+                    style =
+                    {
+                        width = valueFieldWidth
+                    }
+                };
 
-            // 4. Scope enum dropdown
-            var scopeField = new EnumField { name = "scope", style = { width = scopeFieldWidth } };
-            row.Add(scopeField);
+                valueField.style.whiteSpace = WhiteSpace.NoWrap;
+                valueField.style.overflow = Overflow.Hidden;
+                row.Add(valueField);
+            }
 
-            // 5. Remove button
-            var removeBtn = new Button(() => RemoveCurrentRow(row)) { text = "–" };
-            removeBtn.AddToClassList("variable-remove-button");
-            row.Add(removeBtn);
+            PrepScopeField();
+            void PrepScopeField()
+            {
+                var scopeField = new EnumField
+                {
+                    name = "scope",
+                    style =
+                    {
+                        width = scopeFieldWidth
+                    }
+                };
+                row.Add(scopeField);
+            }
+
+            PrepRemoveButton();
+            void PrepRemoveButton()
+            {
+                var removeBtn = new Button(() => RemoveCurrentRow(row)) { text = "–" };
+                removeBtn.style.width = removeButtonWidth;
+                removeBtn.AddToClassList("variable-remove-button");
+                row.Add(removeBtn);
+            }
 
             return row;
         }
@@ -144,21 +167,28 @@ namespace Amanita.EditorUtils
         protected static int typeLabelWidth = 80,
             keyFieldWidth = 100,
             valueFieldWidth = 150,
-            scopeFieldWidth = 70;
+            scopeFieldWidth = 70,
+            removeButtonWidth = 25;
 
         // Called by `bindItem`
         protected virtual void BindVariableRow(VisualElement element, int index)
         {
-            var variable = varsList[index];
+            var flowchart = TargetFlowchart;
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            IVariable varToRepresent = flowchart.GetVariable(index);
 
             // Need to account for when a var was just deleted
-            while (varsList.Count > 0 && variable == null)
+            while (flowchart.VariableCount > 0 && varToRepresent == null)
             {
-                varsList.RemoveAt(index);
+                flowchart.RemoveVariable(index);
                 bool validIndex = index < varsList.Count;
                 if (validIndex)
                 {
-                    variable = varsList[index];
+                    varToRepresent = flowchart.GetVariable(index);
                 }
                 else
                 {
@@ -166,49 +196,84 @@ namespace Amanita.EditorUtils
                 }
             }
 
-            if (variable == null)
+            if (varToRepresent == null)
             {
                 return;
             }
 
-            var flowchart = TargetFlowchart;
-
-            // 1) Type
-            string newTypeLabelText = variable.GetType().Name;
-            // We don't want "Variable" to be in the label, so...
-            int l = "Variable".Length;
-            newTypeLabelText = newTypeLabelText.Substring(0, newTypeLabelText.Length - l);
-            var typeNameField = element.Q<UIToolkitLabel>("type");
-            typeNameField.text = newTypeLabelText;
-
-            // 2) Key
-            var keyField = element.Q<TextField>("key");
-            keyField.value = variable.Key;
-            keyField.RegisterValueChangedCallback(evt =>
+            HandleTypeLabel();
+            void HandleTypeLabel()
             {
-                if (variable == null)
+                string newTypeLabelText = varToRepresent.GetType().Name;
+                // We don't want "Variable" to be in the label, so...
+                int varWordLength = "Variable".Length;
+                newTypeLabelText = newTypeLabelText.Substring(0, newTypeLabelText.Length - varWordLength);
+                var typeNameField = element.Q<UIToolkitLabel>("type");
+
+                if (typeNameField == null)
                 {
+                    Debug.LogWarning($"Missing a type label field for the Variables UI");
                     return;
                 }
-                Undo.RecordObject(variable, "Change Variable Key");
-                variable.Key = flowchart.GetUniqueVariableKey(evt.newValue, variable);
-                flowchartSO.ApplyModifiedProperties();
-            });
 
-            // 3) Value
-            var valProp = new SerializedObject(variable).FindProperty("value");
-            var valField = element.Q<PropertyField>("value");
-            valField.BindProperty(valProp);
+                typeNameField.text = newTypeLabelText;
+            }
 
-            // 4) Scope
-            var scopeProp = new SerializedObject(variable).FindProperty("scope");
-            var scopeField = element.Q<EnumField>("scope");
-            scopeField.Init(variable.Scope);
-            scopeField.RegisterValueChangedCallback(evt =>
+            HandleKeyField();
+            void HandleKeyField()
             {
-                scopeProp.enumValueIndex = System.Convert.ToInt32(evt.newValue);
-                scopeProp.serializedObject.ApplyModifiedProperties();
-            });
+                var keyField = element.Q<TextField>("key");
+                if (keyField == null)
+                {
+                    Debug.LogWarning($"Missing a key field for the Variables UI");
+                    return;
+                }
+                keyField.value = varToRepresent.Key;
+                keyField.RegisterValueChangedCallback(evt =>
+                {
+                    if (varToRepresent == null)
+                    {
+                        return;
+                    }
+                    Undo.RecordObject(varToRepresent as UnityEngine.Object, "Change Variable Key");
+                    varToRepresent.Key = flowchart.GetUniqueVariableKey(evt.newValue, varToRepresent);
+                    flowchartSO.ApplyModifiedProperties();
+                });
+            }
+
+            HandleValueField();
+            void HandleValueField()
+            {
+                var valProp = new SerializedObject(varToRepresent as UnityEngine.Object).FindProperty("value");
+                var valField = element.Q<PropertyField>("value");
+
+                if (valField == null)
+                {
+                    Debug.LogWarning($"Missing value field in Variables UI");
+                    return;
+                }
+                valField.BindProperty(valProp);
+            }
+
+            HandleScopeField();
+            void HandleScopeField()
+            {
+                var scopeProp = new SerializedObject(varToRepresent as UnityEngine.Object).FindProperty("scope");
+                var scopeField = element.Q<EnumField>("scope");
+
+                if (scopeField == null)
+                {
+                    Debug.LogWarning($"Missing scope field in Variables UI");
+                    return;
+                }
+
+                scopeField.Init(varToRepresent.Scope);
+                scopeField.RegisterValueChangedCallback(evt =>
+                {
+                    scopeProp.enumValueIndex = System.Convert.ToInt32(evt.newValue);
+                    scopeProp.serializedObject.ApplyModifiedProperties();
+                });
+            }
 
             // 5) Remove ⇒ store index on the row for lookup
             element.userData = index;
@@ -218,7 +283,7 @@ namespace Amanita.EditorUtils
         {
             int index = (int)row.userData;
             // Destroy component and remove from list
-            var varToRemove = varsList[index];
+            var varToRemove = varsList[index] as UnityEngine.Object;
 
             Undo.DestroyObjectImmediate(varToRemove);
 

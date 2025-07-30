@@ -1,11 +1,11 @@
-﻿using Amanita.Collections;
+﻿using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class BlockClipboard : IDisposable
     {
@@ -85,7 +85,7 @@ namespace Amanita.EditorUtils
                     return null;
                 }
 
-                return Window.currentFlowchart;
+                return Window.Flowchart;
             }
         }
 

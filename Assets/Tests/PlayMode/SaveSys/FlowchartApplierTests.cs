@@ -8,6 +8,7 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {

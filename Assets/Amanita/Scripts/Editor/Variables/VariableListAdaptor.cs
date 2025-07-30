@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -8,8 +5,9 @@ using UnityEditorInternal;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class VariableListAdaptor
     {
@@ -202,7 +200,7 @@ namespace Amanita.EditorUtils
                 {
                     highlight = flowchart.SelectedBlock.ActiveCommand.IsVariableReferenced(variable);
                 }
-                else if (!Application.isPlaying && flowchart.SelectedCommands.Count > 0)
+                else if (!Application.isPlaying && flowchart.SelectedCommandCount > 0)
                 {
                     foreach (Command selectedCommand in flowchart.SelectedCommands)
                     {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -10,9 +11,9 @@ namespace Amanita.SaveSys
         public virtual bool NeedsInput => true;
         public bool CanHandle(object toMakeFrom)
         {
-            return CanHandle(toMakeFrom as Variable);
+            return CanHandle(toMakeFrom as IVariable);
         }
-        public virtual bool CanHandle(Variable variable) =>
+        public virtual bool CanHandle(IVariable variable) =>
             variable is ColorVariable;
 
         public virtual bool CanHandle(string typeName) =>
@@ -21,7 +22,7 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData EncodeToSave(Variable variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             VariableSaveData result = new()
             {
@@ -33,7 +34,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual string EncodeToString(Variable toEncode)
+        public virtual string EncodeToString(IVariable toEncode)
         {
             ColorVariable colorVar = toEncode as ColorVariable;
             if (colorVar == null)
@@ -47,7 +48,7 @@ namespace Amanita.SaveSys
             return encodedColor;
         }
 
-        public virtual void Decode(Variable toDecode, string data)
+        public virtual void Decode(IVariable toDecode, string data)
         {
             ColorVariable colorVar = toDecode as ColorVariable;
             if (colorVar == null)
@@ -71,7 +72,7 @@ namespace Amanita.SaveSys
             colorVar.Value = new Color(r, g, b, a);
         }
 
-        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             if (saveData.VarTypeName != nameof(ColorVariable))
             {

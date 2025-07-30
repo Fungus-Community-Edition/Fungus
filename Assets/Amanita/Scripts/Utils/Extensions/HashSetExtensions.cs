@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Amanita.Collections
+namespace Collections
 {
     public static class HashSetExtensions
     {

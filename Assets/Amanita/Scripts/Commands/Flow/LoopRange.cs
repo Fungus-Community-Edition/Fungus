@@ -1,9 +1,6 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus) maintained by Chris Gregan (http://twitter.com/gofungus).
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Loop over a fixed integer range, similar to a common for loop.

@@ -1,11 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 ﻿using UnityEngine;
 using MoonSharp.Interpreter;
 using Amanita.Lua;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Executes a Lua code chunk using a Lua Environment.

@@ -1,13 +1,11 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Text;
+using Amanita.VScripting;
 
-namespace Amanita
+namespace Amanita.DialogueSys
 {
     /// <summary>
     /// Helper class to manage parsing and executing the conversation format.

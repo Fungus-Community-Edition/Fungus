@@ -1,22 +1,22 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+﻿
+
 
 using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// The meat of the Fungus Collection. Internally uses a List of given type, simplest example
     /// being IntCollection. Provides some type specific additions to the base Collection for
     /// increasing speed and safety.
     ///
-    /// Uses Promote methods to convert from objects or other collection or Amanita.Variable types
+    /// Uses Promote methods to convert from objects or other collection or Variable types
     /// being passed in, will attempt to do compatability for you, such as if you give an
     /// IntCollection an int or a Amanita.IntVariable, either works as the Promote is aware
-    /// of Amanita.VariableBase<T>. Will also allow mixing some operations between
+    /// of VariableBase<T>. Will also allow mixing some operations between
     /// GenericCollection<T>, T[], and List<T>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -293,11 +293,11 @@ namespace Amanita
             //element type only works for arrays, need to use getgenerictype with ilist<>T
             if (o is System.Array)
             {
-                return ote is T || ote is Amanita.VariableBase<T>;
+                return ote is T || ote is VariableBase<T>;
             }
             else if (o is System.Collections.IList && otgs.Length > 0)
             {
-                return otgs[0] == typeof(T) || otgs[0].IsSubclassOf(typeof(Amanita.VariableBase<T>));
+                return otgs[0] == typeof(T) || otgs[0].IsSubclassOf(typeof(VariableBase<T>));
             }
             else
             {

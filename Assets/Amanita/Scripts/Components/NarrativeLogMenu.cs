@@ -1,13 +1,10 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-#if UNITY_5_3_OR_NEWER
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Amanita.DentedPixel;
+using Amanita.VScripting;
+using Amanita.DialogueSys;
 
-namespace Amanita
+namespace Amanita.UI.Legacy
 {
     /// <summary>
     /// A singleton game object which displays a simple UI for the Narrative Log.
@@ -83,8 +80,6 @@ namespace Amanita
         protected virtual void OnEnable()
         {
             WriterSignals.OnWriterState += OnWriterState;
-            SaveManagerSignals.OnSavePointLoaded += OnSavePointLoaded;
-            SaveManagerSignals.OnSaveReset += OnSaveReset;
             BlockSignals.OnBlockEnd += OnBlockEnd;
             NarrativeLog.OnNarrativeAdded += OnNarrativeAdded;
         }
@@ -92,8 +87,6 @@ namespace Amanita
         protected virtual void OnDisable()
         {
             WriterSignals.OnWriterState -= OnWriterState;
-            SaveManagerSignals.OnSavePointLoaded -= OnSavePointLoaded;
-            SaveManagerSignals.OnSaveReset -= OnSaveReset;
             BlockSignals.OnBlockEnd -= OnBlockEnd;
             NarrativeLog.OnNarrativeAdded -= OnNarrativeAdded;
         }
@@ -212,5 +205,3 @@ namespace Amanita
         #endregion
     }
 }
-
-#endif

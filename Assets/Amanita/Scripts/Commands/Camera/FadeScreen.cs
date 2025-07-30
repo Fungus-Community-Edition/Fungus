@@ -1,10 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 ﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Draws a fullscreen texture over the scene to give a fade effect. Setting Target Alpha to 1 will obscure the screen, alpha 0 will reveal the screen.
