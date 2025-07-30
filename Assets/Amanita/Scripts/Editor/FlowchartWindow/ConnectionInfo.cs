@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public readonly struct ConnectionInfo
     {

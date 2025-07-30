@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static Amanita.EditorUtils.FlowchartWindow;
-using System;
 using System.Linq;
 using Object = UnityEngine.Object;
+using ClipboardObject = Amanita.VScripting.EditorUtils.FlowchartWindow.ClipboardObject;
+using Amanita.VScripting.EventHandlers;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class BlockClipboardEntry
     {

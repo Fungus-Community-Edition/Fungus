@@ -5,6 +5,7 @@ using Amanita.SaveSys;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.TestTools;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {

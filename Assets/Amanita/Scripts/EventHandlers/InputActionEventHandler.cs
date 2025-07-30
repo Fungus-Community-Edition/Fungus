@@ -1,12 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 #if ENABLE_INPUT_SYSTEM
 
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Amanita
+namespace Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.

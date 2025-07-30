@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
+using Amanita.VScripting;
+using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.Tests.Editor
 {

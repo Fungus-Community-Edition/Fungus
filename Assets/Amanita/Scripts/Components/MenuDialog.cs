@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -9,11 +6,9 @@ using System.Linq;
 using MoonSharp.Interpreter;
 using Amanita.Lua;
 using System;
+using Amanita.VScripting;
 
-#if ENABLE_INPUT_SYSTEM
-#endif
-
-namespace Amanita
+namespace Amanita.DialogueSys
 {
 	/// <summary>
 	/// Presents multiple choice buttons to the players.

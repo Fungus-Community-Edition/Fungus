@@ -3,6 +3,8 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.EditorUtils;
+using Amanita.VScripting;
+using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.Tests.Editor
 {

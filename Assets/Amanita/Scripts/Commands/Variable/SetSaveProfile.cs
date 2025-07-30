@@ -1,10 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using UnityEngine;
 using System;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Sets the active profile that the Save Variable and Load Variable commands will use. This is useful to crete multiple player save games. Once set, the profile applies across all Flowcharts and will also persist across scene loads.

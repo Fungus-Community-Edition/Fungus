@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
 
 namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Adds window that generates the require scripts to create a new FungusVariable that wraps an existing type. 
     /// 
-    /// These can then be used in the fungus flowcharts. It also generates a *Property command to allow Gets and Sets
-    /// on all the elements of that variable that Fungus Understands. The Quaternion and Matrix4x4 have been auto
+    /// These can then be used in the flowcharts. It also generates a *Property command to allow Gets and Sets
+    /// on all the elements of that variable that Amanita Understands. The Quaternion and Matrix4x4 have been auto
     /// generated and then auto formatted in visual studio and set to preview only as examples of it's use. 
     /// 
     /// It can be used to help building variable wrappers for builtin Unity types or your own components or classes.

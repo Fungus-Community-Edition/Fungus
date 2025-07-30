@@ -1,5 +1,3 @@
-using UnityEditor;
-
 namespace Amanita.EditorUtils
 {
     public class SaveMenuItems 

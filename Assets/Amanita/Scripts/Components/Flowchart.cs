@@ -1,5 +1,4 @@
 using Amanita.Lua;
-using Amanita.VScripting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,10 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Amanita.VScripting.UI;
+using Amanita.VScripting.EventHandlers;
+using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 
-using Amanita.UI;
-
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -213,6 +213,14 @@ namespace Amanita
             
         }
 
+        public virtual void RemoveVariable(int index)
+        {
+            if (index >= 0 && index < variables.Count)
+            {
+                variables.RemoveAt(index);
+            }
+        }
+
         protected virtual void GetAndInitVars()
         {
             variables = GetComponentsInChildren<Variable>().ToList();
@@ -397,7 +405,7 @@ namespace Amanita
                 }
             }
             
-            var eventHandlers = GetComponents<EventHandler>();
+            var eventHandlers = GetComponents<AmanitaEventHandler>();
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
@@ -529,7 +537,7 @@ namespace Amanita
         /// <summary>
         /// The list of variables that can be accessed by the Flowchart.
         /// </summary>
-        public virtual List<Variable> Variables { get { return variables; } }
+        public virtual IList<Variable> Variables { get { return variables; } }
 
         public virtual int VariableCount { get { return variables.Count; } }
 
@@ -835,7 +843,7 @@ namespace Amanita
                 for (int i = 0; i < vars.Count; i++)
                 {
                     var variable = vars[i];
-                    if (variable == null || (variable as Variable) == ignoreVariable || variable.Key == null)
+                    if (variable == null || (variable as IVariable) == ignoreVariable || variable.Key == null)
                     {
                         continue;
                     }
@@ -968,6 +976,16 @@ namespace Amanita
         public Variable GetVariableByName(string name)
         {
             return GetVariable(name);
+        }
+
+        public virtual IVariable GetVariable(int index)
+        {
+            IVariable result = null;
+            if (variables.Count > index && index >= 0)
+            {
+                result = variables[index];
+            }
+            return result;
         }
 
         public virtual Variable GetVariableById(int id)
@@ -1303,7 +1321,7 @@ namespace Amanita
                     command.hideFlags = HideFlags.HideInInspector;
                 }
 
-                var eventHandlers = GetComponents<EventHandler>();
+                var eventHandlers = GetComponents<AmanitaEventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
                     var eventHandler = eventHandlers[i];

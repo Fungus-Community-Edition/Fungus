@@ -1,4 +1,3 @@
-
 namespace Amanita.EditorUtils
 {
     public struct IndexPair

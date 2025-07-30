@@ -1,4 +1,5 @@
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -8,7 +9,7 @@ namespace Amanita.SaveSys
     [System.Serializable]
     public class StringVarCodec : IVarCodec
     {
-        public virtual bool CanHandle(Variable variable) =>
+        public virtual bool CanHandle(IVariable variable) =>
             variable is StringVariable;
         public virtual bool CanHandle(string typeName) =>
             typeName == nameof(StringVariable);
@@ -16,9 +17,9 @@ namespace Amanita.SaveSys
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual string EncodeToString(Variable variable) => ((StringVariable)variable).Value;
+        public virtual string EncodeToString(IVariable variable) => ((StringVariable)variable).Value;
 
-        public virtual VariableSaveData EncodeToSave(Variable variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             VariableSaveData result = new()
             {
@@ -31,7 +32,7 @@ namespace Amanita.SaveSys
 
             return result;
         }
-        public virtual void Decode(Variable variable, string data)
+        public virtual void Decode(IVariable variable, string data)
         {
             if (variable is StringVariable strVar)
             {
@@ -43,7 +44,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             if (saveData.VarTypeName != nameof(StringVariable))
             {

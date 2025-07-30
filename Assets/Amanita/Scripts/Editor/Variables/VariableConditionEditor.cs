@@ -1,10 +1,7 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles custom drawing for ConditionExperssions within the VariableCondition and inherited commands.

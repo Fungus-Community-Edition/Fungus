@@ -1,8 +1,8 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// To keep the FlowchartWindow and BlockInspector synced with the last Flowchart selected.
@@ -123,10 +123,12 @@ namespace Amanita.EditorUtils
                     flowchart.ClearSelectedCommands();
                 }
 
-                if (block.ActiveCommand != null)
+                if (block != null && block.ActiveCommand != null)
+                {
                     flowchart.AddSelectedCommand(block.ActiveCommand);
+                    FlowchartWindow.blockInspector.block = block;
+                }
 
-                FlowchartWindow.blockInspector.block = block;
             }
 
         }

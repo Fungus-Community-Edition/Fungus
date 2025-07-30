@@ -1,11 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Changes a game object's scale to the specified value and back to its original scale over time.

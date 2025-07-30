@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.UI
+namespace Amanita.VScripting.UI
 {
     [System.Serializable]
     public class FlowchartUIModel : IFlowchartUIModel
@@ -127,7 +127,7 @@ namespace Amanita.UI
 
         public virtual void AddToSelection(Block block)
         {
-            if (!_selectedBlocks.Contains(block))
+            if (block != null && !_selectedBlocks.Contains(block))
             {
                 block.IsSelected = true;
                 _selectedBlocks.Add(block);

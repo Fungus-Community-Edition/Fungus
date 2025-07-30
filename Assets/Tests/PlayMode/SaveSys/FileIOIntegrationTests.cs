@@ -1,16 +1,12 @@
 ﻿using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
-using UnityEngine.TestTools;
-using Encoding = System.Text.Encoding;
 
 namespace Amanita.SaveSystemTests
 {

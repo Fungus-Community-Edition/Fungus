@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
-using Amanita.EditorUtils;
+using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.Tests.Editor
 {
@@ -29,8 +29,7 @@ namespace Amanita.Tests.Editor
             var toAnchor = new Vector2(-7, -8);
 
             // progress = 1 → should equal toAnchor
-            var result = ConnectionDrawer
-                .GetPointOnCurve(fromAnchor, fromControl, toControl, toAnchor, 1f);
+            var result = ConnectionDrawer.GetPointOnCurve(fromAnchor, fromControl, toControl, toAnchor, 1f);
 
             Assert.AreEqual(toAnchor, result);
         }

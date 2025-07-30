@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     [CommandInfo("Variable", 
         "StringToFloat",

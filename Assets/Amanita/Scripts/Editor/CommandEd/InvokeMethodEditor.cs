@@ -1,15 +1,13 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEditor;
 using System.Linq;
 using System.Reflection;
 using System;
 using System.Collections.Generic;
+using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.Commands.EditorUtils
 {
     [CustomEditor(typeof(InvokeMethod))]
     public class InvokeMethodEditor : CommandEditor
@@ -178,7 +176,9 @@ namespace Amanita.EditorUtils
 
                     if (isDrawn)
                     {
-                        var vars = GetFungusVariablesByType(targetMethod.GetFlowchart().Variables, objParam.ParameterType);
+                        var flowchart = targetMethod.GetFlowchart();
+                        var fungusVars = flowchart.Variables.Where((elem) => elem is Variable).ToList();
+                        var vars = GetFungusVariablesByType(fungusVars, objParam.ParameterType);
                         var values = new string[] { "<Value>" };
                         var displayValue = values.Concat(vars).ToList();
 
@@ -212,7 +212,7 @@ namespace Amanita.EditorUtils
                         var style = EditorStyles.label;
                         var prevColor = style.normal.textColor;
                         style.normal.textColor = Color.red;
-                        EditorGUILayout.LabelField(new GUIContent(objParam.ParameterType.Name + " cannot be drawn, don´t use this method in the flowchart."), style);
+                        EditorGUILayout.LabelField(new GUIContent(objParam.ParameterType.Name + " cannot be drawn, don�t use this method in the flowchart."), style);
                         style.normal.textColor = prevColor;
                     }
 
@@ -247,7 +247,9 @@ namespace Amanita.EditorUtils
 
                 if (saveReturnValueProp.boolValue)
                 {
-                    var vars = GetFungusVariablesByType(targetMethod.GetFlowchart().Variables, method.ReturnType).ToList();
+                    var flowchart = targetMethod.GetFlowchart();
+                    var fungusVars = flowchart.Variables.Where((elem) => elem is Variable).ToList();
+                    var vars = GetFungusVariablesByType(fungusVars, method.ReturnType).ToList();
                     int index = vars.IndexOf(returnValueKeyProp.stringValue);
                     index = EditorGUILayout.Popup(method.ReturnType.Name, index, vars.ToArray());
 

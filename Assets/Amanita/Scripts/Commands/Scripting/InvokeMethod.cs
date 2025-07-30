@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 ﻿using UnityEngine;
 using System.Collections;
 using System.Reflection;
@@ -10,7 +7,7 @@ using UnityEngine.Events;
 using MarkerMetro.Unity.WinLegacy.Reflection;
 using System.Linq;
 
-namespace Amanita
+namespace Amanita.VScripting.Commands
 {
     /// <summary>
     /// Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.

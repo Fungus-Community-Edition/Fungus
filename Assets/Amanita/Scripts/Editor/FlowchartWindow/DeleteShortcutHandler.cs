@@ -1,7 +1,7 @@
-using UnityEditor;
 using UnityEngine;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class DeleteShortcutHandler : IUGUIEventHandler
     {

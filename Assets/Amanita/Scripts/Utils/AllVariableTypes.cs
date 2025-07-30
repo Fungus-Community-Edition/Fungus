@@ -1,8 +1,6 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Static cache of all fungus variable types, used by commands that are designed to work on
@@ -18,7 +16,7 @@ namespace Amanita
             Any
         }
 
-        public static readonly System.Type[] AllAmanitaVarTypes = new System.Type[]
+        public static readonly System.Type[] AllIVariableTypes = new System.Type[]
         {
             typeof(AnimatorVariable),
             typeof(AudioSourceVariable),
@@ -151,9 +149,9 @@ namespace Amanita
         public class TypeActions
         {
             public TypeActions(string dataPropName,
-                               System.Func<AnyVariableAndDataPair, Amanita.CompareOperator, bool> comparer,
+                               System.Func<AnyVariableAndDataPair, CompareOperator, bool> comparer,
                                System.Func<AnyVariableAndDataPair, string> desccription,
-                               System.Action<AnyVariableAndDataPair, Amanita.SetOperator> set
+                               System.Action<AnyVariableAndDataPair, SetOperator> set
                               )
             {
                 DataPropName = dataPropName;
@@ -165,9 +163,9 @@ namespace Amanita
             // used in AnyVaraibleAndDataPair Drawer to show the correct aspect of the AnyVariableData in the editor
             public string DataPropName { get; set; }
 
-            public System.Func<AnyVariableAndDataPair, Amanita.CompareOperator, bool> CompareFunc;
+            public System.Func<AnyVariableAndDataPair, CompareOperator, bool> CompareFunc;
             public System.Func<AnyVariableAndDataPair, string> DescFunc;
-            public System.Action<AnyVariableAndDataPair, Amanita.SetOperator> SetFunc;
+            public System.Action<AnyVariableAndDataPair, SetOperator> SetFunc;
         }
 
         [VariableProperty(AllVariableTypes.VariableAny.Any)]

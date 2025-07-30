@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// For drawing the UI elements letting you know that a Block or Command
@@ -40,7 +41,7 @@ namespace Amanita.EditorUtils
             if (Event.current.type != EventType.Repaint || !Application.isPlaying)
                 return;
 
-            // same “world → screen” rect you used for zoom
+            // same �world ? screen� rect you used for zoom
             viewRect = _window.CalcFlowchartWindowViewRect();
             var curTime = Time.realtimeSinceStartup;
 

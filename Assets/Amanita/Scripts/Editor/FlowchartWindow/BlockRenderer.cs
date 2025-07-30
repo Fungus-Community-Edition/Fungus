@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static TreeEditor.TreeEditorHelper;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles drawing all the Blocks in the currently-selected Flowchart

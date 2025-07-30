@@ -1,13 +1,11 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
+using Amanita.VScripting.Commands.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Temp hidden object which lets us use the entire inspector window to inspect the block command list.

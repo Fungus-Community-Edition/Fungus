@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FcWindowZoomPanComponent : IFcWindowComponent
     {

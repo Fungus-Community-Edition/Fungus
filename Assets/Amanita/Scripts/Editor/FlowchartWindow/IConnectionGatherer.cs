@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public interface IConnectionGatherer
     {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.Tests.Editor.Integration
 {

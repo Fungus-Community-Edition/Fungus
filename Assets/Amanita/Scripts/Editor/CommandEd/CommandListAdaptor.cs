@@ -1,13 +1,12 @@
-ï»¿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class CommandListAdaptor
     {
@@ -199,12 +198,12 @@ namespace Amanita.EditorUtils
 
         protected virtual string BuildCommandNameLabel(Flowchart f, Command cmd)
         {
-            // Get all CommandInfoAttributes on this type (wonâ€™t throw)
+            // Get all CommandInfoAttributes on this type (won’t throw)
             var infos = cmd.GetType()
                            .GetCustomAttributes(typeof(CommandInfoAttribute), inherit: false)
                            .OfType<CommandInfoAttribute>();
 
-            // Pick the first available or fall back to the GameObjectâ€™s name
+            // Pick the first available or fall back to the GameObject’s name
             string baseName = infos
                 .Select(attr => attr.CommandName)
                 .FirstOrDefault()

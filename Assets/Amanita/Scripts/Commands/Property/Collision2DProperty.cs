@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Get or Set a property of a Collision2D component

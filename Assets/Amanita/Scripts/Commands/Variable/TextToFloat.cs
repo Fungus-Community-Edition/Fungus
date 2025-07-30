@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     [CommandInfo("Variable",
         "Text To Float",

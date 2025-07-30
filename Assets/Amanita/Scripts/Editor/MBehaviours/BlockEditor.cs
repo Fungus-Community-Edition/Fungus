@@ -1,6 +1,3 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -9,8 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Amanita.EditorUtils;
+using Amanita.VScripting.EventHandlers;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
 	[CustomEditor(typeof(Block))]
 	public class BlockEditor : Editor

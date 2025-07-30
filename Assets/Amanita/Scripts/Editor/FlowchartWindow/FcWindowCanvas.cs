@@ -1,6 +1,7 @@
 using UnityEngine;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FcWindowCanvas : IFcWindowComponent
     {

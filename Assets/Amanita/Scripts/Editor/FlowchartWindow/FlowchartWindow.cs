@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,8 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartWindow : EventWindow, IFlowchartHost
     {
@@ -230,7 +231,8 @@ namespace Amanita.EditorUtils
                 _components.Add(new FcWindowEditing());
                 _components.Add(new FcWindowExecutionVisualizer());
                 _components.Add(new FcWindowSelectionSync());
-                //_components.Add(new FcWindowZoomPanComponent());
+                _components.Add(new FcWindowVariablesComponent());
+                // ^Commented this out due to the compiler errors
 
                 foreach (var comp in _components)
                     comp.Initialize(this);
@@ -439,7 +441,7 @@ namespace Amanita.EditorUtils
             // Recompute the filtered list and block.FilterState in one call
             filteredBlocks = FilterUtils.FilterBlocks(blocks, SearchString);
 
-            // Keep popup‐selection index in range
+            // Keep popup-selection index in range
             int max = Mathf.Max(filteredBlocks.Count - 1, 0);
             blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, max);
         }
@@ -552,6 +554,10 @@ namespace Amanita.EditorUtils
             if (Flowchart != prevFlowchart)
             {
                 blockInspector = null;
+                if (prevFlowchart != null)
+                {
+                    prevFlowchart.SelectedBlock = null;
+                }
                 prevFlowchart = Flowchart;
                 executingBlocks.ClearAll();
 
@@ -559,7 +565,7 @@ namespace Amanita.EditorUtils
 
                 if (Flowchart != null)
                     Flowchart.ReverseUpdateSelectedCache(); //becomes reverse restore selected cache
-
+                //Flowchart.SelectedBlock = null;
                 Repaint();
                 return true;
             }
@@ -714,7 +720,7 @@ namespace Amanita.EditorUtils
             DrawSelectionBox();
             void DrawSelectionBox()
             {
-                // After your _inputProcessor.Process(...) and your DrawFlowchartView(...)…
+                // After your _inputProcessor.Process(...) and your DrawFlowchartView(...)�
                 bool thereIsBoxToDraw = SelectionBox.size != Vector2.zero;
                 if (thereIsBoxToDraw && this.IsBeingRepainted)
                 {
@@ -759,8 +765,6 @@ namespace Amanita.EditorUtils
                     GUILayout.Space(2);
 
                     GUILayout.Label("", EditorStyles.toolbarButton, GUILayout.Width(8)); // Separator
-
-                    
 
                     //DrawCenterButton();
                     //void DrawCenterButton()
@@ -819,7 +823,7 @@ namespace Amanita.EditorUtils
                 GUILayout.EndHorizontal();
             }
 
-            DrawVariablesBlock(guiEvent);
+            //DrawVariablesBlock(guiEvent);
         }
 
         protected virtual void DrawVariablesBlock(Event guiEvent)
@@ -1010,7 +1014,7 @@ namespace Amanita.EditorUtils
                 flowchart.ClearSelectedCommands();
             }
             
-            if (block.ActiveCommand != null)
+            if (block != null && block.ActiveCommand != null)
             {
                 flowchart.AddSelectedCommand(block.ActiveCommand);
             }

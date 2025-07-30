@@ -1,19 +1,16 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the VariableReference, allows for more easily selecting a target variable in external c#
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Amanita.VariableReference))]
+    [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
     {
-        public Amanita.Flowchart lastFlowchart;
+        public Flowchart lastFlowchart;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -23,7 +20,7 @@ namespace Amanita.EditorUtils
             position.height = EditorGUIUtility.singleLineHeight;
             var variable = property.FindPropertyRelative("variable");
 
-            Amanita.Variable v = variable.objectReferenceValue as Amanita.Variable;
+            Variable v = variable.objectReferenceValue as Variable;
 
             if (variable.objectReferenceValue != null && lastFlowchart == null)
             {
@@ -33,7 +30,7 @@ namespace Amanita.EditorUtils
                 }
             }
 
-            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Amanita.Flowchart), true) as Amanita.Flowchart;
+            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Flowchart), true) as Flowchart;
             position.y += EditorGUIUtility.singleLineHeight;
             if (lastFlowchart != null)
             {

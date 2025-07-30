@@ -1,9 +1,9 @@
-﻿using Amanita.Collections;
+using Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartContext
     {
@@ -63,18 +63,18 @@ namespace Amanita.EditorUtils
 
         /// <summary>
         /// Returns the topmost block whose NodeRect contains the given mouse position,
-        /// taking scroll‐offset and zoom into account.
+        /// taking scroll-offset and zoom into account.
         /// </summary>
         public Block TopmostBlockOverlapping(Vector2 mousePosition)
         {
             Block result = null;
             var blocks = Flowchart.GetComponents<Block>();
 
-            // Iterate in reverse order so higher‐z blocks get hit‐tested first
+            // Iterate in reverse order so higher-z blocks get hit-tested first
             for (int i = blocks.Length - 1; i >= 0; i--)
             {
                 var currentBlock = blocks[i];
-                // Transform the block’s _NodeRect into window-space
+                // Transform the block�s _NodeRect into window-space
                 Rect windowSpaceRect = currentBlock._NodeRect;
                 windowSpaceRect.position += Flowchart.ScrollPos;
 

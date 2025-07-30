@@ -1,11 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
+using Amanita.VScripting;
 
-namespace Amanita
+namespace Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Displays a timer bar and executes a target block if the player fails to select a menu option in time.
