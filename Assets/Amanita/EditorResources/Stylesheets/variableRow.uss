@@ -1,0 +1,45 @@
+#VarRowRoot
+{
+	max-height: 35px;
+}
+
+#TypeLabel
+{
+	
+}
+
+.removeButton
+{
+	width: 30px;
+	font-weight: 100;
+}
+
+.varRowTypeLabel
+{
+	-unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+	color: rgb(229, 229, 229);
+	-unity-text-align: middle-left;
+	width: 75px;
+}
+
+#KeyInput #unity-text-input
+{
+  background-color: #1a1a1a;  
+  color: #e6e6e6;             
+  border-radius: 2px;
+  padding: 2px;
+  width: 150px;
+}
+
+#KeyInput #unity-text-input::placeholder
+{
+	color: #c6b3ff
+	-unity-text-align: middle-left;
+	
+}
+
+#ValueField
+{
+	width: 150px;
+	-unity-text-align: middle-left;
+}
