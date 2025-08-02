@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="VariableDisplayEditorRoot" class="variable-editor">
+        <ui:Foldout text="Variables" name="Foldout" style="font-size: 28px; color: rgb(229, 229, 229); padding-right: 5px;">
+            <ui:Label name="varCountLabel" text="Count: 0" class="var-count" />
+            <ui:Button name="addVarButton" text="Add Variable" view-data-key="addVarButton" class="add-button" style="height: 25px; font-size: 24px; color: rgb(64, 64, 64);" />
+            <ui:ScrollView name="rowList" view-data-key="VarRowList" class="row-list" style="height: 100px; margin-top: 5px;" />
+        </ui:Foldout>
+    </ui:VisualElement>
+</ui:UXML>

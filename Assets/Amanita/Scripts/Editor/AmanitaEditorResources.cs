@@ -71,8 +71,8 @@ namespace Amanita.EditorUtils
         }
 
         private static AmanitaEditorResources instance;
-        private static readonly string editorResourcesFolderName = "\"EditorResources\"";
-        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "EditorResources");
+        private static readonly string editorResourcesFolderName = "\"_EditorResources\"";
+        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "Resources", "_EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
         public static AmanitaEditorResources Instance
@@ -212,14 +212,7 @@ namespace Amanita.EditorUtils
 
             serializedObject.FindProperty("updateOnReloadScripts").boolValue = false;
 
-            // The ApplyModifiedPropertiesWithoutUndo() function wasn't documented until Unity 5.2
-#if UNITY_5_0 || UNITY_5_1
-            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var applyMethod = typeof(SerializedObject).GetMethod("ApplyModifiedPropertiesWithoutUndo", flags);
-            applyMethod.Invoke(serializedObject, null);
-#else
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
-#endif
         }
     }
 }
