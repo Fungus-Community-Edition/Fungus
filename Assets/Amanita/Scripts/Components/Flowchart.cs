@@ -257,12 +257,14 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             cachedFlowcharts.Remove(this);
-
-#if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-#endif
-
             StringSubstituter.UnregisterHandler(this);   
+        }
+
+        protected virtual void OnDestroy()
+        {
+            VariableAdded = delegate { };
+            VariableRemoved = delegate { };
         }
 
         protected virtual void UpdateVersion()

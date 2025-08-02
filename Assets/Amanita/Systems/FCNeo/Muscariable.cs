@@ -44,7 +44,7 @@ namespace Amanita.VScripting
             this.scope = scope;
         }
 
-
+        public virtual Type ValueType { get { return ContentType; } }
         public abstract System.Type ContentType { get; }
         // ^So clients can see the type even through this non-generic interface
 
@@ -232,9 +232,10 @@ namespace Amanita.VScripting
     public interface IVariable : IHasKey
     {
         new string Key { get; set; }
-        object Value { get; }
+        object Value { get; set; }
         VariableScope Scope { get; }
         int ItemID { get; set; }
+        Type ValueType { get; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>

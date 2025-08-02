@@ -27,7 +27,9 @@ namespace Amanita.VScripting.EditorUtils
 
             // If you switched flowcharts, we bail out
             if (_window.HandleFlowchartSelectionChange())
+            {
                 return;
+            }
 
             if (fc.VariableCount != prevVarCount)
             {
@@ -98,10 +100,23 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void ShowBlockInspector(Flowchart flowchart, Block block)
         {
-            _window.SelectBlock(block);
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            if (block != null)
+            {
+                _window.SelectBlock(block);
+            }
+            else
+            {
+                flowchart.ClearSelectedBlocks();
+                flowchart.ClearSelectedCommands();
+            }
 
             CreateOrReuseBlockInspectorSO();
-            static void CreateOrReuseBlockInspectorSO()
+            void CreateOrReuseBlockInspectorSO()
             {
                 if (FlowchartWindow.blockInspector == null)
                 {
@@ -109,19 +124,32 @@ namespace Amanita.VScripting.EditorUtils
                         .CreateInstance<BlockInspector>();
                     FlowchartWindow.blockInspector.hideFlags = HideFlags.DontSave;
                 }
-                Selection.activeObject = FlowchartWindow.blockInspector;
-                EditorUtility.SetDirty(FlowchartWindow.blockInspector);
+                if (flowchart.SelectedBlock != null)
+                {
+                    Selection.activeObject = FlowchartWindow.blockInspector;
+                    EditorUtility.SetDirty(FlowchartWindow.blockInspector);
+                }
+            
             }
 
             SetBlockInspectorToTheRightBlock();
             void SetBlockInspectorToTheRightBlock()
             {
-                Block prevSelectedBlock = flowchart.SelectedBlock;
-                flowchart.SelectedBlock = block;
-                if (prevSelectedBlock != flowchart.SelectedBlock)
+                var blockInspector = FlowchartWindow.blockInspector;
+                bool wasAlreadyShowingThisBlock = blockInspector != null && blockInspector.block == block;
+                if (!wasAlreadyShowingThisBlock)
                 {
+                    // ^We need this check to make sure that when a Command is selected in the 
+                    // Inspector, it's not immediately unselected
                     flowchart.ClearSelectedCommands();
                 }
+
+                //Block prevSelectedBlock = flowchart.SelectedBlock;
+                //flowchart.SelectedBlock = block;
+                //if (prevSelectedBlock != flowchart.SelectedBlock)
+                //{
+                //    flowchart.ClearSelectedCommands();
+                //}
 
                 if (block != null && block.ActiveCommand != null)
                 {
