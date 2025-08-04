@@ -16,13 +16,14 @@ namespace Amanita.VScripting.EditorUtils
         {
             _holder = holder;
             _varToRepresent = toRepresent;
-            _visualHandler = nonInitializedHandler;
-            _visualHandler.Init(holder, toRepresent);
+            VisualHandler = nonInitializedHandler;
+            VisualHandler.Init(holder, toRepresent);
+            VisualHandler.Refresh();
         }
 
         protected VisualElement _holder;
         protected IVariable _varToRepresent;
-        protected IRowVisualHandler _visualHandler;
+        public IRowVisualHandler VisualHandler { get; protected set; }
 
         protected Flowchart _flowchart;
 
@@ -38,9 +39,9 @@ namespace Amanita.VScripting.EditorUtils
 
                 _varToRepresent = value;
 
-                if (_visualHandler != null)
+                if (VisualHandler != null)
                 {
-                    _visualHandler.Variable = value;
+                    VisualHandler.Variable = value;
                 }
             }
         }
@@ -49,12 +50,12 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                if (_visualHandler == null)
+                if (VisualHandler == null)
                 {
                     return null;
                 }
 
-                return _visualHandler.Root;
+                return VisualHandler.Root;
             }
         }
         
@@ -63,12 +64,12 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public virtual void Clear()
         {
-            _varToRepresent = _visualHandler.Variable = null;
+            _varToRepresent = VisualHandler.Variable = null;
         }
 
         public virtual void Refresh()
         {
-            _visualHandler?.Refresh();
+            VisualHandler?.Refresh();
         }
 
         public void Dispose()
@@ -77,12 +78,9 @@ namespace Amanita.VScripting.EditorUtils
             _flowchart = null;
             _varToRepresent = null;
             _holder = null;
-            _visualHandler.Dispose();
+            VisualHandler.Dispose();
         }
 
     }
-
-    
-
 
 }

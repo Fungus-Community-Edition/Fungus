@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Reflection;
 using UnityObject = UnityEngine.Object;
+using System.Linq;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -117,12 +118,12 @@ namespace Amanita.VScripting.EditorUtils
             // and thus that we can easily bind them to the fields
             Root = _template.CloneTree();
             _keyField = Root.Q<TextField>("KeyInput");
-            _valueField = Root.Q<FloatField>("ValueField");
+            _valueFieldHolder = Root.Q<VisualElement>("ValueFieldHolder");
             _scopeField = Root.Q<EnumField>("Scope");
         }
 
         protected TextField _keyField;
-        protected FloatField _valueField;
+        protected VisualElement _valueFieldHolder;
         protected EnumField _scopeField;
 
         protected virtual void UpdateSerializedObject()
@@ -152,7 +153,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void UnbindFields()
         {
             _keyField?.Unbind();
-            _valueField?.Unbind();
+            _valueFieldHolder?.Unbind();
             _scopeField?.Unbind();
         }
 
@@ -164,7 +165,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _keyField.Bind(_serializedObject);
-            _valueField.Bind(_serializedObject);
+            _valueFieldHolder.Bind(_serializedObject);
             _scopeField.Bind(_serializedObject);
         }
 
@@ -191,8 +192,11 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            _holder?.Remove(Root);
-            // ^We should be able to add the root back in later, assuming we're not disposed before then
+            if (_holder != null && _holder.Children().Contains(Root))
+            {
+                _holder.Remove(Root);
+                // ^We should be able to add the root back in later, assuming we're not disposed before then
+            }
         }
 
         public virtual void Dispose()
@@ -208,7 +212,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 Root = null;
                 _keyField = null;
-                _valueField = null;
+                _valueFieldHolder = null;
                 _scopeField = null;
 
                 _serializedObject = null;
@@ -233,7 +237,7 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    [RowVisualHandler("Primitives", typeof(float), "Float", "VarRowTemplates/FloatVarRow")]
+    [RowVisualHandler("Primitives", typeof(float), "Float", "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
     public class FloatRowVisualHandler : RowVisualHandler
     {
         protected override void RegisterVisualElements()
@@ -257,7 +261,7 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    [RowVisualHandler("Misc", typeof(System.Object), "Generic", "VarRowTemplates/_VariableRowTemplate")]
+    [RowVisualHandler("Misc", typeof(System.Object), "Generic", "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler
     {
 

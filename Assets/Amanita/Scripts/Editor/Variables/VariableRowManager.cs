@@ -1,28 +1,37 @@
-using Collections;
-using MoonSharp.VsCodeDebugger.SDK;
+﻿using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
+using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
     public class VariableRowManager : IDisposable
     {
-        public VariableRowManager() { }
+        public VariableRowManager(IRowVisualHandlerResolver handlerResolver)
+        {
+            _handlerResolver = handlerResolver;
+        }
+
+        protected IRowVisualHandlerResolver _handlerResolver;
 
         #region Visual Handler Type Management
 
-        static VariableRowManager()
+        [InitializeOnLoadMethod]
+        protected static void InitializeHandlerLookup()
         {
+            // Always rebuild lookup right now
+            RefreshHandlerLookup();
+
+            // Ensure we only subscribe once
+            AssemblyReloadEvents.afterAssemblyReload -= RefreshHandlerLookup;
             AssemblyReloadEvents.afterAssemblyReload += RefreshHandlerLookup;
         }
 
-        [InitializeOnLoadMethod]
         public static void RefreshHandlerLookup()
         {
             visualHandlerLookup.Clear();
@@ -38,27 +47,35 @@ namespace Amanita.VScripting.EditorUtils
             foreach (var handlerType in allVisualHandlerTypes)
             {
                 var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
-                visualHandlerLookup[attr.ContentType] = handlerType;
+                Type contentType = attr.ContentType;
+                visualHandlerLookup[contentType] = handlerType;
             }
+
+            Debug.Log("RefreshHandlerLookup done");
         }
 
         protected static IEnumerable<Type> allVisualHandlerTypes;
 
         // Keys are var content types, values are the types of the visual handlers meant for 
         // the corresponding keys
-        protected static IDictionary<Type, Type> visualHandlerLookup = new Dictionary<Type, Type>();
-        #endregion
+        protected static IDictionary<Type, Type> visualHandlerLookup = new Dictionary<Type, Type>(new TypeNameComparer());
 
-        [InitializeOnLoadMethod]
-        static void RebuildLookup()
+        class TypeNameComparer : IEqualityComparer<Type>
         {
+            public bool Equals(Type x, Type y)
+              => String.Equals(x?.AssemblyQualifiedName, y?.AssemblyQualifiedName, StringComparison.Ordinal);
 
+            public int GetHashCode(Type t)
+              => t.AssemblyQualifiedName.GetHashCode();
         }
+
+
+        #endregion
 
         /// <summary>
         /// Also meant to be called for reuse after disposing.
         /// </summary>
-        protected virtual void Initialize(VisualElement holderRoot, VisualTreeAsset template, Flowchart flowchart = null)
+        public virtual void Init(VisualElement holderRoot, VisualTreeAsset template, Flowchart flowchart = null)
         {
             DeregisterCallbacks(); // In case we are switching Flowcharts
 
@@ -76,13 +93,37 @@ namespace Amanita.VScripting.EditorUtils
             Refresh();
         }
 
+        public virtual void Init(VariableRowInitArgs initArgs)
+        {
+            DeregisterCallbacks();
+            _holdsManager = initArgs.Root;
+            _listContainer = initArgs.ListContainer;
+            _countLabel = initArgs.CountLabel;
+            _addButton = initArgs.AddButton;
+            _flowchart = initArgs.Flowchart;
+            ListenForEvents();
+            Refresh();
+        }
+
         protected VisualElement _holdsManager;
         protected VisualTreeAsset _ourTemplate;
         protected Flowchart _flowchart;
         protected VisualElement _ourRoot;
         protected UITKLabel _countLabel;
         protected Button _addButton;
-        protected ScrollView _listContainer;
+        protected VisualElement _listContainer;
+
+        public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
+        {
+            if ( (_holdsManager != null && _holdsManager != toHoldManager) &&
+                _ourRoot != null && _ourRoot.parent != null)
+            {
+                _holdsManager.Remove(_ourRoot);
+            }
+
+            _holdsManager = toHoldManager;
+            _holdsManager.Add(_ourRoot);
+        }
 
         protected virtual void DeregisterCallbacks()
         {
@@ -90,7 +131,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-
+            
             _addButton.clicked -= OnAddClicked;
             _flowchart.VariableAdded -= OnVariableAdded;
             _flowchart.VariableRemoved -= OnVariableRemoved;
@@ -116,6 +157,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnVariableAdded(IVariable added)
         {
             AddOrReuseRow(added);
+            _countLabel.text = _flowchart.VariableCount.ToString();
         }
 
         protected void AddOrReuseRow(IVariable varThatNeedsRow)
@@ -154,6 +196,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnVariableRemoved(IVariable removed)
         {
             RemoveRowFor(removed);
+            _countLabel.text = _flowchart.VariableCount.ToString();
         }
 
         protected virtual void RemoveRowFor(IVariable varToRemoveFor)
@@ -167,8 +210,11 @@ namespace Amanita.VScripting.EditorUtils
 
             foreach (VariableRow rowToRemove in allToRemove)
             {
-                _holdsManager.Remove(rowToRemove.RootElement);
+                _ourRoot?.Remove(rowToRemove.RootElement);
+                _listContainer.Remove(rowToRemove.RootElement);
+                var handler = rowToRemove.VisualHandler;
                 rowToRemove.Dispose();
+                _handlerPool.Add(handler);
                 _rowPool.Add(rowToRemove);
                 _rowsBeingShown.Remove(rowToRemove);
             }
@@ -202,26 +248,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual IRowVisualHandler GetHandlerFor(Type contentType)
         {
-            // 1. Exact lookup
-            bool exactLookupSuccess = visualHandlerLookup.TryGetValue(contentType, out var handlerType);
-            if (!exactLookupSuccess)
-            {
-                // 2. Inheritance-based lookup
-                handlerType = visualHandlerLookup
-                    .Where(kv => kv.Key.IsAssignableFrom(contentType))
-                    .OrderByDescending(kv => kv.Key == contentType) // prefer exact, then closest
-                    .Select(kv => kv.Value)
-                    .FirstOrDefault();
-            }
-
-            // 3. Still no match? We don't have a generic fallback registered
-            bool stillNoMatch = handlerType == null &&
-                visualHandlerLookup.TryGetValue(typeof(object), out handlerType) == false;
-            if (stillNoMatch)
-            {
-                string errorMessage = $"No RowVisualHandler found for {contentType.Name}, and no generic fallback registered.";
-                throw new InvalidOperationException(errorMessage);
-            }
+            Type handlerType = _handlerResolver.ResolveHandler(visualHandlerLookup, contentType);
 
             IRowVisualHandler result = (from elem in _handlerPool
                                         where elem.VarContentType == contentType
@@ -246,19 +273,35 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
+        
         public virtual void Dispose()
         {
             DeregisterCallbacks();
             ClearAllRows();
             _rowPool.Clear();
             _allRows.Clear();
-            _holdsManager?.Remove(_ourRoot);
-            _ourRoot = null;
-            _holdsManager = null;
+            if (_ourRoot != null)
+            {
+                _holdsManager?.Remove(_ourRoot);
+                _holdsManager = null;
+                _ourRoot = null;
+            }
+            
             _countLabel = null;
             _addButton = null;
             _listContainer = null;
         }
     }
 
+    /// <summary>
+    /// Holds the UI elements to get a VariableRowManager to do its thing with.
+    /// </summary>
+    public class VariableRowInitArgs
+    {
+        public VisualElement Root { get; set; }
+        public VisualElement ListContainer { get; set; }
+        public UITKLabel CountLabel { get; set; }
+        public Flowchart Flowchart { get; set; }
+        public Button AddButton { get; set; }
+    }
 }

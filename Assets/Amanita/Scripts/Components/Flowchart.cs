@@ -217,7 +217,21 @@ namespace Amanita.VScripting
         {
             if (index >= 0 && index < variables.Count)
             {
+                IVariable toRemove = variables[index];
                 variables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        /// <summary>
+        /// Removes all variables from this Flowchart.
+        /// </summary>
+        public virtual void ClearVariables()
+        {
+            // We'll remove them one by one so the right events fire
+            while (variables.Count > 0)
+            {
+                RemoveVariable(0);
             }
         }
 
@@ -1678,8 +1692,8 @@ namespace Amanita.VScripting
                          select elem).ToList();
         }
 
-        public event System.Action<IVariable> VariableAdded = delegate { };
-        public event System.Action<IVariable> VariableRemoved = delegate { };
+        public event Action<IVariable> VariableAdded = delegate { };
+        public event Action<IVariable> VariableRemoved = delegate { };
 
         public virtual void InsertVariable(int index, Variable whatToInsert)
         {
