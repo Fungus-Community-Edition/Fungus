@@ -179,9 +179,16 @@ namespace Amanita.VScripting
         /// </summary>
         public abstract object GetValue();
 
-        public abstract System.Type ValueType { get; }
 
-        public virtual object Value { get; set; }
+        public abstract System.Type ContentType { get; }
+
+        public virtual object Value
+        {
+            get { return baseVal; }
+            set { baseVal = value; }
+        }
+
+        protected object baseVal;
         /// <summary>
         /// Set value in inherited types via Boxed value.
         /// Not recommended for direct use, primarily intended for use in editor code.
@@ -224,7 +231,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public override System.Type ValueType => typeof(T);
+        public override System.Type ContentType => typeof(T);
 
         [SerializeField] protected T value;
         public virtual new T Value
@@ -246,7 +253,7 @@ namespace Amanita.VScripting
                 if (scope != VariableScope.Global || !Application.isPlaying)
                 {
                     this.value = value;
-                    base.Value = value;
+                    baseVal = value;
                 }
                 else
                 {

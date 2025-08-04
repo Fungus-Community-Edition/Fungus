@@ -537,9 +537,16 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// The list of variables that can be accessed by the Flowchart.
+        /// A copy of the list of variables that can be accessed by the Flowchart.
         /// </summary>
-        public virtual IList<Variable> Variables { get { return variables; } }
+        public virtual IList<IVariable> Variables
+        {
+            get
+            {
+                IList<IVariable> copyOfList = new List<IVariable>(variables);
+                return copyOfList;
+            }
+        }
 
         public virtual int VariableCount { get { return variables.Count; } }
 

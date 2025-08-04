@@ -7,6 +7,7 @@ using UIToolkitLabel = UnityEngine.UIElements.Label;
 using System;
 using System.Linq;
 using UnityObject = UnityEngine.Object;
+using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -205,9 +206,7 @@ namespace Amanita.VScripting.EditorUtils
                 var valueContainer = element.Q<VisualElement>("value");
                 valueContainer.Clear();
                 VisualElement fieldToAdd = null;
-                Type varType = varToRepresent.ValueType;
-                if (varToRepresent.Value != null)
-                    varType = varToRepresent.Value.GetType();
+                Type varType = varToRepresent.ContentType;
 
                 if (varToRepresent is FloatVariable floatVar)
                 {
@@ -255,22 +254,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 else if (typeof(UnityObject).IsAssignableFrom(varType))
                 {
-                    var varAsObj = varToRepresent as UnityObject;
-                    var objField = new ObjectField
-                    {
-                        objectType = varType,
-                        value = varToRepresent.Value as UnityObject,
-                    };
-                    objField.RegisterValueChangedCallback(evt =>
-                    {
-                        var so = new SerializedObject(varAsObj);
-                        var valProp = so.FindProperty("value");
-                        Undo.RecordObject(varAsObj, $"Change {varType.Name} Variable Value");
-                        valProp.objectReferenceValue = evt.newValue as UnityObject;
-                        so.ApplyModifiedProperties();
-                        EditorUtility.SetDirty(varAsObj);
-                    });
-                    fieldToAdd = objField;
+                    fieldToAdd = UitkFieldGenerator.GenerateObjectField(varToRepresent);
                 }
                 //else if (varToRepresent is AudioClipVariable audioVar)
                 //{
@@ -365,5 +349,13 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed -= RefreshListView;
         }
 
+    }
+
+    public static class ReflectionHelper
+    {
+        public static T CastTo<T>(object obj)
+        {
+            return (T)obj;
+        }
     }
 }
