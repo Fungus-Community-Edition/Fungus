@@ -131,6 +131,11 @@ namespace Amanita.VScripting
 
         #region Public members
 
+        public virtual void Init()
+        {
+            Init(GetValue());
+        }
+
         public abstract void Init(System.Object startValue);
 
         /// <summary>

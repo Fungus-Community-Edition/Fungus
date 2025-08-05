@@ -1,10 +1,13 @@
 ﻿using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.Tests.Editor
 {
@@ -15,7 +18,6 @@ namespace Amanita.Tests.Editor
         {
             PrepFlowchart();
             PrepUIElements();
-            
         }
 
         protected virtual void PrepUIElements()
@@ -52,49 +54,143 @@ namespace Amanita.Tests.Editor
 
         protected virtual void PrepFlowchart()
         {
-            GameObject fcHolder = new GameObject("FC");
-            _flowchart = fcHolder.AddComponent<Flowchart>();
+            _fcHolder = new GameObject("FC");
+            _flowchart = _fcHolder.AddComponent<Flowchart>();
 
-            _flowchart.AddNewVariable<float, FloatVariable>("floatVar");
-            _flowchart.AddNewVariable<string, StringVariable>("stringVar");
-            _flowchart.AddNewVariable<int, IntegerVariable>("intVar");
-            _flowchart.AddNewVariable<GameObject, GameObjectVariable>("goVar", fcHolder);
-            _flowchart.AddNewVariable<bool, BooleanVariable>("boolVar");
+            var floatVar = _fcHolder.AddComponent<FloatVariable>();
+            floatVar.Key = "floatVar";
+            var stringVar =_fcHolder.AddComponent<StringVariable>();
+            stringVar.Key = "stringVar";
+            var intVar = _fcHolder.AddComponent<IntegerVariable>();
+            intVar.Key = "intVar";
+            var goVar = _fcHolder.AddComponent<GameObjectVariable>();
+            goVar.Key = "goVar";
+            var boolVar = _fcHolder.AddComponent<BooleanVariable>();
+            boolVar.Key = "boolVar";
+
+            _initVars = new List<IVariable>()
+            {
+                floatVar, stringVar, intVar, goVar,
+                boolVar
+            };
+
+            AddInitVarsToFlowchart();
+
         }
 
+        protected GameObject _fcHolder;
         protected Flowchart _flowchart;
+
+        protected IList<IVariable> _initVars;
+
+        protected virtual void AddInitVarsToFlowchart()
+        {
+            foreach (var elem in _initVars)
+            {
+                _flowchart.AddVariable(elem);
+            }
+        }
 
         [TearDown]
         public virtual void TearDown()
         {
+            _initVars?.Clear();
             _rowManager.Dispose();
             _handlerResolver = null;
             _rowManager = null;
-            UnityObject.DestroyImmediate(_flowchart.gameObject);
+            UnityObject.DestroyImmediate(_fcHolder);
         }
 
         [Test]
         public virtual void VarRemovalReturnsRowsAndHandlersToPool()
         {
-            Assert.Ignore();
+            int pooledRows = _rowManager.PooledRowCount, pooledHandlers = _rowManager.PooledHandlerCount;
+            bool poolsStartEmpty = pooledRows == 0 && pooledHandlers == 0;
+            Assert.IsTrue(poolsStartEmpty, $"The pooled rows don't start empty. Pooled row count: {pooledRows}, " +
+                $"pooled handler count: {pooledHandlers}");
+
+            var toRemove = new IVariable[] 
+            {
+                // Both of these should be from the init setup
+                _flowchart.Variables[0],
+                _flowchart.Variables[1]
+            };
+
+            foreach (var elem in toRemove)
+                _flowchart.RemoveVariable(elem);
+
+            // 3. UI updated
+            Assert.AreEqual(_flowchart.VariableCount, _listContainer.childCount);
+            Assert.AreEqual(_flowchart.VariableCount.ToString(), _countLabel.text);
+
+            // 4. Exactly two rows & two handlers should be back in their pools
+            Assert.AreEqual(2, _rowManager.PooledRowCount);
+            Assert.AreEqual(2, _rowManager.PooledHandlerCount);
         }
 
         [Test]
         public virtual void CountLabel_TextUpdates_AddingVars()
         {
-            Assert.Ignore();
+            int currentCount = _flowchart.VariableCount;
+            Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+
+            IList<IVariable> varsToAdd = new List<IVariable>()
+            {
+                _fcHolder.AddComponent<StringVariable>(),
+                _fcHolder.AddComponent<FloatVariable>(),
+                _fcHolder.AddComponent<IntegerVariable>(),
+                _fcHolder.AddComponent<GameObjectVariable>(),
+            };
+
+            foreach (var elem in varsToAdd)
+            {
+                _flowchart.AddVariable(elem);
+                currentCount++;
+                Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+            }
         }
 
         [Test]
         public virtual void CountLabel_TextUpdates_RemovingVars()
         {
-            Assert.Ignore();
+            int currentCount = _flowchart.VariableCount;
+            Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+
+            while (_flowchart.VariableCount > 0)
+            {
+                _flowchart.RemoveVariable(0);
+                currentCount--;
+                Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+            }
         }
 
         [Test]
         public virtual void CountLabel_TextUpdates_MixVarAddsAndRemoves()
         {
-            Assert.Ignore();
+            int currentCount = _flowchart.VariableCount;
+            Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+
+            IList<IVariable> varsToAddOrRemove = new List<IVariable>()
+            {
+                _fcHolder.AddComponent<StringVariable>(),
+                _fcHolder.AddComponent<FloatVariable>(),
+                _fcHolder.AddComponent<IntegerVariable>(),
+                _fcHolder.AddComponent<GameObjectVariable>(),
+            };
+
+            foreach (IVariable elem in varsToAddOrRemove)
+            {
+                _flowchart.AddVariable(elem);
+                currentCount++;
+                Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+            }
+
+            foreach (IVariable elem in varsToAddOrRemove)
+            {
+                _flowchart.RemoveVariable(elem);
+                currentCount--;
+                Assert.AreEqual(currentCount.ToString(), _countLabel.text);
+            }
         }
 
         [Test]
@@ -120,16 +216,159 @@ namespace Amanita.Tests.Editor
             Assert.AreEqual(3, _listContainer.childCount);
             Assert.AreEqual("3", _countLabel.text);
         }
-    }
 
-    //What to Test
-    //- Pooling mechanics:
-    //- Adding variables should allocate new rows until the pool is empty, then reuse.
-    //- Removing variables should return rows—and their handlers—to their pools.
-    //- Event wiring:
-    //- Simulate VariableAdded/VariableRemoved calls and verify the right calls to Init(), Dispose(), and list updates.
-    //- Count display:
-    //- After a mixture of adds/removes, check that _countLabel.text matches the expected count.
+        [Test]
+        public virtual void RowsAndHandlersReusedAfterRemoval()
+        {
+            int expectedAmountInPools = 0;
+            IList<IVariable> varsToRemove = _flowchart.Variables;
+            foreach (var elem in varsToRemove)
+            {
+                _flowchart.RemoveVariable(elem);
+                expectedAmountInPools++;
+                Assert.AreEqual(expectedAmountInPools, _rowManager.PooledHandlerCount,
+                    "Removed a var yet the handler pool didn't have the right amount of stuff");
+                Assert.AreEqual(expectedAmountInPools, _rowManager.PooledRowCount,
+                    "Removed a var yet the row pool didn't have the right amount of stuff");
+            }
+
+            IList<IVariable> varsToAdd = _initVars;
+
+            expectedAmountInPools = _initVars.Count;
+            foreach (var elem in varsToAdd)
+            {
+                _flowchart.AddVariable(elem);
+                expectedAmountInPools--;
+                Assert.AreEqual(expectedAmountInPools, _rowManager.PooledHandlerCount,
+                    "Added a var yet the handler pool didn't reuse a handler");
+                Assert.AreEqual(expectedAmountInPools, _rowManager.PooledRowCount,
+                    "Add a var yet the row pool didn't reuse a row");
+            }
+
+            Assert.AreEqual(0, _rowManager.PooledRowCount,
+                "Pooled row count should be zero when all the vars are added back in");
+            Assert.AreEqual(0, _rowManager.PooledHandlerCount,
+                "Pooled handler count should be zero when all the vars are added back in");
+        
+        
+        }
+
+
+        [Test]
+        public void GetHandlerFor_ReusesSameHandlerInstance()
+        {
+            _flowchart.ClearVariables();
+            var floatVar = _flowchart.AddNewVariable<float, FloatVariable>("f1");
+
+            _rowManager.Refresh(); // Should prep and "display" the initial row
+            var firstRow = _rowManager.GetVisibleRowAt(0);
+            var firstHandler = firstRow.VisualHandler;
+
+            _flowchart.RemoveVariable(floatVar);
+            _flowchart.AddVariable(floatVar);
+            // ^Should keep the row using the old handler
+
+            // Assert: pool returned the exactsame handler instance
+            var secondHandler = firstRow.VisualHandler;
+            bool poolReturnedExactSameHandlerInstance = ReferenceEquals(firstHandler, secondHandler);
+            Assert.IsTrue(poolReturnedExactSameHandlerInstance,
+                "The pool apparently made a new handler instance instead of reusing the old one");
+        }
+
+        [Test]
+        public void GetHandlerFor_CreatesNewWhenPoolIsEmpty()
+        {
+            // Remember: with each test, the flowchart starts with as many variables as the
+            // init vars list has. This implies that the handler amount at the start is
+            // equal to that same variable count. And that none of those are pooled yet.
+            var handlerPool = _rowManager.HandlerPool;
+            int expectedPooledHandlerCount = 0;
+            Assume.That(handlerPool.PooledHandlerCount == expectedPooledHandlerCount,
+                "Handler pool has stuff in it despite how we only just added multiple vars");
+
+            _flowchart.ClearVariables(); // After this, all the handlers should be in the pool
+            expectedPooledHandlerCount = _initVars.Count;
+            Assume.That(handlerPool.PooledHandlerCount == expectedPooledHandlerCount,
+                $"Right after the first var clear, the pool didn't get all the handlers back. " +
+                $"How many it has: {handlerPool.PooledHandlerCount}");
+
+            _rowManager.Refresh();
+            _flowchart.AddNewVariable<string, StringVariable>("s1");
+            expectedPooledHandlerCount -= 1; // Since that string variable should've gotten one of the handlers unpooled
+            Assume.That(handlerPool.PooledHandlerCount == expectedPooledHandlerCount,
+                $"The pool didn't release one handler after having multiple pooled and just one var added." +
+                $"How many the pool has: {handlerPool.PooledHandlerCount}");
+
+            var firstRow = _rowManager.GetVisibleRowAt(0);
+            Assume.That(firstRow, Is.Not.Null, "First row wasn't registered properly");
+            var firstHandler = firstRow.VisualHandler;
+            Assume.That(firstHandler, Is.Not.Null, "First row doesn't have a visual handler");
+
+            _flowchart.RemoveVariable(firstHandler.Variable); // Should get the row (and its handler) into the pool
+            // ^ERROR: For some reason, the first handler's variable is null
+
+            expectedPooledHandlerCount += 1;
+            int howManyPooled = _rowManager.PooledHandlerCount;
+            bool wasReleasedBackIntoPool = howManyPooled == expectedPooledHandlerCount;
+            Assert.IsTrue(wasReleasedBackIntoPool,
+                $"The row wasn't pooled after the one var from the manager was removed. " +
+                $"Handler amount: {howManyPooled} Expected amount: {expectedPooledHandlerCount}");
+
+            // Drain the pool by manually ReleaseHandler
+            handlerPool.Clear();
+            //var internalPoolField = typeof(VariableRowManager)
+            //  .GetField("_handlerPool", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var pool = (IList<IRowVisualHandler>)internalPoolField.GetValue(_rowManager);
+            //pool.Clear();
+
+            // With the pool now empty, adding another var should create a new 
+            // handler instance
+            _flowchart.AddNewVariable<string, StringVariable>("s2");
+            var handler2 = firstRow.VisualHandler;
+
+            bool createdBrandNewInstance = !ReferenceEquals(firstHandler, handler2);
+            Assert.AreNotSame(createdBrandNewInstance,
+                "Did not create brand new instance of a handler after draining the pool");
+        }
+
+        [Test]
+        public void ReleaseHandler_ResetsHandlerState()
+        {
+            var handlerPool = _rowManager.HandlerPool;
+            int expectedHandlersInPool = 0;
+            Assume.That(handlerPool.PooledHandlerCount == expectedHandlersInPool,
+                "Handler count doesn't start as 0");
+
+            _flowchart.ClearVariables();
+            expectedHandlersInPool = _initVars.Count;
+            Assume.That(handlerPool.PooledHandlerCount == expectedHandlersInPool,
+                "Pool doesn't get all its handlers back after a full-on row-clear");
+            
+            IntegerVariable firstIntVar = _flowchart.AddNewVariable<int, IntegerVariable>("i1");
+            expectedHandlersInPool--;
+            Assume.That(expectedHandlersInPool == handlerPool.PooledHandlerCount,
+                "Handler count should be one less that the full amount when only one row should be 'visible'");
+
+            var firstRow = _rowManager.GetVisibleRowAt(0);
+            var handler = firstRow.VisualHandler;
+
+            // Act: remove, then re-add a *different* integer var. We expect the same handler
+            // from before to be reused here
+            _flowchart.RemoveVariable(handler.Variable);
+            var secondIntVar = _fcHolder.AddComponent<IntegerVariable>();
+            secondIntVar.Key = "i2";
+            _flowchart.AddVariable(secondIntVar);
+
+            var reusedHandler = firstRow.VisualHandler;
+            Assert.AreSame(handler, reusedHandler,
+                "The handler for the second var is different from that of the first, " +
+                "meaning the former was NOT reused as it should've");
+
+            // Assert: handler.Variable is updated to second, not left pointing at i1
+            Assert.AreEqual("i2", reusedHandler.Variable.Key, "After reuse, the handler doesn't point to the second var");
+        }
+
+    }
 
 
 }

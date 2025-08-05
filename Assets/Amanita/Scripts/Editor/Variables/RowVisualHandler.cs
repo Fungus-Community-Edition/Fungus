@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using System.Reflection;
 using UnityObject = UnityEngine.Object;
 using System.Linq;
+using System.CodeDom;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -32,9 +33,9 @@ namespace Amanita.VScripting.EditorUtils
     /// Handles the shared behaviour for showing the visuals in a VariableRow.
     /// Naturally, all based on the IVariable they're assigned.
     /// </summary>
-    public abstract class RowVisualHandler : IRowVisualHandler
+    public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {
-        public RowVisualHandler() { }
+        public abstract Type VarContentType { get; }
 
         public virtual void Init(VisualElement rowHolder, IVariable toDisplay)
         {
@@ -73,7 +74,7 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         protected static RowVisualHandlerAttribute _handlerAttr;
-
+        
         protected static VisualTreeAsset _template;
         // ^Note that in terms of VisualTreeAssets, templates are basically prefabs but
         // UI-Toolkit-centric
@@ -199,24 +200,31 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        public virtual void Reset()
+        {
+            ClearVisuals();
+            void ClearVisuals()
+            {
+                Hide();
+                UnbindFields();
+            }
+
+            ResetInstanceFields();
+            void ResetInstanceFields()
+            {
+                // We want to leave the static fields alone since reloading them every time
+                // just adds to overhead
+                _prevVariable = null;
+                _currentVariable = null;
+                _holder = null;
+                Root = null;
+            }
+        }
+
+
         public virtual void Dispose()
         {
-            Hide();
-            UnbindFields();
-            ReleaseAllReferences();
-            void ReleaseAllReferences()
-            {
-                _holder = null;
-                _prevVariable = _currentVariable = null;
-                _template = null;
-
-                Root = null;
-                _keyField = null;
-                _valueFieldHolder = null;
-                _scopeField = null;
-
-                _serializedObject = null;
-            }
+            Reset(); // So pooling can call either
         }
 
         public virtual VisualTreeAsset Template
@@ -224,21 +232,25 @@ namespace Amanita.VScripting.EditorUtils
             get { return _template; }
         }
 
-        public virtual Type VarContentType
-        {
-            get
-            {
-                if (_currentVariable == null)
-                {
-                    return null;
-                }
-                return _currentVariable.ContentType;
-            }
-        }
+        
     }
 
+    public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
+    {
+        public RowVisualHandler()
+        {
+            // Caching it to reduce GC cruft
+            _varContentType = typeof(TVarContentType);
+        }
+
+        protected Type _varContentType;
+        public override Type VarContentType
+        {
+            get { return _varContentType; }
+        }
+    }
     [RowVisualHandler("Primitives", typeof(float), "Float", "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
-    public class FloatRowVisualHandler : RowVisualHandler
+    public class FloatRowVisualHandler : RowVisualHandler<float>
     {
         protected override void RegisterVisualElements()
         {
@@ -262,8 +274,7 @@ namespace Amanita.VScripting.EditorUtils
     }
 
     [RowVisualHandler("Misc", typeof(System.Object), "Generic", "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
-    public class DefaultRowVisualHandler : RowVisualHandler
+    public class DefaultRowVisualHandler : RowVisualHandler<System.Object>
     {
-
     }
 }

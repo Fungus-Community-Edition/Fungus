@@ -18,7 +18,6 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         protected IRowVisualHandlerResolver _handlerResolver;
-
         #region Visual Handler Type Management
 
         [InitializeOnLoadMethod]
@@ -36,12 +35,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             visualHandlerLookup.Clear();
 
+            Type rvHandlerGeneralType = typeof(RowVisualHandler);
             allVisualHandlerTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
-                .Where(t =>
-                    typeof(RowVisualHandler).IsAssignableFrom(t) &&
-                    !t.IsAbstract &&
-                    t.GetCustomAttribute<RowVisualHandlerAttribute>() != null
+                .Where(typeToCheck =>
+                    rvHandlerGeneralType.IsAssignableFrom(typeToCheck) &&
+                    !typeToCheck.IsAbstract &&
+                    typeToCheck.GetCustomAttribute<RowVisualHandlerAttribute>() != null
                 );
 
             foreach (var handlerType in allVisualHandlerTypes)
@@ -56,8 +56,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected static IEnumerable<Type> allVisualHandlerTypes;
 
-        // Keys are var content types, values are the types of the visual handlers meant for 
-        // the corresponding keys
+        // Keys are var content types (like for floats, ints, etc), values are the types
+        // of the visual handlers meant for the corresponding keys
         protected static IDictionary<Type, Type> visualHandlerLookup = new Dictionary<Type, Type>(new TypeNameComparer());
 
         class TypeNameComparer : IEqualityComparer<Type>
@@ -68,7 +68,6 @@ namespace Amanita.VScripting.EditorUtils
             public int GetHashCode(Type t)
               => t.AssemblyQualifiedName.GetHashCode();
         }
-
 
         #endregion
 
@@ -101,6 +100,7 @@ namespace Amanita.VScripting.EditorUtils
             _countLabel = initArgs.CountLabel;
             _addButton = initArgs.AddButton;
             _flowchart = initArgs.Flowchart;
+            _handlerPool = new RowVisualHandlerPool(_handlerResolver, visualHandlerLookup);
             ListenForEvents();
             Refresh();
         }
@@ -112,6 +112,7 @@ namespace Amanita.VScripting.EditorUtils
         protected UITKLabel _countLabel;
         protected Button _addButton;
         protected VisualElement _listContainer;
+        protected RowVisualHandlerPool _handlerPool;
 
         public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
         {
@@ -162,17 +163,19 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void AddOrReuseRow(IVariable varThatNeedsRow)
         {
-            VariableRow rowToUse = GetVarRow();
+            VariableRow rowToUse = FetchOrCreateVarRow();
             // ^The var rows don't care what type we are about to ask them to represent.
             // That's for the visual-handlers to worry about, hence us not fetching rows
             // based on content type
-            IRowVisualHandler handler = GetHandlerFor(varThatNeedsRow.ContentType);
+            
+            IRowVisualHandler handler = _handlerPool.GetHandlerFor(varThatNeedsRow.ContentType,
+                _holdsManager, varThatNeedsRow);
             rowToUse.Init(_holdsManager, varThatNeedsRow, handler);
             _listContainer.Add(rowToUse.RootElement);
             _rowsBeingShown.Add(rowToUse);
         }
 
-        protected virtual VariableRow GetVarRow()
+        protected virtual VariableRow FetchOrCreateVarRow()
         {
             VariableRow result;
             if (_rowPool.Count > 0)
@@ -201,23 +204,20 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void RemoveRowFor(IVariable varToRemoveFor)
         {
-            // If we get passed a null, then chances are tht something in the
+            // If we get passed a null, then chances are that something in the
             // Undo/Redo functionality made it so. Thus, we would remove all
             // rows that have null vars assigned
-            IList<VariableRow> allToRemove = (from elem in _allRows
-                                              where elem.VarToRepresent == varToRemoveFor
-                                              select elem).ToList();
+            VariableRow rowToRemove = (from elem in _allRows
+                                       where elem.VarToRepresent == varToRemoveFor
+                                       select elem).First();
 
-            foreach (VariableRow rowToRemove in allToRemove)
-            {
-                _ourRoot?.Remove(rowToRemove.RootElement);
-                _listContainer.Remove(rowToRemove.RootElement);
-                var handler = rowToRemove.VisualHandler;
-                rowToRemove.Dispose();
-                _handlerPool.Add(handler);
-                _rowPool.Add(rowToRemove);
-                _rowsBeingShown.Remove(rowToRemove);
-            }
+            _ourRoot?.Remove(rowToRemove.RootElement);
+            _listContainer.Remove(rowToRemove.RootElement);
+            rowToRemove.Dispose(); // Should also dispose the handler
+            var handler = rowToRemove.VisualHandler;
+            _handlerPool.ReleaseHandler(handler);
+            _rowPool.Add(rowToRemove);
+            _rowsBeingShown.Remove(rowToRemove);
         }
 
         public void Refresh()
@@ -244,36 +244,6 @@ namespace Amanita.VScripting.EditorUtils
             _rowPool.AddRange(_allRows);
         }
 
-        protected readonly IList<IRowVisualHandler> _handlerPool = new List<IRowVisualHandler>();
-
-        protected virtual IRowVisualHandler GetHandlerFor(Type contentType)
-        {
-            Type handlerType = _handlerResolver.ResolveHandler(visualHandlerLookup, contentType);
-
-            IRowVisualHandler result = (from elem in _handlerPool
-                                        where elem.VarContentType == contentType
-                                        select elem).LastOrDefault();
-
-            bool foundOneInThePool = result != null;
-            if (foundOneInThePool)
-            {
-                _handlerPool.Remove(result);
-            }
-            else
-            {
-                result = CreateNewHandlerFor(handlerType);
-            }
-
-            static IRowVisualHandler CreateNewHandlerFor(Type handlerType)
-            {
-                IRowVisualHandler result = (IRowVisualHandler)Activator.CreateInstance(handlerType);
-                return result;
-            }
-
-            return result;
-        }
-
-        
         public virtual void Dispose()
         {
             DeregisterCallbacks();
@@ -291,6 +261,27 @@ namespace Amanita.VScripting.EditorUtils
             _addButton = null;
             _listContainer = null;
         }
+
+        public virtual VariableRow GetVisibleRowAt(int index)
+        {
+            if (_rowsBeingShown.Count > index)
+            {
+                return _rowsBeingShown[index];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #region For Testing Only
+#if UNITY_EDITOR
+        public int PooledRowCount => _rowPool.Count;
+        public int PooledHandlerCount => _handlerPool.PooledHandlerCount;
+        public RowVisualHandlerPool HandlerPool => _handlerPool;
+#endif
+
+#endregion
     }
 
     /// <summary>

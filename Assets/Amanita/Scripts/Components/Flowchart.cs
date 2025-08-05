@@ -213,6 +213,10 @@ namespace Amanita.VScripting
             
         }
 
+        /// <summary>
+        /// Specifically for legacy variables.
+        /// </summary>
+        /// <param name="index"></param>
         public virtual void RemoveVariable(int index)
         {
             if (index >= 0 && index < variables.Count)
@@ -220,6 +224,32 @@ namespace Amanita.VScripting
                 IVariable toRemove = variables[index];
                 variables.RemoveAt(index);
                 VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveMuscariable(int index)
+        {
+            if (index >= 0 && index < muscariables.Count)
+            {
+                IVariable toRemove = muscariables[index];
+                muscariables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveVariable(IVariable toRemove)
+        {
+            int index;
+            if (variables.Contains(toRemove))
+            {
+                index = variables.IndexOf(toRemove as Variable);
+                RemoveVariable(index);
+            }
+
+            if (muscariables.Contains(toRemove))
+            {
+                index = muscariables.IndexOf(toRemove as Muscariable);
+                RemoveMuscariable(index);
             }
         }
 
@@ -237,11 +267,16 @@ namespace Amanita.VScripting
 
         protected virtual void GetAndInitVars()
         {
+            // Muscariables get automatically serialized as part of the list, and thus 
+            // we don't need anything like GetComponentsInChildren for them
             variables = GetComponentsInChildren<Variable>().ToList();
-            for (int i = 0; i < variables.Count; i++)
+            IList<IVariable> allVars = variables.Cast<IVariable>()
+                .Concat(muscariables.Cast<IVariable>())
+                .ToList();
+            for (int i = 0; i < allVars.Count; i++)
             {
-                var currentVar = variables[i];
-                currentVar.Init(currentVar.GetValue());
+                var currentVar = allVars[i];
+                currentVar.Init();
             }
         }
 
@@ -557,7 +592,10 @@ namespace Amanita.VScripting
         {
             get
             {
-                IList<IVariable> copyOfList = new List<IVariable>(variables);
+                IList<IVariable> copyOfList = variables.Cast<IVariable>()
+                    .Concat(muscariables.Cast<IVariable>())
+                    .ToList();
+
                 return copyOfList;
             }
         }
@@ -1652,7 +1690,7 @@ namespace Amanita.VScripting
         /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
         /// </summary>
         /// <param name="toRemove"></param>
-        public virtual void RemoveMuscariable(Muscariable toRemove)
+        public virtual void RemoveVariable(Muscariable toRemove)
         {
             if (muscariables.Contains(toRemove))
             {
@@ -1815,9 +1853,17 @@ namespace Amanita.VScripting
             return newVar;
         }
 
-        public virtual void AddVariable(Variable toAdd)
+        public virtual void AddVariable(IVariable toAdd)
         {
-            variables.Add(toAdd);
+            if (toAdd is Variable legacyVar)
+            {
+                variables.Add(legacyVar);
+            }
+            else if (toAdd is Muscariable muscaVar)
+            {
+                muscariables.Add(muscaVar);
+            }
+
             VariableAdded(toAdd);
         }
 

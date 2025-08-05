@@ -230,6 +230,7 @@ namespace Amanita.VScripting
 
     public interface IVariable : IHasKey
     {
+        void Init();
         new string Key { get; set; }
         object Value { get; set; }
         VariableScope Scope { get; }

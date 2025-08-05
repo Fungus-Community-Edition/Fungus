@@ -11,22 +11,19 @@ namespace Amanita.Tests
         typeof(Animal),
         "Animal",
         "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
-    class AnimalHandler : RowVisualHandler
-    {
-        
-    }
+    class AnimalHandler : RowVisualHandler<Animal> { }
 
     [RowVisualHandler("Testing",
         typeof(Mammal),
         "Mammal",
         "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
-    class MammalHandler { }
+    class MammalHandler : RowVisualHandler<Mammal> { }
 
     [RowVisualHandler("Testing",
         typeof(Dog),
         "Dog",
         "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
-    class DogHandler { }
+    class DogHandler : RowVisualHandler<Dog> { }
 
     // We already have a default handler in the actual editor namespace, so no need to define it here
 
