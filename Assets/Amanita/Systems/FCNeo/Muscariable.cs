@@ -44,7 +44,6 @@ namespace Amanita.VScripting
             this.scope = scope;
         }
 
-        public virtual Type ValueType { get { return ContentType; } }
         public abstract System.Type ContentType { get; }
         // ^So clients can see the type even through this non-generic interface
 
@@ -231,11 +230,18 @@ namespace Amanita.VScripting
 
     public interface IVariable : IHasKey
     {
+        void Init();
         new string Key { get; set; }
         object Value { get; set; }
         VariableScope Scope { get; }
         int ItemID { get; set; }
-        Type ValueType { get; }
+
+        /// <summary>
+        /// The type of the value that this is meant to represent. It's like how Funguns
+        /// FloatVariables represent float, Fungus StringVariables represent strings,
+        /// so on so forth.
+        /// </summary>
+        Type ContentType { get; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>

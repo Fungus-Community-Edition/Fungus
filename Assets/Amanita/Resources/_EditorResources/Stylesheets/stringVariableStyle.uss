@@ -1,0 +1,16 @@
+.varRowTypeLabel
+{
+	background-color: #324062;
+}
+
+.textField
+{
+	-unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+	color: rgb(229, 229, 229);
+	font-size: 18px;
+}
+
+.textField > #unity-text-input
+{
+	background-color: rgb(26, 26, 26);
+}

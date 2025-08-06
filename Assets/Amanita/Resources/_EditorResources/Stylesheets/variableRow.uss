@@ -19,7 +19,8 @@
     font-size: 14px;
 }
 
-.keyInput {
+.keyInput
+{
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
