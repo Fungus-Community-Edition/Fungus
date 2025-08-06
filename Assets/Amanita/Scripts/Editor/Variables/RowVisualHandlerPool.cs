@@ -66,6 +66,8 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        public Dictionary<Type, Stack<IRowVisualHandler>> PoolMap => _poolMap;
+
         public virtual void Clear()
         {
             foreach (var stackEl in _poolMap.Values)

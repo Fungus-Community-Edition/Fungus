@@ -3,11 +3,13 @@ using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
+using Type = System.Type;
 
 namespace Amanita.Tests.Editor
 {
@@ -18,6 +20,7 @@ namespace Amanita.Tests.Editor
         {
             PrepFlowchart();
             PrepUIElements();
+            DoPreTestAssumptions();
         }
 
         protected virtual void PrepUIElements()
@@ -26,9 +29,6 @@ namespace Amanita.Tests.Editor
             _listContainer = new VisualElement();
             _countLabel = new UITKLabel();
             _addButton = new Button();
-
-            _handlerResolver = new RowVisualHandlerResolver();
-            _rowManager = new VariableRowManager(_handlerResolver);
 
             VariableRowInitArgs args = new VariableRowInitArgs()
             {
@@ -41,8 +41,8 @@ namespace Amanita.Tests.Editor
 
             _handlerResolver = new RowVisualHandlerResolver();
             _rowManager = new VariableRowManager(_handlerResolver);
-
             _rowManager.Init(args);
+            _handlerPool = _rowManager.HandlerPool;
         }
 
         protected VisualElement _root;
@@ -51,6 +51,7 @@ namespace Amanita.Tests.Editor
         protected Button _addButton;
         protected IRowVisualHandlerResolver _handlerResolver;
         protected VariableRowManager _rowManager;
+        protected RowVisualHandlerPool _handlerPool;
 
         protected virtual void PrepFlowchart()
         {
@@ -59,12 +60,16 @@ namespace Amanita.Tests.Editor
 
             var floatVar = _fcHolder.AddComponent<FloatVariable>();
             floatVar.Key = "floatVar";
+
             var stringVar =_fcHolder.AddComponent<StringVariable>();
             stringVar.Key = "stringVar";
+
             var intVar = _fcHolder.AddComponent<IntegerVariable>();
             intVar.Key = "intVar";
+
             var goVar = _fcHolder.AddComponent<GameObjectVariable>();
             goVar.Key = "goVar";
+
             var boolVar = _fcHolder.AddComponent<BooleanVariable>();
             boolVar.Key = "boolVar";
 
@@ -91,6 +96,14 @@ namespace Amanita.Tests.Editor
             }
         }
 
+        protected virtual void DoPreTestAssumptions()
+        {
+            var handlerPool = _rowManager.HandlerPool;
+            int expectedHandlersInPool = 0;
+            Assume.That(handlerPool.PooledHandlerCount == expectedHandlersInPool,
+                "Handler count doesn't start as 0");
+        }
+
         [TearDown]
         public virtual void TearDown()
         {
@@ -104,11 +117,6 @@ namespace Amanita.Tests.Editor
         [Test]
         public virtual void VarRemovalReturnsRowsAndHandlersToPool()
         {
-            int pooledRows = _rowManager.PooledRowCount, pooledHandlers = _rowManager.PooledHandlerCount;
-            bool poolsStartEmpty = pooledRows == 0 && pooledHandlers == 0;
-            Assert.IsTrue(poolsStartEmpty, $"The pooled rows don't start empty. Pooled row count: {pooledRows}, " +
-                $"pooled handler count: {pooledHandlers}");
-
             var toRemove = new IVariable[] 
             {
                 // Both of these should be from the init setup
@@ -196,25 +204,24 @@ namespace Amanita.Tests.Editor
         [Test]
         public void RowsAddedOnVariableAdditions()
         {
-            // initially, no vars → no rows
+            // initially, no vars = no rows
             _flowchart.ClearVariables();
-            Assert.AreEqual(0, _listContainer.childCount);
-            Assert.AreEqual("0", _countLabel.text);
+            int expectedRowCount = 0;
+            Assert.AreEqual(expectedRowCount, _listContainer.childCount);
+            Assert.AreEqual(expectedRowCount.ToString(), _countLabel.text);
 
-            // add one variable
             _flowchart.AddNewVariable<float, FloatVariable>("floatVar1");
+            expectedRowCount += 1; // The manager should've responded to the var addition, adding just one row
 
-            // manager should have heard the event and added exactly one row
-            Assert.AreEqual(1, _listContainer.childCount);
-            Assert.AreEqual("1", _countLabel.text);
+            Assert.AreEqual(expectedRowCount, _listContainer.childCount);
+            Assert.AreEqual(expectedRowCount.ToString(), _countLabel.text);
 
-            // add two more
             _flowchart.AddNewVariable<int, IntegerVariable>("intVar1");
             _flowchart.AddNewVariable<string, StringVariable>("stringVar1");
+            expectedRowCount += 2;
 
-            // now 3 total
-            Assert.AreEqual(3, _listContainer.childCount);
-            Assert.AreEqual("3", _countLabel.text);
+            Assert.AreEqual(expectedRowCount, _listContainer.childCount);
+            Assert.AreEqual(expectedRowCount.ToString(), _countLabel.text);
         }
 
         [Test]
@@ -334,19 +341,14 @@ namespace Amanita.Tests.Editor
         [Test]
         public void ReleaseHandler_ResetsHandlerState()
         {
-            var handlerPool = _rowManager.HandlerPool;
-            int expectedHandlersInPool = 0;
-            Assume.That(handlerPool.PooledHandlerCount == expectedHandlersInPool,
-                "Handler count doesn't start as 0");
-
             _flowchart.ClearVariables();
-            expectedHandlersInPool = _initVars.Count;
-            Assume.That(handlerPool.PooledHandlerCount == expectedHandlersInPool,
+            int expectedHandlersInPool = _initVars.Count;
+            Assume.That(_handlerPool.PooledHandlerCount == expectedHandlersInPool,
                 "Pool doesn't get all its handlers back after a full-on row-clear");
             
             IntegerVariable firstIntVar = _flowchart.AddNewVariable<int, IntegerVariable>("i1");
             expectedHandlersInPool--;
-            Assume.That(expectedHandlersInPool == handlerPool.PooledHandlerCount,
+            Assume.That(expectedHandlersInPool == _handlerPool.PooledHandlerCount,
                 "Handler count should be one less that the full amount when only one row should be 'visible'");
 
             var firstRow = _rowManager.GetVisibleRowAt(0);
@@ -368,6 +370,67 @@ namespace Amanita.Tests.Editor
             Assert.AreEqual("i2", reusedHandler.Variable.Key, "After reuse, the handler doesn't point to the second var");
         }
 
+        [Test]
+        public void PoolsAreSeparatePerHandlerType()
+        {
+            _flowchart.ClearVariables();
+
+            _flowchart.AddNewVariable<float, FloatVariable>("f");
+            _flowchart.AddNewVariable<string, StringVariable>("s");
+
+            // Remove both
+            foreach (var v in _flowchart.Variables.ToArray())
+                _flowchart.RemoveVariable(v);
+
+            // Pools should have 1 float‐handler and 1 string‐handler
+            // You can reflect into the pool map
+            var poolMap = _handlerPool.PoolMap;
+
+            Assert.IsTrue(poolMap.ContainsKey(typeof(FloatRowVisualHandler)),
+                "There is no dedicated pool for FloatRowVisualHandlers");
+            Assert.IsTrue(poolMap.ContainsKey(typeof(DefaultRowVisualHandler)),
+                "There is no dedicated pool for DefaultRowVisualHandlers"); // string uses default
+
+            int floatVisualHandlerCount = poolMap[typeof(FloatRowVisualHandler)].Count;
+            int defaultRowVisualHandlerCount = poolMap[typeof(DefaultRowVisualHandler)].Count;
+
+            // We have 5 vars prepped in set up, 4 of which (at this time) should get us a default vis handler.
+            // 1 should get us a float vis handler
+            int expectedFloatHandlerCount = 1, expectedDefaultHandlerCount = 4;
+            Assert.AreEqual(expectedFloatHandlerCount, floatVisualHandlerCount,
+                $"Expected {expectedFloatHandlerCount} float visual handler, got {floatVisualHandlerCount}");
+            Assert.AreEqual(expectedDefaultHandlerCount, defaultRowVisualHandlerCount,
+                $"Expected {expectedDefaultHandlerCount} default visual handler(s), got {defaultRowVisualHandlerCount}");
+        }
+
+        [Test]
+        public void Refresh_ClearsAndRegeneratesRowsCorrectly()
+        {
+            _flowchart.ClearVariables();
+
+            _flowchart.AddNewVariable<bool, BooleanVariable>("b1");
+            _flowchart.AddNewVariable<int, IntegerVariable>("i1");
+            _rowManager.Refresh();
+
+            Assert.AreEqual(2, _listContainer.childCount);
+            Assert.AreEqual("2", _countLabel.text);
+
+            // In setup, we add vars that leads to there being _initVars.Count handlers. After we
+            // clear the flowchart and add 2 vars, that means only two rows should
+            // be outside the pool. 
+            int expectedPooledRowCount = _initVars.Count - 2;
+            Assert.AreEqual(expectedPooledRowCount, _rowManager.PooledRowCount, 
+                $"We expected only {expectedPooledRowCount} left in the pool after adding " +
+                $"those two vars. Instead, we got {_rowManager.PooledRowCount}");
+
+            // Act: clear flowchart and refresh again
+            _flowchart.ClearVariables();
+            _rowManager.Refresh();
+
+            Assert.AreEqual(0, _listContainer.childCount);
+            Assert.AreEqual("0", _countLabel.text);
+            Assert.AreEqual(_initVars.Count, _rowManager.PooledRowCount);
+        }
     }
 
 

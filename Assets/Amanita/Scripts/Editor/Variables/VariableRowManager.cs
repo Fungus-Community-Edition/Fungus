@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -163,37 +164,21 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void AddOrReuseRow(IVariable varThatNeedsRow)
         {
-            VariableRow rowToUse = FetchOrCreateVarRow();
+            VariableRow rowToUse = _rowPool.GetOrCreate();
             // ^The var rows don't care what type we are about to ask them to represent.
             // That's for the visual-handlers to worry about, hence us not fetching rows
             // based on content type
-            
+
             IRowVisualHandler handler = _handlerPool.GetHandlerFor(varThatNeedsRow.ContentType,
                 _holdsManager, varThatNeedsRow);
             rowToUse.Init(_holdsManager, varThatNeedsRow, handler);
             _listContainer.Add(rowToUse.RootElement);
             _rowsBeingShown.Add(rowToUse);
+            _allRows.Add(rowToUse);
         }
 
-        protected virtual VariableRow FetchOrCreateVarRow()
-        {
-            VariableRow result;
-            if (_rowPool.Count > 0)
-            {
-                result = _rowPool.Last();
-                _rowPool.Remove(result);
-            }
-            else
-            {
-                result = new VariableRow();
-                _allRows.Add(result);
-            }
-
-            return result;
-        }
-
-        protected readonly IList<VariableRow> _rowPool = new List<VariableRow>();
-        protected readonly IList<VariableRow> _allRows = new List<VariableRow>();
+        protected readonly VariableRowPool _rowPool = new VariableRowPool();
+        protected readonly HashSet<VariableRow> _allRows = new HashSet<VariableRow>();
         protected readonly IList<VariableRow> _rowsBeingShown = new List<VariableRow>();
 
         protected virtual void OnVariableRemoved(IVariable removed)
@@ -216,13 +201,14 @@ namespace Amanita.VScripting.EditorUtils
             rowToRemove.Dispose(); // Should also dispose the handler
             var handler = rowToRemove.VisualHandler;
             _handlerPool.ReleaseHandler(handler);
-            _rowPool.Add(rowToRemove);
+            _rowPool.Release(rowToRemove);
             _rowsBeingShown.Remove(rowToRemove);
         }
 
         public void Refresh()
         {
             ClearAllRows();
+            HideAndReturnAllRowsToPool();
             IList<IVariable> fcVars = _flowchart.Variables;
             _countLabel.text = fcVars.Count.ToString();
             foreach (var varToShow in fcVars)
@@ -239,15 +225,20 @@ namespace Amanita.VScripting.EditorUtils
             {
                 row.Clear();
             }
+        }
 
+        protected virtual void HideAndReturnAllRowsToPool()
+        {
+            _rowsBeingShown.Clear();
             _listContainer.Clear();
-            _rowPool.AddRange(_allRows);
+            _rowPool.ReleaseRange(_allRows);
         }
 
         public virtual void Dispose()
         {
             DeregisterCallbacks();
             ClearAllRows();
+            HideAndReturnAllRowsToPool();
             _rowPool.Clear();
             _allRows.Clear();
             if (_ourRoot != null)
