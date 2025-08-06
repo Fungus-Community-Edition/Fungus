@@ -456,6 +456,78 @@ namespace Amanita.Tests.Editor
                 $"Expected the count label to say 0, but instead it says {_countLabel.text}");
         }
 
+        [Test]
+        public void Init_CanBeCalledMultipleTimesSafely()
+        {
+            // Given what we do in SetUp, this test's first init is the session's second init
+            VisualElement newRoot, newList;
+            UITKLabel newLabel;
+            Button newAddButton;
+            Flowchart newFC;
+            GameObject newFCHolder;
+
+            Flowchart secondFC = ApplyNewInitToManager();
+            Flowchart ApplyNewInitToManager()
+            {
+                newRoot = new VisualElement();
+                newList = new VisualElement();
+                newLabel = new UITKLabel();
+                newAddButton = new Button();
+                var fcsInScene = UnityObject.FindObjectsOfType<Flowchart>(); 
+                // ^Keeping this obsolete func call; we want compatibility with 2022 LTS
+                int fcCount = fcsInScene.Length;
+                newFCHolder = new GameObject($"FC_{fcCount.ToString("D2")}");
+                newFC = newFCHolder.AddComponent<Flowchart>();
+
+                var newInitArgs = new VariableRowInitArgs
+                {
+                    Root = newRoot,
+                    ListContainer = newList,
+                    CountLabel = newLabel,
+                    AddButton = newAddButton,
+                    Flowchart = newFC
+                };
+                _rowManager.Init(newInitArgs);
+
+                Assert.That(newList.childCount == 0, $"List #{fcCount} has children despite the new init");
+                Assert.That(_rowManager.VisibleRowCount == 0, $"The manager (after we created List #{fcCount}) has " +
+                    $"visible rows despite the new init");
+
+                return newFC;
+            }
+
+            VisualElement secondList = newList;
+
+            secondFC.AddNewVariable<bool, BooleanVariable>("var1");
+            Assert.AreEqual(1, secondList.childCount, 
+                $"Adding a var after the first init doesn't get us the right child count. " +
+                $"List child count: {secondList.childCount}");
+
+            Flowchart thirdFC = ApplyNewInitToManager();
+            VisualElement thirdList = newList;
+
+            // Adding vars to the first flowchart should not affect the second or third roots
+            _flowchart.AddNewVariable<bool, BooleanVariable>("z");
+            Assert.AreEqual(1, secondList.childCount, $"Adding a var to the first FC " +
+                $"changed the child count of the second list. Second list " +
+                $"child count: {secondList.childCount}");
+
+            Assert.AreEqual(0, thirdList.childCount, $"Adding a var to the first FC " +
+                $"changed the child count of the third list. Second list " +
+                $"child count: {thirdList.childCount}");
+
+            // Adding to the third Flowchart only affects the third root
+            thirdFC.AddNewVariable<bool, BooleanVariable>("w");
+
+            Assert.AreEqual(1, secondList.childCount, $"Adding a var to the third FC " +
+                $"changed the child count of the second list. Second list " +
+                $"child count: {secondList.childCount}");
+
+            Assert.AreEqual(1, thirdList.childCount, $"Adding a var to the third FC " +
+                $"changed the child count of the third list. Second list " +
+                $"child count: {thirdList.childCount}");
+        }
+
     }
 
 }
