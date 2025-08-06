@@ -431,7 +431,31 @@ namespace Amanita.Tests.Editor
             Assert.AreEqual("0", _countLabel.text);
             Assert.AreEqual(_initVars.Count, _rowManager.PooledRowCount);
         }
-    }
 
+        [Test]
+        public void Dispose_ClearsAllAndUnsubscribes()
+        {
+            _flowchart.ClearVariables();
+            _flowchart.AddNewVariable<float, FloatVariable>("x");
+            Assert.AreEqual(1, _listContainer.childCount);
+
+            _rowManager.Dispose();
+
+            // UI is cleared
+            Assert.AreEqual(0, _listContainer.childCount, 
+                $"Expected nothing in the list container, but we got {_listContainer.childCount}");
+            Assert.AreEqual(0, _rowManager.PooledRowCount,
+                $"Expected no more rows pooled, but we got {_rowManager.PooledRowCount}");
+            Assert.AreEqual(0, _rowManager.PooledHandlerCount,
+                $"Expected no more handlers pooled, but we got {_rowManager.PooledHandlerCount}");
+
+            // Further adds/removes have no effect
+            _flowchart.AddNewVariable<int, IntegerVariable>("y");
+            Assert.AreEqual(0, _listContainer.childCount);
+            Assert.AreEqual("0", _countLabel.text,
+                $"Expected the count label to say 0, but instead it says {_countLabel.text}");
+        }
+
+    }
 
 }

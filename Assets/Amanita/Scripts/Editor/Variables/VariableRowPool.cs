@@ -12,9 +12,9 @@ namespace Amanita.VScripting.EditorUtils
         {
             VariableRow result;
 
-            if (_rows.Count > 0)
+            if (_rowsPooled.Count > 0)
             {
-                result = _rows.Pop();
+                result = _rowsPooled.Pop();
             }
             else
             {
@@ -24,21 +24,7 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
-        protected readonly Stack<VariableRow> _rows = new Stack<VariableRow>();
-
-        /// <summary>
-        /// Disposes and returns the row to this pool
-        /// </summary>
-        public void Release(VariableRow row)
-        {
-            if (!_rows.Contains(row))
-            {
-                row.Dispose();
-                _rows.Push(row);
-            }
-        }
-
-        public int Count => _rows.Count;
+        protected readonly Stack<VariableRow> _rowsPooled = new Stack<VariableRow>();
 
         public virtual void ReleaseRange(IEnumerable<VariableRow> rows)
         {
@@ -47,6 +33,20 @@ namespace Amanita.VScripting.EditorUtils
                 Release(row);
             }
         }
+
+        /// <summary>
+        /// Disposes and returns the row to this pool
+        /// </summary>
+        public void Release(VariableRow row)
+        {
+            if (!_rowsPooled.Contains(row))
+            {
+                row.Dispose();
+                _rowsPooled.Push(row);
+            }
+        }
+
+        public int Count => _rowsPooled.Count;
 
         public virtual void ReleaseRange(IList<VariableRow> rows)
         {
@@ -59,13 +59,12 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Clear()
         {
-            foreach (var row in _rows)
+            foreach (var rowToClear in _rowsPooled)
             {
-                row.Clear();
-                row.Dispose();
+                rowToClear.Dispose(); // Disposal implies clearing
             }
 
-            _rows.Clear();
+            _rowsPooled.Clear();
         }
     }
 }

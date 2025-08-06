@@ -77,6 +77,7 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public virtual void Init(VisualElement holderRoot, VisualTreeAsset template, Flowchart flowchart = null)
         {
+            _isDisposed = false;
             DeregisterCallbacks(); // In case we are switching Flowcharts
 
             this._holdsManager = holderRoot; // At this time, we expect this to be the root for the FlowchartWindow
@@ -93,8 +94,11 @@ namespace Amanita.VScripting.EditorUtils
             Refresh();
         }
 
+        protected bool _isDisposed;
+
         public virtual void Init(VariableRowInitArgs initArgs)
         {
+            _isDisposed = false;
             DeregisterCallbacks();
             _holdsManager = initArgs.Root;
             _listContainer = initArgs.ListContainer;
@@ -196,18 +200,19 @@ namespace Amanita.VScripting.EditorUtils
                                        where elem.VarToRepresent == varToRemoveFor
                                        select elem).First();
 
+            // Visuals
             _ourRoot?.Remove(rowToRemove.RootElement);
             _listContainer.Remove(rowToRemove.RootElement);
-            rowToRemove.Dispose(); // Should also dispose the handler
-            var handler = rowToRemove.VisualHandler;
-            _handlerPool.ReleaseHandler(handler);
-            _rowPool.Release(rowToRemove);
             _rowsBeingShown.Remove(rowToRemove);
+
+            // Pooling
+            var handler = rowToRemove.VisualHandler;
+            _handlerPool.Release(handler);
+            _rowPool.Release(rowToRemove);
         }
 
         public void Refresh()
         {
-            ClearAllRows();
             HideAndReturnAllRowsToPool();
             IList<IVariable> fcVars = _flowchart.Variables;
             _countLabel.text = fcVars.Count.ToString();
@@ -232,14 +237,21 @@ namespace Amanita.VScripting.EditorUtils
             _rowsBeingShown.Clear();
             _listContainer.Clear();
             _rowPool.ReleaseRange(_allRows);
+
         }
 
         public virtual void Dispose()
         {
+            if (_isDisposed )
+            {
+                return;
+            }
+
             DeregisterCallbacks();
-            ClearAllRows();
             HideAndReturnAllRowsToPool();
+            _countLabel.text = "0";
             _rowPool.Clear();
+            _handlerPool.Clear();
             _allRows.Clear();
             if (_ourRoot != null)
             {
@@ -247,10 +259,11 @@ namespace Amanita.VScripting.EditorUtils
                 _holdsManager = null;
                 _ourRoot = null;
             }
-            
+
             _countLabel = null;
             _addButton = null;
             _listContainer = null;
+            _isDisposed = true;
         }
 
         public virtual VariableRow GetVisibleRowAt(int index)

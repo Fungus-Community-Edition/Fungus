@@ -79,8 +79,14 @@ namespace Amanita.VScripting.EditorUtils
 #endif
         #endregion
 
-
-        public void ReleaseHandler(IRowVisualHandler handler)
+        public virtual void ReleaseRange(IEnumerable<IRowVisualHandler> toRelease)
+        {
+            foreach (var elem in toRelease)
+            {
+                Release(elem);
+            }
+        }
+        public void Release(IRowVisualHandler handler)
         {
             PrepHandlerForReuse();
             void PrepHandlerForReuse()
@@ -107,6 +113,14 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             stack.Push(handler);
+        }
+
+        public virtual void ReleaseIn(IEnumerable<VariableRow> rows)
+        {
+            foreach (var row in rows)
+            {
+                Release(row.VisualHandler);
+            }
         }
     }
 }

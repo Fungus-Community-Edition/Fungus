@@ -14,6 +14,7 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Init(VisualElement holder, IVariable toRepresent,
             IRowVisualHandler nonInitializedHandler)
         {
+            _isDisposed = false;
             _holder = holder;
             _varToRepresent = toRepresent;
             VisualHandler = nonInitializedHandler;
@@ -21,6 +22,7 @@ namespace Amanita.VScripting.EditorUtils
             VisualHandler.Refresh();
         }
 
+        protected bool _isDisposed;
         protected VisualElement _holder;
         protected IVariable _varToRepresent;
         public IRowVisualHandler VisualHandler { get; protected set; }
@@ -74,11 +76,16 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Dispose()
         {
-            this.VarToRepresent = null;
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            Clear();
+            VisualHandler.Dispose();
             _flowchart = null;
             _varToRepresent = null;
             _holder = null;
-            VisualHandler.Dispose();
         }
 
     }

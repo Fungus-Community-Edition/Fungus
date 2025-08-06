@@ -44,10 +44,14 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
+
+            _isDisposed = false;
             _holder = rowHolder;
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
         }
+
+        protected bool _isDisposed;
 
         protected virtual void ReadyTheTemplate()
         {
@@ -224,6 +228,11 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Dispose()
         {
+            if (_isDisposed)
+            {
+                return;
+            }
+
             Reset(); // So pooling can call either
         }
 
@@ -232,7 +241,6 @@ namespace Amanita.VScripting.EditorUtils
             get { return _template; }
         }
 
-        
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
