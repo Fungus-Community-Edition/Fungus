@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
+    [Muscariable("Physics/Vector", typeof(Vector2), "VectorTwo")]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
         public override bool IsArithmeticSupported => true;
@@ -141,6 +142,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
+    [Muscariable("Physics/Vector", typeof(Vector3), "VectorThree")]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
         public override bool IsArithmeticSupported => true;

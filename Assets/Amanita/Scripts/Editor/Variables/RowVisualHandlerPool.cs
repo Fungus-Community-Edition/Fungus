@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -46,7 +48,6 @@ namespace Amanita.VScripting.EditorUtils
             = new Dictionary<Type, Stack<IRowVisualHandler>>();
 
         #region Just for testing
-#if UNITY_EDITOR
         /// <summary>
         /// How many handlers (of any particular IRowVisualHandler implementation)
         /// are in the pool at this time.
@@ -76,7 +77,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-#endif
         #endregion
 
         public virtual void ReleaseRange(IEnumerable<IRowVisualHandler> toRelease)
@@ -112,7 +112,10 @@ namespace Amanita.VScripting.EditorUtils
                 // whatever kind of instance you're looking for
             }
 
-            stack.Push(handler);
+            if (!stack.Contains(handler))
+            {
+                stack.Push(handler);
+            }
         }
 
         public virtual void ReleaseIn(IEnumerable<VariableRow> rows)
@@ -121,6 +124,13 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Release(row.VisualHandler);
             }
+        }
+
+        [Conditional("DEV_DIAGNOSTICS")]
+        public void DumpState()
+        {
+            foreach (var kvp in _poolMap)
+                Debug.Log($"{kvp.Key.Name}: {kvp.Value.Count} in pool");
         }
     }
 }

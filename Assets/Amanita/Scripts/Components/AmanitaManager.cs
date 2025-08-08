@@ -56,12 +56,7 @@ namespace Amanita
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 GlobalVariables = GetComponentInChildren<GlobalVariables>();
                 MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
-#if UNITY_5_3_OR_NEWER
-                //SaveManager = GetComponentInChildren<SaveManager>();
-                //SaveManager.Init();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-#endif
-
                 AudioSystem = GetComponentInChildren<AudioSystem>();
                 SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
             }

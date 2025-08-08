@@ -49,6 +49,12 @@ namespace Amanita.SaveSys
                 whereSavesAreStored = SaveDirectoryType.DataPath;
             }
 
+            if (Application.platform == RuntimePlatform.Android ||
+                Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
+            }
+
             SaveDirectoryType = whereSavesAreStored;
 
             // We assume these are valid due to what we have OnValidate do
