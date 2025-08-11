@@ -1,10 +1,9 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    /// <summary>
-    // 
-    /// </summary>
     public class VariableRowPool
     {
         public VariableRow GetOrCreate()
@@ -65,5 +64,6 @@ namespace Amanita.VScripting.EditorUtils
 
             _rowsPooled.Clear();
         }
+
     }
 }

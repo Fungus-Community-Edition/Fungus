@@ -34,29 +34,40 @@ namespace Amanita.VScripting.EditorUtils
 
         public static void RefreshHandlerLookup()
         {
+            var visHandlerType = typeof(RowVisualHandler);
+
+            // 1) Snapshot types safely (avoid ReflectionTypeLoadException)
+            var discovered = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(SafeGetTypes)
+                .Where(typeEl =>
+                    visHandlerType.IsAssignableFrom(typeEl) &&
+                    !typeEl.IsAbstract &&
+                    typeEl.GetCustomAttribute<RowVisualHandlerAttribute>() != null)
+                .ToArray(); // snapshot
+
+            // 2) Precompute the pairs outside the lock
+            var pairs = new List<KeyValuePair<Type, Type>>(discovered.Length);
+            foreach (var handlerType in discovered)
+            {
+                var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
+                pairs.Add(new KeyValuePair<Type, Type>(attr.ContentType, handlerType));
+            }
+
+            // 3) Atomic update under the lock (keep same dictionary instance)
             lock (_handlerLookupLock)
             {
                 visualHandlerLookup.Clear();
+                foreach (var kv in pairs)
+                    visualHandlerLookup[kv.Key] = kv.Value;
 
-                Type rvHandlerGeneralType = typeof(RowVisualHandler);
-                allVisualHandlerTypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
-                    .Where(typeToCheck =>
-                        rvHandlerGeneralType.IsAssignableFrom(typeToCheck) &&
-                        !typeToCheck.IsAbstract &&
-                        typeToCheck.GetCustomAttribute<RowVisualHandlerAttribute>() != null
-                    );
-
-                foreach (var handlerType in allVisualHandlerTypes)
-                {
-                    var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
-                    Type contentType = attr.ContentType;
-                    visualHandlerLookup[contentType] = handlerType;
-                }
-#if AMANITA_VERBOSE_LOGS
-                Debug.Log("RefreshHandlerLookup done");
-#endif
+                allVisualHandlerTypes = discovered; // consistent with the lookup now
             }
+        }
+
+        protected static IEnumerable<Type> SafeGetTypes(Assembly a)
+        {
+            try { return a.GetTypes(); }
+            catch (ReflectionTypeLoadException e) { return e.Types.Where(typeEl => typeEl != null); }
         }
 
         protected static IEnumerable<Type> allVisualHandlerTypes;
@@ -67,45 +78,6 @@ namespace Amanita.VScripting.EditorUtils
 
 #endregion
 
-        /// <summary>
-        /// Also meant to be called for reuse after disposing.
-        /// </summary>
-        public virtual void Init(VisualElement holderRoot, VisualTreeAsset template, Flowchart flowchart = null)
-        {
-            _isDisposed = false;
-
-            // Need to do this in case this isn't the first Init we were called for
-            CleanStatePreInit();
-
-            this._holdsManager = holderRoot; // At this time, we expect this to be the root for the FlowchartWindow
-            _ourTemplate = template;
-            _flowchart = flowchart;
-
-            _ourRoot = _ourTemplate.CloneTree();
-            _countLabel = _ourRoot.Q<UITKLabel>("varCountLabel");
-            _addButton = _ourRoot.Q<Button>("addVarButton");
-            _listContainer = _ourRoot.Q<ScrollView>("rowList");
-            _holdsManager.Add(_ourRoot);
-
-            ListenForEvents();
-            Refresh();
-        }
-
-        protected bool _isDisposed;
-
-        protected void CleanStatePreInit()
-        {
-            DeregisterCallbacks(); // In case we are switching Flowcharts
-
-            RemoveVarReferencesFromRows();
-            void RemoveVarReferencesFromRows()
-            {
-                foreach (var elem in _allRows)
-                {
-                    elem.VarToRepresent = null;
-                }
-            }
-        }
         public virtual void Init(VRowManagerInitArgs initArgs)
         {
             _isDisposed = false;
@@ -115,6 +87,8 @@ namespace Amanita.VScripting.EditorUtils
             ListenForEvents();
             Refresh();
         }
+
+        protected bool _isDisposed;
 
         protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
         {
@@ -126,7 +100,8 @@ namespace Amanita.VScripting.EditorUtils
             _flowchart = initArgs.Flowchart;
         }
 
-        protected VisualElement _holdsManager;
+        protected VisualElement _holdsManager; 
+        // ^We expect this to be FlowchartWindow or something meant to fulfill its purpose
         protected VisualTreeAsset _ourTemplate;
         protected Flowchart _flowchart;
         protected VisualElement _ourRoot;
@@ -182,6 +157,7 @@ namespace Amanita.VScripting.EditorUtils
             RefreshCountLabel();
         }
 
+        // Involves lifetime registry mutation
         protected void AddOrReuseRow(IVariable varThatNeedsRow)
         {
             VariableRow rowToUse = _rowPool.GetOrCreate();
@@ -193,17 +169,19 @@ namespace Amanita.VScripting.EditorUtils
                 _holdsManager, varThatNeedsRow);
             rowToUse.Init(_holdsManager, varThatNeedsRow, handler);
 
+#if DEV_DIAGNOSTICS
             if (rowToUse.RootElement == null)
-                Debug.LogError($"Row created with null RootElement for var '{varThatNeedsRow?.Key}'");
+                Debug.LogWarning($"Row created with null RootElement for var '{varThatNeedsRow?.Key}'");
+#endif
 
             _listContainer.Add(rowToUse.RootElement);
-            _visibleRows.Add(rowToUse);
             _allRows.Add(rowToUse);
         }
 
         protected readonly VariableRowPool _rowPool = new VariableRowPool();
         protected readonly HashSet<VariableRow> _allRows = new HashSet<VariableRow>();
-        protected readonly IList<VariableRow> _visibleRows = new List<VariableRow>();
+        // ^A sort of lifetime registry of rows, be they pooled or visible. Should only be
+        // cleared by the Dispose method
 
         protected virtual void OnVariableRemoved(IVariable removed)
         {
@@ -218,54 +196,80 @@ namespace Amanita.VScripting.EditorUtils
             // rows that have null vars assigned
             VariableRow rowToRemove = (from elem in _allRows
                                        where elem.VarToRepresent == varToRemoveFor
-                                       select elem).First();
+                                       select elem).FirstOrDefault();
 
+            if (rowToRemove == null)
+            {
+                return;
+            }
+
+#if DEV_DIAGNOSTICS
             if (rowToRemove.RootElement == null)
                 Debug.LogError($"RemoveRowFor: Row RootElement is null for var '{varToRemoveFor?.Key}'");
-
-            // Visuals
-            _listContainer.Remove(rowToRemove.RootElement);
-            _visibleRows.Remove(rowToRemove);
-
-            // Pooling
-            var handler = rowToRemove.VisualHandler;
-            _handlerPool.Release(handler);
-            _rowPool.Release(rowToRemove);
+#endif
+            ReleaseRow(rowToRemove);
         }
 
         public void Refresh()
         {
-            HideAndReturnAllRowsToPool();
-            RefreshCountLabel();
+            if (_flowchart == null)
+            {
+                return;
+            }
+
+            ReleaseAllRows();
             foreach (var varToShow in _flowchart.Variables)
                 AddOrReuseRow(varToShow);
+            RefreshCountLabel();
         }
 
         protected virtual void RefreshCountLabel()
         {
-            _countLabel.text = $"Count: {_flowchart.VariableCount}";
+            _countLabel.text = $"Count: {_listContainer.childCount}";
         }
 
-        /// <summary>
-        /// Gets all rows to stop representing vars. Also empties the list container, making
-        /// the rows return to the pool.
-        /// </summary>
-        protected void ClearAllRows()
+        protected virtual void ReleaseAllRows()
         {
-            foreach (VariableRow row in _allRows)
+            var snapshot = VisibleRows;
+            foreach (var elem in EnumerateVisibleRows())
             {
-                row.Clear();
+                ReleaseRow(elem);
             }
         }
 
-        protected virtual void HideAndReturnAllRowsToPool()
+        // Enumerates without allocation
+        public IEnumerable<VariableRow> EnumerateVisibleRows()
         {
-            _visibleRows.Clear();
-            _listContainer.Clear();
-            _rowPool.ReleaseRange(_allRows);
-
+            var container = _listContainer; // Avoids capturing the field in the iterator state
+            foreach (var row in _allRows)
+            {
+                if (row.RootElement?.parent == container)
+                    yield return row;
+            }
         }
 
+
+        protected virtual void ReleaseRow(VariableRow toRelease)
+        {
+            if (toRelease == null || toRelease.RootElement?.parent != _listContainer)
+            {
+                return;
+            }
+
+            var root = toRelease.RootElement;
+            if (root?.parent != null)
+            {
+                root.RemoveFromHierarchy();
+            }
+
+            var handler = toRelease?.VisualHandler;
+            if (handler != null)
+                _handlerPool.Release(handler);
+
+            _rowPool.Release(toRelease);
+        }
+
+        // Involves lifetime registry mutation
         public virtual void Dispose()
         {
             if (_isDisposed)
@@ -274,8 +278,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             DeregisterCallbacks();
-            HideAndReturnAllRowsToPool();
-            _countLabel.text = "Count: 0";
+            ReleaseAllRows();
+            RefreshCountLabel();
             _rowPool.Clear();
             _handlerPool.Clear();
             _allRows.Clear();
@@ -285,11 +289,10 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _holdsManager.Remove(_ourRoot);
                 }
-
-                _holdsManager = null;
-                _ourRoot = null;
             }
 
+            _holdsManager = null;
+            _ourRoot = null;
             _countLabel = null;
             _addButton = null;
             _listContainer = null;
@@ -298,9 +301,10 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual VariableRow GetVisibleRowAt(int index)
         {
-            if (_visibleRows.Count > index)
+            var rows = VisibleRows; // Best work with just one copy per call of this func for the sake of performance
+            if (rows.Count > index)
             {
-                return _visibleRows[index];
+                return rows[index];
             }
             else
             {
@@ -308,15 +312,29 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public virtual int VisibleRowCount => _visibleRows.Count;
+        public IList<VariableRow> VisibleRows =>
+            EnumerateVisibleRows().ToList();
+
+        public virtual int VisibleRowCount
+        {
+            get
+            {
+                int count = 0;
+                var container = _listContainer;
+                foreach (var row in _allRows)
+                    if (row.RootElement?.parent == container)
+                        count++;
+                return count;
+
+            }
+        }
+        // ^For performance, we're not converting things to a list before getting the count
 
         #region For Testing Only
-#if UNITY_EDITOR
         // Can't use InternalsVisibleTo on properties, so...
         public int PooledRowCount => _rowPool.Count;
         public int PooledHandlerCount => _handlerPool.PooledHandlerCount;
         public RowVisualHandlerPool HandlerPool => _handlerPool;
-#endif
 
 #endregion
     }

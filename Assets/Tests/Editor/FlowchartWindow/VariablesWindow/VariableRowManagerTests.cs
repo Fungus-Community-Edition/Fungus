@@ -2,10 +2,16 @@
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Unity.PerformanceTesting;
+using Unity.Profiling;
+using UnityEditor;
+using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
@@ -153,12 +159,9 @@ namespace Amanita.Tests.Editor
             
         }
 
-        protected SuppressLogsScope _logSuppressor;
-
         [Test]
         public virtual void CountLabel_TextUpdates_AddingVars()
         {
-            
             int currentCount = _flowchart.VariableCount;
             string expectedLabelText = string.Format(countLabelFormat, currentCount);
             Assert.AreEqual(expectedLabelText, _countLabel.text);
@@ -355,7 +358,6 @@ namespace Amanita.Tests.Editor
         [Test]
         public void GetHandlerFor_CreatesNewWhenPoolIsEmpty()
         {
-            
             // Remember: with each test, the flowchart starts with as many variables as the
             // init vars list has. This implies that the handler amount at the start is
             // equal to that same variable count. And that none of those are pooled yet.
@@ -374,8 +376,9 @@ namespace Amanita.Tests.Editor
             _flowchart.AddNewVariable<string, StringVariable>("s1");
             expectedPooledHandlerCount -= 1; // Since that string variable should've gotten one of the handlers unpooled
             Assume.That(handlerPool.PooledHandlerCount == expectedPooledHandlerCount,
-                $"The pool didn't release one handler after having multiple pooled and just one var added." +
-                $"How many the pool has: {handlerPool.PooledHandlerCount}");
+                $"The pool didn't release one handler after having multiple pooled and just one var added. " +
+                $"How many the pool has: {handlerPool.PooledHandlerCount}\n" +
+                $"What we expectedc: {expectedPooledHandlerCount}");
 
             var firstRow = _rowManager.GetVisibleRowAt(0);
             Assume.That(firstRow, Is.Not.Null, "First row wasn't registered properly");
@@ -511,7 +514,6 @@ namespace Amanita.Tests.Editor
         [Test]
         public void Dispose_ClearsAllAndUnsubscribes()
         {
-            
             _flowchart.ClearVariables();
             _flowchart.AddNewVariable<float, FloatVariable>("x");
             Assert.AreEqual(1, _listContainer.childCount);
@@ -630,9 +632,6 @@ namespace Amanita.Tests.Editor
         protected static readonly string missingTemplateFormat = "Template for {0} not found at '{1}'." +
                         "\nPlease update the path in the RowVisualHandlerAttribute of the former.";
 
-        
-        public static bool SuppressTemplateErrorsForTests = true;
-
         [Test]
         public void AllRowVisualHandlers_HaveAttribute()
         {
@@ -652,6 +651,33 @@ namespace Amanita.Tests.Editor
 
             
         }
+
+        [Test]
+        public void Refresh_Idempotent_DoesNotGrowHandlerPool()
+        {
+            // Arrange
+            _flowchart.ClearVariables();
+            _flowchart.AddNewVariable<float, FloatVariable>("f");
+            _flowchart.AddNewVariable<string, StringVariable>("s");
+            _rowManager.Refresh();
+
+            // Force everything into the pool
+            _flowchart.ClearVariables();
+            _rowManager.Refresh();
+            int pooledAfterFirstClear = _rowManager.PooledHandlerCount;
+
+            // Act: repeat without changing the model
+            _rowManager.Refresh();
+            _rowManager.Refresh();
+
+            // Assert: pool size should NOT grow just by refreshing
+            Assert.AreEqual(pooledAfterFirstClear, _rowManager.PooledHandlerCount,
+                "Handler pool should not increase when refreshing without changes");
+        }
+
+
+
+
 
     }
 
@@ -722,7 +748,7 @@ namespace Amanita.Tests.Editor
         public virtual Type ResolveHandler(IDictionary<Type, Type> visualHandlerLookup, Type contentType)
         {
             var filteredLookup = visualHandlerLookup
-            .Where(kvp => !kvp.Value.Equals(typeof(FakeHandlerWithBadPath)))
+            .Where(kvp => !typeof(FakeHandlerWithBadPath).IsAssignableFrom(kvp.Value))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             Debug.Log("Filtered lookup:");
