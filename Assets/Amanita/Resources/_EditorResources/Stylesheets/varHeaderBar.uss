@@ -1,0 +1,19 @@
+/* Ensure the header bar lays out horizontally */
+#varHeaderBar {
+    display: flex;           /* In case defaults get overridden */
+    flex-direction: row;
+    align-items: center;     /* Vertically center label & button */
+    justify-content: flex-start;
+    column-gap: 6px;         /* Space between label and button */
+    padding-bottom: 2px;     /* Optional subtle padding */
+}
+
+/* Optional: style tweaks for children for better visual balance */
+#varHeaderBar > #varCountLabel {
+    unity-font-style: bold;
+    font-size: 14px;
+}
+
+#varHeaderBar > #addVarButton {
+    min-width: 110px;
+}

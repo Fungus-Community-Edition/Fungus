@@ -1,12 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Reflection;
 using UnityObject = UnityEngine.Object;
-using System.Linq;
-using System.CodeDom;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -53,41 +53,45 @@ namespace Amanita.VScripting.EditorUtils
 
         protected bool _isDisposed;
 
-        protected virtual void ReadyTheTemplate()
+        public virtual void ReadyTheTemplate()
         {
-            if (!TemplateReadied)
+            if (TemplateReadied) return;
+
+            var typeOfThisHandler = GetType();
+
+            bool whatWeWantIsCached = templateCache.ContainsKey(typeOfThisHandler);
+            if (!whatWeWantIsCached)
             {
-                Type ourType = GetType();
-                _handlerAttr = ourType.GetCustomAttribute<RowVisualHandlerAttribute>();
-                if (_handlerAttr == null)
+                var attr = typeOfThisHandler.GetCustomAttribute<RowVisualHandlerAttribute>();
+                if (attr == null)
                 {
-                    string errorMessage = $"{ourType.Name} does not have a RowVisualHandlerAttribute set. Please set one.";
+                    Debug.LogError($"{typeOfThisHandler.Name} is missing RowVisualHandlerAttribute.");
+                    return;
+                }
+
+                var template = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
+                if (template == null)
+                {
+                    string errorMessage = string.Format(missingTemplateFormat, typeOfThisHandler.Name, attr.PathToTemplate);
                     Debug.LogError(errorMessage);
                     return;
                 }
 
-                string path = _handlerAttr.PathToTemplate;
-                _template = Resources.Load<VisualTreeAsset>(path);
-
-                if (_template == null)
-                {
-                    string errorMessage = $"Template for {ourType.Name} class could not be found at {path}. Please update the path arg.";
-                    Debug.LogError(errorMessage);
-                }
+                templateCache[typeOfThisHandler] = template;
             }
+
+            _template = templateCache[typeOfThisHandler];
         }
 
-        protected static RowVisualHandlerAttribute _handlerAttr;
-        
-        protected static VisualTreeAsset _template;
-        // ^Note that in terms of VisualTreeAssets, templates are basically prefabs but
-        // UI-Toolkit-centric
+        protected static readonly Dictionary<Type, VisualTreeAsset> templateCache = new(new TypeNameComparer());
+        // ^So each RowVisualHandler subclass can work with its own template
 
-        // Only concerns itself with the variable and the visual elements. Not the flowchart.
-        // We assume that this always gets called before any of the other methods in this
-        // class, hence certain if-checks being omitted.
+        protected static readonly string missingTemplateFormat = "Template for {0} not found at '{1}'." +
+                        "\nPlease update the path in the RowVisualHandlerAttribute of the former.";
 
-        protected static bool TemplateReadied => _template != null;
+        protected VisualTreeAsset _template; 
+
+        protected bool TemplateReadied => _template != null;
 
         protected VisualElement _holder;
         protected IVariable _currentVariable;
@@ -98,7 +102,7 @@ namespace Amanita.VScripting.EditorUtils
             // Rather than recreating the root each time we have to be shown, we'll
             // just create it once and use it until we're disposed. If asked 
             // to be shown after said disposal, then we recreate the root.
-            if (!_holder.Contains(Root))
+            if (_holder != null && !_holder.Contains(Root))
             {
                 _holder.Add(Root);
             }
@@ -121,6 +125,11 @@ namespace Amanita.VScripting.EditorUtils
         {
             // We assume that all IVariables we work with inherit from UnityObject, 
             // and thus that we can easily bind them to the fields
+            if (_template == null)
+            {
+                Debug.Log($"Cannot refresh visual handler when its template field is null.");
+                return;
+            }
             Root = _template.CloneTree();
             _keyField = Root.Q<TextField>("KeyInput");
             _valueFieldHolder = Root.Q<VisualElement>("ValueFieldHolder");
@@ -193,7 +202,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (Root == null)
             {
-                Debug.LogWarning($"Cannot hide a VariableRow that doesn't have its visuals readied.");
+                //Debug.LogWarning($"Cannot hide a VariableRow that doesn't have its visuals readied.");
                 return;
             }
 
@@ -256,7 +265,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             get { return _varContentType; }
         }
+
+        protected static new bool TemplateReadied => _template != null;
+
+        protected static new VisualTreeAsset _template;
+        // ^We want each RowVisualHandler subclass to manage its own template
     }
+
     [RowVisualHandler("Primitives", typeof(float), "Float", "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
     public class FloatRowVisualHandler : RowVisualHandler<float>
     {
@@ -281,7 +296,7 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    [RowVisualHandler("Misc", typeof(System.Object), "Generic", "_EditorResources/UIToolkitTemplates/VarRows/VariableRowTemplate")]
+    [RowVisualHandler("Misc", typeof(System.Object), "Generic", "_EditorResources/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<System.Object>
     {
     }

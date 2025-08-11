@@ -46,7 +46,6 @@ namespace Amanita.VScripting.EditorUtils
             = new Dictionary<Type, Stack<IRowVisualHandler>>();
 
         #region Just for testing
-#if UNITY_EDITOR
         /// <summary>
         /// How many handlers (of any particular IRowVisualHandler implementation)
         /// are in the pool at this time.
@@ -76,7 +75,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-#endif
         #endregion
 
         public virtual void ReleaseRange(IEnumerable<IRowVisualHandler> toRelease)

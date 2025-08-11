@@ -15,7 +15,6 @@ namespace Amanita.VScripting.EditorUtils
             bool exactMatchFound = visualHandlerLookup.TryGetValue(contentType, out handlerType);
             if (exactMatchFound)
             {
-                Debug.Log($"[Resolver] Exact match for {contentType.Name} → {handlerType.Name}");
                 return handlerType;
             }
 
@@ -34,15 +33,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 var closest = candidates.First();
                 handlerType = visualHandlerLookup[closest.BaseType];
-                Debug.Log($"[Resolver] Inherited match for {contentType.Name} → "
-                    + $"{closest.BaseType.Name} ({closest.Distance} steps) → {handlerType.Name}");
                 return handlerType;
             }
 
             // 3) Generic fallback
             if (visualHandlerLookup.TryGetValue(typeof(object), out handlerType))
             {
-                Debug.Log($"[Resolver] Falling back for {contentType.Name} → {handlerType.Name}");
                 return handlerType;
             }
 

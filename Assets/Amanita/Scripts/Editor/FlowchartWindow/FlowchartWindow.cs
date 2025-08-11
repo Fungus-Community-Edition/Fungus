@@ -231,8 +231,12 @@ namespace Amanita.VScripting.EditorUtils
                 _components.Add(new FcWindowEditing());
                 _components.Add(new FcWindowExecutionVisualizer());
                 _components.Add(new FcWindowSelectionSync());
-                _components.Add(new FcWindowVariablesComponent());
-                // ^Commented this out due to the compiler errors
+
+                var varsComponent = new FcWindowVariablesComponent();
+                string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+                varsComponent.VariableDisplayEditorUxml = uxml;
+                _components.Add(varsComponent);
 
                 foreach (var comp in _components)
                     comp.Initialize(this);
@@ -294,7 +298,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            DecideWhatToDoWithVarListAdaptor();
+            //DecideWhatToDoWithVarListAdaptor();
             void DecideWhatToDoWithVarListAdaptor()
             {
                 if (FcSelected == null)
@@ -570,12 +574,15 @@ namespace Amanita.VScripting.EditorUtils
                     Flowchart.ReverseUpdateSelectedCache(); //becomes reverse restore selected cache
                 }
                 //Flowchart.SelectedBlock = null;
+                FlowchartSelectionChanged(Flowchart);
+
                 Repaint();
                 return true;
             }
             return false;
         }
 
+        public event Action<Flowchart> FlowchartSelectionChanged = delegate { };
         public FlowchartContext flowchartCtx = new FlowchartContext();
 
         protected NodeStyleProvider _nodeStyleProvider = new NodeStyleProvider();

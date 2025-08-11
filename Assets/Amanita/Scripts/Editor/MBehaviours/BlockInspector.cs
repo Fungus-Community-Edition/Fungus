@@ -3,7 +3,6 @@ using UnityEngine.Serialization;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
-using Amanita.VScripting.Commands.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
