@@ -1,30 +1,42 @@
+/* Individual rows */
+#VariableDisplayEditorRoot
+{
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    background-color: rgba(0, 0, 255, 0.05);
+    max-width: 450px;
+}
+
 #varHeaderBar
 {
     display: flex;           /* In case defaults get overridden */
     flex-direction: row;
     align-items: center;     /* Vertically center label & button */
     justify-content: flex-start;
-    column-gap: 6px;         /* Space between label and button */
-    padding-bottom: 2px;     /* Optional subtle padding */
+    margin-bottom: 5px;
+    font-size: 20px;
+    height: 40px;
 
 }
 
 /* Optional: style tweaks for children for better visual balance */
 #varHeaderBar > #varCountLabel
 {
-    unity-font-style: bold;
-    font-size: 14px;
+    min-width: 70px;
+    height: 100%;
+    -unity-text-align: left-middle;
 }
 
 #varHeaderBar > #addVarButton 
 {
     min-width: 110px;
+    height: 100%;
 }
 
 #addVarButton
 {
     background-color: white;
     color: black;
+    height: 30px;
 
 }
 
@@ -34,21 +46,8 @@
     max-height: 250px;
 }
 
-#varHeaderBar > #varCountLabel 
+.unity-scroll-view__content-container 
 {
-    unity-font-style: bold;
-    font-size: 14px;
-}
-
-/* Individual rows */
-#VariableDisplayEditorRoot
-{
-    outline: 1px dashed blue;
-    background-color: rgba(0, 0, 255, 0.05);
-    max-width: 450px;
-}
-
-.unity-scroll-view__content-container {
     height: auto !important;
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
@@ -57,8 +56,6 @@
 #rowList .unity-scroll-view__content-viewport
 {
     align-items: flex-start !important;
-    overflow-y: scroll !important;
-
 }
 
 #rowList .unity-scroll-view__content-container 

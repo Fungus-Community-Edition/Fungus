@@ -1,25 +1,25 @@
-
 #VarRowRoot 
 {
     flex-direction: row;
     height: 30px;
-
+    margin-bottom: 3px;
 }
 
 .removeButton 
 {
     width: 30px;
     border-radius: 2px;
-    padding: 0 2px 0 0;
-    margin: 2px 1px 2px 2px;
+    padding: 0px;
+    margin-left: 2px;
 }
 
-.varRowTypeLabel {
+.varRowTypeLabel
+{
     -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
     color: rgb(229, 229, 229);
     -unity-text-align: middle-left;
     width: 75px;
-    padding: 0 0 0 2px;
+    padding: 0 0 0 3px;
     margin: 0;
     font-size: 14px;
 }
@@ -30,26 +30,30 @@
     color: rgb(230, 230, 230);
     border-radius: 2px;
     padding: 0 1px 0 1px;
-    width: 150px;
+    width: 130px;
     margin: 0 1px 0 1px;
-    font-size: 18px;
 }
 
-.keyInput > #unity-text-input {
+.keyInput > #unity-text-input
+{
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
     padding: 2px;
     width: 150px;
     margin: 0;
+    font-size: 14px;
 }
 
-#ValueField {
-    width: 140px;
+#ValueFieldHolder
+{
+    width: 120px;
     padding: 0;
     -unity-text-align: middle-left;
     border-radius: 2px;
     border-color: white;
+    font-size: 14px;
 }
 
 .scopeRoot 
@@ -84,7 +88,8 @@
     height: 100%;
     flex-shrink: 0;
     margin: 0;
-    padding: 0;
+    padding-left: 3px;
+    font-size: 14px;
 }
 
 #KeyInput > #unity-text-input
