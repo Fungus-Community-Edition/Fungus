@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -10,159 +9,125 @@ using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    // For now, we assume that all classes of this interface
-    // will only work with up to 1 template throughout its entire lifetime
     public interface IRowVisualHandler : IDisposable
     {
-        /// <summary>
-        /// Used not just for initialization, but reuse after disposing
-        /// </summary>
         void Init(VisualElement holder, IVariable variable);
         IVariable Variable { get; set; }
         VisualElement Root { get; }
         VisualTreeAsset Template { get; }
-        /// <summary>
-        /// The type of the value that the variable holds. float for FloatVariable, 
-        /// string for StringVariables, etc.
-        /// </summary>
         Type VarContentType { get; }
         void Refresh();
     }
 
-    /// <summary>
-    /// Handles the shared behaviour for showing the visuals in a VariableRow.
-    /// Naturally, all based on the IVariable they're assigned.
-    /// </summary>
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {
         public abstract Type VarContentType { get; }
 
+        protected bool _isDisposed;
+        protected VisualElement _holder;
+        protected IVariable _currentVariable;
+        protected IVariable _prevVariable;
+        protected SerializedObject _serializedObject;
+        protected VisualElement _valueFieldHolder;
+        protected TextField _keyField;
+        protected EnumField _scopeField;
+
+        protected VisualTreeAsset _template;
+        protected static readonly Dictionary<string, VisualTreeAsset> _templateCache =
+            new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
+
         public virtual void Init(VisualElement rowHolder, IVariable toDisplay)
         {
-            ReadyTheTemplate();
-            if (!TemplateReadied)
-            {
-                return;
-            }
-
             _isDisposed = false;
             _holder = rowHolder;
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
+
+            _template = GetOrResolveTemplate(GetType());
         }
 
-        protected bool _isDisposed;
-
-        public virtual void ReadyTheTemplate()
+        /// <summary>
+        /// Centralized entry for resolving a handler’s template from cache or resources.
+        /// </summary>
+        protected VisualTreeAsset GetOrResolveTemplate(Type handlerType)
         {
-            if (TemplateReadied) return;
+            var key = TemplateKeyFor(handlerType);
 
-            var typeOfThisHandler = GetType();
-
-            bool whatWeWantIsCached = templateCache.ContainsKey(typeOfThisHandler);
-            if (!whatWeWantIsCached)
+            if (!_templateCache.TryGetValue(key, out var vta) || vta == null)
             {
-                var attr = typeOfThisHandler.GetCustomAttribute<RowVisualHandlerAttribute>();
+                var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
                 if (attr == null)
                 {
-                    Debug.LogError($"{typeOfThisHandler.Name} is missing RowVisualHandlerAttribute.");
-                    return;
+                    Debug.LogError($"{handlerType.Name} is missing RowVisualHandlerAttribute.");
+                    return null;
                 }
 
-                var template = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
-                if (template == null)
+                vta = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
+                if (vta == null)
                 {
-                    string errorMessage = string.Format(missingTemplateFormat, typeOfThisHandler.Name, attr.PathToTemplate);
-                    Debug.LogError(errorMessage);
-                    return;
+                    Debug.LogError(string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate));
+                    return null;
                 }
 
-                templateCache[typeOfThisHandler] = template;
+                _templateCache[key] = vta;
             }
 
-            _template = templateCache[typeOfThisHandler];
+            return _templateCache[key];
         }
 
-        protected static readonly Dictionary<Type, VisualTreeAsset> templateCache = new(new TypeNameComparer());
-        // ^So each RowVisualHandler subclass can work with its own template
-
-        protected static readonly string missingTemplateFormat = "Template for {0} not found at '{1}'." +
-                        "\nPlease update the path in the RowVisualHandlerAttribute of the former.";
-
-        protected VisualTreeAsset _template; 
-
-        protected bool TemplateReadied => _template != null;
-
-        protected VisualElement _holder;
-        protected IVariable _currentVariable;
+        protected static string TemplateKeyFor(Type t) => t.AssemblyQualifiedName;
+        protected static readonly string missingTemplateFormat =
+            "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
 
         public virtual void Refresh()
         {
             EnsureVisualsAreReady();
-            // Rather than recreating the root each time we have to be shown, we'll
-            // just create it once and use it until we're disposed. If asked 
-            // to be shown after said disposal, then we recreate the root.
+
             if (_holder != null && !_holder.Contains(Root))
-            {
                 _holder.Add(Root);
-            }
+
             UpdateSerializedObject();
-            UnbindFields(); // In case we had a previous var to work with
+            UnbindFields();
             BindFields();
         }
 
         protected virtual void EnsureVisualsAreReady()
         {
-            if (Root == null) // Implying this is our first time being shown or we were disposed earlier
-            {
+            if (Root == null && _template != null)
                 RegisterVisualElements();
-            }
         }
 
         public virtual VisualElement Root { get; protected set; }
 
         protected virtual void RegisterVisualElements()
         {
-            // We assume that all IVariables we work with inherit from UnityObject, 
-            // and thus that we can easily bind them to the fields
             if (_template == null)
             {
-                Debug.Log($"Cannot refresh visual handler when its template field is null.");
+                Debug.LogWarning($"{GetType().Name}: Cannot register visuals; template is null.");
                 return;
             }
+
             Root = _template.CloneTree();
             _keyField = Root.Q<TextField>("KeyInput");
             _valueFieldHolder = Root.Q<VisualElement>("ValueFieldHolder");
             _scopeField = Root.Q<EnumField>("Scope");
         }
 
-        protected TextField _keyField;
-        protected VisualElement _valueFieldHolder;
-        protected EnumField _scopeField;
-
         protected virtual void UpdateSerializedObject()
         {
-            // We only need to update this when we're assigned a different variable to
-            // work with. Why? The field-binding implies automatically updating the
-            // IVariable and the display, saving us headache we'd otherwise have with
-            // binding SerializedProperties manually
-            if (_prevVariable != _currentVariable)
+            if ((_prevVariable == _currentVariable) && _serializedObject != null) return;
+
+            if (_currentVariable != null)
             {
-                if (_currentVariable != null)
-                {
-                    _serializedObject?.Dispose();
-                    _serializedObject = new SerializedObject((UnityObject)_currentVariable);
-                    _serializedObject.Update();
-                }
-                else
-                {
-                    _serializedObject = null;
-                }
+                _serializedObject?.Dispose();
+                _serializedObject = new SerializedObject((UnityObject)_currentVariable);
+                _serializedObject.Update();
+            }
+            else
+            {
+                _serializedObject = null;
             }
         }
-
-        protected IVariable _prevVariable;
-        protected SerializedObject _serializedObject;
 
         protected virtual void UnbindFields()
         {
@@ -173,26 +138,19 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void BindFields()
         {
-            if (_serializedObject == null)
-            {
-                return;
-            }
+            if (_serializedObject == null) return;
 
-            _keyField.Bind(_serializedObject);
-            _valueFieldHolder.Bind(_serializedObject);
-            _scopeField.Bind(_serializedObject);
+            _keyField?.Bind(_serializedObject);
+            _valueFieldHolder?.Bind(_serializedObject);
+            _scopeField?.Bind(_serializedObject);
         }
 
         public virtual IVariable Variable
         {
-            get { return _currentVariable; }
+            get => _currentVariable;
             set
             {
-                if (_currentVariable == value)
-                {
-                    return;
-                }
-
+                if (_currentVariable == value) return;
                 _prevVariable = _currentVariable;
                 _currentVariable = value;
             }
@@ -200,104 +158,73 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void Hide()
         {
-            if (Root == null)
-            {
-                //Debug.LogWarning($"Cannot hide a VariableRow that doesn't have its visuals readied.");
-                return;
-            }
-
-            if (_holder != null && _holder.Children().Contains(Root))
-            {
+            if (Root == null) return;
+            if (_holder != null && _holder.Contains(Root))
                 _holder.Remove(Root);
-                // ^We should be able to add the root back in later, assuming we're not disposed before then
-            }
         }
 
         public virtual void Reset()
         {
-            ClearVisuals();
-            void ClearVisuals()
-            {
-                Hide();
-                UnbindFields();
-            }
+            Hide();
+            UnbindFields();
 
-            ResetInstanceFields();
-            void ResetInstanceFields()
-            {
-                // We want to leave the static fields alone since reloading them every time
-                // just adds to overhead
-                _prevVariable = null;
-                _currentVariable = null;
-                _holder = null;
-                Root = null;
-            }
+            _prevVariable = null;
+            _currentVariable = null;
+            _holder = null;
+            Root = null;
         }
-
 
         public virtual void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            Reset(); // So pooling can call either
+            if (_isDisposed) return;
+            _isDisposed = true;
+            Reset();
         }
 
-        public virtual VisualTreeAsset Template
-        {
-            get { return _template; }
-        }
-
+        public virtual VisualTreeAsset Template => _template;
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
     {
-        public RowVisualHandler()
+        protected readonly Type _varContentType;
+
+        protected RowVisualHandler()
         {
-            // Caching it to reduce GC cruft
             _varContentType = typeof(TVarContentType);
         }
 
-        protected Type _varContentType;
-        public override Type VarContentType
-        {
-            get { return _varContentType; }
-        }
+        public override Type VarContentType => _varContentType;
 
-        protected static new bool TemplateReadied => _template != null;
-
-        protected static new VisualTreeAsset _template;
-        // ^We want each RowVisualHandler subclass to manage its own template
     }
 
-    [RowVisualHandler("Primitives", typeof(float), "Float", "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
+    [RowVisualHandler("Primitives", typeof(float), "Float",
+        "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
     public class FloatRowVisualHandler : RowVisualHandler<float>
     {
+        private FloatField _floatField;
+
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
             _floatField = Root.Q<FloatField>("FloatField");
         }
 
-        protected FloatField _floatField;
-
         protected override void UnbindFields()
         {
             base.UnbindFields();
-            _floatField.Unbind();
+            _floatField?.Unbind();
         }
 
         protected override void BindFields()
         {
             base.BindFields();
-            _floatField.Bind(_serializedObject);
+            _floatField?.Bind(_serializedObject);
         }
     }
 
-    [RowVisualHandler("Misc", typeof(System.Object), "Generic", "_EditorResources/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
-    public class DefaultRowVisualHandler : RowVisualHandler<System.Object>
+    [RowVisualHandler("Misc", typeof(object), "Generic",
+        "_EditorResources/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
+    public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
     }
 }

@@ -93,7 +93,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
         {
             _holdsManager = initArgs.HoldsManager;
-            _ourRoot = initArgs.Root;
+            Root = initArgs.Root;
             _listContainer = initArgs.ListContainer;
             _countLabel = initArgs.CountLabel;
             _addButton = initArgs.AddButton;
@@ -104,7 +104,7 @@ namespace Amanita.VScripting.EditorUtils
         // ^We expect this to be FlowchartWindow or something meant to fulfill its purpose
         protected VisualTreeAsset _ourTemplate;
         protected Flowchart _flowchart;
-        protected VisualElement _ourRoot;
+        public VisualElement Root { get; protected set; }
         protected UITKLabel _countLabel;
         protected Button _addButton;
         protected VisualElement _listContainer;
@@ -113,13 +113,13 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
         {
             if ( (_holdsManager != null && _holdsManager != toHoldManager) &&
-                _ourRoot != null && _ourRoot.parent != null)
+                Root != null && Root.parent != null)
             {
-                _holdsManager.Remove(_ourRoot);
+                _holdsManager.Remove(Root);
             }
 
             _holdsManager = toHoldManager;
-            _holdsManager.Add(_ourRoot);
+            _holdsManager.Add(Root);
         }
 
         protected virtual void DeregisterCallbacks()
@@ -283,16 +283,16 @@ namespace Amanita.VScripting.EditorUtils
             _rowPool.Clear();
             _handlerPool.Clear();
             _allRows.Clear();
-            if (_ourRoot != null)
+            if (Root != null)
             {
-                if (_holdsManager != null && _holdsManager.Contains(_ourRoot))
+                if (_holdsManager != null && _holdsManager.Contains(Root))
                 {
-                    _holdsManager.Remove(_ourRoot);
+                    _holdsManager.Remove(Root);
                 }
             }
 
             _holdsManager = null;
-            _ourRoot = null;
+            Root = null;
             _countLabel = null;
             _addButton = null;
             _listContainer = null;

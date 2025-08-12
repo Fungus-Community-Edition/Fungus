@@ -620,7 +620,7 @@ namespace Amanita.Tests.Editor
             var handler = new FakeHandlerWithBadPath();
             
             // Act
-            handler.ReadyTheTemplate();
+            
 
             string expectedPath = "_EditorResources/UIToolkitTemplates/VarRows/BadPathRow";
             string handlerName = nameof(FakeHandlerWithBadPath);
@@ -684,36 +684,6 @@ namespace Amanita.Tests.Editor
     [RowVisualHandler("Null", typeof(FakeHandlerWithBadPath), "5ryw45y", "_EditorResources/UIToolkitTemplates/VarRows/BadPathRow")]
     public class FakeHandlerWithBadPath : RowVisualHandler<FakeHandlerWithBadPath>
     {
-        public override void ReadyTheTemplate()
-        {
-            if (TemplateReadied) return;
-
-            var typeOfThisHandler = GetType();
-
-            bool whatWeWantIsCached = templateCache.ContainsKey(typeOfThisHandler);
-            if (!whatWeWantIsCached)
-            {
-                var attr = typeOfThisHandler.GetCustomAttribute<RowVisualHandlerAttribute>();
-                if (attr == null && !SuppressTemplateErrorsForTests)
-                {
-                    Debug.LogError($"{typeOfThisHandler.Name} is missing RowVisualHandlerAttribute.");
-                    return;
-                }
-
-                var template = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
-                if (template == null && !SuppressTemplateErrorsForTests)
-                {
-                    string errorMessage = string.Format(missingTemplateFormat, typeOfThisHandler.Name, attr.PathToTemplate);
-                    Debug.LogError(errorMessage);
-                    return;
-                }
-
-                templateCache[typeOfThisHandler] = template;
-            }
-
-            _template = templateCache[typeOfThisHandler];
-        }
-
         public static bool SuppressTemplateErrorsForTests = true;
 
     }
