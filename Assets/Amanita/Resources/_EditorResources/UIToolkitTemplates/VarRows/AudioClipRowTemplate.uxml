@@ -2,10 +2,17 @@
     <Style src="project://database/Assets/Amanita/EditorResources/Stylesheets/variableRow.uss?fileID=7433441132597879392&amp;guid=dc36f721c9349184d99e907b905f9005&amp;type=3#variableRow" />
     <Style src="project://database/Assets/Amanita/EditorResources/Stylesheets/audioClipStyle.uss?fileID=7433441132597879392&amp;guid=55e85e62a18781c489b5487aa9fc3abc&amp;type=3#audioClipStyle" />
     <engine:VisualElement name="VarRowRoot" style="flex-grow: 1; flex-direction: row;">
+<<<<<<<< HEAD:Assets/Amanita/Resources/_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow.uxml
+        <engine:Label text="Float" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
+        <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" placeholder-text="var name" binding-path="key" class="varRowInputField keyInput" />
+        <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueFieldHolder" style="flex-grow: 1;">
+            <engine:FloatField value="0" name="FloatField" binding-path="value" view-data-key="ValueField" class="numericField" />
+========
         <engine:Label text="AudioClip" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueField" view-data-key="ValueField" style="flex-grow: 1;">
             <editor:PropertyField view-data-key="PropertyField" name="PropertyField" binding-path="value" class="propertyField" />
+>>>>>>>> flowchartVarOverhaul:Assets/Amanita/Resources/_EditorResources/UIToolkitTemplates/VarRows/AudioClipRowTemplate.uxml
         </engine:VisualElement>
         <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="Scope" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" view-data-key="RemoveButton" class="removeButton" />

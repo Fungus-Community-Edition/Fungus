@@ -22,7 +22,7 @@
 	padding: 0px 0px 0px 2px;
 	margin: 0px;
 	background-color: rgb(20, 20, 20);
-	font-size: 18px;
+	font-size: 16px;
 }
 
 .numericField > Label

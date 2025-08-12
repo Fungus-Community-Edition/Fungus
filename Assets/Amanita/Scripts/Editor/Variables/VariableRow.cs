@@ -63,6 +63,7 @@ namespace Amanita.VScripting.EditorUtils
         
         /// <summary>
         /// Makes this row stop representing (and by extension, displaying) any IVariables.
+        /// This does not necessarily imply that this row should be returned to the pool.
         /// </summary>
         public virtual void Clear()
         {
@@ -74,6 +75,10 @@ namespace Amanita.VScripting.EditorUtils
             VisualHandler?.Refresh();
         }
 
+        /// <summary>
+        /// Resets the state of this row, including how it's meant to start out 
+        /// non-parented.
+        /// </summary>
         public void Dispose()
         {
             if (_isDisposed)
@@ -82,10 +87,17 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             Clear();
-            VisualHandler.Dispose();
+            var rootParent = RootElement?.parent;
+            if (rootParent != null)
+            {
+                rootParent.Remove(RootElement);
+            }
+            VisualHandler?.Dispose();
+            VisualHandler = null;
             _flowchart = null;
             _varToRepresent = null;
             _holder = null;
+            _isDisposed = true;
         }
 
     }
