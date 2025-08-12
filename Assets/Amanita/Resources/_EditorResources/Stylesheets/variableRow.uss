@@ -1,9 +1,13 @@
-#VarRowRoot {
-    max-height: 45px;
-    min-height: 35px;
+
+#VarRowRoot 
+{
+    flex-direction: row;
+    height: 30px;
+
 }
 
-.removeButton {
+.removeButton 
+{
     width: 30px;
     border-radius: 2px;
     padding: 0 2px 0 0;
@@ -48,37 +52,42 @@
     border-color: white;
 }
 
-.scopeRoot {
+.scopeRoot 
+{
     -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
     width: 75px;
     display: flex;
     flex-direction: row;
     height: 100%;
-    padding: 2px 0 2px 0;
+    padding: 0px;
     margin: 0;
     font-size: 14px;
 }
 
-.scopeRoot > VisualElement {
+.scopeRoot > VisualElement 
+{
     height: 100%;
-    padding: 2px;
+    padding: 0px;
     margin: 0;
     border-radius: 2px;
 }
 
-.scopeRoot > VisualElement > VisualElement {
+.scopeRoot > VisualElement > VisualElement 
+{
     width: 20%;
     height: 50%;
     flex-shrink: 1;
 }
 
-.scopeRoot > VisualElement > TextElement {
-    width: 75%;
+.scopeRoot > VisualElement > TextElement 
+{
     height: 100%;
-    flex-grow: 1;
     flex-shrink: 0;
     margin: 0;
+    padding: 0;
 }
 
-.boolRow {
+#KeyInput > #unity-text-input
+{
+    font-size: 14px;
 }

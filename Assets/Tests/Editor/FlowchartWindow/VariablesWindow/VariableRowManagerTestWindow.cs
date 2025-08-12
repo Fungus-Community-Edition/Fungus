@@ -35,7 +35,6 @@ namespace Amanita.VScripting.EditorUtils
         // UI
         private VisualElement _root;
         private VisualElement _toolbar;
-        private ScrollView _scroll;
         private VisualElement _rowsRoot;
         private UITKLabel _status;
 
@@ -96,9 +95,6 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void MarginRight(VisualElement e, float px) => e.style.marginRight = px;
 
-        
-
-
         private void BuildToolbar()
         {
             _toolbar = new VisualElement { name = "toolbar" };
@@ -142,15 +138,12 @@ namespace Amanita.VScripting.EditorUtils
 
         private void BuildRowsHost()
         {
-            _scroll = new ScrollView(ScrollViewMode.Vertical) { name = "rows-scroll" };
-            _scroll.style.flexGrow = 1;
-
+            // Remove the outer ScrollView entirely
             _rowsRoot = new VisualElement { name = "rows-root" };
             _rowsRoot.style.flexDirection = FlexDirection.Column;
             _rowsRoot.style.flexGrow = 1;
 
-            _scroll.Add(_rowsRoot);
-            _root.Add(_scroll);
+            _root.Add(_rowsRoot);
         }
 
         private void OnEditorUpdate()
@@ -298,6 +291,7 @@ namespace Amanita.VScripting.EditorUtils
         private void ClearVariables()
         {
             var list = GetVariables().ToList();
+            _flowchart.ClearVariables();
             Undo.IncrementCurrentGroup();
             foreach (var v in list)
             {

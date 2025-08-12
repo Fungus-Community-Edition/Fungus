@@ -1,6 +1,6 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/variableRow.uss?fileID=7433441132597879392&amp;guid=dc36f721c9349184d99e907b905f9005&amp;type=3#variableRow" />
-    <engine:VisualElement name="VarRowRoot" style="flex-grow: 1; flex-direction: row; min-height: 35px; max-height: 45px;">
+    <engine:VisualElement name="VarRowRoot" style="flex-grow: 1; flex-direction: row;">
         <engine:Label text="Type Label" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueFieldHolder" style="flex-grow: 1;" />

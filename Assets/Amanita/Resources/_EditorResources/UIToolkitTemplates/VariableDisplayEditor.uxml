@@ -1,12 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/varHeaderBar.uss?fileID=7433441132597879392&amp;guid=9c0e2f55938933348bc8eb8a71cf2058&amp;type=3#varHeaderBar" />
     <ui:VisualElement name="VariableDisplayEditorRoot" class="variable-editor">
-        <ui:Foldout text="Variables" name="Foldout" style="font-size: 28px; color: rgb(229, 229, 229); padding-right: 5px;">
+        <ui:Foldout text="Variables" name="Foldout" style="font-size: 28px; color: rgb(229, 229, 229);">
             <ui:VisualElement name="varHeaderBar" view-data-key="varHeaderBar">
                 <ui:Label name="varCountLabel" text="Count: 0" view-data-key="varCountLabel" class="var-count" />
                 <ui:Button name="addVarButton" text="Add Variable" view-data-key="addVarButton" class="add-button" style="height: 25px; font-size: 24px; color: rgb(64, 64, 64);" />
             </ui:VisualElement>
-            <ui:ScrollView name="rowList" view-data-key="rowList" class="row-list" style="height: auto; margin-top: 5px; min-height: 100px; max-height: 250px;" />
+            <ui:ScrollView name="rowList" view-data-key="rowList" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" class="row-list" />
         </ui:Foldout>
     </ui:VisualElement>
 </ui:UXML>

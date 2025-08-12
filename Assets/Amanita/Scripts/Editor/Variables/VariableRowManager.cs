@@ -1,11 +1,13 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
-using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -85,7 +87,7 @@ namespace Amanita.VScripting.EditorUtils
             InitVisuals(initArgs);
             _handlerPool = new RowVisualHandlerPool(_handlerResolver, visualHandlerLookup);
             ListenForEvents();
-            Refresh();
+            //Refresh();
         }
 
         protected bool _isDisposed;
@@ -94,10 +96,31 @@ namespace Amanita.VScripting.EditorUtils
         {
             _holdsManager = initArgs.HoldsManager;
             Root = initArgs.Root;
-            _listContainer = initArgs.ListContainer;
+            _listContainer = initArgs.ListContainer as ScrollView;
+
+            // Decided to apply the following in uxml instead of code
+            //_listContainer.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
+            //_listContainer.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+
             _countLabel = initArgs.CountLabel;
             _addButton = initArgs.AddButton;
             _flowchart = initArgs.Flowchart;
+
+            //_listContainer.contentContainer.RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
+
+        }
+
+        protected virtual void OnGeometryChangedEvent(GeometryChangedEvent evt)
+        {
+            if (evt.newRect.height > evt.oldRect.height)
+            {
+                // First growth detected — prod the ScrollView to update
+                _listContainer.schedule.Execute(() =>
+                {
+                    _listContainer.style.marginBottom = _listContainer.style.marginBottom.value.value + 0.001f;
+                    _listContainer.style.marginBottom = 0;
+                });
+            }
         }
 
         protected VisualElement _holdsManager; 
@@ -107,7 +130,7 @@ namespace Amanita.VScripting.EditorUtils
         public VisualElement Root { get; protected set; }
         protected UITKLabel _countLabel;
         protected Button _addButton;
-        protected VisualElement _listContainer;
+        protected ScrollView _listContainer;
         protected RowVisualHandlerPool _handlerPool;
 
         public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
@@ -128,7 +151,8 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-            
+
+            //_listContainer.contentContainer.UnregisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
             _addButton.clicked -= OnAddClicked;
             _flowchart.VariableAdded -= OnVariableAdded;
             _flowchart.VariableRemoved -= OnVariableRemoved;
@@ -175,6 +199,7 @@ namespace Amanita.VScripting.EditorUtils
 #endif
 
             _listContainer.Add(rowToUse.RootElement);
+
             _allRows.Add(rowToUse);
         }
 
@@ -221,6 +246,23 @@ namespace Amanita.VScripting.EditorUtils
             foreach (var varToShow in _flowchart.Variables)
                 AddOrReuseRow(varToShow);
             RefreshCountLabel();
+
+            TrimPhantomSpace(); // So the scrolling doesn't get wonky. 
+        }
+
+        protected virtual void TrimPhantomSpace()
+        {
+            // Apparently, the scroll field doesn't properly update its layout on its own
+            // (even after it gets something added to it). That leads to phantom space
+            // when we try to scroll. To fix that, we have to force it to redo its layout
+            // again by changing the content container's style as you see below.
+            var cc = _listContainer.contentContainer;
+            cc.style.display = DisplayStyle.None;
+
+            _listContainer.schedule.Execute(() =>
+            {
+                cc.style.display = DisplayStyle.Flex;
+            }).StartingIn(0);
         }
 
         protected virtual void RefreshCountLabel()

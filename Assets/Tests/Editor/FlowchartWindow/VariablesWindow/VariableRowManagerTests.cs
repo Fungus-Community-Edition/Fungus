@@ -721,9 +721,9 @@ namespace Amanita.Tests.Editor
             .Where(kvp => !typeof(FakeHandlerWithBadPath).IsAssignableFrom(kvp.Value))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            Debug.Log("Filtered lookup:");
-            foreach (var kvp in filteredLookup)
-                Debug.Log($"Key: {kvp.Key.Name}, Value: {kvp.Value.Name}");
+            //Debug.Log("Filtered lookup:");
+            //foreach (var kvp in filteredLookup)
+            //    Debug.Log($"Key: {kvp.Key.Name}, Value: {kvp.Value.Name}");
 
 
             Type handlerType = null;

@@ -1,4 +1,3 @@
-/* Ensure the header bar lays out horizontally */
 #varHeaderBar
 {
     display: flex;           /* In case defaults get overridden */
@@ -7,6 +6,7 @@
     justify-content: flex-start;
     column-gap: 6px;         /* Space between label and button */
     padding-bottom: 2px;     /* Optional subtle padding */
+
 }
 
 /* Optional: style tweaks for children for better visual balance */
@@ -16,7 +16,8 @@
     font-size: 14px;
 }
 
-#varHeaderBar > #addVarButton {
+#varHeaderBar > #addVarButton 
+{
     min-width: 110px;
 }
 
@@ -25,4 +26,43 @@
     background-color: white;
     color: black;
 
+}
+
+/* The only scroll cap you need */
+#rowList 
+{
+    max-height: 250px;
+}
+
+#varHeaderBar > #varCountLabel 
+{
+    unity-font-style: bold;
+    font-size: 14px;
+}
+
+/* Individual rows */
+#VariableDisplayEditorRoot
+{
+    outline: 1px dashed blue;
+    background-color: rgba(0, 0, 255, 0.05);
+    max-width: 450px;
+}
+
+.unity-scroll-view__content-container {
+    height: auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+#rowList .unity-scroll-view__content-viewport
+{
+    align-items: flex-start !important;
+    overflow-y: scroll !important;
+
+}
+
+#rowList .unity-scroll-view__content-container 
+{
+    height: auto !important;
+    align-items: flex-start !important;
 }
