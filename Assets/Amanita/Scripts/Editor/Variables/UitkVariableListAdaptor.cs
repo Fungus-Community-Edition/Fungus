@@ -1,5 +1,4 @@
-﻿using Amanita.EditorUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,7 +6,6 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
-using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {

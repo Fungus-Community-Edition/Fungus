@@ -2,18 +2,15 @@
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Unity.PerformanceTesting;
-using Unity.Profiling;
+using System.Text.RegularExpressions;
 using UnityEditor;
-using UnityEditor.Search;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Regex = System.Text.RegularExpressions.Regex;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
 
@@ -26,6 +23,7 @@ namespace Amanita.Tests.Editor
         {
             LogAssert.ignoreFailingMessages = true;
             FakeHandlerWithBadPath.SuppressTemplateErrorsForTests = true;
+            RowVisualHandler.LoggedMissingOnce.Clear();
             PrepFlowchart();
             PrepUIElements();
             DoPreTestAssumptions();
@@ -41,7 +39,7 @@ namespace Amanita.Tests.Editor
             _countLabel = _root.Q<UITKLabel>("varCountLabel");
             _addButton = _root.Q<Button>("addVarButton");
 
-            VRowManagerInitArgs args = new VRowManagerInitArgs()
+            initArgs = new VRowManagerInitArgs()
             {
                 HoldsManager = _holdsManager,
                 Root = _root,
@@ -51,12 +49,13 @@ namespace Amanita.Tests.Editor
                 Flowchart = _flowchart,
             };
 
-            _handlerResolver = new SilentTestResolver();
+            _handlerResolver = new RowVisualHandlerResolver();
             _rowManager = new VariableRowManager(_handlerResolver);
-            _rowManager.Init(args);
+            _rowManager.Init(initArgs);
             _handlerPool = _rowManager.HandlerPool;
         }
 
+        VRowManagerInitArgs initArgs;
         protected VisualTreeAsset _rootTemplate;
         protected VisualElement _holdsManager;
         protected VisualElement _root;
@@ -552,7 +551,7 @@ namespace Amanita.Tests.Editor
             Flowchart ApplyNewInitToManager()
             {
                 newRoot = new VisualElement();
-                newList = new VisualElement();
+                newList = new ScrollView();
                 newLabel = new UITKLabel();
                 newAddButton = new Button();
                 var fcsInScene = UnityObject.FindObjectsOfType<Flowchart>(); 
@@ -614,28 +613,44 @@ namespace Amanita.Tests.Editor
         [Test]
         public void ReadyTheTemplates_LogsError_WhenTemplateMissing()
         {
-            // Arrange
             LogAssert.ignoreFailingMessages = false;
             FakeHandlerWithBadPath.SuppressTemplateErrorsForTests = false;
-            var handler = new FakeHandlerWithBadPath();
-            
-            // Act
-            
+
+            StringMuscariable testM = (StringMuscariable)MuscariableFactory.Create(typeof(string));
+
+            _handlerResolver = new RowVisualHandlerResolver();
+            _rowManager = new VariableRowManager(_handlerResolver);
+            _rowManager.Init(initArgs);
+            _handlerPool = _rowManager.HandlerPool;
+
+            // Ensure we hit the right handler after suppression is off
+            _flowchart.ClearVariables();
+
+            Type handlerType = typeof(FakeHandlerWithBadPath);
+            var badVar = MuscariableFactory.Create(handlerType);
+            badVar.Key = "badVar";
+            badVar.ItemID = 123;
 
             string expectedPath = "_EditorResources/UIToolkitTemplates/VarRows/BadPathRow";
-            string handlerName = nameof(FakeHandlerWithBadPath);
-            string expectedErrorMessage = string.Format(missingTemplateFormat, handlerName, expectedPath);
-            // Assert
+
+            string expectedErrorMessage = string.Format(missingTemplateFormat, handlerType.Name, expectedPath);
             LogAssert.Expect(LogType.Error, expectedErrorMessage);
+
+            _flowchart.AddVariable(badVar);
         }
 
-        protected static readonly string missingTemplateFormat = "Template for {0} not found at '{1}'." +
-                        "\nPlease update the path in the RowVisualHandlerAttribute of the former.";
+        protected static readonly string missingTemplateFormat =
+            "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
+
+        [Muscariable("", typeof(FakeHandlerWithBadPath), "")]
+        public class BadHandlerMuscariable : Muscariable<FakeHandlerWithBadPath>
+        {
+
+        }
 
         [Test]
         public void AllRowVisualHandlers_HaveAttribute()
         {
-            
             var handlerTypes = typeof(RowVisualHandler).Assembly
                 .GetTypes()
                 .Where(t => !t.IsAbstract && typeof(RowVisualHandler).IsAssignableFrom(t));
@@ -649,7 +664,6 @@ namespace Amanita.Tests.Editor
                 );
             }
 
-            
         }
 
         [Test]
@@ -674,10 +688,6 @@ namespace Amanita.Tests.Editor
             Assert.AreEqual(pooledAfterFirstClear, _rowManager.PooledHandlerCount,
                 "Handler pool should not increase when refreshing without changes");
         }
-
-
-
-
 
     }
 

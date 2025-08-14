@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
+    [Muscariable("PhysicsThreeD", typeof(Collider), "ColliderThreeD")]
     public class ColliderMuscariableThreeD : Muscariable<Collider>
     {
         public static bool operator ==(ColliderMuscariableThreeD a, ColliderMuscariableThreeD b)
@@ -33,6 +34,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
+    [Muscariable("PhysicsTwoD", typeof(Collider2D), "ColliderTwoD")]
     public class ColliderMuscariableTwoD : Muscariable<Collider2D>
     {
         public static bool operator ==(ColliderMuscariableTwoD a, ColliderMuscariableTwoD b)
