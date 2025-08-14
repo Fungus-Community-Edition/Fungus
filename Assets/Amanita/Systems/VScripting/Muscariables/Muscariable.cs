@@ -260,7 +260,7 @@ namespace Amanita.VScripting
     }
 
     [Serializable]
-    public class GenericMuscariable : Muscariable<System.Object>
+    public class GenericMuscariable : Muscariable<object>
     {
         // Keep defaults: Assign supported; Equals/NotEquals from base are fine.
         // You can extend later for numeric T to support + - * / or relational ops.
