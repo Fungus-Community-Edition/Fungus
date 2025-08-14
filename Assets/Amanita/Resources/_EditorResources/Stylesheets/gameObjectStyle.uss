@@ -9,7 +9,7 @@
 	width: auto;
 }
 
-#AudioClipObjectField
+#GameObjectField
 {
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -29,7 +29,7 @@ Scope to just the AudioClip field so other ObjectFields aren’t affected.
 Also, the field selector is the circle at the right side of the field, not
 the music note.
 */
-#AudioClipObjectField .unity-object-field__selector 
+#GameObjectField .unity-object-field__selector 
 {
 	width: 20px;      
 	height: 70%;   
@@ -37,7 +37,7 @@ the music note.
 	margin-right: 2px;
 }
 
-#audioClipObjectField .unity-object-field__selector > .unity-object-field__selector-icon
+#GameObjectField .unity-object-field__selector > .unity-object-field__selector-icon
 {
 	width: 60px;
 	height: 100%;

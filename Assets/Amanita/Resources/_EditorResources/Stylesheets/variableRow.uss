@@ -11,6 +11,7 @@
     border-radius: 2px;
     padding: 0px;
     margin-left: 2px;
+    margin-bottom: 0px;
 }
 
 .varRowTypeLabel
@@ -31,7 +32,7 @@
     border-radius: 2px;
     padding: 0 1px 0 1px;
     width: 130px;
-    margin: 0 1px 0 1px;
+    margin: 0 2px 0 1px;
 }
 
 .keyInput > #unity-text-input
@@ -48,12 +49,14 @@
 
 #ValueFieldHolder
 {
+    flex-grow: 0;
     width: 120px;
     padding: 0;
     -unity-text-align: middle-left;
     border-radius: 2px;
     border-color: white;
     font-size: 14px;
+    margin-right: 3px;
 }
 
 .scopeRoot 
@@ -64,7 +67,7 @@
     flex-direction: row;
     height: 100%;
     padding: 0px;
-    margin: 0;
+    margin: 0px 2px 0px 0px;
     font-size: 14px;
 }
 

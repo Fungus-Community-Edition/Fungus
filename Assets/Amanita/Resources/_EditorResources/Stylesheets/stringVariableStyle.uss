@@ -8,9 +8,14 @@
 	-unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
 	color: rgb(229, 229, 229);
 	font-size: 18px;
+	height: 100%;
+	-unity-text-align: middle-left;
+	padding: 0px;
+	margin: 0px;
 }
 
 .textField > #unity-text-input
 {
 	background-color: rgb(26, 26, 26);
+	height: 100%;
 }

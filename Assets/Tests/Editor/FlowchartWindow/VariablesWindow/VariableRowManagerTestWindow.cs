@@ -308,9 +308,10 @@ namespace Amanita.VScripting.EditorUtils
             EnsureClipsCached();
             
             Undo.IncrementCurrentGroup();
+            int varTypeCount = 6;
             for (int i = 0; i < count; i++)
             {
-                var typeIndex = i % 5;
+                var typeIndex = i % varTypeCount;
                 IVariable var = null;
 
                 switch (typeIndex)
@@ -323,6 +324,11 @@ namespace Amanita.VScripting.EditorUtils
                         var clip = _clips.Count > 0 ? _clips[_rng.Next(_clips.Count)] : null;
                         var = AddVariableComponent<AudioClipVariable>(clip);
                         break;
+                    case 5:
+                    Vector2 toDisplay = new Vector2(_rng.Next(-100, 100),
+                        _rng.Next(-100, 100));
+                    var = AddVariableComponent<Vector2Variable>(toDisplay);
+                    break;
                 }
 
                 // Assign a unique key via Flowchart helper if available

@@ -735,7 +735,6 @@ namespace Amanita.Tests.Editor
             //foreach (var kvp in filteredLookup)
             //    Debug.Log($"Key: {kvp.Key.Name}, Value: {kvp.Value.Name}");
 
-
             Type handlerType = null;
 
             // Exact match
