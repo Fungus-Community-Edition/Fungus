@@ -36,6 +36,8 @@
     background-color: white;
     color: black;
     height: 30px;
+    font-size: 18px;
+    width: 120px;
 }
 
 #rowList 

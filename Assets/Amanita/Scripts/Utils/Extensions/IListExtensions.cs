@@ -6,10 +6,34 @@ namespace Collections
 {
     public static class IListExtensions
     {
+        // Adds the item if the list isn't at capacity
+        public static void Add<T>(this IList<T> list, T item, int capacity)
+        {
+            if (list.Count < capacity) list.Add(item);
+        }
+
         public static void AddRange<T>(this IList<T> toAddTo, IList<T> whatToAdd)
         {
             for (int i = 0; i < whatToAdd.Count; i++)
             {
+                toAddTo.Add(whatToAdd[i]);
+            }
+        }
+
+        /// <summary>
+        /// AddRange but won't add stuff when toAddTo is at or above the specified capacity.
+        /// </summary>
+        public static void AddRange<T>(this IList<T> toAddTo, IList<T> whatToAdd, int capacity)
+        {
+            bool isAtCapacity = false;
+            for (int i = 0; i < whatToAdd.Count; i++)
+            {
+                isAtCapacity = toAddTo.Count >= capacity;
+                if (isAtCapacity)
+                {
+                    return;
+                }
+
                 toAddTo.Add(whatToAdd[i]);
             }
         }

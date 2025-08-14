@@ -234,10 +234,6 @@ namespace Amanita.SaveSystemTests
             pathFound = saveReader.GetSavePath(copyReq);
             StringAssert.StartsWith(Application.persistentDataPath, pathFound, $"App persistent data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
 
-            copyReq.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            pathFound = saveReader.GetSavePath(copyReq);
-            StringAssert.StartsWith(Application.streamingAssetsPath, pathFound, $"App streaming data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
-
         }
 
         [Test]

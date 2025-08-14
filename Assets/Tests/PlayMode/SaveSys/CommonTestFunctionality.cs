@@ -435,7 +435,6 @@ namespace Amanita.SaveSystemTests
             {
                 { SaveDirectoryType.DataPath, Application.dataPath },
                 { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
             };
 
         protected virtual async Task CommonSetupAsync()

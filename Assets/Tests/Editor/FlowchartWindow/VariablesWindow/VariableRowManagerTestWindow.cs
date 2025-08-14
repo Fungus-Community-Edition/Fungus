@@ -1,22 +1,17 @@
-// Assets/Editor/VariableRowManagerTestWindow.cs
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityObject = UnityEngine.Object;
 
 using UITKLabel = UnityEngine.UIElements.Label;
+using UnityRandom = UnityEngine.Random;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AV = Amanita.VScripting;
-
-
-// Adjust these to your namespaces
-using Amanita.VScripting;
 using Amanita.Tests.Editor;
+using Collections;
 // using Amanita.VScripting.EditorUtils; // if you keep helpers here
 
 namespace Amanita.VScripting.EditorUtils
@@ -33,27 +28,29 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         // UI
-        private VisualElement _root;
-        private VisualElement _toolbar;
-        private VisualElement _rowsRoot;
-        private UITKLabel _status;
+        protected VisualElement _root;
+        protected VisualElement _toolbar;
+        protected VisualElement _rowsRoot;
+        protected UITKLabel _status;
 
         // Data
-        private Flowchart _flowchart;
-        private GameObject _ownerGO; // hidden owner of test Flowchart
-        private readonly System.Random _rng = new System.Random(1337);
-        private bool _liveRefresh = true;
-        private double _lastRefresh;
-        private const double LiveRefreshInterval = 0.25;
+        protected Flowchart _flowchart;
+        protected GameObject _ownerGO; // hidden owner of test Flowchart
+        protected readonly System.Random _rng = new System.Random(1337);
+        protected bool _liveRefresh = true;
+        protected double _lastRefresh;
+        protected const double LiveRefreshInterval = 0.25;
 
-        // Cached audio clips for seeding
-        private List<AudioClip> _clips;
+        // Cached values for seeding
+        protected List<AudioClip> _audioClips = new List<AudioClip>();
+        protected List<GameObject> _gameObjects = new List<GameObject>();
+        protected List<Sprite> _sprites = new List<Sprite>();
 
         // If your VariableRowManager is a class, you can keep a reference here.
         // Replace this with your real type/usage.
-        // private VariableRowManager _vrm;
+        // protected VariableRowManager _vrm;
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             EditorApplication.update += OnEditorUpdate;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -63,7 +60,7 @@ namespace Amanita.VScripting.EditorUtils
             TrySubscribeFlowchartEvents(_flowchart, subscribe: true);
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
@@ -93,9 +90,9 @@ namespace Amanita.VScripting.EditorUtils
             UpdateStatus();
         }
 
-        private static void MarginRight(VisualElement e, float px) => e.style.marginRight = px;
+        protected static void MarginRight(VisualElement e, float px) => e.style.marginRight = px;
 
-        private void BuildToolbar()
+        protected void BuildToolbar()
         {
             _toolbar = new VisualElement { name = "toolbar" };
             _toolbar.style.flexDirection = FlexDirection.Row;
@@ -136,7 +133,7 @@ namespace Amanita.VScripting.EditorUtils
             _root.Add(_toolbar);
         }
 
-        private void BuildRowsHost()
+        protected void BuildRowsHost()
         {
             // Remove the outer ScrollView entirely
             _rowsRoot = new VisualElement { name = "rows-root" };
@@ -146,7 +143,7 @@ namespace Amanita.VScripting.EditorUtils
             _root.Add(_rowsRoot);
         }
 
-        private void OnEditorUpdate()
+        protected void OnEditorUpdate()
         {
             if (!_liveRefresh) return;
 
@@ -159,7 +156,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void OnPlayModeStateChanged(PlayModeStateChange change)
+        protected void OnPlayModeStateChanged(PlayModeStateChange change)
         {
             // Keep UI and data view sane across domain reloads/runtime copies
             if (change == PlayModeStateChange.EnteredPlayMode ||
@@ -171,7 +168,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void EnsureTestFlowchart()
+        protected void EnsureTestFlowchart()
         {
             // Reuse if still around
             if (_flowchart != null) return;
@@ -187,7 +184,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void TrySubscribeFlowchartEvents(Flowchart fc, bool subscribe)
+        protected void TrySubscribeFlowchartEvents(Flowchart fc, bool subscribe)
         {
             if (fc == null) return;
             // If your Flowchart exposes VariableAdded/VariableRemoved, hook them for instant updates.
@@ -208,14 +205,14 @@ namespace Amanita.VScripting.EditorUtils
             catch { /* no-op if events differ */ }
         }
 
-        private void OnVariableAddedRemoved(IVariable _)
+        protected void OnVariableAddedRemoved(IVariable _)
         {
             // Ensure UI reflects changes caused by code outside the window
             RefreshRows();
             UpdateStatus();
         }
 
-        private void MountRowsUI()
+        protected void MountRowsUI()
         {
             // Clean previous
             _rowsRoot.Clear();
@@ -268,19 +265,19 @@ namespace Amanita.VScripting.EditorUtils
 
         }
 
-        private VariableRowManager _vRowManager;
-        private SilentTestResolver _resolver = new SilentTestResolver();
-        private VisualTreeAsset _variableTemplate;
+        protected VariableRowManager _vRowManager;
+        protected SilentTestResolver _resolver = new SilentTestResolver();
+        protected VisualTreeAsset _variableTemplate;
 
 
-        private void RefreshRows()
+        protected void RefreshRows()
         {
             // If your manager supports lightweight refresh, call it here.
             // e.g., _vrm?.Refresh();
             UpdateStatus();
         }
 
-        private void RebindRows()
+        protected void RebindRows()
         {
             // For safety, remount entirely — good for catching binding lifecycle issues
             MountRowsUI();
@@ -288,7 +285,7 @@ namespace Amanita.VScripting.EditorUtils
 
         // ------------- Data ops -------------
 
-        private void ClearVariables()
+        protected void ClearVariables()
         {
             var list = GetVariables().ToList();
             _flowchart.ClearVariables();
@@ -302,15 +299,24 @@ namespace Amanita.VScripting.EditorUtils
             UpdateStatus();
         }
 
-        private void SeedVariables(int count, bool clearBefore)
+        protected void SeedVariables(int count, bool clearBefore)
         {
             if (clearBefore) ClearVariables();
-            EnsureClipsCached();
+            EnsureCacheForAssets(_audioClips);
+            EnsureCacheForAssets(_gameObjects);
+            EnsureCollidersCached();
+            EnsureCacheForAssets(_textures);
+            EnsureCacheForAssets(_materials);
+            EnsureCacheForAssets(_sprites);
+            EnsureRigidbodiesCached();
+            EnsureUnityObjectsCached();
             
             Undo.IncrementCurrentGroup();
+            int varTypeCount = _supportedTypes.Count;
+            // For when we find stuff
             for (int i = 0; i < count; i++)
             {
-                var typeIndex = i % 5;
+                var typeIndex = i % varTypeCount;
                 IVariable var = null;
 
                 switch (typeIndex)
@@ -320,9 +326,90 @@ namespace Amanita.VScripting.EditorUtils
                     case 2: var = AddVariableComponent<BooleanVariable>(_rng.NextDouble() > 0.5); break;
                     case 3: var = AddVariableComponent<StringVariable>(RandomString(6)); break;
                     case 4:
-                        var clip = _clips.Count > 0 ? _clips[_rng.Next(_clips.Count)] : null;
+                        var clip = _audioClips.Count > 0 ? _audioClips[_rng.Next(_audioClips.Count)] : null;
                         var = AddVariableComponent<AudioClipVariable>(clip);
                         break;
+                    case 5:
+                        Vector2 toDisplay = new Vector2(RandomInt(),
+                        RandomInt());
+                        var = AddVariableComponent<Vector2Variable>(toDisplay);
+                        break;
+                    case 6:
+                        Vector3 vec3 = new Vector3(RandomInt(), RandomInt(), RandomInt());
+                        var = AddVariableComponent<Vector3Variable>(vec3);
+                        break;
+                    case 7:
+                        var go = _gameObjects.Count > 0 ? _gameObjects[_rng.Next(_gameObjects.Count)] : null;
+                        var = AddVariableComponent<GameObjectVariable>(go);
+                        break;
+                    case 8:
+                        var hasTrans = _gameObjects.Count > 0 ? _gameObjects[_rng.Next(_gameObjects.Count)] : null;
+                        Transform trans = null;
+                        if (hasTrans != null)
+                        {
+                            trans = hasTrans.transform;
+                        }
+                        var = AddVariableComponent<TransformVariable>(trans);
+                        break;
+                    case 9:
+                        var theObj = _unityObjects.Count > 0 ? _unityObjects[_rng.Next(_unityObjects.Count)] : null;
+                        var = AddVariableComponent<ObjectVariable>(theObj);
+                        break;
+                    case 10:
+                        int r = UnityRandom.Range(0, 100), g = UnityRandom.Range(0, 100), b = UnityRandom.Range(0, 100);
+                        var theCol = new Color(r, g, b);  
+                        var = AddVariableComponent<ColorVariable>(theCol);
+                        break;
+                    case 11:
+                        if (_colliderTwoDObjects.Count > 0)
+                        {
+                            var collValue = _colliderTwoDObjects.GetRandom();
+                            var = AddVariableComponent<Collider2DVariable>(collValue);
+                        }
+                        break;
+                    case 12:
+                        if (_colliderThreeDObjects.Count > 0)
+                        {
+                            var collValue = _colliderThreeDObjects.GetRandom();
+                            var = AddVariableComponent<ColliderVariable>(collValue);
+                        }
+                        break;
+                    case 13: 
+                        if (_textures.Count > 0)
+                        {
+                            var texVal = _textures.GetRandom();
+                            var = AddVariableComponent<TextureVariable>(texVal);
+                        }
+                        break;
+                    case 14:
+                        if (_materials.Count > 0)
+                        {
+                            var matVal = _materials.GetRandom();
+                            var = AddVariableComponent<MaterialVariable>(matVal);
+                        }
+                        break;
+                    case 15:
+                        if (_sprites.Count > 0)
+                        {
+                            var spriteVal = _sprites.GetRandom();
+                            var = AddVariableComponent<SpriteVariable>(spriteVal);
+                        }
+                        break;
+                    case 16:
+                        if (_rigidbodyTwoDs.Count > 0)
+                        {
+                            var rbVal = _rigidbodyTwoDs.GetRandom();
+                            var = AddVariableComponent<Rigidbody2DVariable>(rbVal);
+                        }
+                        break;
+                    case 17:
+                        if (_rigidbodyThreeDs.Count > 0)
+                        {
+                            var rbVal = _rigidbodyThreeDs.GetRandom();
+                            var = AddVariableComponent<RigidbodyVariable>(rbVal);
+                        }
+                        break;
+
                 }
 
                 // Assign a unique key via Flowchart helper if available
@@ -348,7 +435,30 @@ namespace Amanita.VScripting.EditorUtils
             UpdateStatus();
         }
 
-        private void RandomMutate(int count)
+        protected static IList<Type> _supportedTypes = new List<Type>()
+        {
+            typeof(int),
+            typeof(float),
+            typeof(string),
+            typeof(bool),
+            typeof(Color),
+            typeof(GameObject),
+            typeof(Transform),
+            typeof(UnityObject),
+            typeof(Vector3),
+            typeof(Vector2),
+            typeof(Collider2D),
+            typeof(Collider),
+            typeof(AudioClip),
+            typeof(Texture),
+            typeof(Material),
+            typeof(Sprite),
+            typeof(Rigidbody),
+            typeof(Rigidbody2D)
+            
+        };
+
+        protected void RandomMutate(int count)
         {
             var vars = GetVariables().ToList();
             if (vars.Count == 0) return;
@@ -390,7 +500,7 @@ namespace Amanita.VScripting.EditorUtils
             UpdateStatus();
         }
 
-        private void SimulateExternalChange()
+        protected void SimulateExternalChange()
         {
             var vars = GetVariables().ToList();
             if (vars.Count == 0) return;
@@ -416,93 +526,102 @@ namespace Amanita.VScripting.EditorUtils
 
         // ------------- Helpers -------------
 
-        private IEnumerable<IVariable> GetVariables()
+        protected IEnumerable<IVariable> GetVariables()
         {
             return _flowchart?.Variables?.Cast<IVariable>() ?? Enumerable.Empty<IVariable>();
         }
 
-        private T AddVariableComponent<T>(object valueForInit) where T : Component, IVariable
+        protected TVarType AddVariableComponent<TVarType>(object valueForInit)
+    where TVarType : Component, IVariable
         {
-            var c = Undo.AddComponent<T>(_ownerGO);
-            var uo = c as UnityEngine.Object;
-            var so = new SerializedObject(uo);
+            var varComponent = Undo.AddComponent<TVarType>(_ownerGO);
+            var unityObj = varComponent as UnityEngine.Object;
+            var serializedObj = new SerializedObject(unityObj);
 
-            // Assign initial value through serialization
-            var valueProp = FindValueProperty(so);
-            so.Update();
-            if (valueForInit is float f && valueProp != null) valueProp.floatValue = f;
-            else if (valueForInit is int i && valueProp != null) valueProp.intValue = i;
-            else if (valueForInit is bool b && valueProp != null) valueProp.boolValue = b;
-            else if (valueForInit is string s && valueProp != null) valueProp.stringValue = s;
-            else if (valueForInit is UnityEngine.Object obj && valueProp != null) valueProp.objectReferenceValue = obj;
+            var valueProp = FindValueProperty(serializedObj);
+            serializedObj.Update();
 
-            so.ApplyModifiedProperties();
-            EditorUtility.SetDirty(uo);
-            return c;
+            if (valueForInit is float floatVal && valueProp != null) valueProp.floatValue = floatVal;
+            else if (valueForInit is int intVal && valueProp != null) valueProp.intValue = intVal;
+            else if (valueForInit is bool boolVal && valueProp != null) valueProp.boolValue = boolVal;
+            else if (valueForInit is string stringVal && valueProp != null) valueProp.stringValue = stringVal;
+            else if (valueForInit is Vector2 vecTwoVal && valueProp != null) valueProp.vector2Value = vecTwoVal;
+            else if (valueForInit is Vector3 vecThreeVal && valueProp != null) valueProp.vector3Value = vecThreeVal;
+            else if (valueForInit is Color colorVal && valueProp != null)
+            {
+                valueProp.colorValue = colorVal;
+            }
+            else if (valueForInit is UnityEngine.Object unityObject && valueProp != null) valueProp.objectReferenceValue = unityObject;
+
+            serializedObj.ApplyModifiedProperties();
+
+            EditorUtility.SetDirty(unityObj);
+
+            return varComponent;
         }
 
-        private void MutateFloat(SerializedProperty p, SerializedObject so)
+        protected void MutateFloat(SerializedProperty prop, SerializedObject serializedObj)
         {
-            if (p != null)
+            if (prop != null)
             {
-                so.Update();
-                p.floatValue += UnityEngine.Random.Range(-5f, 5f);
-                so.ApplyModifiedProperties();
+                serializedObj.Update();
+                prop.floatValue += UnityEngine.Random.Range(-5f, 5f);
+                serializedObj.ApplyModifiedProperties();
             }
         }
 
-        private void MutateInt(SerializedProperty p, SerializedObject so)
+        protected void MutateInt(SerializedProperty prop, SerializedObject serializedObj)
         {
-            if (p != null)
+            if (prop != null)
             {
-                so.Update();
-                p.intValue += UnityEngine.Random.Range(-5, 6);
-                so.ApplyModifiedProperties();
+                serializedObj.Update();
+                prop.intValue += UnityEngine.Random.Range(-5, 6);
+                serializedObj.ApplyModifiedProperties();
             }
         }
 
-        private void MutateBool(SerializedProperty p, SerializedObject so)
+        protected void MutateBool(SerializedProperty prop, SerializedObject serializedObj)
         {
-            if (p != null)
+            if (prop != null)
             {
-                so.Update();
-                p.boolValue = !p.boolValue;
-                so.ApplyModifiedProperties();
+                serializedObj.Update();
+                prop.boolValue = !prop.boolValue;
+                serializedObj.ApplyModifiedProperties();
             }
         }
 
-        private void MutateString(SerializedProperty p, SerializedObject so)
+        protected void MutateString(SerializedProperty prop, SerializedObject serializedObj)
         {
-            if (p != null)
+            if (prop != null)
             {
-                so.Update();
-                p.stringValue = RandomString(6);
-                so.ApplyModifiedProperties();
+                serializedObj.Update();
+                prop.stringValue = RandomString(6);
+                serializedObj.ApplyModifiedProperties();
             }
         }
 
-        private void MutateObjectRef(SerializedProperty p, SerializedObject so)
+        protected void MutateObjectRef(SerializedProperty prop, SerializedObject serializedObj)
         {
-            if (p == null) return;
-            EnsureClipsCached();
-            var newObj = _clips.Count > 0 ? _clips[_rng.Next(_clips.Count)] : null;
+            if (prop == null) return;
+            EnsureCacheForAssets(_audioClips);
+            var newObj = _audioClips.Count > 0 ? _audioClips[_rng.Next(_audioClips.Count)] : null;
 
-            so.Update();
-            p.objectReferenceValue = newObj;
-            so.ApplyModifiedProperties();
+            serializedObj.Update();
+            prop.objectReferenceValue = newObj;
+            serializedObj.ApplyModifiedProperties();
         }
 
-        private SerializedProperty FindValueProperty(SerializedObject so)
+        protected SerializedProperty FindValueProperty(SerializedObject serializedObj)
         {
             string[] candidates = { "value", "baseVal", "baseValue", "m_Value" };
             foreach (var name in candidates)
             {
-                var prop = so.FindProperty(name);
+                var prop = serializedObj.FindProperty(name);
                 if (prop != null) return prop;
             }
 
             // Fallback: prefer object refs, then any non m_Script visible property
-            var it = so.GetIterator();
+            var it = serializedObj.GetIterator();
             bool enterChildren = true;
             SerializedProperty firstNonScript = null;
             while (it.NextVisible(enterChildren))
@@ -515,36 +634,249 @@ namespace Amanita.VScripting.EditorUtils
             return firstNonScript;
         }
 
-        private void EnsureClipsCached()
+        protected virtual void EnsureCollidersCached()
         {
-            if (_clips != null) return;
-            _clips = new List<AudioClip>();
-            var guids = AssetDatabase.FindAssets("t:AudioClip");
-            foreach (var g in guids)
+            bool needRefreshThreeD = _colliderThreeDObjects.Count < _cacheCapacity || _colliderThreeDObjects.Contains(null);
+            bool needRefreshTwoD = _colliderTwoDObjects.Count < _cacheCapacity || _colliderTwoDObjects.Contains(null);
+            if (!needRefreshThreeD && !needRefreshTwoD)
             {
-                var path = AssetDatabase.GUIDToAssetPath(g);
-                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                if (clip != null) _clips.Add(clip);
+                return;
+            }
+
+            _colliderThreeDObjects.Clear();
+            _colliderTwoDObjects.Clear();
+
+            foreach (GameObject go in _gameObjects)
+            {
+                if (_colliderThreeDObjects.Count < _cacheCapacity)
+                {
+                    var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
+                    _colliderThreeDObjects.AddRange(colliderThreeDsFound, _cacheCapacity);
+                }
+
+                if (_colliderTwoDObjects.Count < _cacheCapacity)
+                {
+                    var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+                    _colliderTwoDObjects.AddRange(colliderTwoDsFound, _cacheCapacity);
+                }
+
+                if (_colliderThreeDObjects.Count >= _cacheCapacity && 
+                    _colliderTwoDObjects.Count >= _cacheCapacity)
+                {
+                    break;
+                }
+
             }
         }
 
-        private string RandomString(int len)
+        protected static int _cacheCapacity = 10;
+
+        protected virtual void EnsureRigidbodiesCached()
+        {
+            // We assume that the GameObject cache is ready by this point
+            bool shouldRefreshThreeDs = _rigidbodyThreeDs.Count < _cacheCapacity || _rigidbodyThreeDs.Contains(null);
+
+            int howManyToGoThrough = _cacheCapacity;
+            if (shouldRefreshThreeDs)
+            {
+                _rigidbodyThreeDs.Clear();
+                IList<Rigidbody> toAdd = GetComponentsFrom<Rigidbody>(_gameObjects);
+                _rigidbodyThreeDs.AddRange(toAdd);
+            }
+
+            IList<T> GetComponentsFrom<T>(IList<GameObject> gameObjects, int countLimit = 10) where T: Component
+            {
+                IList<T> result = new List<T>();
+                var hasWhatWeWant = (from elem in _gameObjects
+                                     where elem.GetComponent<T>() != null
+                                     select elem.GetComponent<T>()).ToList();
+
+                howManyToGoThrough = Mathf.Min(_cacheCapacity, hasWhatWeWant.Count);
+
+                for (int i = 0; i < howManyToGoThrough; i++)
+                {
+                    var currentRb = hasWhatWeWant[i];
+                    result.Add(currentRb);
+                }
+                return result;
+            }
+
+            bool shouldRefreshTwoDs = _rigidbodyTwoDs.Count < _cacheCapacity || _rigidbodyTwoDs.Contains(null);
+
+            if (shouldRefreshTwoDs)
+            {
+                _rigidbodyTwoDs.Clear();
+                IList<Rigidbody2D> toAdd = GetComponentsFrom<Rigidbody2D>(_gameObjects);
+                _rigidbodyTwoDs.AddRange(toAdd);
+            }
+        }
+
+        protected List<Rigidbody> _rigidbodyThreeDs = new List<Rigidbody>();
+        protected List<Rigidbody2D> _rigidbodyTwoDs = new List<Rigidbody2D>();
+
+        protected virtual void EnsureUnityObjectsCached()
+        {
+            // We want there to be a variety, hence why we're not populating by checking guids
+            // like we did with the other asset types
+            if (_unityObjects.Count >= _cacheCapacity && !_unityObjects.Contains(null)) return;
+
+            _unityObjects.Clear();
+            int amountAdded = 0;
+            foreach (var go in _gameObjects)
+            {
+                _unityObjects.Add(go);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
+            }
+
+            amountAdded = 0;
+            foreach (var clip in _audioClips) 
+            {
+                _unityObjects.Add(clip);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
+            }
+
+            amountAdded = 0;
+            foreach (var coll in _colliderThreeDObjects)
+            {
+                _unityObjects.Add(coll);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
+            }
+
+            amountAdded = 0;
+            foreach (var coll in _colliderTwoDObjects)
+            {
+                _unityObjects.Add(coll);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
+            }
+
+            // We won't need to add more stuff than this
+        }
+
+        protected virtual void EnsureCacheForAssets<T>(IList<T> cacheInvolved) where T: UnityEngine.Object
+        {
+            if (cacheInvolved.Count >= _cacheCapacity && !cacheInvolved.Contains(default))
+            {
+                return;
+            }
+
+            cacheInvolved.Clear();
+            string query = $"t:{typeof(T).Name}";
+            var guids = AssetDatabase.FindAssets(query);
+            int howManyToGoThrough = Mathf.Min(_cacheCapacity, guids.Length);
+
+            for (int i = 0; i < howManyToGoThrough; i++)
+            {
+                var guidEl = guids[i];
+                var path = AssetDatabase.GUIDToAssetPath(guidEl);
+                var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                if (asset != null) cacheInvolved.Add(asset);
+            }
+
+        }
+
+        protected IList<UnityObject> _unityObjects = new List<UnityObject>();
+        protected IList<Collider> _colliderThreeDObjects = new List<Collider>();
+        protected IList<Collider2D> _colliderTwoDObjects = new List<Collider2D>();
+        protected IList<Texture> _textures = new List<Texture>();
+        protected IList<Material> _materials = new List<Material>();
+
+        protected string RandomString(int len)
         {
             const string chars = "abcdefghijklmnopqrstuvwxyz";
             return new string(Enumerable.Range(0, len).Select(_ => chars[_rng.Next(chars.Length)]).ToArray());
         }
 
-        private float RandomFloat()
+        protected float RandomFloat()
         {
             return (float)(_rng.NextDouble() * 200.0 - 100.0);
         }
 
-        private void UpdateStatus()
+        protected int RandomInt()
+        {
+            return _rng.Next(-100, 100);
+        }
+
+        protected void UpdateStatus()
         {
             if (_status == null) return;
             var count = GetVariables().Count();
             var play = EditorApplication.isPlaying ? "Play" : "Edit";
             _status.text = $"Vars: {count}  |  Mode: {play}  |  LiveRefresh: {(_liveRefresh ? "On" : "Off")}";
         }
+    }
+
+    public class CircularBuffer<T> : IEnumerable<T>
+    {
+        private readonly T[] _buffer;
+        private int _start;   // index of oldest element
+        private int _count;
+
+        public int Capacity => _buffer.Length;
+        public int Count => _count;
+
+        public CircularBuffer(int capacity)
+        {
+            if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+            _buffer = new T[capacity];
+            _start = 0;
+            _count = 0;
+        }
+
+        public void Add(T item)
+        {
+            int index = (_start + _count) % Capacity;
+            _buffer[index] = item;
+
+            if (_count == Capacity)
+            {
+                // Overwrite oldest
+                int firstNullIndex = FirstIndexOfNull();
+
+                _start = (_start + 1) % Capacity;
+            }
+            else
+            {
+                _count++;
+            }
+        }
+
+        protected virtual int FirstIndexOfNull()
+        {
+            for (int i = 0; i < _buffer.Length; i++)
+            {
+                var item = _buffer[i];
+                if (item == null)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= _count) throw new ArgumentOutOfRangeException(nameof(index));
+                return _buffer[(_start + index) % Capacity];
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < _count; i++)
+                yield return this[i];
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

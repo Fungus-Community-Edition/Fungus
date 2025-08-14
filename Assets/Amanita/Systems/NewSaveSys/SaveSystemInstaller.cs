@@ -50,7 +50,8 @@ namespace Amanita.SaveSys
             }
 
             if (Application.platform == RuntimePlatform.Android ||
-                Application.platform == RuntimePlatform.IPhonePlayer)
+                Application.platform == RuntimePlatform.IPhonePlayer ||
+                Application.platform == RuntimePlatform.WebGLPlayer)
             {
                 whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
             }
@@ -81,7 +82,6 @@ namespace Amanita.SaveSys
                 {
                     { SaveDirectoryType.DataPath, Application.dataPath },
                     { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                    { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
                 };
 
                 // We assume that the GlobalVariables Flowchart was already initted by this point, as well
@@ -153,6 +153,11 @@ namespace Amanita.SaveSys
 
         protected virtual void OnValidate()
         {
+            if (whereSavesAreStored == SaveDirectoryType.Null)
+            {
+                whereSavesAreStored = SaveDirectoryType.InTheBalls;
+            }
+
             ValidateAppliers();
             void ValidateAppliers()
             {

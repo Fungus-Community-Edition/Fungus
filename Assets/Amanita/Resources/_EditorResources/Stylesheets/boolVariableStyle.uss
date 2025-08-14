@@ -21,7 +21,7 @@
 	height: 100%;
 	padding: 0px 0px 0px 2px;
 	margin: 0px;
-	background-color: rgb(20, 20, 20);
+	background-color: rgb(26, 26, 26);
 	font-size: 18px;
 }
 
@@ -33,7 +33,7 @@
 
 .varRowTypeLabel 
 {
-  background-color: #6a3e4d;
+  background-color: #005A9C;
 }
 
 .toggle
@@ -50,7 +50,7 @@
 {
 	display: flex;
 	background-color: transparent;
-	height: 100%;
+	height: 30px;
 	width: 30px;
 	align-items: center;
 }
@@ -61,6 +61,6 @@
 	background-color: rgb(26, 26, 26);
 	align-items: center;
 	align-content: center;
-	height: 90%;
+	height: 30px;
 	width: 30px;
 }

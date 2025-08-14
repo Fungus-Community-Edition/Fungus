@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/FontsTest_TextFields.uss?fileID=7433441132597879392&amp;guid=49d9c4e50507ce34397916957b7dfde9&amp;type=3#FontsTest_TextFields" />
+    <ui:VisualElement class="root">
+        <ui:Label text="Raw Amaranth .ttf" class="title" />
+        <ui:TextField value="String " class="tf raw" />
+        <ui:Label text="Amaranth + spacing tweak" class="title" />
+        <ui:TextField value="Kerning test: AVATAR WAVE" class="tf spaced" />
+        <ui:Label text="Fallback system font" class="title" />
+        <ui:TextField value="Kerning test: AVATAR WAVE" class="tf fallback" />
+    </ui:VisualElement>
+</ui:UXML>
