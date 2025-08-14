@@ -1,11 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
 
@@ -25,7 +22,7 @@ namespace Amanita.VScripting.EditorUtils
         protected static void InitializeHandlerLookup()
         {
             // Always rebuild lookup right now
-            RefreshHandlerLookup();
+            RefreshHandlerLookup(); //
 
             // Ensure we only subscribe once
             AssemblyReloadEvents.afterAssemblyReload -= RefreshHandlerLookup;
@@ -87,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils
             InitVisuals(initArgs);
             _handlerPool = new RowVisualHandlerPool(_handlerResolver, visualHandlerLookup);
             ListenForEvents();
-            //Refresh();
+            Refresh();
         }
 
         protected bool _isDisposed;
@@ -97,17 +94,9 @@ namespace Amanita.VScripting.EditorUtils
             _holdsManager = initArgs.HoldsManager;
             Root = initArgs.Root;
             _listContainer = initArgs.ListContainer as ScrollView;
-
-            // Decided to apply the following in uxml instead of code
-            //_listContainer.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
-            //_listContainer.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
-
             _countLabel = initArgs.CountLabel;
             _addButton = initArgs.AddButton;
             _flowchart = initArgs.Flowchart;
-
-            //_listContainer.contentContainer.RegisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
-
         }
 
         protected virtual void OnGeometryChangedEvent(GeometryChangedEvent evt)
@@ -152,7 +141,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            //_listContainer.contentContainer.UnregisterCallback<GeometryChangedEvent>(OnGeometryChangedEvent);
             _addButton.clicked -= OnAddClicked;
             _flowchart.VariableAdded -= OnVariableAdded;
             _flowchart.VariableRemoved -= OnVariableRemoved;
@@ -199,7 +187,6 @@ namespace Amanita.VScripting.EditorUtils
 #endif
 
             _listContainer.Add(rowToUse.RootElement);
-
             _allRows.Add(rowToUse);
         }
 
@@ -256,12 +243,12 @@ namespace Amanita.VScripting.EditorUtils
             // (even after it gets something added to it). That leads to phantom space
             // when we try to scroll. To fix that, we have to force it to redo its layout
             // again by changing the content container's style as you see below.
-            var cc = _listContainer.contentContainer;
-            cc.style.display = DisplayStyle.None;
+            var contentContainer = _listContainer.contentContainer;
+            contentContainer.style.display = DisplayStyle.None;
 
             _listContainer.schedule.Execute(() =>
             {
-                cc.style.display = DisplayStyle.Flex;
+                contentContainer.style.display = DisplayStyle.Flex;
             }).StartingIn(0);
         }
 
@@ -289,7 +276,6 @@ namespace Amanita.VScripting.EditorUtils
                     yield return row;
             }
         }
-
 
         protected virtual void ReleaseRow(VariableRow toRelease)
         {

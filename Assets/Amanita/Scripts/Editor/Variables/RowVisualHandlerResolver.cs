@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Type = System.Type;
-using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -10,9 +9,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         public virtual Type ResolveHandler(IDictionary<Type, Type> visualHandlerLookup, Type contentType)
         {
-            Type handlerType;
-
-            bool exactMatchFound = visualHandlerLookup.TryGetValue(contentType, out handlerType);
+            bool exactMatchFound = visualHandlerLookup.TryGetValue(contentType, out Type handlerType);
             if (exactMatchFound)
             {
                 return handlerType;
@@ -50,7 +47,9 @@ namespace Amanita.VScripting.EditorUtils
         static int InheritanceDistance(Type baseType, Type derivedType)
         {
             int distance = 0;
-            for (var t = derivedType; t != null && t != baseType; t = t.BaseType)
+            for (var typeToCheck = derivedType;
+                typeToCheck != null && typeToCheck != baseType;
+                typeToCheck = typeToCheck.BaseType)
                 distance++;
             return distance;
         }

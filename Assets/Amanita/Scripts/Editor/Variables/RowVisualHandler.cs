@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace Amanita.VScripting.EditorUtils
         VisualElement Root { get; }
         VisualTreeAsset Template { get; }
         Type VarContentType { get; }
+        SerializedObject SerializedVar { get; set; }
         void Refresh();
     }
 
@@ -27,7 +29,6 @@ namespace Amanita.VScripting.EditorUtils
         protected VisualElement _holder;
         protected IVariable _currentVariable;
         protected IVariable _prevVariable;
-        protected SerializedObject _serializedObject;
         protected VisualElement _valueFieldHolder;
         protected TextField _keyField;
         protected EnumField _scopeField;
@@ -49,9 +50,14 @@ namespace Amanita.VScripting.EditorUtils
         /// <summary>
         /// Centralized entry for resolving a handler’s template from cache or resources.
         /// </summary>
-        protected VisualTreeAsset GetOrResolveTemplate(Type handlerType)
+        protected virtual VisualTreeAsset GetOrResolveTemplate(Type handlerType)
         {
             var key = TemplateKeyFor(handlerType);
+
+            if (LoggedMissingOnce.Contains(handlerType))
+            {
+                return null;
+            }
 
             if (!_templateCache.TryGetValue(key, out var vta) || vta == null)
             {
@@ -65,7 +71,9 @@ namespace Amanita.VScripting.EditorUtils
                 vta = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
                 if (vta == null)
                 {
-                    Debug.LogError(string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate));
+                    string errorMessage = string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate);
+                    Debug.LogError(errorMessage);
+                    LoggedMissingOnce.Add(handlerType);
                     return null;
                 }
 
@@ -75,6 +83,7 @@ namespace Amanita.VScripting.EditorUtils
             return _templateCache[key];
         }
 
+        public static IList<Type> LoggedMissingOnce = new List<Type>();
         protected static string TemplateKeyFor(Type t) => t.AssemblyQualifiedName;
         protected static readonly string missingTemplateFormat =
             "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
@@ -83,10 +92,9 @@ namespace Amanita.VScripting.EditorUtils
         {
             EnsureVisualsAreReady();
 
-            if (_holder != null && !_holder.Contains(Root))
+            if (_holder != null && Root != null && !_holder.Contains(Root))
                 _holder.Add(Root);
 
-            UpdateSerializedObject();
             UnbindFields();
             BindFields();
         }
@@ -113,37 +121,35 @@ namespace Amanita.VScripting.EditorUtils
             _scopeField = Root.Q<EnumField>("Scope");
         }
 
-        protected virtual void UpdateSerializedObject()
-        {
-            if ((_prevVariable == _currentVariable) && _serializedObject != null) return;
-
-            if (_currentVariable != null)
-            {
-                _serializedObject?.Dispose();
-                _serializedObject = new SerializedObject((UnityObject)_currentVariable);
-                _serializedObject.Update();
-            }
-            else
-            {
-                _serializedObject = null;
-            }
-        }
-
         protected virtual void UnbindFields()
         {
-            _keyField?.Unbind();
-            _valueFieldHolder?.Unbind();
-            _scopeField?.Unbind();
+            Root?.Unbind();
         }
 
         protected virtual void BindFields()
         {
-            if (_serializedObject == null) return;
+            if (SerializedVar == null || Root == null)
+            {
+                return;
+            }
 
-            _keyField?.Bind(_serializedObject);
-            _valueFieldHolder?.Bind(_serializedObject);
-            _scopeField?.Bind(_serializedObject);
+            Root.Bind(SerializedVar);
         }
+
+        public virtual SerializedObject SerializedVar
+        {
+            get { return _serializedVar; }
+            set
+            {
+                if (_serializedVar == value) return;
+
+                UnbindFields();
+                _serializedVar = value;
+                BindFields();
+            }
+        }
+
+        protected SerializedObject _serializedVar;
 
         public virtual IVariable Variable
         {
@@ -182,6 +188,7 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public virtual VisualTreeAsset Template => _template;
+
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
@@ -218,7 +225,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void BindFields()
         {
             base.BindFields();
-            _floatField?.Bind(_serializedObject);
+            _floatField?.Bind(SerializedVar);
         }
     }
 

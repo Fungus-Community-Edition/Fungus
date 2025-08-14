@@ -1,5 +1,8 @@
 using System;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -12,34 +15,57 @@ namespace Amanita.VScripting.EditorUtils
         /// IRowVisualHandler passed to be in a disposed state.
         /// </summary>
         public virtual void Init(VisualElement holder, IVariable toRepresent,
-            IRowVisualHandler nonInitializedHandler)
+            IRowVisualHandler visHandler)
         {
             _isDisposed = false;
             _holder = holder;
-            _varToRepresent = toRepresent;
-            VisualHandler = nonInitializedHandler;
+            _prevVariable = _currentVariable;
+            _currentVariable = toRepresent;
+
+            UpdateSerializedVar();
+
+            VisualHandler = visHandler;
+            VisualHandler.SerializedVar = _serializedVar;
             VisualHandler.Init(holder, toRepresent);
             VisualHandler.Refresh();
         }
 
         protected bool _isDisposed;
         protected VisualElement _holder;
-        protected IVariable _varToRepresent;
-        public IRowVisualHandler VisualHandler { get; protected set; }
+        protected IVariable _prevVariable;
+        protected IVariable _currentVariable;
 
-        protected Flowchart _flowchart;
+        protected virtual void UpdateSerializedVar()
+        {
+            if ((_prevVariable == _currentVariable) && _serializedVar != null) return;
+
+            if (_currentVariable != null)
+            {
+                _serializedVar?.Dispose();
+                _serializedVar = SerializedObjectFrom(_currentVariable);
+                _serializedVar.Update();
+            }
+            else
+            {
+                _serializedVar = null;
+            }
+        }
+
+        protected SerializedObject _serializedVar;
+
+        public IRowVisualHandler VisualHandler { get; protected set; }
 
         public virtual IVariable VarToRepresent
         {
-            get { return _varToRepresent; }
+            get { return _currentVariable; }
             set
             {
-                if (_varToRepresent == value)
+                if (_currentVariable == value)
                 {
                     return;
                 }
 
-                _varToRepresent = value;
+                _currentVariable = value;
 
                 if (VisualHandler != null)
                 {
@@ -67,12 +93,31 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public virtual void Clear()
         {
-            _varToRepresent = VisualHandler.Variable = null;
+            _currentVariable = VisualHandler.Variable = null;
         }
 
         public virtual void Refresh()
         {
+            UpdateSerializedVar();
             VisualHandler?.Refresh();
+        }
+
+        protected SerializedObject SerializedObjectFrom(IVariable variable)
+        {
+            SerializedObject result;
+
+            if (variable is UnityObject unityObj) // Should apply even when we have a MuscariableHolder passed in
+            {
+                result = new SerializedObject(unityObj);
+            }
+            else
+            {
+                MuscariableHolder holder = ScriptableObject.CreateInstance<MuscariableHolder>();
+                holder.Init(variable);
+                result = new SerializedObject(holder);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -88,14 +133,11 @@ namespace Amanita.VScripting.EditorUtils
 
             Clear();
             var rootParent = RootElement?.parent;
-            if (rootParent != null)
-            {
-                rootParent.Remove(RootElement);
-            }
+            rootParent?.Remove(RootElement);
+
             VisualHandler?.Dispose();
             VisualHandler = null;
-            _flowchart = null;
-            _varToRepresent = null;
+            _currentVariable = null;
             _holder = null;
             _isDisposed = true;
         }

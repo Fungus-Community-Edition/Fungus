@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-
+    
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [System.Serializable]
-    public abstract class Muscariable : UnityEngine.Object, IVariable
+    public abstract class Muscariable : IVariable
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
@@ -37,6 +37,14 @@ namespace Amanita.VScripting
 
         public Muscariable() { }
 
+        public Muscariable (IVariable otherVar)
+        {
+            key = otherVar.Key;
+            scope = otherVar.Scope;
+            itemID = otherVar.ItemID;
+            value = otherVar.Value;
+        }
+
         public Muscariable(string key, int itemID, VariableScope scope)
         {
             this.key = key;
@@ -44,12 +52,12 @@ namespace Amanita.VScripting
             this.scope = scope;
         }
 
-        public abstract System.Type ContentType { get; }
+        public virtual System.Type ContentType => typeof(Type);
         // ^So clients can see the type even through this non-generic interface
 
         public virtual System.Object Value
         {
-            get { return val; }
+            get { return value; }
             set
             {
                 if (!CanHoldAsValue(value))
@@ -58,10 +66,12 @@ namespace Amanita.VScripting
                     throw new System.ArgumentException(errorMessage, "value");
                 }
 
-                val = value;
+                this.value = value;
             }
         }
-        protected System.Object val;
+
+        [SerializeField]
+        protected System.Object value;
 
         protected virtual bool CanHoldAsValue(System.Object obj)
         {
@@ -130,10 +140,10 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
-        public override System.Type ContentType { get { return typeof(T); } }
+        public override Type ContentType { get { return typeof(T); } }
 
         public virtual new T Value
         {
@@ -237,7 +247,7 @@ namespace Amanita.VScripting
         int ItemID { get; set; }
 
         /// <summary>
-        /// The type of the value that this is meant to represent. It's like how Funguns
+        /// The type of the value that this is meant to represent. It's like how Fungus
         /// FloatVariables represent float, Fungus StringVariables represent strings,
         /// so on so forth.
         /// </summary>
@@ -249,7 +259,33 @@ namespace Amanita.VScripting
         new T Value { get; set; }
     }
 
+    [Serializable]
+    public class GenericMuscariable : Muscariable<System.Object>
+    {
+        // Keep defaults: Assign supported; Equals/NotEquals from base are fine.
+        // You can extend later for numeric T to support + - * / or relational ops.
+
+        public static bool operator ==(GenericMuscariable a, GenericMuscariable b)
+            => a.Value == b.Value;
+
+        public static bool operator !=(GenericMuscariable a, GenericMuscariable b)
+            => a.Value != b.Value;
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as GenericMuscariable;
+            if (other is null) return false;
+            return this.Value == other.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value != null ? Value.GetHashCode() : 0;
+        }
+    }
+
     [System.Serializable]
+    [Muscariable("Primitive", typeof(string), "String")]
     public class StringMuscariable : Muscariable<string>
     {
         public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)
