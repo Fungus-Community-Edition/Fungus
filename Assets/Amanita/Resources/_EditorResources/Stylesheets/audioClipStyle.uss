@@ -1,6 +1,7 @@
 .varRowTypeLabel 
 {
-  background-color: #434343;
+  background-color: #F5A927;
+  color: black;
 }
 
 .propertyField
@@ -21,7 +22,6 @@
 
 	padding: 0px;
 	margin: 0px;
-
 }
 
 /* 
@@ -35,6 +35,7 @@ the music note.
 	height: 70%;   
 	flex-shrink: 0;    /* Prevent squeezing */
 	margin-right: 2px;
+	background-color: rgb(26, 26, 26);
 }
 
 #audioClipObjectField .unity-object-field__selector > .unity-object-field__selector-icon

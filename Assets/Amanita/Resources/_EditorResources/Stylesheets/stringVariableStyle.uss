@@ -1,6 +1,11 @@
+#TypeLabel
+{
+	font-size: 16px;
+}
+
 .varRowTypeLabel
 {
-	background-color: #324062;
+	background-color: #3C5E4F;
 }
 
 .textField

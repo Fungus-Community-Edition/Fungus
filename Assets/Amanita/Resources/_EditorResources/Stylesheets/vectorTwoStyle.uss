@@ -16,6 +16,7 @@
 	width: auto;
 }
 
+
 #ValueFieldHolder
 {
 	flex-direction: column;
@@ -67,7 +68,7 @@ the music note.
 #VectorTwoField > #unity-input-value
 {
 	height: 100%;
-	width: 100%;
+	width: 97%;
 }
 
 #VectorTwoField > #unity-input-value > Label
@@ -99,10 +100,17 @@ the music note.
 #VectorTwoField > #unity-input-value > VisualElement > #unity-x-input > #unity-text-input
 {
 	height: 100%;
+	background-color: rgb(26, 26, 26);
 }
 
 #VectorTwoField > #unity-input-value > VisualElement > #unity-y-input > #unity-text-input
 {
 	height: 100%;
+	background-color: rgb(26, 26, 26);
 }
 
+
+.varRowTypeLabel
+{
+	background-color: #3C5E4F;
+}

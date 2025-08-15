@@ -3,6 +3,7 @@
     flex-direction: row;
     height: 30px;
     margin-bottom: 3px;
+    border-radius: 2px;
 }
 
 .removeButton 
@@ -10,8 +11,7 @@
     width: 30px;
     border-radius: 2px;
     padding: 0px;
-    margin-left: 2px;
-    margin-bottom: 0px;
+    margin: 0px 0px 0px 2px;
 }
 
 .varRowTypeLabel
@@ -20,8 +20,8 @@
     color: rgb(229, 229, 229);
     -unity-text-align: middle-left;
     width: 75px;
-    padding: 0 0 0 3px;
-    margin: 0;
+    padding: 0 0 0 5px;
+    margin: 0px;
     font-size: 14px;
 }
 
@@ -30,7 +30,7 @@
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
-    padding: 0 1px 0 1px;
+    padding: 0 2px 0 2px;
     width: 130px;
     margin: 0 2px 0 1px;
 }
@@ -56,7 +56,8 @@
     border-radius: 2px;
     border-color: white;
     font-size: 14px;
-    margin-right: 3px;
+    margin: 0px 3px 0px 0px;
+
 }
 
 .scopeRoot 

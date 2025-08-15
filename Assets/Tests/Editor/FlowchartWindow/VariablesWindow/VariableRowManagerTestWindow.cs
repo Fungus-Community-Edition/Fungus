@@ -4,18 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 using UITKLabel = UnityEngine.UIElements.Label;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AV = Amanita.VScripting;
-
-
-// Adjust these to your namespaces
-using Amanita.VScripting;
 using Amanita.Tests.Editor;
 // using Amanita.VScripting.EditorUtils; // if you keep helpers here
 
@@ -308,7 +302,7 @@ namespace Amanita.VScripting.EditorUtils
             EnsureClipsCached();
             
             Undo.IncrementCurrentGroup();
-            int varTypeCount = 6;
+            int varTypeCount = 7;
             for (int i = 0; i < count; i++)
             {
                 var typeIndex = i % varTypeCount;
@@ -325,10 +319,16 @@ namespace Amanita.VScripting.EditorUtils
                         var = AddVariableComponent<AudioClipVariable>(clip);
                         break;
                     case 5:
-                    Vector2 toDisplay = new Vector2(_rng.Next(-100, 100),
+                        Vector2 toDisplay = new Vector2(_rng.Next(-100, 100),
                         _rng.Next(-100, 100));
-                    var = AddVariableComponent<Vector2Variable>(toDisplay);
-                    break;
+                        var = AddVariableComponent<Vector2Variable>(toDisplay);
+                        break;
+                    case 6:
+                        Vector3 vec3 = new Vector3(_rng.Next(-100, 100), 
+                        _rng.Next(-100, 100), 
+                        _rng.Next(-100, 100));
+                        var = AddVariableComponent<Vector3Variable>(vec3);
+                        break;
                 }
 
                 // Assign a unique key via Flowchart helper if available
@@ -427,9 +427,9 @@ namespace Amanita.VScripting.EditorUtils
             return _flowchart?.Variables?.Cast<IVariable>() ?? Enumerable.Empty<IVariable>();
         }
 
-        private T AddVariableComponent<T>(object valueForInit) where T : Component, IVariable
+        private TVarType AddVariableComponent<TVarType>(object valueForInit) where TVarType : Component, IVariable
         {
-            var c = Undo.AddComponent<T>(_ownerGO);
+            var c = Undo.AddComponent<TVarType>(_ownerGO);
             var uo = c as UnityEngine.Object;
             var so = new SerializedObject(uo);
 
@@ -440,8 +440,10 @@ namespace Amanita.VScripting.EditorUtils
             else if (valueForInit is int i && valueProp != null) valueProp.intValue = i;
             else if (valueForInit is bool b && valueProp != null) valueProp.boolValue = b;
             else if (valueForInit is string s && valueProp != null) valueProp.stringValue = s;
+            else if (valueForInit is Vector2 vec2 && valueProp != null) valueProp.vector2Value = vec2;
+            else if (valueForInit is Vector3 vec3 && valueProp != null) valueProp.vector3Value = vec3;
             else if (valueForInit is UnityEngine.Object obj && valueProp != null) valueProp.objectReferenceValue = obj;
-
+            
             so.ApplyModifiedProperties();
             EditorUtility.SetDirty(uo);
             return c;
