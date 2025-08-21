@@ -76,6 +76,7 @@ namespace Amanita.VScripting
         protected virtual bool CanHoldAsValue(System.Object obj)
         {
             bool result;
+
             if (obj == null)
             {
                 result = ContentType.IsClass;

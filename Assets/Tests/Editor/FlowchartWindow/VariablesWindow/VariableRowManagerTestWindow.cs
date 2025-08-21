@@ -41,9 +41,9 @@ namespace Amanita.VScripting.EditorUtils
         protected double _lastRefresh;
         protected const double LiveRefreshInterval = 0.25;
 
-        // Cached audio clips for seeding
-        protected List<AudioClip> _clips;
-        protected List<GameObject> _gameObjects;
+        // Cached values for seeding
+        protected List<AudioClip> _audioClips = new List<AudioClip>();
+        protected List<GameObject> _gameObjects = new List<GameObject>();
 
         // If your VariableRowManager is a class, you can keep a reference here.
         // Replace this with your real type/usage.
@@ -303,9 +303,11 @@ namespace Amanita.VScripting.EditorUtils
             if (clearBefore) ClearVariables();
             EnsureClipsCached();
             EnsureGameObjectsCached();
+            EnsureCollidersCached();
+            EnsureUnityObjectsCached();
             
             Undo.IncrementCurrentGroup();
-            int varTypeCount = 11;
+            int varTypeCount = _supportedTypes.Count;
             // For when we find stuff
             for (int i = 0; i < count; i++)
             {
@@ -319,7 +321,7 @@ namespace Amanita.VScripting.EditorUtils
                     case 2: var = AddVariableComponent<BooleanVariable>(_rng.NextDouble() > 0.5); break;
                     case 3: var = AddVariableComponent<StringVariable>(RandomString(6)); break;
                     case 4:
-                        var clip = _clips.Count > 0 ? _clips[_rng.Next(_clips.Count)] : null;
+                        var clip = _audioClips.Count > 0 ? _audioClips[_rng.Next(_audioClips.Count)] : null;
                         var = AddVariableComponent<AudioClipVariable>(clip);
                         break;
                     case 5:
@@ -353,6 +355,20 @@ namespace Amanita.VScripting.EditorUtils
                         var theCol = new Color(r, g, b);  
                         var = AddVariableComponent<ColorVariable>(theCol);
                         break;
+                    case 11:
+                        if (_colliderTwoDObjects.Count > 0)
+                        {
+                            var collValue = _colliderTwoDObjects.GetRandom();
+                            var = AddVariableComponent<Collider2DVariable>(collValue);
+                        }
+                        break;
+                    case 12:
+                        if (_colliderThreeDObjects.Count > 0)
+                        {
+                            var collValue = _colliderTwoDObjects.GetRandom();
+                            var = AddVariableComponent<ColliderVariable>(collValue);
+                        }
+                        break;
 
 
 
@@ -380,6 +396,24 @@ namespace Amanita.VScripting.EditorUtils
             EditorUtility.SetDirty(_flowchart);
             UpdateStatus();
         }
+
+        protected static IList<Type> _supportedTypes = new List<Type>()
+        {
+            typeof(int),
+            typeof(float),
+            typeof(string),
+            typeof(bool),
+            typeof(Color),
+            typeof(GameObject),
+            typeof(Transform),
+            typeof(UnityObject),
+            typeof(Vector3),
+            typeof(Vector2),
+            typeof(Collider2D),
+            typeof(Collider),
+            typeof(AudioClip),
+            
+        };
 
         protected void RandomMutate(int count)
         {
@@ -527,7 +561,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (prop == null) return;
             EnsureClipsCached();
-            var newObj = _clips.Count > 0 ? _clips[_rng.Next(_clips.Count)] : null;
+            var newObj = _audioClips.Count > 0 ? _audioClips[_rng.Next(_audioClips.Count)] : null;
 
             serializedObj.Update();
             prop.objectReferenceValue = newObj;
@@ -559,23 +593,26 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void EnsureClipsCached()
         {
-            if (_clips != null) return;
-            _clips = new List<AudioClip>();
+            if (_audioClips.Count > 0 && !_audioClips.Contains(null)) return;
+
+            _audioClips.Clear();
             var guids = AssetDatabase.FindAssets("t:AudioClip");
             foreach (var g in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(g);
                 var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                if (clip != null) _clips.Add(clip);
+                if (clip != null) _audioClips.Add(clip);
             }
 
-            _unityObjects.AddRange(_clips.Cast<UnityObject>().ToList());
+            _unityObjects.AddRange(_audioClips.Cast<UnityObject>().ToList());
         }
 
         protected virtual void EnsureGameObjectsCached()
         {
-            if (_gameObjects != null) return;
-            _gameObjects = new List<GameObject>();
+            if (_gameObjects.Count > 0 && !_gameObjects.Contains(null)) return;
+
+            _gameObjects.Clear();
+
             var guids = AssetDatabase.FindAssets("t:GameObject");
             foreach (var g in guids)
             {
@@ -584,10 +621,58 @@ namespace Amanita.VScripting.EditorUtils
                 if (go != null) _gameObjects.Add(go);
             }
 
-            _unityObjects.AddRange(_gameObjects.Cast<UnityObject>().ToList());
+            foreach (var go in _gameObjects)
+            {
+                _unityObjects.Add(go);
+            }
+        }
+
+        protected virtual void EnsureCollidersCached()
+        {
+            _colliderThreeDObjects.Clear();
+            _colliderTwoDObjects.Clear();
+
+            foreach (GameObject go in _gameObjects)
+            {
+                var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
+                var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+
+                _colliderThreeDObjects.AddRange(colliderThreeDsFound);
+                _colliderTwoDObjects.AddRange(colliderTwoDsFound);
+            }
+        }
+
+        protected virtual void EnsureUnityObjectsCached()
+        {
+            if (_unityObjects.Count > 0 && !_unityObjects.Contains(null)) return;
+
+            _unityObjects.Clear();
+            foreach (var go in _gameObjects)
+            {
+                _unityObjects.Add(go);
+            }
+
+            foreach (var clip in _audioClips) 
+            {
+                _unityObjects.Add(clip);
+            }
+
+            foreach (var coll in _colliderThreeDObjects)
+            {
+                _unityObjects.Add(coll);
+            }
+
+            foreach (var coll in _colliderTwoDObjects)
+            {
+                _unityObjects.Add(coll);
+            }
+
+            // We won't need to add more stuff than this
         }
 
         protected IList<UnityObject> _unityObjects = new List<UnityObject>();
+        protected IList<Collider> _colliderThreeDObjects = new List<Collider>();
+        protected IList<Collider2D> _colliderTwoDObjects = new List<Collider2D>();
 
         protected string RandomString(int len)
         {

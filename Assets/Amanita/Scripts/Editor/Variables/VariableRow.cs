@@ -45,7 +45,7 @@ namespace Amanita.VScripting.EditorUtils
                 _serializedVar = SerializedObjectFrom(_currentVariable);
                 _serializedVar.Update();
                 var prop = _serializedVar.FindProperty("value");
-                Debug.Log($"{prop.propertyType} at path 'value'");
+                //Debug.Log($"{prop.propertyType} at path 'value'");
             }
             else
             {

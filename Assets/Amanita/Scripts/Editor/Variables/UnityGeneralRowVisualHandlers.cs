@@ -40,11 +40,11 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            _transformField = Root.Q<EditorObjectField>("UnityObjectField");
-            _transformField.objectType = typeof(UnityObject);
+            _unityObjectField = Root.Q<EditorObjectField>("UnityObjectField");
+            _unityObjectField.objectType = typeof(UnityObject);
         }
 
-        protected EditorObjectField _transformField;
+        protected EditorObjectField _unityObjectField;
     }
 
 }

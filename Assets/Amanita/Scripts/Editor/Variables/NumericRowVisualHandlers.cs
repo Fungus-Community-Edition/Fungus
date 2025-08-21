@@ -21,5 +21,4 @@ namespace Amanita.VScripting.EditorUtils
         
     }
 
-    
 }

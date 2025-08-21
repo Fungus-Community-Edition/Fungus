@@ -94,17 +94,6 @@ namespace Amanita.SaveSystemTests
         }
 
         [Test]
-        public virtual async Task WritesSaveToDisk_BaseStreamingAssetsPath()
-        {
-            writeArgs.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            
-            // ^Since it might get set to null by other tests, we need to reset it
-            await CommonSaveWriteTestAsync(writeArgs);
-        }
-
-        // We can worry about PlayerPrefs later, if we need to.
-
-        [Test]
         public virtual async Task WritesSaveToDisk_BaseDataPath_RelativePathIncluded()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
@@ -115,14 +104,6 @@ namespace Amanita.SaveSystemTests
         public virtual async Task WritesSaveToDisk_BasePersistentDataPath_RelativePathIncluded()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            await CommonSaveWriteTestAsync(writeArgs, saveWriter.RelativeSavePath);
-        }
-
-        [Test]
-        public virtual async Task WritesSaveToDisk_BaseStreamingAssetsPath_RelativePathIncluded()
-        {
-            writeArgs.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-
             await CommonSaveWriteTestAsync(writeArgs, saveWriter.RelativeSavePath);
         }
 
@@ -149,9 +130,6 @@ namespace Amanita.SaveSystemTests
             Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
                 "Expected ArgumentNullException when trying to write null save data.");
 
-            writeArgsWithNullSaveData.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
-                "Expected ArgumentNullException when trying to write null save data.");
         }
 
         [Test]
@@ -168,9 +146,6 @@ namespace Amanita.SaveSystemTests
             Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
             writeArgsWithBadSlotNumber.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
-                "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
-            writeArgsWithBadSlotNumber.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
             Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
                 "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
         }
@@ -222,14 +197,6 @@ namespace Amanita.SaveSystemTests
                     SaveMetaData = new SaveMetaData(),
                     BaseSaveDirectory = SaveDirectoryType.PersistentDataPath
                 },
-                new SaveWriteRequest
-                {
-                    SaveName = "TestSave3",
-                    SlotNumber = 2,
-                    MainState = new CompositeSaveData(),
-                    SaveMetaData = new SaveMetaData(),
-                    BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath
-                }
             };
 
         [Test]
