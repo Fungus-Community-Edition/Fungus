@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
+using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -102,7 +101,20 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void EnsureVisualsAreReady()
         {
             if (Root == null && _template != null)
+            {
                 RegisterVisualElements();
+
+                if (_currentVariable != null)
+                {
+                    // For debug purposes
+                    string typeName = _currentVariable.ContentType.Name;
+                    Root.name = $"{typeName}_Row";
+                }
+                else
+                {
+                    Root.name = "EmptyRow";
+                }
+            }
         }
 
         public virtual VisualElement Root { get; protected set; }
@@ -202,34 +214,30 @@ namespace Amanita.VScripting.EditorUtils
 
         public override Type VarContentType => _varContentType;
 
-    }
-
-    [RowVisualHandler("Primitives", typeof(float), "Float",
-        "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
-    public class FloatRowVisualHandler : RowVisualHandler<float>
-    {
-        private FloatField _floatField;
-
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            _floatField = Root.Q<FloatField>("FloatField");
+
+            // For those classes that simply need to hook up a single type to a single ObjectField
+            _objField = Root.Q<ObjectField>("UnityObjectField");
+
+            if (_objField != null)
+            {
+                _objField.objectType = typeof(TVarContentType);
+            }
         }
 
-        protected override void UnbindFields()
-        {
-            base.UnbindFields();
-            _floatField?.Unbind();
-        }
+        protected EditorObjectField _objField;
 
-        protected override void BindFields()
-        {
-            base.BindFields();
-            _floatField?.Bind(SerializedVar);
-        }
     }
 
-    [RowVisualHandler("Misc", typeof(object), "Generic",
+    [RowVisualHandler("Primitives", typeof(string), "String",
+        "_EditorResources/UIToolkitTemplates/VarRows/StringVariableRow")]
+    public class StringRowVisualHandler : RowVisualHandler<object>
+    {
+    }
+
+    [RowVisualHandler("Hidden", typeof(object), "Generic",
         "_EditorResources/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
