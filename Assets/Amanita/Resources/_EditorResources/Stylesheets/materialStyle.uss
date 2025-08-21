@@ -9,10 +9,6 @@
 	-unity-text-outline-color: black;
 }
 
-#ColorRowLabel {
-	
-}
-
 #TypeLabel
 {
 	font-size: 18px;
@@ -24,7 +20,7 @@
 	width: auto;
 }
 
-#ColorField
+#UnityObjectField
 {
 	flex-grow: 0;
 	flex-shrink: 0;

@@ -5,7 +5,7 @@
         <engine:Label text="AudioClip" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueField">
-            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="AudioClipObjectField" binding-path="value" view-data-key="AudioClipObjectField" />
+            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="UnityObjectField" binding-path="value" view-data-key="AudioClipObjectField" />
         </engine:VisualElement>
         <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="Scope" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" view-data-key="RemoveButton" class="removeButton" />

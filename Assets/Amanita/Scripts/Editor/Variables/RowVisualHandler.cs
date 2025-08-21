@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
+using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -213,6 +213,21 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public override Type VarContentType => _varContentType;
+
+        protected override void RegisterVisualElements()
+        {
+            base.RegisterVisualElements();
+
+            // For those classes that simply need to hook up a single type to a single ObjectField
+            _objField = Root.Q<ObjectField>("UnityObjectField");
+
+            if (_objField != null)
+            {
+                _objField.objectType = typeof(TVarContentType);
+            }
+        }
+
+        protected EditorObjectField _objField;
 
     }
 

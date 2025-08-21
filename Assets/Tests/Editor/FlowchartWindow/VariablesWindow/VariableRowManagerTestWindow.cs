@@ -304,6 +304,8 @@ namespace Amanita.VScripting.EditorUtils
             EnsureClipsCached();
             EnsureGameObjectsCached();
             EnsureCollidersCached();
+            EnsureTexturesCached();
+            EnsureMaterialsCached();
             EnsureUnityObjectsCached();
             
             Undo.IncrementCurrentGroup();
@@ -365,8 +367,14 @@ namespace Amanita.VScripting.EditorUtils
                     case 12:
                         if (_colliderThreeDObjects.Count > 0)
                         {
-                            var collValue = _colliderTwoDObjects.GetRandom();
+                            var collValue = _colliderThreeDObjects.GetRandom();
                             var = AddVariableComponent<ColliderVariable>(collValue);
+                        }
+                        break;
+                    case 13: if (_textures.Count > 0)
+                        {
+                            var texVal = _textures.GetRandom();
+                            var = AddVariableComponent<TextureVariable>(texVal);
                         }
                         break;
 
@@ -412,6 +420,7 @@ namespace Amanita.VScripting.EditorUtils
             typeof(Collider2D),
             typeof(Collider),
             typeof(AudioClip),
+            typeof(Texture),
             
         };
 
@@ -593,86 +602,164 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void EnsureClipsCached()
         {
-            if (_audioClips.Count > 0 && !_audioClips.Contains(null)) return;
+            if (_audioClips.Count >= _cacheCapacity && !_audioClips.Contains(null)) return;
 
             _audioClips.Clear();
             var guids = AssetDatabase.FindAssets("t:AudioClip");
-            foreach (var g in guids)
+            foreach (var guidEl in guids)
             {
-                var path = AssetDatabase.GUIDToAssetPath(g);
+                var path = AssetDatabase.GUIDToAssetPath(guidEl);
                 var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
                 if (clip != null) _audioClips.Add(clip);
+
+                if (_audioClips.Count >= _cacheCapacity)
+                {
+                    break;
+                }
             }
 
-            _unityObjects.AddRange(_audioClips.Cast<UnityObject>().ToList());
         }
 
         protected virtual void EnsureGameObjectsCached()
         {
-            if (_gameObjects.Count > 0 && !_gameObjects.Contains(null)) return;
+            if (_gameObjects.Count >= _cacheCapacity && !_gameObjects.Contains(null)) return;
 
             _gameObjects.Clear();
 
             var guids = AssetDatabase.FindAssets("t:GameObject");
-            foreach (var g in guids)
+            foreach (var guidEl in guids)
             {
-                var path = AssetDatabase.GUIDToAssetPath(g);
+                var path = AssetDatabase.GUIDToAssetPath(guidEl);
                 var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 if (go != null) _gameObjects.Add(go);
-            }
 
-            foreach (var go in _gameObjects)
-            {
-                _unityObjects.Add(go);
+                if (_gameObjects.Count >= _cacheCapacity)
+                {
+                    break;
+                }
+
             }
         }
 
         protected virtual void EnsureCollidersCached()
         {
+            bool needRefreshThreeD = _colliderThreeDObjects.Count < _cacheCapacity || _colliderThreeDObjects.Contains(null);
+            bool needRefreshTwoD = _colliderTwoDObjects.Count < _cacheCapacity || _colliderTwoDObjects.Contains(null);
+            if (!needRefreshThreeD && !needRefreshTwoD)
+            {
+                return;
+            }
+
             _colliderThreeDObjects.Clear();
             _colliderTwoDObjects.Clear();
 
             foreach (GameObject go in _gameObjects)
             {
-                var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
-                var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+                if (_colliderThreeDObjects.Count < _cacheCapacity)
+                {
+                    var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
+                    _colliderThreeDObjects.AddRange(colliderThreeDsFound, _cacheCapacity);
+                }
 
-                _colliderThreeDObjects.AddRange(colliderThreeDsFound);
-                _colliderTwoDObjects.AddRange(colliderTwoDsFound);
+                if (_colliderTwoDObjects.Count < _cacheCapacity)
+                {
+                    var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+                    _colliderTwoDObjects.AddRange(colliderTwoDsFound, _cacheCapacity);
+                }
+
+                if (_colliderThreeDObjects.Count >= _cacheCapacity && 
+                    _colliderTwoDObjects.Count >= _cacheCapacity)
+                {
+                    break;
+                }
+
             }
         }
 
+        protected static int _cacheCapacity = 10;
+
         protected virtual void EnsureUnityObjectsCached()
         {
-            if (_unityObjects.Count > 0 && !_unityObjects.Contains(null)) return;
+            if (_unityObjects.Count >= _cacheCapacity && !_unityObjects.Contains(null)) return;
 
             _unityObjects.Clear();
+            int amountAdded = 0;
             foreach (var go in _gameObjects)
             {
                 _unityObjects.Add(go);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
             }
 
+            amountAdded = 0;
             foreach (var clip in _audioClips) 
             {
                 _unityObjects.Add(clip);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
             }
 
+            amountAdded = 0;
             foreach (var coll in _colliderThreeDObjects)
             {
                 _unityObjects.Add(coll);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
             }
 
+            amountAdded = 0;
             foreach (var coll in _colliderTwoDObjects)
             {
                 _unityObjects.Add(coll);
+                amountAdded++;
+                if (amountAdded > 2)
+                    break;
             }
 
             // We won't need to add more stuff than this
         }
 
+        protected virtual void EnsureTexturesCached()
+        {
+            if (_textures.Count > 0 && !_textures.Contains(null)) return;
+
+            _textures.Clear();
+            var guids = AssetDatabase.FindAssets("t:Texture");
+            foreach (var g in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(g);
+                var tex = AssetDatabase.LoadAssetAtPath<Texture>(path);
+                if (tex != null) _textures.Add(tex);
+                if (_textures.Count > 10)
+                    break;
+            }
+        }
+
+        protected virtual void EnsureMaterialsCached()
+        {
+            if (_materials.Count > 0 && !_materials.Contains(null)) return;
+
+            _materials.Clear();
+            var guids = AssetDatabase.FindAssets("t:Material");
+            foreach (var g in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(g);
+                var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (mat != null) _materials.Add(mat);
+
+                if (_materials.Count > 10)
+                    break;
+            }
+        }
+
         protected IList<UnityObject> _unityObjects = new List<UnityObject>();
         protected IList<Collider> _colliderThreeDObjects = new List<Collider>();
         protected IList<Collider2D> _colliderTwoDObjects = new List<Collider2D>();
+        protected IList<Texture> _textures = new List<Texture>();
+        protected IList<Material> _materials = new List<Material>();
 
         protected string RandomString(int len)
         {
@@ -697,5 +784,72 @@ namespace Amanita.VScripting.EditorUtils
             var play = EditorApplication.isPlaying ? "Play" : "Edit";
             _status.text = $"Vars: {count}  |  Mode: {play}  |  LiveRefresh: {(_liveRefresh ? "On" : "Off")}";
         }
+    }
+
+    public class CircularBuffer<T> : IEnumerable<T>
+    {
+        private readonly T[] _buffer;
+        private int _start;   // index of oldest element
+        private int _count;
+
+        public int Capacity => _buffer.Length;
+        public int Count => _count;
+
+        public CircularBuffer(int capacity)
+        {
+            if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+            _buffer = new T[capacity];
+            _start = 0;
+            _count = 0;
+        }
+
+        public void Add(T item)
+        {
+            int index = (_start + _count) % Capacity;
+            _buffer[index] = item;
+
+            if (_count == Capacity)
+            {
+                // Overwrite oldest
+                int firstNullIndex = FirstIndexOfNull();
+
+                _start = (_start + 1) % Capacity;
+            }
+            else
+            {
+                _count++;
+            }
+        }
+
+        protected virtual int FirstIndexOfNull()
+        {
+            for (int i = 0; i < _buffer.Length; i++)
+            {
+                var item = _buffer[i];
+                if (item == null)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= _count) throw new ArgumentOutOfRangeException(nameof(index));
+                return _buffer[(_start + index) % Capacity];
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < _count; i++)
+                yield return this[i];
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

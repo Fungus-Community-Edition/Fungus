@@ -1,11 +1,12 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/variableRowStyle.uss?fileID=7433441132597879392&amp;guid=dc36f721c9349184d99e907b905f9005&amp;type=3#variableRowStyle" />
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/transformStyle.uss?fileID=7433441132597879392&amp;guid=f03b67d4aee03a94f9dc9425249c4387&amp;type=3#transformStyle" />
+    <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/textureStyle.uss?fileID=7433441132597879392&amp;guid=f64d3e345ffa3104481495482ce9acd5&amp;type=3#textureStyle" />
     <engine:VisualElement name="VarRowRoot" style="flex-grow: 1; flex-direction: row;">
-        <engine:Label text="Transform" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
+        <engine:Label text="Texture" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueField">
-            <editor:ObjectField data-source-type="UnityEngine.GameObject, UnityEngine.CoreModule" name="UnityObjectField" binding-path="value" view-data-key="TransformField" focusable="false" type="UnityEngine.Transform, UnityEngine.CoreModule" class="objField" />
+            <editor:ObjectField data-source-type="UnityEngine.AMD.FSR2CommandExecutionData+Textures, UnityEngine.AMDModule" name="UnityObjectField" binding-path="value" view-data-key="UnityObjectField" focusable="false" type="UnityEngine.Transform, UnityEngine.CoreModule" class="objField" />
         </engine:VisualElement>
         <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="Scope" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" view-data-key="RemoveButton" class="removeButton" />
