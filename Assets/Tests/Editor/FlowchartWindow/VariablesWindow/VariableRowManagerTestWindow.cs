@@ -44,6 +44,7 @@ namespace Amanita.VScripting.EditorUtils
         // Cached values for seeding
         protected List<AudioClip> _audioClips = new List<AudioClip>();
         protected List<GameObject> _gameObjects = new List<GameObject>();
+        protected List<Sprite> _sprites = new List<Sprite>();
 
         // If your VariableRowManager is a class, you can keep a reference here.
         // Replace this with your real type/usage.
@@ -301,11 +302,13 @@ namespace Amanita.VScripting.EditorUtils
         protected void SeedVariables(int count, bool clearBefore)
         {
             if (clearBefore) ClearVariables();
-            EnsureClipsCached();
-            EnsureGameObjectsCached();
+            EnsureCacheForAssets(_audioClips);
+            EnsureCacheForAssets(_gameObjects);
             EnsureCollidersCached();
-            EnsureTexturesCached();
-            EnsureMaterialsCached();
+            EnsureCacheForAssets(_textures);
+            EnsureCacheForAssets(_materials);
+            EnsureCacheForAssets(_sprites);
+            EnsureRigidbodiesCached();
             EnsureUnityObjectsCached();
             
             Undo.IncrementCurrentGroup();
@@ -371,14 +374,41 @@ namespace Amanita.VScripting.EditorUtils
                             var = AddVariableComponent<ColliderVariable>(collValue);
                         }
                         break;
-                    case 13: if (_textures.Count > 0)
+                    case 13: 
+                        if (_textures.Count > 0)
                         {
                             var texVal = _textures.GetRandom();
                             var = AddVariableComponent<TextureVariable>(texVal);
                         }
                         break;
-
-
+                    case 14:
+                        if (_materials.Count > 0)
+                        {
+                            var matVal = _materials.GetRandom();
+                            var = AddVariableComponent<MaterialVariable>(matVal);
+                        }
+                        break;
+                    case 15:
+                        if (_sprites.Count > 0)
+                        {
+                            var spriteVal = _sprites.GetRandom();
+                            var = AddVariableComponent<SpriteVariable>(spriteVal);
+                        }
+                        break;
+                    case 16:
+                        if (_rigidbodyTwoDs.Count > 0)
+                        {
+                            var rbVal = _rigidbodyTwoDs.GetRandom();
+                            var = AddVariableComponent<Rigidbody2DVariable>(rbVal);
+                        }
+                        break;
+                    case 17:
+                        if (_rigidbodyThreeDs.Count > 0)
+                        {
+                            var rbVal = _rigidbodyThreeDs.GetRandom();
+                            var = AddVariableComponent<RigidbodyVariable>(rbVal);
+                        }
+                        break;
 
                 }
 
@@ -421,6 +451,10 @@ namespace Amanita.VScripting.EditorUtils
             typeof(Collider),
             typeof(AudioClip),
             typeof(Texture),
+            typeof(Material),
+            typeof(Sprite),
+            typeof(Rigidbody),
+            typeof(Rigidbody2D)
             
         };
 
@@ -569,7 +603,7 @@ namespace Amanita.VScripting.EditorUtils
         protected void MutateObjectRef(SerializedProperty prop, SerializedObject serializedObj)
         {
             if (prop == null) return;
-            EnsureClipsCached();
+            EnsureCacheForAssets(_audioClips);
             var newObj = _audioClips.Count > 0 ? _audioClips[_rng.Next(_audioClips.Count)] : null;
 
             serializedObj.Update();
@@ -598,47 +632,6 @@ namespace Amanita.VScripting.EditorUtils
                 if (it.propertyType == SerializedPropertyType.ObjectReference) return it.Copy();
             }
             return firstNonScript;
-        }
-
-        protected void EnsureClipsCached()
-        {
-            if (_audioClips.Count >= _cacheCapacity && !_audioClips.Contains(null)) return;
-
-            _audioClips.Clear();
-            var guids = AssetDatabase.FindAssets("t:AudioClip");
-            foreach (var guidEl in guids)
-            {
-                var path = AssetDatabase.GUIDToAssetPath(guidEl);
-                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                if (clip != null) _audioClips.Add(clip);
-
-                if (_audioClips.Count >= _cacheCapacity)
-                {
-                    break;
-                }
-            }
-
-        }
-
-        protected virtual void EnsureGameObjectsCached()
-        {
-            if (_gameObjects.Count >= _cacheCapacity && !_gameObjects.Contains(null)) return;
-
-            _gameObjects.Clear();
-
-            var guids = AssetDatabase.FindAssets("t:GameObject");
-            foreach (var guidEl in guids)
-            {
-                var path = AssetDatabase.GUIDToAssetPath(guidEl);
-                var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (go != null) _gameObjects.Add(go);
-
-                if (_gameObjects.Count >= _cacheCapacity)
-                {
-                    break;
-                }
-
-            }
         }
 
         protected virtual void EnsureCollidersCached()
@@ -678,8 +671,53 @@ namespace Amanita.VScripting.EditorUtils
 
         protected static int _cacheCapacity = 10;
 
+        protected virtual void EnsureRigidbodiesCached()
+        {
+            // We assume that the GameObject cache is ready by this point
+            bool shouldRefreshThreeDs = _rigidbodyThreeDs.Count < _cacheCapacity || _rigidbodyThreeDs.Contains(null);
+
+            int howManyToGoThrough = _cacheCapacity;
+            if (shouldRefreshThreeDs)
+            {
+                _rigidbodyThreeDs.Clear();
+                IList<Rigidbody> toAdd = GetComponentsFrom<Rigidbody>(_gameObjects);
+                _rigidbodyThreeDs.AddRange(toAdd);
+            }
+
+            IList<T> GetComponentsFrom<T>(IList<GameObject> gameObjects, int countLimit = 10) where T: Component
+            {
+                IList<T> result = new List<T>();
+                var hasWhatWeWant = (from elem in _gameObjects
+                                     where elem.GetComponent<T>() != null
+                                     select elem.GetComponent<T>()).ToList();
+
+                howManyToGoThrough = Mathf.Min(_cacheCapacity, hasWhatWeWant.Count);
+
+                for (int i = 0; i < howManyToGoThrough; i++)
+                {
+                    var currentRb = hasWhatWeWant[i];
+                    result.Add(currentRb);
+                }
+                return result;
+            }
+
+            bool shouldRefreshTwoDs = _rigidbodyTwoDs.Count < _cacheCapacity || _rigidbodyTwoDs.Contains(null);
+
+            if (shouldRefreshTwoDs)
+            {
+                _rigidbodyTwoDs.Clear();
+                IList<Rigidbody2D> toAdd = GetComponentsFrom<Rigidbody2D>(_gameObjects);
+                _rigidbodyTwoDs.AddRange(toAdd);
+            }
+        }
+
+        protected List<Rigidbody> _rigidbodyThreeDs = new List<Rigidbody>();
+        protected List<Rigidbody2D> _rigidbodyTwoDs = new List<Rigidbody2D>();
+
         protected virtual void EnsureUnityObjectsCached()
         {
+            // We want there to be a variety, hence why we're not populating by checking guids
+            // like we did with the other asset types
             if (_unityObjects.Count >= _cacheCapacity && !_unityObjects.Contains(null)) return;
 
             _unityObjects.Clear();
@@ -722,37 +760,26 @@ namespace Amanita.VScripting.EditorUtils
             // We won't need to add more stuff than this
         }
 
-        protected virtual void EnsureTexturesCached()
+        protected virtual void EnsureCacheForAssets<T>(IList<T> cacheInvolved) where T: UnityEngine.Object
         {
-            if (_textures.Count > 0 && !_textures.Contains(null)) return;
-
-            _textures.Clear();
-            var guids = AssetDatabase.FindAssets("t:Texture");
-            foreach (var g in guids)
+            if (cacheInvolved.Count >= _cacheCapacity && !cacheInvolved.Contains(default))
             {
-                var path = AssetDatabase.GUIDToAssetPath(g);
-                var tex = AssetDatabase.LoadAssetAtPath<Texture>(path);
-                if (tex != null) _textures.Add(tex);
-                if (_textures.Count > 10)
-                    break;
+                return;
             }
-        }
 
-        protected virtual void EnsureMaterialsCached()
-        {
-            if (_materials.Count > 0 && !_materials.Contains(null)) return;
+            cacheInvolved.Clear();
+            string query = $"t:{typeof(T).Name}";
+            var guids = AssetDatabase.FindAssets(query);
+            int howManyToGoThrough = Mathf.Min(_cacheCapacity, guids.Length);
 
-            _materials.Clear();
-            var guids = AssetDatabase.FindAssets("t:Material");
-            foreach (var g in guids)
+            for (int i = 0; i < howManyToGoThrough; i++)
             {
-                var path = AssetDatabase.GUIDToAssetPath(g);
-                var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
-                if (mat != null) _materials.Add(mat);
-
-                if (_materials.Count > 10)
-                    break;
+                var guidEl = guids[i];
+                var path = AssetDatabase.GUIDToAssetPath(guidEl);
+                var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                if (asset != null) cacheInvolved.Add(asset);
             }
+
         }
 
         protected IList<UnityObject> _unityObjects = new List<UnityObject>();

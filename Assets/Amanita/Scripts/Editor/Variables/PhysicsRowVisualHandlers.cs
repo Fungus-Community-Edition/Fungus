@@ -22,27 +22,23 @@ namespace Amanita.VScripting.EditorUtils
         "_EditorResources/UIToolkitTemplates/VarRows/ColliderTwoDVariableRow")]
     public class ColliderTwoDRowVisualHandler : RowVisualHandler<Collider2D>
     {
-        protected override void RegisterVisualElements()
-        {
-            base.RegisterVisualElements();
-            _colliderTwoDField = Root.Q<EditorObjectField>("UnityObjectField");
-            _colliderTwoDField.objectType = typeof(Collider2D);
-        }
-
-        protected EditorObjectField _colliderTwoDField;
     }
 
     [RowVisualHandler("Physics", typeof(Collider), "ColliderThreeD",
         "_EditorResources/UIToolkitTemplates/VarRows/ColliderThreeDVariableRow")]
     public class ColliderThreeDRowVisualHandler : RowVisualHandler<Collider>
     {
-        protected override void RegisterVisualElements()
-        {
-            base.RegisterVisualElements();
-            _colliderThreeField = Root.Q<EditorObjectField>("UnityObjectField");
-            _colliderThreeField.objectType = typeof(Collider);
-        }
+    }
 
-        protected EditorObjectField _colliderThreeField;
+    [RowVisualHandler("Physics", typeof(Rigidbody2D), "RigidbodyTwoD",
+        "_EditorResources/UIToolkitTemplates/VarRows/RigidbodyTwoDVariableRow")]
+    public class RigidbodyTwoDRowVisualHandler : RowVisualHandler<Rigidbody2D>
+    {
+    }
+
+    [RowVisualHandler("Physics", typeof(Rigidbody), "RigidbodyThreeD",
+        "_EditorResources/UIToolkitTemplates/VarRows/RigidbodyThreeDVariableRow")]
+    public class RigidbodyThreeDRowVisualHandler : RowVisualHandler<Rigidbody>
+    {
     }
 }

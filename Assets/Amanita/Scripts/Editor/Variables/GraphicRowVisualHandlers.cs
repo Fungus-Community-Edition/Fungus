@@ -15,4 +15,18 @@ namespace Amanita.VScripting.EditorUtils
     {
         
     }
+
+    [RowVisualHandler("Graphics", typeof(Material), "Material",
+        "_EditorResources/UIToolkitTemplates/VarRows/MaterialVariableRow")]
+    public class MaterialVariableRow : RowVisualHandler<Material>
+    {
+
+    }
+
+    [RowVisualHandler("Graphics", typeof(Sprite), "Sprite",
+        "_EditorResources/UIToolkitTemplates/VarRows/SpriteVariableRow")]
+    public class SpriteVariableRow : RowVisualHandler<Sprite>
+    {
+
+    }
 }
