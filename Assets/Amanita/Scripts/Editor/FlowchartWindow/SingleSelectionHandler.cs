@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
+using Amanita.VScripting;
 
 namespace Amanita.EditorUtils
 {
@@ -88,14 +89,11 @@ namespace Amanita.EditorUtils
 
             if (hitEmpty && !hasDragRect && !IsMultiSelect(inputEvent))
             {
-                fc.ClearSelectedBlocks();
+                FlowchartWindowSignals.EmptySpaceClicked();
             }
             else if (!hitEmpty)  // only when a real block was clicked
             {
-                FlowchartWindow.SetBlockForInspector(fc, blockHit);
-
-                if (fc.SelectedBlockCount == 0)
-                    fc.AddToSelection(blockHit);
+                BlockSignals.BlockClicked(blockHit, inputEvent);
             }
 
             ctx.FcHost.UpdateBlockCollection();

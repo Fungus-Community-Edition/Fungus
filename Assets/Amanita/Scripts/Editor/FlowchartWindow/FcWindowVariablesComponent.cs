@@ -9,12 +9,12 @@ namespace Amanita.VScripting.EditorUtils
     {
         public VisualTreeAsset VariableDisplayEditorUxml { get; set; }
 
-        protected FlowchartWindow window;
+        protected IFlowchartHost window;
         protected TemplateContainer _rootElement;
         protected VariableRowManager _manager;
         protected IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
 
-        public void Initialize(FlowchartWindow host)
+        public void Initialize(IFlowchartHost host)
         {
             window = host;
 
@@ -25,18 +25,18 @@ namespace Amanita.VScripting.EditorUtils
             _rootElement.style.bottom = 10;
 
             // Attach to FlowchartWindow's root
-            window.rootVisualElement.Add(_rootElement);
+            window.RootVisualElement.Add(_rootElement);
 
             // Build manager for current Flowchart
             BuildManager();
 
-            // Listen for play mode changes
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            DeregisterCallbacks();
+            ListenForEvents();
         }
 
-        private void BuildManager()
+        protected void BuildManager()
         {
-            var flowchart = window?.Flowchart;
+            var flowchart = window != null ? window.Flowchart : null;
             if (flowchart == null)
                 return;
 
@@ -53,7 +53,13 @@ namespace Amanita.VScripting.EditorUtils
             });
         }
 
-        private void OnPlayModeStateChanged(PlayModeStateChange state)
+        protected virtual void DeregisterCallbacks()
+        {
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
+        }
+
+        protected void OnPlayModeStateChanged(PlayModeStateChange state)
         {
             if (state == PlayModeStateChange.EnteredEditMode ||
                 state == PlayModeStateChange.EnteredPlayMode)
@@ -62,10 +68,20 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        protected virtual void OnFlowchartChanged(Flowchart prevFlowchar, Flowchart newFlowchart)
+        {
+            BuildManager();
+        }
+
+        protected virtual void ListenForEvents()
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
+        }
+
         public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
         {
-            if (window.HandleFlowchartSelectionChange())
-                BuildManager();
+            // Formerly built manager here in response to flowchart changes
         }
 
         public void OnInspectorUpdate() { }
@@ -75,8 +91,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Dispose()
         {
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-
+            DeregisterCallbacks();
             _manager?.Dispose();
             _manager = null;
 

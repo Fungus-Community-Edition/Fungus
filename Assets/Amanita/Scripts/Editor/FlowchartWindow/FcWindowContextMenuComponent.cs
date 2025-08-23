@@ -5,10 +5,10 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class FcWindowContextMenuComponent : IFcWindowComponent
     {
-        private FlowchartWindow host;
+        private IFlowchartHost host;
         private Vector2 rightClickDown;
 
-        public void Initialize(FlowchartWindow hostWindow)
+        public void Initialize(IFlowchartHost hostWindow)
         {
             host = hostWindow;
         }
@@ -37,7 +37,6 @@ namespace Amanita.VScripting.EditorUtils
         private void ShowContextMenu(Vector2 pos)
         {
             var menu = new GenericMenu();
-
             // 1) Paste
             if (host.HasClipboard)
                 menu.AddItem(new GUIContent("Paste"), false,
@@ -48,12 +47,6 @@ namespace Amanita.VScripting.EditorUtils
             // 2) Create Block
             menu.AddItem(new GUIContent("Create Block"), false,
                 () => host.CreateBlock(host.Flowchart, host.CalcFlowchartWindowViewRect().PointToNormalized(pos)));
-
-            // 3) Delete Block (if clicking on a block)
-            //var clickedBlock = host.GetBlockAtPosition(pos);
-            //if (clickedBlock != null)
-            //    menu.AddItem(new GUIContent("Delete Block"), false,
-            //        () => host.DeleteBlock(clickedBlock));
 
             menu.ShowAsContext();
         }

@@ -14,7 +14,7 @@ namespace Amanita.VScripting
                  "Destroys a specified game object in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class Destroy : Command
+    public class Destroy : Command, ISerializationCallbackReceiver
     {
         [Tooltip("Reference to game object to destroy")]
         [SerializeField] protected GameObjectData _targetGameObject;
@@ -74,6 +74,15 @@ namespace Amanita.VScripting
                 _targetGameObject.Value = targetGameObjectOLD;
                 targetGameObjectOLD = null;
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+        }
+
+        public void OnAfterDeserialize()
+        {
+            destroyInXSeconds ??= new FloatData(0);
         }
 
         #endregion

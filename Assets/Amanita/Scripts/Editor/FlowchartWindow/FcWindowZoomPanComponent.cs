@@ -5,9 +5,9 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class FcWindowZoomPanComponent : IFcWindowComponent
     {
-        private FlowchartWindow host;
+        private IFlowchartHost host;
 
-        public void Initialize(FlowchartWindow hostWindow)
+        public void Initialize(IFlowchartHost hostWindow)
         {
             host = hostWindow;
         }

@@ -11,7 +11,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowEditing : IFcWindowComponent
     {
-        public virtual void Initialize(FlowchartWindow window)
+        public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;
 
@@ -45,6 +45,15 @@ namespace Amanita.VScripting.EditorUtils
             if (_inputPipeline.Process(Event.current, fcCtx))
                 Event.current.Use();
 
+            if (_scheduledForDeletion.Count > 0)
+            {
+                DeleteScheduledBlocks();
+                _window.Repaint();
+            }
+        }
+
+        public virtual void OnGUI()
+        {
             if (_scheduledForDeletion.Count > 0)
             {
                 DeleteScheduledBlocks();
@@ -100,6 +109,7 @@ namespace Amanita.VScripting.EditorUtils
                     _window.Flowchart.DeselectBlockNoCheck(block);
 
                 // Destroy the block itself
+                FlowchartWindowSignals.PreBlockDeletion(block);
                 Undo.DestroyObjectImmediate(block);
             }
 

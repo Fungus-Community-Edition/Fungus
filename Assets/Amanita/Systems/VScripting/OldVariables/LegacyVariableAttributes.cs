@@ -1,0 +1,53 @@
+using UnityEngine;
+
+namespace Amanita.VScripting
+{
+    /// <summary>
+    /// Attribute class for variables.
+    /// </summary>
+    public sealed class VariableInfoAttribute : System.Attribute
+    {
+        // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
+        public VariableInfoAttribute(string category, string variableType, int order = 0, bool isPreviewedOnly = false)
+        {
+            this.Category = category;
+            this.VariableType = variableType;
+            this.Order = order;
+            this.IsPreviewedOnly = isPreviewedOnly;
+        }
+
+        public string Category { get; set; }
+        public string VariableType { get; set; }
+        public int Order { get; set; }
+        public bool IsPreviewedOnly { get; set; }
+    }
+
+    /// <summary>
+    /// Attribute class for variable properties. We use these so that fields in Commands
+    /// that should ONLY take variable inputs accept the intended variable types.
+    /// </summary>
+    public sealed class VariablePropertyAttribute : PropertyAttribute
+    {
+        public VariablePropertyAttribute(params System.Type[] variableTypes)
+        {
+            this.VariableTypes = variableTypes;
+        }
+
+        public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
+        {
+            VariableTypes = AllVariableTypes.AllIVariableTypes;
+        }
+
+        public VariablePropertyAttribute(string defaultText, params System.Type[] variableTypes)
+        {
+            this.defaultText = defaultText;
+            this.VariableTypes = variableTypes;
+        }
+
+        public string defaultText = "<None>";
+        public string compatibleVariableName = string.Empty;
+
+        public System.Type[] VariableTypes { get; set; }
+    }
+
+}

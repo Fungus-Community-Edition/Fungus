@@ -86,6 +86,7 @@ namespace Amanita.VScripting.EditorUtils
             // highlight
             if (block.IsSelected && !block.IsControlSelected)
             {
+                //Debug.Log($"Block {block.BlockName} is selected");
                 GUI.backgroundColor = Color.white;
                 style.normal.background = graphics.onTexture;
                 GUI.Box(rect, "", style);

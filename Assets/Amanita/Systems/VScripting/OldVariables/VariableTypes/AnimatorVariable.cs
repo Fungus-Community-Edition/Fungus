@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -15,46 +12,39 @@ namespace Amanita.VScripting
     {
     }
 
-    /// <summary>
-    /// Container for an Animator variable reference or constant value.
-    /// </summary>
     [System.Serializable]
-    public struct AnimatorData
+    public class AnimatorData : VariableData<Animator, IVariable<Animator>>
     {
-        [SerializeField]
-        [VariableProperty("<Value>", typeof(AnimatorVariable))]
+        [SerializeField] [VariableProperty("<Value>", typeof(AnimatorVariable))]
         public AnimatorVariable animatorRef;
-        
-        [SerializeField]
-        public Animator animatorVal;
 
         public static implicit operator Animator(AnimatorData animatorData)
         {
             return animatorData.Value;
         }
 
-        public AnimatorData(Animator v)
-        {
-            animatorVal = v;
-            animatorRef = null;
-        }
-            
-        public Animator Value
-        {
-            get { return (animatorRef == null) ? animatorVal : animatorRef.Value; }
-            set { if (animatorRef == null) { animatorVal = value; } else { animatorRef.Value = value; } }
-        }
+        public AnimatorData() : base(default) { }
+        public AnimatorData(Animator startVal = default) : base(startVal) { }
 
-        public string GetDescription()
+        public override IVariable VarRef
         {
-            if (animatorRef == null)
+            get { return animatorRef; }
+            set
             {
-                return animatorVal != null ? animatorVal.ToString() : "Null";
-            }
-            else
-            {
-                return animatorRef.Key;
+                if (value == null) { animatorRef = null; return; }
+                // TODO: Refactor this setter so it works with polymorphism
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    animatorRef = value as AnimatorVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }
+
 }
