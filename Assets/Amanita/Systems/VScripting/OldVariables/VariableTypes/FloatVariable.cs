@@ -82,19 +82,16 @@ namespace Amanita.VScripting
     /// Container for an float variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct FloatData
+    public class FloatData : VariableData<float, IVariable<float>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(FloatVariable))]
         public FloatVariable floatRef;
 
-        [SerializeField]
-        public float floatVal;
+        public FloatData() : base(default) { }
 
-        public FloatData(float v)
+        public FloatData(float startVal) : base(startVal)
         {
-            floatVal = v;
-            floatRef = null;
         }
 
         public static implicit operator float(FloatData floatData)
@@ -102,21 +99,23 @@ namespace Amanita.VScripting
             return floatData.Value;
         }
 
-        public float Value
+        public override IVariable VarRef
         {
-            get { return (floatRef == null) ? floatVal : floatRef.Value; }
-            set { if (floatRef == null) { floatVal = value; } else { floatRef.Value = value; } }
-        }
+            get { return floatRef; }
+            set
+            {
+                if (value == null) { floatRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (floatRef == null)
-            {
-                return floatVal.ToString();
-            }
-            else
-            {
-                return floatRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    floatRef = value as FloatVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+                
             }
         }
     }

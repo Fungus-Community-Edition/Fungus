@@ -36,7 +36,7 @@ namespace Amanita.VScripting
     /// Container for a Boolean variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct BooleanData
+    public class BooleanData
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(BooleanVariable))]
@@ -45,9 +45,9 @@ namespace Amanita.VScripting
         [SerializeField]
         public bool booleanVal;
 
-        public BooleanData(bool v)
+        public BooleanData(bool startVal = false)
         {
-            booleanVal = v;
+            booleanVal = startVal;
             booleanRef = null;
         }
         
