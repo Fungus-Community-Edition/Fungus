@@ -340,6 +340,28 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed += Undo_ForceRepaint;
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
             ListenForUiToolkitEvents();
+            BlockSignals.BlockClicked += OnBlockClicked;
+        }
+
+        protected virtual void OnBlockClicked(Block involved)
+        {
+            Flowchart fcItBelongsTo = involved.GetFlowchart();
+            string logMessage;
+            if (Flowchart == null)
+            {
+                // I have yet to see this part of the code execute, but hey. Just in case.
+                logMessage = "A Block was clicked yet we have no Flowchart registered as the active one.";
+                Debug.LogError(logMessage);
+            }
+            else
+            {
+                logMessage = "Responding to Block clicked while we indeed do have a Flowchart registered as the active one.";
+                Debug.Log(logMessage);
+                fungusState.SelectedFlowchart = Flowchart = fcItBelongsTo;
+                fcItBelongsTo.SelectedBlock = involved;
+
+                Selection.activeGameObject = fcItBelongsTo.gameObject;
+            }
         }
 
         protected virtual void ListenForUiToolkitEvents()
@@ -366,6 +388,7 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed -= Undo_ForceRepaint;
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
             UnregisterUiToolkitCallbacks();
+            BlockSignals.BlockClicked -= OnBlockClicked;
         }
 
         protected virtual void UnregisterUiToolkitCallbacks()
@@ -643,6 +666,9 @@ namespace Amanita.VScripting.EditorUtils
                         break;
 
                     case EventType.KeyDown:
+                        // This lets you change the selected block through the arrow keys,
+                        // deselect everything through the Escape key, and... still trying to
+                        // figure out how the Return key factors into all of this
                         if (GUI.GetNameOfFocusedControl() == SearchFieldName)
                         {
                             var centerBlock = false;
@@ -1008,6 +1034,7 @@ namespace Amanita.VScripting.EditorUtils
                 blockInspector.hideFlags = HideFlags.DontSave;
             }
 
+            Selection.activeGameObject = flowchart.gameObject;
             Selection.activeObject = blockInspector;
 
             EditorUtility.SetDirty(blockInspector);

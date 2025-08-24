@@ -11,27 +11,28 @@ namespace Amanita.VScripting.EditorUtils
     public class CommandEditor : Editor 
     {
         #region statics
-        public static Command selectedCommand;
         public static bool SelectedCommandDataStale { get; set; }
 
         public static CommandInfoAttribute GetCommandInfo(System.Type commandType)
         {
-            CommandInfoAttribute retval = null;
+            CommandInfoAttribute returnVal = null;
 
             object[] attributes = commandType.GetCustomAttributes(typeof(CommandInfoAttribute), false);
-            foreach (object obj in attributes)
+            for (int i = 0; i < attributes.Length; i++)
             {
+                object obj = attributes[i];
                 CommandInfoAttribute commandInfoAttr = obj as CommandInfoAttribute;
                 if (commandInfoAttr != null)
                 {
-                    if (retval == null)
-                        retval = commandInfoAttr;
-                    else if (retval.Priority < commandInfoAttr.Priority)
-                        retval = commandInfoAttr;
+                    // We want the CommandInfo with the highest priority
+                    if (returnVal == null)
+                        returnVal = commandInfoAttr;
+                    else if (returnVal.Priority < commandInfoAttr.Priority)
+                        returnVal = commandInfoAttr;
                 }
             }
             
-            return retval;
+            return returnVal;
         }
 
         #endregion statics
@@ -48,19 +49,19 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void DrawCommandInspectorGUI()
         {
-            Command t = target as Command;
-            if (t == null)
+            Command targetCommand = target as Command;
+            if (targetCommand == null)
             {
                 return;
             }
 
-            var flowchart = (Flowchart)t.GetFlowchart();
+            var flowchart = (Flowchart)targetCommand.GetFlowchart();
             if (flowchart == null)
             {
                 return;
             }
 
-            var commandType = t.GetType();
+            var commandType = targetCommand.GetType();
 
             CommandInfoAttribute commandInfoAttr = CommandEditor.GetCommandInfo(commandType);
             if (commandInfoAttr == null)
@@ -76,11 +77,11 @@ namespace Amanita.VScripting.EditorUtils
 
             GUILayout.BeginVertical(GUI.skin.box);
 
-            if (t.enabled)
+            if (targetCommand.enabled)
             {
                 if (flowchart.ColorCommands)
                 {
-                    GUI.backgroundColor = t.GetButtonColor();
+                    GUI.backgroundColor = targetCommand.GetButtonColor();
                 }
                 else
                 {
@@ -98,18 +99,18 @@ namespace Amanita.VScripting.EditorUtils
 
             GUILayout.FlexibleSpace();
 
-            GUILayout.Label(new GUIContent("(" + t.ItemId + ")"));
+            GUILayout.Label(new GUIContent("(" + targetCommand.ItemId + ")"));
 
             GUILayout.Space(10);
 
             GUI.backgroundColor = Color.white;
-            bool enabled = t.enabled;
+            bool enabled = targetCommand.enabled;
             enabled = GUILayout.Toggle(enabled, new GUIContent());
 
-            if (t.enabled != enabled)
+            if (targetCommand.enabled != enabled)
             {
-                Undo.RecordObject(t, "Set Enabled");
-                t.enabled = enabled;
+                Undo.RecordObject(targetCommand, "Set Enabled");
+                targetCommand.enabled = enabled;
             }
 
             GUILayout.EndHorizontal();
@@ -126,17 +127,17 @@ namespace Amanita.VScripting.EditorUtils
 
             EditorGUILayout.Separator();
 
-            if (t.ErrorMessage.Length > 0)
+            if (targetCommand.ErrorMessage.Length > 0)
             {
                 GUIStyle style = new GUIStyle(GUI.skin.label);
                 style.normal.textColor = new Color(1,0,0);
-                EditorGUILayout.LabelField(new GUIContent("Error: " + t.ErrorMessage), style);
+                EditorGUILayout.LabelField(new GUIContent("Error: " + targetCommand.ErrorMessage), style);
             }
 
             GUILayout.EndVertical();
 
             // Display help text
-            CommandInfoAttribute infoAttr = CommandEditor.GetCommandInfo(t.GetType());
+            CommandInfoAttribute infoAttr = CommandEditor.GetCommandInfo(targetCommand.GetType());
             if (infoAttr != null && !AmanitaEditorPreferences.suppressHelpBoxes)
             {
                 EditorGUILayout.HelpBox(infoAttr.HelpText, MessageType.Info, true);
@@ -145,7 +146,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void DrawCommandGUI()
         {
-            Command t = target as Command;
+            Command targetCommand = target as Command;
             
             // Code below was copied from here
             // http://answers.unity3d.com/questions/550829/how-to-add-a-script-field-in-custom-inspector.html
@@ -165,13 +166,13 @@ namespace Amanita.VScripting.EditorUtils
                     continue;
                 }
 
-                if (!t.IsPropertyVisible(iterator.name))
+                if (!targetCommand.IsPropertyVisible(iterator.name))
                 {
                     continue;
                 }
 
                 if (iterator.isArray &&
-                    t.IsReorderableArray(iterator.name))
+                    targetCommand.IsReorderableArray(iterator.name))
                 {
                     ReorderableList reordList = null;
                     reorderableLists.TryGetValue(iterator.displayName, out reordList);
@@ -263,8 +264,8 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         // When modifying custom editor code you can occasionally end up with orphaned editor instances.
-        // When this happens, you'll get a null exception error every time the scene serializes / deserialized.
-        // Once this situation occurs, the only way to fix it is to restart the Unity editor.
+        // When this happens, you'll get a null exception error every time the scene serializes or
+        // deserializes. Once that happens, the only way to fix it is to restart the Unity editor.
         // 
         // As a workaround, this function detects if this command editor is an orphan and deletes it. 
         // To use it, just call this function at the top of the OnEnable() method in your custom editor.

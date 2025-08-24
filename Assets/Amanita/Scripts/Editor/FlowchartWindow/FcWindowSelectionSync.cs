@@ -73,7 +73,6 @@ namespace Amanita.VScripting.EditorUtils
         public void OnGUI(DrawBlockContext d, FlowchartContext f) { }
         public void OnInspectorGUI() { }
 
-        
         public virtual void OnInspectorUpdate()
         {
             var fc = _window.Flowchart;
@@ -144,17 +143,13 @@ namespace Amanita.VScripting.EditorUtils
                     flowchart.ClearSelectedCommands();
                 }
 
-                //Block prevSelectedBlock = flowchart.SelectedBlock;
-                //flowchart.SelectedBlock = block;
-                //if (prevSelectedBlock != flowchart.SelectedBlock)
-                //{
-                //    flowchart.ClearSelectedCommands();
-                //}
-
+                if (block != null)
+                {
+                    FlowchartWindow.blockInspector.block = block;
+                }
                 if (block != null && block.ActiveCommand != null)
                 {
                     flowchart.AddSelectedCommand(block.ActiveCommand);
-                    FlowchartWindow.blockInspector.block = block;
                 }
 
             }

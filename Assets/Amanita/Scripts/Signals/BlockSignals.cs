@@ -1,12 +1,16 @@
+using System;
+
 namespace Amanita.VScripting
 {
     /// <summary>
     /// Block event signalling system.
-    /// You can use this to be notified about various events in the Block execution process.
+    /// You can use this to be notified about various events related to Blocks, such as parts
+    /// of its execution process.
     /// </summary>
     public static class BlockSignals
     {
         #region Public members
+        public static Action<Block> BlockClicked = delegate { };
 
         /// <summary>
         /// BlockStart signal. Sent when the Block starts execution.

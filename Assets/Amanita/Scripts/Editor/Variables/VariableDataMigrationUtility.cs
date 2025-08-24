@@ -1,91 +1,172 @@
-using UnityEngine;
-using UnityEditor;
+﻿using Amanita.VScripting;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
-public static class VariableDataMigrationUtility
+public static class VariableDataMigrationFiltered
 {
-    [MenuItem("Tools/Migrate VariableData Nulls")]
-    public static void MigrateAllVariableData()
-    {
-        string[] assetPaths = AssetDatabase.GetAllAssetPaths();
-        int fixedCount = 0;
+    [MenuItem("Tools/Migration/Run VariableData Migration (Prefiltered Dry Run)")]
+    public static void DryRun() => RunMigration(dryRun: true);
 
-        foreach (string path in assetPaths)
+    [MenuItem("Tools/Migration/Run VariableData Migration (Prefiltered Apply)")]
+    public static void Apply() => RunMigration(dryRun: false);
+
+    private static void RunMigration(bool dryRun)
+    {
+        int scanned = 0, migrated = 0;
+        var candidatePaths = GetCandidateAssetPaths();
+
+        foreach (var path in candidatePaths)
         {
-            if (!path.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase) &&
-                !path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase) &&
-                !path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
+            // Load only if text prefilter says it might contain VariableData
+            if (!FileContainsVariableData(path))
                 continue;
 
-            UnityEngine.Object asset = AssetDatabase.LoadMainAssetAtPath(path);
-            if (asset == null) continue;
+            var mainType = AssetDatabase.GetMainAssetTypeAtPath(path);
+            if (mainType == null || (!typeof(GameObject).IsAssignableFrom(mainType) &&
+                                     !typeof(ScriptableObject).IsAssignableFrom(mainType)))
+                continue;
 
-            bool modified = false;
+            var mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
+            if (!mainAsset) continue;
 
-            // Handle main asset
-            modified |= FixObject(asset);
+            scanned++;
+            bool changed = false;
 
-            // Handle sub-assets (e.g., ScriptableObjects inside .asset files)
-            UnityEngine.Object[] subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
-            foreach (var sub in subAssets)
+            var so = new SerializedObject(mainAsset);
+            var sp = so.GetIterator();
+
+            while (sp.NextVisible(true))
             {
-                if (sub != null && sub != asset)
-                    modified |= FixObject(sub);
-            }
+                if (sp.propertyType != SerializedPropertyType.ManagedReference) continue;
+                if (sp.managedReferenceValue != null) continue;
 
-            if (modified)
-            {
-                EditorUtility.SetDirty(asset);
-                fixedCount++;
-            }
-        }
+                var declaredType = GetManagedReferenceFieldType(mainAsset, sp.propertyPath);
+                if (declaredType == null || !IsSubclassOfRawGeneric(typeof(VariableData), declaredType) || declaredType.IsAbstract)
+                    continue;
 
-        AssetDatabase.SaveAssets();
-        Debug.Log($"VariableData migration complete. Fixed {fixedCount} assets.");
-    }
-
-    private static bool FixObject(UnityEngine.Object obj)
-    {
-        bool modified = false;
-        var so = new SerializedObject(obj);
-        var sp = so.GetIterator();
-
-        while (sp.NextVisible(true))
-        {
-            if (sp.propertyType == SerializedPropertyType.ManagedReference && sp.managedReferenceValue == null)
-            {
-                var fieldType = GetManagedReferenceFieldType(obj, sp.propertyPath);
-                if (fieldType != null && typeof(object).IsAssignableFrom(fieldType) && fieldType.Name.EndsWith("Data"))
+                if (dryRun)
                 {
-                    try
-                    {
-                        var instance = Activator.CreateInstance(fieldType);
-                        sp.managedReferenceValue = instance;
-                        modified = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning($"Could not instantiate {fieldType}: {ex.Message}");
-                    }
+                    Debug.Log($"[Dry Run] Would instantiate {declaredType.Name} in {path} :: {mainAsset.name} :: {sp.propertyPath}");
+                    continue;
+                }
+
+                try
+                {
+                    var instance = Activator.CreateInstance(declaredType);
+                    sp.managedReferenceValue = instance;
+                    changed = true;
+                    migrated++;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"Could not instantiate {declaredType}: {ex.Message}");
                 }
             }
+
+            if (changed)
+            {
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(mainAsset);
+            }
         }
 
-        if (modified) so.ApplyModifiedProperties();
-        return modified;
+        if (!dryRun) AssetDatabase.SaveAssets();
+        Debug.Log($"[VariableData Migration] {(dryRun ? "Dry Run" : "Apply")} — Assets scanned: {scanned}, migrated: {migrated}");
+    }
+
+    private static IEnumerable<string> GetCandidateAssetPaths()
+    {
+        // Limit search to relevant folders
+        string[] guids = AssetDatabase.FindAssets("t:Prefab t:ScriptableObject t:Scene",
+            new[] { "Assets/FungusExamples",  });
+        var result = guids.Select(AssetDatabase.GUIDToAssetPath).Distinct().ToList();
+        return result;
+    }
+
+    private static bool FileContainsVariableData(string path)
+    {
+        // Quick text scan for type name before loading
+        try
+        {
+            foreach (var line in File.ReadLines(path))
+            {
+                if (line.Contains("VariableData") || line.Contains("VariableData`"))
+                    return true;
+            }
+        }
+        catch { }
+        return false;
     }
 
     private static Type GetManagedReferenceFieldType(UnityEngine.Object obj, string propertyPath)
     {
-        Type objType = obj.GetType();
+        Type type = obj.GetType();
         FieldInfo field = null;
-        foreach (var part in propertyPath.Split('.'))
+
+        var tokens = propertyPath.Split('.');
+        for (int i = 0; i < tokens.Length; i++)
         {
-            field = objType.GetField(part, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            if (field == null) break;
-            objType = field.FieldType;
+            string token = tokens[i];
+            if (token == "Array")
+            {
+                i++;
+                type = GetIListElementType(type) ?? type.GetElementType() ?? type;
+                continue;
+            }
+
+            field = GetFieldIncludingBase(type, token);
+            if (field == null) continue;
+            type = field.FieldType;
         }
+
         return field?.FieldType;
+    }
+
+    private static FieldInfo GetFieldIncludingBase(Type type, string name)
+    {
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        while (type != null)
+        {
+            var fi = type.GetField(name, flags);
+            if (fi != null) return fi;
+            type = type.BaseType;
+        }
+        return null;
+    }
+
+    private static Type GetIListElementType(Type type)
+    {
+        if (type == null) return null;
+        if (type.IsArray) return type.GetElementType();
+        if (type.IsGenericType)
+        {
+            var args = type.GetGenericArguments();
+            if (args.Length == 1 && typeof(IList).IsAssignableFrom(type))
+                return args[0];
+
+            foreach (var itf in type.GetInterfaces())
+            {
+                if (itf.IsGenericType && itf.GetGenericTypeDefinition() == typeof(IList<>))
+                    return itf.GetGenericArguments()[0];
+            }
+        }
+        return null;
+    }
+
+    private static bool IsSubclassOfRawGeneric(Type rawGeneric, Type toCheck)
+    {
+        while (toCheck != null && toCheck != typeof(object))
+        {
+            var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+            if (rawGeneric == cur) return true;
+            toCheck = toCheck.BaseType;
+        }
+        return false;
     }
 }
