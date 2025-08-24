@@ -698,12 +698,14 @@ namespace Amanita.VScripting
         public virtual Block CreateBlock(Vector2 position)
         {
             Block created = CreateBlockComponent(gameObject);
-            created._NodeRect = new Rect(position.x, position.y, 0, 0);
+            created._NodeRect = new Rect(position, defaultBlockSize);
             created.BlockName = GetUniqueBlockKey(created.BlockName, created);
             created.ItemId = NextItemId();
 
             return created;
         }
+
+        protected static Vector2 defaultBlockSize = new Vector2(300, 100);
 
         public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
         {
@@ -1810,6 +1812,24 @@ namespace Amanita.VScripting
             }
 
             CheckItemIds();
+
+            EnsureBlocksHaveAValidSize();
+            void EnsureBlocksHaveAValidSize()
+            {
+                IList<Block> blocks = GetComponents<Block>();
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    var currentBlock = blocks[i];
+                    Rect nodeRect = currentBlock._NodeRect;
+                    if (nodeRect.size.Equals(Vector2.zero))
+                    {
+                        string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
+                        Debug.LogWarning(logMessage);
+                        Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
+                        currentBlock._NodeRect = fixedRect;
+                    }
+                }
+            }
 
         }
 #endif

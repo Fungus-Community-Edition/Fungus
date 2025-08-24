@@ -94,10 +94,6 @@ namespace Amanita.EditorUtils
             else if (!hitEmpty)  // only when a real block was clicked
             {
                 BlockSignals.BlockClicked(blockHit);
-                //FlowchartWindow.SetBlockForInspector(fc, blockHit);
-
-                //if (fc.SelectedBlockCount == 0)
-                //    fc.AddToSelection(blockHit);
             }
 
             ctx.FcHost.UpdateBlockCollection();
