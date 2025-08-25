@@ -4,7 +4,7 @@ using Amanita.VScripting;
 namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
-    public class MA_FadeVolume : MyceliaudioCommand
+    public class MA_FadeVolume : MyceliaudioCommand, ISerializationCallbackReceiver
     {
         [SerializeField] protected TrackGroup trackGroup = TrackGroup.BGMusic;
         [SerializeField] protected IntegerData track = new IntegerData(0);
@@ -88,6 +88,16 @@ namespace Amanita.Myceliaudio
             //Tr {track.Value} to {targetVol.Value} over {duration.Value} seconds";
             return result;
         }
+
+        public void OnBeforeSerialize() { }
+
+        public void OnAfterDeserialize()
+        {
+            targetVol ??= new FloatData();
+            duration ??= new FloatData(0);
+            waitUntilFinished ??= new BooleanData(false);
+        }
+
 
     }
 }

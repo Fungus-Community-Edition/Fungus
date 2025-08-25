@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
@@ -65,8 +67,79 @@ namespace Amanita.VScripting
     /// string var substitution.
     /// </summary>
     [System.Serializable]
-    public partial struct AnyVariableData
+    public partial class AnyVariableData
     {
+        [SerializeReference] // Allows polymorphic serialization of IVariableData
+        protected IVariableData data;
+
+        /// <summary>
+        /// Strongly-typed getter/setter for the underlying value.
+        /// </summary>
+        public T GetValue<T>()
+        {
+            ValidateVarData<T>();
+            return (T)data.Value;
+        }
+
+        public static void InitializeFromType(Type type)
+        {
+            var meta = VariableDataRegistry.GetMetadata(type);
+            if (meta != null)
+            {
+                // Instantiate and initialize as needed
+                // Example: Activator.CreateInstance(meta.Type);
+            }
+            else
+            {
+                // Optional: fallback to legacy list for phased migration
+            }
+        }
+
+        protected virtual void ValidateVarData<T>()
+        {
+            if (data == null)
+                throw new InvalidOperationException("No variable data assigned.");
+
+            if (data.ContentType != typeof(T))
+                throw new InvalidCastException(
+                    $"Stored type is {data.ContentType}, requested {typeof(T)}.");
+        }
+
+        public void SetValue<T>(T value)
+        {
+            ValidateVarData<T>();
+            data.Value = value;
+        }
+
+        public string GetDescription() => data?.GetDescription() ?? "Null";
+
+        public IVariable VarRef => data?.VarRef;
+
+        public System.Type ContentType => data?.ContentType;
+
+        /// <summary>
+        /// Assigns a new IVariableData instance (e.g., from registry).
+        /// </summary>
+        public void SetData(IVariableData newData) => data = newData;
+
+        public IVariableData GetData() => data;
+
+
+        /// <summary>
+        /// Non-generic access for editor tooling or dynamic use.
+        /// </summary>
+        public object Value
+        {
+            get => data?.Value;
+            set
+            {
+                if (data == null)
+                    throw new System.InvalidOperationException("No variable data assigned.");
+                data.Value = value;
+            }
+        }
+
+
         public AnimatorData animatorData;
         public AudioSourceData audioSourceData;
         public BooleanData booleanData;
@@ -129,6 +202,8 @@ namespace Amanita.VScripting
                    audioMixerData.audioMixerRef == var ||
                    characterData.characterRef == var;
         }
+    
+    
     }
 
     /// <summary>

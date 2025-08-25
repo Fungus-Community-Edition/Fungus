@@ -443,7 +443,6 @@ namespace Amanita.Tests.Editor
         [Test]
         public void PoolsAreSeparatePerHandlerType()
         {
-            
             _flowchart.ClearVariables();
 
             _flowchart.AddNewVariable<float, FloatVariable>("f");
@@ -457,21 +456,22 @@ namespace Amanita.Tests.Editor
             // You can reflect into the pool map
             var poolMap = _handlerPool.PoolMap;
 
+            var stringRowType = typeof(StringRowVisualHandler);
             Assert.IsTrue(poolMap.ContainsKey(typeof(FloatRowVisualHandler)),
                 "There is no dedicated pool for FloatRowVisualHandlers");
-            Assert.IsTrue(poolMap.ContainsKey(typeof(DefaultRowVisualHandler)),
-                "There is no dedicated pool for DefaultRowVisualHandlers"); // string uses default
+            Assert.IsTrue(poolMap.ContainsKey(stringRowType),
+                "There is no dedicated pool for StringRowVisualHandlers"); // string uses default
 
             int floatVisualHandlerCount = poolMap[typeof(FloatRowVisualHandler)].Count;
-            int defaultRowVisualHandlerCount = poolMap[typeof(DefaultRowVisualHandler)].Count;
+            int stringRowVisualHandlerCount = poolMap[stringRowType].Count;
 
-            // We have 5 vars prepped in set up, 4 of which (at this time) should get us a default vis handler.
+            // We have 5 vars prepped in set up, 1 of which (at this time) should get us a string vis handler.
             // 1 should get us a float vis handler
-            int expectedFloatHandlerCount = 1, expectedDefaultHandlerCount = 4;
+            int expectedFloatHandlerCount = 1, expectedStringHandlerCount = 1;
             Assert.AreEqual(expectedFloatHandlerCount, floatVisualHandlerCount,
                 $"Expected {expectedFloatHandlerCount} float visual handler, got {floatVisualHandlerCount}");
-            Assert.AreEqual(expectedDefaultHandlerCount, defaultRowVisualHandlerCount,
-                $"Expected {expectedDefaultHandlerCount} default visual handler(s), got {defaultRowVisualHandlerCount}");
+            Assert.AreEqual(expectedStringHandlerCount, stringRowVisualHandlerCount,
+                $"Expected {expectedStringHandlerCount} default visual handler(s), got {stringRowVisualHandlerCount}");
             
         }
 

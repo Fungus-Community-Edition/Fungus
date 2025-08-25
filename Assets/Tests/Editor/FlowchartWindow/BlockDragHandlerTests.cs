@@ -77,6 +77,9 @@ namespace Amanita.Tests.Editor
 
             SetGridSnap(initGridSnap);
             Undo.FlushUndoRecordObjects();
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName("");
+            
 
         }
 
@@ -125,6 +128,9 @@ namespace Amanita.Tests.Editor
             }
 
             SetGridSnap(false);
+            Undo.FlushUndoRecordObjects();
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName("");
         }
 
         [Test]
@@ -271,7 +277,6 @@ namespace Amanita.Tests.Editor
         public void MouseDown_SelectedBlock_UndoGroupNotRecorded(int blockIndex)
         {
             SelectBlock(blockIndex);
-            //mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
             Block blockHit = blocksInFlowchart[blockIndex];
             fcContext.BlockHitInLastMouseDown = blockHit;
 

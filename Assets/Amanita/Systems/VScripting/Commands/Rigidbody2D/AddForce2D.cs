@@ -12,7 +12,7 @@ namespace Amanita.VScripting
                  "AddForce2D",
                  "Add force to a Rigidbody2D")]
     [AddComponentMenu("")]
-    public class AddForce2D : Command
+    public class AddForce2D : Command, ISerializationCallbackReceiver
     {
         [SerializeField]
         protected Rigidbody2DData rb;
@@ -81,6 +81,14 @@ namespace Amanita.VScripting
 
             return false;
         }
+
+        public void OnBeforeSerialize() { }
+
+        public void OnAfterDeserialize()
+        {
+            forceScaleFactor ??= new FloatData(1);
+        }
+
 
     }
 }

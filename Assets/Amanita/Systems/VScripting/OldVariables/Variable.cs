@@ -1,49 +1,7 @@
-
-
-
-using Amanita.VScripting;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Standard comparison operators.
-    /// </summary>
-    public enum CompareOperator
-    {
-        /// <summary> == mathematical operator.</summary>
-        Equals,
-        /// <summary> != mathematical operator.</summary>
-        NotEquals,
-        /// <summary> < mathematical operator.</summary>
-        LessThan,
-        /// <summary> > mathematical operator.</summary>
-        GreaterThan,
-        /// <summary> <= mathematical operator.</summary>
-        LessThanOrEquals,
-        /// <summary> >= mathematical operator.</summary>
-        GreaterThanOrEquals
-    }
-
-    /// <summary>
-    /// Mathematical operations that can be performed on variables.
-    /// </summary>
-    public enum SetOperator
-    {
-        /// <summary> = operator. </summary>
-        Assign,
-        /// <summary> =! operator. </summary>
-        Negate,
-        /// <summary> += operator. </summary>
-        Add,
-        /// <summary> -= operator. </summary>
-        Subtract,
-        /// <summary> *= operator. </summary>
-        Multiply,
-        /// <summary> /= operator. </summary>
-        Divide
-    }
-
     /// <summary>
     /// Scope types for Variables.
     /// </summary>
@@ -55,53 +13,6 @@ namespace Amanita.VScripting
         Public,
         /// <summary> Creates and/or references a global variable of that name, all variables of this name and scope share the same underlying fungus variable and exist for the duration of the instance of Unity.</summary>
         Global,
-    }
-
-    /// <summary>
-    /// Attribute class for variables.
-    /// </summary>
-    public sealed class VariableInfoAttribute : System.Attribute
-    {
-        //Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
-        public VariableInfoAttribute(string category, string variableType, int order = 0, bool isPreviewedOnly = false)
-        {
-            this.Category = category;
-            this.VariableType = variableType;
-            this.Order = order;
-            this.IsPreviewedOnly = isPreviewedOnly;
-        }
-        
-        public string Category { get; set; }
-        public string VariableType { get; set; }
-        public int Order { get; set; }
-        public bool IsPreviewedOnly { get; set; }
-    }
-
-    /// <summary>
-    /// Attribute class for variable properties.
-    /// </summary>
-    public sealed class VariablePropertyAttribute : PropertyAttribute 
-    {
-        public VariablePropertyAttribute (params System.Type[] variableTypes) 
-        {
-            this.VariableTypes = variableTypes;
-        }
-
-        public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
-        {
-            VariableTypes = AllVariableTypes.AllIVariableTypes;
-        }
-
-        public VariablePropertyAttribute (string defaultText, params System.Type[] variableTypes) 
-        {
-            this.defaultText = defaultText;
-            this.VariableTypes = variableTypes;
-        }
-
-        public string defaultText = "<None>";
-        public string compatibleVariableName = string.Empty;
-
-        public System.Type[] VariableTypes { get; set; }
     }
 
     /// <summary>
@@ -211,7 +122,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
-    public abstract class VariableBase<T> : Variable
+    public abstract class VariableBase<T> : Variable, IVariable<T>
     {
 
         //caching mechanism for global static variables
@@ -398,6 +309,23 @@ namespace Amanita.VScripting
         public override bool IsArithmeticSupported(SetOperator setOperator)
         {
             return setOperator == SetOperator.Assign || base.IsArithmeticSupported(setOperator);
+        }
+
+        public bool Equals(T other)
+        {
+            bool result = false;
+            if (value == null)
+            {
+                if (other == null)
+                {
+                    result = true;
+                }
+            }
+            else
+            {
+                result = value.Equals(other);
+            }
+            return result;
         }
     }
 }

@@ -1,6 +1,7 @@
 
 
 
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -19,7 +20,7 @@ namespace Amanita.VScripting
     /// Container for an AudioSource variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct AudioSourceData
+    public class AudioSourceData : VariableData<AudioSource, IVariable<AudioSource>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(AudioSourceVariable))]
@@ -33,28 +34,31 @@ namespace Amanita.VScripting
             return audioSourceData.Value;
         }
 
-        public AudioSourceData(AudioSource v)
+        public AudioSourceData(AudioSource startVal = null)
         {
-            audioSourceVal = v;
+            audioSourceVal = startVal;
             audioSourceRef = null;
         }
 
-        public AudioSource Value
+        public override IVariable VarRef
         {
-            get { return (audioSourceRef == null) ? audioSourceVal : audioSourceRef.Value; }
-            set { if (audioSourceRef == null) { audioSourceVal = value; } else { audioSourceRef.Value = value; } }
+            get { return audioSourceRef; }
+            set
+            {
+                if (value == null) { audioSourceRef = null; return; }
+
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    audioSourceRef = value as AudioSourceVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
         }
 
-        public string GetDescription()
-        {
-            if (audioSourceRef == null)
-            {
-                return audioSourceVal != null ? audioSourceVal.ToString() : "Null";
-            }
-            else
-            {
-                return audioSourceRef.Key;
-            }
-        }
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using Amanita.EditorUtils;
+using StylePos = UnityEngine.UIElements.Position;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -114,12 +115,12 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                if (flowchartCtx == null)
+                if (FlowchartCtx == null)
                 {
                     return Rect.zero;
                 }
 
-                return flowchartCtx.SelectionBox;
+                return FlowchartCtx.SelectionBox;
             }
         }
         protected List<Block> mouseDownSelectionState = new List<Block>();
@@ -199,7 +200,7 @@ namespace Amanita.VScripting.EditorUtils
             addTexture = AmanitaEditorResources.AddSmall;
             addButtonContent = new GUIContent(addTexture, "Add a new block");
             connectionPointTexture = AmanitaEditorResources.ConnectionPoint;
-            gridLineColor.a = EditorGUIUtility.isProSkin ? 0.5f : 0.25f;
+            _gridLineColor.a = EditorGUIUtility.isProSkin ? 0.5f : 0.25f;
 
             wantsMouseMove = true; // For hover selection in block search popup  
 
@@ -214,7 +215,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 // Optional: tweak its layout right here
                 IStyle searchStyle = searchPanel.Root.style;
-                searchStyle.position = Position.Absolute;
+                searchStyle.position = StylePos.Absolute;
                 searchStyle.top = 20;   // just below your toolbar
                 searchStyle.right = 10;
                 searchStyle.width = 200;
@@ -251,8 +252,8 @@ namespace Amanita.VScripting.EditorUtils
         
         public virtual BlockClipboard Clipboard { get; set; }
         public virtual bool HasClipboard => Clipboard != null && Clipboard.HasEntries;
-        public DrawGridContext drawGridCtx = new DrawGridContext();
-        public DrawBlockContext _drawBlockContext = new DrawBlockContext();
+        public DrawGridContext DrawGridCtx { get; set; } = new DrawGridContext();
+        public DrawBlockContext DrawBlockCtx { get; set; } = new DrawBlockContext();
         protected Texture2D addTexture;
         protected GUIContent addButtonContent;
         protected Texture2D connectionPointTexture;
@@ -264,7 +265,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Using a temp hidden object to track the active Flowchart across 
             // serialization / deserialization when playing the game in the editor.
-
             EnsureThereIsFungusState();
             void EnsureThereIsFungusState()
             {
@@ -298,21 +298,6 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            //DecideWhatToDoWithVarListAdaptor();
-            void DecideWhatToDoWithVarListAdaptor()
-            {
-                if (FcSelected == null)
-                {
-                    variableListAdaptor = null;
-                }
-                else if (variableListAdaptor == null || variableListAdaptor.TargetFlowchart != FcSelected)
-                {
-                    var fsSO = new SerializedObject(FcSelected);
-                    var varProp = fsSO.FindProperty("variables");
-                    variableListAdaptor = new VariableListAdaptor(varProp, FcSelected);
-                }
-            }
-
             return fungusState.SelectedFlowchart;
         }
 
@@ -340,6 +325,12 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed += Undo_ForceRepaint;
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
             ListenForUiToolkitEvents();
+            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+        }
+
+        protected virtual void OnEmptySpaceClicked()
+        {
+            UpdateBlockCollection();
         }
 
         protected virtual void ListenForUiToolkitEvents()
@@ -366,6 +357,7 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed -= Undo_ForceRepaint;
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
             UnregisterUiToolkitCallbacks();
+            FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
         }
 
         protected virtual void UnregisterUiToolkitCallbacks()
@@ -391,7 +383,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Force null so it can refresh context on the other side of the context
             Flowchart = null;
-            prevFlowchart = null;
+            _prevFlowchart = null;
             blockInspector = null;
 
         }
@@ -414,7 +406,7 @@ namespace Amanita.VScripting.EditorUtils
 
             if (Application.isPlaying)
             {
-                executingBlocks.ProcessAllBlocks(blocks);
+                executingBlocks.ProcessAllBlocks(Blocks);
                 if (executingBlocks.isChangeDetected || executingBlocks.IsAnimFadeoutNeed())
                     Repaint();
             }
@@ -425,26 +417,26 @@ namespace Amanita.VScripting.EditorUtils
             GetFlowchart();
             if (FcSelected == null)
             {
-                blocks = new Block[0];
+                Blocks = new Block[0];
                 filteredBlocks.Clear();
             }
             else
             {
-                blocks = FcSelected.GetComponents<Block>();
+                Blocks = FcSelected.GetComponents<Block>();
             }
-            flowchartCtx.AllBlocks = blocks;
+            FlowchartCtx.AllBlocks = Blocks;
             filterStale = true;
             UpdateFilteredBlocks();
         }
 
-        public IList<Block> blocks = new Block[0];
+        public IList<Block> Blocks { get; protected set; } = new Block[0];
         protected IList<Block> filteredBlocks = new List<Block>();
         protected bool filterStale = true;
 
         protected void UpdateFilteredBlocks()
         {
             // Recompute the filtered list and block.FilterState in one call
-            filteredBlocks = FilterUtils.FilterBlocks(blocks, SearchString);
+            filteredBlocks = FilterUtils.FilterBlocks(Blocks, SearchString);
 
             // Keep popup-selection index in range
             int max = Mathf.Max(filteredBlocks.Count - 1, 0);
@@ -453,8 +445,48 @@ namespace Amanita.VScripting.EditorUtils
 
         protected int blockPopupSelection = -1;
 
-        public Flowchart Flowchart { get; set; }
-        protected Flowchart prevFlowchart;
+        public Flowchart Flowchart
+        {
+            get { return _flowchart; }
+            set
+            {
+                if (value != _flowchart)
+                {
+                    _prevFlowchart = _flowchart;
+                    _flowchart = value;
+                    OnFlowchartChanged(_flowchart);
+                }
+            }
+        }
+
+        protected Flowchart _flowchart;
+        protected virtual void OnFlowchartChanged(Flowchart newFlowchart)
+        {
+            blockInspector = null;
+
+            if (_prevFlowchart != null)
+            {
+                _prevFlowchart.SelectedBlock = null;
+            }
+
+            executingBlocks.ClearAll();
+
+            UpdateBlockCollection();
+
+            if (Flowchart != null)
+            {
+                Flowchart.SelectedBlock = null;
+                Flowchart.ReverseUpdateSelectedCache(); // becomes reverse restore selected cache
+            }
+
+            Repaint();
+
+            FlowchartWindowSignals.ChangedFlowchart(_prevFlowchart, Flowchart);
+            // ^Why here instead of the setter? So we can make sure we're the first responder
+            // to the flowchart-change
+        }
+
+        protected Flowchart _prevFlowchart;
 
         protected virtual void OnInspectorUpdate()
         {
@@ -552,73 +584,43 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public bool HandleFlowchartSelectionChange()
-        {
-            Flowchart = GetFlowchart();
-            //target has changed, so clear the blockinspector
-            if (Flowchart != prevFlowchart)
-            {
-                blockInspector = null;
-                if (prevFlowchart != null)
-                {
-                    prevFlowchart.SelectedBlock = null;
-                }
-                prevFlowchart = Flowchart;
-                executingBlocks.ClearAll();
-
-                UpdateBlockCollection();
-
-                if (Flowchart != null)
-                {
-                    Flowchart.SelectedBlock = null;
-                    Flowchart.ReverseUpdateSelectedCache(); //becomes reverse restore selected cache
-                }
-                //Flowchart.SelectedBlock = null;
-                FlowchartSelectionChanged(Flowchart);
-
-                Repaint();
-                return true;
-            }
-            return false;
-        }
-
-        public event Action<Flowchart> FlowchartSelectionChanged = delegate { };
-        public FlowchartContext flowchartCtx = new FlowchartContext();
+        public FlowchartContext FlowchartCtx { get; set; } = new FlowchartContext();
 
         protected NodeStyleProvider _nodeStyleProvider = new NodeStyleProvider();
-        protected virtual void OnGUI()
+        public virtual void OnGUI()
         {
             UpdateContexts();
             void UpdateContexts()
             {
-                flowchartCtx.FcHost = this;
-                flowchartCtx.Flowchart = Flowchart;
-                flowchartCtx.Position = position;
+                FlowchartCtx.FcHost = this;
+                FlowchartCtx.Flowchart = Flowchart;
+                FlowchartCtx.Position = position;
 
-                drawGridCtx.GridLineSpacingSize = 120;
-                drawGridCtx.GridLineColor = gridLineColor;
+                DrawGridCtx.GridLineSpacingSize = 120;
+                DrawGridCtx.GridLineColor = GridLineColor;
 
-                _drawBlockContext.FlowchartCtx = flowchartCtx;
-                _drawBlockContext.DefaultBlockHeight = 40;
-                _drawBlockContext.BlockMinWidth = 60;
-                _drawBlockContext.BlockMaxWidth = 240;
-                _nodeStyleProvider.ProvideStylesTo(_drawBlockContext);
-                _drawBlockContext.ViewRect = CalcFlowchartWindowViewRect();
-            }
-
-            if (HandleFlowchartSelectionChange())
-            {
-                return;
+                DrawBlockCtx.FlowchartCtx = FlowchartCtx;
+                DrawBlockCtx.DefaultBlockHeight = 40;
+                DrawBlockCtx.BlockMinWidth = 60;
+                DrawBlockCtx.BlockMaxWidth = 240;
+                _nodeStyleProvider.ProvideStylesTo(DrawBlockCtx);
+                DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
             }
 
             if (Flowchart == null)
+            {
+                Flowchart = GetFlowchart();
+            }
+
+            bool triedButFailedToGetFc = Flowchart == null;
+            if (triedButFailedToGetFc)
             {
                 DrawNoFlowchartMessage();
                 return;
             }
             void DrawNoFlowchartMessage()
             {
-                GUILayout.Label("No Flowchart scene object selected");
+                GUILayout.Label("No Flowchart in the scene is selected");
             }
 
             DrawToolbarAndSearch(Event.current);
@@ -643,6 +645,9 @@ namespace Amanita.VScripting.EditorUtils
                         break;
 
                     case EventType.KeyDown:
+                        // This lets you change the selected block through the arrow keys,
+                        // deselect everything through the Escape key, and... still trying to
+                        // figure out how the Return key factors into all of this
                         if (GUI.GetNameOfFocusedControl() == SearchFieldName)
                         {
                             var centerBlock = false;
@@ -726,7 +731,7 @@ namespace Amanita.VScripting.EditorUtils
             UpdateFilteredBlocks();
 
             foreach (var comp in _components)
-                comp.OnGUI(_drawBlockContext, flowchartCtx);
+                comp.OnGUI(DrawBlockCtx, FlowchartCtx);
 
             DrawSelectionBox();
             void DrawSelectionBox()
@@ -764,8 +769,14 @@ namespace Amanita.VScripting.EditorUtils
             GUIUtility.ExitGUI();
         }
 
-        public Color gridLineColor = Color.black;
-
+        public virtual VisualElement RootVisualElement { get { return rootVisualElement; } }
+        public virtual Rect Position { get { return position; } }
+        public Color GridLineColor
+        {
+            get { return _gridLineColor; }
+            set { _gridLineColor = value; }
+        }
+        protected Color _gridLineColor = Color.black;
         protected virtual void DrawOverlay(Event guiEvent)
         {
             DrawMainToolbarGroup();
@@ -776,15 +787,6 @@ namespace Amanita.VScripting.EditorUtils
                     GUILayout.Space(2);
 
                     GUILayout.Label("", EditorStyles.toolbarButton, GUILayout.Width(8)); // Separator
-
-                    //DrawCenterButton();
-                    //void DrawCenterButton()
-                    //{
-                    //    if (GUILayout.Button("Center", EditorStyles.toolbarButton))
-                    //    {
-                    //        CenterFlowchart();
-                    //    }
-                    //}
 
                     GUILayout.FlexibleSpace();
 
@@ -837,6 +839,7 @@ namespace Amanita.VScripting.EditorUtils
             //DrawVariablesBlock(guiEvent);
         }
 
+        // Keeping this around for when we want to use the old variables block
         protected virtual void DrawVariablesBlock(Event guiEvent)
         {
             // Variables group
@@ -938,9 +941,9 @@ namespace Amanita.VScripting.EditorUtils
         {
             UpdateBlockCollection();
 
-            if (blocks.Count > 0)
+            if (Blocks.Count > 0)
             {
-                var center = -GetBlockCenter(blocks);
+                var center = -GetBlockCenter(Blocks);
                 center.x += position.width * 0.5f / Flowchart.Zoom;
                 center.y += position.height * 0.5f / Flowchart.Zoom;
 
@@ -964,7 +967,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Select the block and also select currently executing command
             Flowchart.SelectedBlock = block;
-            SetBlockForInspector(Flowchart, block);
+            //SetBlockForInspector(Flowchart, block);
         }
 
         public virtual void DeselectAll()
@@ -973,19 +976,24 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart.ClearSelectedCommands();
             EndControlSelection();
             Flowchart.ClearSelectedBlocks();
-            Selection.activeGameObject = Flowchart.gameObject;
+
+            if (Selection.activeGameObject != Flowchart.gameObject)
+            {
+                Selection.activeGameObject = Flowchart.gameObject;
+            }
         }
 
+        /// <summary>
+        /// Only for when you want to create a single Block at a time instead of multiple at once.
+        /// </summary>
+        /// <returns></returns>
         public Block CreateBlock(Flowchart flowchart, Vector2 position)
         {
             Block newBlock = flowchart.CreateBlock(position);
             UpdateBlockCollection();
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
-            // Use AddSelected instead of Select for when multiple blocks are duplicated
             flowchart.AddToSelection(newBlock);
-            SetBlockForInspector(flowchart, newBlock);
-
             return newBlock;
         }
 
@@ -996,39 +1004,6 @@ namespace Amanita.VScripting.EditorUtils
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
             return newBlock;
-        }
-
-        protected static void ShowBlockInspector(Flowchart flowchart)
-        {
-            if (blockInspector == null)
-            {
-                // Create a Scriptable Object with a custom editor which we can use to inspect the selected block.
-                // Editors for Scriptable Objects display using the full height of the inspector window.
-                blockInspector = ScriptableObject.CreateInstance<BlockInspector>() as BlockInspector;
-                blockInspector.hideFlags = HideFlags.DontSave;
-            }
-
-            Selection.activeObject = blockInspector;
-
-            EditorUtility.SetDirty(blockInspector);
-        }
-
-        public static void SetBlockForInspector(Flowchart flowchart, Block block)
-        {
-            bool wasAlreadyShowingThisBlock = blockInspector != null && blockInspector.block == block;
-            ShowBlockInspector(flowchart);
-
-            if (!wasAlreadyShowingThisBlock) 
-            {
-                // ^We need this check to make sure that when a Command is selected in the 
-                // Inspector, it's not immediately unselected
-                flowchart.ClearSelectedCommands();
-            }
-            
-            if (block != null && block.ActiveCommand != null)
-            {
-                flowchart.AddSelectedCommand(block.ActiveCommand);
-            }
         }
 
         /// <summary>

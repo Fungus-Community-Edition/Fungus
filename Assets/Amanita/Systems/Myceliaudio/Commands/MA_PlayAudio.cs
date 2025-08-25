@@ -5,7 +5,7 @@ using Amanita.VScripting;
 namespace Amanita.Myceliaudio
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
-    public class MA_PlayAudio : MyceliaudioCommand
+    public class MA_PlayAudio : MyceliaudioCommand, ISerializationCallbackReceiver
     {
         public enum AudioPlayMode
         {
@@ -332,6 +332,15 @@ namespace Amanita.Myceliaudio
             string result = $"{TrackGroup} Tr {TrackNameForSummary()}";
             return result;
         }
+
+        public void OnBeforeSerialize() { }
+
+        public void OnAfterDeserialize()
+        {
+            skipIfAlreadyPlaying ??= new BooleanData();
+            useConfigSO ??= new BooleanData();
+        }
+
     }
 
     [System.Serializable]

@@ -3,7 +3,7 @@
     public interface IFcWindowComponent
     {
         // Called once when the window enables
-        void Initialize(FlowchartWindow window);
+        void Initialize(IFlowchartHost window);
 
         // Called inside OnGUI before and after zoom‐area, as needed
         void OnToolbarGUI();
