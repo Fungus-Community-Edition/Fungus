@@ -42,8 +42,8 @@ namespace Amanita.VScripting.EditorUtils
             _holder = rowHolder;
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
-
             _template = GetOrResolveTemplate(GetType());
+            //Debug.Log($"Handler Init: Variable Key={toDisplay.Key}, InstanceID={toDisplay.GetHashCode()}, SerializedObject Target={SerializedVar?.targetObject}");
         }
 
         /// <summary>
@@ -94,7 +94,11 @@ namespace Amanita.VScripting.EditorUtils
             if (_holder != null && Root != null && !_holder.Contains(Root))
                 _holder.Add(Root);
 
-            UnbindFields();
+            if (_prevVariable != _currentVariable)
+            {
+                UnbindFields();
+            }
+
             BindFields();
         }
 
@@ -144,8 +148,8 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-
-            Root.Bind(SerializedVar);
+            
+            Root?.Bind(SerializedVar);
         }
 
         public virtual SerializedObject SerializedVar
@@ -188,6 +192,8 @@ namespace Amanita.VScripting.EditorUtils
 
             _prevVariable = null;
             _currentVariable = null;
+            _serializedVar?.Dispose();
+            _serializedVar = null;
             _holder = null;
             Root = null;
         }
@@ -197,6 +203,7 @@ namespace Amanita.VScripting.EditorUtils
             if (_isDisposed) return;
             _isDisposed = true;
             Reset();
+            _currentVariable = _prevVariable = null;
         }
 
         public virtual VisualTreeAsset Template => _template;

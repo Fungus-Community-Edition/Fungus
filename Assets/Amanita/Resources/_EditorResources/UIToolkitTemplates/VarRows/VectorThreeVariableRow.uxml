@@ -3,11 +3,11 @@
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/vectorThreeStyle.uss?fileID=7433441132597879392&amp;guid=946b58ee69bdd45449790de143a578ee&amp;type=3#vectorThreeStyle" />
     <engine:VisualElement name="VarRowRoot">
         <engine:VisualElement name="TopRow" style="flex-grow: 1;">
-            <engine:Label text="VecThree" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
-            <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
+            <engine:Label text="VecThree" name="TypeLabel" view-data-key="" class="varRowTypeLabel" />
+            <engine:TextField name="KeyInput" view-data-key="" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
             <engine:VisualElement name="SpaceFiller" style="flex-grow: 1;" />
-            <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="Scope" binding-path="scope" class="scopeRoot" />
-            <engine:Button text="-" name="RemoveButton" view-data-key="RemoveButton" class="removeButton" />
+            <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="" binding-path="scope" class="scopeRoot" />
+            <engine:Button text="-" name="RemoveButton" view-data-key="" class="removeButton" />
         </engine:VisualElement>
         <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueField">
             <engine:Vector3Field name="VectorThreeField" binding-path="value" />

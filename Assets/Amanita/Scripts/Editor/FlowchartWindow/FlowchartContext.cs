@@ -1,12 +1,26 @@
 using Collections;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class FlowchartContext
+    public class FlowchartContext : IDisposable
     {
+        public virtual void Dispose()
+        {
+            BlockDragOngoing = SelectionBoxDragOngoing = DragUndoRecorded = false;
+            StartDragPosition = StartSelectionBoxPosition = default;
+            ForceRepaintCount = 0;
+            BlockHitInLastMouseDown = RootBlockToDrag = null;
+            Position = SelectionBox = default;
+            //AllBlocks.Clear(); // AllBlocks is read-only
+            QueuedForDeletion.Clear();
+            AllBlocks = null;
+            queuedForDeletion = null;
+        }
+
         public IList<Block> SelectedBlocks
         {
             get { return Flowchart.SelectedBlocks; }

@@ -197,9 +197,9 @@ namespace Amanita.VScripting
 
         protected virtual IEnumerator HandleGameStartedBlock()
         {
-            GameStarted gsEventHandler = GetComponentInChildren<GameStarted>();
+            IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
 
-            if (gsEventHandler == null)
+            if (gsEventHandler.Count == 0)
             {
                 yield break;
             }
@@ -209,7 +209,10 @@ namespace Amanita.VScripting
                 yield return null;
             }
 
-            gsEventHandler.Trigger();
+            foreach (var elem in gsEventHandler)
+            {
+                elem.Trigger();
+            }
             
         }
 
@@ -1640,17 +1643,20 @@ namespace Amanita.VScripting
 
         public virtual void DetermineSubstituteVariables(string str, List<Variable> vars)
         {
-            Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
-
+            Regex regex = new Regex(Flowchart.SubstituteVariableRegexString);
+            if (str == null)
+            {
+                Debug.LogError("Str in DetermineSubstituteVariables is null");
+            }
             // Match the regular expression pattern against a text string.
-            var results = r.Matches(str);
+            var results = regex.Matches(str);
             for (int i = 0; i < results.Count; i++)
             {
                 var match = results[i];
-                var v = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
-                if (v != null)
+                var varFound = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                if (varFound != null)
                 {
-                    vars.Add(v);
+                    vars.Add(varFound);
                 }
             }
         }
@@ -1836,7 +1842,6 @@ namespace Amanita.VScripting
         }
 #endif
         
-
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
         {
@@ -1884,6 +1889,11 @@ namespace Amanita.VScripting
             else if (toAdd is Muscariable muscaVar)
             {
                 muscariables.Add(muscaVar);
+            }
+
+            if (toAdd is Variable || toAdd is Muscariable)
+            {
+                toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
             }
 
             VariableAdded(toAdd);

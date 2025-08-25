@@ -1,6 +1,8 @@
-﻿namespace Amanita.VScripting.EditorUtils
+﻿using System;
+
+namespace Amanita.VScripting.EditorUtils
 {
-    public interface IFcWindowComponent
+    public interface IFcWindowComponent : IDisposable
     {
         // Called once when the window enables
         void Initialize(IFlowchartHost window);

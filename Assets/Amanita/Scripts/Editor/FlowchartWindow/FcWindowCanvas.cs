@@ -5,6 +5,17 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class FcWindowCanvas : IFcWindowComponent
     {
+        public virtual void Dispose()
+        {
+            _window = null;
+            _gridRenderer.Dispose();
+            _blockRenderer.Dispose();
+            _flowchartCtx.Dispose();
+            _drawGridCtx.Dispose();
+            _drawBlockCtx.Dispose();
+            _connectionRenderer.Dispose();
+        }
+
         public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;

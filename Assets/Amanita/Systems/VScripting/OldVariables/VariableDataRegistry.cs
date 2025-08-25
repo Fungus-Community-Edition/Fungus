@@ -2,91 +2,77 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
     public static class VariableDataRegistry
     {
-        private static readonly Dictionary<Type, VariableDataMetadata> _registry = new();
+        // Key is var type, value is data type
+        private static readonly Dictionary<Type, Type> _varTypeToDataType = new();
 
-        // Legacy fallback list reference (inject or link to your existing static list)
-        public static Func<IEnumerable<Type>> LegacyListProvider { get; set; }
-
-        public static void DiscoverAndRegisterAll(Assembly assembly = null)
+        public static void Clear()
         {
-            assembly ??= Assembly.GetExecutingAssembly();
-
-            var validVarDataTypes = assembly.GetTypes()
-                .Where(typeFound => typeof(VariableData).
-                IsAssignableFrom(typeFound) && !typeFound.IsAbstract && !typeFound.IsInterface);
-
-            foreach (var typeEl in validVarDataTypes)
-                Register(typeEl);
+            _varTypeToDataType.Clear();
+            _uniqueIdToDataType.Clear();
         }
 
-        public static void Register<T>() where T : class
-            => Register(typeof(T));
-
-        public static void Register(Type varDataType)
+        public static void Register(Type varDataType, VariableDataAttribute attr)
         {
-            if (!_registry.ContainsKey(varDataType))
+            if (attr == null || varDataType == null)
             {
-                var attr = varDataType.GetCustomAttribute<VariableDataAttribute>();
+                Debug.LogWarning($"Passed null attr or varDataType to VariableDataRegistry Register func");
+                return;
+            }
 
-                // We want the attribute to be optional, and thus when the data type doesn't
-                // have it, we go with some defaults.
-                var displayName = attr?.DisplayName ?? varDataType.Name;
-                var category = attr?.Category ?? "Uncategorized";
+            IList<Type> compatibleVarTypes = attr.VariableTypes.Where((elem) => elem != null).ToList();
 
-                _registry[varDataType] = new VariableDataMetadata(varDataType, displayName, category);
+            foreach (var varTypeEl in compatibleVarTypes)
+            {
+                // We want to allow multiple ways of looking up data types, hence the
+                // multiple dictionaries we're managing
+                _varTypeToDataType.TryAdd(varTypeEl, varDataType);
+
+                VariableInfoAttribute infoAtt = varTypeEl.GetCustomAttribute<VariableInfoAttribute>();
+                _uniqueIdToDataType.TryAdd(infoAtt.UniqueID, varDataType);
+                
             }
         }
 
-        public static VariableDataMetadata GetMetadata(Type type)
+        // The unique ids belong to the var types, NOT the data types
+        private static readonly IDictionary<string, Type> _uniqueIdToDataType = new Dictionary<string, Type>();
+
+        /// <summary>
+        /// T is the variable type (IntegerVariable, AudioClipVariable, etc)
+        /// </summary>
+        public static IVariableData CreateForVar<T>() where T: IVariable
         {
-            VariableDataMetadata result;
-            _registry.TryGetValue(type, out result);
+            return CreateForVar(typeof(T));
+        }
 
-            // Fallback to legacy list if provided
-            if (result == null && LegacyListProvider != null && LegacyListProvider().Contains(type))
-                return new VariableDataMetadata(type, type.Name, "Legacy");
-
+        public static IVariableData CreateForVar(Type variableType)
+        {
+            var dataType = GetDataTypeLinkedToVarType(variableType);
+            IVariableData result = null;
+            if (dataType != null)
+            {
+                result = (IVariableData)Activator.CreateInstance(dataType);
+            }
+            else
+            {
+                Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
+                    $"in the registry: {_varTypeToDataType.Count}");
+            }
+            
             return result;
         }
 
-        public static IEnumerable<VariableDataMetadata> AllMetadata
+        public static Type GetDataTypeLinkedToVarType(Type variableType)
         {
-            get
-            {
-                var all = _registry.Values.ToList();
-
-                if (LegacyListProvider != null)
-                {
-                    foreach (var legacyType in LegacyListProvider())
-                    {
-                        if (!_registry.ContainsKey(legacyType))
-                            all.Add(new VariableDataMetadata(legacyType, legacyType.Name, "Legacy"));
-                    }
-                }
-
-                return all;
-            }
+            _varTypeToDataType.TryGetValue(variableType, out var result);
+            return result;
         }
+
     }
 
-    public class VariableDataMetadata
-    {
-        public Type Type { get; }
-        public string DisplayName { get; }
-        public string Category { get; }
-
-        public VariableDataMetadata(Type type, string displayName, string category)
-        {
-            Type = type;
-            DisplayName = displayName;
-            Category = category;
-        }
-    }
-
-    
 }

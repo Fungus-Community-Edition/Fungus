@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -107,9 +108,9 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (Flowchart.VariableCount != prevVarCount)
+            if (Flowchart.VariableCount != _prevVarCount)
             {
-                prevVarCount = Flowchart.VariableCount;
+                _prevVarCount = Flowchart.VariableCount;
                 _window.Repaint();
             }
 
@@ -144,7 +145,7 @@ namespace Amanita.VScripting.EditorUtils
 
         }
 
-        protected int prevVarCount;
+        protected int _prevVarCount;
         public void OnToolbarGUI() { }
         public void OnGUI(DrawBlockContext d, FlowchartContext f) { }
         public void OnInspectorGUI() { }
@@ -276,6 +277,9 @@ namespace Amanita.VScripting.EditorUtils
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
             BlockSignals.BlockClicked -= OnBlockClicked;
+
+            _lastShownBlock = null;
+            _prevVarCount = 0;
         }
 
     }

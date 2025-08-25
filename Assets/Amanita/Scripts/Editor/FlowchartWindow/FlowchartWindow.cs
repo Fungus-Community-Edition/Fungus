@@ -233,11 +233,15 @@ namespace Amanita.VScripting.EditorUtils
                 _components.Add(new FcWindowExecutionVisualizer());
                 _components.Add(new FcWindowSelectionSync());
 
-                var varsComponent = new FcWindowVariablesComponent();
-                string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
-                var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
-                varsComponent.VariableDisplayEditorUxml = uxml;
-                _components.Add(varsComponent);
+                PrepVarsComponent();
+                void PrepVarsComponent()
+                {
+                    var varsComponent = new FcWindowVariablesComponent();
+                    string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                    var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+                    varsComponent.VariableDisplayEditorUxml = uxml;
+                    _components.Add(varsComponent);
+                }
 
                 foreach (var comp in _components)
                     comp.Initialize(this);
@@ -265,52 +269,40 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Using a temp hidden object to track the active Flowchart across 
             // serialization / deserialization when playing the game in the editor.
-            EnsureThereIsFungusState();
-            void EnsureThereIsFungusState()
+            EnsureThereIsAmanitaState();
+            static void EnsureThereIsAmanitaState()
             {
-                if (fungusState == null)
+                if (amanitaState == null)
                 {
 #if UNITY_6000
-                    fungusState = GameObject.FindFirstObjectByType<FungusState>();
+                    amanitaState = GameObject.FindFirstObjectByType<AmanitaState>();
 #else
-                    fungusState = GameObject.FindObjectOfType<FungusState>();
+                    fungusState = GameObject.FindObjectOfType<AmanitaState>();
 #endif
-                    if (fungusState == null)
+                    if (amanitaState == null)
                     {
-                        GameObject stateHolder = new GameObject("_FungusState");
+                        GameObject stateHolder = new GameObject("_AmanitaState");
                         stateHolder.hideFlags = HideFlags.HideInHierarchy;
-                        fungusState = stateHolder.AddComponent<FungusState>();
+                        amanitaState = stateHolder.AddComponent<AmanitaState>();
                     }
                 }
             }
 
-            FindSelectedFlowchart();
-            void FindSelectedFlowchart()
-            {
-                GameObject selectedGo = Selection.activeGameObject;
-                if (selectedGo != null)
-                {
-                    selectedGo.TryGetComponent(out Flowchart flowchartSelected);
-                    if (flowchartSelected != null)
-                    {
-                        fungusState.SelectedFlowchart = flowchartSelected;
-                    }
-                }
-            }
+            amanitaState.Refresh();
 
-            return fungusState.SelectedFlowchart;
+            return amanitaState.SelectedFlowchart;
         }
 
-        protected static FungusState fungusState;
+        protected static AmanitaState amanitaState;
 
         protected static Flowchart FcSelected
         {
             get
             {
                 Flowchart result = null;
-                if (fungusState != null)
+                if (amanitaState != null)
                 {
-                    result = fungusState.SelectedFlowchart;
+                    result = amanitaState.SelectedFlowchart;
                 }
 
                 return result;
@@ -349,6 +341,13 @@ namespace Amanita.VScripting.EditorUtils
             Clipboard?.Dispose();
             UnregisterCallbacks();
             CleanUpSearchPanel();
+
+            for (int i = 0; i < _components.Count; i++)
+            {
+                var componentEl = _components[i];
+                componentEl.Dispose();
+            }
+            _components.Clear();
         }
 
         protected virtual void UnregisterCallbacks()
@@ -385,7 +384,6 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart = null;
             _prevFlowchart = null;
             blockInspector = null;
-
         }
 
         protected void Undo_ForceRepaint()
@@ -401,6 +399,11 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void OnEditorUpdate()
         {
+            if (Flowchart == null)
+            {
+                Flowchart = GetFlowchart();
+            }
+
             foreach (var comp in _components)
                 comp.OnEditorUpdate();
 
@@ -450,7 +453,7 @@ namespace Amanita.VScripting.EditorUtils
             get { return _flowchart; }
             set
             {
-                if (value != _flowchart)
+                if (!ReferenceEquals(value, _flowchart))
                 {
                     _prevFlowchart = _flowchart;
                     _flowchart = value;
@@ -607,11 +610,9 @@ namespace Amanita.VScripting.EditorUtils
                 DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
             }
 
-            if (Flowchart == null)
-            {
-                Flowchart = GetFlowchart();
-            }
-
+            Flowchart = GetFlowchart();
+            Repaint();
+            
             bool triedButFailedToGetFc = Flowchart == null;
             if (triedButFailedToGetFc)
             {

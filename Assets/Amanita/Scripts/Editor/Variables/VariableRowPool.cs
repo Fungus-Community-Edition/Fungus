@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -11,6 +12,7 @@ namespace Amanita.VScripting.EditorUtils
             if (_rowsPooled.Count > 0)
             {
                 result = _rowsPooled.Pop();
+                Debug.Log($"Reusing a row.");
             }
             else
             {

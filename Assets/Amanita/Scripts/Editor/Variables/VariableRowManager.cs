@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
+using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -160,7 +161,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void OnAddClicked()
         {
-            /* show add dialog, then Refresh */
+            /* TODO: show add dialog, then Refresh */
         }
 
         protected virtual void OnVariableAdded(IVariable added)
@@ -232,6 +233,7 @@ namespace Amanita.VScripting.EditorUtils
             ReleaseAllRows();
             foreach (var varToShow in _flowchart.Variables)
                 AddOrReuseRow(varToShow);
+
             RefreshCountLabel();
 
             TrimPhantomSpace(); // So the scrolling doesn't get wonky. 
@@ -316,6 +318,7 @@ namespace Amanita.VScripting.EditorUtils
                 if (_holdsManager != null && _holdsManager.Contains(Root))
                 {
                     _holdsManager.Remove(Root);
+                    Debug.Log($"VarRowManager: Removed root from holder");
                 }
             }
 

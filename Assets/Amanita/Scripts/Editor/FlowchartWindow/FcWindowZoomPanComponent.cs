@@ -7,6 +7,11 @@ namespace Amanita.VScripting.EditorUtils
     {
         private IFlowchartHost host;
 
+        public virtual void Dispose()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Initialize(IFlowchartHost hostWindow)
         {
             host = hostWindow;

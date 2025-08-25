@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
+using Collections;
 
 namespace Amanita.EditorUtils
 {
@@ -19,7 +20,10 @@ namespace Amanita.EditorUtils
         public SearchPanel(Flowchart toSearchFor)
         {
             flowchart = toSearchFor;
-            allBlocks = toSearchFor.GetComponents<Block>();
+            if (flowchart != null)
+            {
+                AllBlocks = toSearchFor.GetComponents<Block>();
+            }
             Root = new VisualElement();
 
             BuildUI();
@@ -27,7 +31,19 @@ namespace Amanita.EditorUtils
         }
 
         protected Flowchart flowchart;
-        protected IList<Block> allBlocks;
+        protected IList<Block> AllBlocks
+        {
+            get => _allBlocks;
+            set
+            {
+                _allBlocks.Clear();
+                if (value != null)
+                {
+                    _allBlocks.AddRange(value);
+                }
+            }
+        }
+        protected IList<Block> _allBlocks = new List<Block>();
         public VisualElement Root { get; }
 
         protected virtual void BuildUI()
@@ -38,6 +54,7 @@ namespace Amanita.EditorUtils
                 searchField = new ToolbarSearchField();
                 searchField.name = SearchFieldName;
                 searchField.style.marginBottom = searchFieldMarginBottom;
+                searchField.value = ""; // To avoid certain null ref errors
             }
 
             PrepResultList();
@@ -99,7 +116,7 @@ namespace Amanita.EditorUtils
             }
 
             UIToolkitLabel uitkLabel = (UIToolkitLabel)element;
-            allBlocks = flowchart.GetComponents<Block>();
+            AllBlocks = flowchart.GetComponents<Block>();
             IList<Block> blocksInResults = (IList<Block>)resultList.itemsSource;
             Block currentBlock = blocksInResults[index];
 
@@ -134,7 +151,7 @@ namespace Amanita.EditorUtils
 
         protected virtual void RebindResults()
         {
-            IList<Block> resultsToShow = FilterUtils.FilterBlocks(allBlocks, Query);
+            IList<Block> resultsToShow = FilterUtils.FilterBlocks(AllBlocks, Query);
 
             resultList.itemsSource = (System.Collections.IList)resultsToShow;
             resultList.RefreshItems();
@@ -159,6 +176,8 @@ namespace Amanita.EditorUtils
         public virtual void Dispose()
         {
             UnregisterUiCallbacks();
+            _allBlocks.Clear();
+            _allBlocks = null;
             if (Root.parent != null)
                 Root.RemoveFromHierarchy();
         }

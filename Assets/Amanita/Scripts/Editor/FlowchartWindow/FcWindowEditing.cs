@@ -61,7 +61,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected readonly List<Block> _scheduledForDeletion = new List<Block>();
+        protected List<Block> _scheduledForDeletion = new List<Block>();
 
         public virtual void OnInspectorGUI()
         {
@@ -124,6 +124,16 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void OnInspectorUpdate()
         {
             
+        }
+
+        public virtual void Dispose()
+        {
+            _window = null;
+            _inputPipeline.Dispose();
+            _inputPipeline = null;
+            _clipboard = null; // We expect another module to dispose of the clipboard
+            _scheduledForDeletion.Clear();
+            _scheduledForDeletion = null;
         }
     }
 }

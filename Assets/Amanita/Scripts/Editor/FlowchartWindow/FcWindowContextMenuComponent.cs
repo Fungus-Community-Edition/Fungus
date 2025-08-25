@@ -67,6 +67,12 @@ namespace Amanita.VScripting.EditorUtils
         public void OnInspectorGUI()
         {
         }
+
+        public virtual void Dispose()
+        {
+            host = null;
+            rightClickDown = Vector2.zero;
+        }
     }
 
     // Extension to convert window-space to flowchart-space
