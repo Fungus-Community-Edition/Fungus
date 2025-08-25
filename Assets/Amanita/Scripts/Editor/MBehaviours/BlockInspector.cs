@@ -64,7 +64,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             BlockInspector blockInspector = target as BlockInspector;
             Block block = blockInspector.block;
-            bool weHaveAnythingToDraw = block != null;
+            bool weHaveAnythingToDraw = block != null && block.IsSelected;
             if (!weHaveAnythingToDraw)
             {
                 return;
@@ -78,14 +78,14 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            EnsureABlockIsSelected();
-            void EnsureABlockIsSelected()
-            {
-                if (flowchart.SelectedBlockCount == 0)
-                {
-                    flowchart.AddToSelection(block);
-                }
-            }
+            //EnsureABlockIsSelected();
+            //void EnsureABlockIsSelected()
+            //{
+            //    if (flowchart.SelectedBlockCount == 0)
+            //    {
+            //        flowchart.AddToSelection(block);
+            //    }
+            //}
             
             EnsureBlockEditorTargetsOurBlock();
             void EnsureBlockEditorTargetsOurBlock()

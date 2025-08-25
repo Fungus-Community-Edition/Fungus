@@ -701,7 +701,7 @@ namespace Amanita.VScripting
             created._NodeRect = new Rect(position, defaultBlockSize);
             created.BlockName = GetUniqueBlockKey(created.BlockName, created);
             created.ItemId = NextItemId();
-
+            BlockSignals.BlockCreated(created);
             return created;
         }
 
@@ -1447,7 +1447,9 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void ClearSelectedBlocks()
         {
+            IList<Block> blocksToSignal = SelectedBlocks;
             UIModel.ClearSelectedBlocks();
+            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
         }
 
         public virtual void AddRangeToSelection(IList<Block> toSelect)

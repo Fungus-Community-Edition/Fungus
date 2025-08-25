@@ -121,11 +121,28 @@ namespace Amanita.VScripting.UI
         {
             foreach (var blockEl in toAdd)
             {
-                AddToSelection(blockEl);
+                // To avoid confusion, we don't want this to be able to trigger MultiBlocksSelected
+                // and BlockSelected at the same time in the same call of this func
+                AddToSelectionWithoutSignal(blockEl);
+            }
+
+            if (toAdd.Count > 0)
+            {
+                BlockSignals.MultiBlocksSelected(toAdd);
             }
         }
 
         public virtual void AddToSelection(Block block)
+        {
+            if (block != null && !_selectedBlocks.Contains(block))
+            {
+                block.IsSelected = true;
+                _selectedBlocks.Add(block);
+                BlockSignals.BlockSelected(block);
+            }
+        }
+
+        protected virtual void AddToSelectionWithoutSignal(Block block)
         {
             if (block != null && !_selectedBlocks.Contains(block))
             {

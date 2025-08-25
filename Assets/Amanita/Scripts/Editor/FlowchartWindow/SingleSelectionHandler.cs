@@ -89,11 +89,11 @@ namespace Amanita.EditorUtils
 
             if (hitEmpty && !hasDragRect && !IsMultiSelect(inputEvent))
             {
-                fc.ClearSelectedBlocks();
+                FlowchartWindowSignals.EmptySpaceClicked();
             }
             else if (!hitEmpty)  // only when a real block was clicked
             {
-                BlockSignals.BlockClicked(blockHit);
+                BlockSignals.BlockClicked(blockHit, inputEvent);
             }
 
             ctx.FcHost.UpdateBlockCollection();

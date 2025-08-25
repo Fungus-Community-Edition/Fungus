@@ -340,28 +340,12 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed += Undo_ForceRepaint;
             EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
             ListenForUiToolkitEvents();
-            BlockSignals.BlockClicked += OnBlockClicked;
+            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
         }
 
-        protected virtual void OnBlockClicked(Block involved)
+        protected virtual void OnEmptySpaceClicked()
         {
-            Flowchart fcItBelongsTo = involved.GetFlowchart();
-            string logMessage;
-            if (Flowchart == null)
-            {
-                // I have yet to see this part of the code execute, but hey. Just in case.
-                logMessage = "A Block was clicked yet we have no Flowchart registered as the active one.";
-                Debug.LogError(logMessage);
-            }
-            else
-            {
-                logMessage = "Responding to Block clicked while we indeed do have a Flowchart registered as the active one.";
-                Debug.Log(logMessage);
-                fungusState.SelectedFlowchart = Flowchart = fcItBelongsTo;
-                fcItBelongsTo.SelectedBlock = involved;
-
-                Selection.activeGameObject = fcItBelongsTo.gameObject;
-            }
+            UpdateBlockCollection();
         }
 
         protected virtual void ListenForUiToolkitEvents()
@@ -388,7 +372,7 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed -= Undo_ForceRepaint;
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
             UnregisterUiToolkitCallbacks();
-            BlockSignals.BlockClicked -= OnBlockClicked;
+            FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
         }
 
         protected virtual void UnregisterUiToolkitCallbacks()
@@ -578,7 +562,7 @@ namespace Amanita.VScripting.EditorUtils
         public bool HandleFlowchartSelectionChange()
         {
             Flowchart = GetFlowchart();
-            //target has changed, so clear the blockinspector
+            // target has changed, so clear the blockinspector
             if (Flowchart != prevFlowchart)
             {
                 blockInspector = null;
@@ -990,7 +974,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Select the block and also select currently executing command
             Flowchart.SelectedBlock = block;
-            SetBlockForInspector(Flowchart, block);
+            //SetBlockForInspector(Flowchart, block);
         }
 
         public virtual void DeselectAll()
@@ -999,19 +983,24 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart.ClearSelectedCommands();
             EndControlSelection();
             Flowchart.ClearSelectedBlocks();
-            Selection.activeGameObject = Flowchart.gameObject;
+
+            if (Selection.activeGameObject != Flowchart.gameObject)
+            {
+                Selection.activeGameObject = Flowchart.gameObject;
+            }
         }
 
+        /// <summary>
+        /// Only for when you want to create a single Block at a time instead of multiple at once.
+        /// </summary>
+        /// <returns></returns>
         public Block CreateBlock(Flowchart flowchart, Vector2 position)
         {
             Block newBlock = flowchart.CreateBlock(position);
             UpdateBlockCollection();
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
-            // Use AddSelected instead of Select for when multiple blocks are duplicated
             flowchart.AddToSelection(newBlock);
-            SetBlockForInspector(flowchart, newBlock);
-
             return newBlock;
         }
 
@@ -1022,40 +1011,6 @@ namespace Amanita.VScripting.EditorUtils
             Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
 
             return newBlock;
-        }
-
-        protected static void ShowBlockInspector(Flowchart flowchart)
-        {
-            if (blockInspector == null)
-            {
-                // Create a Scriptable Object with a custom editor which we can use to inspect the selected block.
-                // Editors for Scriptable Objects display using the full height of the inspector window.
-                blockInspector = ScriptableObject.CreateInstance<BlockInspector>() as BlockInspector;
-                blockInspector.hideFlags = HideFlags.DontSave;
-            }
-
-            Selection.activeGameObject = flowchart.gameObject;
-            Selection.activeObject = blockInspector;
-
-            EditorUtility.SetDirty(blockInspector);
-        }
-
-        public static void SetBlockForInspector(Flowchart flowchart, Block block)
-        {
-            bool wasAlreadyShowingThisBlock = blockInspector != null && blockInspector.block == block;
-            ShowBlockInspector(flowchart);
-
-            if (!wasAlreadyShowingThisBlock) 
-            {
-                // ^We need this check to make sure that when a Command is selected in the 
-                // Inspector, it's not immediately unselected
-                flowchart.ClearSelectedCommands();
-            }
-            
-            if (block != null && block.ActiveCommand != null)
-            {
-                flowchart.AddSelectedCommand(block.ActiveCommand);
-            }
         }
 
         /// <summary>
