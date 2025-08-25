@@ -24,11 +24,13 @@ namespace Amanita.Tests.Editor
             ctx = new FlowchartContext
             {
                 Flowchart = host.Flowchart,
-                FcHost = null      // not used by the handler
+                FcHost = null // not used by the handler
             };
 
             rightClickEmptySpace = RightClick(whereEmptySpaceShouldBe);
             rightClickBlock = RightClick(whereABlockShouldBe);
+
+            _fcWindowEditing = host.GetComponent<FcWindowEditing>();
 
         }
 
@@ -37,6 +39,7 @@ namespace Amanita.Tests.Editor
         protected BlockContextMenuHandler handler;
         protected FlowchartContext ctx;
         protected Event rightClickEmptySpace;
+        protected FcWindowEditing _fcWindowEditing;
         Event RightClick(Vector2 pos) => RightClick(pos.x, pos.y);
         Event RightClick(float x, float y) => new Event
         {
@@ -54,6 +57,7 @@ namespace Amanita.Tests.Editor
         public virtual void TearDown()
         {
             rightClickEmptySpace = rightClickBlock = null;
+            _fcWindowEditing = null;
             host.Dispose();
         }
 
@@ -177,7 +181,7 @@ namespace Amanita.Tests.Editor
         {
             string errorMessage = string.Empty;
             CommonCutTest(out IList<Block> selectedBlocks, out IList<int> blockIDsBeforeCut);
-
+            
             bool allNulls = selectedBlocks.All(item => item == null);
             Assert.IsTrue(allNulls, "All of the original vers of the cut blocks should be null");
 
@@ -192,12 +196,12 @@ namespace Amanita.Tests.Editor
             string errorMessage = string.Empty;
 
             CheckIfAtLeastOneIsSelected(out localSelectedBlocks);
-            void CheckIfAtLeastOneIsSelected(out IList<Block> selectedBlocks)
+            void CheckIfAtLeastOneIsSelected(out IList<Block> localSelectedBlocks)
             {
-                selectedBlocks = host.Flowchart.SelectedBlocks;
-                bool atLeastOneSelected = selectedBlocks.Count > 0;
+                localSelectedBlocks = host.Flowchart.SelectedBlocks;
+                bool atLeastOneSelected = localSelectedBlocks.Count > 0;
                 errorMessage = "At least one block should be selected upon right-clicking one." +
-                    "\nThere might be an issue with SingleSelectionHandler";
+                    "\nThere might be an issue with SingleSelectionHandler.";
                 Assume.That(atLeastOneSelected, errorMessage);
             }
 
@@ -208,10 +212,11 @@ namespace Amanita.Tests.Editor
                                      select elem.ItemId).ToList();
                 // ^Given how cutting deletes the original blocks, we need to register the IDs
                 // here so we can check that the right stuff gets queued and such
-
+                
                 var cutItem = menuFactory.LastMenu.Items
                      .First(i => i.Content.text.ToLower() == "cut");
                 cutItem.Callback();
+                _fcWindowEditing.OnGUI();
                 Assert.IsTrue(host.Clipboard.HasEntries, "Clipboard has no entries after a Cut op");
             }
 

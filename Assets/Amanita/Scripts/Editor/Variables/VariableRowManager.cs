@@ -44,7 +44,7 @@ namespace Amanita.VScripting.EditorUtils
                     typeEl.GetCustomAttribute<RowVisualHandlerAttribute>() != null)
                 .ToArray(); // snapshot
 
-            // 2) Precompute the pairs outside the lock
+            // 2) Precompute the pairs outside the lock //
             var pairs = new List<KeyValuePair<Type, Type>>(discovered.Length);
             foreach (var handlerType in discovered)
             {

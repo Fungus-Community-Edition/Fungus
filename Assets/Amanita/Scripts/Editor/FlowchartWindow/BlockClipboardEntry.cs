@@ -35,6 +35,10 @@ namespace Amanita.VScripting.EditorUtils
             var prop = source.GetIterator();
             while (prop.NextVisible(true))
             {
+                // Exclude problematic valObj fields
+                if (prop.propertyPath.EndsWith("valObj"))
+                    continue;
+
                 if (!excludeTypes.Contains(prop.propertyType))
                 {
                     newSerializedObject.CopyFromSerializedProperty(prop);

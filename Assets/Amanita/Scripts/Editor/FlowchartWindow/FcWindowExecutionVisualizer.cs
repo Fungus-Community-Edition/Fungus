@@ -9,14 +9,14 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowExecutionVisualizer : IFcWindowComponent
     {
-        public virtual void Initialize(FlowchartWindow window)
+        public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;
             _execTracker = new FlowchartWindow.ExecutingBlocks();
             _iconStyle = new GUIStyle();
         }
 
-        protected FlowchartWindow _window;
+        protected IFlowchartHost _window;
         protected FlowchartWindow.ExecutingBlocks _execTracker;
         protected GUIStyle _iconStyle;
 
@@ -24,7 +24,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (Application.isPlaying)
             {
-                _execTracker.ProcessAllBlocks(_window.blocks);
+                _execTracker.ProcessAllBlocks(_window.Blocks);
                 if (_execTracker.isChangeDetected || _execTracker.IsAnimFadeoutNeed())
                     _window.Repaint();
             }

@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowSelectionSync : IFcWindowComponent, IDisposable
     {
-        public virtual void Initialize(FlowchartWindow window)
+        public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;
             DeregisterCallbacks();
@@ -22,6 +22,7 @@ namespace Amanita.VScripting.EditorUtils
             BlockSignals.BlockCreated -= OnBlockCreated;
             BlockSignals.BlockClicked -= OnBlockClicked;
             FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+            FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
         }
 
         protected virtual void ListenForEvents()
@@ -29,6 +30,7 @@ namespace Amanita.VScripting.EditorUtils
             BlockSignals.BlockCreated += OnBlockCreated;
             BlockSignals.BlockClicked += OnBlockClicked;
             FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
         }
 
         protected virtual void OnBlockCreated(Block block)
@@ -58,10 +60,6 @@ namespace Amanita.VScripting.EditorUtils
             else
             {
                 Flowchart.ClearSelectedBlocks();
-                if (Selection.activeGameObject != Flowchart.gameObject)
-                {
-                    Selection.activeGameObject = Flowchart.gameObject;
-                }
             }
 
             _lastShownBlock = block;
@@ -86,7 +84,14 @@ namespace Amanita.VScripting.EditorUtils
             
         }
 
-        protected FlowchartWindow _window;
+        protected virtual void OnFlowchartChanged(Flowchart prevFlowchart, Flowchart currentFlowchart)
+        {
+            _skipNextEditorUpdate = true;
+        }
+
+        protected bool _skipNextEditorUpdate; // So we know when to bail in OnEditorUpdate
+
+        protected IFlowchartHost _window;
 
         public virtual void OnEditorUpdate()
         {
@@ -96,8 +101,9 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // If you switched flowcharts, we bail out
-            if (_window.HandleFlowchartSelectionChange())
+            if (_skipNextEditorUpdate)
             {
+                _skipNextEditorUpdate = false;
                 return;
             }
 
@@ -194,7 +200,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        bool AnyNullBlocks() => _window.blocks.Any(b => b == null);
+        bool AnyNullBlocks() => _window.Blocks.Any(b => b == null);
 
         protected virtual void ShowBlockInspector(Block block)
         {
@@ -227,27 +233,22 @@ namespace Amanita.VScripting.EditorUtils
                 if (BlockInspector == null)
                 {
                     Debug.Log($"Creating new BlockInspector in FcWindowSelectionSync's CreateOrReuseBlockInspectorSO method");
-                    BlockInspector = ScriptableObject
-                        .CreateInstance<BlockInspector>();
+                    BlockInspector = ScriptableObject.CreateInstance<BlockInspector>();
                     BlockInspector.hideFlags = HideFlags.DontSave;
                     EditorUtility.SetDirty(BlockInspector);
                 }
-                if (Flowchart.SelectedBlock != null)
+                if (Flowchart.SelectedBlock != null && Selection.activeObject != BlockInspector)
                 {
-                    if (Selection.activeObject != BlockInspector)
-                    {
-                        Debug.Log($"Right before changing active object to the inspector in FcWindowSelectionSync's CreateOrReuseBlockInspectorSO");
-                        Selection.activeObject = BlockInspector;
-                    }
+                    Debug.Log($"Right before changing active object to the inspector in FcWindowSelectionSync's CreateOrReuseBlockInspectorSO");
+                    Selection.activeObject = BlockInspector;
                 }
-            
             }
 
             SetBlockInspectorToTheRightBlock();
             void SetBlockInspectorToTheRightBlock()
             {
                 bool wasAlreadyShowingThisBlock = BlockInspector != null && BlockInspector.block == block;
-                if (!wasAlreadyShowingThisBlock)
+                if (!alreadyShowingThatBlock)
                 {
                     // ^We need this check to make sure that when a Command is selected in the 
                     // Inspector, it's not immediately unselected

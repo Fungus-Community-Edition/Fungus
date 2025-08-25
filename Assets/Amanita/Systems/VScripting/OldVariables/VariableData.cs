@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
 
     public abstract class VariableData : IVariableData
-    {
+    { 
         public abstract Type ContentType { get; }
 
         public object Value
