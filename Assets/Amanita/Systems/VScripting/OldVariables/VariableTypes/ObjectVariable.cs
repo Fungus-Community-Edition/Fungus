@@ -2,6 +2,7 @@
 
 
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {
@@ -11,7 +12,7 @@ namespace Amanita.VScripting
     [VariableInfo("Other", "Object")]
     [AddComponentMenu("")]
     [System.Serializable]
-    public class ObjectVariable : VariableBase<Object>
+    public class ObjectVariable : VariableBase<UnityObject>
     {
     }
 
@@ -19,41 +20,36 @@ namespace Amanita.VScripting
     /// Container for an Object variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct ObjectData
+    public class ObjectData : VariableData<UnityObject, IVariable<UnityObject>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ObjectVariable))]
         public ObjectVariable objectRef;
         
-        [SerializeField]
-        public Object objectVal;
-
-        public ObjectData(Object v)
-        {
-            objectVal = v;
-            objectRef = null;
-        }
+        public ObjectData(UnityObject startVal = null) : base(startVal) { }
         
-        public static implicit operator Object(ObjectData objectData)
+        public static implicit operator UnityObject(ObjectData objectData)
         {
             return objectData.Value;
         }
 
-        public Object Value
+        public override IVariable VarRef
         {
-            get { return (objectRef == null) ? objectVal : objectRef.Value; }
-            set { if (objectRef == null) { objectVal = value; } else { objectRef.Value = value; } }
-        }
+            get { return objectRef; }
+            set
+            {
+                if (value == null) { objectRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (objectRef == null)
-            {
-                return objectVal != null ? objectVal.ToString() : "Null";
-            }
-            else
-            {
-                return objectRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    objectRef = value as ObjectVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

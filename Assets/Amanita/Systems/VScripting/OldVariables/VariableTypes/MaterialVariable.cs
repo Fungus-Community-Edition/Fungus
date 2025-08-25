@@ -19,41 +19,36 @@ namespace Amanita.VScripting
     /// Container for a Material variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct MaterialData
+    public class MaterialData : VariableData<Material, IVariable<Material>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(MaterialVariable))]
         public MaterialVariable materialRef;
-        
-        [SerializeField]
-        public Material materialVal;
 
-        public MaterialData(Material v)
-        {
-            materialVal = v;
-            materialRef = null;
-        }
-        
+        public MaterialData(Material startVal = null) : base(startVal) { }
+
         public static implicit operator Material(MaterialData materialData)
         {
             return materialData.Value;
         }
 
-        public Material Value
+        public override IVariable VarRef
         {
-            get { return (materialRef == null) ? materialVal : materialRef.Value; }
-            set { if (materialRef == null) { materialVal = value; } else { materialRef.Value = value; } }
-        }
+            get { return materialRef; }
+            set
+            {
+                if (value == null) { materialRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (materialRef == null)
-            {
-                return materialVal != null ? materialVal.ToString() : "Null";
-            }
-            else
-            {
-                return materialRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    materialRef = value as MaterialVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

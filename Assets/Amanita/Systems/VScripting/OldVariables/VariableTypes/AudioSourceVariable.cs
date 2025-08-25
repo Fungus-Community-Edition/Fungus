@@ -34,11 +34,7 @@ namespace Amanita.VScripting
             return audioSourceData.Value;
         }
 
-        public AudioSourceData(AudioSource startVal = null)
-        {
-            audioSourceVal = startVal;
-            audioSourceRef = null;
-        }
+        public AudioSourceData(AudioSource startVal = null) : base(startVal) { }
 
         public override IVariable VarRef
         {

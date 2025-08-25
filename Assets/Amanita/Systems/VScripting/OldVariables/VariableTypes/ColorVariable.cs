@@ -45,42 +45,38 @@ namespace Amanita.VScripting
     /// Container for a Color variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct ColorData
+    public class ColorData : VariableData<Color, IVariable<Color>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ColorVariable))]
         public ColorVariable colorRef;
-        
-        [SerializeField]
-        public Color colorVal;
 
-        public ColorData(Color v)
-        {
-            colorVal = v;
-            colorRef = null;
-        }
-        
+        public ColorData(Color startVal = default) : base(startVal) { }
+
         public static implicit operator Color(ColorData colorData)
         {
             return colorData.Value;
         }
 
-        public Color Value
+        public override IVariable VarRef
         {
-            get { return (colorRef == null) ? colorVal : colorRef.Value; }
-            set { if (colorRef == null) { colorVal = value; } else { colorRef.Value = value; } }
+            get { return colorRef; }
+            set
+            {
+                if (value == null) { colorRef = null; return; }
+
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    colorRef = value as ColorVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
         }
 
-        public string GetDescription()
-        {
-            if (colorRef == null)
-            {
-                return colorVal.ToString();
-            }
-            else
-            {
-                return colorRef.Key;
-            }
-        }
     }
 }

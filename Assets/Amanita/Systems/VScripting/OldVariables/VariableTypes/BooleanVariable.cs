@@ -36,7 +36,7 @@ namespace Amanita.VScripting
     /// Container for a Boolean variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public class BooleanData
+    public class BooleanData : VariableData<bool, IVariable<bool>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(BooleanVariable))]
@@ -45,32 +45,30 @@ namespace Amanita.VScripting
         [SerializeField]
         public bool booleanVal;
 
-        public BooleanData(bool startVal = false)
-        {
-            booleanVal = startVal;
-            booleanRef = null;
-        }
-        
+        public BooleanData(bool startVal = default) : base(startVal) { }
+
         public static implicit operator bool(BooleanData booleanData)
         {
             return booleanData.Value;
         }
 
-        public bool Value
+        public override IVariable VarRef
         {
-            get { return (booleanRef == null) ? booleanVal : booleanRef.Value; }
-            set { if (booleanRef == null) { booleanVal = value; } else { booleanRef.Value = value; } }
-        }
+            get { return booleanRef; }
+            set
+            {
+                if (value == null) { booleanRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (booleanRef == null)
-            {
-                return booleanVal.ToString();
-            }
-            else
-            {
-                return booleanRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    booleanRef = value as BooleanVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

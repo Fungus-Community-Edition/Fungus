@@ -20,41 +20,38 @@ namespace Amanita.VScripting
 	/// Container for a AudioClip variable reference or constant value.
 	/// </summary>
 	[System.Serializable]
-	public struct AudioClipData
+	public class AudioClipData : VariableData<AudioClip, IVariable<AudioClip>>
 	{
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(AudioClipVariable))]
 		public AudioClipVariable audioClipRef;
 
-		[SerializeField]
-		public UnityEngine.AudioClip audioClipVal;
-
-		public static implicit operator UnityEngine.AudioClip(AudioClipData AudioClipData)
+		public static implicit operator AudioClip(AudioClipData AudioClipData)
 		{
 			return AudioClipData.Value;
 		}
 
-		public AudioClipData(UnityEngine.AudioClip v)
-		{
-			audioClipVal = v;
-			audioClipRef = null;
-		}
+		public AudioClipData() : base(default) { }
 
-		public UnityEngine.AudioClip Value
-		{
-			get { return (audioClipRef == null) ? audioClipVal : audioClipRef.Value; }
-			set { if (audioClipRef == null) { audioClipVal = value; } else { audioClipRef.Value = value; } }
-		}
+		public AudioClipData(AudioClip startVal) : base(startVal) { }
 
-		public string GetDescription()
+		public override IVariable VarRef
 		{
-			if (audioClipRef == null)
+			get { return audioClipRef; }
+			set
 			{
-				return audioClipVal != null ? audioClipVal.ToString() : "Null";
-			}
-			else
-			{
-				return audioClipRef.Key;
+				if (value == null) { audioClipRef = null; return; }
+
+				if (VarRef.ContentType.Equals(this.ContentType))
+				{
+					audioClipRef = value as AudioClipVariable;
+				}
+				else
+				{
+					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+					throw new System.InvalidCastException(errorMessage);
+				}
+
 			}
 		}
 	}

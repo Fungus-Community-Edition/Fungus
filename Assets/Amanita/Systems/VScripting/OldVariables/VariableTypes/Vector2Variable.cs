@@ -60,41 +60,36 @@ namespace Amanita.VScripting
     /// Container for a Vector2 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct Vector2Data
+    public class Vector2Data : VariableData<Vector2, IVariable<Vector2>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Vector2Variable))]
         public Vector2Variable vector2Ref;
-        
-        [SerializeField]
-        public Vector2 vector2Val;
 
-        public Vector2Data(Vector2 v)
-        {
-            vector2Val = v;
-            vector2Ref = null;
-        }
-        
+        public Vector2Data(Vector2 startVal = default) : base(startVal) { }
+
         public static implicit operator Vector2(Vector2Data vector2Data)
         {
             return vector2Data.Value;
         }
 
-        public Vector2 Value
+        public override IVariable VarRef
         {
-            get { return (vector2Ref == null) ? vector2Val : vector2Ref.Value; }
-            set { if (vector2Ref == null) { vector2Val = value; } else { vector2Ref.Value = value; } }
-        }
+            get { return vector2Ref; }
+            set
+            {
+                if (value == null) { vector2Ref = null; return; }
 
-        public string GetDescription()
-        {
-            if (vector2Ref == null)
-            {
-                return vector2Val.ToString();
-            }
-            else
-            {
-                return vector2Ref.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    vector2Ref = value as Vector2Variable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

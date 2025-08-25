@@ -82,19 +82,16 @@ namespace Amanita.VScripting
     /// Container for an integer variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct IntegerData
+    public class IntegerData : VariableData<int, IVariable<int>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(IntegerVariable))]
         public IntegerVariable integerRef;
 
-        [SerializeField]
-        public int integerVal;
+        public IntegerData() : base(default) { }
 
-        public IntegerData(int v)
+        public IntegerData(int startVal) : base(startVal)
         {
-            integerVal = v;
-            integerRef = null;
         }
 
         public static implicit operator int(IntegerData integerData)
@@ -102,22 +99,25 @@ namespace Amanita.VScripting
             return integerData.Value;
         }
 
-        public int Value
+        public override IVariable VarRef
         {
-            get { return (integerRef == null) ? integerVal : integerRef.Value; }
-            set { if (integerRef == null) { integerVal = value; } else { integerRef.Value = value; } }
+            get { return integerRef; }
+            set
+            {
+                if (value == null) { integerRef = null; return; }
+
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    integerRef = value as IntegerVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
         }
 
-        public string GetDescription()
-        {
-            if (integerRef == null)
-            {
-                return integerVal.ToString();
-            }
-            else
-            {
-                return integerRef.Key;
-            }
-        }
     }
 }

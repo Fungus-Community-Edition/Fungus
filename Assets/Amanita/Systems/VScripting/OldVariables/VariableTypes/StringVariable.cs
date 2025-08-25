@@ -21,45 +21,40 @@ namespace Amanita.VScripting
     /// For a multi-line property, use StringDataMulti.
     /// </summary>
     [System.Serializable]
-    public struct StringData
+    public class StringData : VariableData<string, IVariable<string>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(StringVariable))]
         public StringVariable stringRef;
 
-        [SerializeField]
-        public string stringVal;
+        public StringData() : base(default) { }
 
-        public StringData(string v)
+        public StringData(string startVal) : base(startVal)
         {
-            stringVal = v;
-            stringRef = null;
         }
-        
+
         public static implicit operator string(StringData spriteData)
         {
             return spriteData.Value;
         }
 
-        public string Value
+        public override IVariable VarRef
         {
-            get 
-            { 
-                if (stringVal == null) stringVal = "";
-                return (stringRef == null) ? stringVal : stringRef.Value; 
-            }
-            set { if (stringRef == null) { stringVal = value; } else { stringRef.Value = value; } }
-        }
+            get { return stringRef; }
+            set
+            {
+                if (value == null) { stringRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (stringRef == null)
-            {
-                return stringVal != null ? stringVal : string.Empty;
-            }
-            else
-            {
-                return stringRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    stringRef = value as StringVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }
@@ -70,20 +65,12 @@ namespace Amanita.VScripting
     /// For a single-line property, use StringData.
     /// </summary>
     [System.Serializable]
-    public struct StringDataMulti
+    public class StringDataMulti : StringData
     {
-        [SerializeField]
-        [VariableProperty("<Value>", typeof(StringVariable))]
-        public StringVariable stringRef;
+        public StringDataMulti() : base(default) { }
 
-        [TextArea(1,15)]
-        [SerializeField]
-        public string stringVal;
-
-        public StringDataMulti(string v)
+        public StringDataMulti(string startVal) : base(startVal)
         {
-            stringVal = v;
-            stringRef = null;
         }
 
         public static implicit operator string(StringDataMulti spriteData)
@@ -91,27 +78,6 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public string Value
-        {
-            get 
-            {
-                if (stringVal == null) stringVal = "";
-                return (stringRef == null) ? stringVal : stringRef.Value; 
-            }
-            set { if (stringRef == null) { stringVal = value; } else { stringRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (stringRef == null)
-            {
-                return stringVal != null ? stringVal : string.Empty;
-            }
-            else
-            {
-                return stringRef.Key;
-            }
-        }
     }
         
 }

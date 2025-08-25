@@ -265,52 +265,40 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Using a temp hidden object to track the active Flowchart across 
             // serialization / deserialization when playing the game in the editor.
-            EnsureThereIsFungusState();
-            void EnsureThereIsFungusState()
+            EnsureThereIsAmanitaState();
+            static void EnsureThereIsAmanitaState()
             {
-                if (fungusState == null)
+                if (amanitaState == null)
                 {
 #if UNITY_6000
-                    fungusState = GameObject.FindFirstObjectByType<FungusState>();
+                    amanitaState = GameObject.FindFirstObjectByType<AmanitaState>();
 #else
-                    fungusState = GameObject.FindObjectOfType<FungusState>();
+                    fungusState = GameObject.FindObjectOfType<AmanitaState>();
 #endif
-                    if (fungusState == null)
+                    if (amanitaState == null)
                     {
-                        GameObject stateHolder = new GameObject("_FungusState");
+                        GameObject stateHolder = new GameObject("_AmanitaState");
                         stateHolder.hideFlags = HideFlags.HideInHierarchy;
-                        fungusState = stateHolder.AddComponent<FungusState>();
+                        amanitaState = stateHolder.AddComponent<AmanitaState>();
                     }
                 }
             }
 
-            FindSelectedFlowchart();
-            void FindSelectedFlowchart()
-            {
-                GameObject selectedGo = Selection.activeGameObject;
-                if (selectedGo != null)
-                {
-                    selectedGo.TryGetComponent(out Flowchart flowchartSelected);
-                    if (flowchartSelected != null)
-                    {
-                        fungusState.SelectedFlowchart = flowchartSelected;
-                    }
-                }
-            }
+            amanitaState.Refresh();
 
-            return fungusState.SelectedFlowchart;
+            return amanitaState.SelectedFlowchart;
         }
 
-        protected static FungusState fungusState;
+        protected static AmanitaState amanitaState;
 
         protected static Flowchart FcSelected
         {
             get
             {
                 Flowchart result = null;
-                if (fungusState != null)
+                if (amanitaState != null)
                 {
-                    result = fungusState.SelectedFlowchart;
+                    result = amanitaState.SelectedFlowchart;
                 }
 
                 return result;
@@ -401,6 +389,11 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void OnEditorUpdate()
         {
+            if (Flowchart == null)
+            {
+                Flowchart = GetFlowchart();
+                Flowchart = amanitaState.SelectedFlowchart;
+            }
             foreach (var comp in _components)
                 comp.OnEditorUpdate();
 
@@ -450,7 +443,7 @@ namespace Amanita.VScripting.EditorUtils
             get { return _flowchart; }
             set
             {
-                if (value != _flowchart)
+                if (!ReferenceEquals(value, _flowchart))
                 {
                     _prevFlowchart = _flowchart;
                     _flowchart = value;
@@ -610,6 +603,7 @@ namespace Amanita.VScripting.EditorUtils
             if (Flowchart == null)
             {
                 Flowchart = GetFlowchart();
+                Repaint();
             }
 
             bool triedButFailedToGetFc = Flowchart == null;

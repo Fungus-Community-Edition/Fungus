@@ -19,41 +19,36 @@ namespace Amanita.VScripting
     /// Container for a Sprite variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct SpriteData
+    public class SpriteData : VariableData<Sprite, IVariable<Sprite>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
         public SpriteVariable spriteRef;
-        
-        [SerializeField]
-        public Sprite spriteVal;
 
-        public SpriteData(Sprite v)
-        {
-            spriteVal = v;
-            spriteRef = null;
-        }
-        
+        public SpriteData(Sprite startVal = null) : base(startVal) { }
+
         public static implicit operator Sprite(SpriteData spriteData)
         {
             return spriteData.Value;
         }
 
-        public Sprite Value
+        public override IVariable VarRef
         {
-            get { return (spriteRef == null) ? spriteVal : spriteRef.Value; }
-            set { if (spriteRef == null) { spriteVal = value; } else { spriteRef.Value = value; } }
-        }
+            get { return spriteRef; }
+            set
+            {
+                if (value == null) { spriteRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (spriteRef == null)
-            {
-                return spriteVal != null ? spriteVal.ToString() : "Null";
-            }
-            else
-            {
-                return spriteRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    spriteRef = value as SpriteVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

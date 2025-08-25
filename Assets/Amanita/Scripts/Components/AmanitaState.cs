@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -7,7 +8,7 @@ namespace Amanita.VScripting
     /// so that the same Flowchart can be displayed while editing & playing.
     /// </summary>
     [AddComponentMenu("")]
-    public class FungusState : MonoBehaviour
+    public class AmanitaState : MonoBehaviour
     {
         [SerializeField] protected Flowchart selectedFlowchart;
 
@@ -16,8 +17,20 @@ namespace Amanita.VScripting
         /// <summary>
         /// The currently selected Flowchart.
         /// </summary>
-        public virtual Flowchart SelectedFlowchart { get { return selectedFlowchart; } set { selectedFlowchart = value; } }
+        public virtual Flowchart SelectedFlowchart
+        {
+            get { return selectedFlowchart; }
+            set { selectedFlowchart = value; }
+        }
 
         #endregion
+
+        public virtual void Refresh()
+        {
+            if (selectedFlowchart == null && Selection.activeGameObject != null)
+            {
+                selectedFlowchart = Selection.activeGameObject.GetComponent<Flowchart>();
+            }
+        }
     }
 }

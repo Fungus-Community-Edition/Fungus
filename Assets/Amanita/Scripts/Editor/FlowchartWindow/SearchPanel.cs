@@ -19,7 +19,10 @@ namespace Amanita.EditorUtils
         public SearchPanel(Flowchart toSearchFor)
         {
             flowchart = toSearchFor;
-            allBlocks = toSearchFor.GetComponents<Block>();
+            if (flowchart != null)
+            {
+                allBlocks = toSearchFor.GetComponents<Block>();
+            }
             Root = new VisualElement();
 
             BuildUI();

@@ -19,41 +19,36 @@ namespace Amanita.VScripting
     /// Container for a GameObject variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct GameObjectData
+    public class GameObjectData : VariableData<GameObject, IVariable<GameObject>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(GameObjectVariable))]
         public GameObjectVariable gameObjectRef;
-        
-        [SerializeField]
-        public GameObject gameObjectVal;
 
-        public GameObjectData(GameObject v)
-        {
-            gameObjectVal = v;
-            gameObjectRef = null;
-        }
-        
+        public GameObjectData(GameObject startVal = null) : base(startVal) { }
+
         public static implicit operator GameObject(GameObjectData gameObjectData)
         {
             return gameObjectData.Value;
         }
 
-        public GameObject Value
+        public override IVariable VarRef
         {
-            get { return (gameObjectRef == null) ? gameObjectVal : gameObjectRef.Value; }
-            set { if (gameObjectRef == null) { gameObjectVal = value; } else { gameObjectRef.Value = value; } }
-        }
+            get { return gameObjectRef; }
+            set
+            {
+                if (value == null) { gameObjectRef = null; return; }
 
-        public string GetDescription()
-        {
-            if (gameObjectRef == null)
-            {
-                return gameObjectVal != null ? gameObjectVal.ToString() : "Null";
-            }
-            else
-            {
-                return gameObjectRef.Key;
+                if (VarRef.ContentType.Equals(this.ContentType))
+                {
+                    gameObjectRef = value as GameObjectVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }
