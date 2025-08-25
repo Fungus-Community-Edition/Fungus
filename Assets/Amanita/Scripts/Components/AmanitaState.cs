@@ -27,7 +27,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
-            if (selectedFlowchart == null && Selection.activeGameObject != null)
+            if (Selection.activeGameObject != null)
             {
                 selectedFlowchart = Selection.activeGameObject.GetComponent<Flowchart>();
             }

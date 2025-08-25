@@ -600,12 +600,9 @@ namespace Amanita.VScripting.EditorUtils
                 DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
             }
 
-            if (Flowchart == null)
-            {
-                Flowchart = GetFlowchart();
-                Repaint();
-            }
-
+            Flowchart = GetFlowchart();
+            Repaint();
+            
             bool triedButFailedToGetFc = Flowchart == null;
             if (triedButFailedToGetFc)
             {
