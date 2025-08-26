@@ -233,11 +233,15 @@ namespace Amanita.VScripting.EditorUtils
                 _components.Add(new FcWindowExecutionVisualizer());
                 _components.Add(new FcWindowSelectionSync());
 
-                var varsComponent = new FcWindowVariablesComponent();
-                string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
-                var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
-                varsComponent.VariableDisplayEditorUxml = uxml;
-                _components.Add(varsComponent);
+                PrepVarsComponent();
+                void PrepVarsComponent()
+                {
+                    var varsComponent = new FcWindowVariablesComponent();
+                    string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                    var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+                    varsComponent.VariableDisplayEditorUxml = uxml;
+                    _components.Add(varsComponent);
+                }
 
                 foreach (var comp in _components)
                     comp.Initialize(this);
@@ -337,6 +341,13 @@ namespace Amanita.VScripting.EditorUtils
             Clipboard?.Dispose();
             UnregisterCallbacks();
             CleanUpSearchPanel();
+
+            for (int i = 0; i < _components.Count; i++)
+            {
+                var componentEl = _components[i];
+                componentEl.Dispose();
+            }
+            _components.Clear();
         }
 
         protected virtual void UnregisterCallbacks()
@@ -373,7 +384,6 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart = null;
             _prevFlowchart = null;
             blockInspector = null;
-
         }
 
         protected void Undo_ForceRepaint()
@@ -392,8 +402,8 @@ namespace Amanita.VScripting.EditorUtils
             if (Flowchart == null)
             {
                 Flowchart = GetFlowchart();
-                Flowchart = amanitaState.SelectedFlowchart;
             }
+
             foreach (var comp in _components)
                 comp.OnEditorUpdate();
 

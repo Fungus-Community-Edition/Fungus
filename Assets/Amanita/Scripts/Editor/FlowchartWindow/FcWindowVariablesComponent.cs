@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
+using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -9,14 +10,14 @@ namespace Amanita.VScripting.EditorUtils
     {
         public VisualTreeAsset VariableDisplayEditorUxml { get; set; }
 
-        protected IFlowchartHost window;
+        protected IFlowchartHost _window;
         protected TemplateContainer _rootElement;
         protected VariableRowManager _manager;
         protected IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
 
         public void Initialize(IFlowchartHost host)
         {
-            window = host;
+            _window = host;
 
             // Clone UXML and anchor
             _rootElement = VariableDisplayEditorUxml.CloneTree();
@@ -25,7 +26,7 @@ namespace Amanita.VScripting.EditorUtils
             _rootElement.style.bottom = 10;
 
             // Attach to FlowchartWindow's root
-            window.RootVisualElement.Add(_rootElement);
+            _window.RootVisualElement.Add(_rootElement);
 
             // Build manager for current Flowchart
             BuildManager();
@@ -36,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void BuildManager()
         {
-            var flowchart = window != null ? window.Flowchart : null;
+            var flowchart = _window != null ? _window.Flowchart : null;
             if (flowchart == null)
                 return;
 
@@ -82,6 +83,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
         {
             // Formerly built manager here in response to flowchart changes
+            Debug.Log("Executing OnGUI in FcWindowVariablesComponent");
         }
 
         public void OnInspectorUpdate() { }
@@ -92,6 +94,10 @@ namespace Amanita.VScripting.EditorUtils
         public void Dispose()
         {
             DeregisterCallbacks();
+
+            _window = null;
+            _resolver = null;
+
             _manager?.Dispose();
             _manager = null;
 

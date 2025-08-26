@@ -29,7 +29,11 @@ namespace Amanita.VScripting
         {
             if (Selection.activeGameObject != null)
             {
-                selectedFlowchart = Selection.activeGameObject.GetComponent<Flowchart>();
+                Flowchart fcFound = Selection.activeGameObject.GetComponent<Flowchart>();
+                if (fcFound != null || selectedFlowchart == null)
+                {
+                    selectedFlowchart = fcFound;
+                }
             }
         }
     }

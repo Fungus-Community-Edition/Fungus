@@ -57,6 +57,47 @@ namespace Amanita.VScripting
 
             }
         }
+
+        public override string Value
+        {
+            get
+            {
+                string result;
+                if (VarRef != null)
+                {
+                    result = (string)VarRef.Value;
+                }
+                else
+                {
+                    result = _valOfType;
+                }
+
+                // To make sure we never return a null value
+                if (result == null)
+                {
+                    result = "";
+                    if (VarRef != null)
+                    {
+                        VarRef.Value = result;
+                    }
+                    base.Value = _valOfType = result;
+                }
+
+                return result;
+            }
+            set
+            {
+                if (VarRef != null)
+                {
+                    VarRef.Value = value;
+                }
+                else
+                {
+                    base.Value = value;
+                    _valOfType = value;
+                }
+            }
+        }
     }
 
     /// <summary>

@@ -57,7 +57,14 @@ namespace Amanita.VScripting
         /// <summary>
         /// String identifier for the variable.
         /// </summary>
-        public virtual string Key { get { return key; } set { key = value; } }
+        public virtual string Key
+        {
+            get { return key; } 
+            set
+            {
+                key = value;
+            }
+        }
 
         /// <summary>
         /// Callback to reset the variable if the Flowchart is reset.

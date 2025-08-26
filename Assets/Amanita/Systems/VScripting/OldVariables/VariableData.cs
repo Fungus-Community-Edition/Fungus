@@ -71,7 +71,7 @@ namespace Amanita.VScripting
 
         public override Type ContentType => typeof(TValue);
 
-        public new TValue Value
+        public virtual new TValue Value
         {
             get
             {

@@ -41,6 +41,7 @@ namespace Amanita.EditorUtils
                 searchField = new ToolbarSearchField();
                 searchField.name = SearchFieldName;
                 searchField.style.marginBottom = searchFieldMarginBottom;
+                searchField.value = ""; // To avoid certain null ref errors
             }
 
             PrepResultList();
