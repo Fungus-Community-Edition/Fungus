@@ -197,9 +197,9 @@ namespace Amanita.VScripting
 
         protected virtual IEnumerator HandleGameStartedBlock()
         {
-            GameStarted gsEventHandler = GetComponentInChildren<GameStarted>();
+            IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
 
-            if (gsEventHandler == null)
+            if (gsEventHandler.Count == 0)
             {
                 yield break;
             }
@@ -209,7 +209,10 @@ namespace Amanita.VScripting
                 yield return null;
             }
 
-            gsEventHandler.Trigger();
+            foreach (var elem in gsEventHandler)
+            {
+                elem.Trigger();
+            }
             
         }
 

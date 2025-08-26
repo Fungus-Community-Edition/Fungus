@@ -42,12 +42,6 @@ namespace Amanita.VScripting.EditorUtils
             _holder = rowHolder;
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
-            if (_currentVariable != null && string.IsNullOrEmpty(_currentVariable.Key))
-            {
-                Debug.LogWarning($"Variable key was reset to default after binding. Restoring previous value if possible.");
-                _serializedVar?.Update();
-                // Optionally restore from backup or prompt user
-            }
             _template = GetOrResolveTemplate(GetType());
             //Debug.Log($"Handler Init: Variable Key={toDisplay.Key}, InstanceID={toDisplay.GetHashCode()}, SerializedObject Target={SerializedVar?.targetObject}");
         }
@@ -154,7 +148,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-            Debug.Log($"Binding: Handler={GetType().Name}, VariableKey={_currentVariable?.Key}, SerializedObjectTarget={SerializedVar.targetObject}");
+            
             Root?.Bind(SerializedVar);
         }
 
