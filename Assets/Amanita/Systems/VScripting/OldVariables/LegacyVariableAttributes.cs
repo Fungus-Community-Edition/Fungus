@@ -1,9 +1,11 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// Attribute class for variables.
+    /// Attribute class for variables. This helps decide how they're presented as an option
+    /// when selecting a variable to add to a Flowchart.
     /// </summary>
     public sealed class VariableInfoAttribute : System.Attribute
     {
@@ -28,14 +30,14 @@ namespace Amanita.VScripting
     /// </summary>
     public sealed class VariablePropertyAttribute : PropertyAttribute
     {
+        public VariablePropertyAttribute()
+        {
+            this.VariableTypes = VariableTypeRegistry.AllTypes.ToArray();
+        }
+        
         public VariablePropertyAttribute(params System.Type[] variableTypes)
         {
             this.VariableTypes = variableTypes;
-        }
-
-        public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
-        {
-            VariableTypes = AllVariableTypes.AllIVariableTypes;
         }
 
         public VariablePropertyAttribute(string defaultText, params System.Type[] variableTypes)

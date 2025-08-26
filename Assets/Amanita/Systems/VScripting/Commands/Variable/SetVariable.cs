@@ -85,7 +85,7 @@ namespace Amanita.VScripting.Commands
 
 
         [Tooltip("Variable to use in expression")]
-        [VariableProperty(AllVariableTypes.VariableAny.Any)]
+        [VariableProperty]
         [SerializeField] protected Variable variable;
 
         [Tooltip("Boolean value to compare against")]

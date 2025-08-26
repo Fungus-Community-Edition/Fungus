@@ -118,7 +118,10 @@ namespace Amanita.VScripting
         /// <summary>
         /// Used by SetVariable. Child classes required to declare and implement operators.
         /// </summary>
-        public abstract void Apply(SetOperator setOperator, object toApply);
+        public virtual void Apply(SetOperator setOperator, object toApply)
+        {
+            value = toApply;
+        }
 
         /// <summary>
         /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
@@ -139,6 +142,7 @@ namespace Amanita.VScripting
         // have this in case client (especially editor) code cares about whether we are or not
         public virtual Flowchart ParentFlowchart { get; set; }
 
+        public virtual bool IsComparisonSupported() => false;
     }
 
     [Serializable]
@@ -253,11 +257,20 @@ namespace Amanita.VScripting
         /// so on so forth.
         /// </summary>
         Type ContentType { get; }
+        bool IsComparisonSupported();
+
+        /// <summary>
+        /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
+        /// </summary>
+        bool Evaluate(CompareOperator compareOperator, object value);
+
+        void Apply(SetOperator setOperator, object value);
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
     {
         new T Value { get; set; }
+        void Apply(SetOperator setOperator, T value);
     }
 
     [Serializable]
@@ -283,6 +296,7 @@ namespace Amanita.VScripting
         {
             return Value != null ? Value.GetHashCode() : 0;
         }
+
     }
 
     [System.Serializable]

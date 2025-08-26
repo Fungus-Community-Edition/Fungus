@@ -24,9 +24,9 @@ namespace Amanita.VScripting.EditorUtils
         {
             serializedObject.Update();
 
-            SetVariable t = target as SetVariable;
+            SetVariable setVarCommand = target as SetVariable;
 
-            var flowchart = (Flowchart)t.GetFlowchart();
+            var flowchart = setVarCommand.GetFlowchart();
             if (flowchart == null)
             {
                 return;
@@ -62,7 +62,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Get previously selected operator
-            int selectedIndex = (int) t._SetOperator;
+            int selectedIndex = (int) setVarCommand._SetOperator;
             if (selectedIndex < 0)
             {
                 // Default to first index if the operator is not found in the available operators list
@@ -71,7 +71,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Get next selected operator
-            selectedIndex = EditorGUILayout.Popup(new GUIContent("Operation", "Arithmetic operator to use"), selectedIndex, operatorsList.ToArray());
+            selectedIndex = EditorGUILayout.Popup(new GUIContent("Operation", "Arithmetic operator to use"),
+                selectedIndex, operatorsList.ToArray());
 
             if (selectedVariable != null)
             {

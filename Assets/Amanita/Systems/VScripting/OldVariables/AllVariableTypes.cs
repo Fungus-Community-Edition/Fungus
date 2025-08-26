@@ -1,67 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// Static cache of all fungus variable types, used by commands that are designed to work on
-    /// any and all variable types supported by Amanita.
-    ///
-    /// New types created need to be added to the list below and also to AnyVariableData and
-    /// AnyVaraibleAndDataPair
-    /// </summary>
-    public static class AllVariableTypes
-    {
-        public enum VariableAny
-        {
-            Any
-        }
-
-        public static readonly System.Type[] AllIVariableTypes = new System.Type[]
-        {
-            typeof(AnimatorVariable),
-            typeof(AudioSourceVariable),
-            typeof(BooleanVariable),
-            typeof(CollectionVariable),
-            typeof(Collider2DVariable),
-            typeof(ColliderVariable),
-            typeof(Collision2DVariable),
-            typeof(CollisionVariable),
-            typeof(ColorVariable),
-            typeof(ControllerColliderHitVariable),
-            typeof(FloatVariable),
-            typeof(GameObjectVariable),
-            typeof(IntegerVariable),
-            typeof(MaterialVariable),
-            typeof(Matrix4x4Variable),
-            typeof(ObjectVariable),
-            typeof(QuaternionVariable),
-            typeof(Rigidbody2DVariable),
-            typeof(RigidbodyVariable),
-            typeof(SpriteVariable),
-            typeof(StringVariable),
-            typeof(TextureVariable),
-            typeof(TransformVariable),
-            typeof(Vector2Variable),
-            typeof(Vector3Variable),
-            typeof(Vector4Variable),
-
-            typeof(AudioClipVariable),
-            typeof(AudioMixerGroupVariable),
-            typeof(AudioMixerSnapshotVariable),
-            typeof(AudioMixerVariable),
-            typeof(CharacterVariable),
-        };
-    }
-
-    /// <summary>
     /// Collection of every Fungus VariableData type, used in commands that are designed to
     /// support any and all types. Those command just have a AnyVariableData anyVar or
-    /// an AnyVaraibleAndDataPair anyVarDataPair to encapsulate the more unpleasant parts.
+    /// an AnyVariableAndDataPair anyVarDataPair to encapsulate the more unpleasant parts.
     ///
     /// New types created need to be added to the list below and also to AllVariableTypes and
-    /// AnyVaraibleAndDataPair
+    /// AnyVariableAndDataPair
     /// 
     /// Note; when using this in a command ensure that RefreshVariableCache is also handled for
     /// string var substitution.
@@ -243,7 +193,7 @@ namespace Amanita.VScripting
             public System.Action<AnyVariableAndDataPair, SetOperator> SetFunc;
         }
 
-        [VariableProperty(AllVariableTypes.VariableAny.Any)]
+        [VariableProperty()]
         [UnityEngine.SerializeField] public Variable variable;
 
         [UnityEngine.SerializeField] public AnyVariableData data;
@@ -254,7 +204,7 @@ namespace Amanita.VScripting
         {
             { typeof(AnimatorVariable),
                 new TypeActions( "animatorData",
-                    (anyVar, compareOperator) => {return anyVar.variable.Evaluate(compareOperator, anyVar.data.animatorData.Value); },
+                    (anyVar, compareOperator) => { return anyVar.variable.Evaluate(compareOperator, anyVar.data.animatorData.Value); },
                     (anyVar) => anyVar.data.animatorData.GetDescription(),
                     (anyVar, setOperator) => anyVar.variable.Apply(setOperator, anyVar.data.animatorData.Value)) },
             { typeof(AudioSourceVariable),
@@ -409,13 +359,15 @@ namespace Amanita.VScripting
         }
 
 #if UNITY_EDITOR
-        public void RefreshVariableCacheHelper(Flowchart f, ref List<Variable> referencedVariables)
+        public void RefreshVariableCacheHelper(Flowchart flowchart, ref List<Variable> referencedVariables)
         {
-            if (variable is StringVariable asStringVar && asStringVar != null && !string.IsNullOrEmpty(asStringVar.Value))
-                f.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
+            if (variable is StringVariable asStringVar && 
+                asStringVar != null && 
+                !string.IsNullOrEmpty(asStringVar.Value))
+                flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
 
             if (!string.IsNullOrEmpty(data.stringData.Value))
-                f.DetermineSubstituteVariables(data.stringData.Value, referencedVariables);
+                flowchart.DetermineSubstituteVariables(data.stringData.Value, referencedVariables);
         }
 #endif
 
@@ -447,6 +399,34 @@ namespace Amanita.VScripting
             {
                 ta.SetFunc(this, setOperator);
             }
+        }
+
+        private static void RegisterVariableType(Type varType)
+        {
+            VariableTypeActions typeActions = new VariableTypeActions()
+            {
+                CompareFunc = VarCompareFunc,
+                DescFunc = VarGetDescription,
+                SetFunc = VarSetFunc
+            };
+
+            VariableTypeRegistry.Register(varType, typeActions);
+        }
+
+        private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
+        {
+            bool result = varInvolved.Evaluate(compareOp, varData.Value);
+            return result;
+        }
+
+        private static string VarGetDescription(IVariableData varData)
+        {
+            return varData.GetDescription();
+        }
+
+        private static void VarSetFunc(IVariable iVar, IVariableData varData, SetOperator setOp)
+        {
+            iVar.Apply(setOp, varData.Value);
         }
     }
 }

@@ -6,35 +6,33 @@ namespace Amanita.VScripting
     public static class VariableTypeRegistry
     {
         private static readonly List<Type> _types = new();
-        private static readonly Dictionary<Type, AnyVariableAndDataPair.TypeActions> _actions = new();
+        private static readonly Dictionary<Type, VariableTypeActions> _actions = new();
 
-        public static void Register<TVar>(
-            string dataPropName,
-            Func<AnyVariableAndDataPair, CompareOperator, bool> compare,
-            Func<AnyVariableAndDataPair, string> desc,
-            Action<AnyVariableAndDataPair, SetOperator> set) where TVar: IVariable
+        public static void Clear()
+        {
+            _types.Clear();
+            _actions.Clear();
+        }
+
+        public static void Register<TVar>(VariableTypeActions actions) where TVar: IVariable
         {
             var type = typeof(TVar);
             if (!_types.Contains(type))
                 _types.Add(type);
 
-            _actions[type] = new AnyVariableAndDataPair.TypeActions(dataPropName, compare, desc, set);
+            _actions[type] = actions;
         }
 
-        public static IReadOnlyList<Type> AllTypes => _types;
+        public static IReadOnlyList<Type> AllTypes => new List<Type>(_types);
 
-        public static bool TryGetActions(Type t, out AnyVariableAndDataPair.TypeActions actions)
-            => _actions.TryGetValue(t, out actions);
-
-        public static void Register(
-        Type variableType,
-        string dataPropName,
-        Func<AnyVariableAndDataPair, CompareOperator, bool> compare,
-        Func<AnyVariableAndDataPair, string> desc,
-        Action<AnyVariableAndDataPair, SetOperator> set)
+        public static void Register(Type varType, VariableTypeActions actions)
         {
-            _types.Add(variableType);
-            _actions[variableType] = new AnyVariableAndDataPair.TypeActions(dataPropName, compare, desc, set);
+            if (!_types.Contains(varType))
+                _types.Add(varType);
+
+            _actions[varType] = actions;
         }
+
+
     }
 }

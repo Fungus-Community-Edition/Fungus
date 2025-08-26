@@ -52,9 +52,9 @@ namespace Amanita.VScripting.EditorUtils
             conditions.arraySize = EditorGUILayout.IntField("Size", conditions.arraySize);
             GUILayout.Label("Conditions", EditorStyles.boldLabel);
 
-            VariableCondition t = target as VariableCondition;
+            VariableCondition condTarget = target as VariableCondition;
 
-            var flowchart = (Flowchart)t.GetFlowchart();
+            var flowchart = condTarget.GetFlowchart();
             if (flowchart == null)
             {
                 return;
@@ -69,7 +69,7 @@ namespace Amanita.VScripting.EditorUtils
                 EditorGUILayout.PropertyField(conditionAnyVar, new GUIContent("Variable"), true);
 
                 // Get selected variable
-                Variable selectedVariable = conditionAnyVar.FindPropertyRelative("variable").objectReferenceValue as Variable;
+                IVariable selectedVariable = conditionAnyVar.FindPropertyRelative("variable").objectReferenceValue as IVariable;
 
                 if (selectedVariable == null)
                     continue;

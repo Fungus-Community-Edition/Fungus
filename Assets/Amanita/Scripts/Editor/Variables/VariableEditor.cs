@@ -32,6 +32,10 @@ namespace Amanita.VScripting.EditorUtils
             return null;
         }
 
+        /// <summary>
+        /// Handles drawing the dropdown that lets you select variables in a Command's UI.
+        /// Filter decides if a particular variable should be an option in the dropdown.
+        /// </summary>
         public static void VariableField(SerializedProperty property, 
                                          GUIContent label, 
                                          Flowchart flowchart,
@@ -39,39 +43,37 @@ namespace Amanita.VScripting.EditorUtils
                                          Func<Variable, bool> filter, 
                                          Func<string, int, string[], int> drawer = null)
         {
-            List<string> variableKeys = new List<string>();
-            List<Variable> variableObjects = new List<Variable>();
-            
-            variableKeys.Add(defaultText);
-            variableObjects.Add(null);
-            
-            IList<IVariable> variables = flowchart.Variables.Cast<IVariable>().ToList();
+            List<string> variableKeys = new List<string>() { defaultText };
+            List<Variable> variableObjects = new List<Variable>() { null };
+
+            IList<IVariable> variables = flowchart.Variables;
             int index = 0;
             int selectedIndex = 0;
 
             Variable selectedVariable = property.objectReferenceValue as Variable;
 
-            // When there are multiple Flowcharts in a scene with variables, switching
-            // between the Flowcharts can cause the wrong variable property
-            // to be inspected for a single frame. This has the effect of causing private
-            // variable references to be set to null when inspected. When this condition 
-            // occurs we just skip displaying the property for this frame.
-            if (selectedVariable != null &&
-                selectedVariable.gameObject != flowchart.gameObject &&
-                selectedVariable.Scope == VariableScope.Private)
+            AvoidGlitchInvolvingFlowchartSwitches();
+            void AvoidGlitchInvolvingFlowchartSwitches()
             {
-                property.objectReferenceValue = null;
-                return;
+                // When there are multiple Flowcharts in a scene with variables, switching
+                // between the Flowcharts can cause the wrong variable property
+                // to be inspected for a single frame. This has the effect of causing private
+                // variable references to be set to null when inspected. When this condition 
+                // occurs we just skip displaying the property for this frame.
+                if (selectedVariable != null &&
+                    selectedVariable.gameObject != flowchart.gameObject &&
+                    selectedVariable.Scope == VariableScope.Private)
+                {
+                    property.objectReferenceValue = null;
+                    return;
+                }
             }
 
             foreach (Variable elem in variables)
             {
-                if (filter != null)
+                if (filter != null && !filter(elem))
                 {
-                    if (!filter(elem))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 
                 variableKeys.Add(elem.Key);
@@ -135,6 +137,8 @@ namespace Amanita.VScripting.EditorUtils
         
         public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) 
         {
+            // Seems that this handles drawing the dropdown for selecting a variable
+
             VariablePropertyAttribute variableProperty = attribute as VariablePropertyAttribute;
             if (variableProperty == null)
             {
@@ -146,25 +150,21 @@ namespace Amanita.VScripting.EditorUtils
             // Filter the variables by the types listed in the VariableProperty attribute
             Func<Variable, bool> compare = varToCheck => 
             {
+                var varType = varToCheck.GetType();
                 if (varToCheck == null)
                 {
                     return false;
-                }
+                } 
 
                 if (variableProperty.VariableTypes.Length == 0)
                 {
-                    var compatChecker = property.serializedObject.targetObject as ICollectionCompatible;
-                    if (compatChecker != null)
-                    {
-                        return compatChecker.IsVarCompatibleWithCollection(varToCheck, variableProperty.compatibleVariableName);
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    // Use VariableTypeRegistry.AllTypes for filtering
+                    var allTypes = VariableTypeRegistry.AllTypes;
+                    bool result = allTypes.Any((typeInColl) => typeInColl.Equals(varType));
+                    return result;
                 }
 
-                return variableProperty.VariableTypes.Contains<System.Type>(varToCheck.GetType());
+                return variableProperty.VariableTypes.Contains<System.Type>(varType);
             };
 
             VariableEditor.VariableField(property, 
@@ -211,9 +211,9 @@ namespace Amanita.VScripting.EditorUtils
                 // - If ref is null: show literal + compact ref popup
                 // - If ref is set: show just the ref field
                 var flowchart = (property.serializedObject.targetObject as Command)?.GetFlowchart();
-                if (flowchart == null)
+                if (flowchart == null || flowchart.Variables == null)
                 {
-                    EditorGUI.LabelField(position, label.text, "No parent Flowchart");
+                    EditorGUI.LabelField(new Rect(0,0,100,20), "No Flowchart or Variables found");
                     return;
                 }
 

@@ -4,16 +4,15 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting
 {
     public static class VariableTypeDiscovery
     {
         [InitializeOnLoadMethod]
         public static void DiscoverAndRegister()
         {
-            return; // Let's go back to this later
+            UnityEngine.Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
             RefreshVariableTypeRegistry();
-            // Optional: re-run after domain reload
             AssemblyReloadEvents.afterAssemblyReload -= RefreshVariableTypeRegistry;
             AssemblyReloadEvents.afterAssemblyReload += RefreshVariableTypeRegistry;
         }
@@ -42,13 +41,14 @@ namespace Amanita.VScripting.EditorUtils
                 return !toEvaluate.IsAbstract && !toEvaluate.IsInterface;
             }
 
+            VariableTypeRegistry.Clear();
             foreach (var type in allTypes)
             {
                 // 1) Legacy Amanita variables
                 var legacyAttr = type.GetCustomAttribute<VariableInfoAttribute>();
                 if (legacyAttr != null)
                 {
-                    //RegisterVariableType(type, legacyAttr.DataPropName);
+                    RegisterVariableType(type);
                     continue;
                 }
 
@@ -62,16 +62,34 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private static void RegisterVariableType(Type varType, string dataPropName)
+        private static void RegisterVariableType(Type varType)
         {
-            // TODO: Replace with your actual compare/desc/set lambdas
-            VariableTypeRegistry.Register(
-                varType,
-                dataPropName,
-                (pair, op) => false, // compare
-                pair => "TODO",      // desc
-                (pair, op) => { }    // set
-            );
+            VariableTypeActions typeActions = new VariableTypeActions()
+            {
+                CompareFunc = VarCompareFunc,
+                DescFunc = VarGetDescription,
+                SetFunc = VarSetFunc
+            };
+
+            VariableTypeRegistry.Register(varType, typeActions);
+
+            UnityEngine.Debug.Log($"Registering variable type: {varType.FullName}");
+        }
+
+        private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
+        {
+            bool result = varInvolved.Evaluate(compareOp, varData.Value);
+            return result;
+        }
+
+        private static string VarGetDescription(IVariableData varData)
+        {
+            return varData.GetDescription();
+        }
+
+        private static void VarSetFunc(IVariable iVar, IVariableData varData, SetOperator setOp)
+        {
+            iVar.Apply(setOp, varData.Value);
         }
 
         private static void RegisterMuscariableType(Type type, MuscariableAttribute attr)
