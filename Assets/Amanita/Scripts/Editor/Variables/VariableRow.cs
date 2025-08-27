@@ -25,6 +25,7 @@ namespace Amanita.VScripting.EditorUtils
             UpdateSerializedVar();
 
             VisualHandler = visHandler;
+            VisualHandler.Variable = _currentVariable;
             VisualHandler.SerializedVar = _serializedVar;
             VisualHandler.Init(holder, toRepresent);
             VisualHandler.Refresh();
@@ -44,7 +45,7 @@ namespace Amanita.VScripting.EditorUtils
                 _serializedVar?.Dispose();
                 _serializedVar = SerializedObjectFrom(_currentVariable);
                 _serializedVar.Update();
-                var prop = _serializedVar.FindProperty("value");
+                //var prop = _serializedVar.FindProperty("value");
                 //Debug.Log($"{prop.propertyType} at path 'value'");
             }
             else
@@ -98,12 +99,6 @@ namespace Amanita.VScripting.EditorUtils
             _currentVariable = VisualHandler.Variable = null;
         }
 
-        public virtual void Refresh()
-        {
-            UpdateSerializedVar();
-            VisualHandler?.Refresh();
-        }
-
         protected SerializedObject SerializedObjectFrom(IVariable variable)
         {
             SerializedObject result;
@@ -136,7 +131,8 @@ namespace Amanita.VScripting.EditorUtils
             Clear();
             var rootParent = RootElement?.parent;
             rootParent?.Remove(RootElement);
-
+            _serializedVar.Dispose();
+            _serializedVar = null;
             VisualHandler?.Dispose();
             VisualHandler = null;
             _currentVariable = null;

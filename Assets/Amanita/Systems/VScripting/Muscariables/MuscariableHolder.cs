@@ -140,6 +140,25 @@ namespace Amanita.VScripting
             UnityEditor.EditorUtility.SetDirty(this);
 #endif
         }
-        
+
+        public virtual bool IsComparisonSupported()
+        {
+            if (muscariable == null)
+            {
+                return false;
+            }
+
+            return muscariable.IsComparisonSupported();
+        }
+
+        public bool Evaluate(CompareOperator compareOperator, object value)
+        {
+            return ((IVariable)muscariable).Evaluate(compareOperator, value);
+        }
+
+        public void Apply(SetOperator setOperator, object value)
+        {
+            ((IVariable)muscariable).Apply(setOperator, value);
+        }
     }
 }

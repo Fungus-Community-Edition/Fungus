@@ -1,20 +1,22 @@
 using System;
+using System.Collections.Generic;
 
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// Optional attribute for overriding display name and category in the registry.
+    /// For VariableData subclasses
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class VariableDataAttribute : Attribute
     {
-        public string DisplayName { get; }
-        public string Category { get; }
+        public Type ContentType { get; private set; }
+        public IList<Type> VariableTypes { get; private set; }
 
-        public VariableDataAttribute(string displayName, string category)
+        public VariableDataAttribute(Type contentType, params Type[] variableType)
         {
-            DisplayName = displayName;
-            Category = category;
+            ContentType = contentType;
+            VariableTypes = variableType;
         }
+
     }
 }

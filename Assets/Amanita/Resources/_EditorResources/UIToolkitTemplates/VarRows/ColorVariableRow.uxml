@@ -2,12 +2,12 @@
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/variableRowStyle.uss?fileID=7433441132597879392&amp;guid=dc36f721c9349184d99e907b905f9005&amp;type=3#variableRowStyle" />
     <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/colorStyle.uss?fileID=7433441132597879392&amp;guid=30abe926e191a2d479db1395a04683c0&amp;type=3#colorStyle" />
     <engine:VisualElement name="VarRowRoot">
-        <engine:Label text="Color" name="TypeLabel" view-data-key="TypeLabel" class="varRowTypeLabel" />
-        <engine:TextField name="KeyInput" view-data-key="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
-        <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueFieldHolder">
+        <engine:Label text="Color" name="TypeLabel" view-data-key="" class="varRowTypeLabel" />
+        <engine:TextField name="KeyInput" view-data-key="" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
+        <engine:VisualElement name="ValueFieldHolder" view-data-key="">
             <editor:ColorField value="#00FFFFFF" binding-path="value" name="ColorField" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="Scope" binding-path="scope" class="scopeRoot" />
-        <engine:Button text="-" name="RemoveButton" view-data-key="RemoveButton" class="removeButton" />
+        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" view-data-key="" binding-path="scope" class="scopeRoot" />
+        <engine:Button text="-" name="RemoveButton" view-data-key="" class="removeButton" />
     </engine:VisualElement>
 </UXML>

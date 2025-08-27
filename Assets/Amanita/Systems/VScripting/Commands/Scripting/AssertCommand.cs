@@ -16,7 +16,7 @@ namespace Amanita.VScripting.Commands
         protected StringData message;
 
         [SerializeField]
-        [VariableProperty(AllVariableTypes.VariableAny.Any)]
+        [VariableProperty()]
         protected Variable a, b;
 
         public enum Method

@@ -9,6 +9,14 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowExecutionVisualizer : IFcWindowComponent
     {
+        public virtual void Dispose()
+        {
+            _window = null;
+            _execTracker = null;
+            _iconStyle = null;
+            viewRect = default;
+        }
+
         public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;

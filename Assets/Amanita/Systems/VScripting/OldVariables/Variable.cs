@@ -57,7 +57,14 @@ namespace Amanita.VScripting
         /// <summary>
         /// String identifier for the variable.
         /// </summary>
-        public virtual string Key { get { return key; } set { key = value; } }
+        public virtual string Key
+        {
+            get { return key; } 
+            set
+            {
+                key = value;
+            }
+        }
 
         /// <summary>
         /// Callback to reset the variable if the Flowchart is reset.
@@ -124,10 +131,9 @@ namespace Amanita.VScripting
     /// </summary>
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
-
         //caching mechanism for global static variables
         private VariableBase<T> _globalStaicRef;
-        private VariableBase<T> globalStaicRef
+        private VariableBase<T> GlobalStaticRef
         {
             get
             {
@@ -173,7 +179,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    globalStaicRef.Value = value;
+                    GlobalStaticRef.Value = value;
                 }
             }
         }
