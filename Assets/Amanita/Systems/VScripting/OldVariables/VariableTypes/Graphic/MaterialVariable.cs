@@ -19,12 +19,14 @@ namespace Amanita.VScripting
     /// Container for a Material variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(Material), typeof(MaterialVariable))]
     public class MaterialData : VariableData<Material, IVariable<Material>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(MaterialVariable))]
         public MaterialVariable materialRef;
 
+        public MaterialData() : base(default) { }
         public MaterialData(Material startVal = null) : base(startVal) { }
 
         public static implicit operator Material(MaterialData materialData)
@@ -39,7 +41,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { materialRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     materialRef = value as MaterialVariable;
                 }

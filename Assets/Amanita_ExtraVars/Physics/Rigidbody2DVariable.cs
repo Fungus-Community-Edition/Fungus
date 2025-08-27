@@ -19,42 +19,38 @@ namespace Amanita.VScripting
     /// Container for a Rigidbody2D variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct Rigidbody2DData
+    [VariableData(typeof(Rigidbody2D), typeof(Rigidbody2DVariable))]
+    public class Rigidbody2DData : VariableData<Rigidbody2D, IVariable<Rigidbody2D>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Rigidbody2DVariable))]
         public Rigidbody2DVariable rigidbody2DRef;
 
-        [SerializeField]
-        public Rigidbody2D rigidbody2DVal;
+        public Rigidbody2DData() : base(default) { }
 
-        public static implicit operator Rigidbody2D(Rigidbody2DData rigidbody2DData)
+        public Rigidbody2DData(Rigidbody2D startVal) : base(startVal)
         {
-            return rigidbody2DData.Value;
         }
 
-        public Rigidbody2DData(Rigidbody2D v)
+        public override IVariable VarRef
         {
-            rigidbody2DVal = v;
-            rigidbody2DRef = null;
-        }
-
-        public Rigidbody2D Value
-        {
-            get { return (rigidbody2DRef == null) ? rigidbody2DVal : rigidbody2DRef.Value; }
-            set { if (rigidbody2DRef == null) { rigidbody2DVal = value; } else { rigidbody2DRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (rigidbody2DRef == null)
+            get { return rigidbody2DRef; }
+            set
             {
-                return rigidbody2DVal != null ? rigidbody2DVal.ToString() : "Null";
-            }
-            else
-            {
-                return rigidbody2DRef.Key;
+                if (value == null) { rigidbody2DRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    rigidbody2DRef = value as Rigidbody2DVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
     }
 }

@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Animator variable type.
     /// </summary>
-    [VariableInfo("Other", "Animator")]
+    [VariableInfo("Other", "Animator", "Animator")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class AnimatorVariable : VariableBase<Animator>
@@ -13,6 +13,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
+    [VariableData(typeof(Animator), typeof(AnimatorVariable))]
     public class AnimatorData : VariableData<Animator, IVariable<Animator>>
     {
         [SerializeField] [VariableProperty("<Value>", typeof(AnimatorVariable))]
@@ -33,7 +34,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { animatorRef = null; return; }
                 // TODO: Refactor this setter so it works with polymorphism
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     animatorRef = value as AnimatorVariable;
                 }

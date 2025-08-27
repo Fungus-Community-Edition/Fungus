@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Color variable type.
     /// </summary>
-    [VariableInfo("Other", "Color")]
+    [VariableInfo("Other", "Color", "Color")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ColorVariable : VariableBase<Color>
@@ -45,12 +45,14 @@ namespace Amanita.VScripting
     /// Container for a Color variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(Color), typeof(ColorVariable))]
     public class ColorData : VariableData<Color, IVariable<Color>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ColorVariable))]
         public ColorVariable colorRef;
 
+        public ColorData() : base(default) { }
         public ColorData(Color startVal = default) : base(startVal) { }
 
         public static implicit operator Color(ColorData colorData)
@@ -65,7 +67,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { colorRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     colorRef = value as ColorVariable;
                 }

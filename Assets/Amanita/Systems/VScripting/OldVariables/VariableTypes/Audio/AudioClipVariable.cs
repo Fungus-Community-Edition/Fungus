@@ -10,7 +10,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// AudioClip variable type.
 	/// </summary>
-	[VariableInfo("Other", "AudioClip")]
+	[VariableInfo("Other", "AudioClip", "AudioClip")]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class AudioClipVariable : VariableBase<UnityEngine.AudioClip>
@@ -20,6 +20,7 @@ namespace Amanita.VScripting
 	/// Container for a AudioClip variable reference or constant value.
 	/// </summary>
 	[System.Serializable]
+	[VariableData(typeof(AudioClip), typeof(AudioClipVariable))]
 	public class AudioClipData : VariableData<AudioClip, IVariable<AudioClip>>
 	{
 		[SerializeField]
@@ -42,7 +43,7 @@ namespace Amanita.VScripting
 			{
 				if (value == null) { audioClipRef = null; return; }
 
-				if (VarRef.ContentType.Equals(this.ContentType))
+				if (value.ContentType.Equals(this.ContentType))
 				{
 					audioClipRef = value as AudioClipVariable;
 				}

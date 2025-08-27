@@ -66,8 +66,8 @@ namespace Amanita.VScripting
 
                 case SetOperator.Divide:
                     //https://answers.unity.com/questions/398495/can-genericmenu-item-content-display-.html
-                    // '/' in a menu means submenu and because it had no leading text, Unity thinks we want a spacer
-                    //  using unicode alternates for / fix the problem.
+                    // '/' in a menu means submenu and because it had no leading text, Unity thinks we want a spacer.
+                    //  Using a unicode alternative to fix the problem.
                     return "\u200A\u2215\u200A=";
                     break;
             }

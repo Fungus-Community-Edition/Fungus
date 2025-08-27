@@ -13,13 +13,18 @@ namespace Amanita.VScripting
         {
             UnityEngine.Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
             RefreshVariableTypeRegistry();
+            RefreshVariableDataTypeRegistry();
+
             AssemblyReloadEvents.afterAssemblyReload -= RefreshVariableTypeRegistry;
+            AssemblyReloadEvents.afterAssemblyReload -= RefreshVariableDataTypeRegistry;
+
             AssemblyReloadEvents.afterAssemblyReload += RefreshVariableTypeRegistry;
+            AssemblyReloadEvents.afterAssemblyReload += RefreshVariableDataTypeRegistry;
         }
 
         private static void RefreshVariableTypeRegistry()
         {
-            var allTypes = AppDomain.CurrentDomain.GetAssemblies()
+            allTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(SafeGetTypes)
                 .Where(TypeIsConcreteImplementation)
                 .ToArray();
@@ -62,6 +67,8 @@ namespace Amanita.VScripting
             }
         }
 
+        private static IList<Type> allTypes;
+
         private static void RegisterVariableType(Type varType)
         {
             VariableTypeActions typeActions = new VariableTypeActions()
@@ -72,8 +79,7 @@ namespace Amanita.VScripting
             };
 
             VariableTypeRegistry.Register(varType, typeActions);
-
-            UnityEngine.Debug.Log($"Registering variable type: {varType.FullName}");
+            //UnityEngine.Debug.Log($"Registering variable type: {varType.FullName}");
         }
 
         private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
@@ -102,6 +108,25 @@ namespace Amanita.VScripting
             //    (pair) => attr.Describe(pair),          // description delegate
             //    (pair, op) => attr.Set(pair, op)        // set delegate
             //);
+        }
+
+        private static void RefreshVariableDataTypeRegistry()
+        {
+            VariableDataRegistry.Clear();
+
+            foreach (var elem in allTypes)
+            {
+                VariableDataAttribute attr = elem.GetCustomAttribute<VariableDataAttribute>();
+                if (attr != null)
+                {
+                    VariableDataRegistry.Register(elem, attr);
+                }
+            }
+        }
+
+        private static void RegisterVariableDataType(Type varDataType)
+        {
+
         }
 
     }

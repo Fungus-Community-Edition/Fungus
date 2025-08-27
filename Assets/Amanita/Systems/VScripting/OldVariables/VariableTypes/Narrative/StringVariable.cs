@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// String variable type.
     /// </summary>
-    [VariableInfo("", "String")]
+    [VariableInfo("", "String", "String")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class StringVariable : VariableBase<string>
@@ -21,6 +21,7 @@ namespace Amanita.VScripting
     /// For a multi-line property, use StringDataMulti.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(string), typeof(StringVariable))]
     public class StringData : VariableData<string, IVariable<string>>
     {
         [SerializeField]
@@ -45,7 +46,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { stringRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     stringRef = value as StringVariable;
                 }

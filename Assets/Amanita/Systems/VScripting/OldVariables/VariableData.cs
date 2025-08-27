@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,8 +9,7 @@ namespace Amanita.VScripting
     public abstract class VariableData : IVariableData
     { 
         public abstract Type ContentType { get; }
-
-        public object Value
+        public virtual object Value
         {
             get
             {
@@ -19,7 +19,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    return valObj;
+                    return _valObj;
                 }
             }
             set
@@ -30,15 +30,29 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    valObj = value;
+                    _valObj = value;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected object valObj;
+        [SerializeReference, SerializeField] protected object _valObj;
         public abstract IVariable VarRef { get; set; }
 
         public abstract string GetDescription();
+
+        public virtual void SetContentsTo(IVariableData otherVarData)
+        {
+            this._valObj = (otherVarData as VariableData)._valObj;
+        }
+
+        public virtual IVariableData GetCopy()
+        {
+            Type thisType = GetType();
+
+            IVariableData theCopy = (IVariableData)Activator.CreateInstance(thisType);
+            theCopy.SetContentsTo(this);
+            return theCopy;
+        }
     }
 
     public interface IVariableData
@@ -53,10 +67,19 @@ namespace Amanita.VScripting
         string GetDescription();
 
         IVariable VarRef { get; set; } // To be a more generic way to access stuff like animatorRef, floatRef, etc
+        void SetContentsTo(IVariableData otherVarData);
+
+        IVariableData GetCopy();
+
     }
 
     public abstract class VariableData<TValue, TVar> : VariableData where TVar : IVariable<TValue>
     {
+        public static implicit operator TValue(VariableData<TValue, TVar> someData)
+        {
+            return someData.Value;
+        }
+
         public VariableData()
         {
             _valOfType = default;
@@ -77,10 +100,12 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
+                    //Debug.Log($"{GetType().Name}.Value get: {VarRef.Value} (hash: {GetHashCode()})");
                     return (TValue)VarRef.Value;
                 }
                 else
                 {
+                    //Debug.Log($"{GetType().Name}.Value get: {_valOfType} (hash: {GetHashCode()})");
                     return _valOfType;
                 }
             }
@@ -92,6 +117,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
+                    //Debug.Log($"{GetType().Name}.Value set: {value} (hash: {GetHashCode()})");
                     base.Value = value;
                     _valOfType = value;
                 }
@@ -108,7 +134,7 @@ namespace Amanita.VScripting
             {
                 result = _valOfType.ToString();
             }
-            else
+            else if (VarRef != null)
             {
                 result = VarRef.Key;
             }
@@ -116,7 +142,23 @@ namespace Amanita.VScripting
             return result;
         }
 
+        public override void SetContentsTo(IVariableData otherVarData)
+        {
+            var ourType = this.GetType();
+            var theirType = otherVarData.GetType();
+            if (ourType.Equals(theirType))
+            {
+                SetContentsTo(otherVarData as VariableData<TValue, TVar>);
+            }
+        }
+
+        public virtual void SetContentsTo(VariableData<TValue, TVar> otherVarData)
+        {
+            this._valObj = this._valOfType = otherVarData._valOfType;
+            this.VarRef = otherVarData.VarRef;
+        }
+
+
     }
 
-    
 }

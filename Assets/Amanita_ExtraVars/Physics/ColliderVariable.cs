@@ -20,7 +20,8 @@ namespace Amanita.VScripting
     /// Container for a Collider variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct ColliderData
+    [VariableData(typeof(Collider), typeof(ColliderVariable))]
+    public class ColliderData : VariableData<Collider, IVariable<Collider>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ColliderVariable))]
@@ -29,33 +30,32 @@ namespace Amanita.VScripting
         [SerializeField]
         public UnityEngine.Collider colliderVal;
 
-        public static implicit operator UnityEngine.Collider(ColliderData ColliderData)
+        public ColliderData() : base(default) { }
+
+        public ColliderData(Collider startVal) : base(startVal)
         {
-            return ColliderData.Value;
         }
 
-        public ColliderData(UnityEngine.Collider v)
+        public override IVariable VarRef
         {
-            colliderVal = v;
-            colliderRef = null;
-        }
-
-        public UnityEngine.Collider Value
-        {
-            get { return (colliderRef == null) ? colliderVal : colliderRef.Value; }
-            set { if (colliderRef == null) { colliderVal = value; } else { colliderRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (colliderRef == null)
+            get { return colliderRef; }
+            set
             {
-                return colliderVal != null ? colliderVal.ToString() : "Null";
-            }
-            else
-            {
-                return colliderRef.Key;
+                if (value == null) { colliderRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    colliderRef = value as ColliderVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
     }
+
 }

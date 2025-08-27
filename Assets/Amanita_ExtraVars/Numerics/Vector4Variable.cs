@@ -59,41 +59,33 @@ namespace Amanita.VScripting
     /// Container for a Vector4 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct Vector4Data
+    [VariableData(typeof(Vector4), typeof(Vector4Variable))]
+    public class Vector4Data : VariableData<Vector4, IVariable<Vector4>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Vector4Variable))]
         public Vector4Variable vector4Ref;
 
-        [SerializeField]
-        public UnityEngine.Vector4 vector4Val;
+        public Vector4Data() : base(default) { }
+        public Vector4Data(Vector4 startVal = default) : base(startVal) { }
 
-        public static implicit operator UnityEngine.Vector4(Vector4Data Vector4Data)
+        public override IVariable VarRef
         {
-            return Vector4Data.Value;
-        }
-
-        public Vector4Data(UnityEngine.Vector4 v)
-        {
-            vector4Val = v;
-            vector4Ref = null;
-        }
-
-        public UnityEngine.Vector4 Value
-        {
-            get { return (vector4Ref == null) ? vector4Val : vector4Ref.Value; }
-            set { if (vector4Ref == null) { vector4Val = value; } else { vector4Ref.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (vector4Ref == null)
+            get { return vector4Ref; }
+            set
             {
-                return vector4Val.ToString();
-            }
-            else
-            {
-                return vector4Ref.Key;
+                if (value == null) { vector4Ref = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    vector4Ref = value as Vector4Variable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
     }

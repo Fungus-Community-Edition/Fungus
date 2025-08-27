@@ -131,10 +131,9 @@ namespace Amanita.VScripting
     /// </summary>
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
-
         //caching mechanism for global static variables
         private VariableBase<T> _globalStaicRef;
-        private VariableBase<T> globalStaicRef
+        private VariableBase<T> GlobalStaticRef
         {
             get
             {
@@ -180,7 +179,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    globalStaicRef.Value = value;
+                    GlobalStaticRef.Value = value;
                 }
             }
         }

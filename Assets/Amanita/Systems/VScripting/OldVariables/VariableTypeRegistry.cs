@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
     public static class VariableTypeRegistry
     {
         private static readonly List<Type> _types = new();
-        private static readonly Dictionary<Type, VariableTypeActions> _actions = new();
+        private static readonly Dictionary<Type, VariableTypeActions> _actions = new(new TypeNameComparer());
 
         public static void Clear()
         {
@@ -31,6 +32,25 @@ namespace Amanita.VScripting
                 _types.Add(varType);
 
             _actions[varType] = actions;
+        }
+
+        public static bool TryGetTypeActionsFor<T>(out VariableTypeActions result)
+        {
+            Type type = typeof(T);
+            return TryGetTypeActionsFor(type, out result);
+        }
+
+        public static bool TryGetTypeActionsFor(System.Type type, out VariableTypeActions result)
+        {
+            bool gotIt = _actions.TryGetValue(type, out result);
+
+            if (!gotIt)
+            {
+                string logMessage = $"Could not get type actions for type {type.Name}.";
+                Debug.LogError(logMessage);
+            }
+
+            return gotIt;
         }
 
 

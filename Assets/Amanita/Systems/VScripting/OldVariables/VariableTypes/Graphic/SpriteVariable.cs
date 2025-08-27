@@ -19,12 +19,14 @@ namespace Amanita.VScripting
     /// Container for a Sprite variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(Sprite), typeof(SpriteVariable))]
     public class SpriteData : VariableData<Sprite, IVariable<Sprite>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
         public SpriteVariable spriteRef;
 
+        public SpriteData() : base(default) { }
         public SpriteData(Sprite startVal = null) : base(startVal) { }
 
         public static implicit operator Sprite(SpriteData spriteData)
@@ -39,7 +41,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { spriteRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     spriteRef = value as SpriteVariable;
                 }

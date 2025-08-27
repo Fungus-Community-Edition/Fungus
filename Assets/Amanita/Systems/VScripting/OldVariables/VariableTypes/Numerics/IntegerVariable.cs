@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Integer variable type.
     /// </summary>
-    [VariableInfo("", "Integer")]
+    [VariableInfo("", "Integer", "Integer")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class IntegerVariable : VariableBase<int>
@@ -82,6 +82,7 @@ namespace Amanita.VScripting
     /// Container for an integer variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(int), typeof(IntegerVariable))]
     public class IntegerData : VariableData<int, IVariable<int>>
     {
         [SerializeField]
@@ -104,9 +105,12 @@ namespace Amanita.VScripting
             get { return integerRef; }
             set
             {
-                if (value == null) { integerRef = null; return; }
+                if (value == null || integerRef == null)
+                {
+                    integerRef = null; return;
+                }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (VarRef.ContentType.Equals(value.ContentType))
                 {
                     integerRef = value as IntegerVariable;
                 }

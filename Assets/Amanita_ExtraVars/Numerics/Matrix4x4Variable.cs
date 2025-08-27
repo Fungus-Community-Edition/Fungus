@@ -53,42 +53,39 @@ namespace Amanita.VScripting
     /// Container for a Matrix4x4 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct Matrix4x4Data
+    [VariableData(typeof(Matrix4x4), typeof(Matrix4x4Variable))]
+    public class Matrix4x4Data : VariableData<Matrix4x4, IVariable<Matrix4x4>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Matrix4x4Variable))]
         public Matrix4x4Variable matrix4x4Ref;
 
-        [SerializeField]
-        public UnityEngine.Matrix4x4 matrix4x4Val;
+        public Matrix4x4Data() : base(default) { }
 
-        public static implicit operator UnityEngine.Matrix4x4(Matrix4x4Data Matrix4x4Data)
+        public Matrix4x4Data(Matrix4x4 startVal) : base(startVal)
         {
-            return Matrix4x4Data.Value;
         }
 
-        public Matrix4x4Data(UnityEngine.Matrix4x4 v)
+        public override IVariable VarRef
         {
-            matrix4x4Val = v;
-            matrix4x4Ref = null;
-        }
-
-        public UnityEngine.Matrix4x4 Value
-        {
-            get { return (matrix4x4Ref == null) ? matrix4x4Val : matrix4x4Ref.Value; }
-            set { if (matrix4x4Ref == null) { matrix4x4Val = value; } else { matrix4x4Ref.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (matrix4x4Ref == null)
+            get { return matrix4x4Ref; }
+            set
             {
-                return matrix4x4Val.ToString();
-            }
-            else
-            {
-                return matrix4x4Ref.Key;
+                if (value == null) { matrix4x4Ref = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    matrix4x4Ref = value as Matrix4x4Variable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
+
     }
 }

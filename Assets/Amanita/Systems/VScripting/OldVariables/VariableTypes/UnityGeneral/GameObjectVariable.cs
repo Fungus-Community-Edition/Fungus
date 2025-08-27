@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// GameObject variable type.
     /// </summary>
-    [VariableInfo("Other", "GameObject")]
+    [VariableInfo("Other", "GameObject", "GameObject")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class GameObjectVariable : VariableBase<GameObject>
@@ -19,12 +19,14 @@ namespace Amanita.VScripting
     /// Container for a GameObject variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(GameObject), typeof(GameObjectVariable))]
     public class GameObjectData : VariableData<GameObject, IVariable<GameObject>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(GameObjectVariable))]
         public GameObjectVariable gameObjectRef;
 
+        public GameObjectData() : base(default) { }
         public GameObjectData(GameObject startVal = null) : base(startVal) { }
 
         public static implicit operator GameObject(GameObjectData gameObjectData)
@@ -39,7 +41,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { gameObjectRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     gameObjectRef = value as GameObjectVariable;
                 }

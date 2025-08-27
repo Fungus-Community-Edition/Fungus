@@ -20,20 +20,19 @@ namespace Amanita.VScripting
     /// Container for an AudioSource variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(AudioSource), typeof(AudioSourceVariable))]
     public class AudioSourceData : VariableData<AudioSource, IVariable<AudioSource>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(AudioSourceVariable))]
         public AudioSourceVariable audioSourceRef;
         
-        [SerializeField]
-        public AudioSource audioSourceVal;
-
         public static implicit operator AudioSource(AudioSourceData audioSourceData)
         {
             return audioSourceData.Value;
         }
 
+        public AudioSourceData() : base(default) { }
         public AudioSourceData(AudioSource startVal = null) : base(startVal) { }
 
         public override IVariable VarRef
@@ -43,7 +42,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { audioSourceRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     audioSourceRef = value as AudioSourceVariable;
                 }

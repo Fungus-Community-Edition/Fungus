@@ -134,10 +134,8 @@ namespace Amanita.VScripting.EditorUtils
     [CustomPropertyDrawer(typeof(VariablePropertyAttribute))]
     public class VariableDrawer : PropertyDrawer
     {   
-        
         public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) 
         {
-            // Seems that this handles drawing the dropdown for selecting a variable
 
             VariablePropertyAttribute variableProperty = attribute as VariablePropertyAttribute;
             if (variableProperty == null)

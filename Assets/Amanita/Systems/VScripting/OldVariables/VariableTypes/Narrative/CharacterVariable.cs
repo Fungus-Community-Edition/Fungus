@@ -20,41 +20,39 @@ namespace Amanita.VScripting
 	/// Container for a Character variable reference or constant value.
 	/// </summary>
 	[System.Serializable]
-	public struct CharacterData
+	[VariableData(typeof(Character), typeof(CharacterVariable))]
+	public class CharacterData : VariableData<Character, IVariable<Character>>
 	{
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]
 		public CharacterVariable characterRef;
 
-		[SerializeField]
-		public Amanita.Character characterVal;
 
 		public static implicit operator Amanita.Character(CharacterData CharacterData)
 		{
 			return CharacterData.Value;
 		}
 
-		public CharacterData(Amanita.Character v)
-		{
-			characterVal = v;
-			characterRef = null;
-		}
+		public CharacterData() : base(default) { }
+		public CharacterData(Character startVal = null) : base(startVal) { }
 
-		public Amanita.Character Value
+		public override IVariable VarRef
 		{
-			get { return (characterRef == null) ? characterVal : characterRef.Value; }
-			set { if (characterRef == null) { characterVal = value; } else { characterRef.Value = value; } }
-		}
+			get { return characterRef; }
+			set
+			{
+				if (value == null) { characterRef = null; return; }
 
-		public string GetDescription()
-		{
-			if (characterRef == null)
-			{
-				return characterVal != null ? characterVal.ToString() : "Null";
-			}
-			else
-			{
-				return characterRef.Key;
+				if (value.ContentType.Equals(this.ContentType))
+				{
+					characterRef = value as CharacterVariable;
+				}
+				else
+				{
+					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+					throw new System.InvalidCastException(errorMessage);
+				}
+
 			}
 		}
 	}

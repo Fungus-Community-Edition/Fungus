@@ -19,42 +19,38 @@ namespace Amanita.VScripting
     /// Container for a Texture variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct TextureData
+    [VariableData(typeof(Texture), typeof(TextureVariable))]
+    public class TextureData : VariableData<Texture, IVariable<Texture>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(TextureVariable))]
         public TextureVariable textureRef;
         
-        [SerializeField]
-        public Texture textureVal;
+        public TextureData() : base(default) { }
 
-        public TextureData(Texture v)
+        public TextureData(Texture startVal) : base(startVal)
         {
-            textureVal = v;
-            textureRef = null;
-        }
-        
-        public static implicit operator Texture(TextureData textureData)
-        {
-            return textureData.Value;
         }
 
-        public Texture Value
+        public override IVariable VarRef
         {
-            get { return (textureRef == null) ? textureVal : textureRef.Value; }
-            set { if (textureRef == null) { textureVal = value; } else { textureRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (textureRef == null)
+            get { return textureRef; }
+            set
             {
-                return textureVal != null ? textureVal.ToString() : "Null";
-            }
-            else
-            {
-                return textureRef.Key;
+                if (value == null) { textureRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    textureRef = value as TextureVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+    
     }
 }

@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Collection variable type.
     /// </summary>
-    [VariableInfo("Other", "Collection")]
+    [VariableInfo("Other", "Collection", "Collection")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class CollectionVariable : VariableBase<Collection>
@@ -20,7 +20,8 @@ namespace Amanita.VScripting
     /// Container for a Collection variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct CollectionData
+    [VariableData(typeof(Collection), typeof(CollectionVariable))]
+    public class CollectionData : VariableData<Collection, IVariable<Collection>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(CollectionVariable))]
@@ -34,28 +35,28 @@ namespace Amanita.VScripting
             return CollectionData.Value;
         }
 
-        public CollectionData(Collection v)
+        public CollectionData() : base(default) { }
+        public CollectionData(Collection startVal) : base(startVal) { }
+
+        public override IVariable VarRef
         {
-            collectionVal = v;
-            collectionRef = null;
+            get { return collectionRef; }
+            set
+            {
+                if (value == null) { collectionRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    collectionRef = value as CollectionVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
         }
 
-        public Collection Value
-        {
-            get { return (collectionRef == null) ? collectionVal : collectionRef.Value; }
-            set { if (collectionRef == null) { collectionVal = value; } else { collectionRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (collectionRef == null)
-            {
-                return collectionVal != null ? collectionVal.ToString() : "Null";
-            }
-            else
-            {
-                return collectionRef.Key;
-            }
-        }
     }
 }

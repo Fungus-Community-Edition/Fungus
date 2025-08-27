@@ -20,42 +20,38 @@ namespace Amanita.VScripting
     /// Container for a Rigidbody variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct RigidbodyData
+    [VariableData(typeof(Rigidbody), typeof(RigidbodyVariable))]
+    public class RigidbodyData : VariableData<Rigidbody, IVariable<Rigidbody>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(RigidbodyVariable))]
         public RigidbodyVariable rigidbodyRef;
 
-        [SerializeField]
-        public UnityEngine.Rigidbody rigidbodyVal;
+        public RigidbodyData() : base(default) { }
 
-        public static implicit operator UnityEngine.Rigidbody(RigidbodyData RigidbodyData)
+        public RigidbodyData(Rigidbody startVal) : base(startVal)
         {
-            return RigidbodyData.Value;
         }
 
-        public RigidbodyData(UnityEngine.Rigidbody v)
+        public override IVariable VarRef
         {
-            rigidbodyVal = v;
-            rigidbodyRef = null;
-        }
-
-        public UnityEngine.Rigidbody Value
-        {
-            get { return (rigidbodyRef == null) ? rigidbodyVal : rigidbodyRef.Value; }
-            set { if (rigidbodyRef == null) { rigidbodyVal = value; } else { rigidbodyRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (rigidbodyRef == null)
+            get { return rigidbodyRef; }
+            set
             {
-                return rigidbodyVal != null ? rigidbodyVal.ToString() : "Null";
-            }
-            else
-            {
-                return rigidbodyRef.Key;
+                if (value == null) { rigidbodyRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    rigidbodyRef = value as RigidbodyVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
     }
 }

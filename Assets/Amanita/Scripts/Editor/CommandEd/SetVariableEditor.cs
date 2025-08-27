@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using Amanita.VScripting.Commands;
+using System.Linq;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -38,31 +39,39 @@ namespace Amanita.VScripting.EditorUtils
             //fetching every draw to ensure we don't have stale data based on types that have changed by user selection,
             //  without us noticing.
 
-            // Get selected variable
             Variable selectedVariable = anyVarProp.FindPropertyRelative("variable").objectReferenceValue as Variable;
-            List<GUIContent> operatorsList = new List<GUIContent>();
-            if (selectedVariable != null)
+            IList<GUIContent> operatorsList = new List<GUIContent>();
+            PopulateOperatorsList();
+            void PopulateOperatorsList()
             {
-                if(selectedVariable.IsArithmeticSupported(SetOperator.Assign))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Assign)));
-                if (selectedVariable.IsArithmeticSupported(SetOperator.Negate))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Negate)));
-                if (selectedVariable.IsArithmeticSupported(SetOperator.Add))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Add)));
-                if (selectedVariable.IsArithmeticSupported(SetOperator.Subtract))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Subtract)));
-                if (selectedVariable.IsArithmeticSupported(SetOperator.Multiply))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Multiply)));
-                if (selectedVariable.IsArithmeticSupported(SetOperator.Divide))
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Divide)));
-            }
-            else
-            {
-                operatorsList.Add(VariableConditionEditor.None);
+                if (selectedVariable != null)
+                {
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Assign))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Assign)));
+
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Negate))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Negate)));
+
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Add))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Add)));
+
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Subtract))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Subtract)));
+
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Multiply))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Multiply)));
+
+                    if (selectedVariable.IsArithmeticSupported(SetOperator.Divide))
+                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Divide)));
+                }
+                else
+                {
+                    operatorsList.Add(VariableConditionEditor.None);
+                }
             }
 
             // Get previously selected operator
-            int selectedIndex = (int) setVarCommand._SetOperator;
+            int selectedIndex = (int) setVarCommand.SetOperator;
             if (selectedIndex < 0)
             {
                 // Default to first index if the operator is not found in the available operators list
@@ -70,9 +79,12 @@ namespace Amanita.VScripting.EditorUtils
                 selectedIndex = 0;
             }
 
-            // Get next selected operator
-            selectedIndex = EditorGUILayout.Popup(new GUIContent("Operation", "Arithmetic operator to use"),
-                selectedIndex, operatorsList.ToArray());
+            GetAndShowCurrentOperator();
+            void GetAndShowCurrentOperator()
+            {
+                GUIContent operatorContent = new GUIContent("Operation", "Arithmetic operator to use");
+                selectedIndex = EditorGUILayout.Popup(operatorContent, selectedIndex, operatorsList.ToArray());
+            }
 
             if (selectedVariable != null)
             {

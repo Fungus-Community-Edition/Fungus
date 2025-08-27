@@ -20,42 +20,39 @@ namespace Amanita.VScripting
     /// Container for a Collider2D variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct Collider2DData
+    [VariableData(typeof(Collider2D), typeof(Collider2DVariable))]
+    public class Collider2DData : VariableData<Collider2D, IVariable<Collider2D>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Collider2DVariable))]
         public Collider2DVariable collider2DRef;
 
-        [SerializeField]
-        public UnityEngine.Collider2D collider2DVal;
+        public Collider2DData() : base(default) { }
 
-        public static implicit operator UnityEngine.Collider2D(Collider2DData Collider2DData)
+        public Collider2DData(Collider2D startVal) : base(startVal)
         {
-            return Collider2DData.Value;
         }
 
-        public Collider2DData(UnityEngine.Collider2D v)
+        public override IVariable VarRef
         {
-            collider2DVal = v;
-            collider2DRef = null;
-        }
-
-        public UnityEngine.Collider2D Value
-        {
-            get { return (collider2DRef == null) ? collider2DVal : collider2DRef.Value; }
-            set { if (collider2DRef == null) { collider2DVal = value; } else { collider2DRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (collider2DRef == null)
+            get { return collider2DRef; }
+            set
             {
-                return collider2DVal != null ? collider2DVal.ToString() : "Null";
-            }
-            else
-            {
-                return collider2DRef.Key;
+                if (value == null) { collider2DRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    collider2DRef = value as Collider2DVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
+
     }
 }

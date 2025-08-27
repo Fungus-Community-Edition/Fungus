@@ -53,42 +53,38 @@ namespace Amanita.VScripting
     /// Container for a Quaternion variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    public struct QuaternionData
+    [VariableData(typeof(Quaternion), typeof(QuaternionVariable))]
+    public class QuaternionData : VariableData<Quaternion, IVariable<Quaternion>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(QuaternionVariable))]
         public QuaternionVariable quaternionRef;
 
-        [SerializeField]
-        public UnityEngine.Quaternion quaternionVal;
+        public QuaternionData() : base(default) { }
 
-        public static implicit operator UnityEngine.Quaternion(QuaternionData QuaternionData)
+        public QuaternionData(Quaternion startVal) : base(startVal)
         {
-            return QuaternionData.Value;
         }
 
-        public QuaternionData(UnityEngine.Quaternion v)
+        public override IVariable VarRef
         {
-            quaternionVal = v;
-            quaternionRef = null;
-        }
-
-        public UnityEngine.Quaternion Value
-        {
-            get { return (quaternionRef == null) ? quaternionVal : quaternionRef.Value; }
-            set { if (quaternionRef == null) { quaternionVal = value; } else { quaternionRef.Value = value; } }
-        }
-
-        public string GetDescription()
-        {
-            if (quaternionRef == null)
+            get { return quaternionRef; }
+            set
             {
-                return quaternionVal.ToString();
-            }
-            else
-            {
-                return quaternionRef.Key;
+                if (value == null) { quaternionRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    quaternionRef = value as QuaternionVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
             }
         }
+
     }
 }

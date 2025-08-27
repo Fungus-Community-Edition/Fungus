@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector2 variable type.
     /// </summary>
-    [VariableInfo("Other", "Vector2")]
+    [VariableInfo("Other", "Vector2", "Vector2")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class Vector2Variable : VariableBase<Vector2>
@@ -60,12 +60,14 @@ namespace Amanita.VScripting
     /// Container for a Vector2 variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(Vector2), typeof(Vector2Variable))]
     public class Vector2Data : VariableData<Vector2, IVariable<Vector2>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Vector2Variable))]
         public Vector2Variable vector2Ref;
 
+        public Vector2Data() : base(default) { }
         public Vector2Data(Vector2 startVal = default) : base(startVal) { }
 
         public static implicit operator Vector2(Vector2Data vector2Data)
@@ -80,7 +82,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { vector2Ref = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     vector2Ref = value as Vector2Variable;
                 }

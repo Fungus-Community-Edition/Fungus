@@ -53,25 +53,25 @@ namespace Amanita.VScripting
             float lhs = Value;
             float rhs = value;
 
-            bool condition = false;
+            bool condition;
 
             switch (compareOperator)
             {
-            case CompareOperator.LessThan:
-                condition = lhs < rhs;
-                break;
-            case CompareOperator.GreaterThan:
-                condition = lhs > rhs;
-                break;
-            case CompareOperator.LessThanOrEquals:
-                condition = lhs <= rhs;
-                break;
-            case CompareOperator.GreaterThanOrEquals:
-                condition = lhs >= rhs;
-                break;
-            default:
-                condition = base.Evaluate(compareOperator, value);
-                break;
+                case CompareOperator.LessThan:
+                    condition = lhs < rhs;
+                    break;
+                case CompareOperator.GreaterThan:
+                    condition = lhs > rhs;
+                    break;
+                case CompareOperator.LessThanOrEquals:
+                    condition = lhs <= rhs;
+                    break;
+                case CompareOperator.GreaterThanOrEquals:
+                    condition = lhs >= rhs;
+                    break;
+                default:
+                    condition = base.Evaluate(compareOperator, value);
+                    break;
             }
 
             return condition;
@@ -81,13 +81,13 @@ namespace Amanita.VScripting
     /// <summary>
     /// Container for an float variable reference or constant value.
     /// </summary>
+    [VariableData(typeof(float), typeof(FloatVariable))]
     [System.Serializable]
     public class FloatData : VariableData<float, IVariable<float>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(FloatVariable))]
         public FloatVariable floatRef;
-
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
@@ -106,7 +106,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { floatRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     floatRef = value as FloatVariable;
                 }
@@ -118,5 +118,6 @@ namespace Amanita.VScripting
                 
             }
         }
+    
     }
 }

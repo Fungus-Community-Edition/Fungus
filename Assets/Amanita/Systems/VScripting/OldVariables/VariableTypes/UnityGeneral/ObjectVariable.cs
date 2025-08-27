@@ -9,7 +9,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Object variable type.
     /// </summary>
-    [VariableInfo("Other", "Object")]
+    [VariableInfo("Other", "Object", "UnityObject")]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ObjectVariable : VariableBase<UnityObject>
@@ -20,12 +20,14 @@ namespace Amanita.VScripting
     /// Container for an Object variable reference or constant value.
     /// </summary>
     [System.Serializable]
+    [VariableData(typeof(UnityObject), typeof(ObjectVariable))]
     public class ObjectData : VariableData<UnityObject, IVariable<UnityObject>>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ObjectVariable))]
         public ObjectVariable objectRef;
-        
+
+        public ObjectData() : base(default) { }
         public ObjectData(UnityObject startVal = null) : base(startVal) { }
         
         public static implicit operator UnityObject(ObjectData objectData)
@@ -40,7 +42,7 @@ namespace Amanita.VScripting
             {
                 if (value == null) { objectRef = null; return; }
 
-                if (VarRef.ContentType.Equals(this.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     objectRef = value as ObjectVariable;
                 }
