@@ -105,12 +105,12 @@ namespace Amanita.VScripting
             get { return integerRef; }
             set
             {
-                if (value == null || integerRef == null)
+                if (value == null)
                 {
                     integerRef = null; return;
                 }
 
-                if (VarRef.ContentType.Equals(value.ContentType))
+                if (value.ContentType.Equals(this.ContentType))
                 {
                     integerRef = value as IntegerVariable;
                 }

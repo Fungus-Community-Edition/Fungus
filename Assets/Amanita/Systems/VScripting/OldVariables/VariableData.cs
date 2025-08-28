@@ -124,7 +124,7 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeReference, SerializeField] protected TValue _valOfType;
+        [SerializeReference, SerializeField] protected TValue _valOfType = default;
 
         public override string GetDescription()
         {

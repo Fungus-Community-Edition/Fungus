@@ -25,8 +25,13 @@ namespace Amanita.VScripting
         public override System.Object Value
         {
             get
-            { 
-                Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {data?.Value}");
+            {
+                string valStr = "none";
+                if (data != null)
+                {
+                    valStr = data.Value != null ? data.Value.ToString() : "null";
+                }
+                Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {valStr}");
                 if (ReferenceEquals(data, null))
                 {
                     return null;
@@ -64,9 +69,9 @@ namespace Amanita.VScripting
         {
         }
 
-        public virtual void SetFor<T>() where T : IVariable
+        public virtual void SetFor<TVarType, TContentType>()
         {
-            SetFor(typeof(T));
+            SetFor(typeof(TVarType), typeof(TContentType));
         }
 
         public virtual void OnBeforeSerialize() { }
@@ -75,7 +80,7 @@ namespace Amanita.VScripting
         {
         }
 
-        public virtual void SetFor(Type varType)
+        public virtual void SetFor(Type varType, Type contentType)
         {
             // Chances are that at this time, the dict has been emptied due to how Unity doesn't
             // play nice with dictionaries.
@@ -87,7 +92,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            bool alreadySetToThatType = data != null && data.VarRef != null && data.VarRef.GetType() == varType;
+            bool alreadySetToThatType = contentType.Equals(this.ContentType);
             if (alreadySetToThatType)
             {
                 return;
@@ -122,7 +127,7 @@ namespace Amanita.VScripting
                 }
 
                 // Adapt the data to the type of the var
-                SetFor(value.GetType());
+                SetFor(value.GetType(), value.ContentType);
 
                 data.VarRef = value;
             }

@@ -38,14 +38,15 @@ namespace Amanita.VScripting
 
         public virtual void OnBeforeSerialize()
         {
-            data.OnBeforeSerialize();
-            data.VarRef = variable;
         }
 
         public virtual void OnAfterDeserialize()
         {
             data.OnAfterDeserialize();
-            data.VarRef = variable;
+            if (variable != null && data.VarRef == null)
+            {
+                data.SetFor(variable.GetType(), variable.ContentType);
+            }
         }
 
         public bool HasReference(Variable variable)

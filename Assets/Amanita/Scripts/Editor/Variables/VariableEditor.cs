@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -34,21 +35,19 @@ namespace Amanita.VScripting.EditorUtils
 
         /// <summary>
         /// Handles drawing the dropdown that lets you select variables in a Command's UI.
-        /// Filter decides if a particular variable should be an option in the dropdown.
         /// </summary>
         public static void VariableField(SerializedProperty property, 
                                          GUIContent label, 
-                                         Flowchart flowchart,
+                                         Flowchart flowchartBelongingToCommand,
                                          string defaultText,
-                                         Func<Variable, bool> filter, 
+                                         Func<IVariable, bool> shouldBeOptionInDropdown, 
                                          Func<string, int, string[], int> drawer = null)
         {
-            List<string> variableKeys = new List<string>() { defaultText };
-            List<Variable> variableObjects = new List<Variable>() { null };
-
-            IList<IVariable> variables = flowchart.Variables;
-            int index = 0;
-            int selectedIndex = 0;
+            bool allowAnythingInSelectionList = shouldBeOptionInDropdown == null;
+            if (allowAnythingInSelectionList)
+            {
+                shouldBeOptionInDropdown = (varInQuestion) => true;
+            }
 
             Variable selectedVariable = property.objectReferenceValue as Variable;
 
@@ -61,7 +60,7 @@ namespace Amanita.VScripting.EditorUtils
                 // variable references to be set to null when inspected. When this condition 
                 // occurs we just skip displaying the property for this frame.
                 if (selectedVariable != null &&
-                    selectedVariable.gameObject != flowchart.gameObject &&
+                    selectedVariable.gameObject != flowchartBelongingToCommand.gameObject &&
                     selectedVariable.Scope == VariableScope.Private)
                 {
                     property.objectReferenceValue = null;
@@ -69,51 +68,74 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            foreach (Variable elem in variables)
+            IList<IVariable> varsToCheck = flowchartBelongingToCommand.Variables;
+            int index = 0;
+            int selectedIndex = 0;
+            IList<string> variableKeys = new List<string>() { defaultText };
+            IList<IVariable> variableObjects = new List<IVariable>() { null };
+            RegisterLocalVarsToShowInDropdown();
+            void RegisterLocalVarsToShowInDropdown()
             {
-                if (filter != null && !filter(elem))
+                // As in local to the Flowchart the Command belongs to
+                for (int i = 0; i < varsToCheck.Count; i++)
                 {
-                    continue;
-                }
-                
-                variableKeys.Add(elem.Key);
-                variableObjects.Add(elem);
-                
-                index++;
-                
-                if (elem == selectedVariable)
-                {
-                    selectedIndex = index;
+                    var elem = varsToCheck[i];
+                    if (!shouldBeOptionInDropdown(elem))
+                    {
+                        continue;
+                    }
+
+                    variableKeys.Add(elem.Key);
+                    variableObjects.Add(elem);
+                    index++;
+
+                    // Given the nature of Unity's serialization system, we'll assume that 
+                    // all IVariables here are in UnityObject's family tree. We'll probably
+                    // want to use an editor-only holder of sorts for Muscariables when
+                    // we get around to integrating those.
+                    if ((UnityObject)elem == selectedVariable)
+                    {
+                        selectedIndex = index;
+                    }
                 }
             }
 
-            List<Flowchart> fcList = Flowchart.CachedFlowcharts;
-            foreach (Flowchart fcElem in fcList)
+            // We want the appropriate public variables of other Flowcharts in the scene
+            // to be selectable as well. Thus, we'll scan those too.
+            RegisterOtherPublicVarsToShowInDropdown();
+            void RegisterOtherPublicVarsToShowInDropdown()
             {
-                if (fcElem == flowchart)
-                {
-                    continue;
-                }
+                List<Flowchart> fcList = Flowchart.CachedFlowcharts;
 
-                List<Variable> publicVars = fcElem.GetPublicVariables();
-                foreach (Variable varElem in publicVars)
+                for (int fcListIndex = 0; fcListIndex < fcList.Count; fcListIndex++)
                 {
-                    if (filter != null)
+                    Flowchart fcElem = fcList[fcListIndex];
+                    if (fcElem == flowchartBelongingToCommand)
                     {
-                        if (!filter(varElem))
+                        continue;
+                    }
+
+                    IList<IVariable> publicVars = fcElem.GetPublicVariables();
+                    for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
+                    { 
+                        IVariable varElem = publicVars[publicVarIndex];
+                        if (!shouldBeOptionInDropdown(varElem))
                         {
                             continue;
                         }
-                    }
 
-                    variableKeys.Add(fcElem.name + "/" + varElem.Key);
-                    variableObjects.Add(varElem);
+                        string publicVarKey = $"{fcElem.name}/{varElem.Key}";
+                        // ^To make it easy to see that the var belongs to another
+                        // flowchart
+                        variableKeys.Add(publicVarKey);
+                        variableObjects.Add(varElem);
 
-                    index++;
+                        index++;
 
-                    if (varElem == selectedVariable)
-                    {
-                        selectedIndex = index;
+                        if ((UnityObject)varElem == selectedVariable)
+                        {
+                            selectedIndex = index;
+                        }
                     }
                 }
             }
@@ -127,7 +149,14 @@ namespace Amanita.VScripting.EditorUtils
                 selectedIndex = drawer(label.text, selectedIndex, variableKeys.ToArray());
             }
 
-            property.objectReferenceValue = variableObjects[selectedIndex];
+            if (selectedIndex == 0)
+            {
+                property.objectReferenceValue = (UnityObject)variableObjects[selectedIndex];
+            }
+            else
+            {
+                property.objectReferenceValue = (UnityObject)variableObjects[selectedIndex];
+            }
         }
     }
 
@@ -136,7 +165,6 @@ namespace Amanita.VScripting.EditorUtils
     {   
         public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) 
         {
-
             VariablePropertyAttribute variableProperty = attribute as VariablePropertyAttribute;
             if (variableProperty == null)
             {
@@ -145,33 +173,48 @@ namespace Amanita.VScripting.EditorUtils
 
             EditorGUI.BeginProperty(position, label, property);
 
-            // Filter the variables by the types listed in the VariableProperty attribute
-            Func<Variable, bool> compare = varToCheck => 
+            bool ShouldBeAnOptionInTheDropdown(IVariable varToCheck)
             {
-                var varType = varToCheck.GetType();
-                if (varToCheck == null)
-                {
-                    return false;
-                } 
+                // ^We decide this based on whether the var to check is of a type that is included
+                // in the varProp's type list. 
+                bool whetherItDoesOrNot = false;
 
-                if (variableProperty.VariableTypes.Length == 0)
+                if (varToCheck != null)
                 {
-                    // Use VariableTypeRegistry.AllTypes for filtering
-                    var allTypes = VariableTypeRegistry.AllTypes;
-                    bool result = allTypes.Any((typeInColl) => typeInColl.Equals(varType));
-                    return result;
+                    var typeToCheck = varToCheck.GetType();
+
+                    IReadOnlyList<Type> typeListToCheck;
+                    bool shouldCheckForAllTypes = variableProperty.VariableTypes.Length == 0;
+                    // ^Though for flexibility's sake, we made it so that having no types in the 
+                    // prop's list means we should list any var of any type in the registry
+                    if (shouldCheckForAllTypes)
+                    {
+                        typeListToCheck = VariableTypeRegistry.AllTypes;
+                    }
+                    else
+                    {
+                        typeListToCheck = variableProperty.VariableTypes;
+                    }
+
+                    whetherItDoesOrNot = typeListToCheck.Any((typeInList) => typeInList.Equals(typeToCheck));
                 }
 
-                return variableProperty.VariableTypes.Contains<System.Type>(varType);
-            };
+                return whetherItDoesOrNot;
+                
+            }
 
             VariableEditor.VariableField(property, 
                                          label,
                                          FlowchartWindow.GetFlowchart(),
                                          variableProperty.defaultText,
-                                         compare,
-                                         (label, selectedIndex, optionsToDisplay) => 
-                                         (EditorGUI.Popup(position, label, selectedIndex, optionsToDisplay)));
+                                         ShouldBeAnOptionInTheDropdown,
+                                         VariableSelectionPopup);
+
+            // Returns the index of the option selected
+            int VariableSelectionPopup(string label,  int selectedIndex, string[] optionsToDisplay)
+            {
+                return EditorGUI.Popup(position, label, selectedIndex, optionsToDisplay);
+            }
 
             EditorGUI.EndProperty();
         }
@@ -211,7 +254,7 @@ namespace Amanita.VScripting.EditorUtils
                 var flowchart = (property.serializedObject.targetObject as Command)?.GetFlowchart();
                 if (flowchart == null || flowchart.Variables == null)
                 {
-                    EditorGUI.LabelField(new Rect(0,0,100,20), "No Flowchart or Variables found");
+                    EditorGUI.LabelField(noContentFoundRect, "No Flowchart or Variables found");
                     return;
                 }
 
@@ -232,6 +275,8 @@ namespace Amanita.VScripting.EditorUtils
             }, property.displayName);
             
         }
+
+        protected static Rect noContentFoundRect = new Rect(0, 0, 100, 20);
 
         // Compatibility finder for literal value fields across legacy/new layouts
         private static SerializedProperty FindLiteralProp(SerializedProperty root, string baseName)
@@ -276,7 +321,8 @@ namespace Amanita.VScripting.EditorUtils
             int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            if (referenceProp.objectReferenceValue == null && valueProp != null)
+            bool shouldDrawLiteral = referenceProp.objectReferenceValue == null && valueProp != null;
+            if (shouldDrawLiteral)
             {
                 CustomVariableDrawerLookup.DrawCustomOrPropertyField(typeof(T), valueRect, valueProp, GUIContent.none);
                 popupRect.x += valueRect.width + popupGap;

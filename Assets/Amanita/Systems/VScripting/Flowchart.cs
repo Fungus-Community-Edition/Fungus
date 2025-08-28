@@ -1165,9 +1165,9 @@ namespace Amanita.VScripting
         /// <summary>
         /// Gets a list of all variables with public scope in this Flowchart.
         /// </summary>
-        public virtual List<Variable> GetPublicVariables()
+        public virtual IList<IVariable> GetPublicVariables()
         {
-            var publicVariables = new List<Variable>();
+            IList<IVariable> publicVariables = new List<IVariable>();
             for (int i = 0; i < variables.Count; i++)
             {
                 var v = variables[i];
