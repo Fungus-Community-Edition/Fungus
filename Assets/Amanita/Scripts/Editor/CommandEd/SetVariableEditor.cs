@@ -70,12 +70,11 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            // Get previously selected operator
-            int selectedIndex = (int) setVarCommand.SetOperator;
-            if (selectedIndex < 0)
+            SetOperator prevOperator = setVarCommand.SetOperator;
+            int selectedIndex = (int)setVarCommand.SetOperator;
+            bool varSupportsOperator = selectedVariable != null && selectedVariable.IsArithmeticSupported(prevOperator);
+            if (!varSupportsOperator) // <- This can occur when changing between variable types
             {
-                // Default to first index if the operator is not found in the available operators list
-                // This can occur when changing between variable types
                 selectedIndex = 0;
             }
 

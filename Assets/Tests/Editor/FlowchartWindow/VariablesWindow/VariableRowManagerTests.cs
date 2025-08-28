@@ -12,7 +12,7 @@ using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.Tests.Editor
+namespace Amanita.Tests.EditMode
 {
     public class VariableRowManagerTests 
     {
@@ -297,7 +297,7 @@ namespace Amanita.Tests.Editor
         {
             
             int expectedAmountInPools = 0;
-            IList<IVariable> varsToRemove = _flowchart.Variables;
+            IList<IVariable> varsToRemove = new List<IVariable>(_flowchart.Variables);
             foreach (var elem in varsToRemove)
             {
                 _flowchart.RemoveVariable(elem);

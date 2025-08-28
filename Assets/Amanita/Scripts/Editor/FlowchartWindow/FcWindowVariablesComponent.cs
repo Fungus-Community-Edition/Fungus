@@ -37,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void BuildManager()
         {
-            var flowchart = _window != null ? _window.Flowchart : null;
+            var flowchart = _window?.Flowchart;
             if (flowchart == null)
                 return;
 
@@ -83,7 +83,6 @@ namespace Amanita.VScripting.EditorUtils
         public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
         {
             // Formerly built manager here in response to flowchart changes
-            Debug.Log("Executing OnGUI in FcWindowVariablesComponent");
         }
 
         public void OnInspectorUpdate() { }

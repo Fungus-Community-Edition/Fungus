@@ -10,7 +10,7 @@ using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
 
 // Optional: avoid pulling conflicting types into the global scope
-using Amanita.Tests.Editor;
+using Amanita.Tests.EditMode;
 using Collections;
 // using Amanita.VScripting.EditorUtils; // if you keep helpers here
 

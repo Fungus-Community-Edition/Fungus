@@ -2,7 +2,7 @@
 using UnityEngine;
 using Amanita.EditorUtils;
 
-namespace Amanita.Tests.Editor
+namespace Amanita.Tests.EditMode
 {
     public class CanvasUtilsTests
     {
