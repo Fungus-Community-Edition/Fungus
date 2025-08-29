@@ -14,11 +14,10 @@ namespace Amanita.VScripting.EditorUtils
         /// Also meant to be used for reuse after disposing. It's fine for the 
         /// IRowVisualHandler passed to be in a disposed state.
         /// </summary>
-        public virtual void Init(VisualElement holder, IVariable toRepresent,
+        public virtual void Init(IVariable toRepresent,
             IRowVisualHandler visHandler)
         {
             _isDisposed = false;
-            _holder = holder;
             _prevVariable = _currentVariable;
             _currentVariable = toRepresent;
 
@@ -27,12 +26,11 @@ namespace Amanita.VScripting.EditorUtils
             VisualHandler = visHandler;
             VisualHandler.Variable = _currentVariable;
             VisualHandler.SerializedVar = _serializedVar;
-            VisualHandler.Init(holder, toRepresent);
+            VisualHandler.Init(toRepresent);
             VisualHandler.Refresh();
         }
 
         protected bool _isDisposed;
-        protected VisualElement _holder;
         protected IVariable _prevVariable;
         protected IVariable _currentVariable;
 
@@ -86,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils
                     return null;
                 }
 
-                return VisualHandler.Root;
+                return VisualHandler.RowRoot;
             }
         }
         
@@ -136,7 +134,6 @@ namespace Amanita.VScripting.EditorUtils
             VisualHandler?.Dispose();
             VisualHandler = null;
             _currentVariable = null;
-            _holder = null;
             _isDisposed = true;
         }
 
