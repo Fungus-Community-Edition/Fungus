@@ -1,9 +1,8 @@
-﻿using Amanita.Tests.Editor;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.Tests
+namespace Amanita.Tests.EditMode
 {
     // Dummy handler types for testing
     public class GoodHandler { }

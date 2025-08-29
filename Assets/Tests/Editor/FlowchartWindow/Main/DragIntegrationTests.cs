@@ -6,7 +6,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.Editor.Integration
+namespace Amanita.Tests.EditMode.Integration
 {
     public class DragIntegrationTests : FlowchartWindowTestsCommon
     {

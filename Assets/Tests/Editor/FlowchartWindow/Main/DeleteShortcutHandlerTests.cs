@@ -6,7 +6,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.Editor
+namespace Amanita.Tests.EditMode
 {
     [TestFixture]
     public class DeleteShortcutHandlerTests : FlowchartWindowTestsCommon

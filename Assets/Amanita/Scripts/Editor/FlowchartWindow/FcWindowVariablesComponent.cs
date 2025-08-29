@@ -37,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void BuildManager()
         {
-            var flowchart = _window != null ? _window.Flowchart : null;
+            var flowchart = _window?.Flowchart;
             if (flowchart == null)
                 return;
 

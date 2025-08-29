@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.Tests.Editor
+namespace Amanita.Tests.EditMode
 {
     [TestFixture]
     public class GridRendererTests : FlowchartWindowTestsCommon
