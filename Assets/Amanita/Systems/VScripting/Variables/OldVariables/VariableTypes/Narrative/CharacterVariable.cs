@@ -1,0 +1,59 @@
+
+
+
+
+using UnityEngine;
+
+
+namespace Amanita.VScripting
+{
+	/// <summary>
+	/// Character variable type.
+	/// </summary>
+	[VariableInfo("Other", "Character")]
+	[AddComponentMenu("")]
+	[System.Serializable]
+	public class CharacterVariable : VariableBase<Amanita.Character>
+	{ }
+
+	/// <summary>
+	/// Container for a Character variable reference or constant value.
+	/// </summary>
+	[System.Serializable]
+	[VariableData(typeof(Character), typeof(CharacterVariable))]
+	public class CharacterData : VariableData<Character, IVariable<Character>>
+	{
+		[SerializeField]
+		[VariableProperty("<Value>", typeof(CharacterVariable))]
+		public CharacterVariable characterRef;
+
+
+		public static implicit operator Amanita.Character(CharacterData CharacterData)
+		{
+			return CharacterData.Value;
+		}
+
+		public CharacterData() : base(default) { }
+		public CharacterData(Character startVal = null) : base(startVal) { }
+
+		public override IVariable VarRef
+		{
+			get { return characterRef; }
+			set
+			{
+				if (value == null) { characterRef = null; return; }
+
+				if (value.ContentType.Equals(this.ContentType))
+				{
+					characterRef = value as CharacterVariable;
+				}
+				else
+				{
+					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+					throw new System.InvalidCastException(errorMessage);
+				}
+
+			}
+		}
+	}
+}

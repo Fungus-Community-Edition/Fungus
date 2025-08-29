@@ -64,7 +64,7 @@ namespace Amanita.EditorUtils
             {
                 Variable newVariable = newGO.AddComponent(varType) as Variable;
                 newVariable.Key = flow.GetUniqueVariableKey(varType.Name);
-                flow.Variables.Add(newVariable);
+                flow.AddVariable(newVariable);
             }
         }
     }

@@ -1,0 +1,62 @@
+
+
+
+
+
+using UnityEngine;
+
+namespace Amanita.VScripting
+{
+    /// <summary>
+    /// Collection variable type.
+    /// </summary>
+    [VariableInfo("Other", "Collection", "Collection")]
+    [AddComponentMenu("")]
+    [System.Serializable]
+    public class CollectionVariable : VariableBase<Collection>
+    { }
+
+    /// <summary>
+    /// Container for a Collection variable reference or constant value.
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Collection), typeof(CollectionVariable))]
+    public class CollectionData : VariableData<Collection, IVariable<Collection>>
+    {
+        [SerializeField]
+        [VariableProperty("<Value>", typeof(CollectionVariable))]
+        public CollectionVariable collectionRef;
+
+        [SerializeField]
+        public Collection collectionVal;
+
+        public static implicit operator Collection(CollectionData CollectionData)
+        {
+            return CollectionData.Value;
+        }
+
+        public CollectionData() : base(default) { }
+        public CollectionData(Collection startVal) : base(startVal) { }
+
+        public override IVariable VarRef
+        {
+            get { return collectionRef; }
+            set
+            {
+                if (value == null) { collectionRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    collectionRef = value as CollectionVariable;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
+        }
+
+    }
+}

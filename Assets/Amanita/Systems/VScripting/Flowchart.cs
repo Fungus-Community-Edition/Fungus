@@ -18,7 +18,7 @@ namespace Amanita.VScripting
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IVariableSource
     {
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
@@ -101,6 +101,7 @@ namespace Amanita.VScripting
             set { includeInSaves = value; }
         }
 
+        #region SaveSys Involvement
         public virtual bool SaveBlocks
         {
             get { return saveBlocks; }
@@ -112,12 +113,14 @@ namespace Amanita.VScripting
             get { return saveVariables; }
             set { saveVariables = value; }
         }
+        
 
         public virtual int LoadPriority
         {
             get { return loadPriority; }
             set { loadPriority = value; }
         }
+        #endregion
 
         protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
 
@@ -132,14 +135,10 @@ namespace Amanita.VScripting
             set => UIModel.SelectedCommandsStale = value;
         }
 #endif
-
-        #if UNITY_5_4_OR_NEWER
-        #else
         protected virtual void OnLevelWasLoaded(int level) 
         {
             LevelWasLoaded();
         }
-        #endif
 
         protected virtual void LevelWasLoaded()
         {
@@ -588,14 +587,11 @@ namespace Amanita.VScripting
             get { return uiModel.BlockCount; }
         }
 
-        /// <summary>
-        /// A copy of the list of variables that can be accessed by the Flowchart.
-        /// </summary>
-        public virtual IList<IVariable> Variables
+        public virtual IReadOnlyList<IVariable> Variables
         {
             get
             {
-                IList<IVariable> copyOfList = variables.Cast<IVariable>()
+                IReadOnlyList<IVariable> copyOfList = variables.Cast<IVariable>()
                     .Concat(muscariables.Cast<IVariable>())
                     .ToList();
 
@@ -1165,9 +1161,9 @@ namespace Amanita.VScripting
         /// <summary>
         /// Gets a list of all variables with public scope in this Flowchart.
         /// </summary>
-        public virtual List<Variable> GetPublicVariables()
+        public virtual IList<IVariable> GetPublicVariables()
         {
-            var publicVariables = new List<Variable>();
+            IList<IVariable> publicVariables = new List<IVariable>();
             for (int i = 0; i < variables.Count; i++)
             {
                 var v = variables[i];
@@ -1178,188 +1174,6 @@ namespace Amanita.VScripting
             }
 
             return publicVariables;
-        }
-
-        /// <summary>
-        /// Gets the value of a boolean variable.
-        /// Returns false if the variable key does not exist.
-        /// </summary>
-        public virtual bool GetBooleanVariable(string key)
-        {
-            var variable = GetVariable<BooleanVariable>(key);
-            if(variable != null)
-            {
-                return GetVariable<BooleanVariable>(key).Value;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a boolean variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetBooleanVariable(string key, bool value)
-        {
-            var variable = GetVariable<BooleanVariable>(key);
-            if(variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of an integer variable.
-        /// Returns 0 if the variable key does not exist.
-        /// </summary>
-        public virtual int GetIntegerVariable(string key)
-        {
-            var variable = GetVariable<IntegerVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<IntegerVariable>(key).Value;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of an integer variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetIntegerVariable(string key, int value)
-        {
-            var variable = GetVariable<IntegerVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a float variable.
-        /// Returns 0 if the variable key does not exist.
-        /// </summary>
-        public virtual float GetFloatVariable(string key)
-        {
-            var variable = GetVariable<FloatVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<FloatVariable>(key).Value;
-            }
-            else
-            {
-                return 0f;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a float variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetFloatVariable(string key, float value)
-        {
-            var variable = GetVariable<FloatVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a string variable.
-        /// Returns the empty string if the variable key does not exist.
-        /// </summary>
-        public virtual string GetStringVariable(string key)
-        {
-            var variable = GetVariable<StringVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<StringVariable>(key).Value;
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a string variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetStringVariable(string key, string value)
-        {
-            var variable = GetVariable<StringVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a GameObject variable.
-        /// Returns null if the variable key does not exist.
-        /// </summary>
-        public virtual GameObject GetGameObjectVariable(string key)
-        {
-            var variable = GetVariable<GameObjectVariable>(key);
-
-            if (variable != null)
-            {
-                return GetVariable<GameObjectVariable>(key).Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a GameObject variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetGameObjectVariable(string key, GameObject value)
-        {
-            var variable = GetVariable<GameObjectVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a Transform variable.
-        /// Returns null if the variable key does not exist.
-        /// </summary>
-        public virtual Transform GetTransformVariable(string key)
-        {
-            var variable = GetVariable<TransformVariable>(key);
-
-            if (variable != null)
-            {
-                return GetVariable<TransformVariable>(key).Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a Transform variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetTransformVariable(string key, Transform value)
-        {
-            var variable = GetVariable<TransformVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
         }
 
         /// <summary>

@@ -144,7 +144,8 @@ namespace Amanita.VScripting.EditorUtils
             var existingVariable = flowchart.GetVariable(suggestedName);
             if (existingVariable != null)
             {
-                int index = flowchart.Variables.IndexOf(existingVariable) + 1;
+                var varListCopy = new List<IVariable>(flowchart.Variables);
+                int index = varListCopy.IndexOf(existingVariable) + 1;
                 flowchart.InsertVariable(index, newVariable);
             }
             else
