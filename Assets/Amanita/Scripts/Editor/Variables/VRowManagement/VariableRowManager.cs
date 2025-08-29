@@ -17,78 +17,40 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         protected IRowVisualHandlerResolver _handlerResolver;
-        #region Visual Handler Type Management
-
-        [InitializeOnLoadMethod]
-        protected static void InitializeHandlerLookup()
-        {
-            // Always rebuild lookup right now
-            RefreshHandlerLookup(); //
-
-            // Ensure we only subscribe once
-            AssemblyReloadEvents.afterAssemblyReload -= RefreshHandlerLookup;
-            AssemblyReloadEvents.afterAssemblyReload += RefreshHandlerLookup;
-        }
-
-        protected static readonly object _handlerLookupLock = new object();
-
-        public static void RefreshHandlerLookup()
-        {
-            var visHandlerType = typeof(RowVisualHandler);
-
-            // 1) Snapshot types safely (avoid ReflectionTypeLoadException)
-            var discovered = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(SafeGetTypes)
-                .Where(typeEl =>
-                    visHandlerType.IsAssignableFrom(typeEl) &&
-                    !typeEl.IsAbstract &&
-                    typeEl.GetCustomAttribute<RowVisualHandlerAttribute>() != null)
-                .ToArray(); // snapshot
-
-            // 2) Precompute the pairs outside the lock //
-            var pairs = new List<KeyValuePair<Type, Type>>(discovered.Length);
-            foreach (var handlerType in discovered)
-            {
-                var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
-                pairs.Add(new KeyValuePair<Type, Type>(attr.ContentType, handlerType));
-            }
-
-            // 3) Atomic update under the lock (keep same dictionary instance)
-            lock (_handlerLookupLock)
-            {
-                visualHandlerLookup.Clear();
-                foreach (var kv in pairs)
-                    visualHandlerLookup[kv.Key] = kv.Value;
-
-                allVisualHandlerTypes = discovered; // consistent with the lookup now
-            }
-        }
-
-        protected static IEnumerable<Type> SafeGetTypes(Assembly a)
-        {
-            try { return a.GetTypes(); }
-            catch (ReflectionTypeLoadException e) { return e.Types.Where(typeEl => typeEl != null); }
-        }
-
-        protected static IEnumerable<Type> allVisualHandlerTypes;
-
-        // Keys are var content types (like for floats, ints, etc), values are the types
-        // of the visual handlers meant for the corresponding keys
-        protected static IDictionary<Type, Type> visualHandlerLookup = new Dictionary<Type, Type>(new TypeNameComparer());
-
-#endregion
-
+        
         public virtual void Init(VRowManagerInitArgs initArgs)
         {
             _isDisposed = false;
-            DeregisterCallbacks();
+            ToggleSubscriptions(false);
             InitVisuals(initArgs);
-            _handlerPool = new RowVisualHandlerPool(_handlerResolver, visualHandlerLookup);
-            ListenForEvents();
+            _visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
+            _handlerPool = new RowVisualHandlerPool(_handlerResolver, _visualHandlerLookup);
+            ToggleSubscriptions(true);
             Refresh();
         }
 
         protected bool _isDisposed;
+        protected IDictionary<Type, Type> _visualHandlerLookup;
+
+        protected virtual void ToggleSubscriptions(bool on)
+        {
+            if (_flowchart == null) return;
+            if (_addButton != null)
+            {
+                if (on) _addButton.clicked += OnAddClicked;
+                else _addButton.clicked -= OnAddClicked;
+            }
+            if (on)
+            {
+                _flowchart.VariableAdded += OnVariableAdded;
+                _flowchart.VariableRemoved += OnVariableRemoved;
+            }
+            else
+            {
+                _flowchart.VariableAdded -= OnVariableAdded;
+                _flowchart.VariableRemoved -= OnVariableRemoved;
+            }
+        }
 
         protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
         {
@@ -135,30 +97,6 @@ namespace Amanita.VScripting.EditorUtils
             _holdsManager.Add(Root);
         }
 
-        protected virtual void DeregisterCallbacks()
-        {
-            if (_flowchart == null)
-            {
-                return;
-            }
-
-            _addButton.clicked -= OnAddClicked;
-            _flowchart.VariableAdded -= OnVariableAdded;
-            _flowchart.VariableRemoved -= OnVariableRemoved;
-        }
-
-        protected virtual void ListenForEvents()
-        {
-            if (_flowchart == null)
-            {
-                return;
-            }
-
-            _addButton.clicked += OnAddClicked;
-            _flowchart.VariableAdded += OnVariableAdded;
-            _flowchart.VariableRemoved += OnVariableRemoved;
-        }
-
         protected void OnAddClicked()
         {
             /* TODO: show add dialog, then Refresh */
@@ -188,11 +126,11 @@ namespace Amanita.VScripting.EditorUtils
 #endif
 
             _listContainer.Add(rowToUse.RootElement);
-            _allRows.Add(rowToUse);
+            _rowRegistry.Add(rowToUse);
         }
 
         protected readonly VariableRowPool _rowPool = new VariableRowPool();
-        protected readonly HashSet<VariableRow> _allRows = new HashSet<VariableRow>();
+        protected readonly HashSet<VariableRow> _rowRegistry = new HashSet<VariableRow>();
         // ^A sort of lifetime registry of rows, be they pooled or visible. Should only be
         // cleared by the Dispose method
 
@@ -207,7 +145,7 @@ namespace Amanita.VScripting.EditorUtils
             // If we get passed a null, then chances are that something in the
             // Undo/Redo functionality made it so. Thus, we would remove all
             // rows that have null vars assigned
-            VariableRow rowToRemove = (from elem in _allRows
+            VariableRow rowToRemove = (from elem in _rowRegistry
                                        where elem.VarToRepresent == varToRemoveFor
                                        select elem).FirstOrDefault();
 
@@ -272,7 +210,7 @@ namespace Amanita.VScripting.EditorUtils
         public IEnumerable<VariableRow> EnumerateVisibleRows()
         {
             var container = _listContainer; // Avoids capturing the field in the iterator state
-            foreach (var row in _allRows)
+            foreach (var row in _rowRegistry)
             {
                 if (row.RootElement?.parent == container)
                     yield return row;
@@ -307,12 +245,12 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            DeregisterCallbacks();
+            ToggleSubscriptions(false);
             ReleaseAllRows();
             RefreshCountLabel();
             _rowPool.Clear();
             _handlerPool.Clear();
-            _allRows.Clear();
+            _rowRegistry.Clear();
             if (Root != null)
             {
                 if (_holdsManager != null && _holdsManager.Contains(Root))
@@ -352,7 +290,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 int count = 0;
                 var container = _listContainer;
-                foreach (var row in _allRows)
+                foreach (var row in _rowRegistry)
                     if (row.RootElement?.parent == container)
                         count++;
                 return count;
