@@ -83,7 +83,6 @@ namespace Amanita.VScripting.EditorUtils
         public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
         {
             // Formerly built manager here in response to flowchart changes
-            Debug.Log("Executing OnGUI in FcWindowVariablesComponent");
         }
 
         public void OnInspectorUpdate() { }
