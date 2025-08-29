@@ -61,7 +61,7 @@ namespace Amanita
 				varAsType.Key = variableKey;
 				varAsType.Scope = VariableScope.Public;
 				variables[variableKey] = varAsType;
-				holder.Variables.Add(varAsType);
+				holder.AddVariable(varAsType);
 			}
 
 			return varAsType;

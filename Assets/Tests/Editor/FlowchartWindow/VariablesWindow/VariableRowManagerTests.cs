@@ -297,7 +297,7 @@ namespace Amanita.Tests.EditMode
         {
             
             int expectedAmountInPools = 0;
-            IList<IVariable> varsToRemove = _flowchart.Variables;
+            IList<IVariable> varsToRemove = new List<IVariable>(_flowchart.Variables);
             foreach (var elem in varsToRemove)
             {
                 _flowchart.RemoveVariable(elem);

@@ -68,7 +68,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            IList<IVariable> varsToCheck = flowchartBelongingToCommand.Variables;
+            IReadOnlyList<IVariable> varsToCheck = flowchartBelongingToCommand.Variables;
             int index = 0;
             int selectedIndex = 0;
             IList<string> variableKeys = new List<string>() { defaultText };

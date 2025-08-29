@@ -243,36 +243,6 @@ namespace Amanita.VScripting
 
     }
 
-    public interface IVariable : IHasKey
-    {
-        void Init();
-        new string Key { get; set; }
-        object Value { get; set; }
-        VariableScope Scope { get; }
-        int ItemID { get; set; }
-
-        /// <summary>
-        /// The type of the value that this is meant to represent. It's like how Fungus
-        /// FloatVariables represent float, Fungus StringVariables represent strings,
-        /// so on so forth.
-        /// </summary>
-        Type ContentType { get; }
-        bool IsComparisonSupported();
-
-        /// <summary>
-        /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
-        /// </summary>
-        bool Evaluate(CompareOperator compareOperator, object value);
-
-        void Apply(SetOperator setOperator, object value);
-    }
-
-    public interface IVariable<T> : IVariable, IEquatable<T>
-    {
-        new T Value { get; set; }
-        void Apply(SetOperator setOperator, T value);
-    }
-
     [Serializable]
     public class GenericMuscariable : Muscariable<object>
     {
@@ -297,38 +267,6 @@ namespace Amanita.VScripting
             return Value != null ? Value.GetHashCode() : 0;
         }
 
-    }
-
-    [System.Serializable]
-    [Muscariable("Primitive", typeof(string), "String")]
-    public class StringMuscariable : Muscariable<string>
-    {
-        public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)
-            => new StringMuscariable { Value = a.Value + b.Value };
-
-        public static bool operator ==(StringMuscariable a, StringMuscariable b)
-            => a.Value == b.Value;
-
-        public static bool operator !=(StringMuscariable a, StringMuscariable b)
-            => a.Value != b.Value;
-
-        public override bool Equals(object obj)
-        {
-            var other = obj as StringMuscariable;
-            if (ReferenceEquals(other, null)) return false;
-            return this.Value == other.Value;
-        }
-
-        public override int GetHashCode()
-        {
-            return Value != null ? Value.GetHashCode() : 0;
-        }
-
-    }
-
-    public interface IHasKey
-    {
-        string Key { get; }
     }
 
 }
