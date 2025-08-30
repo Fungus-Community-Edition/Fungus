@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
@@ -14,9 +15,9 @@ namespace Amanita.VScripting.EditorUtils
             _refresher = refresher;
         }
 
-        protected readonly ScrollView _listDisplay;
-        protected readonly UitkLabel _countDisplay;
-        protected readonly ILayoutRefresher _refresher;
+        protected ScrollView _listDisplay;
+        protected UitkLabel _countDisplay;
+        protected ILayoutRefresher _refresher;
 
         public virtual void AddRow(VariableRow toAdd)
         {
@@ -75,7 +76,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             foreach (var elem in _rows)
             {
-                elem.RootElement.RemoveFromHierarchy();
+                elem.RootElement?.RemoveFromHierarchy();
             }
 
             _rows.Clear();
@@ -116,9 +117,19 @@ namespace Amanita.VScripting.EditorUtils
             ScheduleLayoutFix();
         }
 
+        public virtual void Dispose()
+        {
+            Clear();
+            _listDisplay.RemoveFromHierarchy();
+            _countDisplay.RemoveFromHierarchy();
+            _listDisplay = null;
+            _countDisplay = null;
+            _refresher = null;
+        }
+
     }
 
-    public interface IVariableListView
+    public interface IVariableListView : IDisposable
     {
         void AddRow(VariableRow row);
         void RemoveRow(VariableRow row);

@@ -179,6 +179,7 @@ namespace Amanita.VScripting.EditorUtils
                 _holdsManager.Remove(Root);
 
             _factory?.Dispose();
+            _listView?.Dispose();
 
             _factory = null;
             _listView = null;

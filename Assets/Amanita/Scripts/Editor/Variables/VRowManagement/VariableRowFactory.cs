@@ -22,18 +22,16 @@ namespace Amanita.VScripting.EditorUtils
             _isDisposed = false;
             _rowPool = initArgs.RowPool;
             _handlerPool = initArgs.HandlerPool;
-            _holder = initArgs.Holder;
         }
 
         protected VariableRowPool _rowPool;
         protected RowVisualHandlerPool _handlerPool;
-        protected VisualElement _holder;
 
         public VariableRow Create(IVariable variable)
         {
             VariableRow row = _rowPool.GetOrCreate();
-            IRowVisualHandler handler = _handlerPool.GetHandlerFor(variable.ContentType, _holder, variable);
-            row.Init(_holder, variable, handler);
+            IRowVisualHandler handler = _handlerPool.GetHandlerFor(variable.ContentType, variable);
+            row.Init(variable, handler);
             return row;
         }
 

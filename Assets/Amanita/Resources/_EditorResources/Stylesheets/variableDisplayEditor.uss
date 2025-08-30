@@ -3,7 +3,7 @@
 {
     -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
     background-color: rgba(0, 0, 255, 0.05);
-    max-width: 600px;
+    max-width: 470px;
 }
 
 #varHeaderBar

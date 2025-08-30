@@ -11,9 +11,9 @@ namespace Amanita.VScripting.EditorUtils
 {
     public interface IRowVisualHandler : IDisposable
     {
-        void Init(VisualElement holder, IVariable variable);
+        void Init(IVariable variable);
         IVariable Variable { get; set; }
-        VisualElement Root { get; }
+        VisualElement RowRoot { get; }
         VisualTreeAsset Template { get; }
         Type VarContentType { get; }
         SerializedObject SerializedVar { get; set; }
@@ -25,7 +25,6 @@ namespace Amanita.VScripting.EditorUtils
         public abstract Type VarContentType { get; }
 
         protected bool _isDisposed;
-        protected VisualElement _holder;
         protected IVariable _currentVariable;
         protected IVariable _prevVariable;
         protected VisualElement _valueFieldHolder;
@@ -36,10 +35,9 @@ namespace Amanita.VScripting.EditorUtils
         protected static readonly Dictionary<string, VisualTreeAsset> _templateCache =
             new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
-        public virtual void Init(VisualElement rowHolder, IVariable toDisplay)
+        public virtual void Init(IVariable toDisplay)
         {
             _isDisposed = false;
-            _holder = rowHolder;
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
             _template = GetOrResolveTemplate(GetType());
@@ -91,9 +89,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             EnsureVisualsAreReady();
 
-            if (_holder != null && Root != null && !_holder.Contains(Root))
-                _holder.Add(Root);
-
             if (_prevVariable != _currentVariable)
             {
                 UnbindFields();
@@ -104,7 +99,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void EnsureVisualsAreReady()
         {
-            if (Root == null && _template != null)
+            if (RowRoot == null && _template != null)
             {
                 RegisterVisualElements();
 
@@ -112,16 +107,16 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     // For debug purposes
                     string typeName = _currentVariable.ContentType.Name;
-                    Root.name = $"{typeName}_Row";
+                    RowRoot.name = $"{typeName}_Row";
                 }
                 else
                 {
-                    Root.name = "EmptyRow";
+                    RowRoot.name = "EmptyRow";
                 }
             }
         }
 
-        public virtual VisualElement Root { get; protected set; }
+        public virtual VisualElement RowRoot { get; protected set; }
 
         protected virtual void RegisterVisualElements()
         {
@@ -131,25 +126,25 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Root = _template.CloneTree();
-            _keyField = Root.Q<TextField>("KeyInput");
-            _valueFieldHolder = Root.Q<VisualElement>("ValueFieldHolder");
-            _scopeField = Root.Q<EnumField>("Scope");
+            RowRoot = _template.CloneTree();
+            _keyField = RowRoot.Q<TextField>("KeyInput");
+            _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
+            _scopeField = RowRoot.Q<EnumField>("Scope");
         }
 
         protected virtual void UnbindFields()
         {
-            Root?.Unbind();
+            RowRoot?.Unbind();
         }
 
         protected virtual void BindFields()
         {
-            if (SerializedVar == null || Root == null)
+            if (SerializedVar == null || RowRoot == null)
             {
                 return;
             }
             
-            Root?.Bind(SerializedVar);
+            RowRoot?.Bind(SerializedVar);
         }
 
         public virtual SerializedObject SerializedVar
@@ -180,9 +175,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void Hide()
         {
-            if (Root == null) return;
-            if (_holder != null && _holder.Contains(Root))
-                _holder.Remove(Root);
+            if (RowRoot == null) return;
+            RowRoot.RemoveFromHierarchy();
         }
 
         public virtual void Reset()
@@ -194,8 +188,7 @@ namespace Amanita.VScripting.EditorUtils
             _currentVariable = null;
             _serializedVar?.Dispose();
             _serializedVar = null;
-            _holder = null;
-            Root = null;
+            RowRoot = null;
         }
 
         public virtual void Dispose()
@@ -226,7 +219,7 @@ namespace Amanita.VScripting.EditorUtils
             base.RegisterVisualElements();
 
             // For those classes that simply need to hook up a single type to a single ObjectField
-            _objField = Root.Q<ObjectField>("UnityObjectField");
+            _objField = RowRoot.Q<ObjectField>("UnityObjectField");
 
             if (_objField != null)
             {

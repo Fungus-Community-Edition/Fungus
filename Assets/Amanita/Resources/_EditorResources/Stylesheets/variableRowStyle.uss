@@ -3,6 +3,7 @@
     flex-direction: row;
     height: 30px;
     margin-bottom: 3px;
+    /*margin-right: 5px;*/
     border-radius: 2px;
 }
 
@@ -16,7 +17,7 @@
 
 .varRowTypeLabel
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Bold');
     color: rgb(229, 229, 229);
     -unity-text-align: middle-left;
     width: 75px;
@@ -37,7 +38,7 @@
 
 .keyInput > #unity-text-input
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Bold');
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
