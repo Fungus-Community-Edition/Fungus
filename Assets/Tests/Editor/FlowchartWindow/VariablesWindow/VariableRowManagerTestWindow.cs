@@ -30,7 +30,7 @@ namespace Amanita.VScripting.EditorUtils
         // UI
         protected VisualElement _root;
         protected VisualElement _toolbar;
-        protected VisualElement _rowsRoot;
+        protected VisualElement _holdsManager;
         protected UITKLabel _status;
 
         // Data
@@ -136,11 +136,11 @@ namespace Amanita.VScripting.EditorUtils
         protected void BuildRowsHost()
         {
             // Remove the outer ScrollView entirely
-            _rowsRoot = new VisualElement { name = "rows-root" };
-            _rowsRoot.style.flexDirection = FlexDirection.Column;
-            _rowsRoot.style.flexGrow = 1;
+            _holdsManager = new VisualElement { name = "rows-root" };
+            _holdsManager.style.flexDirection = FlexDirection.Column;
+            _holdsManager.style.flexGrow = 1;
 
-            _root.Add(_rowsRoot);
+            _root.Add(_holdsManager);
         }
 
         protected void OnEditorUpdate()
@@ -215,7 +215,7 @@ namespace Amanita.VScripting.EditorUtils
         protected void MountRowsUI()
         {
             // Clean previous
-            _rowsRoot.Clear();
+            _holdsManager.Clear();
             _vRowManager?.Dispose();
             _vRowManager = null;
 
@@ -229,10 +229,10 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Clone and query parts
-            var root = _variableTemplate.CloneTree();
-            var listContainer = root.Q<ScrollView>("rowList");
-            var countLabel = root.Q<UITKLabel>("varCountLabel");
-            var addButton = root.Q<Button>("addVarButton");
+            _root = _variableTemplate.CloneTree();
+            var listContainer = _root.Q<ScrollView>("rowList");
+            var countLabel = _root.Q<UITKLabel>("varCountLabel");
+            var addButton = _root.Q<Button>("addVarButton");
 
             // Sanity checks (prevents silent nothingness)
             if (listContainer == null || countLabel == null || addButton == null)
@@ -241,28 +241,54 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
+            var view = new VariableListView(listContainer, countLabel, new ScrollViewLayoutRefresher());
+            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
+            var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
+            var factoryInitArgs = new VariableRowFactoryInitArgs()
+            {
+                RowPool = new VariableRowPool(),
+                HandlerPool = handlerPool,
+                Holder = _holdsManager,
+            };
+            var varRowFactory = new VariableRowFactory();
+            varRowFactory.Init(factoryInitArgs);
+
             // Build manager
             var args = new VRowManagerInitArgs
             {
-                HoldsManager = _rowsRoot,   // where the manager should attach its root
-                Root = root,        // the cloned root
-                ListContainer = listContainer,
-                CountLabel = countLabel,
+                HoldsManager = _holdsManager,
+                Root = _root,
                 AddButton = addButton,
                 Flowchart = _flowchart,
+                VariableListView = view,
+                LayoutRefresher = new ScrollViewLayoutRefresher(),
+                VariableRowFactory = varRowFactory,
             };
 
-            _vRowManager = new VariableRowManager(_resolver);
+            _vRowManager = new VariableRowManager();
             _vRowManager.Init(args);
 
             // Attach the manager's root to the window (Init doesn't do this)
-            _vRowManager.RegisterAndAddToRoot(_rowsRoot);
+            RegisterAndAddToRoot(_holdsManager);
 
             // Optional: force a refresh (Init already calls Refresh if Flowchart is set)
             _vRowManager.Refresh();
 
             UpdateStatus();
 
+        }
+
+        public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
+        {
+            if ((_holdsManager != null && _holdsManager != toHoldManager) &&
+                _root != null && _root.parent != null)
+            {
+                _holdsManager.Remove(_root);
+            }
+
+            _holdsManager = toHoldManager;
+            if (_root != null && !_holdsManager.Contains(_root))
+                _holdsManager.Add(_root);
         }
 
         protected VariableRowManager _vRowManager;

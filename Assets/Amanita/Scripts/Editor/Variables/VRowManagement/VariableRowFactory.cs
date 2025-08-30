@@ -1,43 +1,89 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class VariableRowFactory : IVariableRowFactory
+    public class VariableRowFactory : IVariableRowFactory<VariableRowFactoryInitArgs>
     {
-        protected readonly VariableRowPool _rowPool;
-        protected readonly RowVisualHandlerPool _handlerPool;
-        protected readonly VisualElement _holder;
-
-        public VariableRowFactory(VariableRowPool rowPool,
-                                  RowVisualHandlerPool handlerPool,
-                                  VisualElement holder)
+        public virtual void Init(object input)
         {
-            _rowPool = rowPool;
-            _handlerPool = handlerPool;
-            _holder = holder;
+            _isDisposed = false;
+            if (input is VariableRowFactoryInitArgs)
+            {
+                Init(input as VariableRowFactoryInitArgs);
+            }
         }
 
-        public VariableRow Create(IVariable variable, VisualElement parent)
+        protected bool _isDisposed;
+
+        public virtual void Init(VariableRowFactoryInitArgs initArgs)
         {
-            var row = _rowPool.GetOrCreate();
-            var handler = _handlerPool.GetHandlerFor(variable.ContentType, _holder, variable);
+            _isDisposed = false;
+            _rowPool = initArgs.RowPool;
+            _handlerPool = initArgs.HandlerPool;
+            _holder = initArgs.Holder;
+        }
+
+        protected VariableRowPool _rowPool;
+        protected RowVisualHandlerPool _handlerPool;
+        protected VisualElement _holder;
+
+        public VariableRow Create(IVariable variable)
+        {
+            VariableRow row = _rowPool.GetOrCreate();
+            IRowVisualHandler handler = _handlerPool.GetHandlerFor(variable.ContentType, _holder, variable);
             row.Init(_holder, variable, handler);
-            parent.Add(row.RootElement);
             return row;
         }
 
         public void Release(VariableRow row)
         {
-            if (row.RootElement?.parent != null)
-                row.RootElement.RemoveFromHierarchy();
-            _handlerPool.Release(row.VisualHandler);
+            if (row == null) return;
+
+            if (row.VisualHandler != null)
+                _handlerPool.Release(row.VisualHandler);
+
             _rowPool.Release(row);
+        }
+
+        public virtual void ReleaseMulti(IEnumerable<VariableRow> toRelease)
+        {
+            foreach (var elem in toRelease)
+            {
+                Release(elem);
+            }
+        }
+
+        // --- Exposed for manager + tests (DIP-friendly pass-throughs) ---
+        public int PooledRowCount => _rowPool.Count;
+        public int PooledHandlerCount => _handlerPool.PooledHandlerCount;
+        public RowVisualHandlerPool HandlerPool => _handlerPool;
+        public VariableRowPool RowPool => _rowPool;
+
+        public virtual void Dispose()
+        {
+            if (_isDisposed) return;
+            _isDisposed = true;
         }
     }
 
-    public interface IVariableRowFactory
+    public interface IVariableRowFactory : IDisposable
     {
-        VariableRow Create(IVariable variable, VisualElement parent);
+        void Init(object input);
+        VariableRow Create(IVariable variable);
         void Release(VariableRow row);
+    }
+
+    public interface IVariableRowFactory<T> : IVariableRowFactory
+    {
+        void Init(T input);
+    }
+
+    public class VariableRowFactoryInitArgs
+    {
+        public VariableRowPool RowPool { get; set; }
+        public RowVisualHandlerPool HandlerPool { get; set; }
+        public VisualElement Holder { get; set; }
     }
 }

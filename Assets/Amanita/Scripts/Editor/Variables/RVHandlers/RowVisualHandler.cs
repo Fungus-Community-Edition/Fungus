@@ -58,7 +58,7 @@ namespace Amanita.VScripting.EditorUtils
                 return null;
             }
 
-            if (!_templateCache.TryGetValue(key, out var vta) || vta == null)
+            if (!_templateCache.TryGetValue(key, out var visTreeAsset) || visTreeAsset == null)
             {
                 var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
                 if (attr == null)
@@ -67,8 +67,8 @@ namespace Amanita.VScripting.EditorUtils
                     return null;
                 }
 
-                vta = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
-                if (vta == null)
+                visTreeAsset = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
+                if (visTreeAsset == null)
                 {
                     string errorMessage = string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate);
                     Debug.LogError(errorMessage);
@@ -76,14 +76,14 @@ namespace Amanita.VScripting.EditorUtils
                     return null;
                 }
 
-                _templateCache[key] = vta;
+                _templateCache[key] = visTreeAsset;
             }
 
             return _templateCache[key];
         }
 
         public static IList<Type> LoggedMissingOnce = new List<Type>();
-        protected static string TemplateKeyFor(Type t) => t.AssemblyQualifiedName;
+        protected static string TemplateKeyFor(Type handlerType) => handlerType.AssemblyQualifiedName;
         protected static readonly string missingTemplateFormat =
             "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
 

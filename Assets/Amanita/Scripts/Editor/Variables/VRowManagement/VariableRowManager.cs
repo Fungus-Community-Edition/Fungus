@@ -1,45 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using UnityEditor;
-using UnityEngine.UIElements;
-using UITKLabel = UnityEngine.UIElements.Label; // So the compiler doesn't get confused
 using UnityEngine;
+using UnityEngine.UIElements;
+using UITKLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
     public class VariableRowManager : IDisposable
     {
-        public VariableRowManager(IRowVisualHandlerResolver handlerResolver)
-        {
-            _handlerResolver = handlerResolver;
-        }
-
-        protected IRowVisualHandlerResolver _handlerResolver;
-        
         public virtual void Init(VRowManagerInitArgs initArgs)
         {
             _isDisposed = false;
-            ToggleSubscriptions(false);
+
+            PrepFcEventListeners();
+            void PrepFcEventListeners()
+            {
+                ToggleSubscriptions(false);
+                _flowchart = initArgs.Flowchart;
+                ToggleSubscriptions(true);
+            }
+            
             InitVisuals(initArgs);
-            _visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            _handlerPool = new RowVisualHandlerPool(_handlerResolver, _visualHandlerLookup);
-            ToggleSubscriptions(true);
+
+            PrepFactory();
+            void PrepFactory()
+            {
+                if (_factory != initArgs.VariableRowFactory)
+                {
+                    _factory?.Dispose();
+                }
+                _factory = initArgs.VariableRowFactory;
+            }
+
+            PrepListView();
+            void PrepListView()
+            {
+                if (initArgs.VariableListView != null)
+                {
+                    // Always adopt provided view (caller controls lifecycle)
+                    _listView = initArgs.VariableListView;
+                }
+                else if (_listView == null)
+                {
+                    Debug.LogError($"VariableRowManager was not given a list view to work with.");
+                }
+            }
+
             Refresh();
         }
 
         protected bool _isDisposed;
-        protected IDictionary<Type, Type> _visualHandlerLookup;
+        protected Flowchart _flowchart;
+        protected IVariableRowFactory _factory;
+        protected IVariableListView _listView;
 
+        protected VisualElement _holdsManager;
+
+        public VisualElement Root { get; protected set; }
+
+        #region Event Wiring / Visual Init
         protected virtual void ToggleSubscriptions(bool on)
         {
             if (_flowchart == null) return;
-            if (_addButton != null)
-            {
-                if (on) _addButton.clicked += OnAddClicked;
-                else _addButton.clicked -= OnAddClicked;
-            }
+
             if (on)
             {
                 _flowchart.VariableAdded += OnVariableAdded;
@@ -56,256 +80,113 @@ namespace Amanita.VScripting.EditorUtils
         {
             _holdsManager = initArgs.HoldsManager;
             Root = initArgs.Root;
-            _listContainer = initArgs.ListContainer as ScrollView;
-            _countLabel = initArgs.CountLabel;
-            _addButton = initArgs.AddButton;
-            _flowchart = initArgs.Flowchart;
         }
 
-        protected virtual void OnGeometryChangedEvent(GeometryChangedEvent evt)
-        {
-            if (evt.newRect.height > evt.oldRect.height)
-            {
-                // First growth detected — prod the ScrollView to update
-                _listContainer.schedule.Execute(() =>
-                {
-                    _listContainer.style.marginBottom = _listContainer.style.marginBottom.value.value + 0.001f;
-                    _listContainer.style.marginBottom = 0;
-                });
-            }
-        }
+        #endregion
 
-        protected VisualElement _holdsManager; 
-        // ^We expect this to be FlowchartWindow or something meant to fulfill its purpose
-        protected VisualTreeAsset _ourTemplate;
-        protected Flowchart _flowchart;
-        public VisualElement Root { get; protected set; }
-        protected UITKLabel _countLabel;
-        protected Button _addButton;
-        protected ScrollView _listContainer;
-        protected RowVisualHandlerPool _handlerPool;
-
-        public virtual void RegisterAndAddToRoot(VisualElement toHoldManager)
-        {
-            if ( (_holdsManager != null && _holdsManager != toHoldManager) &&
-                Root != null && Root.parent != null)
-            {
-                _holdsManager.Remove(Root);
-            }
-
-            _holdsManager = toHoldManager;
-            _holdsManager.Add(Root);
-        }
-
-        protected void OnAddClicked()
-        {
-            /* TODO: show add dialog, then Refresh */
-        }
-
+        #region Variable Event Handlers
         protected virtual void OnVariableAdded(IVariable added)
         {
-            AddOrReuseRow(added);
-            RefreshCountLabel();
+            if (_isDisposed || added == null) return;
+            CreateRowForVariable(added);
         }
-
-        // Involves lifetime registry mutation
-        protected void AddOrReuseRow(IVariable varThatNeedsRow)
-        {
-            VariableRow rowToUse = _rowPool.GetOrCreate();
-            // ^The var rows don't care what type we are about to ask them to represent.
-            // That's for the visual-handlers to worry about, hence us not fetching rows
-            // based on content type
-
-            IRowVisualHandler handler = _handlerPool.GetHandlerFor(varThatNeedsRow.ContentType,
-                _holdsManager, varThatNeedsRow);
-            rowToUse.Init(_holdsManager, varThatNeedsRow, handler);
-
-#if DEV_DIAGNOSTICS
-            if (rowToUse.RootElement == null)
-                Debug.LogWarning($"Row created with null RootElement for var '{varThatNeedsRow?.Key}'");
-#endif
-
-            _listContainer.Add(rowToUse.RootElement);
-            _rowRegistry.Add(rowToUse);
-        }
-
-        protected readonly VariableRowPool _rowPool = new VariableRowPool();
-        protected readonly HashSet<VariableRow> _rowRegistry = new HashSet<VariableRow>();
-        // ^A sort of lifetime registry of rows, be they pooled or visible. Should only be
-        // cleared by the Dispose method
 
         protected virtual void OnVariableRemoved(IVariable removed)
         {
+            if (_isDisposed || removed == null) return;
             RemoveRowFor(removed);
-            RefreshCountLabel();
         }
+        #endregion
 
-        protected virtual void RemoveRowFor(IVariable varToRemoveFor)
+        #region Row Create / Remove
+        private void CreateRowForVariable(IVariable variable)
         {
-            // If we get passed a null, then chances are that something in the
-            // Undo/Redo functionality made it so. Thus, we would remove all
-            // rows that have null vars assigned
-            VariableRow rowToRemove = (from elem in _rowRegistry
-                                       where elem.VarToRepresent == varToRemoveFor
-                                       select elem).FirstOrDefault();
+            if (variable == null || _factory == null || _listView == null) return;
 
-            if (rowToRemove == null)
-            {
-                return;
-            }
-
-#if DEV_DIAGNOSTICS
-            if (rowToRemove.RootElement == null)
-                Debug.LogError($"RemoveRowFor: Row RootElement is null for var '{varToRemoveFor?.Key}'");
-#endif
-            ReleaseRow(rowToRemove);
+            var row = _factory.Create(variable);
+            _listView.AddRow(row);
         }
 
+        protected virtual void RemoveRowFor(IVariable variable)
+        {
+            if (variable == null) return;
+
+            VariableRow rowToRemove = _listView.Rows.Where((elem) => elem.VarToRepresent == variable).FirstOrDefault();
+
+            if (rowToRemove != null)
+            {
+                _listView.RemoveRow(rowToRemove);
+                _factory.Release(rowToRemove);
+            }
+            
+        }
+        #endregion
+
+        #region Refresh APIs
+        /// <summary>
+        /// Full rebuild: releases only rows tied to the current list view, then rebuilds all rows from the Flowchart.
+        /// </summary>
         public void Refresh()
         {
-            if (_flowchart == null)
-            {
+            if (_isDisposed || _flowchart == null || _listView == null || _factory == null)
                 return;
+
+            ReleaseRowsFromList();
+
+            foreach (var v in _flowchart.Variables)
+            {
+                CreateRowForVariable(v);
             }
 
-            ReleaseAllRows();
-            foreach (var varToShow in _flowchart.Variables)
-                AddOrReuseRow(varToShow);
-
-            RefreshCountLabel();
-
-            TrimPhantomSpace(); // So the scrolling doesn't get wonky. 
+            _listView.Refresh();
         }
 
-        protected virtual void TrimPhantomSpace()
-        {
-            // Apparently, the scroll field doesn't properly update its layout on its own
-            // (even after it gets something added to it). That leads to phantom space
-            // when we try to scroll. To fix that, we have to force it to redo its layout
-            // again by changing the content container's style as you see below.
-            var contentContainer = _listContainer.contentContainer;
-            contentContainer.style.display = DisplayStyle.None;
+        #endregion
 
-            _listContainer.schedule.Execute(() =>
+        #region Release Helpers
+        /// <summary>
+        /// Releases only rows currently parented in this manager's list view (allows prior roots to retain their visuals).
+        /// </summary>
+        public virtual void ReleaseRowsFromList()
+        {
+            if (_factory == null || _listView == null) return;
+
+            var removalTargets = _listView.Rows.ToList();
+
+            foreach (var elem in removalTargets)
             {
-                contentContainer.style.display = DisplayStyle.Flex;
-            }).StartingIn(0);
-        }
-
-        protected virtual void RefreshCountLabel()
-        {
-            _countLabel.text = $"Count: {_listContainer.childCount}";
-        }
-
-        protected virtual void ReleaseAllRows()
-        {
-            var snapshot = VisibleRows;
-            foreach (var elem in EnumerateVisibleRows())
-            {
-                ReleaseRow(elem);
+                _listView.RemoveRow(elem);
+                _factory.Release(elem);
             }
         }
 
-        // Enumerates without allocation
-        public IEnumerable<VariableRow> EnumerateVisibleRows()
-        {
-            var container = _listContainer; // Avoids capturing the field in the iterator state
-            foreach (var row in _rowRegistry)
-            {
-                if (row.RootElement?.parent == container)
-                    yield return row;
-            }
-        }
+        #endregion
 
-        protected virtual void ReleaseRow(VariableRow toRelease)
-        {
-            if (toRelease == null || toRelease.RootElement?.parent != _listContainer)
-            {
-                return;
-            }
+        #region Query
+        public virtual VariableRow GetVisibleRowAt(int index) => _listView.RowAtIndex(index);
+        public virtual int VisibleRowCount => _listView?.RowCount ?? 0;
+        #endregion
 
-            var root = toRelease.RootElement;
-            if (root?.parent != null)
-            {
-                root.RemoveFromHierarchy();
-            }
-
-            var handler = toRelease?.VisualHandler;
-            if (handler != null)
-                _handlerPool.Release(handler);
-
-            _rowPool.Release(toRelease);
-        }
-
-        // Involves lifetime registry mutation
+        #region Dispose
         public virtual void Dispose()
         {
-            if (_isDisposed)
-            {
-                return;
-            }
-
+            if (_isDisposed) return;
+            
             ToggleSubscriptions(false);
-            ReleaseAllRows();
-            RefreshCountLabel();
-            _rowPool.Clear();
-            _handlerPool.Clear();
-            _rowRegistry.Clear();
-            if (Root != null)
-            {
-                if (_holdsManager != null && _holdsManager.Contains(Root))
-                {
-                    _holdsManager.Remove(Root);
-                    Debug.Log($"VarRowManager: Removed root from holder");
-                }
-            }
+            ReleaseRowsFromList();
 
-            _holdsManager = null;
+            if (Root != null && _holdsManager != null && _holdsManager.Contains(Root))
+                _holdsManager.Remove(Root);
+
+            _factory?.Dispose();
+
+            _factory = null;
+            _listView = null;
+            _flowchart = null;
             Root = null;
-            _countLabel = null;
-            _addButton = null;
-            _listContainer = null;
+            _holdsManager = null;
             _isDisposed = true;
         }
-
-        public virtual VariableRow GetVisibleRowAt(int index)
-        {
-            var rows = VisibleRows; // Best work with just one copy per call of this func for the sake of performance
-            if (rows.Count > index)
-            {
-                return rows[index];
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public IList<VariableRow> VisibleRows =>
-            EnumerateVisibleRows().ToList();
-
-        public virtual int VisibleRowCount
-        {
-            get
-            {
-                int count = 0;
-                var container = _listContainer;
-                foreach (var row in _rowRegistry)
-                    if (row.RootElement?.parent == container)
-                        count++;
-                return count;
-
-            }
-        }
-        // ^For performance, we're not converting things to a list before getting the count
-
-        #region For Testing Only
-        // Can't use InternalsVisibleTo on properties, so...
-        public int PooledRowCount => _rowPool.Count;
-        public int PooledHandlerCount => _handlerPool.PooledHandlerCount;
-        public RowVisualHandlerPool HandlerPool => _handlerPool;
-
-#endregion
+        #endregion
     }
-
 }

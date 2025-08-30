@@ -19,16 +19,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             _window = host;
 
-            // Clone UXML and anchor
             _rootElement = VariableDisplayEditorUxml.CloneTree();
             _rootElement.style.position = Position.Absolute;
             _rootElement.style.left = 10;
             _rootElement.style.bottom = 10;
 
-            // Attach to FlowchartWindow's root
             _window.RootVisualElement.Add(_rootElement);
 
-            // Build manager for current Flowchart
             BuildManager();
 
             DeregisterCallbacks();
@@ -42,17 +39,37 @@ namespace Amanita.VScripting.EditorUtils
                 return;
 
             _manager?.Dispose();
-            _manager = new VariableRowManager(_resolver);
+            _manager = new VariableRowManager();
+
+            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
+            var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
+            var rowPool = new VariableRowPool();
+            var holder = _rootElement;
+
+            _factoryInitArgs.Holder = holder;
+            _factoryInitArgs.HandlerPool = handlerPool;
+            _factoryInitArgs.RowPool = rowPool;
+            _rowFactory.Init(_factoryInitArgs);
+
+            var list = _rootElement.Q<ScrollView>("rowList");
+            var count = _rootElement.Q<UitkLabel>("varCountLabel");
+            var addBtn = _rootElement.Q<Button>("addVarButton");
+
+            var view = new VariableListView(list, count, new ScrollViewLayoutRefresher());
 
             _manager.Init(new VRowManagerInitArgs
             {
                 Root = _rootElement,
-                ListContainer = _rootElement.Q<ScrollView>("rowList"),
-                CountLabel = _rootElement.Q<UitkLabel>("varCountLabel"),
-                AddButton = _rootElement.Q<Button>("addVarButton"),
-                Flowchart = flowchart
+                AddButton = addBtn,
+                Flowchart = flowchart,
+                VariableRowFactory = _rowFactory,
+                VariableListView = view,
+                LayoutRefresher = new ScrollViewLayoutRefresher()
             });
         }
+
+        protected VariableRowFactory _rowFactory = new VariableRowFactory();
+        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
 
         protected virtual void DeregisterCallbacks()
         {
