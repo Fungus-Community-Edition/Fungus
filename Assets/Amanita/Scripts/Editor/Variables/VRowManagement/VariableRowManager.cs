@@ -20,7 +20,7 @@ namespace Amanita.VScripting.EditorUtils
                 _flowchart = initArgs.Flowchart;
                 ToggleSubscriptions(true);
             }
-            
+
             InitVisuals(initArgs);
 
             PrepFactory();
@@ -38,8 +38,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 if (initArgs.VariableListView != null)
                 {
-                    // Always adopt provided view (caller controls lifecycle)
                     _listView = initArgs.VariableListView;
+                    if (_listView is VariableListView concrete)
+                    {
+                        concrete.SetFactory(_factory);
+                        concrete.OrderChanged += OnRowOrderChanged;
+                    }
                 }
                 else if (_listView == null)
                 {
@@ -82,84 +86,50 @@ namespace Amanita.VScripting.EditorUtils
             Root = initArgs.Root;
         }
 
+        protected virtual void OnRowOrderChanged(IReadOnlyList<IVariable> newOrder)
+        {
+            if (_flowchart == null || newOrder == null) return;
+            Debug.Log($"Row order changed");
+            _flowchart.ReorderVariables(newOrder);
+        }
         #endregion
 
         #region Variable Event Handlers
         protected virtual void OnVariableAdded(IVariable added)
         {
             if (_isDisposed || added == null) return;
-            CreateRowForVariable(added);
+            _listView?.AddVariable(added);
+            _listView?.Refresh();
         }
 
         protected virtual void OnVariableRemoved(IVariable removed)
         {
             if (_isDisposed || removed == null) return;
-            RemoveRowFor(removed);
-        }
-        #endregion
-
-        #region Row Create / Remove
-        private void CreateRowForVariable(IVariable variable)
-        {
-            if (variable == null || _factory == null || _listView == null) return;
-
-            var row = _factory.Create(variable);
-            _listView.AddRow(row);
-        }
-
-        protected virtual void RemoveRowFor(IVariable variable)
-        {
-            if (variable == null) return;
-
-            VariableRow rowToRemove = _listView.Rows.Where((elem) => elem.VarToRepresent == variable).FirstOrDefault();
-
-            if (rowToRemove != null)
-            {
-                _listView.RemoveRow(rowToRemove);
-                _factory.Release(rowToRemove);
-            }
-            
+            _listView?.RemoveVariable(removed);
+            _listView?.Refresh();
         }
         #endregion
 
         #region Refresh APIs
         /// <summary>
-        /// Full rebuild: releases only rows tied to the current list view, then rebuilds all rows from the Flowchart.
+        /// Full rebuild: just repopulates the itemsSource list on the ListView.
         /// </summary>
         public void Refresh()
         {
-            if (_isDisposed || _flowchart == null || _listView == null || _factory == null)
+            if (_isDisposed || _flowchart == null || _listView == null)
                 return;
 
-            ReleaseRowsFromList();
-
-            foreach (var v in _flowchart.Variables)
-            {
-                CreateRowForVariable(v);
-            }
-
+            _listView.SetVariables(_flowchart.Variables);
             _listView.Refresh();
         }
-
         #endregion
 
         #region Release Helpers
-        /// <summary>
-        /// Releases only rows currently parented in this manager's list view (allows prior roots to retain their visuals).
-        /// </summary>
         public virtual void ReleaseRowsFromList()
         {
-            if (_factory == null || _listView == null) return;
-
-            var removalTargets = _listView.Rows.ToList();
-
-            foreach (var elem in removalTargets)
-            {
-                _listView.RemoveRow(elem);
-                _factory.Release(elem);
-            }
+            // With virtualization, clearing variables triggers unbind & release logic
+            _listView?.Clear();
         }
-
         #endregion
 
         #region Query
@@ -171,23 +141,26 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             if (_isDisposed) return;
-            
+
             ToggleSubscriptions(false);
             ReleaseRowsFromList();
+            if (_listView is VariableListView concrete)
+                concrete.OrderChanged -= OnRowOrderChanged;
 
             if (Root != null && _holdsManager != null && _holdsManager.Contains(Root))
                 _holdsManager.Remove(Root);
 
-            _factory?.Dispose();
+            // Factory remains owned externally; do not dispose pooled handlers unless required
             _listView?.Dispose();
 
-            _factory = null;
             _listView = null;
             _flowchart = null;
             Root = null;
             _holdsManager = null;
             _isDisposed = true;
         }
+
+        
         #endregion
     }
 }

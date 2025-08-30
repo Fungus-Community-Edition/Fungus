@@ -1,7 +1,7 @@
 /* Individual rows */
 #VariableDisplayEditorRoot
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     background-color: rgba(0, 0, 255, 0.05);
     max-width: 470px;
 }

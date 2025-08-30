@@ -135,7 +135,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void BuildRowsHost()
         {
-            // Remove the outer ScrollView entirely
+            // Remove the outer ListView entirely
             _holdsManager = new VisualElement { name = "rows-root" };
             _holdsManager.style.flexDirection = FlexDirection.Column;
             _holdsManager.style.flexGrow = 1;
@@ -230,7 +230,7 @@ namespace Amanita.VScripting.EditorUtils
 
             // Clone and query parts
             _root = _variableTemplate.CloneTree();
-            var listContainer = _root.Q<ScrollView>("rowList");
+            var listContainer = _root.Q<ListView>("rowList");
             var countLabel = _root.Q<UITKLabel>("varCountLabel");
             var addButton = _root.Q<Button>("addVarButton");
 
@@ -241,7 +241,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var view = new VariableListView(listContainer, countLabel, new ScrollViewLayoutRefresher());
+            var view = new VariableListView(listContainer, countLabel, new ListViewLayoutRefresher());
             var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
             var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
             var factoryInitArgs = new VariableRowFactoryInitArgs()
@@ -261,7 +261,7 @@ namespace Amanita.VScripting.EditorUtils
                 AddButton = addButton,
                 Flowchart = _flowchart,
                 VariableListView = view,
-                LayoutRefresher = new ScrollViewLayoutRefresher(),
+                LayoutRefresher = new ListViewLayoutRefresher(),
                 VariableRowFactory = varRowFactory,
             };
 

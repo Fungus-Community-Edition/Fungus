@@ -41,7 +41,6 @@ namespace Amanita.VScripting.EditorUtils
             _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
             _template = GetOrResolveTemplate(GetType());
-            //Debug.Log($"Handler Init: Variable Key={toDisplay.Key}, InstanceID={toDisplay.GetHashCode()}, SerializedObject Target={SerializedVar?.targetObject}");
         }
 
         /// <summary>

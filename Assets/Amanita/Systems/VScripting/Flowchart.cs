@@ -1721,5 +1721,36 @@ namespace Amanita.VScripting
             eventSystemPresent = false;
         }
 
+        /// <summary>
+        /// Reorders the legacy Variable list to match the sequence supplied (only
+        /// for those Variables already registered). Muscariables are not affected.
+        /// Variables not present in newOrder retain their relative order at the end.
+        /// Does not raise add/remove events (pure reordering).
+        /// </summary>
+        public virtual void ReorderVariables(IReadOnlyList<IVariable> newOrder)
+        {
+            if (newOrder == null || newOrder.Count == 0) return;
+
+            // Extract legacy variables that appear in newOrder, in that order
+            var ordered = new List<Variable>(variables.Count);
+            var seen = new HashSet<Variable>();
+
+            for (int i = 0; i < newOrder.Count; i++)
+            {
+                if (newOrder[i] is Variable legacy && variables.Contains(legacy) && seen.Add(legacy))
+                    ordered.Add(legacy);
+            }
+
+            // Append the rest (not explicitly positioned)
+            for (int i = 0; i < variables.Count; i++)
+            {
+                var v = variables[i];
+                if (!seen.Contains(v))
+                    ordered.Add(v);
+            }
+            if (ordered.Count == variables.Count)
+                variables = ordered;
+        }
+
     }
 }

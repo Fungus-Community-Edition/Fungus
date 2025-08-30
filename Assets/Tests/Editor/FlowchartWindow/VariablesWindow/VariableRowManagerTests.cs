@@ -52,10 +52,10 @@ namespace Amanita.Tests.EditMode
                 _rootTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _root = _rootTemplate.CloneTree();
                 _holdsManager = new VisualElement();
-                _listContainer = _root.Q<ScrollView>("rowList");
+                _listContainer = _root.Q<ListView>("rowList");
                 _countLabel = _root.Q<UITKLabel>("varCountLabel");
                 _addButton = _root.Q<Button>("addVarButton");
-                _firstListView = new VariableListView(_listContainer, _countLabel, new ScrollViewLayoutRefresher());
+                _firstListView = new VariableListView(_listContainer, _countLabel, new ListViewLayoutRefresher());
                 _rowManagerInitArgs = new VRowManagerInitArgs()
                 {
                     HoldsManager = _holdsManager,
@@ -80,7 +80,7 @@ namespace Amanita.Tests.EditMode
         protected VisualTreeAsset _rootTemplate;
         protected VisualElement _root;
         protected VisualElement _holdsManager;
-        protected ScrollView _listContainer;
+        protected ListView _listContainer;
         protected UITKLabel _countLabel;
         protected Button _addButton;
         protected VariableListView _firstListView;
@@ -588,7 +588,7 @@ namespace Amanita.Tests.EditMode
         {
             // Given what we do in SetUp, this test's first init is the session's second init
             VisualElement newRoot;
-            ScrollView newList;
+            ListView newList;
             UITKLabel newLabel;
             Button newAddButton;
             Flowchart newFC;
@@ -598,17 +598,17 @@ namespace Amanita.Tests.EditMode
             Flowchart ApplyNewInitToManager()
             {
                 newRoot = new VisualElement();
-                newList = new ScrollView();
+                newList = new ListView();
                 newLabel = new UITKLabel();
                 newAddButton = new Button();
                 var fcsInScene = UnityObject.FindObjectsOfType<Flowchart>(); 
                 // ^Keeping this obsolete func call; we want compatibility with 2022 LTS
                 int fcCount = fcsInScene.Length;
                 newFCHolder = new GameObject($"FC_{fcCount.ToString("D2")}");
-                newList.name = $"ScrollView_{fcCount.ToString("D2")}";
+                newList.name = $"ListView_{fcCount.ToString("D2")}";
                 newFC = newFCHolder.AddComponent<Flowchart>();
 
-                var varListView = new VariableListView(newList, newLabel, new ScrollViewLayoutRefresher());
+                var varListView = new VariableListView(newList, newLabel, new ListViewLayoutRefresher());
                 var newInitArgs = new VRowManagerInitArgs
                 {
                     Root = newRoot,
@@ -777,10 +777,10 @@ namespace Amanita.Tests.EditMode
             var newHolder = new GameObject("FC_Alt");
             var secondFc = newHolder.AddComponent<Flowchart>();
             var newRoot = new VisualElement();
-            var newList = new ScrollView();
+            var newList = new ListView();
             var newLbl = new UITKLabel();
             var newAddBtn = new Button();
-            var newView = new VariableListView(newList, newLbl, new ScrollViewLayoutRefresher());
+            var newView = new VariableListView(newList, newLbl, new ListViewLayoutRefresher());
 
             _rowManager.Init(new VRowManagerInitArgs {
                 Root = newRoot,
@@ -808,12 +808,12 @@ namespace Amanita.Tests.EditMode
         {
             // Prepare second root scenario
             var secondRoot = new VisualElement();
-            var secondList = new ScrollView();
+            var secondList = new ListView();
             var secondLabel = new UITKLabel();
             var secondAdd = new Button();
             var secondFcHolder = new GameObject("FC_Second");
             var secondFc = secondFcHolder.AddComponent<Flowchart>();
-            var secondView = new VariableListView(secondList, secondLabel, new ScrollViewLayoutRefresher());
+            var secondView = new VariableListView(secondList, secondLabel, new ListViewLayoutRefresher());
 
             // First: add a variable to original FC so we have at least 1 row
             int originalStart = _listContainer.childCount;

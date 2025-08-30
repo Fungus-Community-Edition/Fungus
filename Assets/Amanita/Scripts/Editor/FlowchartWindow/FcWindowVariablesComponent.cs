@@ -32,6 +32,9 @@ namespace Amanita.VScripting.EditorUtils
             ListenForEvents();
         }
 
+        protected VariableRowFactory _rowFactory = new VariableRowFactory();
+        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
+
         protected void BuildManager()
         {
             var flowchart = _window?.Flowchart;
@@ -51,11 +54,12 @@ namespace Amanita.VScripting.EditorUtils
             _factoryInitArgs.RowPool = rowPool;
             _rowFactory.Init(_factoryInitArgs);
 
-            var list = _rootElement.Q<ScrollView>("rowList");
+            var list = _rootElement.Q<ListView>("rowList");
             var count = _rootElement.Q<UitkLabel>("varCountLabel");
             var addBtn = _rootElement.Q<Button>("addVarButton");
 
-            var view = new VariableListView(list, count, new ScrollViewLayoutRefresher());
+            var view = new VariableListView(list, count, new ListViewLayoutRefresher());
+            view.SetFactory(_rowFactory); // provide factory to new virtualized view
 
             _manager.Init(new VRowManagerInitArgs
             {
@@ -64,12 +68,9 @@ namespace Amanita.VScripting.EditorUtils
                 Flowchart = flowchart,
                 VariableRowFactory = _rowFactory,
                 VariableListView = view,
-                LayoutRefresher = new ScrollViewLayoutRefresher()
+                LayoutRefresher = new ListViewLayoutRefresher()
             });
         }
-
-        protected VariableRowFactory _rowFactory = new VariableRowFactory();
-        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
 
         protected virtual void DeregisterCallbacks()
         {
@@ -99,7 +100,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
         {
-            // Formerly built manager here in response to flowchart changes
+            // Variable list is now entirely UIToolkit/virtualized; no GUI draw needed.
         }
 
         public void OnInspectorUpdate() { }
