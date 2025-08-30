@@ -34,6 +34,10 @@ namespace Amanita.VScripting.EditorUtils
         // Active rows kept by variable; we now retain them across unbinds to avoid flicker / empties
         protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
 
+        bool _requireHandleForDrag;
+        string _dragHandleName;
+        bool _lastPointerDownOnHandle;
+
         public void SetFactory(IVariableRowFactory factory) => _factory = factory;
 
         void InitListViewStructure()
@@ -72,6 +76,27 @@ namespace Amanita.VScripting.EditorUtils
                     rs.display = DisplayStyle.Flex;
                     element.Add(row.RootElement);
                 }
+
+                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName))
+                {
+                    // Register once per bound instance (handlers are cheap)
+                    var handle = row.RootElement.Q<VisualElement>(_dragHandleName);
+                    if (handle != null && handle.userData as string != "dragHandleHooked")
+                    {
+                        handle.userData = "dragHandleHooked";
+                        handle.RegisterCallback<PointerDownEvent>(_ =>
+                        {
+                            _lastPointerDownOnHandle = true;
+                        });
+                    }
+
+                    // Row root fallback: pointer downs not on handle clear eligibility
+                    row.RootElement.RegisterCallback<PointerDownEvent>(evt =>
+                    {
+                        if (evt.target != handle)
+                            _lastPointerDownOnHandle = false;
+                    });
+                }
             };
 
             _listDisplay.unbindItem = (element, index) =>
@@ -89,6 +114,10 @@ namespace Amanita.VScripting.EditorUtils
         bool OnCanStartDrag(CanStartDragArgs args)
         {
             if (Application.isPlaying) return false;
+            if (_requireHandleForDrag && !_lastPointerDownOnHandle)
+                return false;
+            // Reset so subsequent drags require a fresh handle click
+            _lastPointerDownOnHandle = false;
             return true;
         }
 
@@ -252,6 +281,18 @@ namespace Amanita.VScripting.EditorUtils
             _factory = null;
             _refresher = null;
         }
+
+        // Public API to enable drag-handle mode
+        public void RequireDragHandle(string handleName)
+        {
+            _requireHandleForDrag = !string.IsNullOrEmpty(handleName);
+            _dragHandleName = handleName;
+        }
+
+        // (optional) test helper (internal so normal builds ignore misuse)
+#if UNITY_EDITOR
+        public void ForTests_SetLastPointerDownOnHandle(bool v) => _lastPointerDownOnHandle = v;
+#endif
     }
 
     public interface IVariableListView : IDisposable
