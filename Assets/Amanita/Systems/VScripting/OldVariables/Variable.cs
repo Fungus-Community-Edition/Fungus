@@ -1,10 +1,10 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
+
+
 
 using Amanita.VScripting;
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Standard comparison operators.
@@ -89,7 +89,7 @@ namespace Amanita
 
         public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
         {
-            VariableTypes = AllVariableTypes.AllAmanitaVarTypes;
+            VariableTypes = AllVariableTypes.AllIVariableTypes;
         }
 
         public VariablePropertyAttribute (string defaultText, params System.Type[] variableTypes) 
@@ -179,6 +179,8 @@ namespace Amanita
         /// </summary>
         public abstract object GetValue();
 
+        public abstract System.Type ValueType { get; }
+
         public virtual object Value { get; set; }
         /// <summary>
         /// Set value in inherited types via Boxed value.
@@ -222,19 +224,22 @@ namespace Amanita
             }
         }
 
+        public override System.Type ValueType => typeof(T);
+
         [SerializeField] protected T value;
         public virtual new T Value
         {
             get
             {
-                if (scope != VariableScope.Global || !Application.isPlaying)
-                {
-                    return this.value;
-                }
-                else
-                { 
-                    return globalStaicRef.value;
-                }
+                return this.value;
+                //if (scope != VariableScope.Global || !Application.isPlaying)
+                //{
+                //    return this.value;
+                //}
+                //else
+                //{ 
+                //    return globalStaicRef.value;
+                //}
             }
             set
             {
@@ -304,6 +309,7 @@ namespace Amanita
         protected virtual void Init(T startVal)
         {
             this.startValue = startVal;
+            base.Value = startValue;
         }
 
         //Apply to get from base system.object to T

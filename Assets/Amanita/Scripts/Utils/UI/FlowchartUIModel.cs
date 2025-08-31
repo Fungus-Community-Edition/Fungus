@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.UI
+namespace Amanita.VScripting.UI
 {
     [System.Serializable]
     public class FlowchartUIModel : IFlowchartUIModel
@@ -127,7 +127,7 @@ namespace Amanita.UI
 
         public virtual void AddToSelection(Block block)
         {
-            if (!_selectedBlocks.Contains(block))
+            if (block != null && !_selectedBlocks.Contains(block))
             {
                 block.IsSelected = true;
                 _selectedBlocks.Add(block);
@@ -174,6 +174,18 @@ namespace Amanita.UI
 
         [field: SerializeField] public bool SelectedCommandsStale { get; set; }
 
+        public virtual bool Contains(Command command)
+        {
+            return _selectedCommands.Contains(command);
+        }
+
+        public virtual bool Contains(Block block)
+        {
+            return _selectedBlocks.Contains(block);
+        }
+
+        public virtual int CommandCount { get { return _selectedCommands.Count; } }
+        public virtual int BlockCount { get { return _selectedBlocks.Count; } }
         public virtual void CleanUp()
         {
             // To get rid of unreferenced Blocks and Commands, which should 

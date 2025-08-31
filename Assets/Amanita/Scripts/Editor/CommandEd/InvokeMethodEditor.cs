@@ -177,9 +177,7 @@ namespace Amanita.VScripting.Commands.EditorUtils
                     if (isDrawn)
                     {
                         var flowchart = targetMethod.GetFlowchart();
-                        List<Variable> fungusVars = flowchart.Variables.Where((elem) => elem is Variable)
-                            .Cast<Variable>()
-                            .ToList();
+                        var fungusVars = flowchart.Variables.Where((elem) => elem is Variable).ToList();
                         var vars = GetFungusVariablesByType(fungusVars, objParam.ParameterType);
                         var values = new string[] { "<Value>" };
                         var displayValue = values.Concat(vars).ToList();
@@ -250,9 +248,7 @@ namespace Amanita.VScripting.Commands.EditorUtils
                 if (saveReturnValueProp.boolValue)
                 {
                     var flowchart = targetMethod.GetFlowchart();
-                    List<Variable> fungusVars = flowchart.Variables.Where((elem) => elem is Variable)
-                        .Cast<Variable>()
-                        .ToList();
+                    var fungusVars = flowchart.Variables.Where((elem) => elem is Variable).ToList();
                     var vars = GetFungusVariablesByType(fungusVars, method.ReturnType).ToList();
                     int index = vars.IndexOf(returnValueKeyProp.stringValue);
                     index = EditorGUILayout.Popup(method.ReturnType.Name, index, vars.ToArray());

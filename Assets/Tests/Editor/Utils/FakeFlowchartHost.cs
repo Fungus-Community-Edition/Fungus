@@ -1,7 +1,10 @@
-﻿using Amanita.Collections;
+﻿using Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Amanita.VScripting;
+using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.EditorUtils
 {
@@ -10,6 +13,8 @@ namespace Amanita.EditorUtils
         public virtual void Init()
         {
             Flowchart = new GameObject("fc").AddComponent<Flowchart>();
+            components.Add(new FcWindowCanvas());
+            components.Add(new FcWindowEditing());
         }
 
         public Flowchart Flowchart { get; protected set; }
@@ -59,6 +64,13 @@ namespace Amanita.EditorUtils
                 GameObject.DestroyImmediate(Flowchart.gameObject);
             }
         }
+
+        public T GetComponent<T>() where T : IFcWindowComponent
+        {
+            return components.OfType<T>().FirstOrDefault();
+        }
+
+        protected IList<IFcWindowComponent> components = new List<IFcWindowComponent>();
     }
 
 

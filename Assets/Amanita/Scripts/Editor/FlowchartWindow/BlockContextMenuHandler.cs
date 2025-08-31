@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Amanita.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     public class BlockContextMenuHandler : IUGUIEventHandler
     {
@@ -42,7 +43,7 @@ namespace Amanita.EditorUtils
             {
                 hitBlock = flowchartCtx.TopmostBlockOverlapping(mousePos); // Fallback
                 
-                if (fc.SelectedBlocks.Count == 0)
+                if (fc.SelectedBlockCount == 0)
                 {
                     fc.AddToSelection(hitBlock);
                 }
@@ -68,7 +69,7 @@ namespace Amanita.EditorUtils
 
             // We should only allow cutting and deletion when there 
             // are any blocks selected
-            if (Flowchart.SelectedBlocks.Count > 0)
+            if (Flowchart.SelectedBlockCount > 0)
             {
                 menu.AddItem(CutLabel, false, () => CutBlocks(flowchartCtx));
                 menu.AddItem(DeleteLabel, false, () => blockDeletion.Execute(flowchartCtx));
@@ -100,8 +101,8 @@ namespace Amanita.EditorUtils
         protected virtual void DeleteBlocks(FlowchartContext flowchartCtx)
         {
             IList<Block> selectedBlocks = flowchartCtx.SelectedBlocks;
-            _host.QueueToDelete(selectedBlocks);
-            _host.DeleteScheduledBlocks();
+            FcWindowEditing windowEditing = _host.GetComponent<FcWindowEditing>();
+            windowEditing?.QueueToDelete(selectedBlocks);
             flowchartCtx.ForceRepaintCount++;
         }
 

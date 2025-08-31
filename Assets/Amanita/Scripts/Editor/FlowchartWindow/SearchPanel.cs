@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
+using Amanita.VScripting;
+using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.EditorUtils
 {
