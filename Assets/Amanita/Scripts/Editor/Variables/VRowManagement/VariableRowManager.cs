@@ -41,6 +41,12 @@ namespace Amanita.VScripting.EditorUtils
                     errorLogs++;
                 }
 
+                if (initArgs.AddButton == null)
+                {
+                    Debug.LogError("VariableRowManager was not given an add button to work with");
+                    errorLogs++;
+                }
+
                 allWentWell = errorLogs == 0;
             }
 
@@ -72,6 +78,7 @@ namespace Amanita.VScripting.EditorUtils
         protected bool _isDisposed;
         protected Flowchart _flowchart;
         protected IVariableListView _listView;
+        protected Button _addButton;
 
         public VisualElement Root { get; protected set; }
 
@@ -88,18 +95,21 @@ namespace Amanita.VScripting.EditorUtils
                 _flowchart.VariableAdded += OnVariableAdded;
                 _flowchart.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
+                _addButton.clicked += OnAddButtonClicked;
             }
             else
             {
                 _flowchart.VariableAdded -= OnVariableAdded;
                 _flowchart.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
+                _addButton.clicked -= OnAddButtonClicked;
             }
         }
 
         protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
         {
             Root = initArgs.Root;
+            _addButton = initArgs.AddButton;
         }
 
         #endregion
@@ -122,6 +132,12 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnOrderChanged(IReadOnlyList<IVariable> newlyOrderedVars)
         {
             _flowchart.ReorderVariables(newlyOrderedVars);
+        }
+
+        protected virtual void OnAddButtonClicked()
+        {
+            Rect rect = _addButton.worldBound;
+            VariableSelectPopupWindowContent.DoAddVariable(rect, "", _flowchart);
         }
         #endregion
 
