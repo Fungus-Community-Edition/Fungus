@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita.Lua
+﻿namespace Amanita.Lua
 {
     public interface IExecuteHandlerConfigurator
     {

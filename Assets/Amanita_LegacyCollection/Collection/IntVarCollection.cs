@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita.VScripting
+﻿namespace Amanita.VScripting
 {
     public class IntVarCollection : GenericCollection<IntegerVariable>
     {

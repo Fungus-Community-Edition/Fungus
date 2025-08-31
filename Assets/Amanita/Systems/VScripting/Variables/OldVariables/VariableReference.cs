@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita.VScripting
+﻿namespace Amanita.VScripting
 {
     /// <summary>
     /// A simple struct wrapping a reference to a Fungus Variable. Allows for VariableReferenceDrawer. 

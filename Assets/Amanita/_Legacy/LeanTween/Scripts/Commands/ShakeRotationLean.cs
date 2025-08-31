@@ -1,7 +1,4 @@
-﻿
-
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
 namespace Amanita.VScripting

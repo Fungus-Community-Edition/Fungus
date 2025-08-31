@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita
+﻿namespace Amanita
 {
     /// <summary>
     /// An item of localizeable text.

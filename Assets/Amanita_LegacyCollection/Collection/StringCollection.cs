@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita.VScripting
+﻿namespace Amanita.VScripting
 {
     public class StringCollection : GenericCollection<string>
     {

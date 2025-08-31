@@ -1,4 +1,3 @@
-
 using Amanita.VScripting.EditorUtils;
 using UnityEngine;
 

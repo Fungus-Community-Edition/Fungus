@@ -1,4 +1,3 @@
-
 using Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;

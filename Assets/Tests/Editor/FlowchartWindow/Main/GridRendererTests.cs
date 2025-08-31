@@ -1,5 +1,4 @@
-﻿
-using Amanita.EditorUtils;
+﻿using Amanita.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;

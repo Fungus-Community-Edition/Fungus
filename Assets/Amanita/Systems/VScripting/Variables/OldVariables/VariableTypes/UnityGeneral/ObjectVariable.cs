@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 

@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 using UnityPhysics = UnityEngine.Physics;
 

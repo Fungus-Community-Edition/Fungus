@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita.VScripting
+﻿namespace Amanita.VScripting
 {
     /// <summary>
     /// Extension of IList for Fungus collections and support for associated commands.

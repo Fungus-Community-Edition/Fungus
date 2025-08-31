@@ -1,5 +1,3 @@
-
-
 using Amanita.Utils;
 using System;
 using System.Globalization;

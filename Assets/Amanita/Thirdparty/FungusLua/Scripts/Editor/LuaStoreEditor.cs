@@ -1,6 +1,3 @@
-
-
-
 ﻿using UnityEngine;
 using UnityEditor;
 using MoonSharp.Interpreter.Serialization;

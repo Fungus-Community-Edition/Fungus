@@ -1,6 +1,3 @@
-
-
-
 //Adapted from http://wiki.unity3d.com/index.php/EnumFlagPropertyDrawer
 //placed in fungus namespace to avoid collisions with your own
 

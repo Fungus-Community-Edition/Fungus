@@ -1,7 +1,4 @@
-﻿
-
-
-using UnityEngine;
+﻿using UnityEngine;
 using MoonSharp.Interpreter.Loaders;
 using System.Collections.Generic;
 using System;

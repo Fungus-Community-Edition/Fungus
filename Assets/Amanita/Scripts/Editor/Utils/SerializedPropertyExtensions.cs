@@ -1,6 +1,3 @@
-
-
-
 using UnityEditor;
 using UnityEngine;
 

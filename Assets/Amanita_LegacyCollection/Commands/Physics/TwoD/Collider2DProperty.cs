@@ -1,7 +1,3 @@
-
-
-
-
 using UnityEngine;
 using CompositeOperation = UnityEngine.Collider2D.CompositeOperation;
 
