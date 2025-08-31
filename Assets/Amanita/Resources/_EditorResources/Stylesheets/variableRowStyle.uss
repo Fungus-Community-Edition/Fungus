@@ -3,6 +3,7 @@
     flex-direction: row;
     height: 30px;
     margin-bottom: 3px;
+    /*margin-right: 5px;*/
     border-radius: 2px;
 }
 
@@ -12,11 +13,13 @@
     border-radius: 2px;
     padding: 0px;
     margin: 0px 0px 0px 2px;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .varRowTypeLabel
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     color: rgb(229, 229, 229);
     -unity-text-align: middle-left;
     width: 75px;
@@ -27,17 +30,20 @@
 
 .keyInput
 {
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
     padding: 0 2px 0 2px;
     width: 130px;
     margin: 0 2px 0 1px;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .keyInput > #unity-text-input
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
@@ -62,7 +68,7 @@
 
 .scopeRoot 
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     width: 75px;
     display: flex;
     flex-direction: row;
@@ -70,6 +76,8 @@
     padding: 0px;
     margin: 0px 2px 0px 0px;
     font-size: 14px;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .scopeRoot > VisualElement 

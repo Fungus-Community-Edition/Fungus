@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Amanita/Scripts/Editor/Variables/RVHandlers.meta
+guid: 55827e2d0d7edf34fb3deae84a871b81
+========
 guid: f430879e9f693ef4abf7598898416f36
+>>>>>>>> flowchartVarOverhaul:Assets/Amanita/Scripts/_Testing.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

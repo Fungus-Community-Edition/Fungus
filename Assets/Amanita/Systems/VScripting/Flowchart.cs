@@ -219,7 +219,7 @@ namespace Amanita.VScripting
         /// Specifically for legacy variables.
         /// </summary>
         /// <param name="index"></param>
-        public virtual void RemoveVariable(int index)
+        public virtual void RemoveVariableAtIndex(int index)
         {
             if (index >= 0 && index < variables.Count)
             {
@@ -229,7 +229,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual void RemoveMuscariable(int index)
+        public virtual void RemoveMuscariableAtIndex(int index)
         {
             if (index >= 0 && index < muscariables.Count)
             {
@@ -245,13 +245,13 @@ namespace Amanita.VScripting
             if (variables.Contains(toRemove))
             {
                 index = variables.IndexOf(toRemove as Variable);
-                RemoveVariable(index);
+                RemoveVariableAtIndex(index);
             }
 
             if (muscariables.Contains(toRemove))
             {
                 index = muscariables.IndexOf(toRemove as Muscariable);
-                RemoveMuscariable(index);
+                RemoveMuscariableAtIndex(index);
             }
         }
 
@@ -263,7 +263,7 @@ namespace Amanita.VScripting
             // We'll remove them one by one so the right events fire
             while (variables.Count > 0)
             {
-                RemoveVariable(0);
+                RemoveVariableAtIndex(0);
             }
         }
 
@@ -1696,6 +1696,12 @@ namespace Amanita.VScripting
 
         public virtual void AddVariable(IVariable toAdd)
         {
+            bool alreadyRegistered = variables.Contains(toAdd) || muscariables.Contains(toAdd);
+            if (alreadyRegistered)
+            {
+                return;
+            }
+
             if (toAdd is Variable legacyVar)
             {
                 variables.Add(legacyVar);
@@ -1705,11 +1711,7 @@ namespace Amanita.VScripting
                 muscariables.Add(muscaVar);
             }
 
-            if (toAdd is Variable || toAdd is Muscariable)
-            {
-                toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
-            }
-
+            toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
             VariableAdded(toAdd);
         }
 
@@ -1717,6 +1719,37 @@ namespace Amanita.VScripting
         {
             cachedFlowcharts.Clear();
             eventSystemPresent = false;
+        }
+
+        /// <summary>
+        /// Reorders the legacy Variable list to match the sequence supplied (only
+        /// for those Variables already registered). Muscariables are not affected.
+        /// Variables not present in newOrder retain their relative order at the end.
+        /// Does not raise add/remove events (pure reordering).
+        /// </summary>
+        public virtual void ReorderVariables(IReadOnlyList<IVariable> newOrder)
+        {
+            if (newOrder == null || newOrder.Count == 0) return;
+
+            // Extract legacy variables that appear in newOrder, in that order
+            var ordered = new List<Variable>(variables.Count);
+            var seen = new HashSet<Variable>();
+
+            for (int i = 0; i < newOrder.Count; i++)
+            {
+                if (newOrder[i] is Variable legacy && variables.Contains(legacy) && seen.Add(legacy))
+                    ordered.Add(legacy);
+            }
+
+            // Append the rest (not explicitly positioned)
+            for (int i = 0; i < variables.Count; i++)
+            {
+                var v = variables[i];
+                if (!seen.Contains(v))
+                    ordered.Add(v);
+            }
+            if (ordered.Count == variables.Count)
+                variables = ordered;
         }
 
     }

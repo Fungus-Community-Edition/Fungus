@@ -8,11 +8,10 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class VRowManagerInitArgs
     {
-        public VisualElement HoldsManager { get; set; }
-        public VisualElement Root { get; set; }
-        public VisualElement ListContainer { get; set; }
-        public UITKLabel CountLabel { get; set; }
-        public Flowchart Flowchart { get; set; }
-        public Button AddButton { get; set; }
+        public VisualElement HoldsManager;
+        public VisualElement Root;
+        public Button AddButton;
+        public Flowchart Flowchart;
+        public IVariableListView VariableListView;          // NEW (optional)
     }
 }

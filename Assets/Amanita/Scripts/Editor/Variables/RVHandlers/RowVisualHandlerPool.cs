@@ -24,7 +24,7 @@ namespace Amanita.VScripting.EditorUtils
         // are the types of the visual handlers
         protected readonly IDictionary<Type, Type> _visualHandlerLookup;
 
-        public IRowVisualHandler GetHandlerFor(Type contentType, VisualElement holder, IVariable variable)
+        public IRowVisualHandler GetHandlerFor(Type contentType, IVariable variable)
         {
             IRowVisualHandler result;
             // Figure out which handler *class* we need
@@ -40,7 +40,7 @@ namespace Amanita.VScripting.EditorUtils
                 result = (IRowVisualHandler)Activator.CreateInstance(handlerType);
             }
 
-            result.Init(holder, variable);
+            result.Init(variable);
             return result;
         }
 
@@ -133,4 +133,5 @@ namespace Amanita.VScripting.EditorUtils
                 Debug.Log($"{kvp.Key.Name}: {kvp.Value.Count} in pool");
         }
     }
+
 }

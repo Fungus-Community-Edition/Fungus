@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Amanita/Scripts/Editor/Variables/VRowManagement.meta
+guid: 2b53dfd1504bdc0438e9bf248a578284
+========
 guid: c091c01234acf6f4683836c5db33e2d2
+>>>>>>>> flowchartVarOverhaul:Assets/Amanita/Systems/VScripting/Blocks.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
