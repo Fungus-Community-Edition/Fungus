@@ -1,66 +1,71 @@
-
 using UnityEngine;
-
 
 namespace Amanita.VScripting
 {
 	/// <summary>
-	/// Get or Set a property of a Sprite component
+	/// Get or Set a property of a Collection component
 	/// </summary>
 	[CommandInfo("Property",
-				 "Sprite",
-				 "Get or Set a property of a Sprite component")]
+				 "Collection",
+				 "Get or Set a property of a Collection component")]
 	[AddComponentMenu("")]
-	public class SpriteProperty : BaseVariableProperty
+	public class CollectionProperty : BaseVariableProperty
 	{
 		//generated property
 		public enum Property 
 		{ 
-			Border, 
-			PixelsPerUnit, 
-			Pivot, 
-			Packed, 
-			TextureRectOffset, 
+			Capacity, 
+			Count, 
+			IsFixedSize, 
+			IsReadOnly, 
+			IsSynchronized, 
+			Name, 
 		}
 
-		
-		[SerializeField]
-		protected Property property;
-		
-		[SerializeField]
-		[VariableProperty(typeof(SpriteVariable))]
-		protected SpriteVariable spriteVar;
 
 		[SerializeField]
-		[VariableProperty(typeof(FloatVariable),
-						  typeof(Vector2Variable),
-						  typeof(BooleanVariable))]
+		protected Property property;
+
+		[SerializeField]
+		protected CollectionData collectionData;
+
+		[SerializeField]
+		[VariableProperty(typeof(IntegerVariable),
+						  typeof(BooleanVariable),
+						  typeof(StringVariable))]
 		protected Variable inOutVar;
 
 		public override void OnEnter()
 		{
-			var iof = inOutVar as FloatVariable;
-			var iov2 = inOutVar as Vector2Variable;
+			var ioi = inOutVar as IntegerVariable;
 			var iob = inOutVar as BooleanVariable;
+			var ios = inOutVar as StringVariable;
 
-			var target = spriteVar.Value;
+
+			var target = collectionData.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
 					switch (property)
 					{
-						case Property.PixelsPerUnit:
-							iof.Value = target.pixelsPerUnit;
+						case Property.Capacity:
+							ioi.Value = target.Capacity;
 							break;
-						case Property.Pivot:
-							iov2.Value = target.pivot;
+						case Property.Count:
+							ioi.Value = target.Count;
 							break;
-						case Property.Packed:
-							iob.Value = target.packed;
+						case Property.IsFixedSize:
+							iob.Value = target.IsFixedSize;
 							break;
-						case Property.TextureRectOffset:
-							iov2.Value = target.textureRectOffset;
+						case Property.IsReadOnly:
+							iob.Value = target.IsReadOnly;
+							break;
+						case Property.IsSynchronized:
+							iob.Value = target.IsSynchronized;
+							break;
+						case Property.Name:
+							ios.Value = target.Name;
 							break;
 						default:
 							Debug.Log("Unsupported get or set attempted");
@@ -68,15 +73,20 @@ namespace Amanita.VScripting
 					}
 
 					break;
+
 				case GetSet.Set:
 					switch (property)
 					{
+						case Property.Capacity:
+							target.Capacity = ioi.Value;
+							break;
 						default:
 							Debug.Log("Unsupported get or set attempted");
 							break;
 					}
 
 					break;
+
 				default:
 					break;
 			}
@@ -86,9 +96,9 @@ namespace Amanita.VScripting
 
 		public override string GetSummary()
 		{
-			if (spriteVar == null)
+			if (collectionData.Value == null)
 			{
-				return "Error: no spriteVar set";
+				return "Error: no collection set";
 			}
 			if (inOutVar == null)
 			{
@@ -105,11 +115,10 @@ namespace Amanita.VScripting
 
 		public override bool HasReference(Variable variable)
 		{
-			if (spriteVar == variable || inOutVar == variable)
+			if (collectionData.collectionRef == variable || inOutVar == variable)
 				return true;
 
 			return false;
 		}
-
 	}
 }

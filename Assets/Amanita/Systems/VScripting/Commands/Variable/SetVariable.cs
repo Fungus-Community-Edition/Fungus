@@ -80,58 +80,9 @@ namespace Amanita.VScripting.Commands
 
         #region backwards compat
 
-
         [Tooltip("Variable to use in expression")]
         [VariableProperty]
         [SerializeField] protected Variable variable;
-
-        [Tooltip("Boolean value to compare against")]
-        [SerializeField] protected BooleanData booleanData;
-
-        [Tooltip("Integer value to compare against")]
-        [SerializeField] protected IntegerData integerData;
-
-        [Tooltip("Float value to compare against")]
-        [SerializeField] protected FloatData floatData;
-
-        [Tooltip("String value to compare against")]
-        [SerializeField] protected StringDataMulti stringData;
-
-        [Tooltip("Animator value to compare against")]
-        [SerializeField] protected AnimatorData animatorData;
-
-        [Tooltip("AudioSource value to compare against")]
-        [SerializeField] protected AudioSourceData audioSourceData;
-
-        [Tooltip("Color value to compare against")]
-        [SerializeField] protected ColorData colorData;
-
-        [Tooltip("GameObject value to compare against")]
-        [SerializeField] protected GameObjectData gameObjectData;
-
-        [Tooltip("Material value to compare against")]
-        [SerializeField] protected MaterialData materialData;
-
-        [Tooltip("Object value to compare against")]
-        [SerializeField] protected ObjectData objectData;
-
-        [Tooltip("Rigidbody2D value to compare against")]
-        [SerializeField] protected Rigidbody2DData rigidbody2DData;
-
-        [Tooltip("Sprite value to compare against")]
-        [SerializeField] protected SpriteData spriteData;
-
-        [Tooltip("Texture value to compare against")]
-        [SerializeField] protected TextureData textureData;
-
-        [Tooltip("Transform value to compare against")]
-        [SerializeField] protected TransformData transformData;
-
-        [Tooltip("Vector2 value to compare against")]
-        [SerializeField] protected Vector2Data vector2Data;
-
-        [Tooltip("Vector3 value to compare against")]
-        [SerializeField] protected Vector3Data vector3Data;
 
         public void OnBeforeSerialize()
         {
@@ -151,5 +102,6 @@ namespace Amanita.VScripting.Commands
             variable = null;
         }
         #endregion
+    
     }
 }

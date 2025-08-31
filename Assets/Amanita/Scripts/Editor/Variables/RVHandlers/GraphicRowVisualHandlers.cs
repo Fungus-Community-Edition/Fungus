@@ -29,4 +29,11 @@ namespace Amanita.VScripting.EditorUtils
     {
 
     }
+
+    [RowVisualHandler("Graphics", typeof(Animator), "Animator",
+        "_EditorResources/UIToolkitTemplates/VarRows/AnimatorVariableRow")]
+    public class AnimatorVariableRow : RowVisualHandler<Animator>
+    {
+
+    }
 }
