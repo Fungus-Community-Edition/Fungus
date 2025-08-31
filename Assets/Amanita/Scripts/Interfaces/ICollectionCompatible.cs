@@ -1,6 +1,3 @@
-
-
-
 namespace Amanita.VScripting
 {
     /// <summary>

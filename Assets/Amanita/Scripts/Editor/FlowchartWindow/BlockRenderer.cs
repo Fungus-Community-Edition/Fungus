@@ -2,22 +2,29 @@
 using UnityEditor;
 using UnityEngine;
 using Amanita.EditorUtils;
+using System;
 
 namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles drawing all the Blocks in the currently-selected Flowchart
     /// </summary>
-    public class BlockRenderer 
+    public class BlockRenderer : IDisposable
     {
+        public virtual void Dispose()
+        {
+            _drawer = null;
+            _graphicsGenerator = null;
+        }
+
         public BlockRenderer(IBlockDrawer drawer, IBlockGraphicsGenerator graphicsGenerator)
         {
             _drawer = drawer;
             _graphicsGenerator = graphicsGenerator;
         }
 
-        protected readonly IBlockDrawer _drawer;
-        protected readonly IBlockGraphicsGenerator _graphicsGenerator;
+        protected IBlockDrawer _drawer;
+        protected IBlockGraphicsGenerator _graphicsGenerator;
 
         public virtual void Render(DrawBlockContext drawCtx)
         {
@@ -86,6 +93,7 @@ namespace Amanita.VScripting.EditorUtils
             // highlight
             if (block.IsSelected && !block.IsControlSelected)
             {
+                //Debug.Log($"Block {block.BlockName} is selected");
                 GUI.backgroundColor = Color.white;
                 style.normal.background = graphics.onTexture;
                 GUI.Box(rect, "", style);
@@ -187,8 +195,19 @@ namespace Amanita.VScripting.EditorUtils
 
     }
 
-    public class DrawBlockContext
+    public class DrawBlockContext : IDisposable
     {
+        public virtual void Dispose()
+        {
+            BlockMinWidth = 60;
+            BlockMinWidth = 240;
+            DefaultBlockHeight = 40;
+            NodeStyle = DescriptionStyle = HandlerStyle = BlockSearchPopupNormalStyle =
+                BlockSearchPopupSelectedStyle = null;
+            Graphics = default;
+            ViewRect = CurrentBlockWindowRect = default;
+        }
+
         public virtual FlowchartContext FlowchartCtx { get; set; }
         public virtual float BlockMinWidth { get; set; } = 60;
         public virtual float BlockMaxWidth { get; set; } = 240;

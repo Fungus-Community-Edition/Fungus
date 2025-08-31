@@ -1,5 +1,3 @@
-
-
 using Amanita.Utils;
 using System;
 using System.Globalization;
@@ -210,7 +208,7 @@ namespace Amanita.SaveSys
 
         public static int IDAndVersionLengthCap { get; } = 300;
 
-        public static new SaveMetaData DeserializeFrom(SaveDataUnit item)
+        public static SaveMetaData DeserializeFrom(SaveDataUnit item)
         {
             SaveMetaData result = new SaveMetaData();
             JsonUtility.FromJsonOverwrite(item.Content, result);

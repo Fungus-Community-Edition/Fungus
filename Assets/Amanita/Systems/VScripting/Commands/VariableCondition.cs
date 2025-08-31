@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// class for a single condition. A list of this is used for multiple conditions.
+    /// Class for a single condition. A list of this is used for multiple conditions.
     /// </summary>
     [System.Serializable]
     public class ConditionExpression
@@ -48,10 +48,7 @@ namespace Amanita.VScripting
         {
             base.OnValidate();
 
-            if (conditions == null)
-            {
-                conditions = new List<ConditionExpression>();
-            }
+            conditions ??= new List<ConditionExpression>();
 
             if (conditions.Count == 0)
             {
@@ -95,7 +92,7 @@ namespace Amanita.VScripting
 
             foreach (ConditionExpression condition in conditions)
             {
-                if (condition.AnyVar == null || condition.AnyVar.variable == null)
+                if (condition.AnyVar == null || condition.AnyVar.Variable == null)
                 {
                     return false;
                 }
@@ -123,7 +120,7 @@ namespace Amanita.VScripting
             StringBuilder summary = new StringBuilder("");
             for (int i = 0; i < conditions.Count; i++)
             {
-                summary.Append(conditions[i].AnyVar.variable.Key + " " +
+                summary.Append(conditions[i].AnyVar.Variable.Key + " " +
                                VariableUtil.GetCompareOperatorDescription(conditions[i].CompareOperator) + " " +
                                conditions[i].AnyVar.GetDataDescription());
 
@@ -168,7 +165,7 @@ namespace Amanita.VScripting
         [SerializeField] protected AnyVariableAndDataPair anyVar;
 
         [Tooltip("Variable to use in expression")]
-        [VariableProperty(AllVariableTypes.VariableAny.Any)]
+        [VariableProperty]
         [SerializeField] protected Variable variable;
 
         [Tooltip("Boolean value to compare against")]
@@ -201,9 +198,6 @@ namespace Amanita.VScripting
         [Tooltip("Object value to compare against")]
         [SerializeField] protected ObjectData objectData;
 
-        [Tooltip("Rigidbody2D value to compare against")]
-        [SerializeField] protected Rigidbody2DData rigidbody2DData;
-
         [Tooltip("Sprite value to compare against")]
         [SerializeField] protected SpriteData spriteData;
 
@@ -227,102 +221,18 @@ namespace Amanita.VScripting
         {
             if (variable != null)
             {
-                anyVar.variable = variable;
-
-                if (variable.GetType() == typeof(BooleanVariable) && !booleanData.Equals(new BooleanData()))
-                {
-                    anyVar.data.booleanData = booleanData;
-                    booleanData = new BooleanData();
-                }
-                else if (variable.GetType() == typeof(IntegerVariable) && !integerData.Equals(new IntegerData()))
-                {
-                    anyVar.data.integerData = integerData;
-                    integerData = new IntegerData();
-                }
-                else if (variable.GetType() == typeof(FloatVariable) && !floatData.Equals(new FloatData()))
-                {
-                    anyVar.data.floatData = floatData;
-                    floatData = new FloatData();
-                }
-                else if (variable.GetType() == typeof(StringVariable) && !stringData.Equals(new StringDataMulti()))
-                {
-                    anyVar.data.stringData.stringRef = stringData.stringRef;
-                    anyVar.data.stringData.stringVal = stringData.stringVal;
-                    stringData = new StringDataMulti();
-                }
-                else if (variable.GetType() == typeof(AnimatorVariable) && !animatorData.Equals(new AnimatorData()))
-                {
-                    anyVar.data.animatorData = animatorData;
-                    animatorData = new AnimatorData();
-                }
-                else if (variable.GetType() == typeof(AudioSourceVariable) && !audioSourceData.Equals(new AudioSourceData()))
-                {
-                    anyVar.data.audioSourceData = audioSourceData;
-                    audioSourceData = new AudioSourceData();
-                }
-                else if (variable.GetType() == typeof(ColorVariable) && !colorData.Equals(new ColorData()))
-                {
-                    anyVar.data.colorData = colorData;
-                    colorData = new ColorData();
-                }
-                else if (variable.GetType() == typeof(GameObjectVariable) && !gameObjectData.Equals(new GameObjectData()))
-                {
-                    anyVar.data.gameObjectData = gameObjectData;
-                    gameObjectData = new GameObjectData();
-                }
-                else if (variable.GetType() == typeof(MaterialVariable) && !materialData.Equals(new MaterialData()))
-                {
-                    anyVar.data.materialData = materialData;
-                    materialData = new MaterialData();
-                }
-                else if (variable.GetType() == typeof(ObjectVariable) && !objectData.Equals(new ObjectData()))
-                {
-                    anyVar.data.objectData = objectData;
-                    objectData = new ObjectData();
-                }
-                else if (variable.GetType() == typeof(Rigidbody2DVariable) && !rigidbody2DData.Equals(new Rigidbody2DData()))
-                {
-                    anyVar.data.rigidbody2DData = rigidbody2DData;
-                    rigidbody2DData = new Rigidbody2DData();
-                }
-                else if (variable.GetType() == typeof(SpriteVariable) && !spriteData.Equals(new SpriteData()))
-                {
-                    anyVar.data.spriteData = spriteData;
-                    spriteData = new SpriteData();
-                }
-                else if (variable.GetType() == typeof(TextureVariable) && !textureData.Equals(new TextureData()))
-                {
-                    anyVar.data.textureData = textureData;
-                    textureData = new TextureData();
-                }
-                else if (variable.GetType() == typeof(TransformVariable) && !transformData.Equals(new TransformData()))
-                {
-                    anyVar.data.transformData = transformData;
-                    transformData = new TransformData();
-                }
-                else if (variable.GetType() == typeof(Vector2Variable) && !vector2Data.Equals(new Vector2Data()))
-                {
-                    anyVar.data.vector2Data = vector2Data;
-                    vector2Data = new Vector2Data();
-                }
-                else if (variable.GetType() == typeof(Vector3Variable) && !vector3Data.Equals(new Vector3Data()))
-                {
-                    anyVar.data.vector3Data = vector3Data;
-                    vector3Data = new Vector3Data();
-                }
-
-                //moved to new anyvar storage, clear legacy.
-                variable = null;
+                anyVar.Variable = variable;
+                // ^This should immediately update the var data
             }
 
-            // just checking for anyVar != null fails here. is any var being reintilaized somewhere?
+            // just checking for anyVar != null fails here. Is any var being reintilaized somewhere?
 
-            if (anyVar != null && anyVar.variable != null)
+            if (anyVar != null && anyVar.Variable != null)
             {
-                ConditionExpression c = new ConditionExpression(compareOperator, anyVar);
-                if (!conditions.Contains(c))
+                ConditionExpression cond = new ConditionExpression(compareOperator, anyVar);
+                if (!conditions.Contains(cond))
                 {
-                    conditions.Add(c);
+                    conditions.Add(cond);
                 }
 
                 anyVar = null;

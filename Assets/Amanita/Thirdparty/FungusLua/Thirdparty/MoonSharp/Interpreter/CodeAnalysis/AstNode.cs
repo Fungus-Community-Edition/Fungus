@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.CodeAnalysis
+﻿namespace MoonSharp.Interpreter.CodeAnalysis
 {
 	class AstNode
 	{

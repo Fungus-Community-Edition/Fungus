@@ -1,9 +1,9 @@
 /* Individual rows */
 #VariableDisplayEditorRoot
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
     background-color: rgba(0, 0, 255, 0.05);
-    max-width: 450px;
+    max-width: 500px;
 }
 
 #varHeaderBar
@@ -36,6 +36,8 @@
     background-color: white;
     color: black;
     height: 30px;
+    font-size: 18px;
+    width: 120px;
 }
 
 #rowList 

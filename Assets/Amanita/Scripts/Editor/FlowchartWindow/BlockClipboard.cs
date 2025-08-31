@@ -11,7 +11,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         readonly List<BlockClipboardEntry> _entries = new List<BlockClipboardEntry>();
 
-        public BlockClipboard(FlowchartWindow window)
+        public BlockClipboard(IFlowchartHost window)
         {
             this.Window = window;
         }
@@ -75,7 +75,7 @@ namespace Amanita.VScripting.EditorUtils
                            select elem).Any();
             return result;
         }
-        public virtual FlowchartWindow Window { get; protected set; }
+        public virtual IFlowchartHost Window { get; protected set; }
         protected virtual Flowchart Flowchart
         {
             get
@@ -99,7 +99,6 @@ namespace Amanita.VScripting.EditorUtils
             var pasted = _entries
                 .Select(entry => entry.PasteBlock(Window, Flowchart))
                 .ToList();
-
             // 3) Compute offset so center of pasted blocks is at mouse
             Vector2 copiedCenter = Window.GetBlockCenter(pasted) + Flowchart.ScrollPos;
             Vector2 worldMouse = screenMousePos / Flowchart.Zoom;

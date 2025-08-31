@@ -11,7 +11,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowEditing : IFcWindowComponent
     {
-        public virtual void Initialize(FlowchartWindow window)
+        public virtual void Initialize(IFlowchartHost window)
         {
             _window = window;
 
@@ -52,7 +52,16 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected readonly List<Block> _scheduledForDeletion = new List<Block>();
+        public virtual void OnGUI()
+        {
+            if (_scheduledForDeletion.Count > 0)
+            {
+                DeleteScheduledBlocks();
+                _window.Repaint();
+            }
+        }
+
+        protected List<Block> _scheduledForDeletion = new List<Block>();
 
         public virtual void OnInspectorGUI()
         {
@@ -100,6 +109,7 @@ namespace Amanita.VScripting.EditorUtils
                     _window.Flowchart.DeselectBlockNoCheck(block);
 
                 // Destroy the block itself
+                FlowchartWindowSignals.PreBlockDeletion(block);
                 Undo.DestroyObjectImmediate(block);
             }
 
@@ -114,6 +124,16 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void OnInspectorUpdate()
         {
             
+        }
+
+        public virtual void Dispose()
+        {
+            _window = null;
+            _inputPipeline.Dispose();
+            _inputPipeline = null;
+            _clipboard = null; // We expect another module to dispose of the clipboard
+            _scheduledForDeletion.Clear();
+            _scheduledForDeletion = null;
         }
     }
 }

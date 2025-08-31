@@ -1,154 +1,127 @@
 using System;
-using System.Linq;
 using UnityEditor;
 using UnityEngine.UIElements;
+using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    internal class FcWindowVariablesComponent : IFcWindowComponent, IDisposable
+    public class FcWindowVariablesComponent : IFcWindowComponent, IDisposable
     {
-        public virtual void Initialize(FlowchartWindow host)
-        {
-            window = host;
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            BuildAdapter();
-            BuildUI();
-        }
-        
-        protected FlowchartWindow window;
+        public VisualTreeAsset VariableDisplayEditorUxml { get; set; }
 
-        protected virtual void OnPlayModeStateChanged(PlayModeStateChange state)
+        protected IFlowchartHost _window;
+        protected TemplateContainer _rootElement;
+        protected VariableRowManager _manager;
+        protected IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
+
+        public void Initialize(IFlowchartHost host)
         {
-            if (state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.EnteredPlayMode)
-            {
-                DisposeAdapter();
-                BuildAdapter();
-                BuildUI();
-            }
+            _window = host;
+
+            _rootElement = VariableDisplayEditorUxml.CloneTree();
+            _rootElement.style.position = Position.Absolute;
+            _rootElement.style.left = 10;
+            _rootElement.style.bottom = 10;
+
+            _window.RootVisualElement.Add(_rootElement);
+
+            BuildManager();
+
+            DeregisterCallbacks();
+            ListenForEvents();
         }
 
-        protected virtual void BuildAdapter()
+        protected VariableRowFactory _rowFactory = new VariableRowFactory();
+        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
+
+        protected void BuildManager()
         {
-            var flowchart = window.Flowchart;
-            bool noSelectedFlowchartChange = uitkAdapter != null && uitkAdapter.TargetFlowchart == flowchart;
-            if (flowchart == null || noSelectedFlowchartChange)
-            {
-                DisposeAdapter();
+            var flowchart = _window?.Flowchart;
+            if (flowchart == null)
                 return;
-            }
 
-            DisposeAdapter();
+            _manager?.Dispose();
+            _manager = new VariableRowManager();
 
-            // Wrap the Flowchart in a SerializedObject to drive PropertyFields
-            flowchartSO = new SerializedObject(flowchart);
-            variablesProp = flowchartSO.FindProperty("variables");
-            uitkAdapter = new UitkVariableListAdaptor(variablesProp, flowchart);
-        }
+            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
+            var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
+            var rowPool = new VariableRowPool();
+            var holder = _rootElement;
 
-        protected SerializedObject flowchartSO;
-        protected SerializedProperty variablesProp;
-        protected UitkVariableListAdaptor uitkAdapter;
+            _factoryInitArgs.Holder = holder;
+            _factoryInitArgs.HandlerPool = handlerPool;
+            _factoryInitArgs.RowPool = rowPool;
+            _rowFactory.Init(_factoryInitArgs);
 
-        // Construct the UIElements container and insert into the window
-        protected virtual void BuildUI()
-        {
-            container?.RemoveFromHierarchy();
+            var list = _rootElement.Q<ListView>("rowList");
+            var count = _rootElement.Q<UitkLabel>("varCountLabel");
+            var addBtn = _rootElement.Q<Button>("addVarButton");
 
-            container = new VisualElement { name = "variables-container" };
-
-            SetContainerStyling();
-            void SetContainerStyling()
+            var listViewArgs = new VariableListViewInitArgs()
             {
-                // We want it at the bottom left corner of the FcC Window, wide
-                // enough to give all the fields a decent amount of space. 
-                // Unlike the orig var adapter, we want the height to be fixed
-                // so the devs can scroll through the vars without too much
-                // of the window space monopolized. All regardless of how many
-                // variables an FC has.
-                container.style.position = Position.Absolute;
-                container.style.left = 10;
-                container.style.bottom = 10;
+                List = list,
+                CountLabel = count,
+                RowFactory = _rowFactory,
+            };
+            var view = new VariableListView(listViewArgs);
 
-                // Dimensions
-                container.style.width = Width;
-                container.style.height = Height;
-            }
-
-            if (uitkAdapter != null)
+            _manager.Init(new VRowManagerInitArgs
             {
-                VisualElement variablesUI = uitkAdapter.CreateVariablesUI();
-                container.Add(variablesUI);
-            }
-
-            window.rootVisualElement.Add(container);
+                Root = _rootElement,
+                AddButton = addBtn,
+                Flowchart = flowchart,
+                VariableListView = view,
+            });
         }
 
-        protected VisualElement container;
-
-        public virtual int Width { get; set; } = 450;
-        public virtual int Height { get; set; } = 200;
-
-        // To ensure the adapter stays in sync.
-        public virtual void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
-        {
-            bool selectionChanged = window.HandleFlowchartSelectionChange();
-            if (selectionChanged)
-            {
-                BuildAdapter();
-                BuildUI();
-            }
-        }
-
-        private int lastVarHash = 0;
-
-        public virtual void OnInspectorUpdate()
-        {
-            flowchartSO?.Update();
-        }
-
-        public virtual void OnEditorUpdate()
-        {
-            if (uitkAdapter == null) return;
-            int currentHash = uitkAdapter.VarsList.Aggregate(0, (acc, v) => acc ^ (v?.GetHashCode() ?? 0));
-            if (currentHash != lastVarHash)
-            {
-                uitkAdapter.RefreshListView();
-                lastVarHash = currentHash;
-            }
-        }
-
-        #region No-ops
-
-        public virtual void OnToolbarGUI()
-        {
-        }
-
-        public virtual void OnInspectorGUI()
-        {
-        }
-        #endregion
-
-        #region IDisposable
-
-        protected virtual void DisposeAdapter()
-        {
-            if (uitkAdapter != null)
-            {
-                uitkAdapter.Dispose();
-                uitkAdapter = null;
-            }
-            flowchartSO = null;
-            variablesProp = null;
-        }
-
-        public virtual void Dispose()
+        protected virtual void DeregisterCallbacks()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            DisposeAdapter();
-            container?.RemoveFromHierarchy();
-            container = null;
+            FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
         }
 
-        #endregion
+        protected void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredEditMode ||
+                state == PlayModeStateChange.EnteredPlayMode)
+            {
+                BuildManager();
+            }
+        }
+
+        protected virtual void OnFlowchartChanged(Flowchart prevFlowchar, Flowchart newFlowchart)
+        {
+            BuildManager();
+        }
+
+        protected virtual void ListenForEvents()
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
+        }
+
+        public void OnGUI(DrawBlockContext ctx, FlowchartContext fcCtx)
+        {
+            // Variable list is now entirely UIToolkit/virtualized; no GUI draw needed.
+        }
+
+        public void OnInspectorUpdate() { }
+        public void OnEditorUpdate() { }
+        public void OnToolbarGUI() { }
+        public void OnInspectorGUI() { }
+
+        public void Dispose()
+        {
+            DeregisterCallbacks();
+
+            _window = null;
+            _resolver = null;
+
+            _manager?.Dispose();
+            _manager = null;
+
+            _rootElement?.RemoveFromHierarchy();
+            _rootElement = null;
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace Amanita.VScripting
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IVariableSource
     {
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
@@ -101,6 +101,7 @@ namespace Amanita.VScripting
             set { includeInSaves = value; }
         }
 
+        #region SaveSys Involvement
         public virtual bool SaveBlocks
         {
             get { return saveBlocks; }
@@ -112,12 +113,14 @@ namespace Amanita.VScripting
             get { return saveVariables; }
             set { saveVariables = value; }
         }
+        
 
         public virtual int LoadPriority
         {
             get { return loadPriority; }
             set { loadPriority = value; }
         }
+        #endregion
 
         protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
 
@@ -132,14 +135,10 @@ namespace Amanita.VScripting
             set => UIModel.SelectedCommandsStale = value;
         }
 #endif
-
-        #if UNITY_5_4_OR_NEWER
-        #else
         protected virtual void OnLevelWasLoaded(int level) 
         {
             LevelWasLoaded();
         }
-        #endif
 
         protected virtual void LevelWasLoaded()
         {
@@ -197,9 +196,9 @@ namespace Amanita.VScripting
 
         protected virtual IEnumerator HandleGameStartedBlock()
         {
-            GameStarted gsEventHandler = GetComponentInChildren<GameStarted>();
+            IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
 
-            if (gsEventHandler == null)
+            if (gsEventHandler.Count == 0)
             {
                 yield break;
             }
@@ -209,25 +208,77 @@ namespace Amanita.VScripting
                 yield return null;
             }
 
-            gsEventHandler.Trigger();
+            foreach (var elem in gsEventHandler)
+            {
+                elem.Trigger();
+            }
             
         }
 
-        public virtual void RemoveVariable(int index)
+        /// <summary>
+        /// Specifically for legacy variables.
+        /// </summary>
+        /// <param name="index"></param>
+        public virtual void RemoveVariableAtIndex(int index)
         {
             if (index >= 0 && index < variables.Count)
             {
+                IVariable toRemove = variables[index];
                 variables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveMuscariableAtIndex(int index)
+        {
+            if (index >= 0 && index < muscariables.Count)
+            {
+                IVariable toRemove = muscariables[index];
+                muscariables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveVariable(IVariable toRemove)
+        {
+            int index;
+            if (variables.Contains(toRemove))
+            {
+                index = variables.IndexOf(toRemove as Variable);
+                RemoveVariableAtIndex(index);
+            }
+
+            if (muscariables.Contains(toRemove))
+            {
+                index = muscariables.IndexOf(toRemove as Muscariable);
+                RemoveMuscariableAtIndex(index);
+            }
+        }
+
+        /// <summary>
+        /// Removes all variables from this Flowchart.
+        /// </summary>
+        public virtual void ClearVariables()
+        {
+            // We'll remove them one by one so the right events fire
+            while (variables.Count > 0)
+            {
+                RemoveVariableAtIndex(0);
             }
         }
 
         protected virtual void GetAndInitVars()
         {
+            // Muscariables get automatically serialized as part of the list, and thus 
+            // we don't need anything like GetComponentsInChildren for them
             variables = GetComponentsInChildren<Variable>().ToList();
-            for (int i = 0; i < variables.Count; i++)
+            IList<IVariable> allVars = variables.Cast<IVariable>()
+                .Concat(muscariables.Cast<IVariable>())
+                .ToList();
+            for (int i = 0; i < allVars.Count; i++)
             {
-                var currentVar = variables[i];
-                currentVar.Init(currentVar.GetValue());
+                var currentVar = allVars[i];
+                currentVar.Init();
             }
         }
 
@@ -536,10 +587,17 @@ namespace Amanita.VScripting
             get { return uiModel.BlockCount; }
         }
 
-        /// <summary>
-        /// The list of variables that can be accessed by the Flowchart.
-        /// </summary>
-        public virtual IList<Variable> Variables { get { return variables; } }
+        public virtual IReadOnlyList<IVariable> Variables
+        {
+            get
+            {
+                IReadOnlyList<IVariable> copyOfList = variables.Cast<IVariable>()
+                    .Concat(muscariables.Cast<IVariable>())
+                    .ToList();
+
+                return copyOfList;
+            }
+        }
 
         public virtual int VariableCount { get { return variables.Count; } }
 
@@ -639,12 +697,14 @@ namespace Amanita.VScripting
         public virtual Block CreateBlock(Vector2 position)
         {
             Block created = CreateBlockComponent(gameObject);
-            created._NodeRect = new Rect(position.x, position.y, 0, 0);
+            created._NodeRect = new Rect(position, defaultBlockSize);
             created.BlockName = GetUniqueBlockKey(created.BlockName, created);
             created.ItemId = NextItemId();
-
+            BlockSignals.BlockCreated(created);
             return created;
         }
+
+        protected static Vector2 defaultBlockSize = new Vector2(300, 100);
 
         public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
         {
@@ -835,9 +895,8 @@ namespace Amanita.VScripting
 
             List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
 
-            vars.AddRange(vars);
+            vars.AddRange(variables);
             vars.AddRange(muscariables);
-
             string key = baseKey;
             while (true)
             {
@@ -1101,9 +1160,9 @@ namespace Amanita.VScripting
         /// <summary>
         /// Gets a list of all variables with public scope in this Flowchart.
         /// </summary>
-        public virtual List<Variable> GetPublicVariables()
+        public virtual IList<IVariable> GetPublicVariables()
         {
-            var publicVariables = new List<Variable>();
+            IList<IVariable> publicVariables = new List<IVariable>();
             for (int i = 0; i < variables.Count; i++)
             {
                 var v = variables[i];
@@ -1114,188 +1173,6 @@ namespace Amanita.VScripting
             }
 
             return publicVariables;
-        }
-
-        /// <summary>
-        /// Gets the value of a boolean variable.
-        /// Returns false if the variable key does not exist.
-        /// </summary>
-        public virtual bool GetBooleanVariable(string key)
-        {
-            var variable = GetVariable<BooleanVariable>(key);
-            if(variable != null)
-            {
-                return GetVariable<BooleanVariable>(key).Value;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a boolean variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetBooleanVariable(string key, bool value)
-        {
-            var variable = GetVariable<BooleanVariable>(key);
-            if(variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of an integer variable.
-        /// Returns 0 if the variable key does not exist.
-        /// </summary>
-        public virtual int GetIntegerVariable(string key)
-        {
-            var variable = GetVariable<IntegerVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<IntegerVariable>(key).Value;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of an integer variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetIntegerVariable(string key, int value)
-        {
-            var variable = GetVariable<IntegerVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a float variable.
-        /// Returns 0 if the variable key does not exist.
-        /// </summary>
-        public virtual float GetFloatVariable(string key)
-        {
-            var variable = GetVariable<FloatVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<FloatVariable>(key).Value;
-            }
-            else
-            {
-                return 0f;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a float variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetFloatVariable(string key, float value)
-        {
-            var variable = GetVariable<FloatVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a string variable.
-        /// Returns the empty string if the variable key does not exist.
-        /// </summary>
-        public virtual string GetStringVariable(string key)
-        {
-            var variable = GetVariable<StringVariable>(key);
-            if (variable != null)
-            {
-                return GetVariable<StringVariable>(key).Value;
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a string variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetStringVariable(string key, string value)
-        {
-            var variable = GetVariable<StringVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a GameObject variable.
-        /// Returns null if the variable key does not exist.
-        /// </summary>
-        public virtual GameObject GetGameObjectVariable(string key)
-        {
-            var variable = GetVariable<GameObjectVariable>(key);
-
-            if (variable != null)
-            {
-                return GetVariable<GameObjectVariable>(key).Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a GameObject variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetGameObjectVariable(string key, GameObject value)
-        {
-            var variable = GetVariable<GameObjectVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the value of a Transform variable.
-        /// Returns null if the variable key does not exist.
-        /// </summary>
-        public virtual Transform GetTransformVariable(string key)
-        {
-            var variable = GetVariable<TransformVariable>(key);
-
-            if (variable != null)
-            {
-                return GetVariable<TransformVariable>(key).Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a Transform variable.
-        /// The variable must already be added to the list of variables for this Flowchart.
-        /// </summary>
-        public virtual void SetTransformVariable(string key, Transform value)
-        {
-            var variable = GetVariable<TransformVariable>(key);
-            if (variable != null)
-            {
-                variable.Value = value;
-            }
         }
 
         /// <summary>
@@ -1386,7 +1263,9 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void ClearSelectedBlocks()
         {
+            IList<Block> blocksToSignal = SelectedBlocks;
             UIModel.ClearSelectedBlocks();
+            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
         }
 
         public virtual void AddRangeToSelection(IList<Block> toSelect)
@@ -1577,17 +1456,20 @@ namespace Amanita.VScripting
 
         public virtual void DetermineSubstituteVariables(string str, List<Variable> vars)
         {
-            Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
-
+            Regex regex = new Regex(Flowchart.SubstituteVariableRegexString);
+            if (str == null)
+            {
+                Debug.LogError("Str in DetermineSubstituteVariables is null");
+            }
             // Match the regular expression pattern against a text string.
-            var results = r.Matches(str);
+            var results = regex.Matches(str);
             for (int i = 0; i < results.Count; i++)
             {
                 var match = results[i];
-                var v = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
-                if (v != null)
+                var varFound = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                if (varFound != null)
                 {
-                    vars.Add(v);
+                    vars.Add(varFound);
                 }
             }
         }
@@ -1631,7 +1513,7 @@ namespace Amanita.VScripting
         /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
         /// </summary>
         /// <param name="toRemove"></param>
-        public virtual void RemoveMuscariable(Muscariable toRemove)
+        public virtual void RemoveVariable(Muscariable toRemove)
         {
             if (muscariables.Contains(toRemove))
             {
@@ -1671,8 +1553,8 @@ namespace Amanita.VScripting
                          select elem).ToList();
         }
 
-        public event System.Action<IVariable> VariableAdded = delegate { };
-        public event System.Action<IVariable> VariableRemoved = delegate { };
+        public event Action<IVariable> VariableAdded = delegate { };
+        public event Action<IVariable> VariableRemoved = delegate { };
 
         public virtual void InsertVariable(int index, Variable whatToInsert)
         {
@@ -1752,10 +1634,27 @@ namespace Amanita.VScripting
 
             CheckItemIds();
 
+            EnsureBlocksHaveAValidSize();
+            void EnsureBlocksHaveAValidSize()
+            {
+                IList<Block> blocks = GetComponents<Block>();
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    var currentBlock = blocks[i];
+                    Rect nodeRect = currentBlock._NodeRect;
+                    if (nodeRect.size.Equals(Vector2.zero))
+                    {
+                        string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
+                        Debug.LogWarning(logMessage);
+                        Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
+                        currentBlock._NodeRect = fixedRect;
+                    }
+                }
+            }
+
         }
 #endif
         
-
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
         {
@@ -1794,9 +1693,24 @@ namespace Amanita.VScripting
             return newVar;
         }
 
-        public virtual void AddVariable(Variable toAdd)
+        public virtual void AddVariable(IVariable toAdd)
         {
-            variables.Add(toAdd);
+            bool alreadyRegistered = variables.Contains(toAdd) || muscariables.Contains(toAdd);
+            if (alreadyRegistered)
+            {
+                return;
+            }
+
+            if (toAdd is Variable legacyVar)
+            {
+                variables.Add(legacyVar);
+            }
+            else if (toAdd is Muscariable muscaVar)
+            {
+                muscariables.Add(muscaVar);
+            }
+
+            toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
             VariableAdded(toAdd);
         }
 
@@ -1804,6 +1718,37 @@ namespace Amanita.VScripting
         {
             cachedFlowcharts.Clear();
             eventSystemPresent = false;
+        }
+
+        /// <summary>
+        /// Reorders the legacy Variable list to match the sequence supplied (only
+        /// for those Variables already registered). Muscariables are not affected.
+        /// Variables not present in newOrder retain their relative order at the end.
+        /// Does not raise add/remove events (pure reordering).
+        /// </summary>
+        public virtual void ReorderVariables(IReadOnlyList<IVariable> newOrder)
+        {
+            if (newOrder == null || newOrder.Count == 0) return;
+
+            // Extract legacy variables that appear in newOrder, in that order
+            var ordered = new List<Variable>(variables.Count);
+            var seen = new HashSet<Variable>();
+
+            for (int i = 0; i < newOrder.Count; i++)
+            {
+                if (newOrder[i] is Variable legacy && variables.Contains(legacy) && seen.Add(legacy))
+                    ordered.Add(legacy);
+            }
+
+            // Append the rest (not explicitly positioned)
+            for (int i = 0; i < variables.Count; i++)
+            {
+                var v = variables[i];
+                if (!seen.Contains(v))
+                    ordered.Add(v);
+            }
+            if (ordered.Count == variables.Count)
+                variables = ordered;
         }
 
     }

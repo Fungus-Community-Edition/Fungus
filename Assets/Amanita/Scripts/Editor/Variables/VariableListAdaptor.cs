@@ -111,7 +111,7 @@ namespace Amanita.VScripting.EditorUtils
             Undo.RecordObject(flowchart, "Add Variable");
             Variable newVariable = flowchart.gameObject.AddComponent(variableType) as Variable;
             newVariable.Key = flowchart.GetUniqueVariableKey("");
-            flowchart.Variables.Add(newVariable);
+            flowchart.AddVariable(newVariable);
 
             // Because this is an async call, we need to force prefab instances to record changes
             PrefabUtility.RecordPrefabInstancePropertyModifications(flowchart);
@@ -240,12 +240,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 var existingGUICol = GUI.color;
                 GUI.color = Color.yellow;
-                GUI.Label(itemRects[0], AmanitaConstants.UIPrefixForDeprecated + variableInfo.VariableType);
+                GUI.Label(itemRects[0], AmanitaConstants.UIPrefixForDeprecated + variableInfo.OptionDisplayName);
                 GUI.color = existingGUICol;
             }
             else
             {
-                GUI.Label(itemRects[0], variableInfo.VariableType);
+                GUI.Label(itemRects[0], variableInfo.OptionDisplayName);
             }
 
 

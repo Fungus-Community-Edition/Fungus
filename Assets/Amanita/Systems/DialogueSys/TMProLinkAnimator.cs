@@ -1,7 +1,4 @@
-﻿
-
-
-using UnityEngine;
+﻿using UnityEngine;
 
 #if UNITY_2018_1_OR_NEWER
 

@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using Amanita.EditorUtils;
+using System;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class GridRenderer
+    public class GridRenderer : IDisposable
     {
         public GridRenderer(ILineDrawer drawer)
         {
             _drawer = drawer;
         }
 
-        protected readonly ILineDrawer _drawer;
+        protected ILineDrawer _drawer;
 
         public void Draw(FlowchartContext ctx, DrawGridContext gridCtx)
         {
@@ -36,9 +37,21 @@ namespace Amanita.VScripting.EditorUtils
 
             _drawer.Color = prevColor;
         }
+
+        public void Dispose()
+        {
+            _drawer = null;
+        }
+        
     }
-    public class DrawGridContext
+    public class DrawGridContext : IDisposable
     {
+        public virtual void Dispose()
+        {
+            GridLineSpacingSize = 0;
+            GridLineColor = default;
+        }
+
         public virtual float GridLineSpacingSize { get; set; }
         public virtual Color GridLineColor { get; set; }
     }

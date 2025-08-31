@@ -1,9 +1,11 @@
-﻿namespace Amanita.VScripting.EditorUtils
+﻿using System;
+
+namespace Amanita.VScripting.EditorUtils
 {
-    public interface IFcWindowComponent
+    public interface IFcWindowComponent : IDisposable
     {
         // Called once when the window enables
-        void Initialize(FlowchartWindow window);
+        void Initialize(IFlowchartHost window);
 
         // Called inside OnGUI before and after zoom‐area, as needed
         void OnToolbarGUI();

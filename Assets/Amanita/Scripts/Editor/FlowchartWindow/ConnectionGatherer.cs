@@ -74,5 +74,11 @@ namespace Amanita.VScripting.EditorUtils
                 Mathf.Max(a.yMax, b.yMax));
             return bound.Overlaps(view);
         }
+
+        public virtual void Dispose()
+        {
+            connectedBlocks.Clear();
+            connectedBlocks = null;
+        }
     }
 }

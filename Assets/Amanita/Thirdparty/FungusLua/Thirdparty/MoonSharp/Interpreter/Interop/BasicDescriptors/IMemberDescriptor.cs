@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.Interop.BasicDescriptors
+﻿namespace MoonSharp.Interpreter.Interop.BasicDescriptors
 {
 	/// <summary>
 	/// Base interface to describe access to members of a given type.
