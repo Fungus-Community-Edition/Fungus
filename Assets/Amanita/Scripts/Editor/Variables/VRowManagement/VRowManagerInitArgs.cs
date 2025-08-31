@@ -1,5 +1,4 @@
 using UnityEngine.UIElements;
-using UITKLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {

@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// GameObject variable type.
     /// </summary>
-    [VariableInfo("Other", "GameObject", "GameObject")]
+    [VariableInfo("UnityGeneral", "GameObject", typeof(GameObject))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class GameObjectVariable : VariableBase<GameObject>

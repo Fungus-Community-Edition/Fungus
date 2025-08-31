@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Boolean variable type.
     /// </summary>
-    [VariableInfo("", "Boolean")]
+    [VariableInfo("Numeric", "Boolean", typeof(bool))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class BooleanVariable : VariableBase<bool>

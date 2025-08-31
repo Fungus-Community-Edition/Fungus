@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Collision2D variable type.
     /// </summary>
-    [VariableInfo("Other", "Collision2D", IsPreviewedOnly = true)]
+    [VariableInfo("Physics", "Collision2D", typeof(Collision2D), IsPreviewedOnly = true)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class Collision2DVariable : VariableBase<UnityEngine.Collision2D>

@@ -11,7 +11,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// AudioMixer variable type.
 	/// </summary>
-	[VariableInfo("Other", "AudioMixer")]
+	[VariableInfo("Audio", "AudioMixer", typeof(AudioMixer))]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class AudioMixerVariable : VariableBase<AudioMixer>

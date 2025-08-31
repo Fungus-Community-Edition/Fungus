@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -7,25 +8,28 @@ namespace Amanita.VScripting
     /// Attribute class for variables. This helps decide how they're presented as an option
     /// when selecting a variable to add to a Flowchart.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
     public sealed class VariableInfoAttribute : System.Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
-        public VariableInfoAttribute(string category, string variableType, string uniqueId = "", int order = 0)
+        public VariableInfoAttribute(string category, string optionDisplayName, Type contentType, string uniqueId = "", int order = 0)
         {
             this.Category = category;
-            this.VariableType = variableType;
+            this.OptionDisplayName = optionDisplayName;
+            this.ContentType = contentType;
             this.UniqueID = uniqueId;
 
             if (string.IsNullOrEmpty(uniqueId))
             {
-                this.UniqueID = this.VariableType;
+                this.UniqueID = this.OptionDisplayName;
             }
 
             this.Order = order;
         }
 
         public string Category { get; set; }
-        public string VariableType { get; set; }
+        public string OptionDisplayName { get; set; }
+        public Type ContentType { get; set; }
         public int Order { get; set; }
         public string UniqueID { get; set; }
         public bool IsPreviewedOnly { get; set; }

@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Collection variable type.
     /// </summary>
-    [VariableInfo("Other", "Collection", "Collection")]
+    [VariableInfo("Other", "Collection", typeof(Collection))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class CollectionVariable : VariableBase<Collection>

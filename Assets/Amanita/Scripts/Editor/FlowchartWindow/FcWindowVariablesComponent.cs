@@ -2,7 +2,6 @@ using System;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
-using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {

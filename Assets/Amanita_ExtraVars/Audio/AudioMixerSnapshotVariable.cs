@@ -11,7 +11,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// AudioMixerSnapshot variable type.
 	/// </summary>
-	[VariableInfo("Other", "AudioMixerSnapshot")]
+	[VariableInfo("Audio", "AudioMixerSnapshot", typeof(AudioMixerSnapshot))]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class AudioMixerSnapshotVariable : VariableBase<UnityEngine.Audio.AudioMixerSnapshot>

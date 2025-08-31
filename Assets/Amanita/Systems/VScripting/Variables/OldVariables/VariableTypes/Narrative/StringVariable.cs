@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// String variable type.
     /// </summary>
-    [VariableInfo("", "String", "String")]
+    [VariableInfo("", "String", typeof(string))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class StringVariable : VariableBase<string>

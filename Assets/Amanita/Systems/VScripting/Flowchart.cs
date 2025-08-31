@@ -895,9 +895,8 @@ namespace Amanita.VScripting
 
             List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
 
-            vars.AddRange(vars);
+            vars.AddRange(variables);
             vars.AddRange(muscariables);
-
             string key = baseKey;
             while (true)
             {

@@ -1,8 +1,3 @@
-
-
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -10,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Rigidbody variable type.
     /// </summary>
-    [VariableInfo("Other", "Rigidbody")]
+    [VariableInfo("Physics", "Rigidbody", typeof(Rigidbody))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class RigidbodyVariable : VariableBase<UnityEngine.Rigidbody>

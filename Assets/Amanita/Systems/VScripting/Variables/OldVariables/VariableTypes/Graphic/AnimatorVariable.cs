@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Animator variable type.
     /// </summary>
-    [VariableInfo("Other", "Animator", "Animator")]
+    [VariableInfo("Graphic", "Animator", typeof(Animator))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class AnimatorVariable : VariableBase<Animator>

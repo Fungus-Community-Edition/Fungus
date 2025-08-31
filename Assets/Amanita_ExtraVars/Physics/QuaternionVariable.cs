@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Quaternion variable type.
     /// </summary>
-    [VariableInfo("Other", "Quaternion")]
+    [VariableInfo("Physics", "Quaternion", typeof(Quaternion))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class QuaternionVariable : VariableBase<UnityEngine.Quaternion>

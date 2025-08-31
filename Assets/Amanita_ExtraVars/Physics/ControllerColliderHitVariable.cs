@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// ControllerColliderHit variable type.
     /// </summary>
-    [VariableInfo("Other", "ControllerColliderHit", IsPreviewedOnly = true)]
+    [VariableInfo("Physics", "ControllerColliderHit", typeof(ControllerColliderHit), IsPreviewedOnly = true)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ControllerColliderHitVariable : VariableBase<UnityEngine.ControllerColliderHit>

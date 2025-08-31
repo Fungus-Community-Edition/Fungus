@@ -1,7 +1,3 @@
-
-
-
-using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -9,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// AudioSource variable type.
     /// </summary>
-    [VariableInfo("Other", "AudioSource")]
+    [VariableInfo("Audio", "AudioSource", typeof(AudioSource))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class AudioSourceVariable : VariableBase<AudioSource>

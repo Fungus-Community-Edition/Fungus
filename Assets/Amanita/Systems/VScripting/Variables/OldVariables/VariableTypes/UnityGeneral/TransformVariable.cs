@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Transform variable type.
     /// </summary>
-    [VariableInfo("Other", "Transform")]
+    [VariableInfo("UnityGeneral", "Transform", typeof(Transform))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class TransformVariable : VariableBase<Transform>

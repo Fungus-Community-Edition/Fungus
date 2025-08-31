@@ -9,7 +9,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Object variable type.
     /// </summary>
-    [VariableInfo("Other", "Object", "UnityObject")]
+    [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObject))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ObjectVariable : VariableBase<UnityObject>

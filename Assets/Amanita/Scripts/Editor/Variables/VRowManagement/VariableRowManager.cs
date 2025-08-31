@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UITKLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
