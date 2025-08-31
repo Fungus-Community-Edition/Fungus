@@ -18,6 +18,7 @@ namespace Amanita.VScripting.EditorUtils
             IRowVisualHandler visHandler)
         {
             _isDisposed = false;
+            ToggleSubs(false); // Just in case
             _prevVariable = _currentVariable;
             _currentVariable = toRepresent;
 
@@ -28,11 +29,59 @@ namespace Amanita.VScripting.EditorUtils
             VisualHandler.SerializedVar = _serializedVar;
             VisualHandler.Init(toRepresent);
             VisualHandler.Refresh();
+            ToggleSubs(true);
         }
 
         protected bool _isDisposed;
         protected IVariable _prevVariable;
         protected IVariable _currentVariable;
+
+        protected virtual void ToggleSubs(bool on)
+        { 
+            if (VisualHandler == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                VisualHandler.RemoveButtonClicked += OnRemoveButtonClicked;
+            }
+            else
+            {
+                VisualHandler.RemoveButtonClicked -= OnRemoveButtonClicked;
+            }
+        }
+
+        protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
+        {
+            // Response to the handler's version of the event
+            RemoveButtonClicked(this);
+        }
+
+        public event Action<VariableRow> RemoveButtonClicked = delegate { };
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            ToggleSubs(false);
+            Clear();
+            var rootParent = RootElement?.parent;
+            rootParent?.Remove(RootElement);
+            _serializedVar?.Dispose();
+            _serializedVar = null;
+            VisualHandler?.Dispose();
+            VisualHandler = null;
+            _currentVariable = null;
+            _isDisposed = true;
+
+            // Clear external subscribers to avoid lingering references if pooled.
+            RemoveButtonClicked = delegate { };
+        }
 
         protected virtual void UpdateSerializedVar()
         {
@@ -115,27 +164,6 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
-        /// <summary>
-        /// Resets the state of this row, including how it's meant to start out 
-        /// non-parented.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            Clear();
-            var rootParent = RootElement?.parent;
-            rootParent?.Remove(RootElement);
-            _serializedVar.Dispose();
-            _serializedVar = null;
-            VisualHandler?.Dispose();
-            VisualHandler = null;
-            _currentVariable = null;
-            _isDisposed = true;
-        }
 
     }
 
