@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
+using Amanita.VScripting;
+using System;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
-    // Backing list for ListView
     public class UitkVariableListAdaptor : IDisposable
     {
+        public Flowchart TargetFlowchart { get; }
+        private SerializedProperty variablesProp;
+        private SerializedObject flowchartSO;
+        public static readonly int ReorderListSkirts = 50;
+
+        // Backing list for ListView
+        private List<Variable> varsList => TargetFlowchart.Variables;
+
         public UitkVariableListAdaptor(SerializedProperty variablesProp, Flowchart flowchart)
         {
             this.variablesProp = variablesProp;
@@ -19,10 +26,6 @@ namespace Amanita.VScripting.EditorUtils
             this.TargetFlowchart = flowchart;
             ListenForEvents();
         }
-
-        protected SerializedProperty variablesProp;
-        protected SerializedObject flowchartSO;
-        public Flowchart TargetFlowchart { get; }
 
         protected virtual void ListenForEvents()
         {
@@ -37,20 +40,18 @@ namespace Amanita.VScripting.EditorUtils
             RefreshListView();
         }
 
-        public virtual void RefreshListView()
+        protected virtual void RefreshListView()
         {
             GameObject selectedGO = Selection.activeGameObject;
-            bool hasOurFlowchart = selectedGO != null && selectedGO.GetComponent<Flowchart>() == TargetFlowchart;
-            if (selectedGO != null && hasOurFlowchart && VarsList != null)
+            bool hasOurFlowchart = selectedGO.GetComponent<Flowchart>() == TargetFlowchart;
+            if (selectedGO != null && hasOurFlowchart && varsList != null)
             {
                 Debug.Log("Rebuilding list view");
-                listView.itemsSource = VarsList;
+                listView.itemsSource = varsList;
                 listView?.Rebuild(); // Since RefreshItems leads to weird bugs
             }
 
         }
-
-        public List<IVariable> VarsList => TargetFlowchart.Variables.Cast<IVariable>().ToList();
 
         /// <summary>
         /// Builds and returns a UI Toolkit foldout containing:
@@ -68,7 +69,7 @@ namespace Amanita.VScripting.EditorUtils
 
             listView = new ListView
             {
-                itemsSource = VarsList,
+                itemsSource = varsList,
                 makeItem = MakeVariableRow,
                 bindItem = BindVariableRow,
                 fixedItemHeight = (int)(EditorGUIUtility.singleLineHeight + 4),
@@ -93,6 +94,7 @@ namespace Amanita.VScripting.EditorUtils
             var row = new VisualElement { name = "variable-row" };
             row.style.flexDirection = FlexDirection.Row;
 
+            // 1. Type label
             var typeLabel = PrepTypeLabel();
             UIToolkitLabel PrepTypeLabel()
             {
@@ -108,6 +110,7 @@ namespace Amanita.VScripting.EditorUtils
 
             row.Add(typeLabel);
 
+            // 2. Key text field
             var keyField = PrepKeyField();
             TextField PrepKeyField()
             {
@@ -120,38 +123,20 @@ namespace Amanita.VScripting.EditorUtils
             }
             row.Add(keyField);
 
-            
-            PrepValueField(); // Will bind to SerializedProperty of the Variable component
-            void PrepValueField()
-            {
-                // Placeholder, will be replaced in BindVariableRow
-                var valuePlaceholder = new VisualElement { name = "value" };
-                valuePlaceholder.style.width = valueFieldWidth;
-                row.Add(valuePlaceholder);
-            }
+            // 3. Value field (will bind to SerializedProperty of the Variable component)
+            var valueField = new PropertyField { name = "value", style = { width = valueFieldWidth } };
+            valueField.style.whiteSpace = WhiteSpace.NoWrap;
+            valueField.style.overflow = Overflow.Hidden;
+            row.Add(valueField);
 
-            PrepScopeField();
-            void PrepScopeField()
-            {
-                var scopeField = new EnumField
-                {
-                    name = "scope",
-                    style =
-                    {
-                        width = scopeFieldWidth
-                    }
-                };
-                row.Add(scopeField);
-            }
+            // 4. Scope enum dropdown
+            var scopeField = new EnumField { name = "scope", style = { width = scopeFieldWidth } };
+            row.Add(scopeField);
 
-            PrepRemoveButton();
-            void PrepRemoveButton()
-            {
-                var removeBtn = new Button(() => RemoveCurrentRow(row)) { text = "–" };
-                removeBtn.style.width = removeButtonWidth;
-                removeBtn.AddToClassList("variable-remove-button");
-                row.Add(removeBtn);
-            }
+            // 5. Remove button
+            var removeBtn = new Button(() => RemoveCurrentRow(row)) { text = "–" };
+            removeBtn.AddToClassList("variable-remove-button");
+            row.Add(removeBtn);
 
             return row;
         }
@@ -159,131 +144,81 @@ namespace Amanita.VScripting.EditorUtils
         protected static int typeLabelWidth = 80,
             keyFieldWidth = 100,
             valueFieldWidth = 150,
-            scopeFieldWidth = 70,
-            removeButtonWidth = 25;
+            scopeFieldWidth = 70;
 
         // Called by `bindItem`
         protected virtual void BindVariableRow(VisualElement element, int index)
         {
-            var flowchart = TargetFlowchart;
-            if (flowchart == null) return;
+            var variable = varsList[index];
 
-            IVariable varToRepresent = flowchart.GetVariable(index);
-            if (varToRepresent == null) return;
-
-            var varObj = varToRepresent as UnityEngine.Object;
-            if (varObj == null) return; // All your variables currently are, but keep safety
-
-            var so = new SerializedObject(varObj);
-
-            // Type label
-            string newTypeLabelText = varToRepresent.GetType().Name;
-            int varWordLength = "Variable".Length;
-            if (newTypeLabelText.EndsWith("Variable"))
-                newTypeLabelText = newTypeLabelText.Substring(0, newTypeLabelText.Length - varWordLength);
-
-            var typeNameField = element.Q<UnityEngine.UIElements.Label>("type");
-            if (typeNameField != null)
-                typeNameField.text = newTypeLabelText;
-
-            // Key field — bind directly to the serialized "key" property
-            var keyField = element.Q<TextField>("key");
-            if (keyField != null)
+            // Need to account for when a var was just deleted
+            while (varsList.Count > 0 && variable == null)
             {
-                var keyProp = so.FindProperty("key");
-                if (keyProp != null)
-                    keyField.BindProperty(keyProp);
-            }
-
-            // Value field
-            var valueContainer = element.Q<VisualElement>("value");
-            valueContainer.Clear();
-
-            var varType = varToRepresent.ContentType;
-            VisualElement fieldToAdd = null;
-
-            SerializedProperty valueProp = FindValueProperty(so); // helper method below
-
-            if (varToRepresent is FloatVariable)
-            {
-                var floatField = new FloatField();
-                if (valueProp != null) floatField.BindProperty(valueProp);
-                fieldToAdd = floatField;
-            }
-            else if (varToRepresent is IntegerVariable)
-            {
-                var intField = new IntegerField();
-                if (valueProp != null) intField.BindProperty(valueProp);
-                fieldToAdd = intField;
-            }
-            else if (varToRepresent is BooleanVariable)
-            {
-                var boolField = new Toggle();
-                if (valueProp != null) boolField.BindProperty(valueProp);
-                fieldToAdd = boolField;
-            }
-            else if (varToRepresent is StringVariable)
-            {
-                var strField = new TextField();
-                if (valueProp != null) strField.BindProperty(valueProp);
-                fieldToAdd = strField;
-            }
-            else if (typeof(UnityEngine.Object).IsAssignableFrom(varType))
-            {
-                var objField = new ObjectField { objectType = varType };
-                if (valueProp != null) objField.BindProperty(valueProp);
-                fieldToAdd = objField;
-            }
-            else
-            {
-                Debug.LogWarning($"Could not set up proper value field for variable of type {varType.Name}");
-            }
-
-            if (fieldToAdd != null)
-                valueContainer.Add(fieldToAdd);
-
-            // Scope field — bind directly to serialized "scope" property
-            var scopeField = element.Q<EnumField>("scope");
-            if (scopeField != null)
-            {
-                var scopeProp = so.FindProperty("scope");
-                if (scopeProp != null)
+                varsList.RemoveAt(index);
+                bool validIndex = index < varsList.Count;
+                if (validIndex)
                 {
-                    scopeField.Init(varToRepresent.Scope);
-                    scopeField.BindProperty(scopeProp);
+                    variable = varsList[index];
+                }
+                else
+                {
+                    return;
                 }
             }
 
+            if (variable == null)
+            {
+                return;
+            }
+
+            var flowchart = TargetFlowchart;
+
+            // 1) Type
+            string newTypeLabelText = variable.GetType().Name;
+            // We don't want "Variable" to be in the label, so...
+            int l = "Variable".Length;
+            newTypeLabelText = newTypeLabelText.Substring(0, newTypeLabelText.Length - l);
+            var typeNameField = element.Q<UIToolkitLabel>("type");
+            typeNameField.text = newTypeLabelText;
+
+            // 2) Key
+            var keyField = element.Q<TextField>("key");
+            keyField.value = variable.Key;
+            keyField.RegisterValueChangedCallback(evt =>
+            {
+                if (variable == null)
+                {
+                    return;
+                }
+                Undo.RecordObject(variable, "Change Variable Key");
+                variable.Key = flowchart.GetUniqueVariableKey(evt.newValue, variable);
+                flowchartSO.ApplyModifiedProperties();
+            });
+
+            // 3) Value
+            var valProp = new SerializedObject(variable).FindProperty("value");
+            var valField = element.Q<PropertyField>("value");
+            valField.BindProperty(valProp);
+
+            // 4) Scope
+            var scopeProp = new SerializedObject(variable).FindProperty("scope");
+            var scopeField = element.Q<EnumField>("scope");
+            scopeField.Init(variable.Scope);
+            scopeField.RegisterValueChangedCallback(evt =>
+            {
+                scopeProp.enumValueIndex = System.Convert.ToInt32(evt.newValue);
+                scopeProp.serializedObject.ApplyModifiedProperties();
+            });
+
+            // 5) Remove ⇒ store index on the row for lookup
             element.userData = index;
-        }
-
-        // Helper to locate the backing field for the variable's value
-        private SerializedProperty FindValueProperty(SerializedObject so)
-        {
-            string[] candidates = { "value", "baseVal", "baseValue", "m_Value" };
-            foreach (var name in candidates)
-            {
-                var p = so.FindProperty(name);
-                if (p != null) return p;
-            }
-
-            // Fallback: first visible property that is not m_Script
-            var it = so.GetIterator();
-            bool enterChildren = true;
-            while (it.NextVisible(enterChildren))
-            {
-                enterChildren = false;
-                if (it.name != "m_Script")
-                    return it.Copy();
-            }
-            return null;
         }
 
         protected virtual void RemoveCurrentRow(VisualElement row)
         {
             int index = (int)row.userData;
             // Destroy component and remove from list
-            var varToRemove = VarsList[index] as UnityEngine.Object;
+            var varToRemove = varsList[index];
 
             Undo.DestroyObjectImmediate(varToRemove);
 
@@ -324,13 +259,5 @@ namespace Amanita.VScripting.EditorUtils
             Undo.undoRedoPerformed -= RefreshListView;
         }
 
-    }
-
-    public static class ReflectionHelper
-    {
-        public static T CastTo<T>(object obj)
-        {
-            return (T)obj;
-        }
     }
 }

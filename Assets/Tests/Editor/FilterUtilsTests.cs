@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using Amanita.EditorUtils;
 using UnityObject = UnityEngine.Object;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
 
 namespace Amanita.Tests.Editor
 {

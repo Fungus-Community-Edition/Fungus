@@ -1,6 +1,5 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.EditorUtils
 {
@@ -43,7 +42,7 @@ namespace Amanita.EditorUtils
 
             if (IsLeftMouseButton(inputEvent))
             {
-                bool atMostOneBlockSelected = flowchartCtx.SelectedBlockCount <= 1;
+                bool atMostOneBlockSelected = flowchartCtx.SelectedBlocks.Count <= 1;
                 var blockHit = flowchartCtx.BlockHitInLastMouseDown;
                 bool hitNonSelectedBlock = blockHit != null && !flowchartCtx.Flowchart.SelectedBlocks.Contains(blockHit);
                 bool multiSelect = IsMultiSelect(inputEvent);
@@ -94,7 +93,7 @@ namespace Amanita.EditorUtils
             {
                 FlowchartWindow.SetBlockForInspector(fc, blockHit);
 
-                if (fc.SelectedBlockCount == 0)
+                if (fc.SelectedBlocks.Count == 0)
                     fc.AddToSelection(blockHit);
             }
 

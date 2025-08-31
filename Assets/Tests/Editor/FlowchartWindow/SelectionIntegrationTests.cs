@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
 
 namespace Amanita.Tests.Editor.Integration
 {
@@ -64,7 +63,7 @@ namespace Amanita.Tests.Editor.Integration
             bool consumed = pipeline.Process(mouseDown, ctx);
             Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
 
-            bool success = flowchart.SelectedBlockCount == 0;
+            bool success = flowchart.SelectedBlocks.Count == 0;
             Assert.IsTrue(success, "Mouse down on empty space should've cleared all blocks");
         }
 
@@ -79,7 +78,7 @@ namespace Amanita.Tests.Editor.Integration
             bool consumed = pipeline.Process(mouseDown, ctx);
             Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
 
-            bool success = flowchart.SelectedBlockCount == 0;
+            bool success = flowchart.SelectedBlocks.Count == 0;
             Assert.IsTrue(success, "Mouse down on empty space with no blocks selected should've left the selection empty");
         }
 
@@ -92,7 +91,7 @@ namespace Amanita.Tests.Editor.Integration
             bool consumed = pipeline.Process(mouseDown, ctx);
             Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
 
-            bool success = flowchart.SelectedBlockCount == 0;
+            bool success = flowchart.SelectedBlocks.Count == 0;
             Assert.IsTrue(success, "Mouse release on empty space with no blocks selected should've left the selection empty");
         }
 
@@ -122,7 +121,7 @@ namespace Amanita.Tests.Editor.Integration
             toSelect = blocks[1];
             SimulateSingleBlockSelection(toSelect);
 
-            bool success = ctx.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+            bool success = ctx.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
             string errorMessage = "Selecting a non-selected block should change the selection to only that block";
             Assert.IsTrue(success, errorMessage);
         }
@@ -142,7 +141,7 @@ namespace Amanita.Tests.Editor.Integration
             Assert.IsFalse(consumed, errorMessage);
 
             errorMessage = "After clicking on an already-selected block, only that block should've been selected";
-            bool noClear = flowchart.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+            bool noClear = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
             Assert.IsTrue(noClear, errorMessage);
         }
 
@@ -157,7 +156,7 @@ namespace Amanita.Tests.Editor.Integration
 
             if (!controlClick) // Ctrl-clicking can add to the selection, so...
             {
-                bool blockSelected = flowchart.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+                bool blockSelected = flowchart.SelectedBlocks.Count == 1 && flowchart.SelectedBlock == toSelect;
                 errorMessage = "Only the one block should've been selected in the prep";
                 Assume.That(blockSelected, errorMessage);
             }
@@ -254,7 +253,7 @@ namespace Amanita.Tests.Editor.Integration
             Block secondBlock = blocks[1];
             SimulateSingleBlockSelection(secondBlock, true);
 
-            bool justTwoBlocksSelected = flowchart.SelectedBlockCount == 2;
+            bool justTwoBlocksSelected = flowchart.SelectedBlocks.Count == 2;
             bool theTwoWeExpectAreSelected = justTwoBlocksSelected && flowchart.SelectedBlocks.Contains(firstBlock) 
                 && flowchart.SelectedBlocks.Contains(secondBlock);
             Assert.IsTrue(theTwoWeExpectAreSelected, "Only the first 2 blocks should be selected");
@@ -276,7 +275,7 @@ namespace Amanita.Tests.Editor.Integration
 
             SimulateSingleBlockSelection(secondBlock, true);
             bool onlyFirstBlockSelectedNow = flowchart.SelectedBlocks.Contains(firstBlock) &&
-                flowchart.SelectedBlockCount == 1;
+                flowchart.SelectedBlocks.Count == 1;
 
             Assert.IsTrue(onlyFirstBlockSelectedNow, "Only the first Block should be selected after ctrl-clicking the second one");
         }

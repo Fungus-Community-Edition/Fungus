@@ -1,8 +1,7 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// For dragging the canvas and zooming the view
@@ -106,6 +105,12 @@ namespace Amanita.VScripting.EditorUtils
         public virtual float MaxZoom { get; set; } = 1f;
     }
 
-    
+    public interface IUGUIEventHandler
+    {
+        /// <summary>
+        /// Try to consume this Event. Returns true if it did something.
+        /// </summary>
+        bool Handle(Event eventToHandle, FlowchartContext ctx);
+    }
 
 }

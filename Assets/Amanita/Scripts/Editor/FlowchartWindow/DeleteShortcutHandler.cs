@@ -1,14 +1,14 @@
+using UnityEditor;
 using UnityEngine;
-using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class DeleteShortcutHandler : IUGUIEventHandler
     {
         readonly FcWindowBlockDeletion _deletion;
         readonly IFocusChecker _focusChecker;
 
-        public DeleteShortcutHandler(FcWindowBlockDeletion deletion, KeyCode key,
+        public DeleteShortcutHandler(FcWindowBlockDeletion deletion,KeyCode key,
             IFocusChecker focusChecker)
         {
             _deletion = deletion;
@@ -45,8 +45,8 @@ namespace Amanita.VScripting.EditorUtils
             if (selected == null || selected.Count == 0)
                 return;
 
-            FcWindowEditing windowEditing = ctx.FcHost.GetComponent<FcWindowEditing>();
-            windowEditing.QueueToDelete(selected);
+            ctx.FcHost.QueueToDelete(selected);
+            ctx.FcHost.DeleteScheduledBlocks();
             ctx.ForceRepaintCount++;
         }
 

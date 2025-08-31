@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Amanita.EditorUtils;
+using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Handles click‐and‐drag of selected blocks.

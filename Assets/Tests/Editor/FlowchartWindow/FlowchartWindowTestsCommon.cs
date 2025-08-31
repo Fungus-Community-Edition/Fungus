@@ -2,8 +2,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
 
 namespace Amanita.Tests.Editor
 {

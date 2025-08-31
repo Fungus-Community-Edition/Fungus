@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using UnityEngine.UIElements;
 
 namespace Amanita.EditorUtils
 {
@@ -48,6 +48,7 @@ namespace Amanita.EditorUtils
                     inputEvent.mousePosition.x, inputEvent.mousePosition.y
                 );
 
+                Debug.Log($"Mouse on empty space. Selection box initted with size {ctx.SelectionBox.size}");
                 inputEvent.Use();
             }
 
@@ -132,6 +133,7 @@ namespace Amanita.EditorUtils
                 SelectBlocksOverlappedByBox();
                 void SelectBlocksOverlappedByBox()
                 {
+                    Debug.Log($"Box Selection handler clearing blocks selected before possibly selecting more");
                     ctx.Flowchart.ClearSelectedBlocks();
                     IList<Block> allBlocks = ctx.Flowchart.GetComponents<Block>();
                     foreach (var elem in allBlocks)

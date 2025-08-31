@@ -3,9 +3,8 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 

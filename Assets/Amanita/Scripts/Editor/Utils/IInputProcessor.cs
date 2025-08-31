@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     public interface IInputProcessor
     {

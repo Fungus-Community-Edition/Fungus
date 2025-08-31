@@ -1,5 +1,3 @@
-using Amanita.VScripting.EditorUtils;
-
 namespace Amanita.EditorUtils
 {
     public interface IFocusChecker

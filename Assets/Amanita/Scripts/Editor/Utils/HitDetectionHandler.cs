@@ -1,6 +1,4 @@
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
 
 namespace Amanita.EditorUtils
 {
@@ -32,6 +30,8 @@ namespace Amanita.EditorUtils
             {
                 blockHitName = blockHit.BlockName;
             }
+
+            Debug.Log($"Block hit in last mouse down: {blockHitName}");
 
             return false;
             // ^We won't want this to get in the way of other event handlers doing their thing.

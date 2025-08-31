@@ -3,8 +3,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.Tests.Editor.Integration
 {

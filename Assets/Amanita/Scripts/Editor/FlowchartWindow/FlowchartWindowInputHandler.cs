@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.EditorUtils;
+using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
     public class FlowchartWindowInputHandler : IInputProcessor, IDisposable
     {

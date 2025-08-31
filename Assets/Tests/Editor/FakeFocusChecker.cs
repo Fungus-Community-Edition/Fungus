@@ -1,4 +1,4 @@
-using Amanita.VScripting.EditorUtils;
+using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
