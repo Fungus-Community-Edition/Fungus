@@ -1,7 +1,4 @@
-﻿
-
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 
 #if UNITY_2020_2_OR_NEWER

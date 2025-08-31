@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Amanita
 {
     public interface IResettable

@@ -18,6 +18,7 @@ namespace Amanita.VScripting.EditorUtils
         Type VarContentType { get; }
         SerializedObject SerializedVar { get; set; }
         void Refresh();
+        event Action<IRowVisualHandler> RemoveButtonClicked;
     }
 
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
@@ -129,11 +130,15 @@ namespace Amanita.VScripting.EditorUtils
             _keyField = RowRoot.Q<TextField>("KeyInput");
             _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
             _scopeField = RowRoot.Q<EnumField>("Scope");
+            _removeButton = RowRoot.Q<Button>("RemoveButton");
         }
+
+        protected Button _removeButton;
 
         protected virtual void UnbindFields()
         {
             RowRoot?.Unbind();
+            ToggleSubs(false);
         }
 
         protected virtual void BindFields()
@@ -144,7 +149,33 @@ namespace Amanita.VScripting.EditorUtils
             }
             
             RowRoot?.Bind(SerializedVar);
+            ToggleSubs(false);
+            ToggleSubs(true);
         }
+
+        protected virtual void ToggleSubs(bool on)
+        {
+            if (_removeButton == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                _removeButton.clicked += OnRemoveButtonClicked;
+            }
+            else
+            {
+                _removeButton.clicked -= OnRemoveButtonClicked;
+            }
+        }
+
+        protected virtual void OnRemoveButtonClicked()
+        {
+            RemoveButtonClicked(this);
+        }
+
+        public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
 
         public virtual SerializedObject SerializedVar
         {
@@ -196,6 +227,7 @@ namespace Amanita.VScripting.EditorUtils
             _isDisposed = true;
             Reset();
             _currentVariable = _prevVariable = null;
+            RemoveButtonClicked = delegate { };
         }
 
         public virtual VisualTreeAsset Template => _template;

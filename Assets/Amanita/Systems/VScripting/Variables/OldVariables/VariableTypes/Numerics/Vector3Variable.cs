@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector3 variable type.
     /// </summary>
-    [VariableInfo("Other", "Vector3", "Vector3")]
+    [VariableInfo("Numeric", "Vector3", typeof(Vector3))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class Vector3Variable : VariableBase<Vector3>

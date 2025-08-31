@@ -240,12 +240,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 var existingGUICol = GUI.color;
                 GUI.color = Color.yellow;
-                GUI.Label(itemRects[0], AmanitaConstants.UIPrefixForDeprecated + variableInfo.VariableType);
+                GUI.Label(itemRects[0], AmanitaConstants.UIPrefixForDeprecated + variableInfo.OptionDisplayName);
                 GUI.color = existingGUICol;
             }
             else
             {
-                GUI.Label(itemRects[0], variableInfo.VariableType);
+                GUI.Label(itemRects[0], variableInfo.OptionDisplayName);
             }
 
 

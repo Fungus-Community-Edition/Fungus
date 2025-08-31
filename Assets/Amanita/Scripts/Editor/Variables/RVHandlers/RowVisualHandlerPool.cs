@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
 
 namespace Amanita.VScripting.EditorUtils

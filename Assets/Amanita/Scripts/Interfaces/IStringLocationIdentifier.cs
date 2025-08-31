@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita
+﻿namespace Amanita
 {
     /// <summary>
     /// Interface for providing a human readable path to an element, used in editor code to determine where 

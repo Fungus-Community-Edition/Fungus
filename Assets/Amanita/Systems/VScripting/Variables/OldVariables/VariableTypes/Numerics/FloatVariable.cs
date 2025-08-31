@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Float variable type.
     /// </summary>
-    [VariableInfo("", "Float")]
+    [VariableInfo("Numeric", "Float", typeof(float))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class FloatVariable : VariableBase<float>

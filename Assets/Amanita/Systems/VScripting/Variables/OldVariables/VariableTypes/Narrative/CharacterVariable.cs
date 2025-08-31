@@ -1,7 +1,3 @@
-
-
-
-
 using UnityEngine;
 
 
@@ -10,7 +6,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// Character variable type.
 	/// </summary>
-	[VariableInfo("Other", "Character")]
+	[VariableInfo("Narrative", "Character", typeof(Character))]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class CharacterVariable : VariableBase<Amanita.Character>
