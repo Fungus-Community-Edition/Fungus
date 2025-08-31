@@ -9,38 +9,23 @@ namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).
-    /// FIXES:
-    /// - Explicitly reorder the backing _variables list in OnItemIndexChanged (Unity does NOT automatically mutate IList).
-    /// - Removed RefreshItems() inside reorder (was causing transient empty container).
-    /// - Stopped releasing rows on simple unbind; only release on actual removal / clear to prevent momentary blank rows.
     /// </summary>
-    public class VariableListView : IVariableListView
+    public partial class VariableListView : IVariableListView
     {
-        public VariableListView(ListView list, UITKLabel count, ILayoutRefresher refresher)
+        public VariableListView(VariableListViewInitArgs  initArgs)
         {
-            _listDisplay = list;
-            _countDisplay = count;
-            _refresher = refresher;
+            _listDisplay = initArgs.List;
+            _countDisplay = initArgs.CountLabel;
+            _factory = initArgs.RowFactory;
             if (_listDisplay != null)
                 InitListViewStructure();
         }
 
         protected ListView _listDisplay;
         protected UITKLabel _countDisplay;
-        protected ILayoutRefresher _refresher;
         protected IVariableRowFactory _factory;
 
-        protected readonly List<IVariable> _variables = new();
-        // Active rows kept by variable; we now retain them across unbinds to avoid flicker / empties
-        protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
-
-        bool _requireHandleForDrag;
-        string _dragHandleName;
-        bool _lastPointerDownOnHandle;
-
-        public void SetFactory(IVariableRowFactory factory) => _factory = factory;
-
-        void InitListViewStructure()
+        protected virtual void InitListViewStructure()
         {
             _listDisplay.itemsSource = _variables;
             _listDisplay.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
@@ -50,31 +35,35 @@ namespace Amanita.VScripting.EditorUtils
 
             _listDisplay.makeItem = () =>
             {
-                var ve = new VisualElement { name = "VariableRowContainer" };
-                var s = ve.style;
-                s.flexDirection = FlexDirection.Column;
-                s.position = Position.Relative;
-                s.flexGrow = 0;
-                s.flexShrink = 0;
-                return ve;
+                var visElem = new VisualElement { name = "VariableRowContainer" };
+                var styleForElem = visElem.style;
+                styleForElem.flexDirection = FlexDirection.Column;
+                styleForElem.position = Position.Relative;
+                styleForElem.flexGrow = 0;
+                styleForElem.flexShrink = 0;
+                return visElem;
             };
 
-            _listDisplay.bindItem = (element, index) =>
+            _listDisplay.bindItem = (rowParent, index) =>
             {
                 if ((uint)index >= (uint)_variables.Count) return;
                 var variable = _variables[index];
                 if (variable == null) return;
 
-                element.Clear();
+                rowParent.Clear(); // We don't want a single element to have multiple rows parented to it
                 var row = GetOrCreateRow(variable);
                 if (row?.RootElement != null)
                 {
-                    var rs = row.RootElement.style;
-                    rs.position = Position.Relative;
-                    rs.flexGrow = 0;
-                    rs.flexShrink = 0;
-                    rs.display = DisplayStyle.Flex;
-                    element.Add(row.RootElement);
+                    var rowStyle = row.RootElement.style;
+                    rowStyle.position = Position.Relative;
+
+                    rowStyle.flexGrow = 0;
+                    rowStyle.flexShrink = 0;
+                    // ^We want the size to be consistent, no matter how much the window itself 
+                    // stretches
+
+                    rowStyle.display = DisplayStyle.Flex;
+                    rowParent.Add(row.RootElement);
                 }
 
                 if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName))
@@ -105,13 +94,17 @@ namespace Amanita.VScripting.EditorUtils
                 element.Clear();
             };
 
-            _listDisplay.destroyItem = ve => ve.Clear();
+            _listDisplay.destroyItem = visElem => visElem.Clear();
 
             _listDisplay.canStartDrag += OnCanStartDrag;
             _listDisplay.itemIndexChanged += OnItemIndexChanged;
         }
 
-        bool OnCanStartDrag(CanStartDragArgs args)
+        protected readonly List<IVariable> _variables = new();
+        protected string _dragHandleName;
+        protected bool _lastPointerDownOnHandle;
+
+        protected virtual bool OnCanStartDrag(CanStartDragArgs args)
         {
             if (Application.isPlaying) return false;
             if (_requireHandleForDrag && !_lastPointerDownOnHandle)
@@ -121,48 +114,16 @@ namespace Amanita.VScripting.EditorUtils
             return true;
         }
 
-        void OnItemIndexChanged(int from, int to)
+        protected virtual void OnItemIndexChanged(int from, int to)
         {
             if (from == to) return;
             if (_variables.Count == 0) return;
-
-            // IMPORTANT:
-            // Earlier we manually removed+inserted, assuming ListView did NOT mutate itemsSource.
-            // The observed off-by-one + pair swapping indicates ListView ALREADY applied its own
-            // internal reorder to _variables (because it holds a direct reference to the List<T>).
-            // Our extra move then performed a second reorder, producing the wrong final order.
-            //
-            // Fix: Treat the backing list as already updated. Just propagate the new order.
-            // If (for some future Unity version) this stops working, define AMANITA_FORCE_MANUAL_REORDER
-            // and we’ll fall back to explicit move logic.
-
-#if AMANITA_FORCE_MANUAL_REORDER
-            if ((uint)from < (uint)_variables.Count && (uint)to < (uint)_variables.Count)
-            {
-                // Manual fallback (only enable if Unity stops mutating the list automatically).
-                var item = _variables[from];
-                _variables.RemoveAt(from);
-                if (from < to) to -= 1;
-                if (to < 0) to = 0;
-                if (to > _variables.Count) to = _variables.Count;
-                _variables.Insert(to, item);
-            }
-#endif
-
-#if UNITY_EDITOR && AMANITA_DIAGNOSTICS
-            // Diagnostics: dump current order and indexes involved.
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append($"[VariableListView] Reorder event from {from} to {to}. Current order:\n");
-            for (int i = 0; i < _variables.Count; i++)
-                sb.Append($"{i}: {_variables[i]?.Key}\n");
-            Debug.Log(sb.ToString());
-#endif
 
             OrderChanged?.Invoke(_variables.ToList());
             UpdateCount();
         }
 
-        VariableRow GetOrCreateRow(IVariable variable)
+        protected virtual VariableRow GetOrCreateRow(IVariable variable)
         {
             if (variable == null || _factory == null) return null;
             if (_activeRows.TryGetValue(variable, out var existing)) return existing;
@@ -173,7 +134,10 @@ namespace Amanita.VScripting.EditorUtils
             return row;
         }
 
-        void ReleaseRow(IVariable variable)
+        // Active rows kept by variable; we now retain them across unbinds to avoid flicker / empties
+        protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
+
+        protected virtual void ReleaseRow(IVariable variable)
         {
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
@@ -183,19 +147,24 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        void ReleaseAllActiveRows()
+        protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
-            foreach (var v in _activeRows.Keys.ToList())
-                ReleaseRow(v);
+
+            foreach (var rowElem in _activeRows.Keys.ToList())
+            {
+                ReleaseRow(rowElem);
+            }
+
             _activeRows.Clear();
         }
 
-        // Public API
         public void AddVariable(IVariable variable)
         {
             if (variable == null || _variables.Contains(variable)) return;
             _variables.Add(variable);
+            // ^This list is the source for the list display, and thus adding to it and then
+            // refreshing the list display should get the appropriate row added
             _listDisplay.RefreshItems();
             UpdateCount();
         }
@@ -205,6 +174,7 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             int idx = _variables.IndexOf(variable);
             if (idx < 0) return;
+
             _variables.RemoveAt(idx);
             ReleaseRow(variable);
             _listDisplay.RefreshItems();
@@ -217,10 +187,15 @@ namespace Amanita.VScripting.EditorUtils
             _variables.Clear();
             if (vars != null)
             {
-                foreach (var v in vars)
-                    if (v != null) _variables.Add(v);
+                foreach (var elem in vars)
+                {
+                    if (elem != null)
+                    {
+                        _variables.Add(elem);
+                    }
+                }
             }
-            _listDisplay.RefreshItems();
+
             UpdateCount();
         }
 
@@ -234,8 +209,8 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Refresh()
         {
+            _listDisplay.RefreshItems();
             UpdateCount();
-            ScheduleLayoutFix();
         }
 
         public int RowCount => _variables.Count;
@@ -254,10 +229,10 @@ namespace Amanita.VScripting.EditorUtils
         public void UpdateCount()
         {
             if (_countDisplay != null)
+            {
                 _countDisplay.text = $"Count: {_variables.Count}";
+            }
         }
-
-        public void ScheduleLayoutFix() => _refresher?.Refresh(_listDisplay);
 
         public event Action<IReadOnlyList<IVariable>> OrderChanged;
 
@@ -279,20 +254,69 @@ namespace Amanita.VScripting.EditorUtils
             _countDisplay?.RemoveFromHierarchy();
             _countDisplay = null;
             _factory = null;
-            _refresher = null;
         }
 
-        // Public API to enable drag-handle mode
         public void RequireDragHandle(string handleName)
         {
             _requireHandleForDrag = !string.IsNullOrEmpty(handleName);
             _dragHandleName = handleName;
         }
 
+        protected bool _requireHandleForDrag;
+
+        #region For tests only
         // (optional) test helper (internal so normal builds ignore misuse)
-#if UNITY_EDITOR
         public void ForTests_SetLastPointerDownOnHandle(bool v) => _lastPointerDownOnHandle = v;
-#endif
+
+        // Force-creates rows & handlers for all current variables
+        // without requiring a panel / real binding cycle.
+        // Safely handles the case where ListView's internal scroll view (and thus contentContainer)
+        // has not been created yet (with contentContainer == null).
+        public void ForceMaterializeAllRowsForTests()
+        {
+            if (_listDisplay == null || _variables.Count == 0)
+                return;
+
+            // If ListView hasn't created its internal ScrollView yet, contentContainer will be null.
+            // We create (once) a private fallback container to host materialized rows for tests.
+            var container = _listDisplay.contentContainer;
+            if (container == null)
+            {
+                if (_testMaterializedContainer == null)
+                {
+                    _testMaterializedContainer = new VisualElement
+                    {
+                        name = "__TestMaterializedRows"
+                    };
+                    // Add it directly under the ListView so tests can still inspect visual children if needed.
+                    _listDisplay.hierarchy.Add(_testMaterializedContainer);
+                }
+                container = _testMaterializedContainer;
+            }
+
+            // Avoid redundant population: if we already have as many root row visuals
+            // as variables, assume it's up to date (headless test scenario).
+            if (container.childCount >= _variables.Count && _activeRows.Count >= _variables.Count)
+                return;
+
+            for (int i = 0; i < _variables.Count; i++)
+            {
+                var elem = _variables[i];
+                if (elem == null)
+                    continue;
+
+                var row = GetOrCreateRow(elem);
+                if (row?.RootElement == null)
+                    continue;
+
+                if (row.RootElement.parent == null)
+                    container.Add(row.RootElement);
+            }
+        }
+
+        // Fallback container for headless test materialization (never serialized / runtime only).
+        VisualElement _testMaterializedContainer;
+        #endregion
     }
 
     public interface IVariableListView : IDisposable
@@ -307,5 +331,12 @@ namespace Amanita.VScripting.EditorUtils
         IReadOnlyList<VariableRow> Rows { get; }
         bool Contains(VariableRow row);
         event Action<IReadOnlyList<IVariable>> OrderChanged;
+    }
+
+    public class VariableListViewInitArgs
+    {
+        public IVariableRowFactory RowFactory { get; set; }
+        public ListView List { get; set; }
+        public UITKLabel CountLabel { get; set; }
     }
 }

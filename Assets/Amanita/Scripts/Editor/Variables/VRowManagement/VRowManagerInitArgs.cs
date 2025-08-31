@@ -12,8 +12,6 @@ namespace Amanita.VScripting.EditorUtils
         public VisualElement Root;
         public Button AddButton;
         public Flowchart Flowchart;
-        public IVariableRowFactory VariableRowFactory;
         public IVariableListView VariableListView;          // NEW (optional)
-        public ILayoutRefresher LayoutRefresher;            // NEW (optional)
     }
 }

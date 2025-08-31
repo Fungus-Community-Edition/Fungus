@@ -42,8 +42,13 @@ namespace Amanita.Tests.EditMode
                 RowPool = _rowPool
             });
 
-            _view = new VariableListView(_uiList, _count, new ListViewLayoutRefresher());
-            _view.SetFactory(_factory);
+            listViewArgs = new VariableListViewInitArgs()
+            {
+                List = _uiList,
+                CountLabel = _count,
+                RowFactory = _factory,
+            };
+            _view = new VariableListView(listViewArgs);
 
             // Enable drag-handle requirement with a made-up handle name we will pretend exists
             _view.RequireDragHandle("DragHandle");
@@ -57,6 +62,7 @@ namespace Amanita.Tests.EditMode
             Assert.NotNull(_fiLastPointerFlag, "Could not reflect _lastPointerDownOnHandle");
         }
 
+        protected VariableListViewInitArgs listViewArgs;
         [TearDown]
         public void TearDown()
         {
@@ -128,8 +134,8 @@ namespace Amanita.Tests.EditMode
 #if UNITY_EDITOR
             // Re-create in non-handle mode
             _view.Dispose();
-            _view = new VariableListView(_uiList, _count, new ListViewLayoutRefresher());
-            _view.SetFactory(_factory); // do NOT call RequireDragHandle
+
+            _view = new VariableListView(listViewArgs);
             _miOnCanStartDrag = typeof(VariableListView)
                 .GetMethod("OnCanStartDrag", BindingFlags.NonPublic | BindingFlags.Instance);
 

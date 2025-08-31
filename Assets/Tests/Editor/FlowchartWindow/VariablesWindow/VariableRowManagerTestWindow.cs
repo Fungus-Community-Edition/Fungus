@@ -240,8 +240,6 @@ namespace Amanita.VScripting.EditorUtils
                 Debug.LogError("VariableRowManagerTestWindow: UXML is missing required elements: rowList / varCountLabel / addVarButton");
                 return;
             }
-
-            var view = new VariableListView(listContainer, countLabel, new ListViewLayoutRefresher());
             var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
             var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
             var factoryInitArgs = new VariableRowFactoryInitArgs()
@@ -253,6 +251,16 @@ namespace Amanita.VScripting.EditorUtils
             var varRowFactory = new VariableRowFactory();
             varRowFactory.Init(factoryInitArgs);
 
+            var listViewArgs = new VariableListViewInitArgs()
+            {
+                List = listContainer,
+                CountLabel = countLabel,
+                RowFactory = varRowFactory,
+                
+            };
+
+            var view = new VariableListView(listViewArgs);
+            
             // Build manager
             var args = new VRowManagerInitArgs
             {
@@ -261,8 +269,6 @@ namespace Amanita.VScripting.EditorUtils
                 AddButton = addButton,
                 Flowchart = _flowchart,
                 VariableListView = view,
-                LayoutRefresher = new ListViewLayoutRefresher(),
-                VariableRowFactory = varRowFactory,
             };
 
             _vRowManager = new VariableRowManager();

@@ -58,17 +58,20 @@ namespace Amanita.VScripting.EditorUtils
             var count = _rootElement.Q<UitkLabel>("varCountLabel");
             var addBtn = _rootElement.Q<Button>("addVarButton");
 
-            var view = new VariableListView(list, count, new ListViewLayoutRefresher());
-            view.SetFactory(_rowFactory); // provide factory to new virtualized view
+            var listViewArgs = new VariableListViewInitArgs()
+            {
+                List = list,
+                CountLabel = count,
+                RowFactory = _rowFactory,
+            };
+            var view = new VariableListView(listViewArgs);
 
             _manager.Init(new VRowManagerInitArgs
             {
                 Root = _rootElement,
                 AddButton = addBtn,
                 Flowchart = flowchart,
-                VariableRowFactory = _rowFactory,
                 VariableListView = view,
-                LayoutRefresher = new ListViewLayoutRefresher()
             });
         }
 

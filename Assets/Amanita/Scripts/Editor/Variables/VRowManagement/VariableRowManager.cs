@@ -13,6 +13,59 @@ namespace Amanita.VScripting.EditorUtils
         {
             _isDisposed = false;
 
+            bool allWentWell;
+            ValidateArgs();
+            void ValidateArgs()
+            {
+                int errorLogs = 0;
+                if (initArgs == null)
+                {
+                    Debug.LogError("VariableRowManager was given a null args object.");
+                    allWentWell = false;
+                    return;
+                }
+
+                if (initArgs.Flowchart == null)
+                {
+                    Debug.LogError("VariableRowManager was not given a Flowchart to work with.");
+                    errorLogs++;
+                }
+
+                if (initArgs.VariableListView == null)
+                {
+                    Debug.LogError($"VariableRowManager was not given a list view to work with.");
+                    errorLogs++;
+                }
+
+                if (initArgs.HoldsManager == null)
+                {
+                    Debug.LogError("VariableRowManager was given nothing to hold it.");
+                    errorLogs++;
+                }
+
+                if (initArgs.Root == null)
+                {
+                    Debug.LogError("VariableRowManager was not given a root to work with.");
+                    errorLogs++;
+                }
+
+                allWentWell = errorLogs == 0;
+            }
+
+            if (!allWentWell)
+            {
+                Debug.LogError("Failed to initialize VariableRowManager.");
+                return;
+            }
+
+            PrepListView();
+            void PrepListView()
+            {
+                _listView = initArgs.VariableListView;
+            }
+
+            InitVisuals(initArgs);
+
             PrepFcEventListeners();
             void PrepFcEventListeners()
             {
@@ -21,42 +74,11 @@ namespace Amanita.VScripting.EditorUtils
                 ToggleSubscriptions(true);
             }
 
-            InitVisuals(initArgs);
-
-            PrepFactory();
-            void PrepFactory()
-            {
-                if (_factory != initArgs.VariableRowFactory)
-                {
-                    _factory?.Dispose();
-                }
-                _factory = initArgs.VariableRowFactory;
-            }
-
-            PrepListView();
-            void PrepListView()
-            {
-                if (initArgs.VariableListView != null)
-                {
-                    _listView = initArgs.VariableListView;
-                    if (_listView is VariableListView concrete)
-                    {
-                        concrete.SetFactory(_factory);
-                        concrete.OrderChanged += OnRowOrderChanged;
-                    }
-                }
-                else if (_listView == null)
-                {
-                    Debug.LogError($"VariableRowManager was not given a list view to work with.");
-                }
-            }
-
             Refresh();
         }
 
         protected bool _isDisposed;
         protected Flowchart _flowchart;
-        protected IVariableRowFactory _factory;
         protected IVariableListView _listView;
 
         protected VisualElement _holdsManager;
@@ -66,17 +88,22 @@ namespace Amanita.VScripting.EditorUtils
         #region Event Wiring / Visual Init
         protected virtual void ToggleSubscriptions(bool on)
         {
-            if (_flowchart == null) return;
+            if (_flowchart == null || _listView == null)
+            {
+                return;
+            }
 
             if (on)
             {
                 _flowchart.VariableAdded += OnVariableAdded;
                 _flowchart.VariableRemoved += OnVariableRemoved;
+                _listView.OrderChanged += OnOrderChanged;
             }
             else
             {
                 _flowchart.VariableAdded -= OnVariableAdded;
                 _flowchart.VariableRemoved -= OnVariableRemoved;
+                _listView.OrderChanged -= OnOrderChanged;
             }
         }
 
@@ -86,12 +113,6 @@ namespace Amanita.VScripting.EditorUtils
             Root = initArgs.Root;
         }
 
-        protected virtual void OnRowOrderChanged(IReadOnlyList<IVariable> newOrder)
-        {
-            if (_flowchart == null || newOrder == null) return;
-            Debug.Log($"Row order changed");
-            _flowchart.ReorderVariables(newOrder);
-        }
         #endregion
 
         #region Variable Event Handlers
@@ -107,6 +128,11 @@ namespace Amanita.VScripting.EditorUtils
             if (_isDisposed || removed == null) return;
             _listView?.RemoveVariable(removed);
             _listView?.Refresh();
+        }
+
+        protected virtual void OnOrderChanged(IReadOnlyList<IVariable> newlyOrderedVars)
+        {
+            _flowchart.ReorderVariables(newlyOrderedVars);
         }
         #endregion
 
@@ -124,18 +150,11 @@ namespace Amanita.VScripting.EditorUtils
         }
         #endregion
 
-        #region Release Helpers
         public virtual void ReleaseRowsFromList()
         {
             // With virtualization, clearing variables triggers unbind & release logic
             _listView?.Clear();
         }
-        #endregion
-
-        #region Query
-        public virtual VariableRow GetVisibleRowAt(int index) => _listView.RowAtIndex(index);
-        public virtual int VisibleRowCount => _listView?.RowCount ?? 0;
-        #endregion
 
         #region Dispose
         public virtual void Dispose()
@@ -144,13 +163,10 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubscriptions(false);
             ReleaseRowsFromList();
-            if (_listView is VariableListView concrete)
-                concrete.OrderChanged -= OnRowOrderChanged;
 
             if (Root != null && _holdsManager != null && _holdsManager.Contains(Root))
                 _holdsManager.Remove(Root);
 
-            // Factory remains owned externally; do not dispose pooled handlers unless required
             _listView?.Dispose();
 
             _listView = null;

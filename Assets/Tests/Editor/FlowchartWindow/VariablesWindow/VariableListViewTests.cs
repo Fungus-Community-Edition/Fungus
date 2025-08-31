@@ -52,8 +52,14 @@ namespace Amanita.Tests.EditMode
             };
             _factory.Init(_factoryArgs);
 
-            _view = new VariableListView(_uiList, _countLabel, new ListViewLayoutRefresher());
-            _view.SetFactory(_factory);
+            var listViewArgs = new VariableListViewInitArgs()
+            {
+                List = _uiList,
+                CountLabel = _countLabel,
+                RowFactory = _factory,
+                
+            };
+            _view = new VariableListView(listViewArgs);
 
             _fiVariables = typeof(VariableListView)
                 .GetField("_variables", BindingFlags.Instance | BindingFlags.NonPublic);
