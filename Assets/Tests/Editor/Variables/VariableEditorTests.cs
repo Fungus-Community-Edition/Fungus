@@ -75,7 +75,7 @@ namespace Amanita.Tests.EditMode
             // IntegerVariable should have a VariableInfoAttribute (from Fungus)
             var attr = VariableEditor.GetVariableInfo(typeof(IntegerVariable));
             Assert.NotNull(attr, "VariableInfoAttribute not found for IntegerVariable.");
-            Assert.IsFalse(string.IsNullOrEmpty(attr.VariableType), "VariableType string should not be empty.");
+            Assert.IsFalse(string.IsNullOrEmpty(attr.OptionDisplayName), "VariableType string should not be empty.");
         }
 
         [Test]

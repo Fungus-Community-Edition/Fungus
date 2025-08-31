@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.REPL
+﻿namespace MoonSharp.Interpreter.REPL
 {
 	/// <summary>
 	/// An implementation of <see cref="ReplInterpreter"/> which supports a very basic history of recent input lines.

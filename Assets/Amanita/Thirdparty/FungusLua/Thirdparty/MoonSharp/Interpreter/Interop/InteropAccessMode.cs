@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter
+﻿namespace MoonSharp.Interpreter
 {
 	/// <summary>
 	/// Enumerations of the possible strategies to marshal CLR objects to MoonSharp userdata and functions

@@ -1,6 +1,3 @@
-
-
-
 using UnityEditor;
 
 namespace Amanita.Lua

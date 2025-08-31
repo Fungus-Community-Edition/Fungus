@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
+using UnityEditor;
+using UnityEngine.Pool;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -12,7 +14,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public partial class VariableListView : IVariableListView
     {
-        public VariableListView(VariableListViewInitArgs  initArgs)
+        public VariableListView(VariableListViewInitArgs initArgs)
         {
             _listDisplay = initArgs.List;
             _countDisplay = initArgs.CountLabel;
@@ -24,6 +26,19 @@ namespace Amanita.VScripting.EditorUtils
         protected ListView _listDisplay;
         protected UITKLabel _countDisplay;
         protected IVariableRowFactory _factory;
+
+        protected Flowchart _flowchart;
+        protected int _flowchartInstanceID;
+
+        // Guards & state
+        bool _refreshScheduled;
+
+        public void SetFlowchart(Flowchart flowchart)
+        {
+            _flowchart = flowchart;
+            _flowchartInstanceID = _flowchart != null ? _flowchart.GetInstanceID() : 0;
+            SyncFromFlowchart();
+        }
 
         protected virtual void InitListViewStructure()
         {
@@ -46,40 +61,48 @@ namespace Amanita.VScripting.EditorUtils
 
             _listDisplay.bindItem = (rowParent, index) =>
             {
-                if ((uint)index >= (uint)_variables.Count) return;
-                var variable = _variables[index];
-                if (variable == null) return;
+                if ((uint)index >= (uint)_variables.Count)
+                {
+                    rowParent.userData = null;
+                    rowParent.Clear();
+                    return;
+                }
 
-                rowParent.Clear(); // We don't want a single element to have multiple rows parented to it
+                var variable = _variables[index];
+                if (variable == null)
+                {
+                    rowParent.userData = null;
+                    rowParent.Clear();
+                    return;
+                }
+
+                rowParent.Clear();
+
                 var row = GetOrCreateRow(variable);
                 if (row?.RootElement != null)
                 {
-                    var rowStyle = row.RootElement.style;
-                    rowStyle.position = Position.Relative;
-
-                    rowStyle.flexGrow = 0;
-                    rowStyle.flexShrink = 0;
-                    // ^We want the size to be consistent, no matter how much the window itself 
-                    // stretches
-
-                    rowStyle.display = DisplayStyle.Flex;
                     rowParent.Add(row.RootElement);
                 }
 
-                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName))
+                // Store variable to help unbind cleanup
+                rowParent.userData = variable;
+
+                // Prevent duplicate subscriptions (binding can happen many times)
+                if (row != null)
                 {
-                    // Register once per bound instance (handlers are cheap)
+                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
+                    row.RemoveButtonClicked += OnRemoveButtonClicked;
+                }
+
+                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName) && row?.RootElement != null)
+                {
                     var handle = row.RootElement.Q<VisualElement>(_dragHandleName);
                     if (handle != null && handle.userData as string != "dragHandleHooked")
                     {
                         handle.userData = "dragHandleHooked";
-                        handle.RegisterCallback<PointerDownEvent>(_ =>
-                        {
-                            _lastPointerDownOnHandle = true;
-                        });
+                        handle.RegisterCallback<PointerDownEvent>(_ => { _lastPointerDownOnHandle = true; });
                     }
 
-                    // Row root fallback: pointer downs not on handle clear eligibility
                     row.RootElement.RegisterCallback<PointerDownEvent>(evt =>
                     {
                         if (evt.target != handle)
@@ -90,26 +113,151 @@ namespace Amanita.VScripting.EditorUtils
 
             _listDisplay.unbindItem = (element, index) =>
             {
-                // DO NOT release here; virtualization reuses these on reorder scroll.
+                // Detach per-row handlers to avoid duplicate firing after rebinding
+                if (element.userData is IVariable var && _activeRows.TryGetValue(var, out var row))
+                {
+                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
+                }
+                element.userData = null;
                 element.Clear();
             };
 
-            _listDisplay.destroyItem = visElem => visElem.Clear();
+            _listDisplay.destroyItem = visElem =>
+            {
+                visElem.userData = null;
+                visElem.Clear();
+            };
 
             _listDisplay.canStartDrag += OnCanStartDrag;
             _listDisplay.itemIndexChanged += OnItemIndexChanged;
+
+            Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
+            Undo.undoRedoPerformed += HandleUndoRedoPerformed;
         }
 
         protected readonly List<IVariable> _variables = new();
         protected string _dragHandleName;
         protected bool _lastPointerDownOnHandle;
 
+        // Schedules the actual removal to the next editor update to avoid
+        // mutating ListView data source while it's mid-binding (which can cause orphan/phantom rows).
+        protected virtual void OnRemoveButtonClicked(VariableRow row)
+        {
+            if (row == null) return;
+            // Remove subscription immediately to prevent multiple queued removals
+            row.RemoveButtonClicked -= OnRemoveButtonClicked;
+            EditorApplication.delayCall += () => PerformRemoval(row);
+        }
+
+        void PerformRemoval(VariableRow row)
+        {
+            if (row == null) return;
+            var variable = row.VarToRepresent;
+
+            if (variable != null)
+            {
+                int idx = _variables.IndexOf(variable);
+                if (idx >= 0)
+                    _variables.RemoveAt(idx);
+
+                Flowchart flowchart = _flowchart;
+                if (flowchart == null && variable is Component comp)
+                {
+                    flowchart = comp.GetComponent<Flowchart>() ?? comp.GetComponentInParent<Flowchart>();
+                }
+                if (flowchart != null && _flowchart == null)
+                {
+                    _flowchart = flowchart;
+                    _flowchartInstanceID = _flowchart.GetInstanceID();
+                }
+
+                if (!Application.isPlaying)
+                {
+                    int group = Undo.GetCurrentGroup();
+                    Undo.SetCurrentGroupName("Remove Variable");
+                    if (flowchart != null)
+                        Undo.RegisterCompleteObjectUndo(flowchart, "Remove Variable");
+
+                    if (variable is UnityEngine.Object unityObj)
+                        Undo.DestroyObjectImmediate(unityObj);
+
+                    Undo.CollapseUndoOperations(group);
+                }
+                else
+                {
+                    if (variable is UnityEngine.Object uo)
+                        UnityEngine.Object.Destroy(uo);
+                }
+
+                ReleaseRow(variable);
+            }
+
+            SafeRefresh();
+        }
+
+        void SafeRefresh()
+        {
+            if (_listDisplay == null) return;
+
+            // Debounce multiple refresh requests within the same editor loop
+            if (_refreshScheduled) return;
+            _refreshScheduled = true;
+
+            EditorApplication.delayCall += () =>
+            {
+                if (_listDisplay == null) { _refreshScheduled = false; return; }
+
+                _refreshScheduled = false;
+
+                // Full rebuild strategy to eliminate “phantom” rows:
+                // 1. Break the binding (null itemsSource) so the internal virtualization
+                //    & dynamic height caches are flushed.
+                // 2. Re‑assign itemsSource.
+                // 3. Release any orphaned visuals still tracked (defensive).
+                // 4. Force a Rebuild (heavier than RefreshItems, but reliable after
+                //    mid‑frame data mutation + component destruction).
+                _listDisplay.itemsSource = null;
+
+                // (Optional micro‑optimization: prune any rows whose variable was destroyed)
+                PruneDeadRows();
+
+                _listDisplay.itemsSource = _variables;
+
+                // Force internal pools / height cache to recompute
+                _listDisplay.Rebuild();
+
+                // Final count & UI update
+                UpdateCount();
+            };
+        }
+
+        // Remove any cached row entries whose underlying variable object was destroyed (now null).
+        void PruneDeadRows()
+        {
+            if (_activeRows.Count == 0) return;
+
+            // Unity “missing component” slots can yield null comparison true
+            // so we filter any dictionary entries whose key (IVariable) is now a UnityEngine.Object that is null.
+            var dead = ListPool<IVariable>.Get();
+            foreach (var kvp in _activeRows)
+            {
+                if (kvp.Key is UnityEngine.Object uo && uo == null)
+                    dead.Add(kvp.Key);
+            }
+
+            if (dead.Count > 0)
+            {
+                foreach (var d in dead)
+                    ReleaseRow(d);
+            }
+            ListPool<IVariable>.Release(dead);
+        }
+
         protected virtual bool OnCanStartDrag(CanStartDragArgs args)
         {
             if (Application.isPlaying) return false;
             if (_requireHandleForDrag && !_lastPointerDownOnHandle)
                 return false;
-            // Reset so subsequent drags require a fresh handle click
             _lastPointerDownOnHandle = false;
             return true;
         }
@@ -118,7 +266,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (from == to) return;
             if (_variables.Count == 0) return;
-
             OrderChanged?.Invoke(_variables.ToList());
             UpdateCount();
         }
@@ -134,7 +281,6 @@ namespace Amanita.VScripting.EditorUtils
             return row;
         }
 
-        // Active rows kept by variable; we now retain them across unbinds to avoid flicker / empties
         protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
 
         protected virtual void ReleaseRow(IVariable variable)
@@ -150,12 +296,8 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
-
             foreach (var rowElem in _activeRows.Keys.ToList())
-            {
                 ReleaseRow(rowElem);
-            }
-
             _activeRows.Clear();
         }
 
@@ -163,10 +305,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (variable == null || _variables.Contains(variable)) return;
             _variables.Add(variable);
-            // ^This list is the source for the list display, and thus adding to it and then
-            // refreshing the list display should get the appropriate row added
-            _listDisplay.RefreshItems();
-            UpdateCount();
+            SafeRefresh();
         }
 
         public void RemoveVariable(IVariable variable)
@@ -174,11 +313,9 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             int idx = _variables.IndexOf(variable);
             if (idx < 0) return;
-
             _variables.RemoveAt(idx);
             ReleaseRow(variable);
-            _listDisplay.RefreshItems();
-            UpdateCount();
+            SafeRefresh();
         }
 
         public void SetVariables(IEnumerable<IVariable> vars)
@@ -188,29 +325,22 @@ namespace Amanita.VScripting.EditorUtils
             if (vars != null)
             {
                 foreach (var elem in vars)
-                {
                     if (elem != null)
-                    {
                         _variables.Add(elem);
-                    }
-                }
             }
-
-            UpdateCount();
+            SafeRefresh();
         }
 
         public void Clear()
         {
             ReleaseAllActiveRows();
             _variables.Clear();
-            _listDisplay.RefreshItems();
-            UpdateCount();
+            SafeRefresh();
         }
 
         public void Refresh()
         {
-            _listDisplay.RefreshItems();
-            UpdateCount();
+            SafeRefresh();
         }
 
         public int RowCount => _variables.Count;
@@ -229,17 +359,18 @@ namespace Amanita.VScripting.EditorUtils
         public void UpdateCount()
         {
             if (_countDisplay != null)
-            {
                 _countDisplay.text = $"Count: {_variables.Count}";
-            }
         }
 
         public event Action<IReadOnlyList<IVariable>> OrderChanged;
 
         public void Dispose()
         {
+            Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
+
             ReleaseAllActiveRows();
             _variables.Clear();
+
             if (_listDisplay != null)
             {
                 _listDisplay.makeItem = null;
@@ -251,11 +382,14 @@ namespace Amanita.VScripting.EditorUtils
                 _listDisplay.Clear();
                 _listDisplay = null;
             }
+
             _listDisplay?.RemoveFromHierarchy();
             _countDisplay?.RemoveFromHierarchy();
-            _listDisplay = null;
             _countDisplay = null;
             _factory = null;
+
+            _flowchart = null;
+            _flowchartInstanceID = 0;
         }
 
         public void RequireDragHandle(string handleName)
@@ -266,57 +400,108 @@ namespace Amanita.VScripting.EditorUtils
 
         protected bool _requireHandleForDrag;
 
-        #region For tests only
-        // (optional) test helper (internal so normal builds ignore misuse)
-        public void ForTests_SetLastPointerDownOnHandle(bool v) => _lastPointerDownOnHandle = v;
+        #region Undo/Redo Sync
 
-        // Force-creates rows & handlers for all current variables
-        // without requiring a panel / real binding cycle.
-        // Safely handles the case where ListView's internal scroll view (and thus contentContainer)
-        // has not been created yet (with contentContainer == null).
+        private void HandleUndoRedoPerformed()
+        {
+            AcquireFlowchartIfLost();
+            SyncFromFlowchart();
+        }
+
+        protected bool AcquireFlowchartIfLost()
+        {
+            if (_flowchart != null) return true;
+
+            if (_flowchartInstanceID != 0)
+            {
+                var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
+                if (obj != null)
+                {
+                    _flowchart = obj;
+                    return true;
+                }
+            }
+
+            try
+            {
+                var viaWindow = FlowchartWindow.GetFlowchart();
+                if (viaWindow != null)
+                {
+                    _flowchart = viaWindow;
+                    _flowchartInstanceID = _flowchart.GetInstanceID();
+                    return true;
+                }
+            }
+            catch { }
+
+            var all = UnityEngine.Object.FindObjectsOfType<Flowchart>();
+            if (all.Length == 1)
+            {
+                _flowchart = all[0];
+                _flowchartInstanceID = _flowchart.GetInstanceID();
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual void SyncFromFlowchart()
+        {
+            if (!AcquireFlowchartIfLost())
+                return;
+
+            var source = _flowchart.Variables;
+            if (source == null)
+                return;
+
+            ReleaseAllActiveRows();
+            _variables.Clear();
+            foreach (var elem in source)
+            {
+                if (elem != null)
+                    _variables.Add(elem);
+            }
+
+            SafeRefresh();
+        }
+
+        #endregion
+
+        #region For tests only
+        public void ForTests_SetLastPointerDownOnHandle(bool v) => _lastPointerDownOnHandle = v;
+            
         public void ForceMaterializeAllRowsForTests()
         {
             if (_listDisplay == null || _variables.Count == 0)
                 return;
 
-            // If ListView hasn't created its internal ScrollView yet, contentContainer will be null.
-            // We create (once) a private fallback container to host materialized rows for tests.
             var container = _listDisplay.contentContainer;
             if (container == null)
             {
                 if (_testMaterializedContainer == null)
                 {
-                    _testMaterializedContainer = new VisualElement
-                    {
-                        name = "__TestMaterializedRows"
-                    };
-                    // Add it directly under the ListView so tests can still inspect visual children if needed.
+                    _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
                     _listDisplay.hierarchy.Add(_testMaterializedContainer);
                 }
                 container = _testMaterializedContainer;
             }
 
-            // Avoid redundant population: if we already have as many root row visuals
-            // as variables, assume it's up to date (headless test scenario).
             if (container.childCount >= _variables.Count && _activeRows.Count >= _variables.Count)
                 return;
 
             for (int i = 0; i < _variables.Count; i++)
             {
                 var elem = _variables[i];
-                if (elem == null)
-                    continue;
+                if (elem == null) continue;
 
                 var row = GetOrCreateRow(elem);
-                if (row?.RootElement == null)
-                    continue;
+                if (row?.RootElement == null) continue;
 
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
             }
         }
 
-        // Fallback container for headless test materialization (never serialized / runtime only).
         VisualElement _testMaterializedContainer;
         #endregion
     }

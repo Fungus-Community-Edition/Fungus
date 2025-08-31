@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 using Amanita.DentedPixel;
 

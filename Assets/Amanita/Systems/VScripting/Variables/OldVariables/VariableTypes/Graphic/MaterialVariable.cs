@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Material variable type.
     /// </summary>
-    [VariableInfo("Other", "Material")]
+    [VariableInfo("Graphic", "Material", typeof(Material))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class MaterialVariable : VariableBase<Material>

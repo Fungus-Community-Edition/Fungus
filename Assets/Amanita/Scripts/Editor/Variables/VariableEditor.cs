@@ -234,7 +234,7 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                string propNameBase = char.ToLowerInvariant(typeInfo.VariableType[0]) + typeInfo.VariableType.Substring(1);
+                string propNameBase = char.ToLowerInvariant(typeInfo.OptionDisplayName[0]) + typeInfo.OptionDisplayName.Substring(1);
                 string refPropName = propNameBase + "Ref"; // Example: integerRef
 
                 // Reference and literal lookups with compatibility fallbacks

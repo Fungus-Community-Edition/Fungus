@@ -1,12 +1,12 @@
 {
-    "name": "FungusPlayModeTests",
+    "name": "AmanitaPlayModeTests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "FungusEditor",
-        "FungusEditorTests",
-        "Amanita"
+        "Amanita",
+        "AmanitaEditor",
+        "AmanitaEditorTests"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,4 @@
-﻿
-
-
-#if UNITY_2019_2_OR_NEWER
+﻿#if UNITY_2019_2_OR_NEWER
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;

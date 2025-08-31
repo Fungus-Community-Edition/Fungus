@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Amanita
+﻿namespace Amanita
 {
     /// <summary>
     /// Interface for Flowchart components which can be updated when the 

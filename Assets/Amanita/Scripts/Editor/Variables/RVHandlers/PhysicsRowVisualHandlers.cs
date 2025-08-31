@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
-using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
 namespace Amanita.VScripting.EditorUtils
 {

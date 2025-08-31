@@ -1,6 +1,3 @@
-
-
-
 // Adapted from the Unity Test Tools project (MIT license)
 // https://bitbucket.org/Unity-Technologies/unitytesttools/src/a30d562427e9/Assets/UnityTestTools/
 

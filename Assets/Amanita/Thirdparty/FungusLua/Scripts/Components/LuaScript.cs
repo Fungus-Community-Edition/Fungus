@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 using MoonSharp.Interpreter;
 using Debug = UnityEngine.Debug;

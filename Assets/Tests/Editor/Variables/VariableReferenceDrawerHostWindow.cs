@@ -1,7 +1,6 @@
 using Amanita.VScripting.EditorUtils;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Amanita.Tests.EditMode
 {

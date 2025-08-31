@@ -1,6 +1,3 @@
-
-
-
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Integer variable type.
     /// </summary>
-    [VariableInfo("", "Integer", "Integer")]
+    [VariableInfo("Numeric", "Integer", typeof(int))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class IntegerVariable : VariableBase<int>

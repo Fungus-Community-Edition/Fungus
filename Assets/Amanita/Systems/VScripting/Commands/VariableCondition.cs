@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// class for a single condition. A list of this is used for multiple conditions.
+    /// Class for a single condition. A list of this is used for multiple conditions.
     /// </summary>
     [System.Serializable]
     public class ConditionExpression
@@ -197,9 +197,6 @@ namespace Amanita.VScripting
 
         [Tooltip("Object value to compare against")]
         [SerializeField] protected ObjectData objectData;
-
-        [Tooltip("Rigidbody2D value to compare against")]
-        [SerializeField] protected Rigidbody2DData rigidbody2DData;
 
         [Tooltip("Sprite value to compare against")]
         [SerializeField] protected SpriteData spriteData;

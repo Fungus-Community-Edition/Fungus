@@ -137,6 +137,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             // Remove the outer ListView entirely
             _holdsManager = new VisualElement { name = "rows-root" };
+
             _holdsManager.style.flexDirection = FlexDirection.Column;
             _holdsManager.style.flexGrow = 1;
 
@@ -324,7 +325,10 @@ namespace Amanita.VScripting.EditorUtils
             Undo.IncrementCurrentGroup();
             foreach (var v in list)
             {
-                Undo.DestroyObjectImmediate(v as UnityEngine.Object);
+                if (v != null)
+                {
+                    Undo.DestroyObjectImmediate(v as UnityEngine.Object);
+                }
             }
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
             EditorUtility.SetDirty(_flowchart);
