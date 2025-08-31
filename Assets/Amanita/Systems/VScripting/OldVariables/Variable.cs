@@ -1,10 +1,10 @@
-
-
+// This code is part of the Fungus library (https://github.com/snozbot/fungus)
+// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using Amanita.VScripting;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace Amanita
 {
     /// <summary>
     /// Standard comparison operators.
@@ -89,7 +89,7 @@ namespace Amanita.VScripting
 
         public VariablePropertyAttribute(AllVariableTypes.VariableAny any)
         {
-            VariableTypes = AllVariableTypes.AllIVariableTypes;
+            VariableTypes = AllVariableTypes.AllAmanitaVarTypes;
         }
 
         public VariablePropertyAttribute (string defaultText, params System.Type[] variableTypes) 
@@ -130,11 +130,6 @@ namespace Amanita.VScripting
         }
 
         #region Public members
-
-        public virtual void Init()
-        {
-            Init(GetValue());
-        }
 
         public abstract void Init(System.Object startValue);
 
@@ -184,16 +179,7 @@ namespace Amanita.VScripting
         /// </summary>
         public abstract object GetValue();
 
-
-        public abstract System.Type ContentType { get; }
-
-        public virtual object Value
-        {
-            get { return baseVal; }
-            set { baseVal = value; }
-        }
-
-        protected object baseVal;
+        public virtual object Value { get; set; }
         /// <summary>
         /// Set value in inherited types via Boxed value.
         /// Not recommended for direct use, primarily intended for use in editor code.
@@ -236,29 +222,26 @@ namespace Amanita.VScripting
             }
         }
 
-        public override System.Type ContentType => typeof(T);
-
         [SerializeField] protected T value;
         public virtual new T Value
         {
             get
             {
-                return this.value;
-                //if (scope != VariableScope.Global || !Application.isPlaying)
-                //{
-                //    return this.value;
-                //}
-                //else
-                //{ 
-                //    return globalStaicRef.value;
-                //}
+                if (scope != VariableScope.Global || !Application.isPlaying)
+                {
+                    return this.value;
+                }
+                else
+                { 
+                    return globalStaicRef.value;
+                }
             }
             set
             {
                 if (scope != VariableScope.Global || !Application.isPlaying)
                 {
                     this.value = value;
-                    baseVal = value;
+                    base.Value = value;
                 }
                 else
                 {
@@ -321,7 +304,6 @@ namespace Amanita.VScripting
         protected virtual void Init(T startVal)
         {
             this.startValue = startVal;
-            base.Value = startValue;
         }
 
         //Apply to get from base system.object to T

@@ -1,6 +1,7 @@
 using Amanita.VScripting;
 using NUnit.Framework;
 using System;
+using UnityEngine;
 
 namespace Amanita.MuscariableTests.DataOnly
 {

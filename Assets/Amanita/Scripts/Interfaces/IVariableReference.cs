@@ -3,6 +3,8 @@
 
 using Amanita.VScripting;
 
+using Amanita.VScripting;
+
 namespace Amanita
 {
     /// <summary>
