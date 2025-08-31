@@ -251,7 +251,9 @@ namespace Amanita.VScripting.EditorUtils
                 _listDisplay.Clear();
                 _listDisplay = null;
             }
+            _listDisplay?.RemoveFromHierarchy();
             _countDisplay?.RemoveFromHierarchy();
+            _listDisplay = null;
             _countDisplay = null;
             _factory = null;
         }

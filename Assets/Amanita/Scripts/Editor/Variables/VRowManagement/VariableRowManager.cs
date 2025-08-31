@@ -37,12 +37,6 @@ namespace Amanita.VScripting.EditorUtils
                     errorLogs++;
                 }
 
-                if (initArgs.HoldsManager == null)
-                {
-                    Debug.LogError("VariableRowManager was given nothing to hold it.");
-                    errorLogs++;
-                }
-
                 if (initArgs.Root == null)
                 {
                     Debug.LogError("VariableRowManager was not given a root to work with.");
@@ -81,8 +75,6 @@ namespace Amanita.VScripting.EditorUtils
         protected Flowchart _flowchart;
         protected IVariableListView _listView;
 
-        protected VisualElement _holdsManager;
-
         public VisualElement Root { get; protected set; }
 
         #region Event Wiring / Visual Init
@@ -109,7 +101,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
         {
-            _holdsManager = initArgs.HoldsManager;
             Root = initArgs.Root;
         }
 
@@ -164,19 +155,14 @@ namespace Amanita.VScripting.EditorUtils
             ToggleSubscriptions(false);
             ReleaseRowsFromList();
 
-            if (Root != null && _holdsManager != null && _holdsManager.Contains(Root))
-                _holdsManager.Remove(Root);
-
             _listView?.Dispose();
 
             _listView = null;
             _flowchart = null;
             Root = null;
-            _holdsManager = null;
             _isDisposed = true;
         }
 
-        
         #endregion
     }
 }
