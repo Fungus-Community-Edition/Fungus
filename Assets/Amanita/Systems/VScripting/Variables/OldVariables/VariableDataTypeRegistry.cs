@@ -1,19 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    public static class VariableDataRegistry
+    public static class VariableDataTypeRegistry
     {
         // Key is var type, value is data type
-        private static readonly Dictionary<Type, Type> _varTypeToDataType = new();
+        private static readonly IDictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
+
+        /// <summary>
+        /// Key: IVariable-implementor.
+        /// Value: IVariableData-implementor.
+        /// </summary>
+        public static IReadOnlyDictionary<Type, Type> TypeMap => 
+            _typeMap as IReadOnlyDictionary<Type, Type>;
 
         public static void Clear()
         {
-            _varTypeToDataType.Clear();
+            _typeMap.Clear();
         }
 
         public static void Register(Type varDataType, VariableDataAttribute attr)
@@ -28,16 +34,13 @@ namespace Amanita.VScripting
 
             foreach (var varTypeEl in compatibleVarTypes)
             {
-                _varTypeToDataType.TryAdd(varTypeEl, varDataType);
+                _typeMap.TryAdd(varTypeEl, varDataType);
             }
         }
 
-        /// <summary>
-        /// T is the variable type (IntegerVariable, AudioClipVariable, etc)
-        /// </summary>
-        public static IVariableData CreateForVar<T>() where T: IVariable
+        public static IVariableData CreateForVar<TVarType>() where TVarType: IVariable
         {
-            return CreateForVar(typeof(T));
+            return CreateForVar(typeof(TVarType));
         }
 
         public static IVariableData CreateForVar(Type variableType)
@@ -51,7 +54,7 @@ namespace Amanita.VScripting
             else
             {
                 Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
-                    $"in the registry: {_varTypeToDataType.Count}");
+                    $"in the registry: {_typeMap.Count}");
             }
             
             return result;
@@ -59,7 +62,7 @@ namespace Amanita.VScripting
 
         public static Type GetDataTypeLinkedToVarType(Type variableType)
         {
-            _varTypeToDataType.TryGetValue(variableType, out var result);
+            _typeMap.TryGetValue(variableType, out var result);
             return result;
         }
 

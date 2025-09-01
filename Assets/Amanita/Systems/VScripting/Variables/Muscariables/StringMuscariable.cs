@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [VariableInfo("", "String", typeof(string), false)]
+    [VariableInfo("", "String", typeof(string))]
     public class StringMuscariable : Muscariable<string>
     {
         public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)

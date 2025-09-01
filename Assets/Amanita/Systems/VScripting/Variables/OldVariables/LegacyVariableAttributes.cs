@@ -13,12 +13,11 @@ namespace Amanita.VScripting
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
         public VariableInfoAttribute(string category, string optionDisplayName, Type contentType,
-            bool isLegacy = true, int order = 0)
+            int order = 0)
         {
             this.Category = category;
             this.OptionDisplayName = optionDisplayName;
             this.ContentType = contentType;
-            this.IsLegacy = isLegacy;
 
             this.Order = order;
         }
@@ -27,7 +26,6 @@ namespace Amanita.VScripting
         public string OptionDisplayName { get; set; }
         public Type ContentType { get; set; }
         public int Order { get; set; }
-        public bool IsLegacy { get; set; }
         public bool IsPreviewedOnly { get; set; }
     }
 

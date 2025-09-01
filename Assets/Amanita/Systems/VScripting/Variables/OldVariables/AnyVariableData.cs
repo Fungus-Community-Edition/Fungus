@@ -96,7 +96,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            IVariableData toSet = VariableDataRegistry.CreateForVar(varType);
+            IVariableData toSet = VariableDataTypeRegistry.CreateForVar(varType);
             
             if (toSet == null)
             {

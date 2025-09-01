@@ -244,6 +244,7 @@ namespace Amanita.VScripting
     }
 
     [Serializable]
+    [VariableInfo("NoShow", "", typeof(object))]
     public class GenericMuscariable : Muscariable<object>
     {
         // Keep defaults: Assign supported; Equals/NotEquals from base are fine.

@@ -1,23 +1,38 @@
-using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
+    /// <summary>
+    /// A registry and instantiator for legacy and muscari types alike.
+    /// </summary>
     public static class VariableTypeRegistry
     {
-        private static readonly HashSet<Type> _legacyTypes = new();
-        private static readonly HashSet<Type> _muscariableTypes = new();
-        private static readonly Dictionary<Type, VariableTypeActions> _actions = new(new TypeNameComparer());
+        private static readonly IList<Type> _legacyTypes = new List<Type>();
+        private static readonly IList<Type> _muscariableTypes = new List<Type>();
+        private static readonly IDictionary<Type, VariableTypeActions> _actions = 
+            new Dictionary<Type, VariableTypeActions>(new TypeNameComparer());
 
-        public static IReadOnlyList<Type> AllLegacyTypes => _legacyTypes.ToArray();
-        public static IReadOnlyList<Type> AllMuscariableTypes => _muscariableTypes.ToArray();
+        // Key: IVariable-implementor. Value: content.
+        private static readonly IDictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
 
-        public static void RegisterVariable(Type varType, VariableTypeActions actions, bool isLegacy)
+        public static IReadOnlyList<Type> AllLegacyTypes => _legacyTypes as IReadOnlyList<Type>;
+        public static IReadOnlyList<Type> AllMuscariableTypes => _muscariableTypes as IReadOnlyList<Type>;
+        public static IReadOnlyDictionary<Type, Type> TypeMap => _typeMap as IReadOnlyDictionary<Type, Type>;
+
+        public static void RegisterMultiVariableTypes(IEnumerable<Type> types, VariableTypeActions actions)
         {
+            foreach (var type in types)
+            {
+                RegisterVariableType(type, actions);
+            }
+        }
+
+        public static void RegisterVariableType(Type varType, VariableTypeActions actions)
+        {
+            bool isLegacy = _baseLegacyType.IsAssignableFrom(varType);
             if (isLegacy)
             {
                 _legacyTypes.Add(varType);
@@ -27,8 +42,15 @@ namespace Amanita.VScripting
                 _muscariableTypes.Add(varType);
             }
 
-            _actions[varType] = actions;
+            VariableInfoAttribute att = varType.GetCustomAttribute<VariableInfoAttribute>();
+            if (att != null)
+            {
+                _typeMap.Add(varType, att.ContentType);
+                _actions[varType] = actions;
+            }
         }
+
+        private static readonly Type _baseLegacyType = typeof(Variable);
 
         public static Type LegacyTypeFor(Type contentType)
         {
@@ -57,17 +79,23 @@ namespace Amanita.VScripting
             return result;
         }
 
-        private static IDictionary<Type, Type> _contentTypeToVarType = new Dictionary<Type, Type>(new TypeNameComparer());
+        private static readonly IDictionary<Type, Type> _contentTypeToVarType = new Dictionary<Type, Type>(new TypeNameComparer());
 
-        public static Type MuscariableTypeFor(Type contentType)
+        /// <summary>
+        /// If there is no Muscariable specifically for the passed content type,
+        /// this will return the generic muscariable type.
+        /// </summary>
+        public static Type MuscariTypeFor(Type contentType)
         {
-            return VarTypeFor(_muscariableTypes, contentType);
-        }
+            Type result = VarTypeFor(_muscariableTypes, contentType);
 
-        public static bool TryGetTypeActionsFor<T>(out VariableTypeActions result)
-        {
-            Type type = typeof(T);
-            return TryGetTypeActionsFor(type, out result);
+            // Generic fallback
+            if (result == null)
+            {
+                result = typeof(GenericMuscariable);
+            }
+
+            return result;
         }
 
         public static bool TryGetTypeActionsFor(Type type, out VariableTypeActions result)
@@ -83,31 +111,9 @@ namespace Amanita.VScripting
             return gotIt;
         }
 
-        private static Variable CreateLegacyVar(Type legacyVarType, Flowchart varHolder)
-        {
-            Variable result = null;
-            var newVariable = varHolder.gameObject.AddComponent(legacyVarType) as Variable;
-            if (newVariable == null)
-            {
-                Debug.LogError($"Failed to add variable component of type {legacyVarType.Name} to {varHolder.name}");
-                
-            }
-            else
-            {
-                result = newVariable;
-            }
-
-            return result;
-        }
-
-        private static Muscariable CreateMuscariable(Type muscariType)
-        {
-            Muscariable result = (Muscariable)Activator.CreateInstance(muscariType);
-            return result;
-        }
-
         public static void Clear()
         {
+            _typeMap.Clear();
             _contentTypeToVarType.Clear();
             _legacyTypes.Clear();
             _muscariableTypes.Clear();

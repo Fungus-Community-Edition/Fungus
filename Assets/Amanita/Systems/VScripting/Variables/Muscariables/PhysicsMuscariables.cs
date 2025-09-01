@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [Serializable]
-    [VariableInfo("Physics/ThreeD", "ColliderThreeD", typeof(Collider), false)]
+    [VariableInfo("Physics/ThreeD", "ColliderThreeD", typeof(Collider))]
     public class ColliderMuscariableThreeD : Muscariable<Collider>
     {
         // We use SerializeField here (instead of SerializeReference) due to the way
@@ -98,7 +98,7 @@ namespace Amanita.VScripting
     }
     
     [Serializable]
-    [VariableInfo("Physics/TwoD", "ColliderTwoD", typeof(Collider2D), false)]
+    [VariableInfo("Physics/TwoD", "ColliderTwoD", typeof(Collider2D))]
     public class ColliderMuscariableTwoD : Muscariable<Collider2D>
     {
         [SerializeField] protected Collider2D colliderRef;
