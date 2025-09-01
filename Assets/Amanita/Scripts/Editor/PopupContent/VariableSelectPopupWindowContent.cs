@@ -16,15 +16,27 @@ namespace Amanita.VScripting.EditorUtils
         /// <summary>
         /// All variable types available for user selection. Lazily (re)cached.
         /// </summary>
-        protected static IReadOnlyList<System.Type> VariableTypes
+        protected static IReadOnlyList<System.Type> LegacyTypes
         {
             get
             {
-                if (_variableTypes == null || _variableTypes.Count == 0)
+                if (_legacyTypes == null || _legacyTypes.Count == 0)
                 {
                     RefreshVariableTypeCache();
                 }
-                return _variableTypes;
+                return _legacyTypes;
+            }
+        }
+
+        protected static IReadOnlyList<System.Type> MuscariTypes
+        {
+            get
+            {
+                if (_muscariTypes == null || _muscariTypes.Count == 0)
+                {
+                    RefreshVariableTypeCache();
+                }
+                return _muscariTypes;
             }
         }
 
@@ -47,11 +59,12 @@ namespace Amanita.VScripting.EditorUtils
         protected static void RefreshVariableTypeCache()
         {
             // Using registry instead of reflection scan for performance / determinism.
-            _variableTypes = new List<System.Type>(VariableTypeRegistry.AllTypes);
+            _legacyTypes = VariableTypeRegistry.AllLegacyTypes;
+            _muscariTypes = VariableTypeRegistry.AllMuscariableTypes;
         }
 
         // Cached list of concrete variable component types (legacy Variable system)
-        protected static IReadOnlyList<System.Type> _variableTypes;
+        protected static IReadOnlyList<System.Type> _legacyTypes, _muscariTypes;
 
         #endregion
 
@@ -72,22 +85,36 @@ namespace Amanita.VScripting.EditorUtils
         protected override void PrepareAllItems()
         {
             // Iterate with index so we can map back to original type directly.
-            for (int typeIndex = 0; typeIndex < VariableTypes.Count; typeIndex++)
+            IList<System.Type> contentTypesPreparedFor = new List<System.Type>();
+
+            // Check for muscariables first
+            PrepareItemsFor(MuscariTypes);
+            PrepareItemsFor(LegacyTypes);
+
+            void PrepareItemsFor(IReadOnlyList<System.Type> varTypes)
             {
-                var type = VariableTypes[typeIndex];
-                var info = VariableEditor.GetVariableInfo(type);
-                if (info == null)
+                for (int typeIndex = 0; typeIndex < varTypes.Count; typeIndex++)
                 {
-                    string logMessage = $"Type {type.Name} does not have a variable info attribute.";
-                    Debug.LogWarning(logMessage);
-                    continue;
+                    var type = varTypes[typeIndex];
+                    var info = VariableEditor.GetVariableInfo(type);
+                    if (info == null)
+                    {
+                        string logMessage = $"Type {type.Name} does not have a variable info attribute.";
+                        Debug.LogWarning(logMessage);
+                        continue;
+                    }
+
+                    if (contentTypesPreparedFor.Contains(info.ContentType))
+                    {
+                        continue;
+                    }
+
+                    // We're not going to worry about any of the types having an ObsoleteAttribute
+                    string display = MakeDisplayLabel(info);
+
+                    // The original index into VariableTypes is preserved in 'typeIndex'.
+                    allItems.Add(new FilteredListItem(typeIndex, display));
                 }
-
-                // We're not going to worry about any of the types having an ObsoleteAttribute
-                string display = MakeDisplayLabel(info);
-
-                // The original index into VariableTypes is preserved in 'typeIndex'.
-                allItems.Add(new FilteredListItem(typeIndex, display));
             }
         }
 
@@ -114,10 +141,10 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         protected override void SelectByOrigIndex(int index)
         {
-            if (index < 0 || index >= VariableTypes.Count)
+            if (index < 0 || index >= LegacyTypes.Count)
                 return;
 
-            AddVariable(VariableTypes[index]);
+            AddVariable(LegacyTypes[index]);
         }
 
         #endregion
@@ -162,13 +189,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             GenericMenu menu = new GenericMenu();
 
-            IList<System.Type> typesWithCategory = _variableTypes.Where(TypeHasCategory).ToList();
+            IList<System.Type> typesWithCategory = _legacyTypes.Where(TypeHasCategory).ToList();
             static bool TypeHasCategory(System.Type type)
             {
                 var info = VariableEditor.GetVariableInfo(type);
                 return info == null || !string.IsNullOrEmpty(info.Category);
             }
-            IList<System.Type> uncategorized = _variableTypes.Where((elem) => !TypeHasCategory(elem)).ToList();
+            IList<System.Type> uncategorized = _legacyTypes.Where((elem) => !TypeHasCategory(elem)).ToList();
 
             // We want to list the uncategorized types first
             AddToMenu(uncategorized);
@@ -202,11 +229,11 @@ namespace Amanita.VScripting.EditorUtils
         /// Creates a new Variable component of the supplied type on the active flowchart.
         /// Optionally attempts to place it after an existing variable with the suggested name.
         /// </summary>
-        /// <param name="obj">System.Type expected.</param>
+        /// <param name="varToAdd">System.Type expected.</param>
         /// <param name="suggestedName">Optional preferred key (used also to attempt positional insertion).</param>
-        public static void AddVariable(object obj, string suggestedName)
+        public static void AddVariable(object varToAdd, string suggestedName)
         {
-            if (obj is not System.Type variableType)
+            if (varToAdd is not System.Type variableType)
                 return;
 
             var flowchart = curFlowchart != null ? curFlowchart : FlowchartWindow.GetFlowchart();

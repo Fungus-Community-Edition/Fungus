@@ -74,6 +74,9 @@ namespace Amanita.VScripting
 
     public abstract class VariableData<TValue, TVar> : VariableData where TVar : IVariable<TValue>
     {
+        [SerializeField, SerializeReference]
+        protected IVariable<TValue> _varRef;
+
         public static implicit operator TValue(VariableData<TValue, TVar> someData)
         {
             return someData.Value;
@@ -155,6 +158,26 @@ namespace Amanita.VScripting
         {
             this._valObj = this._valOfType = otherVarData._valOfType;
             this.VarRef = otherVarData.VarRef;
+        }
+
+        public override IVariable VarRef
+        {
+            get { return _varRef; }
+            set
+            {
+                if (value == null) { _varRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    _varRef = value as IVariable<TValue>;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
         }
 
 

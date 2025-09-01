@@ -62,10 +62,10 @@ namespace Amanita.Myceliaudio
             }
 
             string volStr;
-            bool volumeIsVar = targetVol.floatRef != null;
+            bool volumeIsVar = targetVol.VarRef != null;
             if (volumeIsVar)
             {
-                volStr = targetVol.floatRef.Key;
+                volStr = targetVol.VarRef.Key;
             }
             else
             {
@@ -73,10 +73,10 @@ namespace Amanita.Myceliaudio
             }
 
             string durStr;
-            bool durIsVol = duration.floatRef != null;
+            bool durIsVol = duration.VarRef != null;
             if (durIsVol)
             {
-                durStr = duration.floatRef.Key;
+                durStr = duration.VarRef.Key;
             }
             else
             {

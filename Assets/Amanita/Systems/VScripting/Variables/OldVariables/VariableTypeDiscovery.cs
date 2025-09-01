@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
     public static class VariableTypeDiscovery
     {
-        [InitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        [UnityEditor.InitializeOnLoadMethod]
         public static void DiscoverAndRegister()
         {
             UnityEngine.Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
@@ -24,63 +26,43 @@ namespace Amanita.VScripting
 
         private static void RefreshVariableTypeRegistry()
         {
-            allTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(SafeGetTypes)
-                .Where(TypeIsConcreteImplementation)
-                .ToArray();
+            IEnumerable<Type> varSubtypes = AppDomain.CurrentDomain.GetAssemblies()
+                         .SelectMany(SafeGetTypes)
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableType));
 
-            static IEnumerable<Type> SafeGetTypes(Assembly toGetTypesFrom)
+            SetVarTypeRegistry();
+            void SetVarTypeRegistry()
             {
-                try
+                VariableTypeRegistry.Clear();
+                VariableTypeActions typeActions = new VariableTypeActions()
                 {
-                    return toGetTypesFrom.GetTypes();
-                }
-                catch (ReflectionTypeLoadException ex)
-                {
-                    return ex.Types.Where(typeFound => typeFound != null);
-                }
-            }
-
-            static bool TypeIsConcreteImplementation(Type toEvaluate)
-            {
-                return !toEvaluate.IsAbstract && !toEvaluate.IsInterface;
-            }
-
-            VariableTypeRegistry.Clear();
-            foreach (var type in allTypes)
-            {
-                // 1) Legacy Amanita variables
-                var legacyAttr = type.GetCustomAttribute<VariableInfoAttribute>();
-                if (legacyAttr != null)
-                {
-                    RegisterVariableType(type);
-                    continue;
-                }
-
-                // 2) Muscariables
-                var muscariAttr = type.GetCustomAttribute<MuscariableAttribute>();
-                if (muscariAttr != null)
-                {
-                    // Use whatever info MuscariableAttribute already exposes
-                    RegisterMuscariableType(type, muscariAttr);
-                }
+                    CompareFunc = VarCompareFunc,
+                    DescFunc = VarGetDescription,
+                    SetFunc = VarSetFunc
+                };
+                VariableTypeRegistry.RegisterMultiVariableTypes(varSubtypes, typeActions);
             }
         }
 
-        private static IList<Type> allTypes;
-
-        private static void RegisterVariableType(Type varType)
+        static IEnumerable<Type> SafeGetTypes(Assembly toGetTypesFrom)
         {
-            VariableTypeActions typeActions = new VariableTypeActions()
+            try
             {
-                CompareFunc = VarCompareFunc,
-                DescFunc = VarGetDescription,
-                SetFunc = VarSetFunc
-            };
-
-            VariableTypeRegistry.Register(varType, typeActions);
-            //UnityEngine.Debug.Log($"Registering variable type: {varType.FullName}");
+                return toGetTypesFrom.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(typeFound => typeFound != null);
+            }
         }
+
+        private static bool IsInstantiatableType(Type typeToCheck, Type baseVarType)
+        {
+            bool result = typeToCheck.IsConcrete() && baseVarType.IsAssignableFrom(typeToCheck);
+            return result;
+        }
+
+        private static readonly Type _iVariableType = typeof(IVariable);
 
         private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
         {
@@ -98,36 +80,25 @@ namespace Amanita.VScripting
             iVar.Apply(setOp, varData.Value);
         }
 
-        private static void RegisterMuscariableType(Type type, MuscariableAttribute attr)
-        {
-            // If MuscariableAttribute already contains everything needed for registration,
-            // we just pass it through to the registry.
-            //VariableTypeRegistry.Register(
-            //    type,
-            //    (pair, op) => attr.Compare(pair, op),   // or whatever compare delegate Muscariable uses
-            //    (pair) => attr.Describe(pair),          // description delegate
-            //    (pair, op) => attr.Set(pair, op)        // set delegate
-            //);
-        }
-
         private static void RefreshVariableDataTypeRegistry()
         {
-            VariableDataRegistry.Clear();
+            IEnumerable<Type> varDataSubtypes = AppDomain.CurrentDomain.GetAssemblies()
+                         .SelectMany(SafeGetTypes)
+                         .Where((elem) => IsInstantiatableType(elem, iVariableDataType));
 
-            foreach (var elem in allTypes)
+            VariableDataTypeRegistry.Clear();
+
+            foreach (var elem in varDataSubtypes)
             {
                 VariableDataAttribute attr = elem.GetCustomAttribute<VariableDataAttribute>();
                 if (attr != null)
                 {
-                    VariableDataRegistry.Register(elem, attr);
+                    VariableDataTypeRegistry.Register(elem);
                 }
             }
         }
 
-        private static void RegisterVariableDataType(Type varDataType)
-        {
-
-        }
+        private static readonly Type iVariableDataType = typeof(IVariableData);
 
     }
 }
