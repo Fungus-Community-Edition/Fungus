@@ -1,7 +1,9 @@
+using UnityEngine;
+
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [Muscariable("Primitive", typeof(string), "String")]
+    [VariableInfo("", "String", typeof(string), false)]
     public class StringMuscariable : Muscariable<string>
     {
         public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)

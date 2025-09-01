@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UITKLabel = UnityEngine.UIElements.Label;
+using UnityEngine.TestTools;
 
 namespace Amanita.Tests.EditMode
 {
@@ -292,12 +293,20 @@ namespace Amanita.Tests.EditMode
         }
 
         [Test]
-        public void AddVariable_AfterDispose_CurrentBehavior_NRE()
+        public void AddVariable_AfterDispose_LogWarning()
         {
             var v1 = CreateVar<FloatVariable, float>("f1", 1f);
             _view.Dispose();
-            Assert.Catch<NullReferenceException>(() => _view.AddVariable(v1),
-                "Behavior changed (no NRE). Update test if a guard was added.");
+            LogAssert.Expect(LogType.Warning, "Tried to add variable to disposed VariableListView.");
+            _view.AddVariable(v1);
+        }
+
+        [Test]
+        public void AddVariable_NullVar_LogWarning()
+        {
+            IVariable nullVar = null;
+            LogAssert.Expect(LogType.Warning, "Tried to add a null variable to VariableListView.");
+            _view.AddVariable(nullVar);
         }
     }
 }

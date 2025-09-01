@@ -10,6 +10,8 @@ using UnityEngine.EventSystems;
 using Amanita.VScripting.UI;
 using Amanita.VScripting.EventHandlers;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using UnityEngine.Serialization;
+using System.Reflection;
 
 namespace Amanita.VScripting
 {
@@ -37,10 +39,11 @@ namespace Amanita.VScripting
         [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
         
         [HideInInspector]
-        [SerializeField] protected List<Variable> variables = new List<Variable>();
+        [FormerlySerializedAs("variables")]
+        [SerializeField] protected List<Variable> _legacyVariables = new List<Variable>();
 
         [HideInInspector]
-        [SerializeField] protected List<Muscariable> muscariables = new List<Muscariable>();
+        [SerializeField] protected List<Muscariable> _muscariables = new List<Muscariable>();
 
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
@@ -221,20 +224,20 @@ namespace Amanita.VScripting
         /// <param name="index"></param>
         public virtual void RemoveVariableAtIndex(int index)
         {
-            if (index >= 0 && index < variables.Count)
+            if (index >= 0 && index < _legacyVariables.Count)
             {
-                IVariable toRemove = variables[index];
-                variables.RemoveAt(index);
+                IVariable toRemove = _legacyVariables[index];
+                _legacyVariables.RemoveAt(index);
                 VariableRemoved(toRemove);
             }
         }
 
         public virtual void RemoveMuscariableAtIndex(int index)
         {
-            if (index >= 0 && index < muscariables.Count)
+            if (index >= 0 && index < _muscariables.Count)
             {
-                IVariable toRemove = muscariables[index];
-                muscariables.RemoveAt(index);
+                IVariable toRemove = _muscariables[index];
+                _muscariables.RemoveAt(index);
                 VariableRemoved(toRemove);
             }
         }
@@ -242,15 +245,15 @@ namespace Amanita.VScripting
         public virtual void RemoveVariable(IVariable toRemove)
         {
             int index;
-            if (variables.Contains(toRemove))
+            if (_legacyVariables.Contains(toRemove))
             {
-                index = variables.IndexOf(toRemove as Variable);
+                index = _legacyVariables.IndexOf(toRemove as Variable);
                 RemoveVariableAtIndex(index);
             }
 
-            if (muscariables.Contains(toRemove))
+            if (_muscariables.Contains(toRemove))
             {
-                index = muscariables.IndexOf(toRemove as Muscariable);
+                index = _muscariables.IndexOf(toRemove as Muscariable);
                 RemoveMuscariableAtIndex(index);
             }
         }
@@ -261,7 +264,7 @@ namespace Amanita.VScripting
         public virtual void ClearVariables()
         {
             // We'll remove them one by one so the right events fire
-            while (variables.Count > 0)
+            while (_legacyVariables.Count > 0)
             {
                 RemoveVariableAtIndex(0);
             }
@@ -271,9 +274,9 @@ namespace Amanita.VScripting
         {
             // Muscariables get automatically serialized as part of the list, and thus 
             // we don't need anything like GetComponentsInChildren for them
-            variables = GetComponentsInChildren<Variable>().ToList();
-            IList<IVariable> allVars = variables.Cast<IVariable>()
-                .Concat(muscariables.Cast<IVariable>())
+            _legacyVariables = GetComponentsInChildren<Variable>().ToList();
+            IList<IVariable> allVars = _legacyVariables.Cast<IVariable>()
+                .Concat(_muscariables.Cast<IVariable>())
                 .ToList();
             for (int i = 0; i < allVars.Count; i++)
             {
@@ -425,13 +428,13 @@ namespace Amanita.VScripting
 
             // Remove any null entries in the variables list
             // It shouldn't happen but it seemed to occur for a user on the forum 
-            variables.RemoveAll(item => item == null);
+            _legacyVariables.RemoveAll(item => item == null);
 
             var allVariables = GetComponents<Variable>();
             for (int i = 0; i < allVariables.Length; i++)
             {
                 var variable = allVariables[i];
-                if (!variables.Contains(variable))
+                if (!_legacyVariables.Contains(variable))
                 {
                     DestroyImmediate(variable);
                 }
@@ -591,15 +594,15 @@ namespace Amanita.VScripting
         {
             get
             {
-                IReadOnlyList<IVariable> copyOfList = variables.Cast<IVariable>()
-                    .Concat(muscariables.Cast<IVariable>())
+                IReadOnlyList<IVariable> copyOfList = _legacyVariables.Cast<IVariable>()
+                    .Concat(_muscariables.Cast<IVariable>())
                     .ToList();
 
                 return copyOfList;
             }
         }
 
-        public virtual int VariableCount { get { return variables.Count; } }
+        public virtual int VariableCount { get { return _legacyVariables.Count; } }
 
         /// <summary>
         /// Description text displayed in the Flowchart editor window
@@ -895,8 +898,8 @@ namespace Amanita.VScripting
 
             List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
 
-            vars.AddRange(variables);
-            vars.AddRange(muscariables);
+            vars.AddRange(_legacyVariables);
+            vars.AddRange(_muscariables);
             string key = baseKey;
             while (true)
             {
@@ -1019,9 +1022,9 @@ namespace Amanita.VScripting
         /// </summary>
         public Variable GetVariable(string key)
         {
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var variable = variables[i];
+                var variable = _legacyVariables[i];
                 if (variable != null && variable.Key == key)
                 {
                     return variable;
@@ -1042,16 +1045,16 @@ namespace Amanita.VScripting
         public virtual IVariable GetVariable(int index)
         {
             IVariable result = null;
-            if (variables.Count > index && index >= 0)
+            if (_legacyVariables.Count > index && index >= 0)
             {
-                result = variables[index];
+                result = _legacyVariables[index];
             }
             return result;
         }
 
         public virtual Variable GetVariableById(int id)
         {
-            Variable result = (from varEl in variables
+            Variable result = (from varEl in _legacyVariables
                                where varEl.ItemID == id
                                select varEl).FirstOrDefault();
             if (result == null)
@@ -1070,9 +1073,9 @@ namespace Amanita.VScripting
         /// </summary>
         public T GetVariable<T>(string key) where T : Variable
         {
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var variable = variables[i];
+                var variable = _legacyVariables[i];
                 if (variable != null && variable.Key == key)
                 {
                     return variable as T;
@@ -1106,9 +1109,9 @@ namespace Amanita.VScripting
         /// </summary>
         public void SetVariable<T>(string key, T newVar) where T : Variable
         {
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var currentVar = variables[i];
+                var currentVar = _legacyVariables[i];
                 if (currentVar != null && currentVar.Key == key)
                 {
                     T variable = currentVar as T;
@@ -1128,9 +1131,9 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual bool HasVariable(string key)
         {
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var v = variables[i];
+                var v = _legacyVariables[i];
                 if (v != null && v.Key == key)
                 {
                     return true;
@@ -1144,11 +1147,11 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual string[] GetVariableNames()
         {
-            var vList = new string[variables.Count];
+            var vList = new string[_legacyVariables.Count];
 
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var v = variables[i];
+                var v = _legacyVariables[i];
                 if (v != null)
                 {
                     vList[i] = v.Key;
@@ -1163,9 +1166,9 @@ namespace Amanita.VScripting
         public virtual IList<IVariable> GetPublicVariables()
         {
             IList<IVariable> publicVariables = new List<IVariable>();
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var v = variables[i];
+                var v = _legacyVariables[i];
                 if (v != null && v.Scope == VariableScope.Public)
                 {
                     publicVariables.Add(v);
@@ -1318,9 +1321,9 @@ namespace Amanita.VScripting
 
             if (resetVariables)
             {
-                for (int i = 0; i < variables.Count; i++)
+                for (int i = 0; i < _legacyVariables.Count; i++)
                 {
-                    var variable = variables[i];
+                    var variable = _legacyVariables[i];
                     variable.OnReset();
                 }
             }
@@ -1410,9 +1413,9 @@ namespace Amanita.VScripting
                 Match match = results[i];
                 string key = match.Value.Substring(2, match.Value.Length - 3);
                 // Look for any matching private variables in this Flowchart first
-                for (int j = 0; j < variables.Count; j++)
+                for (int j = 0; j < _legacyVariables.Count; j++)
                 {
-                    var variable = variables[j];
+                    var variable = _legacyVariables[j];
                     if (variable == null)
                         continue;
                     if (variable.Scope == VariableScope.Private && variable.Key == key)
@@ -1502,7 +1505,7 @@ namespace Amanita.VScripting
             toAdd.ItemID = newId;
             toAdd.ParentFlowchart = this;
             toAdd.Key = GetUniqueVariableKey(toAdd.Key);
-            muscariables.Add(toAdd);
+            _muscariables.Add(toAdd);
 
             nextMuscariableID++;
 
@@ -1515,10 +1518,10 @@ namespace Amanita.VScripting
         /// <param name="toRemove"></param>
         public virtual void RemoveVariable(Muscariable toRemove)
         {
-            if (muscariables.Contains(toRemove))
+            if (_muscariables.Contains(toRemove))
             {
                 toRemove.ParentFlowchart = null;
-                muscariables.Remove(toRemove);
+                _muscariables.Remove(toRemove);
                 VariableRemoved(toRemove);
             }
 
@@ -1526,7 +1529,7 @@ namespace Amanita.VScripting
 
         public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType: Muscariable
         {
-            IList<TVarType> result = (from elem in muscariables
+            IList<TVarType> result = (from elem in _muscariables
                                       where elem.GetType().IsAssignableFrom(typeof(TVarType))
                                       select elem).Cast<TVarType>().ToList();
             return result;
@@ -1534,21 +1537,21 @@ namespace Amanita.VScripting
 
         public virtual TVarType GetMuscariableWithKey<TVarType>(string key) where TVarType : Muscariable
         {
-            TVarType result = (from elem in muscariables
+            TVarType result = (from elem in _muscariables
                                where elem.Key == key
                                select elem).Cast<TVarType>().FirstOrDefault();
             return result;
 
         }
 
-        public virtual int MuscariableCount { get { return muscariables.Count; } }
+        public virtual int MuscariableCount { get { return _muscariables.Count; } }
 
         public virtual void RefreshVars()
         {
-            muscariables = (from elem in muscariables
+            _muscariables = (from elem in _muscariables
                             where elem != null
                             select elem).ToList();
-            variables = (from elem in variables
+            _legacyVariables = (from elem in _legacyVariables
                          where elem != null
                          select elem).ToList();
         }
@@ -1558,7 +1561,7 @@ namespace Amanita.VScripting
 
         public virtual void InsertVariable(int index, Variable whatToInsert)
         {
-            variables.Insert(index, whatToInsert);
+            _legacyVariables.Insert(index, whatToInsert);
             VariableAdded(whatToInsert);
         }
         #endregion
@@ -1585,9 +1588,9 @@ namespace Amanita.VScripting
                 Match match = results[i];
                 string key = match.Value.Substring(2, match.Value.Length - 3);
                 // Look for any matching public variables in this Flowchart
-                for (int j = 0; j < variables.Count; j++)
+                for (int j = 0; j < _legacyVariables.Count; j++)
                 {
-                    var variable = variables[j];
+                    var variable = _legacyVariables[j];
                     if (variable == null)
                     {
                         continue;
@@ -1688,14 +1691,14 @@ namespace Amanita.VScripting
             newVar.gameObject.hideFlags = HideFlags.HideInInspector;
             newVar.ItemID = nextValidVarID;
             nextValidVarID++;
-            variables.Add(newVar);
+            _legacyVariables.Add(newVar);
             VariableAdded(newVar);
             return newVar;
         }
 
         public virtual void AddVariable(IVariable toAdd)
         {
-            bool alreadyRegistered = variables.Contains(toAdd) || muscariables.Contains(toAdd);
+            bool alreadyRegistered = _legacyVariables.Contains(toAdd) || _muscariables.Contains(toAdd);
             if (alreadyRegistered)
             {
                 return;
@@ -1703,11 +1706,11 @@ namespace Amanita.VScripting
 
             if (toAdd is Variable legacyVar)
             {
-                variables.Add(legacyVar);
+                _legacyVariables.Add(legacyVar);
             }
             else if (toAdd is Muscariable muscaVar)
             {
-                muscariables.Add(muscaVar);
+                _muscariables.Add(muscaVar);
             }
 
             toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
@@ -1731,24 +1734,24 @@ namespace Amanita.VScripting
             if (newOrder == null || newOrder.Count == 0) return;
 
             // Extract legacy variables that appear in newOrder, in that order
-            var ordered = new List<Variable>(variables.Count);
+            var ordered = new List<Variable>(_legacyVariables.Count);
             var seen = new HashSet<Variable>();
 
             for (int i = 0; i < newOrder.Count; i++)
             {
-                if (newOrder[i] is Variable legacy && variables.Contains(legacy) && seen.Add(legacy))
+                if (newOrder[i] is Variable legacy && _legacyVariables.Contains(legacy) && seen.Add(legacy))
                     ordered.Add(legacy);
             }
 
             // Append the rest (not explicitly positioned)
-            for (int i = 0; i < variables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var v = variables[i];
+                var v = _legacyVariables[i];
                 if (!seen.Contains(v))
                     ordered.Add(v);
             }
-            if (ordered.Count == variables.Count)
-                variables = ordered;
+            if (ordered.Count == _legacyVariables.Count)
+                _legacyVariables = ordered;
         }
 
     }

@@ -14,7 +14,6 @@ namespace Amanita.VScripting
         public static void Clear()
         {
             _varTypeToDataType.Clear();
-            _uniqueIdToDataType.Clear();
         }
 
         public static void Register(Type varDataType, VariableDataAttribute attr)
@@ -29,18 +28,9 @@ namespace Amanita.VScripting
 
             foreach (var varTypeEl in compatibleVarTypes)
             {
-                // We want to allow multiple ways of looking up data types, hence the
-                // multiple dictionaries we're managing
                 _varTypeToDataType.TryAdd(varTypeEl, varDataType);
-
-                VariableInfoAttribute infoAtt = varTypeEl.GetCustomAttribute<VariableInfoAttribute>();
-                _uniqueIdToDataType.TryAdd(infoAtt.UniqueID, varDataType);
-                
             }
         }
-
-        // The unique ids belong to the var types, NOT the data types
-        private static readonly IDictionary<string, Type> _uniqueIdToDataType = new Dictionary<string, Type>();
 
         /// <summary>
         /// T is the variable type (IntegerVariable, AudioClipVariable, etc)

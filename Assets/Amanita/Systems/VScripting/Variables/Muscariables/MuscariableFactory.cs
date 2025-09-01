@@ -16,7 +16,7 @@ namespace Amanita.VScripting
         private static void BuildCache()
         {
             typeMap.Clear();
-            var attrType = typeof(MuscariableAttribute);
+            var attrType = typeof(VariableInfoAttribute);
             var baseType = typeof(Muscariable);
 
             var muscariableSubtypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -25,7 +25,7 @@ namespace Amanita.VScripting
 
             foreach (var typeFound in muscariableSubtypes)
             {
-                var attr = typeFound.GetCustomAttribute<MuscariableAttribute>();
+                var attr = typeFound.GetCustomAttribute<VariableInfoAttribute>();
                 if (attr == null)
                 {
                     continue;

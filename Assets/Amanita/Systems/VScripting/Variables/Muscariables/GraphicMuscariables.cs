@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [Muscariable("Graphical", typeof(Color), "Color")]
+    [VariableInfo("Graphic", "Color", typeof(Color), false)]
     public class ColorMuscariable : Muscariable<Color>
     {
         public static bool operator ==(ColorMuscariable a, ColorMuscariable b)
@@ -34,7 +34,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("GraphicalTwoD", typeof(Sprite), "Sprite")]
+    [VariableInfo("Graphic", "Sprite", typeof(Sprite), false)]
     public class SpriteMuscariable : Muscariable<Sprite>
     {
         public static bool operator ==(SpriteMuscariable a, SpriteMuscariable b)
@@ -65,7 +65,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("GraphicalThreeD", typeof(Texture), "Texture")]
+    [VariableInfo("Graphic", "Texture", typeof(Texture), false)]
     public class TextureMuscariable : Muscariable<Texture>
     {
         public static bool operator ==(TextureMuscariable a, TextureMuscariable b)
@@ -96,7 +96,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("GraphicalThreeD", typeof(Material), "Material")]
+    [VariableInfo("Graphic", "Material", typeof(Material), false)]
     public class MaterialMuscariable : Muscariable<Material>
     {
         public static bool operator ==(MaterialMuscariable a, MaterialMuscariable b)
@@ -127,7 +127,7 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("Graphical", typeof(Animator), "Animator")]
+    [VariableInfo("Graphic", "Animator", typeof(Animator), false)]
     public class AnimatorMuscariable : Muscariable<Animator>
     {
         public static bool operator ==(AnimatorMuscariable a, AnimatorMuscariable b)

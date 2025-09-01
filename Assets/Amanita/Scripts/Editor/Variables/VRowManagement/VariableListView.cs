@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
-using UnityEditor;
-using UnityEngine.Pool;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -195,10 +196,10 @@ namespace Amanita.VScripting.EditorUtils
             SafeRefresh();
         }
 
-        void SafeRefresh()
+        protected virtual void SafeRefresh()
         {
             if (_listDisplay == null) return;
-
+            UpdateCount();
             // Debounce multiple refresh requests within the same editor loop
             if (_refreshScheduled) return;
             _refreshScheduled = true;
@@ -303,9 +304,22 @@ namespace Amanita.VScripting.EditorUtils
 
         public void AddVariable(IVariable variable)
         {
-            if (variable == null || _variables.Contains(variable)) return;
+            if (this._isDisposed)
+            {
+                string logMessage = $"Tried to add variable to disposed VariableListView.";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+            if (variable == null || _variables.Contains(variable))
+            {
+                string logMessage = $"Tried to add a null variable to VariableListView.";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+
             _variables.Add(variable);
             SafeRefresh();
+            UpdateCount();
         }
 
         public void RemoveVariable(IVariable variable)
@@ -336,6 +350,7 @@ namespace Amanita.VScripting.EditorUtils
             ReleaseAllActiveRows();
             _variables.Clear();
             SafeRefresh();
+            UpdateCount();
         }
 
         public void Refresh()
@@ -390,7 +405,10 @@ namespace Amanita.VScripting.EditorUtils
 
             _flowchart = null;
             _flowchartInstanceID = 0;
+            _isDisposed = true;
         }
+
+        protected bool _isDisposed;
 
         public void RequireDragHandle(string handleName)
         {

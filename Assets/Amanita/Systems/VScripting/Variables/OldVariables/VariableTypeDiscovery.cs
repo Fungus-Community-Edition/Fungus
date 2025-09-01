@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using UnityEditor;
 
 namespace Amanita.VScripting
@@ -47,29 +48,21 @@ namespace Amanita.VScripting
             }
 
             VariableTypeRegistry.Clear();
-            foreach (var type in allTypes)
+            foreach (var elem in allTypes)
             {
-                // 1) Legacy Amanita variables
-                var legacyAttr = type.GetCustomAttribute<VariableInfoAttribute>();
-                if (legacyAttr != null)
+                var attr = elem.GetCustomAttribute<VariableInfoAttribute>();
+                if (attr == null)
                 {
-                    RegisterVariableType(type);
                     continue;
                 }
 
-                // 2) Muscariables
-                var muscariAttr = type.GetCustomAttribute<MuscariableAttribute>();
-                if (muscariAttr != null)
-                {
-                    // Use whatever info MuscariableAttribute already exposes
-                    RegisterMuscariableType(type, muscariAttr);
-                }
+                RegisterVariableType(elem, attr.IsLegacy);
             }
         }
 
         private static IList<Type> allTypes;
 
-        private static void RegisterVariableType(Type varType)
+        private static void RegisterVariableType(Type varType, bool isLegacy)
         {
             VariableTypeActions typeActions = new VariableTypeActions()
             {
@@ -78,8 +71,7 @@ namespace Amanita.VScripting
                 SetFunc = VarSetFunc
             };
 
-            VariableTypeRegistry.Register(varType, typeActions);
-            //UnityEngine.Debug.Log($"Registering variable type: {varType.FullName}");
+            VariableTypeRegistry.RegisterVariable(varType, typeActions, isLegacy);
         }
 
         private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
@@ -98,18 +90,6 @@ namespace Amanita.VScripting
             iVar.Apply(setOp, varData.Value);
         }
 
-        private static void RegisterMuscariableType(Type type, MuscariableAttribute attr)
-        {
-            // If MuscariableAttribute already contains everything needed for registration,
-            // we just pass it through to the registry.
-            //VariableTypeRegistry.Register(
-            //    type,
-            //    (pair, op) => attr.Compare(pair, op),   // or whatever compare delegate Muscariable uses
-            //    (pair) => attr.Describe(pair),          // description delegate
-            //    (pair, op) => attr.Set(pair, op)        // set delegate
-            //);
-        }
-
         private static void RefreshVariableDataTypeRegistry()
         {
             VariableDataRegistry.Clear();
@@ -122,11 +102,6 @@ namespace Amanita.VScripting
                     VariableDataRegistry.Register(elem, attr);
                 }
             }
-        }
-
-        private static void RegisterVariableDataType(Type varDataType)
-        {
-
         }
 
     }
