@@ -74,6 +74,9 @@ namespace Amanita.VScripting
 
     public abstract class VariableData<TValue, TVar> : VariableData where TVar : IVariable<TValue>
     {
+        [SerializeField, SerializeReference]
+        protected IVariable<TValue> _varRef;
+
         public static implicit operator TValue(VariableData<TValue, TVar> someData)
         {
             return someData.Value;

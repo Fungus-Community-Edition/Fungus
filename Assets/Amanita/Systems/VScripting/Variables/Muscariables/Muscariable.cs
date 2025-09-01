@@ -57,20 +57,26 @@ namespace Amanita.VScripting
 
         public virtual System.Object Value
         {
-            get { return value; }
+            get { return this.value; }
             set
             {
+                if (value != null && value.Equals(this.value)) // For some reason, == won't work here
+                {
+                    return;
+                }
                 if (!CanHoldAsValue(value))
                 {
                     string errorMessage = $"Variable {Key} cannot hold {value} as a value.";
                     throw new System.ArgumentException(errorMessage, "value");
                 }
 
+                object prevValue = this.value;
                 this.value = value;
+                OnBaseValueSet(prevValue);
             }
         }
 
-        [SerializeField]
+        [SerializeField, SerializeReference]
         protected System.Object value;
 
         protected virtual bool CanHoldAsValue(System.Object obj)
@@ -143,11 +149,26 @@ namespace Amanita.VScripting
         public virtual Flowchart ParentFlowchart { get; set; }
 
         public virtual bool IsComparisonSupported() => false;
+
+        /// <summary>
+        /// A callback for right after the base value is set. The previous value,
+        /// as it sounds, is the value the base had right before being set
+        /// to the new one.
+        /// </summary>
+        protected virtual void OnBaseValueSet(object previousValue)
+        {
+
+        }
     }
 
     [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
+        public static implicit operator T(Muscariable<T> genericMuscari)
+        {
+            return genericMuscari.Value;
+        }
+
         public override Type ContentType { get { return typeof(T); } }
 
         public virtual new T Value
@@ -155,9 +176,16 @@ namespace Amanita.VScripting
             get { return valOfType; }
             set
             {
+                if (value != null && value.Equals(valOfType))
+                {
+                    return;
+                }
+
                 // We call base.Value here so that when this instance is being
                 // cast as a non-generic Muscariable, clients can still access the right value
-                base.Value = valOfType = value;
+                T prev = valOfType;
+                base.Value = value;
+                OnGenericValueSet(prev);
                 InvokeOnValueChanged();
             }
         }
@@ -168,6 +196,7 @@ namespace Amanita.VScripting
         {
             OnValueChanged?.Invoke(valOfType);
         }
+
         public event Action<T> OnValueChanged = delegate { };
 
         public override void Apply(SetOperator setOperator, object toApply)
@@ -239,6 +268,19 @@ namespace Amanita.VScripting
         public virtual bool Equals(IVariable<T> otherVar)
         {
             return this.Value.Equals(otherVar.Value);
+        }
+
+        protected override void OnBaseValueSet(object previousValue)
+        {
+            // We don't care about the prev val here. We're just making sure that
+            // the generic field stays in sync with the base field when appropriate.
+            // Say, when this instance's Value property is set through a base class.
+            valOfType = (T)base.value;
+        }
+
+        protected virtual void OnGenericValueSet(T previousValue)
+        {
+
         }
 
     }

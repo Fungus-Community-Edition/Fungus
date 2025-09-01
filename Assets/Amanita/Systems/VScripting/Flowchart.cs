@@ -1142,6 +1142,11 @@ namespace Amanita.VScripting
             return false;
         }
 
+        public virtual bool HasVariable(IVariable varInst)
+        {
+            return _legacyVariables.Contains(varInst) || _muscariables.Contains(varInst);
+        }
+
         /// <summary>
         /// Returns the list of variable names in the Flowchart.
         /// </summary>

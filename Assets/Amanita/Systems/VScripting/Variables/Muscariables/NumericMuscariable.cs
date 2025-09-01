@@ -75,6 +75,8 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Integer", typeof(int))]
     public class IntMuscariable : NumericMuscariable<int>
     {
+        public IntMuscariable() { }
+
         public static IntMuscariable operator +(IntMuscariable a, IntMuscariable b)
             => new IntMuscariable { Value = a.Value + b.Value };
 
@@ -120,6 +122,8 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Float", typeof(float))]
     public class FloatMuscariable : NumericMuscariable<float>
     {
+        public FloatMuscariable() { }
+
         public static FloatMuscariable operator +(FloatMuscariable a, FloatMuscariable b)
             => new FloatMuscariable { Value = a.Value + b.Value };
 
@@ -165,6 +169,8 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Boolean", typeof(bool))]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
+        public BoolMuscariable() { }
+
         public static bool operator ==(BoolMuscariable a, BoolMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -197,6 +203,8 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Double", typeof(double))]
     public class DoubleMuscariable : NumericMuscariable<double>
     {
+        public DoubleMuscariable() { }
+
         public static DoubleMuscariable operator +(DoubleMuscariable a, DoubleMuscariable b)
             => new DoubleMuscariable { Value = a.Value + b.Value };
 

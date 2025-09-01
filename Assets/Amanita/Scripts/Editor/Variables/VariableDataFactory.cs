@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -12,7 +13,7 @@ namespace Amanita.VScripting
 
         public static IVariableData CreateForVar(Type variableType)
         {
-            var dataType = VariableDataTypeRegistry.TypeMap[variableType];
+            var success = TypeMap.TryGetValue(variableType, out var dataType);
             IVariableData result = null;
             if (dataType != null)
             {
@@ -20,7 +21,7 @@ namespace Amanita.VScripting
             }
             else
             {
-                int typeCount = VariableDataTypeRegistry.TypeMap.Count;
+                int typeCount = TypeMap.Count;
                 Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
                     $"in the registry: {typeCount}");
             }
@@ -28,6 +29,7 @@ namespace Amanita.VScripting
             return result;
         }
 
-
+        private static 
+            IReadOnlyDictionary<Type, Type> TypeMap => VariableDataTypeRegistry.TypeMap;
     }
 }
