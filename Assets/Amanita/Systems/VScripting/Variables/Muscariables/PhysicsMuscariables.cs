@@ -21,6 +21,8 @@ namespace Amanita.VScripting
         [SerializeField] protected Vector3 cachedSize;
         [SerializeField] protected bool cachedIsTrigger;
 
+        public ColliderMuscariableThreeD() { }
+
         public override Collider Value
         {
             get => colliderRef;
@@ -107,6 +109,8 @@ namespace Amanita.VScripting
         [SerializeField] protected Vector2 cachedOffset;
         [SerializeField] protected Vector2 cachedSize;
         [SerializeField] protected bool cachedIsTrigger;
+
+        public ColliderMuscariableTwoD() { }
 
         public override Collider2D Value
         {

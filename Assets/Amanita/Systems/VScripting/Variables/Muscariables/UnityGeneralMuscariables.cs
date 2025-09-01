@@ -10,6 +10,8 @@ namespace Amanita.VScripting
         // The Evaluate func by default only handles Equals and NotEquals. Thus, we
         // won't have to override it for this class.
 
+        public GameObjectMuscariable() { }
+
         public virtual string GOName
         {
             get
@@ -66,6 +68,8 @@ namespace Amanita.VScripting
     [VariableInfo("UnityGeneral", "Transform", typeof(Transform))]
     public class TransformMuscariable : Muscariable<Transform>
     {
+        public TransformMuscariable() { }
+
         public static bool operator ==(TransformMuscariable a, TransformMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -99,6 +103,8 @@ namespace Amanita.VScripting
     [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObject))]
     public class UnityObjectMuscariable : Muscariable<UnityObject>
     {
+        public UnityObjectMuscariable() { }
+
         public static bool operator ==(UnityObjectMuscariable a, UnityObjectMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;

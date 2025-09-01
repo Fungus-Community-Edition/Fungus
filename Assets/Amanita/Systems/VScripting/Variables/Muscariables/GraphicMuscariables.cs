@@ -6,6 +6,8 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Color", typeof(Color))]
     public class ColorMuscariable : Muscariable<Color>
     {
+        public ColorMuscariable() { }
+
         public static bool operator ==(ColorMuscariable a, ColorMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -37,6 +39,8 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Sprite", typeof(Sprite))]
     public class SpriteMuscariable : Muscariable<Sprite>
     {
+        public SpriteMuscariable() { }
+
         public static bool operator ==(SpriteMuscariable a, SpriteMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -68,6 +72,8 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Texture", typeof(Texture))]
     public class TextureMuscariable : Muscariable<Texture>
     {
+        public TextureMuscariable() { }
+
         public static bool operator ==(TextureMuscariable a, TextureMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -99,6 +105,8 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Material", typeof(Material))]
     public class MaterialMuscariable : Muscariable<Material>
     {
+        public MaterialMuscariable() { }
+
         public static bool operator ==(MaterialMuscariable a, MaterialMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -130,6 +138,8 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Animator", typeof(Animator))]
     public class AnimatorMuscariable : Muscariable<Animator>
     {
+        public AnimatorMuscariable() { }
+
         public static bool operator ==(AnimatorMuscariable a, AnimatorMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
