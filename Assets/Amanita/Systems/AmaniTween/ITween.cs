@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita
+namespace Amanita.Tweening
 {
     public interface ITween 
     {

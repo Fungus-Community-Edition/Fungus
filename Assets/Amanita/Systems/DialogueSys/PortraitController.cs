@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using MoonSharp.Interpreter;
+using Amanita.Tweening;
 
 namespace Amanita.DialogueSys
 {

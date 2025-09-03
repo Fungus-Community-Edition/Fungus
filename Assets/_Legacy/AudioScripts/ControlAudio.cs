@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
+using Amanita.Tweening;
 
 namespace Amanita.VScripting
 {

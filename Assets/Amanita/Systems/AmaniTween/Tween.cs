@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.Tweening
 {
     public class Tween<T> : ITween
     {
