@@ -4,11 +4,13 @@ using UnityObject = UnityEngine.Object;
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [Muscariable("UnityGeneral", typeof(GameObject), "GameObject")]
+    [VariableInfo("UnityGeneral", "GameObject", typeof(GameObject))]
     public class GameObjectMuscariable : Muscariable<GameObject>
     {
         // The Evaluate func by default only handles Equals and NotEquals. Thus, we
         // won't have to override it for this class.
+
+        public GameObjectMuscariable() { }
 
         public virtual string GOName
         {
@@ -63,9 +65,11 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("UnityGeneral", typeof(Transform), "Transform")]
+    [VariableInfo("UnityGeneral", "Transform", typeof(Transform))]
     public class TransformMuscariable : Muscariable<Transform>
     {
+        public TransformMuscariable() { }
+
         public static bool operator ==(TransformMuscariable a, TransformMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;
@@ -96,9 +100,11 @@ namespace Amanita.VScripting
     // This is sort of a handle-everything else type, just like the original ObjectVariable in Fungus
     // (which also only accepted Unity objects in particular, not just any System.object)
     [System.Serializable]
-    [Muscariable("UnityGeneral", typeof(UnityObject), "UnityObject")]
+    [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObject))]
     public class UnityObjectMuscariable : Muscariable<UnityObject>
     {
+        public UnityObjectMuscariable() { }
+
         public static bool operator ==(UnityObjectMuscariable a, UnityObjectMuscariable b)
         {
             if (ReferenceEquals(a, b)) return true;

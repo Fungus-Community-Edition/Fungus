@@ -1,48 +1,127 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
+    /// <summary>
+    /// A registry and instantiator for legacy and muscari types alike.
+    /// </summary>
     public static class VariableTypeRegistry
     {
-        private static readonly List<Type> _types = new();
-        private static readonly Dictionary<Type, VariableTypeActions> _actions = new(new TypeNameComparer());
+        private static readonly IList<Type> _legacyTypes = new List<Type>();
+        private static readonly IList<Type> _muscariableTypes = new List<Type>();
+        private static readonly IDictionary<Type, VariableTypeActions> _actionsRegistered = 
+            new Dictionary<Type, VariableTypeActions>(new TypeNameComparer());
 
-        public static void Clear()
+        // Key: IVariable-implementor. Value: content.
+        private static readonly IDictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
+
+        public static IReadOnlyList<Type> AllLegacyTypes => _legacyTypes as IReadOnlyList<Type>;
+        public static IReadOnlyList<Type> AllMuscariableTypes => _muscariableTypes as IReadOnlyList<Type>;
+        public static IReadOnlyDictionary<Type, Type> TypeMap => _typeMap as IReadOnlyDictionary<Type, Type>;
+
+        public static void RegisterMultiVariableTypes(IEnumerable<Type> types, VariableTypeActions actions)
         {
-            _types.Clear();
-            _actions.Clear();
+            foreach (var type in types)
+            {
+                RegisterVariableType(type, actions);
+            }
         }
 
-        public static void Register<TVar>(VariableTypeActions actions) where TVar: IVariable
+        public static void RegisterVariableType(Type varType, VariableTypeActions actions)
         {
-            var type = typeof(TVar);
-            if (!_types.Contains(type))
-                _types.Add(type);
+            bool alreadyRegistered = _legacyTypes.Contains(varType) || _muscariableTypes.Contains(varType);
+            bool sameActions = false;
+            string logMessage = "";
+            if (alreadyRegistered)
+            {
+                sameActions = actions.Equals(_actionsRegistered[varType]);
+            }
 
-            _actions[type] = actions;
+            if (alreadyRegistered && sameActions)
+            {
+                logMessage = $"Already registered variable type {varType.Name} under the actions passed.";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+
+            bool isLegacy = _baseLegacyType.IsAssignableFrom(varType);
+            if (isLegacy)
+            {
+                _legacyTypes.Add(varType);
+            }
+            else
+            {
+                _muscariableTypes.Add(varType);
+            }
+
+            VariableInfoAttribute att = varType.GetCustomAttribute<VariableInfoAttribute>();
+            if (att != null)
+            {
+                _typeMap[varType] = att.ContentType;
+                _actionsRegistered[varType] = actions;
+
+                if (sameActions)
+                {
+                    logMessage = $"Overwrote actions tied to {varType.Name}.";
+                    Debug.Log(logMessage);
+                }
+            }
         }
 
-        public static IReadOnlyList<Type> AllTypes => new List<Type>(_types);
+        private static readonly Type _baseLegacyType = typeof(Variable);
 
-        public static void Register(Type varType, VariableTypeActions actions)
+        public static Type LegacyTypeFor(Type contentType)
         {
-            if (!_types.Contains(varType))
-                _types.Add(varType);
-
-            _actions[varType] = actions;
+            return VarTypeFor(_legacyTypes, contentType);
         }
 
-        public static bool TryGetTypeActionsFor<T>(out VariableTypeActions result)
+        private static Type VarTypeFor(IEnumerable<Type> varTypesToCheck, Type contentType)
         {
-            Type type = typeof(T);
-            return TryGetTypeActionsFor(type, out result);
+            Type result = null;
+
+            bool alreadyRegistered = _contentTypeToVarType.TryGetValue(contentType, out result);
+            if (!alreadyRegistered)
+            {
+                foreach (var varType in varTypesToCheck)
+                {
+                    VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
+                    if (attr.ContentType.Equals(contentType))
+                    {
+                        result = varType;
+                        _contentTypeToVarType.Add(attr.ContentType, varType);
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public static bool TryGetTypeActionsFor(System.Type type, out VariableTypeActions result)
+        private static readonly IDictionary<Type, Type> _contentTypeToVarType = new Dictionary<Type, Type>(new TypeNameComparer());
+
+        /// <summary>
+        /// If there is no Muscariable specifically for the passed content type,
+        /// this will return the generic muscariable type.
+        /// </summary>
+        public static Type MuscariTypeFor(Type contentType)
         {
-            bool gotIt = _actions.TryGetValue(type, out result);
+            Type result = VarTypeFor(_muscariableTypes, contentType);
+
+            // Generic fallback
+            if (result == null)
+            {
+                result = typeof(GenericMuscariable);
+            }
+
+            return result;
+        }
+
+        public static bool TryGetTypeActionsFor(Type type, out VariableTypeActions result)
+        {
+            bool gotIt = _actionsRegistered.TryGetValue(type, out result);
 
             if (!gotIt)
             {
@@ -53,6 +132,14 @@ namespace Amanita.VScripting
             return gotIt;
         }
 
+        public static void Clear()
+        {
+            _typeMap.Clear();
+            _contentTypeToVarType.Clear();
+            _legacyTypes.Clear();
+            _muscariableTypes.Clear();
+            _actionsRegistered.Clear();
+        }
 
     }
 }

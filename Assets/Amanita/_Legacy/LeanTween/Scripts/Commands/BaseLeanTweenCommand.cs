@@ -112,7 +112,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _targetObject.gameObjectRef || variable == _duration.floatRef;
+            return variable == _targetObject.VarRef as GameObjectVariable || 
+                variable == _duration.VarRef as FloatVariable;
         }
 
         #endregion

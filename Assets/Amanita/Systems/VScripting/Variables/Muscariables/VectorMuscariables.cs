@@ -3,9 +3,11 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [Muscariable("Physics/Vector", typeof(Vector2), "VectorTwo")]
+    [VariableInfo("Numeric", "VectorTwo", typeof(Vector2))]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
+        public VectorTwoMuscariable() { }
+
         public override bool IsArithmeticSupported => true;
         public override bool IsRelationalSupported => true;
 
@@ -142,9 +144,11 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("Physics/Vector", typeof(Vector3), "VectorThree")]
+    [VariableInfo("Numeric", "VectorThree", typeof(Vector3))]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
+        public VectorThreeMuscariable() { }
+
         public override bool IsArithmeticSupported => true;
         public override bool IsRelationalSupported => true;
 

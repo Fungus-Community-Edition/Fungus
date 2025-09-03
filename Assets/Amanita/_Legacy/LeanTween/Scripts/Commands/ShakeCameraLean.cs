@@ -97,8 +97,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _duration.floatRef ||
-                _axisScale.vector3Ref == variable || _axisSpeedRange.vector2Ref == variable;
+            return variable == _duration.VarRef as FloatVariable ||
+                _axisScale.VarRef as Vector3Variable == variable || 
+                _axisSpeedRange.VarRef as Vector2Variable == variable;
         }
     }
 }

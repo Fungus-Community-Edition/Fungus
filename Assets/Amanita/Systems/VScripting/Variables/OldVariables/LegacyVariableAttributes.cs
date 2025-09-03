@@ -12,17 +12,12 @@ namespace Amanita.VScripting
     public sealed class VariableInfoAttribute : System.Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown
-        public VariableInfoAttribute(string category, string optionDisplayName, Type contentType, string uniqueId = "", int order = 0)
+        public VariableInfoAttribute(string category, string optionDisplayName, Type contentType,
+            int order = 0)
         {
             this.Category = category;
             this.OptionDisplayName = optionDisplayName;
             this.ContentType = contentType;
-            this.UniqueID = uniqueId;
-
-            if (string.IsNullOrEmpty(uniqueId))
-            {
-                this.UniqueID = this.OptionDisplayName;
-            }
 
             this.Order = order;
         }
@@ -31,7 +26,6 @@ namespace Amanita.VScripting
         public string OptionDisplayName { get; set; }
         public Type ContentType { get; set; }
         public int Order { get; set; }
-        public string UniqueID { get; set; }
         public bool IsPreviewedOnly { get; set; }
     }
 
@@ -43,7 +37,7 @@ namespace Amanita.VScripting
     {
         public VariablePropertyAttribute()
         {
-            this.VariableTypes = VariableTypeRegistry.AllTypes.ToArray();
+            this.VariableTypes = VariableTypeRegistry.AllLegacyTypes.ToArray();
         }
         
         public VariablePropertyAttribute(params System.Type[] variableTypes)
