@@ -164,7 +164,11 @@ namespace Amanita.VScripting.EditorUtils
                 Flowchart flowchart = _flowchart;
                 if (flowchart == null && variable is Component comp)
                 {
-                    flowchart = comp.GetComponent<Flowchart>() ?? comp.GetComponentInParent<Flowchart>();
+                    flowchart = comp.GetComponent<Flowchart>();
+                    if (flowchart == null)
+                    {
+                        flowchart = comp.GetComponentInParent<Flowchart>();
+                    }
                 }
                 if (flowchart != null && _flowchart == null)
                 {
