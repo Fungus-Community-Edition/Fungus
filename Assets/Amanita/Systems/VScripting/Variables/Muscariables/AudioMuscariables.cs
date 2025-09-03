@@ -3,9 +3,11 @@ using UnityEngine;
 namespace Amanita.VScripting
 {
     [System.Serializable]
-    [Muscariable("Audio", typeof(AudioClip), "AudioClip")]
+    [VariableInfo("Audio", "AudioClip", typeof(AudioClip))]
     public class AudioClipMuscariable : Muscariable<AudioClip>
     {
+        public AudioClipMuscariable() { }
+
         public static bool operator ==(AudioClipMuscariable a, AudioClipMuscariable b)
         {
             if (ReferenceEquals(a, b))
@@ -40,9 +42,11 @@ namespace Amanita.VScripting
     }
 
     [System.Serializable]
-    [Muscariable("Audio", typeof(AudioSource), "AudioSource")]
+    [VariableInfo("Audio", "AudioSource", typeof(AudioSource))]
     public class AudioSourceMuscariable : Muscariable<AudioSource>
     {
+        public AudioSourceMuscariable() { }
+
         public static bool operator ==(AudioSourceMuscariable a, AudioSourceMuscariable b)
         {
             if (a is null || b is null) return false;

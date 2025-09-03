@@ -189,7 +189,7 @@ namespace Amanita.VScripting.EditorUtils
                     // prop's list means we should list any var of any type in the registry
                     if (shouldCheckForAllTypes)
                     {
-                        typeListToCheck = VariableTypeRegistry.AllTypes;
+                        typeListToCheck = VariableTypeRegistry.AllLegacyTypes;
                     }
                     else
                     {
