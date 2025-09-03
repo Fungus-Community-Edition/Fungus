@@ -13,17 +13,27 @@ namespace Amanita.VScripting
 
         public static IVariableData CreateForVar(Type variableType)
         {
-            var success = TypeMap.TryGetValue(variableType, out var dataType);
             IVariableData result = null;
-            if (dataType != null)
+            string logMessage = "";
+            if (variableType == null)
             {
-                result = (IVariableData)Activator.CreateInstance(dataType);
+                logMessage = "Cannot create variable data for a null var type. Returning null.";
+                Debug.LogWarning(logMessage);
             }
             else
             {
-                int typeCount = TypeMap.Count;
-                Debug.Log($"Couldn't make an instance for {variableType.Name}. The amount of types " +
-                    $"in the registry: {typeCount}");
+                TypeMap.TryGetValue(variableType, out var dataType);
+                if (dataType != null)
+                {
+                    result = (IVariableData)Activator.CreateInstance(dataType);
+                }
+                else
+                {
+                    int typeCount = TypeMap.Count;
+                    logMessage = $"Couldn't make an instance for {variableType.Name}. The amount of types " +
+                        $"in the registry: {typeCount}. Returning null.";
+                    Debug.LogWarning(logMessage);
+                }
             }
 
             return result;

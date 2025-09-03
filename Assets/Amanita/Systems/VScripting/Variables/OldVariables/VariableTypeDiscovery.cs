@@ -93,8 +93,8 @@ namespace Amanita.VScripting
                 VariableDataAttribute attr = elem.GetCustomAttribute<VariableDataAttribute>();
                 if (attr != null)
                 {
-                    VariableDataTypeRegistry.Register(elem, attr);
-                } //
+                    VariableDataTypeRegistry.Register(elem);
+                }
             }
         }
 

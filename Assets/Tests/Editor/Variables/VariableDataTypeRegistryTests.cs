@@ -13,9 +13,8 @@ namespace Amanita.Tests.EditMode
         public void Register_MapsVariableTypeToDataType()
         {
             var fakeDataType = typeof(FakeIntVariableData);
-            VariableDataAttribute attr = fakeDataType.GetCustomAttribute<VariableDataAttribute>();
 
-            VariableDataTypeRegistry.Register(fakeDataType, attr);
+            VariableDataTypeRegistry.Register(fakeDataType);
 
             var linked = VariableDataTypeRegistry.GetDataTypeLinkedToVarType(typeof(IntMuscariable));
             Assert.AreEqual(typeof(FakeIntVariableData), linked);

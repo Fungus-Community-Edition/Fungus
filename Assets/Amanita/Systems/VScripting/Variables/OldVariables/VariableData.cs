@@ -160,6 +160,26 @@ namespace Amanita.VScripting
             this.VarRef = otherVarData.VarRef;
         }
 
+        public override IVariable VarRef
+        {
+            get { return _varRef; }
+            set
+            {
+                if (value == null) { _varRef = null; return; }
+
+                if (value.ContentType.Equals(this.ContentType))
+                {
+                    _varRef = value as IVariable<TValue>;
+                }
+                else
+                {
+                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+                    throw new System.InvalidCastException(errorMessage);
+                }
+
+            }
+        }
+
 
     }
 

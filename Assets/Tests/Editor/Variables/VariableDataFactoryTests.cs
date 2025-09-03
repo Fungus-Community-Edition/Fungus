@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using System;
 using System.Reflection;
+using UnityEngine.TestTools;
 
 namespace Amanita.Tests.EditMode
 {
@@ -14,8 +15,13 @@ namespace Amanita.Tests.EditMode
             VariableDataTypeRegistry.Clear();
 
             Type fakeDataType = typeof(FakeIntVariableData);
-            VariableDataAttribute attr = fakeDataType.GetCustomAttribute<VariableDataAttribute>();
-            VariableDataTypeRegistry.Register(fakeDataType, attr);
+            VariableDataTypeRegistry.Register(fakeDataType);
+        }
+
+        [TearDown]
+        public virtual void TearDown()
+        {
+            Debug.unityLogger.logEnabled = true;
         }
 
         [Test]
@@ -35,6 +41,44 @@ namespace Amanita.Tests.EditMode
             var data = VariableDataFactory.CreateForVar(typeof(IntMuscariable));
             Assert.IsNull(data);
         }
+
+        [Test]
+        public void CreateForVar_WithUnknownVarType_ReturnsNull()
+        {
+            Debug.unityLogger.logEnabled = false;
+
+            // Act
+            var result = VariableDataFactory.CreateForVar(typeof(UnityEngine.Random));
+
+            // Assert
+            Assert.IsNull(result, "Factory should return null when no mapping exists for var type");
+        }
+
+        [Test]
+        public void CreateForVar_WithNullVarType_ReturnsNull()
+        {
+            Debug.unityLogger.logEnabled = false;
+
+            // Act
+            var result = VariableDataFactory.CreateForVar(null);
+
+            // Assert
+            Assert.IsNull(result, "Factory should return null when var type is null");
+        }
+
+        [Test]
+        public void CreateForVar_WithNullVarType_LogsWarning()
+        {
+            string expectedLogMessage = "Cannot create variable data for a null var type. Returning null.";
+            LogAssert.Expect(LogType.Warning, expectedLogMessage);
+            VariableDataFactory.CreateForVar(null);
+        }
+
+        [VariableData(typeof(float), typeof(StringMuscariable))]
+        public class FakeStringVariableData : VariableData<string, IVariable<string>>
+        {
+        }
+
     }
 
     [VariableData(typeof(int), typeof(IntMuscariable))]

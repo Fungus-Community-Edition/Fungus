@@ -12,7 +12,7 @@ namespace Amanita.VScripting
     {
         private static readonly IList<Type> _legacyTypes = new List<Type>();
         private static readonly IList<Type> _muscariableTypes = new List<Type>();
-        private static readonly IDictionary<Type, VariableTypeActions> _actions = 
+        private static readonly IDictionary<Type, VariableTypeActions> _actionsRegistered = 
             new Dictionary<Type, VariableTypeActions>(new TypeNameComparer());
 
         // Key: IVariable-implementor. Value: content.
@@ -32,6 +32,21 @@ namespace Amanita.VScripting
 
         public static void RegisterVariableType(Type varType, VariableTypeActions actions)
         {
+            bool alreadyRegistered = _legacyTypes.Contains(varType) || _muscariableTypes.Contains(varType);
+            bool sameActions = false;
+            string logMessage = "";
+            if (alreadyRegistered)
+            {
+                sameActions = actions.Equals(_actionsRegistered[varType]);
+            }
+
+            if (alreadyRegistered && sameActions)
+            {
+                logMessage = $"Already registered variable type {varType.Name} under the actions passed.";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+
             bool isLegacy = _baseLegacyType.IsAssignableFrom(varType);
             if (isLegacy)
             {
@@ -45,8 +60,14 @@ namespace Amanita.VScripting
             VariableInfoAttribute att = varType.GetCustomAttribute<VariableInfoAttribute>();
             if (att != null)
             {
-                _typeMap.Add(varType, att.ContentType);
-                _actions[varType] = actions;
+                _typeMap[varType] = att.ContentType;
+                _actionsRegistered[varType] = actions;
+
+                if (sameActions)
+                {
+                    logMessage = $"Overwrote actions tied to {varType.Name}.";
+                    Debug.Log(logMessage);
+                }
             }
         }
 
@@ -100,7 +121,7 @@ namespace Amanita.VScripting
 
         public static bool TryGetTypeActionsFor(Type type, out VariableTypeActions result)
         {
-            bool gotIt = _actions.TryGetValue(type, out result);
+            bool gotIt = _actionsRegistered.TryGetValue(type, out result);
 
             if (!gotIt)
             {
@@ -117,7 +138,7 @@ namespace Amanita.VScripting
             _contentTypeToVarType.Clear();
             _legacyTypes.Clear();
             _muscariableTypes.Clear();
-            _actions.Clear();
+            _actionsRegistered.Clear();
         }
 
     }

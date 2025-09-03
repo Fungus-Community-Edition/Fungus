@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -22,13 +23,15 @@ namespace Amanita.VScripting
             _typeMap.Clear();
         }
 
-        public static void Register(Type varDataType, VariableDataAttribute attr)
+        public static void Register(Type varDataType)
         {
-            if (attr == null || varDataType == null)
+            if (varDataType == null)
             {
-                Debug.LogWarning($"Passed null attr or varDataType to VariableDataRegistry Register func");
+                Debug.LogWarning($"Passed null varDataType to VariableDataRegistry Register func");
                 return;
             }
+
+            VariableDataAttribute attr = varDataType.GetCustomAttribute<VariableDataAttribute>();
 
             IList<Type> compatibleVarTypes = attr.VariableTypes.Where((elem) => elem != null).ToList();
 
