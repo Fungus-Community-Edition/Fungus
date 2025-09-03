@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.Tweening;
 
 namespace Amanita.DialogueSys.Commands
 {

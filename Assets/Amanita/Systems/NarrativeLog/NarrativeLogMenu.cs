@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Amanita.DentedPixel;
 using Amanita.VScripting;
 using Amanita.DialogueSys;
+using Amanita.Tweening;
 
 namespace Amanita.UI.Legacy
 {

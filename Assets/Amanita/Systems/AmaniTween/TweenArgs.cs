@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace Amanita
+namespace Amanita.Tweening
 {
     public class TweenArgs : System.EventArgs
     {

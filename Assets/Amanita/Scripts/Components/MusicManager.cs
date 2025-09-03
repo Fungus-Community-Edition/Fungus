@@ -1,4 +1,5 @@
 using UnityEngine;
+using Amanita.Tweening;
 
 namespace Amanita
 {

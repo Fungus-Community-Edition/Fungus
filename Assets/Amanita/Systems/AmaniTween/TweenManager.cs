@@ -4,7 +4,7 @@ using System.Linq;
 using System;
 using UnityEngine.UI;
 
-namespace Amanita
+namespace Amanita.Tweening
 {
     public class TweenManager : MonoBehaviour
     {
