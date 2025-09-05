@@ -1,0 +1,13 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Amanita/Resources/_EditorResources/Stylesheets/inspectorStyle.uss?fileID=7433441132597879392&amp;guid=9e22a25197c37394cb88cdfa12198daf&amp;type=3#inspectorStyle" />
+    <engine:VisualElement name="InspectorRoot" style="flex-grow: 1;">
+        <engine:TextField label="Description" placeholder-text="Insert desc here" select-all-on-mouse-up="false" select-all-on-focus="false" multiline="true" name="DescField" />
+        <engine:TextField label="Localization ID" placeholder-text="filler text" name="LocalizationIDField" />
+        <engine:Foldout text="Foldout" name="EditorOnlyFoldout">
+            <engine:Toggle label="Color Commands" name="ColorCommands" />
+            <engine:Toggle label="Hide Components" name="HideComponents" />
+            <engine:Toggle label="Save Selections" name="SaveSelections" />
+            <engine:MinMaxSlider label="Min/Max Slider" value="10,12" low-limit="-10" high-limit="40" />
+        </engine:Foldout>
+    </engine:VisualElement>
+</engine:UXML>

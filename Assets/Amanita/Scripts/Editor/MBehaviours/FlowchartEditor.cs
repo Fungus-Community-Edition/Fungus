@@ -177,7 +177,7 @@ namespace Amanita.VScripting.EditorUtils
             stepPauseProp = serializedObject.FindProperty("stepPause");
             saveSelectionProp = serializedObject.FindProperty("saveSelection");
             localizationIdProp = serializedObject.FindProperty("localizationId");
-            variablesProp = serializedObject.FindProperty("variables");
+            variablesProp = serializedObject.FindProperty("_legacyVariables");
             showLineNumbersProp = serializedObject.FindProperty("showLineNumbers");
             hideCommandsProp = serializedObject.FindProperty("hideCommands");
             luaEnvironmentProp = serializedObject.FindProperty("luaEnvironment");
