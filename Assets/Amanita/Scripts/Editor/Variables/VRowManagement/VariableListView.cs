@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Pool;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 
@@ -31,13 +29,19 @@ namespace Amanita.VScripting.EditorUtils
         protected Flowchart _flowchart;
         protected int _flowchartInstanceID;
 
-        // Guards & state
-        bool _refreshScheduled;
-
         public void SetFlowchart(Flowchart flowchart)
         {
             _flowchart = flowchart;
-            _flowchartInstanceID = _flowchart != null ? _flowchart.GetInstanceID() : 0;
+            if (_flowchart != null)
+            {
+                _flowchartInstanceID = _flowchart.GetInstanceID();
+                _flowchartGlobalId = GlobalObjectId.GetGlobalObjectIdSlow(_flowchart);
+            }
+            else
+            {
+                _flowchartInstanceID = 0;
+                _flowchartGlobalId = default;
+            }
             SyncFromFlowchart();
         }
 
@@ -80,45 +84,27 @@ namespace Amanita.VScripting.EditorUtils
                 rowParent.Clear();
 
                 var row = GetOrCreateRow(variable);
-                if (row?.RootElement != null)
+                if (row == null || row.RootElement == null)
                 {
-                    rowParent.Add(row.RootElement);
+                    rowParent.userData = null;
+                    return;
                 }
 
-                // Store variable to help unbind cleanup
-                rowParent.userData = variable;
+                // Keep subscriptions stable, dedupe to avoid duplicates
+                row.RemoveButtonClicked -= OnRemoveButtonClicked;
+                row.RemoveButtonClicked += OnRemoveButtonClicked;
 
-                // Prevent duplicate subscriptions (binding can happen many times)
-                if (row != null)
-                {
-                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                    row.RemoveButtonClicked += OnRemoveButtonClicked;
-                }
+                // Attach visual
+                rowParent.Add(row.RootElement);
 
-                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName) && row?.RootElement != null)
-                {
-                    var handle = row.RootElement.Q<VisualElement>(_dragHandleName);
-                    if (handle != null && handle.userData as string != "dragHandleHooked")
-                    {
-                        handle.userData = "dragHandleHooked";
-                        handle.RegisterCallback<PointerDownEvent>(_ => { _lastPointerDownOnHandle = true; });
-                    }
+                // Store the row itself (not the variable) for any per-visual cleanup
+                rowParent.userData = row;
 
-                    row.RootElement.RegisterCallback<PointerDownEvent>(evt =>
-                    {
-                        if (evt.target != handle)
-                            _lastPointerDownOnHandle = false;
-                    });
-                }
+
             };
 
             _listDisplay.unbindItem = (element, index) =>
             {
-                // Detach per-row handlers to avoid duplicate firing after rebinding
-                if (element.userData is IVariable var && _activeRows.TryGetValue(var, out var row))
-                {
-                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                }
                 element.userData = null;
                 element.Clear();
             };
@@ -132,6 +118,7 @@ namespace Amanita.VScripting.EditorUtils
             _listDisplay.canStartDrag += OnCanStartDrag;
             _listDisplay.itemIndexChanged += OnItemIndexChanged;
 
+            UpdateCount();
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
             Undo.undoRedoPerformed += HandleUndoRedoPerformed;
         }
@@ -144,125 +131,46 @@ namespace Amanita.VScripting.EditorUtils
         // mutating ListView data source while it's mid-binding (which can cause orphan/phantom rows).
         protected virtual void OnRemoveButtonClicked(VariableRow row)
         {
-            if (row == null) return;
-            // Remove subscription immediately to prevent multiple queued removals
-            row.RemoveButtonClicked -= OnRemoveButtonClicked;
-            EditorApplication.delayCall += () => PerformRemoval(row);
-        }
+            if (row == null || row.VarToRepresent == null) return;
 
-        void PerformRemoval(VariableRow row)
-        {
-            if (row == null) return;
             var variable = row.VarToRepresent;
+            string contentTypeName = variable.ContentType.Name;
 
-            if (variable != null)
+            int idx = _variables.IndexOf(variable);
+            if (idx < 0) return;
+
+            _variables.RemoveAt(idx);
+
+            Refresh();
+
+            // 3) Release only the removed row (after refresh to avoid mid-bind detach)
+            ReleaseRow(variable);
+
+            // 4) Destroy underlying object with proper Undo
+            if (!Application.isPlaying)
             {
-                int idx = _variables.IndexOf(variable);
-                if (idx >= 0)
-                    _variables.RemoveAt(idx);
+                int group = Undo.GetCurrentGroup();
+                string groupName = $"Remove {contentTypeName} Variable";
+                Undo.SetCurrentGroupName(groupName);
 
-                Flowchart flowchart = _flowchart;
-                if (flowchart == null && variable is Component comp)
-                {
-                    flowchart = comp.GetComponent<Flowchart>();
-                    if (flowchart == null)
-                    {
-                        flowchart = comp.GetComponentInParent<Flowchart>();
-                    }
-                }
-                if (flowchart != null && _flowchart == null)
-                {
-                    _flowchart = flowchart;
-                    _flowchartInstanceID = _flowchart.GetInstanceID();
-                }
+                if (_flowchart != null)
+                    Undo.RegisterCompleteObjectUndo(_flowchart, groupName);
 
-                if (!Application.isPlaying)
-                {
-                    int group = Undo.GetCurrentGroup();
-                    Undo.SetCurrentGroupName("Remove Variable");
-                    if (flowchart != null)
-                        Undo.RegisterCompleteObjectUndo(flowchart, "Remove Variable");
+                if (variable is UnityEngine.Object unityObj && unityObj != null)
+                    Undo.DestroyObjectImmediate(unityObj);
 
-                    if (variable is UnityEngine.Object unityObj)
-                        Undo.DestroyObjectImmediate(unityObj);
-
-                    Undo.CollapseUndoOperations(group);
-                }
-                else
-                {
-                    if (variable is UnityEngine.Object uo)
-                        UnityEngine.Object.Destroy(uo);
-                }
-
-                ReleaseRow(variable);
+                Undo.CollapseUndoOperations(group);
             }
-
-            SafeRefresh();
-        }
-
-        protected virtual void SafeRefresh()
-        {
-            if (_listDisplay == null) return;
-            UpdateCount();
-            // Debounce multiple refresh requests within the same editor loop
-            if (_refreshScheduled) return;
-            _refreshScheduled = true;
-
-            EditorApplication.delayCall += () =>
+            else
             {
-                if (_listDisplay == null) { _refreshScheduled = false; return; }
-
-                _refreshScheduled = false;
-
-                // Full rebuild strategy to eliminate “phantom” rows:
-                // 1. Break the binding (null itemsSource) so the internal virtualization
-                //    & dynamic height caches are flushed.
-                // 2. Re‑assign itemsSource.
-                // 3. Release any orphaned visuals still tracked (defensive).
-                // 4. Force a Rebuild (heavier than RefreshItems, but reliable after
-                //    mid‑frame data mutation + component destruction).
-                _listDisplay.itemsSource = null;
-
-                // (Optional micro‑optimization: prune any rows whose variable was destroyed)
-                PruneDeadRows();
-
-                _listDisplay.itemsSource = _variables;
-
-                // Force internal pools / height cache to recompute
-                _listDisplay.Rebuild();
-
-                // Final count & UI update
-                UpdateCount();
-            };
-        }
-
-        // Remove any cached row entries whose underlying variable object was destroyed (now null).
-        void PruneDeadRows()
-        {
-            if (_activeRows.Count == 0) return;
-
-            // Unity “missing component” slots can yield null comparison true
-            // so we filter any dictionary entries whose key (IVariable) is now a UnityEngine.Object that is null.
-            var dead = ListPool<IVariable>.Get();
-            foreach (var kvp in _activeRows)
-            {
-                if (kvp.Key is UnityEngine.Object uo && uo == null)
-                    dead.Add(kvp.Key);
+                if (variable is UnityEngine.Object uo && uo != null)
+                    UnityEngine.Object.Destroy(uo);
             }
-
-            if (dead.Count > 0)
-            {
-                foreach (var d in dead)
-                    ReleaseRow(d);
-            }
-            ListPool<IVariable>.Release(dead);
         }
 
         protected virtual bool OnCanStartDrag(CanStartDragArgs args)
         {
             if (Application.isPlaying) return false;
-            if (_requireHandleForDrag && !_lastPointerDownOnHandle)
-                return false;
             _lastPointerDownOnHandle = false;
             return true;
         }
@@ -274,6 +182,9 @@ namespace Amanita.VScripting.EditorUtils
             OrderChanged?.Invoke(_variables.ToList());
             UpdateCount();
         }
+
+        protected GlobalObjectId _flowchartGlobalId;
+
 
         protected virtual VariableRow GetOrCreateRow(IVariable variable)
         {
@@ -322,8 +233,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _variables.Add(variable);
-            SafeRefresh();
-            UpdateCount();
+            Refresh();
         }
 
         public void RemoveVariable(IVariable variable)
@@ -331,9 +241,10 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             int idx = _variables.IndexOf(variable);
             if (idx < 0) return;
+
             _variables.RemoveAt(idx);
             ReleaseRow(variable);
-            SafeRefresh();
+            Refresh();
         }
 
         public void SetVariables(IEnumerable<IVariable> vars)
@@ -346,20 +257,20 @@ namespace Amanita.VScripting.EditorUtils
                     if (elem != null)
                         _variables.Add(elem);
             }
-            SafeRefresh();
+            Refresh();
         }
 
         public void Clear()
         {
             ReleaseAllActiveRows();
             _variables.Clear();
-            SafeRefresh();
-            UpdateCount();
+            Refresh();
         }
 
         public void Refresh()
         {
-            SafeRefresh();
+            _listDisplay.RefreshItems();
+            UpdateCount();
         }
 
         public int RowCount => _variables.Count;
@@ -414,13 +325,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected bool _isDisposed;
 
-        public void RequireDragHandle(string handleName)
-        {
-            _requireHandleForDrag = !string.IsNullOrEmpty(handleName);
-            _dragHandleName = handleName;
-        }
-
-        protected bool _requireHandleForDrag;
 
         #region Undo/Redo Sync
 
@@ -428,39 +332,52 @@ namespace Amanita.VScripting.EditorUtils
         {
             AcquireFlowchartIfLost();
             SyncFromFlowchart();
+            UpdateCount();
         }
 
         protected bool AcquireFlowchartIfLost()
         {
             if (_flowchart != null) return true;
 
+            // 1) Try GlobalObjectId first
+            if (_flowchartGlobalId.identifierType != 0) // default struct check
+            {
+                var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
+                if (obj != null)
+                {
+                    SetFlowchart(obj);
+                    return true;
+                }
+            }
+
+            // 2) Fallback to old instance ID (may fail after undo/redo)
             if (_flowchartInstanceID != 0)
             {
                 var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
                 if (obj != null)
                 {
-                    _flowchart = obj;
+                    SetFlowchart(obj);
                     return true;
                 }
             }
 
+            // 3) Try FlowchartWindow
             try
             {
                 var viaWindow = FlowchartWindow.GetFlowchart();
                 if (viaWindow != null)
                 {
-                    _flowchart = viaWindow;
-                    _flowchartInstanceID = _flowchart.GetInstanceID();
+                    SetFlowchart(viaWindow);
                     return true;
                 }
             }
             catch { }
 
+            // 4) Fallback: single Flowchart in scene
             var all = UnityEngine.Object.FindObjectsOfType<Flowchart>();
             if (all.Length == 1)
             {
-                _flowchart = all[0];
-                _flowchartInstanceID = _flowchart.GetInstanceID();
+                SetFlowchart(all[0]);
                 return true;
             }
 
@@ -469,22 +386,22 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void SyncFromFlowchart()
         {
-            if (!AcquireFlowchartIfLost())
-                return;
-
             var source = _flowchart.Variables;
             if (source == null)
                 return;
 
             ReleaseAllActiveRows();
             _variables.Clear();
-            foreach (var elem in source)
+            var sourceToAdd = source.Where(IsValidVar);
+
+            bool IsValidVar(IVariable elem)
             {
-                if (elem != null)
-                    _variables.Add(elem);
+                // As in neither null or a destroyed UnityObj
+                return elem != null && (!(elem is UnityEngine.Object uo) || uo != null);
             }
 
-            SafeRefresh();
+            _variables.AddRange(sourceToAdd);
+            Refresh();
         }
 
         #endregion
