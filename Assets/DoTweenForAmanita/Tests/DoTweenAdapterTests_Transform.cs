@@ -6,34 +6,24 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using System.Collections;
 
-public class DoTweenAdapterTests_Transform
+public class DoTweenAdapterTests_Transform : DoTweenAdapterTests
 {
     [SetUp]
-    public virtual void SetUp()
+    public override void SetUp()
     {
-        // Ensure DOTween state is clean before each test
-        DOTween.KillAll(false);
-        testGO = new GameObject("DoTweenTestGO");
-        adapter = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
+        base.SetUp();
         _nullHandle = new DOTweenHandle(null);
-        _moveToHandle = adapter.MoveTo(testGO.transform, new Vector3(1f, 2f, 3f), 1f);
-        _rotateToHandle = adapter.RotateTo(testGO.transform, Quaternion.Euler(0f, 90f, 0f), 1f);
-        _scaleToHandle = adapter.ScaleTo(testGO.transform, new Vector3(2f, 2f, 2f), 1f);
+        _moveToHandle = _adapter.MoveTo(_testGo.transform, new Vector3(1f, 2f, 3f), 1f);
+        _rotateToHandle = _adapter.RotateTo(_testGo.transform, Quaternion.Euler(0f, 90f, 0f), 1f);
+        _scaleToHandle = _adapter.ScaleTo(_testGo.transform, new Vector3(2f, 2f, 2f), 1f);
     }
 
-    protected GameObject testGO;
-    protected AmaniDoTweenAdapter adapter;
     protected ITweenHandle _nullHandle, _moveToHandle, _rotateToHandle, _scaleToHandle;
-    protected const float Epsilon = 1e-3f;
 
     [TearDown]
-    public virtual void TearDown()
+    public override void TearDown()
     {
-        // Kill any remaining tweens and destroy created objects
-        DOTween.KillAll(false);
-        if (testGO != null) Object.DestroyImmediate(testGO);
-        if (adapter != null) Object.DestroyImmediate(adapter);
-
+        base.TearDown();
         _nullHandle = _moveToHandle = _rotateToHandle = _scaleToHandle = null;
     }
 
@@ -109,7 +99,7 @@ public class DoTweenAdapterTests_Transform
         // Wait slightly longer than the tween duration to allow DOTween to complete
         yield return new WaitForSeconds(1.05f);
 
-        var actual = testGO.transform.position;
+        var actual = _testGo.transform.position;
         Assert.AreEqual(expected.x, actual.x, Epsilon, "X position did not reach expected value.");
         Assert.AreEqual(expected.y, actual.y, Epsilon, "Y position did not reach expected value.");
         Assert.AreEqual(expected.z, actual.z, Epsilon, "Z position did not reach expected value.");
@@ -121,7 +111,7 @@ public class DoTweenAdapterTests_Transform
         var expectedEuler = new Vector3(0f, 90f, 0f);
         yield return new WaitForSeconds(1.05f);
 
-        var actualEuler = testGO.transform.rotation.eulerAngles;
+        var actualEuler = _testGo.transform.rotation.eulerAngles;
         // Compare each euler component; handle wrap-around for angles near 360
         float actualY = Mathf.Repeat(actualEuler.y + 360f, 360f);
         float expectedY = Mathf.Repeat(expectedEuler.y + 360f, 360f);
@@ -134,7 +124,7 @@ public class DoTweenAdapterTests_Transform
         var expected = new Vector3(2f, 2f, 2f);
         yield return new WaitForSeconds(1.05f);
 
-        var actual = testGO.transform.localScale;
+        var actual = _testGo.transform.localScale;
         Assert.AreEqual(expected.x, actual.x, Epsilon, "X scale did not reach expected value.");
         Assert.AreEqual(expected.y, actual.y, Epsilon, "Y scale did not reach expected value.");
         Assert.AreEqual(expected.z, actual.z, Epsilon, "Z scale did not reach expected value.");

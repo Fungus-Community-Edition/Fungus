@@ -7,13 +7,8 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 using UnityObj = UnityEngine.Object;
 
-public class DoTweenAdapterTests_Graphics
+public class DoTweenAdapterTests_Graphics : DoTweenAdapterTests
 {
-    private GameObject _go;
-    private AmaniDoTweenAdapter _adapter;
-
-    private const float Duration = 1f;
-    private const float Epsilon = 1e-3f;
 
     // --- Case definitions ---
     private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
@@ -60,27 +55,11 @@ public class DoTweenAdapterTests_Graphics
     private static readonly object[] GraphicCases = { ShiftGraphicCase, FadeGraphicCase };
     private static readonly object[] SpriteCases = { ShiftSpriteCase, FadeSpriteCase };
 
-    [SetUp]
-    public void SetUp()
-    {
-        DOTween.KillAll(false);
-        _go = new GameObject("TweenTestGO");
-        _adapter = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        DOTween.KillAll(false);
-        if (_go) UnityObj.DestroyImmediate(_go);
-        if (_adapter) UnityObj.DestroyImmediate(_adapter);
-    }
-
     // --- Non-yield tests ---
     [TestCaseSource(nameof(GraphicCases))]
     public void Handle_IsValid_Graphic(TweenCase<Graphic, Color> tc)
     {
-        var comp = tc.CreateComponent(_go);
+        var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
@@ -89,7 +68,7 @@ public class DoTweenAdapterTests_Graphics
     [TestCaseSource(nameof(SpriteCases))]
     public void Handle_IsValid_Sprite(TweenCase<SpriteRenderer, Color> tc)
     {
-        var comp = tc.CreateComponent(_go);
+        var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
@@ -98,7 +77,7 @@ public class DoTweenAdapterTests_Graphics
     [TestCaseSource(nameof(GraphicCases))]
     public void Kill_DoesNotThrow_Graphic(TweenCase<Graphic, Color> tc)
     {
-        var comp = tc.CreateComponent(_go);
+        var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
         Assert.DoesNotThrow(() => handle.Kill());
         Assert.IsFalse(handle.IsPlaying);
@@ -107,7 +86,7 @@ public class DoTweenAdapterTests_Graphics
     [TestCaseSource(nameof(SpriteCases))]
     public void Kill_DoesNotThrow_Sprite(TweenCase<SpriteRenderer, Color> tc)
     {
-        var comp = tc.CreateComponent(_go);
+        var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
         Assert.DoesNotThrow(() => handle.Kill());
         Assert.IsFalse(handle.IsPlaying);
@@ -131,7 +110,7 @@ public class DoTweenAdapterTests_Graphics
     // --- Shared runner ---
     private IEnumerator RunTweenCase<T>(TweenCase<T, Color> tc, Color startValue) where T : Component
     {
-        var comp = tc.CreateComponent(_go);
+        var comp = tc.CreateComponent(_testGo);
         tc.SetValue(comp, startValue);
 
         tc.CreateTween(_adapter, comp);
