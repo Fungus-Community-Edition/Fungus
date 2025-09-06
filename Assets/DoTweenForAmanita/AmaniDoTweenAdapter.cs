@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 namespace Amanita.ThirdPartyInt.DGDOTween
 {
-    public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGraphicTweenAdapter
+    public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGraphicTweenAdapter,
+        IAudioSourceTweenAdapter
     {
         [SerializeField] protected Ease _ease = Ease.Linear;
         public virtual Ease Ease
@@ -15,18 +16,17 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             set => _ease = value;
         }
 
+        #region Transform
         public ITweenHandle MoveTo(Transform target, Vector3 position, float duration)
         {
-            Tween tween = target.DOMove(position, duration)
-                .SetEase(_ease);
+            Tween tween = target.DOMove(position, duration).SetEase(_ease);
             DOTweenHandle tweenHandle = new DOTweenHandle(tween);
             return tweenHandle;
         }
 
         public ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration)
         {
-            Tween tween = target.DORotateQuaternion(rotation, duration)
-                .SetEase(_ease);
+            Tween tween = target.DORotateQuaternion(rotation, duration).SetEase(_ease);
             DOTweenHandle handle = new DOTweenHandle(tween);
             return handle;
         }
@@ -37,7 +37,9 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             DOTweenHandle dOTweenHandle = new DOTweenHandle(tween);
             return dOTweenHandle;
         }
+        #endregion
 
+        #region Graphic
         public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
         {
             Tween tween = target.DOColor(endVal, duration).SetEase(_ease);
@@ -47,14 +49,14 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
         {
-            Tween tween = target.DOColor(endVal,duration).SetEase(_ease);
+            Tween tween = target.DOColor(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
         public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
         {
-            Tween tween = target.DOFade(endVal,duration).SetEase(_ease);
+            Tween tween = target.DOFade(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
@@ -65,48 +67,40 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
-    }
 
-    public class DOTweenHandle : ITweenHandle
-    {
-        public static DOTweenHandle From(Tween tween)
+
+        #endregion
+
+        #region AudioSource
+
+        public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
         {
-            var result = new DOTweenHandle(tween);
+            Tween tween = target.DOFade(targVal, duration).SetEase(_ease);
+            DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public DOTweenHandle(Tween tween)
+        public ITweenHandle ShiftVolume02To(AudioSource target, float targVal, float duration)
         {
-            Tween = tween;
+            return ShiftVolumeTo(target, targVal / 100f, duration);
         }
 
-        public virtual void Kill()
+        public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
         {
-            Tween?.Kill();
+            Tween tween = target.DOPitch(targVal, duration).SetEase(_ease);
+            DOTweenHandle result = new DOTweenHandle(tween);
+            return result;
         }
 
-        public virtual Tween Tween { get; set; }
-
-        public virtual bool IsPlaying => Tween != null && Tween.IsPlaying();
-
-        public virtual Action OnComplete
+        public ITweenHandle ShiftPitch02To(AudioSource target, float targVal, float duration)
         {
-            get
-            {
-                Action result = delegate { };
-                if (Tween != null)
-                {
-                    result = () => Tween.onComplete()
-                    ;
-                }
-
-                return result;
-            }
-            set
-            {
-                Tween?.OnComplete(() => value());
-            }
+            return ShiftPitchTo(target, targVal / 100f, duration);
         }
+
+        #endregion
+
     }
+
+    
 }
 
