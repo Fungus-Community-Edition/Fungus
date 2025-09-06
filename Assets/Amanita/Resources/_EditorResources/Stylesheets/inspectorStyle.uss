@@ -4,6 +4,7 @@
 	--dark-mode-text-color: rgb(230, 230, 230);
 	--dark-mode-text-bg-color: rgb(26, 26, 26);
 	--text-field-font-size: 14px;
+	--text-field-border-radius: 5px;
 }
 
 #InspectorRoot
@@ -16,8 +17,10 @@
 
 #LocalizationIDField
 {
-	height: 25px;
+	height: 30px;
 	-unity-text-align: middle-left;
+	margin: 3px 0px 3px 0px;
+	
 }
 
 #LocalizationIDField > Label
@@ -32,7 +35,7 @@
 {
 	color: var(--dark-mode-text-color);
 	background-color: var(--dark-mode-text-bg-color);
-	
+	border-radius: var(--text-field-border-radius);
 	padding: 5px;
 	
 }
@@ -53,7 +56,7 @@
 	padding: 5px;
 	background-color: var(--dark-mode-text-bg-color);
 	color: var(--dark-mode-text-color);
-	border-radius: 5px;
+	border-radius: var(--text-field-border-radius);
 }
 
 #OpenFlowchartWindow
@@ -63,4 +66,19 @@
 	height: 40px;
 	padding: 0px;
 	font-size: 16px;
+}
+
+#EditorOnly
+{
+	margin: 0px 0px 3px 0px;
+}
+
+#LuaSupport
+{
+	margin: 0px 0px 3px 0px;
+}
+
+#SaveSysInvolvement
+{
+	margin: 0px 0px 3px 0px;
 }
