@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Utils;
 
 public class MaterialTests : DoTweenAdapterTests
 {
@@ -35,11 +36,12 @@ public class MaterialTests : DoTweenAdapterTests
         tc.SetValue(comp, Color.black);
         tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
+
         var actual = tc.GetValue(comp);
-        Assert.AreEqual(tc.TargetValue.r, actual.r, Epsilon, tc.Name);
-        Assert.AreEqual(tc.TargetValue.g, actual.g, Epsilon, tc.Name);
-        Assert.AreEqual(tc.TargetValue.b, actual.b, Epsilon, tc.Name);
+        var comparer = new ColorEqualityComparer(Epsilon);
+        Assert.That(actual, Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
+
 
     [UnityTest]
     public IEnumerator Tween_Completes_Float([ValueSource(nameof(FloatCases))] TweenCase<Renderer, float> tc)
@@ -50,4 +52,5 @@ public class MaterialTests : DoTweenAdapterTests
         yield return new WaitForSeconds(Duration + 0.05f);
         Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name);
     }
+
 }

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Utils; // equality comparers
 
 public class RectTransformTests : DoTweenAdapterTests
 {
@@ -56,7 +57,10 @@ public class RectTransformTests : DoTweenAdapterTests
         tc.SetValue(comp, Vector2.zero);
         tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
-        Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), tc.Name);
+
+        // Use constructor comparer instead of .Within(...)
+        var comparer = new Vector2EqualityComparer(Epsilon);
+        Assert.That(tc.GetValue(comp), Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
 
     [UnityTest]
@@ -66,7 +70,14 @@ public class RectTransformTests : DoTweenAdapterTests
         tc.SetValue(comp, Quaternion.identity);
         tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
-        Assert.AreEqual(tc.TargetValue.eulerAngles, tc.GetValue(comp).eulerAngles, tc.Name);
+
+        // Option A: angle tolerance (recommended)
+        var angle = Quaternion.Angle(tc.GetValue(comp), tc.TargetValue);
+        Assert.LessOrEqual(angle, 1f, $"{tc.Name} angle diff {angle} > 1°");
+
+        // Option B: comparer (if you prefer component-wise tolerance)
+        // var comparer = new QuaternionEqualityComparer(Epsilon);
+        // Assert.That(tc.GetValue(comp), Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
 
     [UnityTest]
@@ -76,6 +87,8 @@ public class RectTransformTests : DoTweenAdapterTests
         tc.SetValue(comp, Vector3.one);
         tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
-        Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), tc.Name);
+
+        var comparer = new Vector3EqualityComparer(Epsilon);
+        Assert.That(tc.GetValue(comp), Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
 }

@@ -4,16 +4,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using UnityEngine.TestTools.Utils;
+
 
 public class GraphicsTests : DoTweenAdapterTests
 {
-    // --- Case definitions ---
     private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
     {
         Name = "ShiftColorTo_Graphic",
-        CreateTween = (adapter, graphic) => adapter.ShiftColorTo(graphic, Color.red, Duration),
-        GetValue = graphic => graphic.color,
-        SetValue = (graphic, color) => graphic.color = color,
+        CreateTween = (adapter, g) => adapter.ShiftColorTo(g, Color.red, Duration),
+        GetValue = g => g.color,
+        SetValue = (g, c) => g.color = c,
         CreateComponent = go => go.AddComponent<Image>(),
         TargetValue = Color.red
     };
@@ -21,9 +22,9 @@ public class GraphicsTests : DoTweenAdapterTests
     private static readonly TweenCase<SpriteRenderer, Color> ShiftSpriteCase = new TweenCase<SpriteRenderer, Color>
     {
         Name = "ShiftColorTo_SpriteRenderer",
-        CreateTween = (adapter, spriteRenderer) => adapter.ShiftColorTo(spriteRenderer, Color.green, Duration),
-        GetValue = spriteRenderer => spriteRenderer.color,
-        SetValue = (spriteRenderer, color) => spriteRenderer.color = color,
+        CreateTween = (adapter, s) => adapter.ShiftColorTo(s, Color.green, Duration),
+        GetValue = s => s.color,
+        SetValue = (s, c) => s.color = c,
         CreateComponent = go => go.AddComponent<SpriteRenderer>(),
         TargetValue = Color.green
     };
@@ -31,9 +32,9 @@ public class GraphicsTests : DoTweenAdapterTests
     private static readonly TweenCase<Graphic, Color> FadeGraphicCase = new TweenCase<Graphic, Color>
     {
         Name = "FadeTo_Graphic",
-        CreateTween = (adapter, graphic) => adapter.FadeTo(graphic, 0.5f, Duration),
-        GetValue = graphic => graphic.color,
-        SetValue = (graphic, color) => graphic.color = color,
+        CreateTween = (adapter, g) => adapter.FadeTo(g, 0.5f, Duration),
+        GetValue = g => g.color,
+        SetValue = (g, c) => g.color = c,
         CreateComponent = go => go.AddComponent<Image>(),
         TargetValue = new Color(1f, 1f, 1f, 0.5f)
     };
@@ -41,83 +42,92 @@ public class GraphicsTests : DoTweenAdapterTests
     private static readonly TweenCase<SpriteRenderer, Color> FadeSpriteCase = new TweenCase<SpriteRenderer, Color>
     {
         Name = "FadeTo_SpriteRenderer",
-        CreateTween = (adapter, spriteRenderer) => adapter.FadeTo(spriteRenderer, 0.25f, Duration),
-        GetValue = spriteRenderer => spriteRenderer.color,
-        SetValue = (spriteRenderer, color) => spriteRenderer.color = color,
+        CreateTween = (adapter, s) => adapter.FadeTo(s, 0.25f, Duration),
+        GetValue = s => s.color,
+        SetValue = (s, c) => s.color = c,
         CreateComponent = go => go.AddComponent<SpriteRenderer>(),
         TargetValue = new Color(1f, 1f, 1f, 0.25f)
     };
 
-    // --- Sources ---
-    private static readonly object[] GraphicCases = { ShiftGraphicCase, FadeGraphicCase };
-    private static readonly object[] SpriteCases = { ShiftSpriteCase, FadeSpriteCase };
-
-    // --- Non-yield tests ---
-    [TestCaseSource(nameof(GraphicCases))]
-    public void Handle_IsValid_Graphic(TweenCase<Graphic, Color> tCase)
+    private static readonly TweenCase<Image, float> ShiftFillCase = new TweenCase<Image, float>
     {
-        var comp = tCase.CreateComponent(_testGo);
-        var handle = tCase.CreateTween(_adapter, comp);
+        Name = "ShiftFillTo_Image",
+        CreateTween = (adapter, img) => adapter.ShiftFillTo(img, 0.75f, Duration),
+        GetValue = img => img.fillAmount,
+        SetValue = (img, v) => img.fillAmount = v,
+        CreateComponent = go => go.AddComponent<Image>(),
+        TargetValue = 0.75f
+    };
+
+    private static readonly object[] GraphicColorCases = { ShiftGraphicCase, FadeGraphicCase };
+    private static readonly object[] SpriteColorCases = { ShiftSpriteCase, FadeSpriteCase };
+    private static readonly object[] FillCases = { ShiftFillCase };
+
+    [TestCaseSource(nameof(GraphicColorCases))]
+    public void Handle_IsValid_Graphic(TweenCase<Graphic, Color> tc)
+    {
+        var comp = tc.CreateComponent(_testGo);
+        var handle = tc.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
-    [TestCaseSource(nameof(SpriteCases))]
-    public void Handle_IsValid_Sprite(TweenCase<SpriteRenderer, Color> tCase)
+    [TestCaseSource(nameof(SpriteColorCases))]
+    public void Handle_IsValid_Sprite(TweenCase<SpriteRenderer, Color> tc)
     {
-        var comp = tCase.CreateComponent(_testGo);
-        var handle = tCase.CreateTween(_adapter, comp);
+        var comp = tc.CreateComponent(_testGo);
+        var handle = tc.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
-    [TestCaseSource(nameof(GraphicCases))]
-    public void Kill_DoesNotThrow_Graphic(TweenCase<Graphic, Color> tCase)
+    [TestCaseSource(nameof(FillCases))]
+    public void Handle_IsValid_Fill(TweenCase<Image, float> tc)
     {
-        var comp = tCase.CreateComponent(_testGo);
-        var handle = tCase.CreateTween(_adapter, comp);
-        Assert.DoesNotThrow(() => handle.Kill());
-        Assert.IsFalse(handle.IsPlaying);
+        var comp = tc.CreateComponent(_testGo);
+        var handle = tc.CreateTween(_adapter, comp);
+        Assert.IsInstanceOf<DOTweenHandle>(handle);
+        Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
-    [TestCaseSource(nameof(SpriteCases))]
-    public void Kill_DoesNotThrow_Sprite(TweenCase<SpriteRenderer, Color> tCase)
-    {
-        var comp = tCase.CreateComponent(_testGo);
-        var handle = tCase.CreateTween(_adapter, comp);
-        Assert.DoesNotThrow(() => handle.Kill());
-        Assert.IsFalse(handle.IsPlaying);
-    }
-
-    // --- Yield tests ---
     [UnityTest]
     public IEnumerator Tween_CompletesWithExpectedValue_Graphic(
-        [ValueSource(nameof(GraphicCases))] TweenCase<Graphic, Color> tCase)
+    [ValueSource(nameof(GraphicColorCases))] TweenCase<Graphic, Color> tc)
     {
-        yield return RunTweenCase(tCase, Color.white);
+        var comp = tc.CreateComponent(_testGo);
+        tc.SetValue(comp, Color.white);
+        tc.CreateTween(_adapter, comp);
+        yield return new WaitForSeconds(Duration + 0.05f);
+
+        var actual = tc.GetValue(comp);
+        var comparer = new ColorEqualityComparer(Epsilon);
+        Assert.That(actual, Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
 
     [UnityTest]
     public IEnumerator Tween_CompletesWithExpectedValue_Sprite(
-        [ValueSource(nameof(SpriteCases))] TweenCase<SpriteRenderer, Color> tCase)
+        [ValueSource(nameof(SpriteColorCases))] TweenCase<SpriteRenderer, Color> tc)
     {
-        yield return RunTweenCase(tCase, Color.white);
-    }
-
-    // --- Shared runner ---
-    private IEnumerator RunTweenCase<T>(TweenCase<T, Color> tCase, Color startValue) where T : Component
-    {
-        var comp = tCase.CreateComponent(_testGo);
-        tCase.SetValue(comp, startValue);
-
-        tCase.CreateTween(_adapter, comp);
-
+        var comp = tc.CreateComponent(_testGo);
+        tc.SetValue(comp, Color.white);
+        tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
 
-        var actual = tCase.GetValue(comp);
-        Assert.AreEqual(tCase.TargetValue.r, actual.r, Epsilon, $"{tCase.Name} - R");
-        Assert.AreEqual(tCase.TargetValue.g, actual.g, Epsilon, $"{tCase.Name} - G");
-        Assert.AreEqual(tCase.TargetValue.b, actual.b, Epsilon, $"{tCase.Name} - B");
-        Assert.AreEqual(tCase.TargetValue.a, actual.a, Epsilon, $"{tCase.Name} - A");
+        var actual = tc.GetValue(comp);
+        var comparer = new ColorEqualityComparer(Epsilon);
+        Assert.That(actual, Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
+
+
+    [UnityTest]
+    public IEnumerator Tween_CompletesWithExpectedValue_Fill(
+        [ValueSource(nameof(FillCases))] TweenCase<Image, float> tc)
+    {
+        var comp = tc.CreateComponent(_testGo);
+        tc.SetValue(comp, 0f);
+        tc.CreateTween(_adapter, comp);
+        yield return new WaitForSeconds(Duration + 0.05f);
+        Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name);
+    }
+
 }

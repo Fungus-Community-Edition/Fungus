@@ -2,12 +2,13 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Utils;
 
 public class LightTests : DoTweenAdapterTests
 {
     private static readonly TweenCase<Light, float> IntensityCase = new TweenCase<Light, float>
     {
-        Name = "ShiftIntensityTo",
+        Name = "ShiftIntensityTo_Light",
         CreateTween = (adapter, light) => adapter.ShiftIntensityTo(light, 2f, Duration),
         GetValue = l => l.intensity,
         SetValue = (l, v) => l.intensity = v,
@@ -17,7 +18,7 @@ public class LightTests : DoTweenAdapterTests
 
     private static readonly TweenCase<Light, Color> ColorCase = new TweenCase<Light, Color>
     {
-        Name = "ShiftColorTo",
+        Name = "ShiftColorTo_Light",
         CreateTween = (adapter, light) => adapter.ShiftColorTo(light, Color.red, Duration),
         GetValue = l => l.color,
         SetValue = (l, c) => l.color = c,
@@ -27,7 +28,7 @@ public class LightTests : DoTweenAdapterTests
 
     private static readonly TweenCase<Light, float> RangeCase = new TweenCase<Light, float>
     {
-        Name = "ShiftRangeTo",
+        Name = "ShiftRangeTo_Light",
         CreateTween = (adapter, light) => adapter.ShiftRangeTo(light, 15f, Duration),
         GetValue = l => l.range,
         SetValue = (l, v) => l.range = v,
@@ -55,9 +56,10 @@ public class LightTests : DoTweenAdapterTests
         tc.SetValue(comp, Color.black);
         tc.CreateTween(_adapter, comp);
         yield return new WaitForSeconds(Duration + 0.05f);
+
         var actual = tc.GetValue(comp);
-        Assert.AreEqual(tc.TargetValue.r, actual.r, Epsilon, tc.Name);
-        Assert.AreEqual(tc.TargetValue.g, actual.g, Epsilon, tc.Name);
-        Assert.AreEqual(tc.TargetValue.b, actual.b, Epsilon, tc.Name);
+        var comparer = new ColorEqualityComparer(Epsilon);
+        Assert.That(actual, Is.EqualTo(tc.TargetValue).Using(comparer), tc.Name);
     }
+
 }
