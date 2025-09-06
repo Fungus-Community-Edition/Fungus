@@ -6,10 +6,15 @@ using UnityEngine.UI;
 
 namespace Amanita.ThirdPartyInt.DGDOTween
 {
-    public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGraphicTweenAdapter,
-        IAudioSourceTweenAdapter
+
+    [CreateAssetMenu(fileName = "NewAmanitaDoTweenAdapter", menuName = "Amanita/DOTween/TweenAdapter")]
+    public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter,
+        IGraphicTweenAdapter, IAudioSourceTweenAdapter, ICameraTweenAdapter,
+        ILightTweenAdapter, ICanvasGroupTweenAdapter, IRectTransformTweenAdapter,
+        IMaterialTweenAdapter, IAudioFilterTweenAdapter
     {
         [SerializeField] protected Ease _ease = Ease.Linear;
+
         public virtual Ease Ease
         {
             get => _ease;
@@ -99,8 +104,125 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         #endregion
 
+        #region Camera
+        public ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.fieldOfView, v => target.fieldOfView = v, targetVal, duration)
+                                 .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.orthographicSize, v => target.orthographicSize = v, targetVal, duration)
+                                 .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.backgroundColor, v => target.backgroundColor = v, targetVal, duration)
+                                 .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+        #region Light
+        public ITweenHandle ShiftIntensityTo(Light target, float targetVal, float duration)
+        {
+            Tween tween = target.DOIntensity(targetVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftColorTo(Light target, Color targetVal, float duration)
+        {
+            Tween tween = target.DOColor(targetVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftRangeTo(Light target, float targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.range,
+                newRangeVal => target.range = newRangeVal,
+                targetVal, duration)
+                                 .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+        #region CanvasGroup
+        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
+        {
+            Tween tween = target.DOFade(endVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+        #region RectTransform
+        public ITweenHandle ShiftAnchoredPositionTo(RectTransform target, Vector2 position, float duration)
+        {
+            Tween tween = target.DOAnchorPos(position, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftSizeDeltaTo(RectTransform target, Vector2 size, float duration)
+        {
+            Tween tween = target.DOSizeDelta(size, duration).SetEase(_ease); ;
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle RotateTo(RectTransform target, Quaternion rotation, float duration)
+        {
+            Tween tween = target.DORotateQuaternion(rotation, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ScaleTo(RectTransform target, Vector3 scale, float duration)
+        {
+            Tween tween = target.DOScale(scale, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+        #region Material
+        public ITweenHandle ShiftColorTo(Material target, Color targetVal, float duration)
+        {
+            Tween tween = target.DOColor(targetVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftFloatTo(Material target, string propertyName, float targetVal, float duration)
+        {
+            Tween tween = target.DOFloat(targetVal, propertyName, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+        #region Audio Filters
+        public ITweenHandle ShiftLowPassCutoffTo(AudioLowPassFilter target, float targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.cutoffFrequency,
+                newVal => target.cutoffFrequency = newVal,
+                targetVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftReverbLevelTo(AudioReverbFilter target, float targetVal, float duration)
+        {
+            Tween tween = DOTween.To(() => target.reverbLevel,
+                newVal => target.reverbLevel = newVal,
+                targetVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle ShiftFillTo(Image target, float endVal, float duration)
+        {
+            Tween tween = target.DOFillAmount(endVal, duration).SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
     }
 
-    
+
 }
 

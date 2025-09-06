@@ -1,21 +1,17 @@
 ﻿using Amanita.ThirdPartyInt.DGDOTween;
-using DG.Tweening;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityObj = UnityEngine.Object;
 
-public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
+public class AudioSourceTests : DoTweenAdapterTests
 {
-
-    // --- Case definitions ---
     private static readonly TweenCase<AudioSource, float> ShiftVolumeCase = new TweenCase<AudioSource, float>
     {
         Name = "ShiftVolumeTo",
         CreateTween = (adapter, src) => adapter.ShiftVolumeTo(src, 0.5f, Duration),
         GetValue = src => src.volume,
-        SetValue = (src, v) => src.volume = v,
+        SetValue = (src, val) => src.volume = val,
         CreateComponent = go => go.AddComponent<AudioSource>(),
         TargetValue = 0.5f
     };
@@ -25,7 +21,7 @@ public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
         Name = "ShiftVolume02To",
         CreateTween = (adapter, src) => adapter.ShiftVolume02To(src, 50f, Duration), // 50% → 0.5f
         GetValue = src => src.volume,
-        SetValue = (src, v) => src.volume = v,
+        SetValue = (src, val) => src.volume = val,
         CreateComponent = go => go.AddComponent<AudioSource>(),
         TargetValue = 0.5f
     };
@@ -35,7 +31,7 @@ public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
         Name = "ShiftPitchTo",
         CreateTween = (adapter, src) => adapter.ShiftPitchTo(src, 1.5f, Duration),
         GetValue = src => src.pitch,
-        SetValue = (src, v) => src.pitch = v,
+        SetValue = (src, val) => src.pitch = val,
         CreateComponent = go => go.AddComponent<AudioSource>(),
         TargetValue = 1.5f
     };
@@ -45,7 +41,7 @@ public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
         Name = "ShiftPitch02To",
         CreateTween = (adapter, src) => adapter.ShiftPitch02To(src, 150f, Duration), // 150% → 1.5f
         GetValue = src => src.pitch,
-        SetValue = (src, v) => src.pitch = v,
+        SetValue = (src, val) => src.pitch = val,
         CreateComponent = go => go.AddComponent<AudioSource>(),
         TargetValue = 1.5f
     };
@@ -62,19 +58,19 @@ public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
 
     // --- Non-yield tests ---
     [TestCaseSource(nameof(AudioCases))]
-    public void Handle_IsValid(TweenCase<AudioSource, float> tc)
+    public void Handle_IsValid(TweenCase<AudioSource, float> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
     [TestCaseSource(nameof(AudioCases))]
-    public void Kill_DoesNotThrow(TweenCase<AudioSource, float> tc)
+    public void Kill_DoesNotThrow(TweenCase<AudioSource, float> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.DoesNotThrow(() => handle.Kill());
         Assert.IsFalse(handle.IsPlaying);
     }
@@ -82,17 +78,17 @@ public class DoTweenAdapterTests_AudioSource : DoTweenAdapterTests
     // --- Yield tests ---
     [UnityTest]
     public IEnumerator Tween_CompletesWithExpectedValue(
-        [ValueSource(nameof(AudioCases))] TweenCase<AudioSource, float> tc)
+        [ValueSource(nameof(AudioCases))] TweenCase<AudioSource, float> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        tc.SetValue(comp, 0f); // start from zero for volume/pitch
+        var comp = tCase.CreateComponent(_testGo);
+        tCase.SetValue(comp, 0f); // start from zero for volume/pitch
 
-        tc.CreateTween(_adapter, comp);
+        tCase.CreateTween(_adapter, comp);
 
         yield return new WaitForSeconds(Duration + 0.05f);
 
-        var actual = tc.GetValue(comp);
-        Assert.AreEqual(tc.TargetValue, actual, Epsilon, tc.Name);
+        var actual = tCase.GetValue(comp);
+        Assert.AreEqual(tCase.TargetValue, actual, Epsilon, tCase.Name);
     }
 
     // --- Edge-case tests for 02 methods ---

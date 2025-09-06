@@ -1,12 +1,11 @@
 using Amanita.ThirdPartyInt.DGDOTween;
 using Amanita.Tweening;
-using DG.Tweening;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System.Collections;
 
-public class DoTweenAdapterTests_Transform : DoTweenAdapterTests
+public class TransformTests : DoTweenAdapterTests
 {
     [SetUp]
     public override void SetUp()

@@ -1,15 +1,12 @@
 using Amanita.ThirdPartyInt.DGDOTween;
-using DG.Tweening;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using UnityObj = UnityEngine.Object;
 
-public class DoTweenAdapterTests_Graphics : DoTweenAdapterTests
+public class GraphicsTests : DoTweenAdapterTests
 {
-
     // --- Case definitions ---
     private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
     {
@@ -57,37 +54,37 @@ public class DoTweenAdapterTests_Graphics : DoTweenAdapterTests
 
     // --- Non-yield tests ---
     [TestCaseSource(nameof(GraphicCases))]
-    public void Handle_IsValid_Graphic(TweenCase<Graphic, Color> tc)
+    public void Handle_IsValid_Graphic(TweenCase<Graphic, Color> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
     [TestCaseSource(nameof(SpriteCases))]
-    public void Handle_IsValid_Sprite(TweenCase<SpriteRenderer, Color> tc)
+    public void Handle_IsValid_Sprite(TweenCase<SpriteRenderer, Color> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.IsInstanceOf<DOTweenHandle>(handle);
         Assert.IsNotNull(((DOTweenHandle)handle).Tween);
     }
 
     [TestCaseSource(nameof(GraphicCases))]
-    public void Kill_DoesNotThrow_Graphic(TweenCase<Graphic, Color> tc)
+    public void Kill_DoesNotThrow_Graphic(TweenCase<Graphic, Color> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.DoesNotThrow(() => handle.Kill());
         Assert.IsFalse(handle.IsPlaying);
     }
 
     [TestCaseSource(nameof(SpriteCases))]
-    public void Kill_DoesNotThrow_Sprite(TweenCase<SpriteRenderer, Color> tc)
+    public void Kill_DoesNotThrow_Sprite(TweenCase<SpriteRenderer, Color> tCase)
     {
-        var comp = tc.CreateComponent(_testGo);
-        var handle = tc.CreateTween(_adapter, comp);
+        var comp = tCase.CreateComponent(_testGo);
+        var handle = tCase.CreateTween(_adapter, comp);
         Assert.DoesNotThrow(() => handle.Kill());
         Assert.IsFalse(handle.IsPlaying);
     }
@@ -95,32 +92,32 @@ public class DoTweenAdapterTests_Graphics : DoTweenAdapterTests
     // --- Yield tests ---
     [UnityTest]
     public IEnumerator Tween_CompletesWithExpectedValue_Graphic(
-        [ValueSource(nameof(GraphicCases))] TweenCase<Graphic, Color> tc)
+        [ValueSource(nameof(GraphicCases))] TweenCase<Graphic, Color> tCase)
     {
-        yield return RunTweenCase(tc, Color.white);
+        yield return RunTweenCase(tCase, Color.white);
     }
 
     [UnityTest]
     public IEnumerator Tween_CompletesWithExpectedValue_Sprite(
-        [ValueSource(nameof(SpriteCases))] TweenCase<SpriteRenderer, Color> tc)
+        [ValueSource(nameof(SpriteCases))] TweenCase<SpriteRenderer, Color> tCase)
     {
-        yield return RunTweenCase(tc, Color.white);
+        yield return RunTweenCase(tCase, Color.white);
     }
 
     // --- Shared runner ---
-    private IEnumerator RunTweenCase<T>(TweenCase<T, Color> tc, Color startValue) where T : Component
+    private IEnumerator RunTweenCase<T>(TweenCase<T, Color> tCase, Color startValue) where T : Component
     {
-        var comp = tc.CreateComponent(_testGo);
-        tc.SetValue(comp, startValue);
+        var comp = tCase.CreateComponent(_testGo);
+        tCase.SetValue(comp, startValue);
 
-        tc.CreateTween(_adapter, comp);
+        tCase.CreateTween(_adapter, comp);
 
         yield return new WaitForSeconds(Duration + 0.05f);
 
-        var actual = tc.GetValue(comp);
-        Assert.AreEqual(tc.TargetValue.r, actual.r, Epsilon, $"{tc.Name} - R");
-        Assert.AreEqual(tc.TargetValue.g, actual.g, Epsilon, $"{tc.Name} - G");
-        Assert.AreEqual(tc.TargetValue.b, actual.b, Epsilon, $"{tc.Name} - B");
-        Assert.AreEqual(tc.TargetValue.a, actual.a, Epsilon, $"{tc.Name} - A");
+        var actual = tCase.GetValue(comp);
+        Assert.AreEqual(tCase.TargetValue.r, actual.r, Epsilon, $"{tCase.Name} - R");
+        Assert.AreEqual(tCase.TargetValue.g, actual.g, Epsilon, $"{tCase.Name} - G");
+        Assert.AreEqual(tCase.TargetValue.b, actual.b, Epsilon, $"{tCase.Name} - B");
+        Assert.AreEqual(tCase.TargetValue.a, actual.a, Epsilon, $"{tCase.Name} - A");
     }
 }
