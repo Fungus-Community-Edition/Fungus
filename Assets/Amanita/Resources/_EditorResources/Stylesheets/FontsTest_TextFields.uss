@@ -8,7 +8,6 @@
 .title {
     color: #ccc;
     font-size: 13px;
-    unity-font-style: bold;
 }
 
 .tf {

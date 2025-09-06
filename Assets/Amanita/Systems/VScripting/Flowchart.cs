@@ -47,47 +47,51 @@ namespace Amanita.VScripting
 
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
-        [SerializeField] protected string description = "";
+        [FormerlySerializedAs("description")]
+        [SerializeField] protected string _description = "";
 
         [Range(0f, 5f)]
         [Tooltip("Adds a pause after each execution step to make it easier to visualise program flow. Editor only, has no effect in platform builds.")]
-        [SerializeField] protected float stepPause = 0f;
+        [SerializeField] protected float _stepPause = 0f;
 
         [Tooltip("Use command color when displaying the command list in the Fungus Editor window")]
-        [SerializeField] protected bool colorCommands = true;
+        [SerializeField] protected bool _colorCommands = true;
 
         [Tooltip("Hides the Flowchart block and command components in the inspector. Deselect to inspect the block and command components that make up the Flowchart.")]
-        [SerializeField] protected bool hideComponents = true;
+        [SerializeField] protected bool _hideComponents = true;
 
         [Tooltip("Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.")]
-        [SerializeField] protected bool saveSelection = true;
+        [SerializeField] protected bool _saveSelection = true;
 
         [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
-        [SerializeField] protected string localizationId = "";
+        [FormerlySerializedAs("localizationId")]
+        [SerializeField] protected string _localizationId = "";
 
         [Tooltip("Display line numbers in the command list in the Block inspector.")]
         [SerializeField] protected bool showLineNumbers = false;
 
         [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
-        [SerializeField] protected List<string> hideCommands = new List<string>();
+        [SerializeField] protected List<string> _hideCommands = new List<string>();
 
         [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
-        [SerializeField] protected LuaEnvironment luaEnvironment;
+        [FormerlySerializedAs("luaEnvironment")]
+        [SerializeField] protected LuaEnvironment _luaEnvironment;
 
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
-        [SerializeField] protected string luaBindingName = "flowchart";
+        [FormerlySerializedAs("_luaBindingName")]
+        [SerializeField] protected string _luaBindingName = "flowchart";
 
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
-        [SerializeField] protected bool includeInSaves = true;
+        [SerializeField] protected bool _includeInSaves = true;
 
         [Tooltip("Whether or not the execution state of this FC's Blocks should be considered for saving.")]
-        [SerializeField] protected bool saveBlocks = true;
+        [SerializeField] protected bool _saveBlocks = true;
 
         [Tooltip("Whether or not this FC's vars should be saved or loaded.")]
-        [SerializeField] protected bool saveVariables = true;
+        [SerializeField] protected bool _saveVariables = true;
 
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
-        [SerializeField] protected int loadPriority = 0;
+        [SerializeField] protected int _loadPriority = 0;
 
         /// <summary>
         /// Scroll position of Flowchart editor window.
@@ -100,28 +104,28 @@ namespace Amanita.VScripting
 
         public virtual bool IncludeInSaves
         {
-            get { return includeInSaves; }
-            set { includeInSaves = value; }
+            get { return _includeInSaves; }
+            set { _includeInSaves = value; }
         }
 
         #region SaveSys Involvement
         public virtual bool SaveBlocks
         {
-            get { return saveBlocks; }
-            set { saveBlocks = value; }
+            get { return _saveBlocks; }
+            set { _saveBlocks = value; }
         }
 
         public virtual bool SaveVariables
         {
-            get { return saveVariables; }
-            set { saveVariables = value; }
+            get { return _saveVariables; }
+            set { _saveVariables = value; }
         }
         
 
         public virtual int LoadPriority
         {
-            get { return loadPriority; }
-            set { loadPriority = value; }
+            get { return _loadPriority; }
+            set { _loadPriority = value; }
         }
         #endregion
 
@@ -607,27 +611,27 @@ namespace Amanita.VScripting
         /// <summary>
         /// Description text displayed in the Flowchart editor window
         /// </summary>
-        public virtual string Description { get { return description; } }
+        public virtual string Description { get { return _description; } }
 
         /// <summary>
         /// Slow down execution in the editor to make it easier to visualise program flow.
         /// </summary>
-        public virtual float StepPause { get { return stepPause; } }
+        public virtual float StepPause { get { return _stepPause; } }
 
         /// <summary>
         /// Use command color when displaying the command list in the inspector.
         /// </summary>
-        public virtual bool ColorCommands { get { return colorCommands; } }
+        public virtual bool ColorCommands { get { return _colorCommands; } }
 
         /// <summary>
         /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
         /// </summary>
-        public virtual bool SaveSelection { get { return saveSelection; } }
+        public virtual bool SaveSelection { get { return _saveSelection; } }
 
         /// <summary>
         /// Unique identifier for identifying this flowchart in localized string keys.
         /// </summary>
-        public virtual string LocalizationId { get { return localizationId; } }
+        public virtual string LocalizationId { get { return _localizationId; } }
 
         /// <summary>
         /// Display line numbers in the command list in the Block inspector.
@@ -637,12 +641,12 @@ namespace Amanita.VScripting
         /// <summary>
         /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
         /// </summary>
-        public virtual LuaEnvironment LuaEnv { get { return luaEnvironment; } }
+        public virtual LuaEnvironment LuaEnv { get { return _luaEnvironment; } }
 
         /// <summary>
         /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
         /// </summary>
-        public virtual string LuaBindingName { get { return luaBindingName; } }
+        public virtual string LuaBindingName { get { return _luaBindingName; } }
 
         /// <summary>
         /// Position in the center of all blocks in the flowchart.
@@ -1188,7 +1192,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void UpdateHideFlags()
         {
-            if (hideComponents)
+            if (_hideComponents)
             {
                 var blocks = GetComponents<Block>();
                 for (int i = 0; i < blocks.Length; i++)
@@ -1339,10 +1343,10 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
         {
-            for (int i = 0; i < hideCommands.Count; i++)
+            for (int i = 0; i < _hideCommands.Count; i++)
             {
                 // Match on category or command name (case insensitive)
-                var key = hideCommands[i];
+                var key = _hideCommands[i];
                 if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     return false;
