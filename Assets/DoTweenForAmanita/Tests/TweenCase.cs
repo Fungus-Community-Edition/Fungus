@@ -3,13 +3,12 @@ using Amanita.Tweening;
 using System;
 using UnityEngine;
 
-public class TweenCase<T> where T : Component
+public class TweenCase<TComponent, TValue> where TComponent : Component
 {
     public string Name;
-    public Func<AmaniDoTweenAdapter, T, ITweenHandle> CreateTween;
-    public Func<T, Color> GetValue;
-    public Action<T, Color> SetValue;
-    public Func<GameObject, T> CreateComponent; // NEW: explicit factory
-    public Color? TargetValue;
-    public float? TargetAlpha;
+    public Func<AmaniDoTweenAdapter, TComponent, ITweenHandle> CreateTween;
+    public Func<TComponent, TValue> GetValue;
+    public Action<TComponent, TValue> SetValue;
+    public Func<GameObject, TComponent> CreateComponent;
+    public TValue TargetValue;
 }
