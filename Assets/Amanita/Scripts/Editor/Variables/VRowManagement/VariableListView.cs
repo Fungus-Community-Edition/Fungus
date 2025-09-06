@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -80,22 +79,24 @@ namespace Amanita.VScripting.EditorUtils
                 rowParent.Clear();
 
                 var row = GetOrCreateRow(variable);
-                if (row?.RootElement != null)
+                if (row == null || row.RootElement == null)
                 {
-                    rowParent.Add(row.RootElement);
+                    rowParent.userData = null;
+                    return;
                 }
 
-                // Store variable to help unbind cleanup
-                rowParent.userData = variable;
+                // Keep subscriptions stable, dedupe to avoid duplicates
+                row.RemoveButtonClicked -= OnRemoveButtonClicked;
+                row.RemoveButtonClicked += OnRemoveButtonClicked;
 
-                // Prevent duplicate subscriptions (binding can happen many times)
-                if (row != null)
-                {
-                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                    row.RemoveButtonClicked += OnRemoveButtonClicked;
-                }
+                // Attach visual
+                rowParent.Add(row.RootElement);
 
-                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName) && row?.RootElement != null)
+                // Store the row itself (not the variable) for any per-visual cleanup
+                rowParent.userData = row;
+
+                // Optional: drag handle hookup (unchanged)
+                if (_requireHandleForDrag && !string.IsNullOrEmpty(_dragHandleName))
                 {
                     var handle = row.RootElement.Q<VisualElement>(_dragHandleName);
                     if (handle != null && handle.userData as string != "dragHandleHooked")
@@ -103,22 +104,16 @@ namespace Amanita.VScripting.EditorUtils
                         handle.userData = "dragHandleHooked";
                         handle.RegisterCallback<PointerDownEvent>(_ => { _lastPointerDownOnHandle = true; });
                     }
-
                     row.RootElement.RegisterCallback<PointerDownEvent>(evt =>
                     {
-                        if (evt.target != handle)
-                            _lastPointerDownOnHandle = false;
+                        if (evt.target != handle) _lastPointerDownOnHandle = false;
                     });
                 }
+
             };
 
             _listDisplay.unbindItem = (element, index) =>
             {
-                // Detach per-row handlers to avoid duplicate firing after rebinding
-                if (element.userData is IVariable var && _activeRows.TryGetValue(var, out var row))
-                {
-                    row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                }
                 element.userData = null;
                 element.Clear();
             };
@@ -144,10 +139,44 @@ namespace Amanita.VScripting.EditorUtils
         // mutating ListView data source while it's mid-binding (which can cause orphan/phantom rows).
         protected virtual void OnRemoveButtonClicked(VariableRow row)
         {
-            if (row == null) return;
-            // Remove subscription immediately to prevent multiple queued removals
-            row.RemoveButtonClicked -= OnRemoveButtonClicked;
-            EditorApplication.delayCall += () => PerformRemoval(row);
+            if (row == null || row.VarToRepresent == null) return;
+
+            var variable = row.VarToRepresent;
+            string contentTypeName = variable.ContentType.Name;
+
+            int idx = _variables.IndexOf(variable);
+            if (idx < 0) return;
+
+            // 1) Update data source
+            _variables.RemoveAt(idx);
+
+            // 2) Refresh the ListView so visible visuals rebind (and keep their subscriptions)
+            _listDisplay.RefreshItems();
+            UpdateCount();
+
+            // 3) Release only the removed row (after refresh to avoid mid-bind detach)
+            ReleaseRow(variable);
+
+            // 4) Destroy underlying object with proper Undo
+            if (!Application.isPlaying)
+            {
+                int group = Undo.GetCurrentGroup();
+                string groupName = $"Remove {contentTypeName} Variable";
+                Undo.SetCurrentGroupName(groupName);
+
+                if (_flowchart != null)
+                    Undo.RegisterCompleteObjectUndo(_flowchart, groupName);
+
+                if (variable is UnityEngine.Object unityObj && unityObj != null)
+                    Undo.DestroyObjectImmediate(unityObj);
+
+                Undo.CollapseUndoOperations(group);
+            }
+            else
+            {
+                if (variable is UnityEngine.Object uo && uo != null)
+                    UnityEngine.Object.Destroy(uo);
+            }
         }
 
         void PerformRemoval(VariableRow row)
