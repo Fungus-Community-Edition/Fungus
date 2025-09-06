@@ -4,11 +4,11 @@
     <engine:VisualElement name="InspectorRoot" style="flex-grow: 1;">
         <engine:TextField label="Description" placeholder-text="Insert desc here" select-all-on-mouse-up="false" select-all-on-focus="false" multiline="true" name="DescField" hide-placeholder-on-focus="true" binding-path="_description" vertical-scroller-visibility="Auto" />
         <engine:TextField label="Localization ID" name="LocalizationIDField" binding-path="_localizationId" hide-placeholder-on-focus="true" />
-        <engine:Foldout text="Editor Only" name="EditorOnlyFoldout">
+        <engine:Foldout text="Editor Only" name="EditorOnly">
             <engine:Toggle label="Color Commands" name="ColorCommands" value="false" binding-path="_colorCommands" />
             <engine:Toggle label="Hide Components" name="HideComponents" binding-path="_hideComponents" />
-            <engine:Toggle label="Save Selections" name="SaveSelections" binding-path="_saveSelections" />
-            <engine:Slider label="Slider" value="42" high-value="5" name="StepPause" binding-path="_stepPause" fill="true" show-input-field="true" />
+            <engine:Toggle label="Save Selection" name="SaveSelections" binding-path="_saveSelection" />
+            <engine:Slider label="Step Pause" value="42" high-value="5" name="StepPause" binding-path="_stepPause" fill="true" show-input-field="true" />
             <editor:PropertyField name="HideCommands" binding-path="_hideCommands" />
         </engine:Foldout>
         <engine:Foldout text="Lua Support&#10;" name="LuaSupport">
