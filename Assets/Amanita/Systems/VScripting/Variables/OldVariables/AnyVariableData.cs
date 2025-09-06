@@ -29,7 +29,7 @@ namespace Amanita.VScripting
                 {
                     valStr = data.Value != null ? data.Value.ToString() : "null";
                 }
-                Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {valStr}");
+                //Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {valStr}");
                 if (ReferenceEquals(data, null))
                 {
                     return null;

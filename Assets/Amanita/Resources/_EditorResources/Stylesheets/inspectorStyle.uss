@@ -3,7 +3,7 @@
 	--main-font: resource('Fonts/Exo2/Exo2-Regular');
 	--dark-mode-text-color: rgb(230, 230, 230);
 	--dark-mode-text-bg-color: rgb(26, 26, 26);
-	--text-field-font-size: 12px;
+	--text-field-font-size: 14px;
 }
 
 #InspectorRoot
@@ -11,6 +11,7 @@
 	padding: 5px;
 	color: var(--dark-mode-text-color);
 	font-size: var(--text-field-font-size);
+	-unity-font-definition: var(--main-font);
 }
 
 #LocalizationIDField
@@ -53,4 +54,13 @@
 	background-color: var(--dark-mode-text-bg-color);
 	color: var(--dark-mode-text-color);
 	border-radius: 5px;
+}
+
+#OpenFlowchartWindow
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 40px;
+	padding: 0px;
+	font-size: 16px;
 }
