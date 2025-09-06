@@ -139,10 +139,7 @@ namespace Amanita.VScripting.EditorUtils
                     text = "Open Flowchart Window"
                 };
 
-                openFlowchartWindowButton.RegisterCallback<ClickEvent>((ClickEvent evt) =>
-                {
-                    EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
-                });
+                openFlowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
 
                 VisualElement varsUi = _uitkVarListAdaptor.CreateVariablesUI();
                 var imguiArea = new IMGUIContainer(() =>
@@ -227,11 +224,12 @@ namespace Amanita.VScripting.EditorUtils
                 //string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
                 string pathToUxml = "_EditorResources/UIToolkitTemplates/FlowchartInspector";
                 var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+                var inspectorRoot = uxml.CloneTree();
+                Button flowchartWindowButton = inspectorRoot.Q<Button>("OpenFlowchartWindow");
+                flowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
+                _rootElement.Add(inspectorRoot);
 
-                var vdeRoot = uxml.CloneTree();
-                _rootElement.Add(vdeRoot);
-
-                var managerRoot = vdeRoot.Q("VariableDisplayEditor");
+                var managerRoot = inspectorRoot.Q("VariableDisplayEditor");
                 BuildManager(managerRoot);
                 return _rootElement;
             }
@@ -281,6 +279,11 @@ namespace Amanita.VScripting.EditorUtils
             }
             
             return false;
+        }
+    
+        protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
+        {
+            EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
         }
     }
 }
