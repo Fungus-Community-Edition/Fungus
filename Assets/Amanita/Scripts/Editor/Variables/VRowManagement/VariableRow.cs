@@ -85,15 +85,32 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void UpdateSerializedVar()
         {
-            if ((_prevVariable == _currentVariable) && _serializedVar != null) return;
+            if ((_prevVariable == _currentVariable) && _serializedVar != null)
+                return;
+
+            _serializedVar?.Dispose();
 
             if (_currentVariable != null)
             {
-                _serializedVar?.Dispose();
-                _serializedVar = SerializedObjectFrom(_currentVariable);
+                // Guard against destroyed UnityEngine.Object
+                if (_currentVariable is UnityObject unityObj)
+                {
+                    if (unityObj == null) // Unity's overloaded null check
+                    {
+                        _serializedVar = null;
+                        return;
+                    }
+
+                    _serializedVar = new SerializedObject(unityObj);
+                }
+                else
+                {
+                    var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
+                    holder.Init(_currentVariable);
+                    _serializedVar = new SerializedObject(holder);
+                }
+
                 _serializedVar.Update();
-                //var prop = _serializedVar.FindProperty("value");
-                //Debug.Log($"{prop.propertyType} at path 'value'");
             }
             else
             {
@@ -148,11 +165,15 @@ namespace Amanita.VScripting.EditorUtils
 
         protected SerializedObject SerializedObjectFrom(IVariable variable)
         {
-            SerializedObject result;
+            SerializedObject result = null;
 
             if (variable is UnityObject unityObj) // Should apply even when we have a MuscariableHolder passed in
             {
-                result = new SerializedObject(unityObj);
+                if (unityObj != null) // Remember how the == operator is overridden for UnityObjects
+                {
+                    result = new SerializedObject(unityObj);
+                }
+                
             }
             else
             {

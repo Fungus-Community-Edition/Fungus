@@ -6,7 +6,7 @@
                 <ui:Label name="varCountLabel" text="Count: 0" view-data-key="varCountLabel" class="var-count" />
                 <ui:Button name="addVarButton" text="Add Variable" view-data-key="addVarButton" class="add-button" />
             </ui:VisualElement>
-            <ui:ListView data-source-path="rowList" name="rowList" reorderable="true" reorder-mode="Animated" show-border="true" />
+            <ui:ListView data-source-path="rowList" name="rowList" reorderable="true" reorder-mode="Animated" show-border="true" horizontal-scrolling="true" />
         </ui:Foldout>
     </ui:VisualElement>
 </ui:UXML>
