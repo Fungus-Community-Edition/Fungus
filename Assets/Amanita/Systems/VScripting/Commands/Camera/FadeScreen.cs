@@ -41,7 +41,8 @@ namespace Amanita.VScripting
         {
             if (fadeTweener == null)
             {
-                fadeTweener = TweenManager.TweenAdapter;
+                doFade = TweenManager.TweenAdapter;
+                return;
             }
 
             doFade = fadeTweener as IGeneralTweenAdapter<float>;

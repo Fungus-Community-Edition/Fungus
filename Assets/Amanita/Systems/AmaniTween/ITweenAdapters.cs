@@ -1,3 +1,4 @@
+using Amanita.Myceliaudio;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,23 +26,29 @@ namespace Amanita.Tweening
     public interface IAudioSourceTweenAdapter
     {
         /// <summary>
-        /// On a scale of 0 for silent to 1 for max.
+        /// On a scale of 0 for silent to 100 for max.
         ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration);
 
         /// <summary>
-        /// On a scale of 0 for silent to 100 for max.
+        /// On a scale of 0 for silent to 1 for max.
         /// </summary>
-        ITweenHandle ShiftVolume02To(AudioSource target, float targVal, float duration);
+        ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration);
 
         /// <summary>
-        /// On a scale of -3 for min to 3 for max. Note that the default pitch here is 1.
+        /// On a scale of -300 for min to 300 for max. Note that the default pitch here is 100.
         /// </summary>
         ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration);
 
         /// <summary>
-        /// On a scale of 0-300 for min to 300 for max. Note that the default pitch here is 100.
+        /// On a scale of -3 for min to 3 for max. Note that the default pitch here is 1.
         /// </summary>
-        ITweenHandle ShiftPitch02To(AudioSource target, float targVal, float duration);
+        ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration);
+    }
+
+    public interface IMyceliaudioTweenAdapter
+    {
+        ITweenHandle ShiftVolumeTo(IAudioTrack track, float targVal, float duration);
+        ITweenHandle ShiftVolume01To(IAudioTrack track, int targVal, float duration);
     }
 
     public interface IGeneralTweenAdapter<T>

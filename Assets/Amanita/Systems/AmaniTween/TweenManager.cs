@@ -1,3 +1,4 @@
+using Amanita.Myceliaudio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace Amanita.Tweening
 {
     public class TweenManager : MonoBehaviour, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
         IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
-        IGraphicTweenAdapter, ICameraTweenAdapter
+        IGraphicTweenAdapter, ICameraTweenAdapter, IAudioSourceTweenAdapter, IMyceliaudioTweenAdapter
     {
         public static DefaultTweenAdapter TweenAdapter { get; protected set; } =
             ScriptableObject.CreateInstance<DefaultTweenAdapter>();
@@ -282,21 +283,23 @@ namespace Amanita.Tweening
         }
 
         /// <summary>
-        /// Uses a scale of 0 to 2
+        /// Uses a scale of 0 to 1
         /// </summary>
         public static Tween<float> TweenAudioSourceVolume01(AudioSource source, float startVol,
             float endVol, float duration, Action onComplete = null)
         {
 
             string id = $"AudioSource_{source.GetInstanceID()}_Volume";
-            Tween<float> result = new Tween<float>(source, id, startVol, endVol, duration, val =>
+            void UpdateTheVol(float newVol)
             {
-                source.volume = val;
-            })
+                source.volume = newVol;
+            }
+            Tween<float> result = new Tween<float>(source, id, startVol, endVol, duration, UpdateTheVol)
                 .SetOnComplete(onComplete);
 
             return result;
         }
+
 
         public static Tween<float> TweenCanvasGroupAlpha(CanvasGroup group, float startAlpha, float targAlpha,
             float duration, Action onComplete = null)
@@ -486,6 +489,51 @@ namespace Amanita.Tweening
                 });
             return result;
         }
+
+        public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
+        {
+            var tween = TweenAudioSourceVolume(target, target.volume * 100, targVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        {
+            var tween = TweenAudioSourceVolume01(target, target.volume, targVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
+        {
+            var tween = TweenAudioSourcePitch(target, target.pitch, targVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
+        {
+            var tween = TweenAudioSourcePitch02(target, target.pitch, targVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        /// <summary>
+        /// Scale of 0 for silent to 100 for max.
+        /// </summary>
+        public ITweenHandle ShiftVolumeTo(IAudioTrack track, float targVal, float duration)
+        {
+            string id = $"GameObject_{track.GameObject.GetInstanceID()}_MyceliaudioShiftVolume";
+            void UpdateTheVol(float newVol)
+            {
+                track.BaseVolume = newVol;
+            }
+            Tween<float> tween = new Tween<float>(track.GameObject, id, track.BaseVolume,
+                targVal, duration, UpdateTheVol);
+
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftVolume01To(IAudioTrack track, int targVal, float duration)
+        {
+            return ShiftVolumeTo(track, targVal / 100f, duration);
+        }
     }
 
     public class DefaultTweenHandle : ITweenHandle
@@ -540,8 +588,9 @@ namespace Amanita.Tweening
 
     public class DefaultTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
         IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
-        IGraphicTweenAdapter, ICameraTweenAdapter
+        IGraphicTweenAdapter, ICameraTweenAdapter, IAudioSourceTweenAdapter, IMyceliaudioTweenAdapter
     {
+
         public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
         {
             return TweenManager.S.FadeTo(target, endVal, duration);
@@ -574,32 +623,62 @@ namespace Amanita.Tweening
 
         public ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftBackgroundColorTo(target, targetVal, duration);
         }
 
         public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftColorTo(target, endVal, duration);
         }
 
         public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftColorTo(target, endVal, duration);
         }
 
         public ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftFieldOfViewTo(target, targetVal, duration);
         }
 
         public ITweenHandle ShiftFillTo(Image target, float endVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftFillTo(target, endVal, duration);
         }
 
         public ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration)
         {
-            throw new NotImplementedException();
+            return TweenManager.S.ShiftOrthographicSizeTo(target, targetVal, duration);
+        }
+
+        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
+        {
+            return TweenManager.S.ShiftPitchN33To(target, targVal, duration);
+        }
+
+        public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
+        {
+            return TweenManager.S.ShiftPitchTo(target, targVal, duration);
+        }
+
+        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        {
+            return TweenManager.S.ShiftVolume01To(target, targVal, duration);
+        }
+
+        public ITweenHandle ShiftVolume01To(IAudioTrack track, int targVal, float duration)
+        {
+            return TweenManager.S.ShiftVolume01To(track, targVal, duration);
+        }
+
+        public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
+        {
+            return TweenManager.S.ShiftVolume01To(target, targVal, duration);
+        }
+
+        public ITweenHandle ShiftVolumeTo(IAudioTrack track, float targVal, float duration)
+        {
+            return TweenManager.S.ShiftVolumeTo(track, targVal, duration);
         }
 
         public ITweenHandle TweenGeneral(Func<Vector2> getter, Action<Vector2> setter, Vector2 endVal,

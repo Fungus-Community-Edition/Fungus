@@ -21,7 +21,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftVolume02Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftVolume02To",
-            CreateTween = (adapter, src) => adapter.ShiftVolume02To(src, 50f, Duration), // 50% → 0.5f
+            CreateTween = (adapter, src) => adapter.ShiftVolume01To(src, 50f, Duration), // 50% → 0.5f
             GetValue = src => src.volume,
             SetValue = (src, val) => src.volume = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -41,7 +41,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftPitch02Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftPitch02To",
-            CreateTween = (adapter, src) => adapter.ShiftPitch02To(src, 150f, Duration), // 150% → 1.5f
+            CreateTween = (adapter, src) => adapter.ShiftPitchN33To(src, 150f, Duration), // 150% → 1.5f
             GetValue = src => src.pitch,
             SetValue = (src, val) => src.pitch = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -98,7 +98,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume02To_ZeroPercent_YieldsZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume02To(src, 0f, Duration);
+            var handle = _adapter.ShiftVolume01To(src, 0f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0f, src.volume, Epsilon);
         }
@@ -107,7 +107,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume02To_HundredPercent_YieldsOne()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume02To(src, 100f, Duration);
+            var handle = _adapter.ShiftVolume01To(src, 100f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(1f, src.volume, Epsilon);
         }
@@ -116,7 +116,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitch02To_ZeroPercent_YieldsZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitch02To(src, 0f, Duration);
+            var handle = _adapter.ShiftPitchN33To(src, 0f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0f, src.pitch, Epsilon);
         }
@@ -125,7 +125,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitch02To_TwoHundredPercent_YieldsTwo()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitch02To(src, 200f, Duration);
+            var handle = _adapter.ShiftPitchN33To(src, 200f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(2f, src.pitch, Epsilon);
         }
@@ -134,7 +134,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume02To_NegativePercent_ScalesToZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume02To(src, -50f, Duration);
+            var handle = _adapter.ShiftVolume01To(src, -50f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0, src.volume, Epsilon);
         }
@@ -143,7 +143,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitch02To_AboveTwoHundredPercent_ScalesAboveTwo()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitch02To(src, 300f, Duration);
+            var handle = _adapter.ShiftPitchN33To(src, 300f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(3f, src.pitch, Epsilon);
         }
@@ -173,7 +173,7 @@ namespace BuiltinCompat
             float expected = (float)caseData[1];
 
             var src = _testGo.AddComponent<AudioSource>();
-            _adapter.ShiftVolume02To(src, inputPercent, Duration);
+            _adapter.ShiftVolume01To(src, inputPercent, Duration);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 
@@ -189,7 +189,7 @@ namespace BuiltinCompat
             float expected = (float)caseData[1];
 
             var src = _testGo.AddComponent<AudioSource>();
-            _adapter.ShiftPitch02To(src, inputPercent, Duration);
+            _adapter.ShiftPitchN33To(src, inputPercent, Duration);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 

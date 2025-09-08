@@ -81,26 +81,26 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
         {
+            return ShiftVolumeTo(target, targVal / 100f, duration);
+        }
+
+        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        {
             Tween tween = target.DOFade(targVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public ITweenHandle ShiftVolume02To(AudioSource target, float targVal, float duration)
-        {
-            return ShiftVolumeTo(target, targVal / 100f, duration);
-        }
-
         public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
         {
-            Tween tween = target.DOPitch(targVal, duration).SetEase(_ease);
+            Tween tween = target.DOPitch(targVal / 100f, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public ITweenHandle ShiftPitch02To(AudioSource target, float targVal, float duration)
+        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
         {
-            return ShiftPitchTo(target, targVal / 100f, duration);
+            return ShiftPitchTo(target, targVal * 100f, duration);
         }
 
         #endregion
@@ -223,6 +223,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
         }
         #endregion
 
+        #region General
         public ITweenHandle TweenGeneral(Func<float> getter, Action<float> setter, float endVal,
             float duration, Action onComplete = null)
         {
@@ -262,6 +263,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
                 .SetEase(_ease);
             return new DOTweenHandle(tween);
         }
+        #endregion
 
 
     }
