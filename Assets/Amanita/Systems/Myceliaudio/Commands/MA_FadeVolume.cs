@@ -23,8 +23,8 @@ namespace Amanita.Myceliaudio.VScripting
         {
             if (fadeTween == null)
             {
-                fadeTween = TweenManager.TweenAdapter;
-                doFade = TweenManager.TweenAdapter;
+                fadeTween = AmanitaManager.DefaultTweener;
+                doFade = AmanitaManager.DefaultTweener;
                 return;
             }
 
@@ -33,7 +33,7 @@ namespace Amanita.Myceliaudio.VScripting
             {
                 Debug.Log($"Fade tweener assigned to MA_FadeVolume is not valid. It needs to implement " +
                     $"IMyceliaudioTweenAdapter. Going back to default.");
-                doFade = TweenManager.TweenAdapter;
+                doFade = AmanitaManager.DefaultTweener;
             }
         }
 

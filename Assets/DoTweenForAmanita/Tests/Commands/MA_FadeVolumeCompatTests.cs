@@ -1,7 +1,6 @@
 using Amanita.Myceliaudio;
 using Amanita.Myceliaudio.VScripting;
 using Amanita.ThirdPartyInt.DGDOTween;
-using Amanita.Tweening;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;

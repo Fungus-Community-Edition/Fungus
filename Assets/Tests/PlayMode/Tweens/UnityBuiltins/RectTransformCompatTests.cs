@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // equality comparers
-using Amanita.Tweening;
 
 namespace Amanita.Tweening.BuiltinCompat
 {

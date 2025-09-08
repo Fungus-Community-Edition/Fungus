@@ -240,7 +240,7 @@ namespace Amanita
 
 			if (tweenAdapter == null)
 			{
-				_neoFadeTween = TweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha,
+				_neoFadeTween = AmanitaManager.DefaultTweener.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha,
 					fadeDuration, onComplete);
 			}
 			else
@@ -358,7 +358,7 @@ namespace Amanita
 			}
 			else
 			{
-				_camOrthoSizeTween = TweenManager.TweenBasic(
+				_camOrthoSizeTween = AmanitaManager.DefaultTweener.TweenBasic(
 					() => camera.orthographicSize,
 					UpdateCamOrthoSize,
 					targetSize, duration,
@@ -391,7 +391,7 @@ namespace Amanita
 				}
 				else
 				{
-					_neoCamPosTween = TweenManager.TweenBasic(
+					_neoCamPosTween = AmanitaManager.DefaultTweener.TweenBasic(
 						() => camera.transform.position,
 						UpdateCamPos,
 						targetPosition, duration)
@@ -424,7 +424,7 @@ namespace Amanita
 				}
 				else
 				{
-					_neoCamRotTween = TweenManager.TweenBasic<Quaternion>(() => camTrans.rotation,
+					_neoCamRotTween = AmanitaManager.DefaultTweener.TweenBasic<Quaternion>(() => camTrans.rotation,
 						UpdateCamRot,
 						targetRotation, duration,
 						OnCamRotTweenDone);

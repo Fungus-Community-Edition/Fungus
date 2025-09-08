@@ -1,5 +1,4 @@
 using UnityEngine;
-using Amanita.DentedPixel;
 using Amanita.Tweening;
 
 namespace Amanita.VScripting
@@ -129,17 +128,17 @@ namespace Amanita.VScripting
             {
                 if (orthoSizeTweener == null)
                 {
-                    orthoSizeTweener = TweenManager.TweenAdapter;
+                    orthoSizeTweener = AmanitaManager.DefaultTweener;
                 }
 
                 if (posTweener == null)
                 {
-                    posTweener = TweenManager.TweenAdapter;
+                    posTweener = AmanitaManager.DefaultTweener;
                 }
 
                 if (rotTweener == null)
                 {
-                    rotTweener = TweenManager.TweenAdapter;
+                    rotTweener = AmanitaManager.DefaultTweener;
                     return;
                 }
             }
@@ -155,21 +154,21 @@ namespace Amanita.VScripting
                 {
                     Debug.LogWarning($"Ortho size tweener passed is invalid. It does not implement " +
                         $"ICameraTweenAdapter. Reverting to the default.");
-                    doOrthoSizeTween = TweenManager.TweenAdapter;
+                    doOrthoSizeTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (doPosTween == null)
                 {
                     Debug.LogWarning($"Pos tweener passed is invalid. It does not implement " +
                         $"ITransformTweenAdapter. Reverting to the default.");
-                    doPosTween = TweenManager.TweenAdapter;
+                    doPosTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (doRotTween == null)
                 {
                     Debug.LogWarning($"Rot tweener passed is invalid. It does not implement " +
                         $"ITransformTweenAdapter. Reverting to the default.");
-                    doRotTween = TweenManager.TweenAdapter;
+                    doRotTween = AmanitaManager.DefaultTweener;
                 }
             }
         

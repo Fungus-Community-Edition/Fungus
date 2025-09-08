@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using Amanita.VScripting.EventHandlers;
 using Amanita.VScripting;
-using Amanita.Tweening;
 
 namespace Amanita
 {
@@ -174,14 +173,14 @@ namespace Amanita
 
                 if (returnOnCancelled)
                 {
-                    TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                    AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                     //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
                 }
             }
             else if (returnOnCompleted)
             {
-                TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                 //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
             }

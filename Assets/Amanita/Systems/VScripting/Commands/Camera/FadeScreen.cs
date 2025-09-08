@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Amanita.DentedPixel;
 using Amanita.Tweening;
 
 namespace Amanita.VScripting
@@ -41,7 +40,7 @@ namespace Amanita.VScripting
         {
             if (fadeTweener == null)
             {
-                doFade = TweenManager.TweenAdapter;
+                doFade = AmanitaManager.DefaultTweener;
                 return;
             }
 
@@ -50,8 +49,8 @@ namespace Amanita.VScripting
             if (doFade == null)
             {
                 Debug.LogWarning($"Fade tweener passed to FadeScreen is invalid. It needs to implement IGeneralTweenAdapter<float>. Going back to default.");
-                fadeTweener = TweenManager.TweenAdapter;
-                doFade = TweenManager.TweenAdapter;
+                fadeTweener = AmanitaManager.DefaultTweener;
+                doFade = AmanitaManager.DefaultTweener;
             }
             
         }

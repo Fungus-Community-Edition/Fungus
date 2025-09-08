@@ -111,7 +111,7 @@ namespace Amanita.VScripting
         {
             if (fadeTweener == null)
             {
-                doFadeTween = TweenManager.TweenAdapter;
+                doFadeTween = AmanitaManager.DefaultTweener;
                 return;
             }
 

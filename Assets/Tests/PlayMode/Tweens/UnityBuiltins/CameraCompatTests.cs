@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Amanita.Tweening;
 
 namespace Amanita.Tweening.BuiltinCompat
 {

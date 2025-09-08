@@ -1,4 +1,3 @@
-using Amanita.DentedPixel;
 using Amanita.Tweening;
 using UnityEngine;
 
@@ -145,22 +144,22 @@ namespace Amanita.VScripting
             {
                 if (fadeTweener == null)
                 {
-                    fadeTweener = TweenManager.TweenAdapter;
+                    fadeTweener = AmanitaManager.DefaultTweener;
                 }
 
                 if (orthoSizeTweener == null)
                 {
-                    orthoSizeTweener = TweenManager.TweenAdapter;
+                    orthoSizeTweener = AmanitaManager.DefaultTweener;
                 }
 
                 if (posTweener == null)
                 {
-                    posTweener = TweenManager.TweenAdapter;
+                    posTweener = AmanitaManager.DefaultTweener;
                 }
 
                 if (rotTweener == null)
                 {
-                    rotTweener = TweenManager.TweenAdapter;
+                    rotTweener = AmanitaManager.DefaultTweener;
                     return;
                 }
             }
@@ -177,25 +176,25 @@ namespace Amanita.VScripting
                 if (doFadeTween == null)
                 {
                     logMessage = "Fade tweener assigned is invalid. It needs to implement IGeneralTweenAdapter<float>.\n";
-                    doFadeTween = TweenManager.TweenAdapter;
+                    doFadeTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (doOrthoSizeTween == null)
                 {
                     logMessage += "Ortho size tweener assigned is invalid. It needs to implement ICameraTweenAdapter.\n";
-                    doOrthoSizeTween = TweenManager.TweenAdapter;
+                    doOrthoSizeTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (doPosTween == null)
                 {
                     logMessage += "Pos tweener assigned is invalid. I needs to implement ITransformTweenAdapter.\n";
-                    doPosTween = TweenManager.TweenAdapter;
+                    doPosTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (doRotTween == null)
                 {
                     logMessage = "Rotation tweener assigned is invalid. It needs to implement ITransformTweenAdapter.\n";
-                    doRotTween = TweenManager.TweenAdapter;
+                    doRotTween = AmanitaManager.DefaultTweener;
                 }
 
                 if (!string.IsNullOrEmpty(logMessage))

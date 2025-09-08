@@ -22,7 +22,7 @@ public class DefaultAdapterTests : MonoBehaviour
             throw new System.MissingFieldException("Wrong path to the Amanita Manager");
         }
         manager = UnityObj.Instantiate(prefab);
-        _adapter = TweenManager.TweenAdapter; //ScriptableObject.CreateInstance<DefaultTweenAdapter>();
+        _adapter = AmanitaManager.DefaultTweener; //ScriptableObject.CreateInstance<DefaultTweenAdapter>();
     }
 
     protected AmanitaManager manager;

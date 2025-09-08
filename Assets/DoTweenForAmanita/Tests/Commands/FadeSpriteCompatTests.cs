@@ -1,6 +1,4 @@
-using Amanita;
 using Amanita.ThirdPartyInt.DGDOTween;
-using Amanita.Tweening;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;

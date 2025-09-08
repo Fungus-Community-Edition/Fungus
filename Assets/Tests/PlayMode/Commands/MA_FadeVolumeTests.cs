@@ -1,11 +1,8 @@
 using Amanita.Myceliaudio;
 using Amanita.Myceliaudio.VScripting;
-using Amanita.Tweening;
 using Amanita.VScripting;
 using NUnit.Framework;
-using System;
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -65,7 +62,7 @@ namespace Amanita.Commands
             typeof(MA_FadeVolume).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new BooleanData(true));
             typeof(MA_FadeVolume).GetField("fadeTween", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, TweenManager.TweenAdapter); // default adapter
+                .SetValue(cmd, AmanitaManager.DefaultTweener); // default adapter
         }
 
         protected override void AssertFinalState()
