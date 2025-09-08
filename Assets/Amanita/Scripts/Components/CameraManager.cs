@@ -32,6 +32,8 @@ namespace Amanita
 		protected float fadeAlpha = 0f;
 		// ^When this changes, OnGUI changes the fadedness of the screen.
 
+		public virtual float ScreenOpacity => fadeAlpha;
+
 		// Swipe panning control
 		protected bool swipePanActive;
 

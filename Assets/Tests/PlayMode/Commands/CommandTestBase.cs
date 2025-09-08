@@ -3,6 +3,8 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using Amanita;
+using UnityObj = UnityEngine.Object;
+using Amanita.SaveSys;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
@@ -21,6 +23,16 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
     [SetUp]
     public virtual void SetUp()
     {
+        string pathToManager = "Prefabs/AmanitaManager";
+        AmanitaManager managerPrefab = Resources.Load<AmanitaManager>(pathToManager);
+
+        if (managerPrefab == null)
+        {
+            throw new System.MissingFieldException("Wrong path to the Amanita Manager");
+        }
+
+        manager = UnityObj.Instantiate(managerPrefab);
+
         go = new GameObject(typeof(TCommand).Name + "_TestGO");
         flowchart = go.AddComponent<Flowchart>();
         block = flowchart.CreateBlock(Vector2.zero);
@@ -32,10 +44,17 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
         ConfigureCommand(command);
     }
 
+    protected AmanitaManager manager;
+
     [TearDown]
     public virtual void TearDown()
     {
         Object.DestroyImmediate(go);
+        Object.DestroyImmediate(manager);
+        go = null;
+        manager = null;
+        SaveSystem.ResetStaticsForTest();
+        Flowchart.ResetStaticsForTest();
     }
 
     /// <summary>
