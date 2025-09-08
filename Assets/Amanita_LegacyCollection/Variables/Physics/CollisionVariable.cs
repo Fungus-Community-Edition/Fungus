@@ -13,7 +13,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableData(typeof(Collision), typeof(CollisionVariable))]
-    public class CollisionData : VariableData<Collision, IVariable<Collision>>
+    public class CollisionData : VariableData<Collision>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(CollisionVariable))]

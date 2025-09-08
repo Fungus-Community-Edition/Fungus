@@ -17,7 +17,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Material), typeof(MaterialVariable))]
-    public class MaterialData : VariableData<Material, IVariable<Material>>
+    public class MaterialData : VariableData<Material>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(MaterialVariable))]

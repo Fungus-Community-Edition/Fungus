@@ -19,7 +19,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(string), typeof(StringVariable))]
-    public class StringData : VariableData<string, IVariable<string>>
+    public class StringData : VariableData<string>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(StringVariable))]

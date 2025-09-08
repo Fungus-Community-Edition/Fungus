@@ -80,7 +80,7 @@ namespace Amanita.VScripting
     /// </summary>
     [VariableData(typeof(float), typeof(FloatVariable))]
     [System.Serializable]
-    public class FloatData : VariableData<float, IVariable<float>>
+    public class FloatData : VariableData<float>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(FloatVariable))]

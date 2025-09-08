@@ -17,7 +17,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Transform), typeof(TransformVariable))]
-    public class TransformData : VariableData<Transform, IVariable<Transform>>
+    public class TransformData : VariableData<Transform>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(TransformVariable))]

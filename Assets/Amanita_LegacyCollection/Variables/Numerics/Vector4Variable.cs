@@ -55,7 +55,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Vector4), typeof(Vector4Variable))]
-    public class Vector4Data : VariableData<Vector4, IVariable<Vector4>>
+    public class Vector4Data : VariableData<Vector4>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Vector4Variable))]

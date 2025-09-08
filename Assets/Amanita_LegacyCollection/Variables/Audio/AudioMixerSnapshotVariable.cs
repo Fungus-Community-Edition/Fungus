@@ -18,7 +18,7 @@ namespace Amanita.VScripting
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioMixerSnapshot), typeof(AudioMixerSnapshotVariable))]
-	public class AudioMixerSnapshotData : VariableData<AudioMixerSnapshot, IVariable<AudioMixerSnapshot>>
+	public class AudioMixerSnapshotData : VariableData<AudioMixerSnapshot>
 	{
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(AudioMixerSnapshotVariable))]

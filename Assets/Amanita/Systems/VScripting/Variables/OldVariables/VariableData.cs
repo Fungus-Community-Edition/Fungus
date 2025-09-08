@@ -72,12 +72,12 @@ namespace Amanita.VScripting
 
     }
 
-    public abstract class VariableData<TValue, TVar> : VariableData where TVar : IVariable<TValue>
+    public abstract class VariableData<TValue> : VariableData
     {
         [SerializeField, SerializeReference]
         protected IVariable<TValue> _varRef;
 
-        public static implicit operator TValue(VariableData<TValue, TVar> someData)
+        public static implicit operator TValue(VariableData<TValue> someData)
         {
             return someData.Value;
         }
@@ -150,11 +150,11 @@ namespace Amanita.VScripting
             var theirType = otherVarData.GetType();
             if (ourType.Equals(theirType))
             {
-                SetContentsTo(otherVarData as VariableData<TValue, TVar>);
+                SetContentsTo(otherVarData as VariableData<TValue>);
             }
         }
 
-        public virtual void SetContentsTo(VariableData<TValue, TVar> otherVarData)
+        public virtual void SetContentsTo(VariableData<TValue> otherVarData)
         {
             this._valObj = this._valOfType = otherVarData._valOfType;
             this.VarRef = otherVarData.VarRef;

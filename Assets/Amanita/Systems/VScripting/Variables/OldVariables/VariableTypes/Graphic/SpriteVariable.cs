@@ -17,7 +17,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Sprite), typeof(SpriteVariable))]
-    public class SpriteData : VariableData<Sprite, IVariable<Sprite>>
+    public class SpriteData : VariableData<Sprite>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(SpriteVariable))]

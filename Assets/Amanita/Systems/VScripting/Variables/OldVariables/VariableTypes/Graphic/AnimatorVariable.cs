@@ -14,7 +14,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableData(typeof(Animator), typeof(AnimatorVariable))]
-    public class AnimatorData : VariableData<Animator, IVariable<Animator>>
+    public class AnimatorData : VariableData<Animator>
     {
         [SerializeField] [VariableProperty("<Value>", typeof(AnimatorVariable))]
         public AnimatorVariable animatorRef;

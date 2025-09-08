@@ -80,7 +80,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(int), typeof(IntegerVariable))]
-    public class IntegerData : VariableData<int, IVariable<int>>
+    public class IntegerData : VariableData<int>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(IntegerVariable))]

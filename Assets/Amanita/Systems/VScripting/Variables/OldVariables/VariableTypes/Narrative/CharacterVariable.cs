@@ -17,7 +17,7 @@ namespace Amanita.VScripting
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(Character), typeof(CharacterVariable))]
-	public class CharacterData : VariableData<Character, IVariable<Character>>
+	public class CharacterData : VariableData<Character>
 	{
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]

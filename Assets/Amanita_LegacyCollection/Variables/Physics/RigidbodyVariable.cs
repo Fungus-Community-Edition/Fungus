@@ -16,7 +16,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Rigidbody), typeof(RigidbodyVariable))]
-    public class RigidbodyData : VariableData<Rigidbody, IVariable<Rigidbody>>
+    public class RigidbodyData : VariableData<Rigidbody>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(RigidbodyVariable))]

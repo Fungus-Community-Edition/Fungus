@@ -55,7 +55,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var flowchart = (Flowchart)targetCommand.GetFlowchart();
+            var flowchart = targetCommand.GetFlowchart();
             if (flowchart == null)
             {
                 return;

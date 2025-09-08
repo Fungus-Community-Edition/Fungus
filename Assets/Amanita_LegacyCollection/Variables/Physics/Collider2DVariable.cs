@@ -16,7 +16,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Collider2D), typeof(Collider2DVariable))]
-    public class Collider2DData : VariableData<Collider2D, IVariable<Collider2D>>
+    public class Collider2DData : VariableData<Collider2D>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(Collider2DVariable))]

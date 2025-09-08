@@ -49,7 +49,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Quaternion), typeof(QuaternionVariable))]
-    public class QuaternionData : VariableData<Quaternion, IVariable<Quaternion>>
+    public class QuaternionData : VariableData<Quaternion>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(QuaternionVariable))]

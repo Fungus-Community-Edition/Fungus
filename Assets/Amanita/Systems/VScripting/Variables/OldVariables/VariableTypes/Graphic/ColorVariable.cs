@@ -43,7 +43,7 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Color), typeof(ColorVariable))]
-    public class ColorData : VariableData<Color, IVariable<Color>>
+    public class ColorData : VariableData<Color>
     {
         [SerializeField]
         [VariableProperty("<Value>", typeof(ColorVariable))]
