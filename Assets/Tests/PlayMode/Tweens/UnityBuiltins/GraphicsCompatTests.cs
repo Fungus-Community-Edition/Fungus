@@ -1,13 +1,13 @@
-using Amanita.ThirdPartyInt.DGDOTween;
+
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using UnityEngine.TestTools.Utils;
+using Amanita.Tweening;
 
-
-public class GraphicsTests : DoTweenAdapterTests
+public class GraphicsCompatTests : DefaultAdapterTests
 {
     private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
     {
@@ -68,8 +68,8 @@ public class GraphicsTests : DoTweenAdapterTests
     {
         var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
-        Assert.IsInstanceOf<DOTweenHandle>(handle);
-        Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+        Assert.IsInstanceOf<DefaultTweenHandle>(handle);
+        Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
     }
 
     [TestCaseSource(nameof(SpriteColorCases))]
@@ -77,8 +77,8 @@ public class GraphicsTests : DoTweenAdapterTests
     {
         var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
-        Assert.IsInstanceOf<DOTweenHandle>(handle);
-        Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+        Assert.IsInstanceOf<DefaultTweenHandle>(handle);
+        Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
     }
 
     [TestCaseSource(nameof(FillCases))]
@@ -86,8 +86,8 @@ public class GraphicsTests : DoTweenAdapterTests
     {
         var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
-        Assert.IsInstanceOf<DOTweenHandle>(handle);
-        Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+        Assert.IsInstanceOf<DefaultTweenHandle>(handle);
+        Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
     }
 
     [UnityTest]

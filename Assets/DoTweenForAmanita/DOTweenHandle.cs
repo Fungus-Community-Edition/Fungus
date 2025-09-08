@@ -26,6 +26,12 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         public virtual bool IsPlaying => Tween != null && Tween.IsPlaying();
 
+        public virtual ITweenHandle SetOnComplete(Action arg)
+        {
+            OnComplete = arg;
+            return this;
+        }
+
         public virtual Action OnComplete
         {
             get
@@ -33,8 +39,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
                 Action result = delegate { };
                 if (Tween != null)
                 {
-                    result = () => Tween.onComplete()
-                    ;
+                    result = () => Tween.onComplete();
                 }
 
                 return result;

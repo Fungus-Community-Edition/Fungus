@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Stops the currently playing game music.

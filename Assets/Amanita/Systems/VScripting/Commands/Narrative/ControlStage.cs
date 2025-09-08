@@ -1,6 +1,5 @@
 using UnityEngine;
 using Amanita.VScripting;
-using Amanita.Tweening;
 
 namespace Amanita.DialogueSys.Commands
 {
@@ -62,7 +61,7 @@ namespace Amanita.DialogueSys.Commands
                 return;
             }
 
-            TweenManager.TweenBasic(() => canvasGroup.alpha,
+            AmanitaManager.DefaultTweener.TweenBasic(() => canvasGroup.alpha,
                 (newVal) => canvasGroup.alpha = newVal,
                 targetAlpha, duration,
                 OnComplete);

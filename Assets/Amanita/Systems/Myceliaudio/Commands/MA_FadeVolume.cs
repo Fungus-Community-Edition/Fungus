@@ -1,7 +1,8 @@
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.Tweening;
 
-namespace Amanita.Myceliaudio
+namespace Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand, ISerializationCallbackReceiver
@@ -11,13 +12,38 @@ namespace Amanita.Myceliaudio
         [SerializeField] protected FloatData targetVol = new FloatData();
         [SerializeField] protected FloatData duration = new FloatData(1);
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [SerializeField] protected ScriptableObject fadeTween;
+
+        protected virtual void Awake()
+        {
+            ValidateTweens();
+        }
+
+        protected virtual void ValidateTweens()
+        {
+            if (fadeTween == null)
+            {
+                fadeTween = AmanitaManager.DefaultTweener;
+                doFade = AmanitaManager.DefaultTweener;
+                return;
+            }
+
+            doFade = fadeTween as IMyceliaudioTweenAdapter;
+            if (doFade == null)
+            {
+                Debug.Log($"Fade tweener assigned to MA_FadeVolume is not valid. It needs to implement " +
+                    $"IMyceliaudioTweenAdapter. Going back to default.");
+                doFade = AmanitaManager.DefaultTweener;
+            }
+        }
+
+        protected IMyceliaudioTweenAdapter doFade;
 
         public override void OnEnter()
         {
             base.OnEnter();
             PrepFadeArgs();
             AudioSys.FadeTrackVol(fade);
-
             if (!waitUntilFinished)
             {
                 Continue();
@@ -30,6 +56,7 @@ namespace Amanita.Myceliaudio
             fade.TrackGroup = trackGroup;
             fade.FadeDuration = duration;
             fade.TargetValue = targetVol;
+            fade.CustomFader = FadeWithTweener; // We have a fallback, so this should be fine
 
             if (waitUntilFinished)
             {
@@ -39,6 +66,12 @@ namespace Amanita.Myceliaudio
             {
                 fade.OnComplete = delegate { };
             }
+        }
+
+        protected virtual void FadeWithTweener(AlterAudioSourceArgs args, IAudioTrack track)
+        {
+            doFade.ShiftVolumeTo(track, args.TargetValue, args.FadeDuration)
+                .SetOnComplete(() => args.OnComplete(args));
         }
 
         protected AlterAudioSourceArgs fade = new AlterAudioSourceArgs();
@@ -98,6 +131,10 @@ namespace Amanita.Myceliaudio
             waitUntilFinished ??= new BooleanData(false);
         }
 
-
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweens();
+        }
     }
 }

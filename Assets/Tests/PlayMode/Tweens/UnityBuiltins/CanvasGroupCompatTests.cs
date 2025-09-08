@@ -1,10 +1,11 @@
-using Amanita.ThirdPartyInt.DGDOTween;
+
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Amanita.Tweening;
 
-public class CanvasGroupTests : DoTweenAdapterTests
+public class CanvasGroupCompatTests : DefaultAdapterTests
 {
     private static readonly TweenCase<CanvasGroup, float> FadeCase = new TweenCase<CanvasGroup, float>
     {
@@ -23,8 +24,8 @@ public class CanvasGroupTests : DoTweenAdapterTests
     {
         var comp = tc.CreateComponent(_testGo);
         var handle = tc.CreateTween(_adapter, comp);
-        Assert.IsInstanceOf<DOTweenHandle>(handle);
-        Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+        Assert.IsInstanceOf<DefaultTweenHandle>(handle);
+        Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
     }
 
     [UnityTest]

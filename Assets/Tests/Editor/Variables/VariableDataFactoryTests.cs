@@ -2,7 +2,6 @@ using Amanita.VScripting;
 using NUnit.Framework;
 using UnityEngine;
 using System;
-using System.Reflection;
 using UnityEngine.TestTools;
 
 namespace Amanita.Tests.EditMode

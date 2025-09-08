@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 namespace Amanita.ThirdPartyInt.DGDOTween
 {
-
     [CreateAssetMenu(fileName = "NewAmanitaDoTweenAdapter", menuName = "Amanita/DOTween/TweenAdapter")]
     public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter,
         IGraphicTweenAdapter, IAudioSourceTweenAdapter, ICameraTweenAdapter,
         ILightTweenAdapter, ICanvasGroupTweenAdapter, IRectTransformTweenAdapter,
-        IMaterialTweenAdapter, IAudioFilterTweenAdapter
+        IMaterialTweenAdapter, IAudioFilterTweenAdapter, IGeneralTweenAdapter<float>,
+        IGeneralTweenAdapter<int>, IGeneralTweenAdapter<Vector2>, IGeneralTweenAdapter<Vector3>
     {
         [SerializeField] protected Ease _ease = Ease.Linear;
 
@@ -78,28 +78,41 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         #region AudioSource
 
+        /// <summary>
+        /// 0 for silent, 100 for max
+        /// </summary>
+        /// <returns></returns>
         public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
         {
+            return ShiftVolume01To(target, targVal / 100f, duration);
+        }
+
+        /// <summary>
+        /// 0 for silent, 1 for max
+        /// </summary>
+        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        {
+            targVal = Mathf.Clamp01(targVal);
             Tween tween = target.DOFade(targVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public ITweenHandle ShiftVolume02To(AudioSource target, float targVal, float duration)
-        {
-            return ShiftVolumeTo(target, targVal / 100f, duration);
-        }
-
+        /// <summary>
+        /// -300 for min, 300 for max. Normal pitch is 100
+        /// </summary>
         public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
         {
+            targVal /= 100f;
+            targVal = Mathf.Clamp(targVal, -3, 3);
             Tween tween = target.DOPitch(targVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public ITweenHandle ShiftPitch02To(AudioSource target, float targVal, float duration)
+        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
         {
-            return ShiftPitchTo(target, targVal / 100f, duration);
+            return ShiftPitchTo(target, targVal * 100f, duration);
         }
 
         #endregion
@@ -221,8 +234,50 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             return new DOTweenHandle(tween);
         }
         #endregion
-    }
 
+        #region General
+        public ITweenHandle TweenGeneral(Func<float> getter, Action<float> setter, float endVal,
+            float duration, Action onComplete = null)
+        {
+            onComplete ??= delegate { };
+            Tween tween = DOTween.To(() => { return getter(); }, (val) => { setter(val); }, endVal, duration)
+                .OnComplete(() => { onComplete(); })
+                .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<int> getter, Action<int> setter, int endVal,
+            float duration, Action onComplete = null)
+        {
+            onComplete ??= delegate { };
+            Tween tween = DOTween.To(() => { return getter(); }, (val) => { setter(val); }, endVal, duration)
+                .OnComplete(() => { onComplete(); })
+                .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector2> getter, Action<Vector2> setter, Vector2 endVal,
+            float duration, Action onComplete = null)
+        {
+            onComplete ??= delegate { };
+            Tween tween = DOTween.To(() => { return getter(); }, (val) => { setter(val); }, endVal, duration)
+                .OnComplete(() => { onComplete(); })
+                .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector3> getter, Action<Vector3> setter, Vector3 endVal,
+            float duration, Action onComplete = null)
+        {
+            onComplete ??= delegate { };
+            Tween tween = DOTween.To(() => { return getter(); }, (val) => { setter(val); }, endVal, duration)
+                .OnComplete(() => { onComplete(); })
+                .SetEase(_ease);
+            return new DOTweenHandle(tween);
+        }
+        #endregion
+
+    }
 
 }
 
