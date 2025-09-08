@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -28,6 +29,12 @@ namespace Amanita.SaveSys
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
+            if (!toCreateFrom.IncludeInSaves)
+            {
+                Debug.LogWarning($"Flowchart {toCreateFrom.name} is set to not be included in saves. Thus, it shall not be encoded.");
+                return null;
+            }
+
             // We want this whole func to run on the main thread,
             // since it might involve Unity API calls that are not thread-safe.
             IList<VariableSaveData> varSaves = null;
@@ -82,7 +89,7 @@ namespace Amanita.SaveSys
 
             var variables = toCreateFrom.Variables;
             int count = variables.Count;
-            if (count == 0 || !toCreateFrom.SaveVariables)
+            if (count == 0 || !toCreateFrom.IncludeInSaves)
             {
                 // Do nothing and just return an empty list later in this func
             }
@@ -125,23 +132,38 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public override IList<SaveDataUnit> FindAndEncodeAll()
+        public virtual IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null)
         {
-            IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-
-            allFlowcharts = (from elem in allFlowcharts
-                             where elem.SaveVariables == true
-                             select elem).ToList();
-
             IList<SaveDataUnit> results = new List<SaveDataUnit>();
-
-            for (int i = 0; i < allFlowcharts.Count; i++)
+            using (var countdown = new CountdownEvent(1))
             {
-                Flowchart currentFlowchart = allFlowcharts[i];
-                SaveDataUnit newUnit = EncodeToUnit(currentFlowchart);
-                results.Add(newUnit);
-            }
+                MainThreadDispatcher.Enqueue(() =>
+                {
+                    IList<Flowchart> allFlowcharts;
+                    
+#if UNITY_6000_0_OR_NEWER
+                    allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+#else
+                    allFlowcharts = FindObjectsOfType<Flowchart>();
+#endif
 
+                    IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
+                                                            where elem.IncludeInSaves == true
+                                                            select elem).ToList();
+
+                    for (int i = 0; i < flowchartsToSave.Count; i++)
+                    {
+                        Flowchart toSave = flowchartsToSave[i];
+                        SaveDataUnit newUnit = EncodeToUnit(toSave);
+                        results.Add(newUnit);
+                    }
+
+                    countdown.Signal(); // Signal that we're done
+                });
+                countdown.Wait(); // Wait for the main thread to finish
+            }
+                
+            onComplete?.Invoke(results);
             return results;
         }
     
@@ -158,6 +180,8 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Failed to decode {unit.DataTypeName} to FlowchartSaveData.");
                 return null;
             }
+
+            saveData.OnDeserialize();
             return saveData;
         }
 

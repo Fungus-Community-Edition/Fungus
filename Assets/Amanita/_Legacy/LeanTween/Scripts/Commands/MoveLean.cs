@@ -1,10 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Moves a game object to a specified position over time. The position can be defined by a transform in another object (using To Transform) or by setting an absolute position (using To Position, if To Transform is set to None).

@@ -1,11 +1,8 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Applies a jolt of force to a GameObject's rotation and wobbles it back to its initial rotation.

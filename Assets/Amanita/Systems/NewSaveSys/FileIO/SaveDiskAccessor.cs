@@ -1,6 +1,3 @@
-using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -14,7 +11,6 @@ namespace Amanita.SaveSys
         [SerializeField] protected string relativeSavePath = "/Saves/";
         [SerializeField] protected string saveNumberFormat = "D2";
 
-        
         public virtual string SavePrefix => savePrefix;
         public virtual string FileExtension => fileExtension;
         public virtual string RelativeSavePath
@@ -79,11 +75,16 @@ namespace Amanita.SaveSys
             }
             EnsureRelativePathInRightFormat();
 
+            if (string.IsNullOrEmpty(savePrefix))
+            {
+                savePrefix = DefaultSavePrefix;
+            }
+
         }
 
         // For checking the validity of the save files.
         public static string CompletionMarker { get; protected set; } = "\n<!-- Amanita Save Sys: Save Completed! -->";
-
+        protected static string DefaultSavePrefix => "saveData";
 
     }
 }

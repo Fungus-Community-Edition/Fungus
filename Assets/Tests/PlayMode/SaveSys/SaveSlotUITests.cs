@@ -3,12 +3,7 @@ using Amanita.SaveSys.UI;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.TestTools;
-using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
-using Encoding = System.Text.Encoding;
 using UnityObject = UnityEngine.Object;
 using Amanita.UI;
 
@@ -54,7 +49,6 @@ namespace Amanita.SaveSystemTests
         protected SaveSlotNumberView numberView;
         protected TimeSpan expectedPlaytime = TimeSpan.FromHours(1.5);
         protected Array playtimeFormatVals, slotNumFormatVals;
-
 
         protected override bool ReqFlowchart => false;
         public override void DoOneTimeTearDown()

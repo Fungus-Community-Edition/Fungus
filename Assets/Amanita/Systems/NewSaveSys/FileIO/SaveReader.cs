@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -58,10 +57,15 @@ namespace Amanita.SaveSys
             string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this);
             Validate(filePath);
             bool writtenAsPlainText = !readEncrypted;
-            byte[] rawBytes = await File.ReadAllBytesAsync(filePath, cancelToken);
+            byte[] rawBytes = await ReadAllBytesAsync(filePath, cancelToken);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
             decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+        }
+
+        protected virtual async Task<byte[]> ReadAllBytesAsync(string filePath, CancellationToken cancelToken)
+        {
+            return await File.ReadAllBytesAsync(filePath, cancelToken).ConfigureAwait(false);
         }
 
         protected BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();

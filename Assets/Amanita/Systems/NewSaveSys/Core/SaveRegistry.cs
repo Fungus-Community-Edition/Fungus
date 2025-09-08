@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace Amanita.SaveSys
     /// </summary>
     public class SaveRegistry
     {
-        protected readonly SavePairDict _savePairs = new Dictionary<int, SaveDataSet>();
+        protected readonly SavePairDict _savePairs = new ConcurrentDictionary<int, SaveDataSet>();
 
         public virtual void Clear()
         {
@@ -42,6 +43,18 @@ namespace Amanita.SaveSys
                 _savePairs.Remove(slotToRemoveFrom);
                 SaveSysSignals.SaveRemovedFromSlot(dataSet);
             }
+        }
+
+        public virtual SaveDataSet GetSave(int slotNumber)
+        {
+            SaveDataSet result = null;
+            _savePairs.TryGetValue(slotNumber, out result);
+            return result;
+        }
+
+        public virtual IList<SaveDataSet> GetAllSaves()
+        {
+            return new List<SaveDataSet>(_savePairs.Values);
         }
 
         public virtual IList<ISaveMetaData> GetMultiSaveMetas(IEnumerable<int> multiSlotsToGetFrom)
@@ -188,6 +201,20 @@ namespace Amanita.SaveSys
         public virtual IList<int> GetOccupiedSlots()
         {
             return _savePairs.Keys.ToArray();
+        }
+    
+        public virtual void SetSaveNameFor(int slot, string newSaveName)
+        {
+            if (HasSaveInSlot(slot))
+            {
+                var meta = GetSaveMeta(slot);
+                meta.SaveName = newSaveName;
+            }
+            else
+            {
+                string warningMessage = $"Cannot set save name for slot {slot}. There is no save data assigned to it.";
+                Debug.LogWarning(warningMessage);
+            }
         }
     }
 

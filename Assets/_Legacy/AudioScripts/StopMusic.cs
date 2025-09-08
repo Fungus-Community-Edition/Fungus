@@ -1,9 +1,6 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Stops the currently playing game music.
@@ -18,7 +15,7 @@ namespace Amanita
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.Instance.MusicManager;
+            var musicManager = AmanitaManager.S.MusicManager;
 
             musicManager.StopMusic();
 

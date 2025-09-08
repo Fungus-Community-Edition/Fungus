@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -9,50 +12,61 @@ namespace Amanita.SaveSys
     /// </summary>
     public class FileSaveRepository : ISaveRepository
     {
-        public virtual void Init(SaveReader saveReader = null, SaveWriter saveWriter = null)
+        public FileSaveRepository(SaveReader saveReader, SaveWriter saveWriter, SaveDirectoryType saveDir)
         {
+            Validate(saveReader, saveWriter);
             this.saveReader = saveReader;
             this.saveWriter = saveWriter;
-
-            AccountForNullInputs();
-            void AccountForNullInputs()
-            {
-                if (saveReader == null)
-                {
-                    this.saveReader = ScriptableObject.CreateInstance<SaveReader>();
-                }
-
-                if (saveWriter == null)
-                {
-                    this.saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
-                }
-            }
+            this.saveDir = saveDir;
 
             PrepRequestCache();
             void PrepRequestCache()
             {
                 readRequest = new SaveReadRequest
                 {
-                    BaseSaveDirectory = SaveDir,
+                    BaseSaveDirectory = saveDir,
+                    SlotNumber = 0 // Default slot number, can be changed later
+                };
+
+                writeReq = new SaveWriteRequest();
+
+                forPathFinding = new SaveReadRequest
+                {
+                    BaseSaveDirectory = this.saveDir,
                     SlotNumber = 0 // Default slot number, can be changed later
                 };
             }
         }
 
+        protected virtual void Validate(SaveReader reader, SaveWriter writer)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader), "Reader passed to FileSaveRepository is null.");
+            }
+
+            if (writer == null)
+            {
+                throw new ArgumentNullException(nameof(writer), "Writer passed to FileSaveRepository is null.");
+            }
+        }
+
         protected SaveReader saveReader;
         protected SaveWriter saveWriter;
+        protected SaveDirectoryType saveDir;
 
         protected SaveReadRequest readRequest;
-        protected SaveDirectoryType SaveDir { get { return SaveSystem.S.SaveDirectoryType; } }
+        protected SaveWriteRequest writeReq;
+        protected SaveReadRequest forPathFinding;
 
-        public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot)
+        public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var mainState = await saveReader.ReadMainSaveDataFromDisk(readRequest);
+            var mainState = await saveReader.ReadMainSaveDataFromDisk(readRequest, token);
             return mainState;
         }
 
-        public virtual async Task SaveAsync(SaveDataSet saveSet)
+        public virtual async Task SaveAsync(SaveDataSet saveSet, CancellationToken token = default)
         {
             var meta = saveSet.Meta;
             int slot = meta.SlotNumber;
@@ -63,42 +77,50 @@ namespace Amanita.SaveSys
                 writeReq.Clear();
                 writeReq.SaveMetaData = meta;
                 writeReq.SlotNumber = slot;
-                writeReq.BaseSaveDirectory = SaveDir;
+                writeReq.BaseSaveDirectory = saveDir;
                 writeReq.MainState = saveSet.MainState;
             }
             
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDisk(writeReq, token);
+            
         }
 
-        protected SaveWriteRequest writeReq = new SaveWriteRequest();
-
-        public async Task<ISaveMetaData> LoadMetaDataAsync(int slot)
+        public virtual async Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var meta = await saveReader.ReadMetadataFromDisk(readRequest);
+            var meta = await saveReader.ReadMetadataFromDisk(readRequest, token);
             return meta;
         }
 
-        public Task DeleteAsync(int slot)
+        /// With how fast deletion operations are, it seems we won't need this to be async
+        public virtual void Delete(int slot)
         {
-            throw new System.NotImplementedException();
+            string path = GetPathTo(slot);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                Debug.Log($"Deleted save at slot {slot}, path {path}");
+            }
         }
 
         /// <summary>
         /// Returns the path to the save file for the given slot number.
         /// </summary>
-        public string GetPathTo(int slot)
+        public virtual string GetPathTo(int slot)
         {
-            forPathFinding.SlotNumber = slot;
-            string result = saveReader.GetSavePath(forPathFinding);
+            PrepReadRequest();
+            void PrepReadRequest()
+            {
+                forPathFinding.Clear();
+                forPathFinding.BaseSaveDirectory = SaveSystem.S.SaveDirectoryType;
+                forPathFinding.SlotNumber = slot;
+            }
+
+            string result = FileUtils.GetPathToFile(saveDir, slot, saveReader);
             return result;
         }
 
-        protected SaveReadRequest forPathFinding = new SaveReadRequest
-        {
-            BaseSaveDirectory = SaveSystem.S.SaveDirectoryType,
-            SlotNumber = 0 // Default slot number, can be changed later
-        };
+        
     }
 
     public interface ISaveRepository
@@ -106,15 +128,15 @@ namespace Amanita.SaveSys
         /// <summary>
         /// Reads save data from file based on theinput, returning said data.
         /// </summary>
-        Task<CompositeSaveData> LoadMainSaveAsync(int slot);
+        Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default);
 
         /// <summary>
         /// Reads only the metadata for a given slot number from file.
         /// </summary>
-        Task<ISaveMetaData> LoadMetaDataAsync(int slot);    
-        Task SaveAsync(SaveDataSet saveSet);
+        Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default);    
+        Task SaveAsync(SaveDataSet saveSet, CancellationToken token = default);
         
-        Task DeleteAsync(int slot);
+        void Delete(int slot);
         string GetPathTo(int slot);
     }
 

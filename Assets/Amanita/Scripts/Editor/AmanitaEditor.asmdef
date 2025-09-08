@@ -1,9 +1,9 @@
 {
-    "name": "FungusEditor",
+    "name": "AmanitaEditor",
+    "rootNamespace": "",
     "references": [
         "GUID:007db7f7a4c8f944990d71603a110f82"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -13,5 +13,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

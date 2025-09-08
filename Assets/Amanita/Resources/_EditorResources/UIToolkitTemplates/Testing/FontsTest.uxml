@@ -1,0 +1,9 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement class="root">
+        <ui:Label text="Raw .ttf (Amaranth)" class="label raw"/>
+        <ui:Label text="Letter-spacing tweak" class="label spaced"/>
+        <ui:Label text="Fallback System Font" class="label fallback"/>
+    </ui:VisualElement>
+</ui:UXML>

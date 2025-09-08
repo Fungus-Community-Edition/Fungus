@@ -1,8 +1,8 @@
 using UnityEngine;
-using AmanitaVar = Amanita.Variable;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -12,7 +12,7 @@ namespace Amanita.SaveSys
     /// </summary>
     public class TransformVarCodec : IVarCodec
     {
-        public virtual bool CanHandle(AmanitaVar variable)
+        public virtual bool CanHandle(IVariable variable)
         {
             return variable is TransformVariable;
         }
@@ -26,7 +26,7 @@ namespace Amanita.SaveSys
             return CanHandle(saveData.VarTypeName);
         }
 
-        public virtual VariableSaveData EncodeToSave(AmanitaVar variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             VariableSaveData result = new()
             {
@@ -38,7 +38,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual string EncodeToString(AmanitaVar toEncode)
+        public virtual string EncodeToString(IVariable toEncode)
         {
             TransformVariable transformVar = toEncode as TransformVariable;
             Transform varValue = null;
@@ -81,7 +81,7 @@ namespace Amanita.SaveSys
             return json;
         }
 
-        public virtual void Decode(AmanitaVar variable, string data)
+        public virtual void Decode(IVariable variable, string data)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)
@@ -138,7 +138,7 @@ namespace Amanita.SaveSys
             return whatWeFound;
         }
 
-        public virtual void Decode(AmanitaVar variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             TransformVariable transformVar = variable as TransformVariable;
             if (transformVar == null)

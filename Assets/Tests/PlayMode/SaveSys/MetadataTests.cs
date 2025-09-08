@@ -2,7 +2,6 @@ using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
 using UnityEngine;
-using UnityEngine.TestTools;
 using System.Collections.Generic;
 
 namespace Amanita.SaveSystemTests

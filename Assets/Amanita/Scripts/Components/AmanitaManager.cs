@@ -1,6 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
+﻿using Amanita.DialogueSys;
+using Amanita.Myceliaudio;
+using Amanita.SaveSys;
+using Amanita.Tweening;
 using UnityEngine;
 
 namespace Amanita
@@ -10,38 +11,103 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-        volatile static AmanitaManager instance;  // The keyword "volatile" is friendly to the multi-thread.
-        static bool applicationIsQuitting = false;
-        readonly static object _lock = new object();  // The keyword "readonly" is friendly to the multi-thread.
-
-        void Awake()
+        public static DefaultTweenAdapter DefaultTweener
         {
-            if (instance == null)
-                instance = this;
-
-            CameraManager = GetComponentInChildren<CameraManager>();
-            EventDispatcher = GetComponentInChildren<EventDispatcher>();
-            GlobalVariables = GetComponentInChildren<GlobalVariables>();
-            MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
-#if UNITY_5_3_OR_NEWER
-            SaveManager = GetComponentInChildren<SaveManager>();
-            NarrativeLog = GetComponentInChildren<NarrativeLog>();
+            get
+            {
+                if (_defaultTweener == null)
+                {
+                    _defaultTweener = Resources.Load<DefaultTweenAdapter>(pathToAdapter);
+#if UNITY_EDITOR
+                    if (_defaultTweener == null)
+                    {
+                        Debug.LogWarning($"No TweenAdapter found at Resources/{pathToAdapter}. Creating a new one.");
+                        _defaultTweener = TweenAdapterUtility.GetOrCreateDefaultAdapter();
+                    }
+#else
+                    if (_adapter == null)
+                    {
+                        _adapter = ScriptableObject.CreateInstance<DefaultTweenAdapter>();
+                    }
 #endif
-            MainAudioMixer.Init();
+                }
+
+                return _defaultTweener;
+            }
         }
 
-        /// <summary>
-        /// When Unity quits, it destroys objects in a random order.
-        /// In principle, a Singleton is only destroyed when application quits.
-        /// If any script calls Instance after it have been destroyed, 
-        ///   it will create a buggy ghost object that will stay on the Editor scene
-        ///   even after stopping playing the Application. Really bad!
-        /// So, this was made to be sure we're not creating that buggy ghost object.
-        /// </summary>
-        void OnDestroy () 
+        static DefaultTweenAdapter _defaultTweener;
+        static string pathToAdapter = "DefaultTweenAdapter";
+
+        // Best avoid setting up the singleton through the getter
+        public static AmanitaManager EnsureExists()
         {
-            applicationIsQuitting = true;
+            if (_s == null)
+            {
+                AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
+                _s = Instantiate(prefab);
+                _s.gameObject.name = prefab.name; // We don't want "Clone" in the name.
+                
+                _s.Init();
+            }
+
+            return _s;
         }
+
+        public void Init()
+        {
+            if (IsInitted)
+            {
+                return;
+            }
+
+            bool thisIsDuplicate = S != this && S != null;
+            if (thisIsDuplicate)
+            {
+                Debug.Log("AmanitaManager instance already exists. Destroying the new one.");
+                Destroy(this.gameObject);
+                return;
+            }
+
+            _s = this;
+
+            if (S == null)
+            {
+                Debug.LogError($"AmanitaManager's claim to the S field was ignored.");
+            }
+
+            FetchSubmodules();
+            void FetchSubmodules()
+            {
+                // We assume that these are each on separate GameObjects (for the sake of easier testing)
+                CameraManager = GetComponentInChildren<CameraManager>();
+                EventDispatcher = GetComponentInChildren<EventDispatcher>();
+                GlobalVariables = GetComponentInChildren<GlobalVariables>();
+                MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
+                NarrativeLog = GetComponentInChildren<NarrativeLog>();
+                AudioSystem = GetComponentInChildren<AudioSystem>();
+                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
+            }
+
+            InitAll();
+            void InitAll()
+            {
+                // The order here matters
+                NarrativeLog.Init();
+                MainAudioMixer.Init();
+                AudioSystem.Init();
+                GlobalVariables.Init();
+                SaveSysInstaller.Init();
+            }
+
+            DontDestroyOnLoad(_s.gameObject);
+            IsInitted = true;
+
+        }
+
+        public bool IsInitted { get; private set; } = false;
+
+        private SaveSystemInstaller SaveSysInstaller { get; set; }
 
         #region Public methods
 
@@ -83,36 +149,21 @@ namespace Amanita
         /// <summary>
         /// Gets the FungusManager singleton instance.
         /// </summary>
-        public static AmanitaManager Instance
+        public static AmanitaManager S
         {
-            get
-            {
-                if (applicationIsQuitting) 
-                {
-                    Debug.LogWarning("FungusManager.Instance() was called while application is quitting. Returning null instead.");
-                    return null;
-                }
-
-                // Use "double checked locking" algorithm to implement the singleton for this "FungusManager" class, which can improve performance.
-                if (instance == null)
-                {
-                    lock (_lock)
-                    {
-                        if (instance == null)
-                        {
-                            AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
-                            instance = Instantiate(prefab);
-                            instance.gameObject.name = prefab.name; // We don't want "Clone" in the name.
-                            DontDestroyOnLoad(instance.gameObject);
-                        }
-
-                    }
-                }
-                
-                return instance;
-            }
+            get => _s;
+            set => _s = value;
         }
 
+        volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to the multi-thread.
+
         #endregion
+
+        public static void ResetStaticsForTest()
+        {
+            S = null;
+        }
+
+        public AudioSystem AudioSystem { get; private set; }
     }
 }

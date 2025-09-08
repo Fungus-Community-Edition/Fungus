@@ -4138,10 +4138,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555371}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555292
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4161,12 +4168,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555294
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4186,12 +4204,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4204,21 +4233,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: 3317.0374, y: 1341.5356}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 200
-  zoom: 0.94000006
-  scrollViewRect:
-    serializedVersion: 2
-    x: -4071.385
-    y: -1729.3505
-    width: 5969.446
-    height: 2818.8503
-  selectedBlocks:
-  - {fileID: 1390555362}
-  selectedCommands: []
   variables:
   - {fileID: 1390555396}
   - {fileID: 1390555441}
@@ -4239,6 +4269,12 @@ MonoBehaviour:
   hideCommands: []
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  nextValidVarID: 10
+  uniqueId: 1945e111-fae6-4ac0-973e-d5983c6ed023
 --- !u!4 &1390555296
 Transform:
   m_ObjectHideFlags: 0
@@ -4334,6 +4370,8 @@ MonoBehaviour:
   - {fileID: 1390555348}
   - {fileID: 1390555326}
   - {fileID: 1390555336}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555299
 MonoBehaviour:
@@ -4411,12 +4449,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555362}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555302
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4451,6 +4500,8 @@ MonoBehaviour:
   - {fileID: 1390555374}
   - {fileID: 1390555321}
   - {fileID: 1390555303}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555303
 MonoBehaviour:
@@ -4469,10 +4520,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555304}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555304
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4503,6 +4561,8 @@ MonoBehaviour:
   - {fileID: 1390555306}
   - {fileID: 1390555305}
   - {fileID: 1390555301}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555305
 MonoBehaviour:
@@ -4523,12 +4583,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555308}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555306
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4592,6 +4663,8 @@ MonoBehaviour:
   - {fileID: 1390555361}
   - {fileID: 1390555387}
   - {fileID: 1390555335}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555308
 MonoBehaviour:
@@ -4622,6 +4695,8 @@ MonoBehaviour:
   - {fileID: 1390555311}
   - {fileID: 1390555310}
   - {fileID: 1390555309}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555309
 MonoBehaviour:
@@ -4642,12 +4717,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555310
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4667,12 +4753,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555311
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4752,6 +4849,8 @@ MonoBehaviour:
   - {fileID: 1390555378}
   - {fileID: 1390555313}
   - {fileID: 1390555291}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555313
 MonoBehaviour:
@@ -5340,10 +5439,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555298}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555336
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5361,10 +5467,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555440}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555337
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5441,14 +5554,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 0}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555340
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5465,14 +5587,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 1}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555341
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5579,13 +5710,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 236204401}
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
   waitUntilFinished: 0
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555345
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5956,14 +6094,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 1}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555358
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5981,156 +6128,109 @@ MonoBehaviour:
   anyVar:
     variable: {fileID: 1390555396}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 1
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
-      audioClipData:
-        audioClipRef: {fileID: 0}
-        audioClipVal: {fileID: 0}
-      audioMixerGroupData:
-        audioMixerGroupRef: {fileID: 0}
-        audioMixerGroupVal: {fileID: 0}
-      audioMixerSnapshotData:
-        audioMixerSnapshotRef: {fileID: 0}
-        audioMixerSnapshotVal: {fileID: 0}
-      audioMixerData:
-        audioMixerRef: {fileID: 0}
-        audioMixerVal: {fileID: 0}
-      characterData:
-        characterRef: {fileID: 0}
-        characterVal: {fileID: 0}
+      rid: 858308029448265
   setOperator: 2
   variable: {fileID: 0}
   booleanData:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   floatData:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     floatRef: {fileID: 0}
-    floatVal: 0
   stringData:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   animatorData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
   audioSourceData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
   colorData:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
   materialData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
   objectData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
   rigidbody2DData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
   spriteData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
   textureData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
   transformData:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
   vector2Data:
+    _valObj:
+      rid: -2
+    _valOfType: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
   vector3Data:
+    _valObj:
+      rid: -2
+    _valOfType: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 858308029448265
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        _valObj:
+          rid: -2
+        data:
+          rid: 858308029448266
+    - rid: 858308029448266
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        _valObj:
+          rid: -2
+        _valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &1390555359
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6147,14 +6247,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 1}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555360
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6170,9 +6279,16 @@ MonoBehaviour:
   itemId: 83
   indentLevel: 0
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 3
   durationOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555361
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6189,14 +6305,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 0}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555362
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6229,6 +6354,8 @@ MonoBehaviour:
   - {fileID: 1390555363}
   - {fileID: 1390555368}
   - {fileID: 1390555459}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555363
 MonoBehaviour:
@@ -6373,13 +6500,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 236204401}
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
   waitUntilFinished: 0
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555369
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6458,6 +6592,8 @@ MonoBehaviour:
   - {fileID: 1390555367}
   - {fileID: 1390555344}
   - {fileID: 1390555464}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555372
 MonoBehaviour:
@@ -6893,14 +7029,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 1}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555387
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6917,14 +7062,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 0}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555388
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6941,14 +7095,23 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   _targetColor:
+    _valObj:
+      rid: -2
+    _valOfType: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 0}
   waitUntilFinished: 0
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555389
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6965,13 +7128,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 1
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 236204401}
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
   waitUntilFinished: 0
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555390
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6988,13 +7158,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 0
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 720879693}
   startVolume: 1
   endVolume: 1
   fadeDuration: 0
   waitUntilFinished: 1
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555391
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7011,13 +7188,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 236204401}
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
   waitUntilFinished: 1
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555392
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7034,13 +7218,20 @@ MonoBehaviour:
   indentLevel: 0
   control: 1
   _audioSource:
+    _valObj:
+      rid: -2
+    _valOfType: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 236204401}
   startVolume: 1
   endVolume: 1
   fadeDuration: 0
   waitUntilFinished: 0
   audioSourceOLD: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555393
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7057,10 +7248,18 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   _visible:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555394
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7077,10 +7276,18 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   _visible:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555395
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7097,10 +7304,18 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   _visible:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555396
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7115,6 +7330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: CouragePoints
+  itemID: 1
   value: 0
 --- !u!114 &1390555440
 MonoBehaviour:
@@ -7145,6 +7361,8 @@ MonoBehaviour:
   - {fileID: 1390555300}
   - {fileID: 1390555294}
   - {fileID: 1390555292}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555441
 MonoBehaviour:
@@ -7160,6 +7378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgm
+  itemID: 2
   value: {fileID: 8300000, guid: f3c866bbc4639e7409c30c71736d84a6, type: 3}
 --- !u!114 &1390555442
 MonoBehaviour:
@@ -7179,30 +7398,60 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       integerRef: {fileID: 1390555443}
-      integerVal: 0
-    clip:
+    introClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
       audioClipRef: {fileID: 1390555441}
-      audioClipVal: {fileID: 0}
     loop:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 1
   useConfigSO:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555443
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7217,6 +7466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgmTrack
+  itemID: 3
   value: 0
 --- !u!114 &1390555444
 MonoBehaviour:
@@ -7236,30 +7486,60 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       integerRef: {fileID: 1390555443}
-      integerVal: 0
-    clip:
+    introClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
       audioClipRef: {fileID: 1390555441}
-      audioClipVal: {fileID: 0}
     loop:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555445
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7274,6 +7554,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeInDur
+  itemID: 9
   value: 2
 --- !u!114 &1390555446
 MonoBehaviour:
@@ -7291,17 +7572,31 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     integerRef: {fileID: 1390555443}
-    integerVal: 0
   targetVol:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     floatRef: {fileID: 1390555451}
-    floatVal: 0
   duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 1390555445}
-    floatVal: 1
   waitUntilFinished:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555447
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7316,6 +7611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: sfxTrack
+  itemID: 8
   value: 0
 --- !u!114 &1390555448
 MonoBehaviour:
@@ -7331,6 +7627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: pourLiquid
+  itemID: 7
   value: {fileID: 8300000, guid: e513fc9af808b8c438338e58bc17a700, type: 3}
 --- !u!114 &1390555449
 MonoBehaviour:
@@ -7350,30 +7647,60 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 3
     track:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       integerRef: {fileID: 1390555447}
-      integerVal: 0
-    clip:
+    introClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      _valObj:
+        rid: -2
+      _valOfType: {fileID: 0}
       audioClipRef: {fileID: 1390555448}
-      audioClipVal: {fileID: 0}
     loop:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
     loopStartPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      _valObj:
+        rid: -2
+      _valOfType: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
   skipIfAlreadyPlaying:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555450
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7388,6 +7715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeOutDur
+  itemID: 6
   value: 2
 --- !u!114 &1390555451
 MonoBehaviour:
@@ -7403,6 +7731,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fullVol
+  itemID: 5
   value: 100
 --- !u!114 &1390555452
 MonoBehaviour:
@@ -7418,6 +7747,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: silent
+  itemID: 4
   value: 0
 --- !u!114 &1390555456
 MonoBehaviour:
@@ -7434,9 +7764,16 @@ MonoBehaviour:
   itemId: 113
   indentLevel: 0
   _duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 0}
-    floatVal: 5
   durationOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555459
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7454,10 +7791,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555460
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7475,10 +7819,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555461
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7496,8 +7847,15 @@ MonoBehaviour:
   stopMode: 2
   trackGroup: 2
   track:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555462
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7514,17 +7872,31 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     integerRef: {fileID: 1390555443}
-    integerVal: 0
   targetVol:
+    _valObj:
+      rid: -2
+    _valOfType: 0
     floatRef: {fileID: 1390555452}
-    floatVal: 0
   duration:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     floatRef: {fileID: 1390555450}
-    floatVal: 1
   waitUntilFinished:
+    _valObj:
+      rid: -2
+    _valOfType: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1390555463
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7552,6 +7924,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 1390555462}
   - {fileID: 1390555461}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1390555464
 MonoBehaviour:
@@ -7570,10 +7944,17 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
+    _valObj:
+      rid: -2
+    _valOfType: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &1403072068
 GameObject:
   m_ObjectHideFlags: 0

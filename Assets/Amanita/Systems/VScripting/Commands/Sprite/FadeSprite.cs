@@ -1,0 +1,129 @@
+using Amanita.Tweening;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace Amanita.VScripting
+{
+    /// <summary>
+    /// Fades a sprite to a target color over a period of time.
+    /// </summary>
+    [CommandInfo("Sprite", 
+                 "Fade Sprite", 
+                 "Fades a sprite to a target color over a period of time.")]
+    [AddComponentMenu("")]
+    [ExecuteInEditMode]
+    public class FadeSprite : Command
+    {
+        [Tooltip("Sprite object to be faded")]
+        [SerializeField] protected SpriteRenderer spriteRenderer;
+
+        [Tooltip("Length of time to perform the fade")]
+        [SerializeField] protected FloatData duration = new FloatData(1f);
+
+        [Tooltip("Target color to fade to. To only fade transparency level, set the color to white and set the alpha to required transparency.")]
+        [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
+
+        [Tooltip("Wait until the fade has finished before executing the next command")]
+        [SerializeField] protected bool waitUntilFinished = true;
+
+        [SerializeField] protected ScriptableObject fadeTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
+
+        #region Public members
+
+        public override void OnEnter()
+        {
+            if (spriteRenderer == null)
+            {
+                Continue();
+                return;
+            }
+
+            SpriteFader.FadeSprite(spriteRenderer, targetColor.Value, duration.Value, Vector2.zero, delegate {
+                if (waitUntilFinished)
+                {
+                    Continue();
+                }
+            });
+
+            if (!waitUntilFinished)
+            {
+                Continue();
+            }
+        }
+
+        public override string GetSummary()
+        {
+            if (spriteRenderer == null)
+            {
+                return "Error: No sprite renderer selected";
+            }
+
+            return spriteRenderer.name + " to " + targetColor.Value.ToString();
+        }
+
+        public override Color GetButtonColor()
+        {
+            return new Color32(221, 184, 169, 255);
+        }
+
+        public override bool HasReference(Variable variable)
+        {
+            return duration.floatRef == variable || targetColor.colorRef == variable ||
+                base.HasReference(variable);
+        }
+
+        #endregion
+
+        #region Backwards compatibility
+
+        [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
+        [HideInInspector] [FormerlySerializedAs("targetColor")] public Color targetColorOLD;
+
+        protected virtual void OnEnable()
+        {
+            if (durationOLD != default(float))
+            {
+                duration.Value = durationOLD;
+                durationOLD = default(float);
+            }
+            if (targetColorOLD != default(Color))
+            {
+                targetColor.Value = targetColorOLD;
+                targetColorOLD = default(Color);
+            }
+        }
+
+        #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+            
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            if (fadeTweener == null)
+            {
+                doFadeTween = AmanitaManager.DefaultTweener;
+                return;
+            }
+
+            doFadeTween = fadeTweener as IGraphicTweenAdapter;
+
+            if (doFadeTween == null && fadeTweener != null)
+            {
+                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
+                fadeTweener = null;
+            }
+        }
+
+        protected IGraphicTweenAdapter doFadeTween;
+    }
+}

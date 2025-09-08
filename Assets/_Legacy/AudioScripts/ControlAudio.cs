@@ -1,10 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
-namespace Amanita
+using Amanita.Tweening;
+
+namespace Amanita.VScripting
 {
     /// <summary>
     /// The type of audio control to perform.
@@ -117,7 +116,7 @@ namespace Amanita
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual IEnumerator WaitAndContinue()
@@ -167,7 +166,7 @@ namespace Amanita
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void PauseLoop()
@@ -211,7 +210,7 @@ namespace Amanita
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void StopLoop(AudioSource source)
@@ -255,7 +254,7 @@ namespace Amanita
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void ChangeVolume()
@@ -287,7 +286,7 @@ namespace Amanita
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void AudioFinished()

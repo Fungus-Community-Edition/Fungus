@@ -43,13 +43,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public abstract SaveDataUnit EncodeToUnit();
 
-        /// <summary>
-        /// Finds all available data units and encodes them into a list. If none are 
-        /// found, the list will be empty.
-        /// </summary>
-        /// <remarks>The searching and encoding processes depend on the
-        /// implementation in derived classes.</remarks>
-        public abstract IList<SaveDataUnit> FindAndEncodeAll();
+        
 
         protected virtual void OnValidate()
         {

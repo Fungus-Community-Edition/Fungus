@@ -7,9 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
-using UnityObject = UnityEngine.Object;
 
 namespace Amanita.SaveSystemTests
 {
@@ -119,7 +117,7 @@ namespace Amanita.SaveSystemTests
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
         {
-            string saveFolder = SaveSystem.SaveDirectoryPaths[request.BaseSaveDirectory];
+            string saveFolder = SaveSystem.S.SaveDirectoryPaths[request.BaseSaveDirectory];
             bool thereIsRelativePathToConsider = RelativeSavePath.Count() > 0;
             if (thereIsRelativePathToConsider)
             {
@@ -236,10 +234,6 @@ namespace Amanita.SaveSystemTests
             pathFound = saveReader.GetSavePath(copyReq);
             StringAssert.StartsWith(Application.persistentDataPath, pathFound, $"App persistent data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
 
-            copyReq.BaseSaveDirectory = SaveDirectoryType.StreamingAssetsPath;
-            pathFound = saveReader.GetSavePath(copyReq);
-            StringAssert.StartsWith(Application.streamingAssetsPath, pathFound, $"App streaming data path to save {readReq.SlotNumber} not recognized correctly. It's instead recognized as {pathFound}");
-
         }
 
         [Test]
@@ -267,7 +261,7 @@ namespace Amanita.SaveSystemTests
             await CommonSetupAsync().ConfigureAwait(false);
             SaveWriteRequest withCustomMeta = new SaveWriteRequest(writeReq);
             SaveMetaData metaBefore = (SaveMetaData)withCustomMeta.SaveMetaData;
-            metaBefore.Name = "BlastOff";
+            metaBefore.SaveName = "BlastOff";
             metaBefore.TimeStamp = new DateTime(2025, 12, 31).ToUniversalTime();
 
             saveWriter.WriteEncrypted = saveReader.ReadEncrypted = false;
@@ -304,6 +298,14 @@ namespace Amanita.SaveSystemTests
 
             string assertMessage = "Does not throw an IOException when reading main save data with wrong encryption flag.";
             Assert.IsTrue(threw, assertMessage);
+        }
+
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
         }
 
     }

@@ -30,7 +30,10 @@ namespace Amanita.SaveSys
     /// </summary>
     public interface IMainSaveCodec : ISaveCodec
     {
-        IList<SaveDataUnit> FindAndEncodeAll();
+        /// <summary>
+        /// The onComplete should get the results passed to it.
+        /// </summary>
+        IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null);
 
     }
 
@@ -48,7 +51,7 @@ namespace Amanita.SaveSys
         where TOutput : SaveData
     {
         TOutput EncodeToSave(TInput from);
-        TOutput DecodeFrom(SaveDataUnit unit);
+        new TOutput DecodeFrom(SaveDataUnit unit);
     }
 
     public interface IMultiSaveCodec<TOutput> : ISaveCodec<TOutput>

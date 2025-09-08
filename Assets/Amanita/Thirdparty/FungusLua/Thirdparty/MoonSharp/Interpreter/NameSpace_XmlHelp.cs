@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter 
+﻿namespace MoonSharp.Interpreter 
 {
 	/// <summary>
 	/// Namespace containing all the most commonly used classes for MoonSharp operation.

@@ -1,0 +1,182 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Amanita.VScripting.EditorUtils
+{
+    public class VariableRowManager : IDisposable
+    {
+        public virtual void Init(VRowManagerInitArgs initArgs)
+        {
+            _isDisposed = false;
+
+            bool allWentWell;
+            ValidateArgs();
+            void ValidateArgs()
+            {
+                int errorLogs = 0;
+                if (initArgs == null)
+                {
+                    Debug.LogError("VariableRowManager was given a null args object.");
+                    allWentWell = false;
+                    return;
+                }
+
+                if (initArgs.Flowchart == null)
+                {
+                    Debug.LogError("VariableRowManager was not given a Flowchart to work with.");
+                    errorLogs++;
+                }
+
+                if (initArgs.VariableListView == null)
+                {
+                    Debug.LogError($"VariableRowManager was not given a list view to work with.");
+                    errorLogs++;
+                }
+
+                if (initArgs.Root == null)
+                {
+                    Debug.LogError("VariableRowManager was not given a root to work with.");
+                    errorLogs++;
+                }
+
+                if (initArgs.AddButton == null)
+                {
+                    Debug.LogError("VariableRowManager was not given an add button to work with");
+                    errorLogs++;
+                }
+
+                allWentWell = errorLogs == 0;
+            }
+
+            if (!allWentWell)
+            {
+                Debug.LogError("Failed to initialize VariableRowManager.");
+                return;
+            }
+
+            PrepListView();
+            void PrepListView()
+            {
+                _listView = initArgs.VariableListView;
+            }
+
+            InitVisuals(initArgs);
+
+            PrepFcEventListeners();
+            void PrepFcEventListeners()
+            {
+                ToggleSubscriptions(false);
+                _flowchart = initArgs.Flowchart;
+                ToggleSubscriptions(true);
+            }
+
+            Refresh();
+        }
+
+        protected bool _isDisposed;
+        protected Flowchart _flowchart;
+        protected IVariableListView _listView;
+        protected Button _addButton;
+
+        public VisualElement Root { get; protected set; }
+
+        #region Event Wiring / Visual Init
+        protected virtual void ToggleSubscriptions(bool on)
+        {
+            if (_flowchart == null || _listView == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                _flowchart.VariableAdded += OnVariableAdded;
+                _flowchart.VariableRemoved += OnVariableRemoved;
+                _listView.OrderChanged += OnOrderChanged;
+                _addButton.clicked += OnAddButtonClicked;
+            }
+            else
+            {
+                _flowchart.VariableAdded -= OnVariableAdded;
+                _flowchart.VariableRemoved -= OnVariableRemoved;
+                _listView.OrderChanged -= OnOrderChanged;
+                _addButton.clicked -= OnAddButtonClicked;
+            }
+        }
+
+        protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
+        {
+            Root = initArgs.Root;
+            _addButton = initArgs.AddButton;
+        }
+
+        #endregion
+
+        #region Variable Event Handlers
+        protected virtual void OnVariableAdded(IVariable added)
+        {
+            if (_isDisposed || added == null) return;
+            _listView?.AddVariable(added);
+            _listView?.Refresh();
+        }
+
+        protected virtual void OnVariableRemoved(IVariable removed)
+        {
+            if (_isDisposed || removed == null) return;
+            _listView?.RemoveVariable(removed);
+            _listView?.Refresh();
+        }
+
+        protected virtual void OnOrderChanged(IReadOnlyList<IVariable> newlyOrderedVars)
+        {
+            _flowchart.ReorderVariables(newlyOrderedVars);
+        }
+
+        protected virtual void OnAddButtonClicked()
+        {
+            Rect rect = _addButton.worldBound;
+            VariableSelectPopupWindowContent.DoAddVariable(rect, "", _flowchart);
+        }
+        #endregion
+
+        #region Refresh APIs
+        /// <summary>
+        /// Full rebuild: just repopulates the itemsSource list on the ListView.
+        /// </summary>
+        public void Refresh()
+        {
+            if (_isDisposed || _flowchart == null || _listView == null)
+                return;
+
+            _listView.SetVariables(_flowchart.Variables);
+            _listView.Refresh();
+        }
+        #endregion
+
+        public virtual void ReleaseRowsFromList()
+        {
+            // With virtualization, clearing variables triggers unbind & release logic
+            _listView?.Clear();
+        }
+
+        #region Dispose
+        public virtual void Dispose()
+        {
+            if (_isDisposed) return;
+
+            ToggleSubscriptions(false);
+            ReleaseRowsFromList();
+
+            _listView?.Dispose();
+
+            _listView = null;
+            _flowchart = null;
+            Root = null;
+            _isDisposed = true;
+        }
+
+        #endregion
+    }
+}

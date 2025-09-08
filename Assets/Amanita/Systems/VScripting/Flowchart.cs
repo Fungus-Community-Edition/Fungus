@@ -1,0 +1,1766 @@
+using Amanita.Lua;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using Amanita.VScripting.UI;
+using Amanita.VScripting.EventHandlers;
+using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using UnityEngine.Serialization;
+
+namespace Amanita.VScripting
+{
+    /// <summary>
+    /// Visual scripting controller for the Flowchart programming language.
+    /// Flowchart objects may be edited visually using the Flowchart editor window.
+    /// </summary>
+    [ExecuteInEditMode]
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IVariableSource
+    {
+        public const string SubstituteVariableRegexString = "{\\$.*?}";
+
+        // What the editor utils use to decide how to render this FC's data in the 
+        // FlowchartWindow and BlockInspector
+        public virtual FlowchartUIModel UIModel
+        {
+            get { return uiModel; }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        protected FlowchartUIModel uiModel = new FlowchartUIModel();
+
+        [HideInInspector]
+        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
+        
+        [HideInInspector]
+        [FormerlySerializedAs("variables")]
+        [SerializeField] protected List<Variable> _legacyVariables = new List<Variable>();
+
+        [HideInInspector]
+        [SerializeField] protected List<Muscariable> _muscariables = new List<Muscariable>();
+
+        [TextArea(3, 5)]
+        [Tooltip("Description text displayed in the Flowchart editor window")]
+        [FormerlySerializedAs("description")]
+        [SerializeField] protected string _description = "";
+
+        [Range(0f, 5f)]
+        [Tooltip("Adds a pause after each execution step to make it easier to visualise program flow. Editor only, has no effect in platform builds.")]
+        [SerializeField] protected float _stepPause = 0f;
+
+        [Tooltip("Use command color when displaying the command list in the Fungus Editor window")]
+        [SerializeField] protected bool _colorCommands = true;
+
+        [Tooltip("Hides the Flowchart block and command components in the inspector. Deselect to inspect the block and command components that make up the Flowchart.")]
+        [SerializeField] protected bool _hideComponents = true;
+
+        [Tooltip("Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.")]
+        [SerializeField] protected bool _saveSelection = true;
+
+        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
+        [FormerlySerializedAs("localizationId")]
+        [SerializeField] protected string _localizationId = "";
+
+        [Tooltip("Display line numbers in the command list in the Block inspector.")]
+        [SerializeField] protected bool showLineNumbers = false;
+
+        [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
+        [SerializeField] protected List<string> _hideCommands = new List<string>();
+
+        [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
+        [FormerlySerializedAs("luaEnvironment")]
+        [SerializeField] protected LuaEnvironment _luaEnvironment;
+
+        [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
+        [FormerlySerializedAs("_luaBindingName")]
+        [SerializeField] protected string _luaBindingName = "flowchart";
+
+        [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
+        [SerializeField] protected bool _includeInSaves = true;
+
+        [Tooltip("Whether or not the execution state of this FC's Blocks should be considered for saving.")]
+        [SerializeField] protected bool _saveBlocks = true;
+
+        [Tooltip("Whether or not this FC's vars should be saved or loaded.")]
+        [SerializeField] protected bool _saveVariables = true;
+
+        [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
+        [SerializeField] protected int _loadPriority = 0;
+
+        /// <summary>
+        /// Scroll position of Flowchart editor window.
+        /// </summary>
+        public virtual Vector2 ScrollPos
+        {
+            get => uiModel.ScrollPos;
+            set => uiModel.ScrollPos = value;
+        }
+
+        public virtual bool IncludeInSaves
+        {
+            get { return _includeInSaves; }
+            set { _includeInSaves = value; }
+        }
+
+        #region SaveSys Involvement
+        public virtual bool SaveBlocks
+        {
+            get { return _saveBlocks; }
+            set { _saveBlocks = value; }
+        }
+
+        public virtual bool SaveVariables
+        {
+            get { return _saveVariables; }
+            set { _saveVariables = value; }
+        }
+        
+
+        public virtual int LoadPriority
+        {
+            get { return _loadPriority; }
+            set { _loadPriority = value; }
+        }
+        #endregion
+
+        protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
+
+        protected static bool eventSystemPresent;
+
+        protected StringSubstituter stringSubstituter;
+
+#if UNITY_EDITOR
+        public bool SelectedCommandsStale
+        {
+            get => UIModel.SelectedCommandsStale;
+            set => UIModel.SelectedCommandsStale = value;
+        }
+#endif
+        protected virtual void OnLevelWasLoaded(int level) 
+        {
+            LevelWasLoaded();
+        }
+
+        protected virtual void LevelWasLoaded()
+        {
+            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
+            eventSystemPresent = false;
+        }
+            
+        protected virtual void Awake()
+        {
+            UIModel.Owner = this.gameObject;
+            CheckEventSystem();
+
+            if (Application.IsPlaying(this))
+            {
+                AmanitaManager.EnsureExists();
+                GetAndInitVars();
+                StartCoroutine(HandleGameStartedBlock());
+            }
+        }
+
+        // There must be an Event System in the scene for Say and Menu input to work.
+        // This method will automatically instantiate one if none exists.
+        protected virtual void CheckEventSystem()
+        {
+            if (eventSystemPresent)
+            {
+                return;
+            }
+            
+#if UNITY_6000
+            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+#else
+            EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
+#endif
+            if (eventSystem == null)
+            {
+                // Auto spawn an Event System from the prefab
+                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
+                if (prefab != null)
+                {
+                    GameObject go = Instantiate(prefab);
+                    eventSystem = go.GetComponent<EventSystem>();
+                    go.name = "EventSystem";
+                }
+                else
+                {
+                    string errorMessage = "Event System prefab for Amanita not found.";
+                    throw new System.MissingFieldException(errorMessage);
+                }
+            }
+
+            eventSystem.gameObject.SetActive(true);
+            eventSystemPresent = true;
+        }
+
+        protected virtual IEnumerator HandleGameStartedBlock()
+        {
+            IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
+
+            if (gsEventHandler.Count == 0)
+            {
+                yield break;
+            }
+
+            while (AmanitaManager.S == null || !AmanitaManager.S.IsInitted)
+            {
+                yield return null;
+            }
+
+            foreach (var elem in gsEventHandler)
+            {
+                elem.Trigger();
+            }
+            
+        }
+
+        /// <summary>
+        /// Specifically for legacy variables.
+        /// </summary>
+        /// <param name="index"></param>
+        public virtual void RemoveVariableAtIndex(int index)
+        {
+            if (index >= 0 && index < _legacyVariables.Count)
+            {
+                IVariable toRemove = _legacyVariables[index];
+                _legacyVariables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveMuscariableAtIndex(int index)
+        {
+            if (index >= 0 && index < _muscariables.Count)
+            {
+                IVariable toRemove = _muscariables[index];
+                _muscariables.RemoveAt(index);
+                VariableRemoved(toRemove);
+            }
+        }
+
+        public virtual void RemoveVariable(IVariable toRemove)
+        {
+            int index;
+            if (_legacyVariables.Contains(toRemove))
+            {
+                index = _legacyVariables.IndexOf(toRemove as Variable);
+                RemoveVariableAtIndex(index);
+            }
+
+            if (_muscariables.Contains(toRemove))
+            {
+                index = _muscariables.IndexOf(toRemove as Muscariable);
+                RemoveMuscariableAtIndex(index);
+            }
+        }
+
+        /// <summary>
+        /// Removes all variables from this Flowchart.
+        /// </summary>
+        public virtual void ClearVariables()
+        {
+            // We'll remove them one by one so the right events fire
+            while (_legacyVariables.Count > 0)
+            {
+                RemoveVariableAtIndex(0);
+            }
+        }
+
+        protected virtual void GetAndInitVars()
+        {
+            // Muscariables get automatically serialized as part of the list, and thus 
+            // we don't need anything like GetComponentsInChildren for them
+            _legacyVariables = GetComponentsInChildren<Variable>().ToList();
+            IList<IVariable> allVars = _legacyVariables.Cast<IVariable>()
+                .Concat(_muscariables.Cast<IVariable>())
+                .ToList();
+            for (int i = 0; i < allVars.Count; i++)
+            {
+                var currentVar = allVars[i];
+                currentVar.Init();
+            }
+        }
+
+        private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
+        {
+            LevelWasLoaded();
+        }
+
+        protected virtual void OnEnable()
+        {
+            if (!cachedFlowcharts.Contains(this))
+            {
+                cachedFlowcharts.Add(this);
+                //TODO these pairs could be replaced by something static that manages all active flowcharts
+#if UNITY_5_4_OR_NEWER
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+#endif
+            }
+
+            CheckItemIds();
+            CleanupComponents();
+            UpdateVersion();
+
+            StringSubstituter.RegisterHandler(this);   
+        }
+
+        protected virtual void OnDisable()
+        {
+            cachedFlowcharts.Remove(this);
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+            StringSubstituter.UnregisterHandler(this);   
+        }
+
+        protected virtual void OnDestroy()
+        {
+            VariableAdded = delegate { };
+            VariableRemoved = delegate { };
+        }
+
+        protected virtual void UpdateVersion()
+        {
+            if (version == AmanitaConstants.CurrentVersion)
+            {
+                // No need to update
+                return;
+            }
+
+            // Tell all components that implement IUpdateable to update to the new version
+            // This is important for when we rework Variables and Blocks to be more lightweight;
+            // might want to make the old var and Block types IUpdatables
+            var components = GetComponents<Component>();
+            for (int i = 0; i < components.Length; i++)
+            {
+                var component = components[i];
+                IUpdateable u = component as IUpdateable;
+                if (u != null)
+                {
+                    u.UpdateToVersion(version, AmanitaConstants.CurrentVersion);
+                }
+            }
+
+            version = AmanitaConstants.CurrentVersion;
+        }
+
+        public virtual void RemoveFromSelection(Command command)
+        {
+            uiModel.RemoveFromSelection(command);
+        }
+
+        public virtual void RemoveFromSelection(Block block)
+        {
+            uiModel.RemoveFromSelection(block);
+        }
+
+        protected virtual void CheckItemIds()
+        {
+            // Make sure item ids are unique and monotonically increasing.
+            // This should always be the case, but some legacy Flowcharts may have issues.
+            List<int> usedIds = new List<int>();
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                if (block.ItemId == -1 || usedIds.Contains(block.ItemId))
+                {
+                    block.ItemId = NextItemId();
+                }
+                usedIds.Add(block.ItemId);
+            }
+            
+            var commands = GetComponents<Command>();
+            for (int i = 0; i < commands.Length; i++)
+            {
+                var command = commands[i];
+                if (command.ItemId == -1 || usedIds.Contains(command.ItemId))
+                {
+                    command.ItemId = NextItemId();
+                }
+                usedIds.Add(command.ItemId);
+            }
+
+            UpdateNextValidVarID();
+            void UpdateNextValidVarID()
+            {
+                var varWithHighestID = Variables.OrderByDescending(x => x.ItemID).FirstOrDefault();
+                if (varWithHighestID == null)
+                {
+                    return;
+                }
+                int highestIDFound = varWithHighestID.ItemID;
+                if (nextValidVarID < highestIDFound)
+                {
+                    nextValidVarID = highestIDFound + 1;
+                }
+            }
+
+            // Due to how variables were directly added through the Variables list,
+            // and how we don't want to change all other parts of the code base so they use
+            // AddVariable... we're going with this workaround.
+            EnsureVarsHaveValidIDs();
+            void EnsureVarsHaveValidIDs()
+            {
+                var varsInNeedOfIDs = (from elem in Variables
+                                       where elem.ItemID <= 0
+                                       where elem.Scope != VariableScope.Global
+                                       select elem).ToList();
+
+                foreach (var elem in varsInNeedOfIDs)
+                {
+                    elem.ItemID = nextValidVarID;
+                    nextValidVarID++;
+                }
+            }
+        }
+
+        [HideInInspector]
+        [SerializeField] protected int nextValidVarID = 1;
+
+        protected virtual void CleanupComponents()
+        {
+            // Delete any unreferenced components which shouldn't exist any more
+            // Unreferenced components don't have any effect on the flowchart behavior, but
+            // they waste memory so should be cleared out periodically.
+
+            // Remove any null entries in the variables list
+            // It shouldn't happen but it seemed to occur for a user on the forum 
+            _legacyVariables.RemoveAll(item => item == null);
+
+            var allVariables = GetComponents<Variable>();
+            for (int i = 0; i < allVariables.Length; i++)
+            {
+                var variable = allVariables[i];
+                if (!_legacyVariables.Contains(variable))
+                {
+                    DestroyImmediate(variable);
+                }
+            }
+            
+            var blocks = GetComponents<Block>();
+            var commands = GetComponents<Command>();
+            for (int i = 0; i < commands.Length; i++)
+            {
+                var command = commands[i];
+                bool found = false;
+                for (int j = 0; j < blocks.Length; j++)
+                {
+                    var block = blocks[j];
+                    if (block.CommandList.Contains(command))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    DestroyImmediate(command);
+                }
+            }
+            
+            var eventHandlers = GetComponents<AmanitaEventHandler>();
+            for (int i = 0; i < eventHandlers.Length; i++)
+            {
+                var eventHandler = eventHandlers[i];
+                bool found = false;
+                for (int j = 0; j < blocks.Length; j++)
+                {
+                    var block = blocks[j];
+                    if (block._EventHandler == eventHandler)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    DestroyImmediate(eventHandler);
+                }
+            }
+        }
+
+        protected virtual Block CreateBlockComponent(GameObject parent)
+        {
+            Block block = parent.AddComponent<Block>();
+            return block;
+        }
+
+        #region Public members
+
+        /// <summary>
+        /// Cached list of flowchart objects in the scene for fast lookup.
+        /// </summary>
+        public static List<Flowchart> CachedFlowcharts { get { return cachedFlowcharts; } }
+
+        /// <summary>
+        /// Sends a message to all Flowchart objects in the current scene.
+        /// Any block with a matching MessageReceived event handler will start executing.
+        /// </summary>
+        public static void BroadcastFungusMessage(string messageName)
+        {
+#if UNITY_6000
+            var eventHandlers = UnityEngine.Object.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
+#else
+            var eventHandlers = UnityEngine.Object.FindObjectsOfType<MessageReceived>();
+#endif
+            for (int i = 0; i < eventHandlers.Length; i++)
+            {
+                var eventHandler = eventHandlers[i];
+                eventHandler.OnSendFungusMessage(messageName);
+            }
+        }
+
+        
+        /// <summary>
+        /// Scroll position of Flowchart variables window.
+        /// </summary>
+        public virtual Vector2 VariablesScrollPos
+        {
+            get => uiModel.VariablesScrollPos;
+            set => uiModel.VariablesScrollPos = value;
+        }
+
+        /// <summary>
+        /// Whether or not to show the variables pane.
+        /// </summary>
+        public virtual bool VariablesExpanded
+        {
+            get => uiModel.VariablesExpanded;
+            set => uiModel.VariablesExpanded = value;
+        }
+
+        /// <summary>
+        /// Height of command block view in inspector.
+        /// </summary>
+        public virtual float BlockViewHeight
+        {
+            get => uiModel.BlockViewHeight;
+            set => uiModel.BlockViewHeight = value;
+        }
+
+        public virtual float Zoom
+        {
+            get => uiModel.Zoom;
+            set => uiModel.Zoom = value;
+        }
+
+        /// <summary>
+        /// Scrollable area for Flowchart editor window.
+        /// </summary>
+        public virtual Rect ScrollViewRect
+        {
+            get => uiModel.ScrollViewRect;
+            set => uiModel.ScrollViewRect = value;
+        }
+
+        /// <summary>
+        /// Current actively selected block in the Flowchart editor.
+        /// </summary>
+        public virtual Block SelectedBlock
+        {
+            get => uiModel.SelectedBlock;
+            set => uiModel.SelectedBlock = value;
+        }
+
+        public virtual IList<Block> SelectedBlocks
+        {
+            get => uiModel.SelectedBlocks;
+            set => uiModel.SelectedBlocks = value;
+        }
+
+        /// <summary>
+        /// Currently selected command in the Flowchart editor.
+        /// </summary>
+        public virtual IList<Command> SelectedCommands
+        {
+            get => uiModel.SelectedCommands; // Returns a copy
+            set => uiModel.SelectedCommands = value;
+        }
+
+        public virtual int SelectedCommandCount
+        {
+            get { return uiModel.CommandCount; }
+        }
+
+        public virtual int SelectedBlockCount
+        {
+            get { return uiModel.BlockCount; }
+        }
+
+        public virtual IReadOnlyList<IVariable> Variables
+        {
+            get
+            {
+                IReadOnlyList<IVariable> copyOfList = _legacyVariables.Cast<IVariable>()
+                    .Concat(_muscariables.Cast<IVariable>())
+                    .ToList();
+
+                return copyOfList;
+            }
+        }
+
+        public virtual int VariableCount { get { return _legacyVariables.Count; } }
+
+        /// <summary>
+        /// Description text displayed in the Flowchart editor window
+        /// </summary>
+        public virtual string Description { get { return _description; } }
+
+        /// <summary>
+        /// Slow down execution in the editor to make it easier to visualise program flow.
+        /// </summary>
+        public virtual float StepPause { get { return _stepPause; } }
+
+        /// <summary>
+        /// Use command color when displaying the command list in the inspector.
+        /// </summary>
+        public virtual bool ColorCommands { get { return _colorCommands; } }
+
+        /// <summary>
+        /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
+        /// </summary>
+        public virtual bool SaveSelection { get { return _saveSelection; } }
+
+        /// <summary>
+        /// Unique identifier for identifying this flowchart in localized string keys.
+        /// </summary>
+        public virtual string LocalizationId { get { return _localizationId; } }
+
+        /// <summary>
+        /// Display line numbers in the command list in the Block inspector.
+        /// </summary>
+        public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
+
+        /// <summary>
+        /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
+        /// </summary>
+        public virtual LuaEnvironment LuaEnv { get { return _luaEnvironment; } }
+
+        /// <summary>
+        /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
+        /// </summary>
+        public virtual string LuaBindingName { get { return _luaBindingName; } }
+
+        /// <summary>
+        /// Position in the center of all blocks in the flowchart.
+        /// </summary>
+        public virtual Vector2 CenterPosition { set; get; }
+
+        /// <summary>
+        /// Variable to track flowchart's version so components can update to new versions.
+        /// </summary>
+        public int Version { set { version = value; } }
+
+        /// <summary>
+        /// Returns true if the Flowchart gameobject is active.
+        /// </summary>
+        public bool IsActive()
+        {
+            return gameObject.activeInHierarchy;
+        }
+
+        /// <summary>
+        /// Returns the Flowchart gameobject name.
+        /// </summary>
+        public string GetName()
+        {
+            return gameObject.name;
+        }
+
+        /// <summary>
+        /// Returns the next id to assign to a new flowchart item.
+        /// Item ids increase monotically so they are guaranteed to
+        /// be unique within a Flowchart.
+        /// </summary>
+        public int NextItemId()
+        {
+            int maxId = -1;
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                maxId = Math.Max(maxId, block.ItemId);
+            }
+
+            var commands = GetComponents<Command>();
+            for (int i = 0; i < commands.Length; i++)
+            {
+                var command = commands[i];
+                maxId = Math.Max(maxId, command.ItemId);
+            }
+            return maxId + 1;
+        }
+
+        /// <summary>
+        /// Create a new block node which you can then add commands to.
+        /// </summary>
+        public virtual Block CreateBlock(Vector2 position)
+        {
+            Block created = CreateBlockComponent(gameObject);
+            created._NodeRect = new Rect(position, defaultBlockSize);
+            created.BlockName = GetUniqueBlockKey(created.BlockName, created);
+            created.ItemId = NextItemId();
+            BlockSignals.BlockCreated(created);
+            return created;
+        }
+
+        protected static Vector2 defaultBlockSize = new Vector2(300, 100);
+
+        public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
+        {
+            IList<Block> blocksCreated = new Block[positions.Count];
+            for (int i = 0; i < positions.Count; i++)
+            {
+                Vector2 currentPos = positions[i];
+                Block newBlock = CreateBlock(currentPos);
+                blocksCreated[i] = newBlock;
+            }
+            return blocksCreated;
+        }
+
+        /// <summary>
+        /// Returns the named Block in the flowchart, or null if not found.
+        /// </summary>
+        public virtual Block FindBlock(string blockName)
+        {
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                if (block.BlockName == blockName)
+                {
+                    return block;
+                }
+            }
+
+            return null;
+        }
+
+        public virtual Block FindBlockByItemId(int itemId)
+        {
+            var blocks = GetComponents<Block>();
+            Block result = (from blockEl in blocks
+                            where blockEl.ItemId == itemId
+                            select blockEl).FirstOrDefault();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Checks availability of the block in the Flowchart.
+        /// You can use this method in a UI event. e.g. to test availability block, before handle it.
+        public virtual bool HasBlock(string blockName)
+        {
+            var block = FindBlock(blockName);
+            return block != null;
+        }
+
+        /// <summary>
+        /// Executes the block if it is available in the Flowchart.
+        /// You can use this method in a UI event. e.g. to try executing block without confidence in its existence.
+        public virtual bool ExecuteIfHasBlock(string blockName)
+        {
+            if (HasBlock(blockName))
+            {
+                ExecuteBlock(blockName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }        
+
+        /// <summary>
+        /// Execute a child block in the Flowchart.
+        /// You can use this method in a UI event. e.g. to handle a button click.
+        public virtual void ExecuteBlock(string blockName)
+        {
+            var block = FindBlock(blockName);
+
+            if (block == null)
+            {
+                Debug.LogError("Block " + blockName  + " does not exist");
+                return;
+            }
+
+            if (!ExecuteBlock(block))
+            {
+                Debug.LogWarning("Block " + blockName  + " failed to execute");
+            }
+        }
+            
+        /// <summary>
+        /// Stops an executing Block in the Flowchart.
+        /// </summary>
+        public virtual void StopBlock(string blockName)
+        {
+            var block = FindBlock(blockName);
+
+            if (block == null)
+            {
+                Debug.LogError("Block " + blockName  + " does not exist");
+                return;
+            }
+
+            if (block.IsExecuting())
+            {
+                block.Stop();
+            }
+        }
+
+        /// <summary>
+        /// Execute a child block in the flowchart.
+        /// The block must be in an idle state to be executed.
+        /// This version provides extra options to control how the block is executed.
+        /// Returns true if the Block started execution.            
+        /// </summary>
+        public virtual bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null)
+        {
+            if (block == null)
+            {
+                Debug.LogError("Block must not be null");
+                return false;
+            }
+
+            if (((Block)block).gameObject != gameObject)
+            {
+                Debug.LogError("Block must belong to the same gameobject as this Flowchart");
+                return false;                
+            }
+
+            // Can't restart a running block, have to wait until it's idle again
+            if (block.IsExecuting())
+            {
+                Debug.LogWarning(block.BlockName + " cannot be called/executed, it is already running.");
+                return false;
+            }
+
+            // Start executing the Block as a new coroutine
+            StartCoroutine(block.Execute(commandIndex, onComplete));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Stop all executing Blocks in this Flowchart.
+        /// </summary>
+        public virtual void StopAllBlocks()
+        {
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                if (block.IsExecuting())
+                {
+                    block.Stop();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to this Flowchart only.
+        /// Any block with a matching MessageReceived event handler will start executing.
+        /// </summary>
+        public virtual void SendFungusMessage(string messageName)
+        {
+            var eventHandlers = GetComponents<MessageReceived>();
+            for (int i = 0; i < eventHandlers.Length; i++)
+            {
+                var eventHandler = eventHandlers[i];
+                eventHandler.OnSendFungusMessage(messageName);
+            }
+        }
+
+        /// <summary>
+        /// Returns a new variable key that is guaranteed not to clash with any existing variable in the list.
+        /// </summary>
+        public virtual string GetUniqueVariableKey(string originalKey, IVariable ignoreVariable = null)
+        {
+            int suffix = 0;
+            string baseKey = originalKey;
+
+            // Only letters and digits allowed
+            char[] arr = baseKey.Where(c => (char.IsLetterOrDigit(c) || c == '_')).ToArray(); 
+            baseKey = new string(arr);
+
+            // No leading digits allowed
+            baseKey = baseKey.TrimStart('0','1','2','3','4','5','6','7','8','9');
+
+            // No empty keys allowed
+            if (baseKey.Length == 0)
+            {
+                baseKey = "Var";
+            }
+
+            List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
+
+            vars.AddRange(_legacyVariables);
+            vars.AddRange(_muscariables);
+            string key = baseKey;
+            while (true)
+            {
+                bool collision = false;
+                for (int i = 0; i < vars.Count; i++)
+                {
+                    var variable = vars[i];
+                    if (variable == null || (variable as IVariable) == ignoreVariable || variable.Key == null)
+                    {
+                        continue;
+                    }
+                    if (variable.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        collision = true;
+                        suffix++;
+                        key = baseKey + suffix;
+                    }
+                }
+
+                if (!collision)
+                {
+                    return key;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Returns a new Block key that is guaranteed not to clash with any existing Block in the Flowchart.
+        /// </summary>
+        public virtual string GetUniqueBlockKey(string originalKey, Block ignoreBlock = null)
+        {
+            int suffix = 0;
+            string baseKey = originalKey.Trim();
+
+            // No empty keys allowed
+            if (baseKey.Length == 0)
+            {
+                baseKey = AmanitaConstants.DefaultBlockName;
+            }
+
+            var blocks = GetComponents<Block>();
+
+            string key = baseKey;
+            while (true)
+            {
+                bool collision = false;
+                for (int i = 0; i < blocks.Length; i++)
+                {
+                    var block = blocks[i];
+                    if (block == ignoreBlock || block.BlockName == null)
+                    {
+                        continue;
+                    }
+                    if (block.BlockName.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        collision = true;
+                        suffix++;
+                        key = baseKey + suffix;
+                    }
+                }
+
+                if (!collision)
+                {
+                    return key;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a new Label key that is guaranteed not to clash with any existing Label in the Block.
+        /// </summary>
+        public virtual string GetUniqueLabelKey(string originalKey, Label ignoreLabel)
+        {
+            int suffix = 0;
+            string baseKey = originalKey.Trim();
+
+            // No empty keys allowed
+            if (baseKey.Length == 0)
+            {
+                baseKey = "New Label";
+            }
+
+            var block = ignoreLabel.ParentBlock;
+
+            string key = baseKey;
+            while (true)
+            {
+                bool collision = false;
+                var commandList = block.CommandList;
+                for (int i = 0; i < commandList.Count; i++)
+                {
+                    var command = commandList[i];
+                    Label label = command as Label;
+                    if (label == null || label == ignoreLabel)
+                    {
+                        continue;
+                    }
+                    if (label.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        collision = true;
+                        suffix++;
+                        key = baseKey + suffix;
+                    }
+                }
+
+                if (!collision)
+                {
+                    return key;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the variable with the specified key, or null if the key is not found.
+        /// You will need to cast the returned variable to the correct sub-type.
+        /// You can then access the variable's value using the Value property. e.g.
+        /// BooleanVariable boolVar = flowchart.GetVariable("MyBool") as BooleanVariable;
+        /// boolVar.Value = false;
+        /// </summary>
+        public Variable GetVariable(string key)
+        {
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var variable = _legacyVariables[i];
+                if (variable != null && variable.Key == key)
+                {
+                    return variable;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Alias for the GetVariable(string key) method.
+        /// </summary>
+        public Variable GetVariableByName(string name)
+        {
+            return GetVariable(name);
+        }
+
+        public virtual IVariable GetVariable(int index)
+        {
+            IVariable result = null;
+            if (_legacyVariables.Count > index && index >= 0)
+            {
+                result = _legacyVariables[index];
+            }
+            return result;
+        }
+
+        public virtual Variable GetVariableById(int id)
+        {
+            Variable result = (from varEl in _legacyVariables
+                               where varEl.ItemID == id
+                               select varEl).FirstOrDefault();
+            if (result == null)
+            {
+                Debug.LogWarning($"Variable with item ID {id} not found.");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the variable with the specified key, or null if the key is not found.
+        /// You can then access the variable's value using the Value property. e.g.
+        /// BooleanVariable boolVar = flowchart.GetVariable<BooleanVariable>("MyBool");
+        /// boolVar.Value = false;
+        /// </summary>
+        public T GetVariable<T>(string key) where T : Variable
+        {
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var variable = _legacyVariables[i];
+                if (variable != null && variable.Key == key)
+                {
+                    return variable as T;
+                }
+            }
+
+            Debug.LogWarning("Variable " + key + " not found.");
+            return null;
+        }
+
+        /// <summary>
+        /// Returns a list of variables matching the specified type.
+        /// </summary>
+        public virtual List<T> GetVariables<T>() where T: Variable
+        {
+            var varsFound = new List<T>();
+            
+            for (int i = 0; i < Variables.Count; i++)
+            {
+                var currentVar = Variables[i];
+                if (currentVar is T)
+                    varsFound.Add(currentVar as T);
+            }
+
+            return varsFound;
+        }
+
+        /// <summary>
+        /// Register a new variable with the Flowchart at runtime. 
+        /// The variable should be added as a component on the Flowchart game object.
+        /// </summary>
+        public void SetVariable<T>(string key, T newVar) where T : Variable
+        {
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var currentVar = _legacyVariables[i];
+                if (currentVar != null && currentVar.Key == key)
+                {
+                    T variable = currentVar as T;
+                    if (variable != null)
+                    {
+                        variable = newVar;
+                        return;
+                    }
+                }
+            }
+
+            Debug.LogWarning("Variable " + key + " not found.");
+        }
+
+        /// <summary>
+        /// Checks if a given variable exists in the flowchart.
+        /// </summary>
+        public virtual bool HasVariable(string key)
+        {
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var v = _legacyVariables[i];
+                if (v != null && v.Key == key)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public virtual bool HasVariable(IVariable varInst)
+        {
+            return _legacyVariables.Contains(varInst) || _muscariables.Contains(varInst);
+        }
+
+        /// <summary>
+        /// Returns the list of variable names in the Flowchart.
+        /// </summary>
+        public virtual string[] GetVariableNames()
+        {
+            var vList = new string[_legacyVariables.Count];
+
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var v = _legacyVariables[i];
+                if (v != null)
+                {
+                    vList[i] = v.Key;
+                }
+            }
+            return vList;
+        }
+
+        /// <summary>
+        /// Gets a list of all variables with public scope in this Flowchart.
+        /// </summary>
+        public virtual IList<IVariable> GetPublicVariables()
+        {
+            IList<IVariable> publicVariables = new List<IVariable>();
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var v = _legacyVariables[i];
+                if (v != null && v.Scope == VariableScope.Public)
+                {
+                    publicVariables.Add(v);
+                }
+            }
+
+            return publicVariables;
+        }
+
+        /// <summary>
+        /// Set the block objects to be hidden or visible depending on the hideComponents property.
+        /// </summary>
+        public virtual void UpdateHideFlags()
+        {
+            if (_hideComponents)
+            {
+                var blocks = GetComponents<Block>();
+                for (int i = 0; i < blocks.Length; i++)
+                {
+                    var block = blocks[i];
+                    block.hideFlags = HideFlags.HideInInspector;
+                    if (block.gameObject != gameObject)
+                    {
+                        block.hideFlags = HideFlags.HideInHierarchy;
+                    }
+                }
+
+                var commands = GetComponents<Command>();
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    var command = commands[i];
+                    command.hideFlags = HideFlags.HideInInspector;
+                }
+
+                var eventHandlers = GetComponents<AmanitaEventHandler>();
+                for (int i = 0; i < eventHandlers.Length; i++)
+                {
+                    var eventHandler = eventHandlers[i];
+                    eventHandler.hideFlags = HideFlags.HideInInspector;
+                }
+            }
+            else
+            {
+                var monoBehaviours = GetComponents<MonoBehaviour>();
+                for (int i = 0; i < monoBehaviours.Length; i++)
+                {
+                    var monoBehaviour = monoBehaviours[i];
+                    if (monoBehaviour == null)
+                    {
+                        continue;
+                    }
+                    monoBehaviour.hideFlags = HideFlags.None;
+                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clears the list of selected commands.
+        /// </summary>
+        public virtual void ClearSelectedCommands()
+        {
+            UIModel.ClearSelectedCommands();
+#if UNITY_EDITOR
+            SelectedCommandsStale = true;
+#endif
+        }
+
+        /// <summary>
+        /// Adds a command to the list of selected commands.
+        /// </summary>
+        public virtual void AddSelectedCommand(Command command)
+        {
+            if (!uiModel.Contains(command))
+            {
+                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
+                // like SelectedCommands.Add, we call the ui model's method specifically for registering
+                // Commands.
+                UIModel.AddToSelection(command); 
+#if UNITY_EDITOR
+                SelectedCommandsStale = true;
+#endif
+                SelectedCommandAdded(command);
+            }
+        }
+
+        /// <summary>
+        /// For when added through AddSelectedCommand (as opposed to just setting 
+        /// the SelectedCommands property or such)
+        /// </summary>
+        public event Action<Command> SelectedCommandAdded = delegate { };
+
+        /// <summary>
+        /// Clears the list of selected blocks.
+        /// </summary>
+        public virtual void ClearSelectedBlocks()
+        {
+            IList<Block> blocksToSignal = SelectedBlocks;
+            UIModel.ClearSelectedBlocks();
+            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
+        }
+
+        public virtual void AddRangeToSelection(IList<Block> toSelect)
+        {
+            UIModel.AddRangeToSelection(toSelect);
+        }
+
+        /// <summary>
+        /// Adds a block to the list of selected blocks.
+        /// </summary>
+        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
+
+        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+
+        public virtual bool Contains(Block block) => UIModel.Contains(block);
+        public virtual bool Contains(Command command) => UIModel.Contains(command);
+
+        public void UpdateSelectedCache()
+        {
+            SelectedBlocks.Clear();
+            var res = gameObject.GetComponents<Block>();
+            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
+        }
+
+        public void ReverseUpdateSelectedCache()
+        {
+            for (int i = 0; i < SelectedBlockCount; i++)
+            {
+                if(SelectedBlocks[i] != null)
+                {
+                    SelectedBlocks[i].IsSelected = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset the commands and variables in the Flowchart.
+        /// </summary>
+        public virtual void ResetFlowchart(bool resetCommands, bool resetVariables)
+        {
+            if (resetCommands)
+            {
+                var commands = GetComponents<Command>();
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    var command = commands[i];
+                    command.OnReset();
+                }
+            }
+
+            if (resetVariables)
+            {
+                for (int i = 0; i < _legacyVariables.Count; i++)
+                {
+                    var variable = _legacyVariables[i];
+                    variable.OnReset();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
+        /// </summary>
+        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
+        {
+            for (int i = 0; i < _hideCommands.Count; i++)
+            {
+                // Match on category or command name (case insensitive)
+                var key = _hideCommands[i];
+                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns true if there are any executing blocks in this Flowchart.
+        /// </summary>
+        public virtual bool HasExecutingBlocks()
+        {
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                if (block.IsExecuting())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a list of all executing blocks in this Flowchart.
+        /// </summary>
+        public virtual List<Block> GetExecutingBlocks()
+        {
+            var executingBlocks = new List<Block>();
+            var blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var block = blocks[i];
+                if (block.IsExecuting())
+                {
+                    executingBlocks.Add(block);
+                }
+            }
+
+            return executingBlocks;
+        }
+
+        /// <summary>
+        /// Substitute variables in the input text with the format {$VarName}
+        /// This will first match with private variables in this Flowchart, and then
+        /// with public variables in all Flowcharts in the scene (and any component
+        /// in the scene that implements StringSubstituter.ISubstitutionHandler).
+        /// </summary>
+        public virtual string SubstituteVariables(string input)
+        {
+            if (stringSubstituter == null)
+            {
+                stringSubstituter = new StringSubstituter();
+            }
+
+            // Use the string builder from StringSubstituter for efficiency.
+            StringBuilder sb = stringSubstituter._StringBuilder;
+            sb.Length = 0;
+            sb.Append(input);
+
+            // Instantiate the regular expression object.
+            Regex r = new Regex(SubstituteVariableRegexString);
+
+            bool changed = false;
+
+            // Match the regular expression pattern against a text string.
+            var results = r.Matches(input);
+            for (int i = 0; i < results.Count; i++)
+            {
+                Match match = results[i];
+                string key = match.Value.Substring(2, match.Value.Length - 3);
+                // Look for any matching private variables in this Flowchart first
+                for (int j = 0; j < _legacyVariables.Count; j++)
+                {
+                    var variable = _legacyVariables[j];
+                    if (variable == null)
+                        continue;
+                    if (variable.Scope == VariableScope.Private && variable.Key == key)
+                    {
+                        string value = variable.ToString();
+                        sb.Replace(match.Value, value);
+                        changed = true;
+                    }
+                }
+            }
+
+            // Now do all other substitutions in the scene
+            changed |= stringSubstituter.SubstituteStrings(sb);
+
+            if (changed)
+            {
+                return sb.ToString();
+            }
+            else
+            {
+                return input;
+            }
+        }
+
+        public virtual void DetermineSubstituteVariables(string str, List<IVariable> vars)
+        {
+            Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
+
+            // Match the regular expression pattern against a text string.
+            var results = r.Matches(str);
+            for (int i = 0; i < results.Count; i++)
+            {
+                var match = results[i];
+                var v = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                if (v != null)
+                {
+                    vars.Add(v);
+                }
+            }
+        }
+
+        public virtual void DetermineSubstituteVariables(string str, List<Variable> vars)
+        {
+            Regex regex = new Regex(Flowchart.SubstituteVariableRegexString);
+            if (str == null)
+            {
+                Debug.LogError("Str in DetermineSubstituteVariables is null");
+            }
+            // Match the regular expression pattern against a text string.
+            var results = regex.Matches(str);
+            for (int i = 0; i < results.Count; i++)
+            {
+                var match = results[i];
+                var varFound = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                if (varFound != null)
+                {
+                    vars.Add(varFound);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns a new Muscariable of the specified type, with this
+        /// as the parent Flowchart.
+        /// </summary>
+        public virtual TVarType AddNewMuscariable<TValueType, TVarType>(string key = "", TValueType initValue = default,
+            VariableScope scope = VariableScope.Private) where TVarType: Muscariable<TValueType>, new()
+        {
+            TVarType result = new TVarType();
+            result.Value = initValue;
+            result.Scope = scope;
+            IntegrateMuscariable(result);
+            result.Init();
+            return result;
+        }
+
+        protected int nextMuscariableID = 1;
+
+        /// <summary>
+        /// Sets up the Muscariable to belong to this Flowchart. We assume that the
+        /// input has already been initialized.
+        /// </summary>
+        /// <param name="toAdd"></param>
+        public virtual void IntegrateMuscariable(Muscariable toAdd)
+        {
+            int newId = nextMuscariableID;
+            toAdd.ItemID = newId;
+            toAdd.ParentFlowchart = this;
+            toAdd.Key = GetUniqueVariableKey(toAdd.Key);
+            _muscariables.Add(toAdd);
+
+            nextMuscariableID++;
+
+            VariableAdded(toAdd);
+        }
+
+        /// <summary>
+        /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
+        /// </summary>
+        /// <param name="toRemove"></param>
+        public virtual void RemoveVariable(Muscariable toRemove)
+        {
+            if (_muscariables.Contains(toRemove))
+            {
+                toRemove.ParentFlowchart = null;
+                _muscariables.Remove(toRemove);
+                VariableRemoved(toRemove);
+            }
+
+        }
+
+        public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType: Muscariable
+        {
+            IList<TVarType> result = (from elem in _muscariables
+                                      where elem.GetType().IsAssignableFrom(typeof(TVarType))
+                                      select elem).Cast<TVarType>().ToList();
+            return result;
+        }
+
+        public virtual TVarType GetMuscariableWithKey<TVarType>(string key) where TVarType : Muscariable
+        {
+            TVarType result = (from elem in _muscariables
+                               where elem.Key == key
+                               select elem).Cast<TVarType>().FirstOrDefault();
+            return result;
+
+        }
+
+        public virtual int MuscariableCount { get { return _muscariables.Count; } }
+
+        public virtual void RefreshVars()
+        {
+            _muscariables = (from elem in _muscariables
+                            where elem != null
+                            select elem).ToList();
+            _legacyVariables = (from elem in _legacyVariables
+                         where elem != null
+                         select elem).ToList();
+        }
+
+        public event Action<IVariable> VariableAdded = delegate { };
+        public event Action<IVariable> VariableRemoved = delegate { };
+
+        public virtual void InsertVariable(int index, Variable whatToInsert)
+        {
+            _legacyVariables.Insert(index, whatToInsert);
+            VariableAdded(whatToInsert);
+        }
+        #endregion
+
+        #region IStringSubstituter implementation
+
+        /// <summary>
+        /// Implementation of StringSubstituter.ISubstitutionHandler which matches any public variable in the Flowchart.
+        /// To perform full variable substitution with all substitution handlers in the scene, you should
+        /// use the SubstituteVariables() method instead.
+        /// </summary>
+        [MoonSharp.Interpreter.MoonSharpHidden]
+        public virtual bool SubstituteStrings(StringBuilder input)
+        {
+            // Instantiate the regular expression object.
+            Regex r = new Regex(SubstituteVariableRegexString);
+
+            bool modified = false;
+
+            // Match the regular expression pattern against a text string.
+            var results = r.Matches(input.ToString());
+            for (int i = 0; i < results.Count; i++)
+            {
+                Match match = results[i];
+                string key = match.Value.Substring(2, match.Value.Length - 3);
+                // Look for any matching public variables in this Flowchart
+                for (int j = 0; j < _legacyVariables.Count; j++)
+                {
+                    var variable = _legacyVariables[j];
+                    if (variable == null)
+                    {
+                        continue;
+                    }
+                    if (variable.Scope == VariableScope.Public && variable.Key == key)
+                    {
+                        string value = variable.ToString();
+                        input.Replace(match.Value, value);
+                        modified = true;
+                    }
+                }
+            }
+
+            return modified;
+        }
+
+        #endregion
+
+        [HideInInspector]
+        [SerializeField] private string uniqueId = "";
+        /// <summary>
+        /// Unique identifier not specific to localization.
+        /// </summary>
+        public string UniqueId => uniqueId;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (UIModel == null)
+            {
+                uiModel = new FlowchartUIModel();
+            }
+
+            if (UIModel.Owner == null)
+            {
+                UIModel.Owner = this.gameObject;
+            }
+
+            if (string.IsNullOrEmpty(uniqueId))
+            {
+                uniqueId = System.Guid.NewGuid().ToString();
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+
+            CheckItemIds();
+
+            EnsureBlocksHaveAValidSize();
+            void EnsureBlocksHaveAValidSize()
+            {
+                IList<Block> blocks = GetComponents<Block>();
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    var currentBlock = blocks[i];
+                    Rect nodeRect = currentBlock._NodeRect;
+                    if (nodeRect.size.Equals(Vector2.zero))
+                    {
+                        string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
+                        Debug.LogWarning(logMessage);
+                        Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
+                        currentBlock._NodeRect = fixedRect;
+                    }
+                }
+            }
+
+        }
+#endif
+        
+        public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
+        where TVarType : VariableBase<TBase>
+        {
+            var variable = GetVariable<TVarType>(key);
+
+            if (variable != null)
+                variable.Value = value;
+            else
+                LetUserKnowVarDoesntExist(key);
+        }
+
+        protected virtual void LetUserKnowVarDoesntExist(string varName)
+        {
+            string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just like Santa Claus: it doesn't exist.";
+            Debug.LogWarning(warningMessage);
+        }
+
+        /// <summary>
+        /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
+        /// a unique key will be generated.
+        /// </summary>
+        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key = default,
+            TValHeld value = default,
+            VariableScope scope = VariableScope.Private)
+            where TVarType : VariableBase<TValHeld>
+        {
+            TVarType newVar = gameObject.AddComponent<TVarType>();
+            newVar.Key = GetUniqueVariableKey(key, newVar);
+            newVar.Value = value;
+            newVar.Scope = scope;
+            newVar.gameObject.hideFlags = HideFlags.HideInInspector;
+            newVar.ItemID = nextValidVarID;
+            nextValidVarID++;
+            _legacyVariables.Add(newVar);
+            VariableAdded(newVar);
+            return newVar;
+        }
+
+        public virtual void AddVariable(IVariable toAdd)
+        {
+            bool alreadyRegistered = _legacyVariables.Contains(toAdd) || _muscariables.Contains(toAdd);
+            if (alreadyRegistered)
+            {
+                return;
+            }
+
+            if (toAdd is Variable legacyVar)
+            {
+                _legacyVariables.Add(legacyVar);
+            }
+            else if (toAdd is Muscariable muscaVar)
+            {
+                _muscariables.Add(muscaVar);
+            }
+
+            toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
+            VariableAdded(toAdd);
+        }
+
+        public static void ResetStaticsForTest()
+        {
+            cachedFlowcharts.Clear();
+            eventSystemPresent = false;
+        }
+
+        /// <summary>
+        /// Reorders the legacy Variable list to match the sequence supplied (only
+        /// for those Variables already registered). Muscariables are not affected.
+        /// Variables not present in newOrder retain their relative order at the end.
+        /// Does not raise add/remove events (pure reordering).
+        /// </summary>
+        public virtual void ReorderVariables(IReadOnlyList<IVariable> newOrder)
+        {
+            if (newOrder == null || newOrder.Count == 0) return;
+
+            // Extract legacy variables that appear in newOrder, in that order
+            var ordered = new List<Variable>(_legacyVariables.Count);
+            var seen = new HashSet<Variable>();
+
+            for (int i = 0; i < newOrder.Count; i++)
+            {
+                if (newOrder[i] is Variable legacy && _legacyVariables.Contains(legacy) && seen.Add(legacy))
+                    ordered.Add(legacy);
+            }
+
+            // Append the rest (not explicitly positioned)
+            for (int i = 0; i < _legacyVariables.Count; i++)
+            {
+                var v = _legacyVariables[i];
+                if (!seen.Contains(v))
+                    ordered.Add(v);
+            }
+            if (ordered.Count == _legacyVariables.Count)
+                _legacyVariables = ordered;
+        }
+
+    }
+}

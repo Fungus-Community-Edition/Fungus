@@ -13,7 +13,7 @@ namespace Amanita.SaveSys
         public static string GetPathToFolder(SaveDirectoryType type, string relative = "")
         {
             relative = RelativePathFormatted(relative);
-            string result = SaveSystem.SaveDirectoryPaths[type];
+            string result = SaveSystem.S.SaveDirectoryPaths[type];
 
             bool thereIsRelativePathToConsider = relative.Length > 1;
 
@@ -87,6 +87,11 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
+        public static string GetPathToBackupFile(SaveDirectoryType dirType, int slot, SaveWriter writer)
+        {
+            string basePath = GetPathToFile(dirType, slot, writer);
+            return basePath + writer.BackupFileExtension;
+        }
+
     }
 }

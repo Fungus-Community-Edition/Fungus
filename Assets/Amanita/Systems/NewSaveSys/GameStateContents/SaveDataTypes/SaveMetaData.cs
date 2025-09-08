@@ -1,7 +1,7 @@
-
-
-using System.Globalization;
+using Amanita.Utils;
 using System;
+using System.Globalization;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,7 +24,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected int sceneBuildIndex = -1;
         [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
 
-        public string Name
+        public string SaveName
         {
             get { return name; }
             set { name = value; }
@@ -160,18 +160,25 @@ namespace Amanita.SaveSys
         {
             this.saveID = System.Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
-            this.saveVersion = "1.0.0";
+            this.saveVersion = NullSaveVer;
 
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
-            RegisterCurrentSceneInfo();
         }
+
+        protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
 
         protected virtual void MakeSureWeHaveSaveVersion()
         {
             if (string.IsNullOrEmpty(this.SaveVersion))
             {
                 SaveVersion = Application.version;
+            }
+
+            bool noValidVer = string.IsNullOrEmpty(this.SaveVersion);
+            if (noValidVer)
+            {
+                this.saveVersion = NullSaveVer;
             }
         }
 
@@ -201,7 +208,7 @@ namespace Amanita.SaveSys
 
         public static int IDAndVersionLengthCap { get; } = 300;
 
-        public static new SaveMetaData DeserializeFrom(SaveDataUnit item)
+        public static SaveMetaData DeserializeFrom(SaveDataUnit item)
         {
             SaveMetaData result = new SaveMetaData();
             JsonUtility.FromJsonOverwrite(item.Content, result);
@@ -213,6 +220,7 @@ namespace Amanita.SaveSys
         {
             base.OnDeserialize();
             UpdateTimeStampStructure();
+            UpdatePlaytimeStructure();
         }
 
         protected virtual void UpdatePlaytimeStructure()
@@ -232,8 +240,32 @@ namespace Amanita.SaveSys
 
         public virtual void RegisterCurrentSceneInfo()
         {
-            sceneName = SceneManager.GetActiveScene().name;
-            sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
+            void GetTheInfo()
+            {
+                sceneName = SceneManager.GetActiveScene().name;
+                sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
+            }
+
+            bool onMainThread = UnityThreadUtil.IsMainThread;
+            if (onMainThread)
+            {
+                GetTheInfo();
+            }
+            else
+            {
+                using (var countdown = new CountdownEvent(1))
+                {
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        GetTheInfo();
+                        countdown.Signal();
+                    }
+                    );
+
+                    countdown.Wait();
+                }
+            }
+            
         }
 
         public virtual bool Equals(SaveMetaData other)
@@ -255,6 +287,7 @@ namespace Amanita.SaveSys
     public interface ISaveMetaData : ISaveData
     {
         string SaveID { get; }
+        string SaveName { get; set; }
         int SlotNumber { get; }
         string SaveVersion { get; }
         DateTime TimeStamp { get; }

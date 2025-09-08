@@ -1,7 +1,5 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
+using Amanita.Tweening;
 
 namespace Amanita
 {
@@ -40,10 +38,10 @@ namespace Amanita
             audioSourceDefaultVoice = audioSources[3];
             audioSourceWriterSoundEffect = audioSources[4];
 
-            audioSourceMusic.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.MusicGroup;
-            audioSourceSoundEffect.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.SFXGroup;
+            audioSourceMusic.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.MusicGroup;
+            audioSourceSoundEffect.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.SFXGroup;
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
-            audioSourceDefaultVoice.outputAudioMixerGroup = AmanitaManager.Instance.MainAudioMixer.VoiceGroup;
+            audioSourceDefaultVoice.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.VoiceGroup;
             audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
 
             fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
@@ -96,7 +94,7 @@ namespace Amanita
                     audioSourceMusic.Play();
                 };
 
-                TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
+                AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
 
@@ -152,8 +150,8 @@ namespace Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            TweenManager.TweenAudioSourcePitch(fadeMusicPitch);
-            TweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
+            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeMusicPitch);
+            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeAmbiancePitch);
         }
 
         /// <summary>
@@ -181,8 +179,8 @@ namespace Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
-            TweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

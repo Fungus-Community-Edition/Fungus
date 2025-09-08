@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Collections;
 using Amanita.SaveSys;
 using System.Collections.Generic;
-using UnityObject = UnityEngine.Object;
 using System.Linq;
 using UnityEngine.TestTools;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {
@@ -45,7 +45,7 @@ namespace Amanita.SaveSystemTests
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
-                                                  where elem.SaveExecutionState
+                                                  where elem.IncludeInSaves
                                                   select elem).ToList();
 
             bool triedSavingTheAppropriateAmountOfBlocks = blocksToSave.Count == flowchartSaveData.SavedBlocks.Count;

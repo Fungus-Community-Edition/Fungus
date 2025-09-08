@@ -1,92 +1,83 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for the AnyVaraibleAndDataPair, shows only the matching data for the targeted variable
     /// scripts.
     /// </summary>
-    [CustomPropertyDrawer(typeof(Amanita.AnyVariableAndDataPair))]
+    [CustomPropertyDrawer(typeof(AnyVariableAndDataPair))]
     public class AnyVariableAndDataPairDrawer : PropertyDrawer
     {
-        public Amanita.Flowchart lastFlowchart;
+        public Flowchart lastFlowchart;
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position, SerializedProperty holdsVarAndDataPair, GUIContent label)
         {
-            position.height = EditorGUIUtility.singleLineHeight;
-
-            var varProp = property.FindPropertyRelative("variable");
-
-            EditorGUI.PropertyField(position, varProp, label);
+            SerializedProperty leftHandSideVarProp;
+            DisplayLeftHandSideVar();
+            void DisplayLeftHandSideVar()
+            {
+                leftHandSideVarProp = holdsVarAndDataPair.FindPropertyRelative("variable");
+                EditorGUI.PropertyField(position, leftHandSideVarProp, label);
+            }
 
             position.y += EditorGUIUtility.singleLineHeight;
 
-            if (varProp.objectReferenceValue != null)
+            HandleInnerDataField();
+            void HandleInnerDataField()
             {
-                var varPropType = varProp.objectReferenceValue.GetType();
-
-                var typeActionsRes = AnyVariableAndDataPair.typeActionLookup[varPropType];
-
-                if (typeActionsRes != null)
+                IVariable currentLeftHandSideVar = leftHandSideVarProp.objectReferenceValue as IVariable;
+                HandleLhsVarChanges();
+                void HandleLhsVarChanges()
                 {
-                    var targetName = "data." + typeActionsRes.DataPropName;
-                    var dataProp = property.FindPropertyRelative(targetName);
-                    if (dataProp != null)
+                    SerializedProperty anyVarDataProp = holdsVarAndDataPair.FindPropertyRelative("data");
+                    // ^Which can be a literal val or a var
+                    AnyVariableData anyVarData = anyVarDataProp.managedReferenceValue as AnyVariableData;
+                    
+
+                    bool lhsVarChanged = !ReferenceEquals(_prevLeftHandSideVar, currentLeftHandSideVar);
+                    bool validAnyVarData = anyVarData != null; 
+                    if (lhsVarChanged && validAnyVarData && currentLeftHandSideVar != null)
                     {
-                        EditorGUI.PropertyField(position, dataProp, new GUIContent("Data", "Data to use in pair with the above variable."));
+                        // When currentLeftHandSideVar is null, we don't want to change the var type
+                        // of the inner data field. Later in this func, we'll just make sure
+                        // not to render it
+                        Debug.Log($"Updating the var type of the rhs");
+                        anyVarData.SetFor(currentLeftHandSideVar.GetType(), currentLeftHandSideVar.ContentType);
+                        _prevLeftHandSideVar = currentLeftHandSideVar;
+                        holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
+                    }
+                }
+
+                DrawInnerDataField();
+                void DrawInnerDataField()
+                {
+                    SerializedProperty innerDataProp = holdsVarAndDataPair.FindPropertyRelative("data.data");
+                    // ^Expected to hold a VariableData subclass as its boxed and object ref values
+
+                    if (currentLeftHandSideVar != null && innerDataProp != null)
+                    {
+                        // Let Unity's property drawer system handle drawing the data
+                        EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"));
                     }
                     else
                     {
-                        EditorGUI.LabelField(position, "Cound not find property in AnyVariableData of name " + targetName);
+                        EditorGUI.LabelField(position, "Must select a variable before setting data.");
                     }
                 }
-                else
-                {
-                    //no matching data type, oops
-                    EditorGUI.LabelField(position, "Cound not find property in AnyVariableData of type " + varPropType.Name);
-                }
-            }
-            else
-            {
-                //no var selected
-                EditorGUI.LabelField(position, "Must select a variable before setting data.");
             }
 
-            property.serializedObject.ApplyModifiedProperties();
+            GUILayout.Space(20);
+            holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        protected IVariable _prevLeftHandSideVar;
+
+        protected static bool TryGetTypeActionsFor(System.Type varPropType, out VariableTypeActions typeActionsRes)
         {
-            //changes in new Unity circa UIElements mean that some data that used to be single line
-            //  are now multiple lines, so we have to ask the props individually how high they are
-            var dataProp = GetDataProp(property);
-
-            return EditorGUI.GetPropertyHeight(property.FindPropertyRelative("variable")) +
-                (dataProp != null ? 
-                    EditorGUI.GetPropertyHeight(dataProp) :
-                    EditorGUIUtility.singleLineHeight);
+            return VariableTypeRegistry.TryGetTypeActionsFor(varPropType, out typeActionsRes);
         }
 
-        protected SerializedProperty GetDataProp(SerializedProperty property)
-        {
-            var varProp = property.FindPropertyRelative("variable");
-            if (varProp.objectReferenceValue != null)
-            {
-                var varPropType = varProp.objectReferenceValue.GetType();
-
-                var typeActionsRes = AnyVariableAndDataPair.typeActionLookup[varPropType];
-
-                if (typeActionsRes != null)
-                {
-                    var targetName = "data." + typeActionsRes.DataPropName;
-                    return property.FindPropertyRelative(targetName);
-                }
-            }
-            return null;
-        }
     }
 }

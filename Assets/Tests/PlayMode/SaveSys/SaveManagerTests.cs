@@ -6,47 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
-using Encoding = System.Text.Encoding;
-using UnityObject = UnityEngine.Object;
 
 
 namespace Amanita.SaveSystemTests
 {
-    // Notes for async tests:
-    // Verify that after an asynchronous operation completes
-    // (e.g., saving or deletion), the file system and
-    // internal state (e.g., occupied slots) are updated appropriately.
-    //
-    // Although exact timing might be fuzzy, you can check that asynchronous
-    // operations don’t lead to race conditions (for example, by kicking off
-    // multiple async save operations concurrently and then verifying
-    // that all the data is correctly saved).
-    // If someone might trigger multiple save or delete operations
-    // concurrently, check that the internal state remains consistent
-    // (a concurrency or race condition test).
-
-    // Integration with Encoders/Decoders
-    // Test scenarios where:
-    // - Multiple encoders are registered
-    // - An encoder fails (simulate or mock an encoder exception) and verify that
-    // SaveManager handles or bubbles up that error gracefully.
-
-    // Error Conditions and Recovery
-    // Tests that simulate I/O failures can be invaluable:
-    // File System Errors: Use dependency injection or mocks (if possible) to
-    // simulate scenarios like disk full, file permission errors, or corrupted files
-    // Data Consistency on Failure: Ensure that if a write fails midway,
-    // SaveManager doesn’t leave partially written (and corrupted) states or
-    // misregister occupied slots.
-
-    // Round-Trip Consistency
-    // Write a save to disk, then load it back, and compare the in-memory state to
-    // confirm that serialization/deserialization works accurately. This ensures that
-    // the data integrity holds through the entire cycle.
 
     public class SaveManagerTests : CommonTestFunctionality
     {
@@ -65,44 +31,43 @@ namespace Amanita.SaveSystemTests
         {
             base.DoSetUp();
 
+            // We expect the installer to have finished injecting the dependencies by the time
+            // time the scene is prepped.
             // We need to make sure that the scene is set up before the
             // manager is
-            FileSaveRepository saveRepository = new FileSaveRepository();
-            saveRepository.Init(saveReader, saveWriter);
-            // Since we're working with a manager other than the one belonging to the SaveSystem singleton
-            manager = new AmanitaSaveManager(saveRepository);
-            manager.RegisterMainCodec(flowchartSaveCodec);
+            manager = (AmanitaSaveManager)saveSys.SaveManager;
 
             readReq.BaseSaveDirectory = manager.SaveDirType;
-
-            SaveSystem.S.RegisterSaveDataApplier(flowchartApplier);
-            SaveSystem.S.RegisterSaveDataApplier(audioApplier);
         }
 
         protected AmanitaSaveManager manager;
 
-        [UnityTest]
-        public IEnumerator WritingToSlots()
+        [TestCaseSource(nameof(TestSlotNumSource))]
+        public virtual async Task WritingToSlots(int slot)
         {
-            yield return CommonSetup();
+            await CommonSetupAsync();
 
-            foreach (int slot in testSlotNums)
+            readReq.SlotNumber = slot;
+            string expectedPath = saveReader.GetSavePath(readReq);
+            Task saveTask = manager.SaveTo(slot);
+
+            await saveTask.ConfigureAwait(false);
+
+            bool itWasWritten = File.Exists(expectedPath);
+            Assert.IsTrue(itWasWritten, $"Save at slot {slot} does not exist");
+
+        }
+
+        public static IEnumerable<int> TestSlotNumSource()
+        {
+            foreach (var slotNum in testSlotNums)
             {
-                readReq.SlotNumber = slot;
-                string expectedPath = saveReader.GetSavePath(readReq);
-                Task saveTask = manager.SaveTo(slot);
-
-                yield return new WaitUntil(() => saveTask.IsCompleted);
-
-
-                bool itWasWritten = File.Exists(expectedPath);
-                Assert.IsTrue(itWasWritten, $"Save at slot {slot} does not exist");
+                yield return slotNum;
             }
 
         }
 
-        //protected IList<int> testSlotNums = new List<int>() { 0, 2, 4, 6, 8, 16, 32, };
-        protected IList<int> testSlotNums = new List<int>() { 1, 2, 4 };
+        protected static IList<int> testSlotNums = new List<int>() { 1, 2, 4 };
 
 
         [UnityTest]
@@ -122,12 +87,27 @@ namespace Amanita.SaveSystemTests
 
         }
 
-        IList<int> invalidSlotNums = new int[] { -1, -3, -325, -12, -47 };
+        protected static IList<int> invalidSlotNums = new int[] { -1, -3, -325, -12, -47 };
 
-        [UnityTest]
-        public IEnumerator RegisteringWrittenSaves()
+        [TestCaseSource(nameof(TestSlotNumSource))]
+        public virtual async Task RegisteringWrittenSaves_Separate(int slot)
         {
-            yield return WritingToSlots();
+            await WritingToSlots(slot);
+
+            var occupiedSlots = manager.GetOccupiedSlots();
+            IList<int> justThatOneSlot = new int[] { slot };
+            bool success = occupiedSlots.SequenceEqual(justThatOneSlot);
+            Assert.IsTrue(success, "Save Manager did not register the slots properly.");
+
+        }
+
+        [Test]
+        public virtual async Task RegisteringWrittenSaves_Together()
+        {
+            foreach (var slot in testSlotNums)
+            {
+                await WritingToSlots(slot);
+            }
 
             var occupiedSlots = manager.GetOccupiedSlots();
             bool success = occupiedSlots.SequenceEqual(testSlotNums);
@@ -175,10 +155,12 @@ namespace Amanita.SaveSystemTests
                 yield return new WaitUntil(() => loadTask.IsCompleted);
             }
         }
-                
-        [Test]
-        public virtual async Task LoadingSlots_CorrectGameStateApplied()
+
+        [TestCaseSource(nameof(TestSlotNumSource))]
+        public virtual async Task LoadingSlots_CorrectGameStateApplied(int slot)
         {
+            await CommonSetupAsync();
+
             string expectedNameVarValue;
             int expectedScoreVarValue;
             bool expectedIsNewPlayerVarValue;
@@ -187,43 +169,38 @@ namespace Amanita.SaveSystemTests
             Vector2 expectedTwoDPosVarValue;
             string expectedStringVarValue;
 
-            foreach (int slot in testSlotNums)
-            {
-                await CommonSetupAsync();
-               
-                expectedNameVarValue = nameVar.Value;
-                expectedScoreVarValue = scoreVar.Value;
-                expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
-                expectedFastestTimeVarValue = fastestTimeVar.Value;
-                expectedThreeDPosVarValue = threeDPosVar.Value;
-                expectedTwoDPosVarValue = twoDPosVar.Value;
-                expectedStringVarValue = stringVar.Value;
+            expectedNameVarValue = nameVar.Value;
+            expectedScoreVarValue = scoreVar.Value;
+            expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
+            expectedFastestTimeVarValue = fastestTimeVar.Value;
+            expectedThreeDPosVarValue = threeDPosVar.Value;
+            expectedTwoDPosVarValue = twoDPosVar.Value;
+            expectedStringVarValue = stringVar.Value;
 
-                await manager.SaveTo(slot);
-                ChangeGameState();
+            await manager.SaveTo(slot);
+            ChangeGameState();
 
-                CompositeSaveData mainState = await manager.LoadMain(slot, false);
-                // ^We need to make sure to avoid loading the scene here. That will just make this test run
-                // again, which is not what we want.
-                Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
+            CompositeSaveData mainState = await manager.LoadMain(slot, false);
+            // ^We need to make sure to avoid loading the scene here. That will just make this test run
+            // again, which is not what we want.
+            Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
 
-                // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching
-                // a flowchart save from mainState, we might not get the one we're looking for.
-                // Hence the need to search all the FC saves and find the one we want.
-                IList<SaveDataUnit> fcUnits = mainState.GetMulti<FlowchartSaveData>();
-                Assert.IsNotEmpty(fcUnits, $"No Flowchart save data found in main state for slot {slot}.");
-                IList<SaveData> baseDecodedDatas = flowchartSaveCodec.DecodeMultiFrom(fcUnits);
-                IList<FlowchartSaveData> flowchartSaves = baseDecodedDatas
-                    .Where(d => d is FlowchartSaveData)
-                    .Cast<FlowchartSaveData>()
-                    .ToList();
-                Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data decoded from main state for slot {slot}.");
+            // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching
+            // a flowchart save from mainState, we might not get the one we're looking for.
+            // Hence the need to search all the FC saves and find the one we want.
+            IList<SaveDataUnit> fcUnits = mainState.GetMulti<FlowchartSaveData>();
+            Assert.IsNotEmpty(fcUnits, $"No Flowchart save data found in main state for slot {slot}.");
+            IList<SaveData> baseDecodedDatas = flowchartSaveCodec.DecodeMultiFrom(fcUnits);
+            IList<FlowchartSaveData> flowchartSaves = baseDecodedDatas
+                .Where(d => d is FlowchartSaveData)
+                .Cast<FlowchartSaveData>()
+                .ToList();
+            Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data decoded from main state for slot {slot}.");
 
-                FlowchartSaveData hasStateWeWantToCheck = flowchartSaves.FirstOrDefault(fc => fc.FlowchartName == flowchart.name);
-                Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
+            FlowchartSaveData hasStateWeWantToCheck = flowchartSaves.FirstOrDefault(fc => fc.FlowchartName == flowchart.name);
+            Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
 
-                CheckGameState(slot, hasStateWeWantToCheck);
-            }
+            CheckGameState(slot, hasStateWeWantToCheck);
 
             void ChangeGameState()
             {
@@ -266,85 +243,6 @@ namespace Amanita.SaveSystemTests
                 Assert.AreEqual(expectedStringVarValue, actualStringVarValue,
                     $"String variable value mismatch for slot {slot}.");
             }
-
-
-            //manager.ClearSaveData();
-            //ResetVarsToInitVals();
-            //Debug.Log($"LoadingSlots_CorrectGameStateApplied: Slot {slot}");
-            //// Need these to help check if the right game state is applied
-            //string expectedNameVarValue = nameVar.Value;
-            //int expectedScoreVarValue = scoreVar.Value;
-            //bool expectedIsNewPlayerVarValue = isNewPlayerVar.Value;
-            //float expectedFastestTimeVarValue = fastestTimeVar.Value;
-            //Vector3 expectedThreeDPosVarValue = threeDPosVar.Value;
-            //Vector2 expectedTwoDPosVarValue = twoDPosVar.Value;
-            //string expectedStringVarValue = stringVar.Value;
-
-            //LogExpectedVarValues();
-            //void LogExpectedVarValues()
-            //{
-            //    Debug.Log($"Expected Name: {expectedNameVarValue}");
-            //    Debug.Log($"Expected Score: {expectedScoreVarValue}");
-            //    Debug.Log($"Expected IsNewPlayer: {expectedIsNewPlayerVarValue}");
-            //    Debug.Log($"Expected FastestTime: {expectedFastestTimeVarValue}");
-            //    Debug.Log($"Expected 3D Position: {expectedThreeDPosVarValue}");
-            //    Debug.Log($"Expected 2D Position: {expectedTwoDPosVarValue}");
-            //    Debug.Log($"Expected String Value: {expectedStringVarValue}");
-            //}
-
-            //// To help us see if the state's loaded correctly
-            //Task saveTask = manager.SaveTo(slot);
-            //yield return new WaitUntil(() => saveTask.IsCompleted);
-
-            //if (saveTask.IsFaulted)
-            //{
-            //    Assert.Fail($"Failed to save to slot {slot}: {saveTask.Exception}");
-            //}
-            //CompositeSaveData saved = manager.GetMainFrom(slot);
-
-            //nameVar.Value += "New Name After Save";
-            //scoreVar.Value += 260;
-            //isNewPlayerVar.Value = !isNewPlayerVar.Value;
-            //fastestTimeVar.Value += 123.45f;
-            //threeDPosVar.Value += new Vector3(10, 20, 30);
-            //twoDPosVar.Value += new Vector2(5, 10);
-            //stringVar.Value += "New String Value After Save";
-
-            //readReq.SlotNumber = slot;
-            //Task<CompositeSaveData> loadTask = manager.LoadMain(slot);
-            //yield return new WaitUntil(() => loadTask.IsCompleted);
-            //CompositeSaveData mainState = loadTask.Result;
-
-            //LogActualVarValues();
-            //void LogActualVarValues()
-            //{
-            //    Debug.Log($"Actual Name: {nameVar.Value}");
-            //    Debug.Log($"Actual Score: {scoreVar.Value}");
-            //    Debug.Log($"Actual IsNewPlayer: {isNewPlayerVar.Value}");
-            //    Debug.Log($"Actual FastestTime: {fastestTimeVar.Value}");
-            //    Debug.Log($"Actual 3D Position: {threeDPosVar.Value}");
-            //    Debug.Log($"Actual 2D Position: {twoDPosVar.Value}");
-            //    Debug.Log($"Actual String Value: {stringVar.Value}");
-            //}
-
-            //Assert.IsNotNull(mainState, "Main save data is null after loading.");
-            //Assert.AreEqual(nameVar.Value, expectedNameVarValue,
-            //    $"Name variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(scoreVar.Value, expectedScoreVarValue,
-            //    $"Score variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(isNewPlayerVar.Value, expectedIsNewPlayerVarValue,
-            //    $"IsNewPlayer variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(fastestTimeVar.Value, expectedFastestTimeVarValue,
-            //    $"FastestTime variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(threeDPosVar.Value, expectedThreeDPosVarValue,
-            //    $"3D Position variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(twoDPosVar.Value, expectedTwoDPosVarValue,
-            //    $"2D Position variable value mismatch after loading slot {slot}.");
-            //Assert.AreEqual(stringVar.Value, expectedStringVarValue,
-            //    $"String variable value mismatch after loading slot {slot}.");
-
-            //DoTearDown();
-
 
         }
 
@@ -496,6 +394,14 @@ namespace Amanita.SaveSystemTests
             var occupiedSlots = manager.GetOccupiedSlots();
             Assert.IsEmpty(occupiedSlots, "Save Manager did not clear the occupied slots after deletion.");
 
+        }
+
+        protected override int CommonSetupDelay
+        {
+            get
+            {
+                return 250; // Milliseconds
+            }
         }
     }
 }

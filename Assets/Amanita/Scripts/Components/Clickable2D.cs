@@ -1,8 +1,7 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Amanita.VScripting.EventHandlers;
+using Amanita.VScripting;
 
 namespace Amanita
 {
@@ -39,7 +38,7 @@ namespace Amanita
                 return;
             }
 
-            var eventDispatcher = AmanitaManager.Instance.EventDispatcher;
+            var eventDispatcher = AmanitaManager.S.EventDispatcher;
 
             eventDispatcher.Raise(new ObjectClicked.ObjectClickedEvent(this));
         }

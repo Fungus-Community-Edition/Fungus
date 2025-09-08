@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.SaveSys;
-using UnityObject = UnityEngine.Object;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {

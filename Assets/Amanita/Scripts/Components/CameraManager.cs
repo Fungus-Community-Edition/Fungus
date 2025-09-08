@@ -1,10 +1,8 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Amanita.DentedPixel;
+using Amanita.Tweening;
 
 namespace Amanita
 {
@@ -33,6 +31,8 @@ namespace Amanita
 
 		protected float fadeAlpha = 0f;
 		// ^When this changes, OnGUI changes the fadedness of the screen.
+
+		public virtual float ScreenOpacity => fadeAlpha;
 
 		// Swipe panning control
 		protected bool swipePanActive;
@@ -228,10 +228,9 @@ namespace Amanita
 		/// <summary>
 		/// Perform a fullscreen fade over a duration.
 		/// </summary>
-		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete, LeanTweenType leanTweenType = LeanTweenType.easeInOutQuad)
+		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete,
+			IGeneralTweenAdapter<float> tweenAdapter = null)
 		{
-			Debug.LogWarning("CameraManager's Fade funcs no longer take into account the LeanTweenType inputs");
-
 			if (Mathf.Approximately(fadeDuration, 0))
 			{
 				fadeAlpha = targetAlpha;
@@ -239,7 +238,15 @@ namespace Amanita
 				return;
 			}
 
-			_neoFadeTween = TweenManager.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
+			if (tweenAdapter == null)
+			{
+				_neoFadeTween = AmanitaManager.DefaultTweener.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha,
+					fadeDuration, onComplete);
+			}
+			else
+			{
+				tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
+			}
 		}
 
 		protected Tween<float> _neoFadeTween;
@@ -251,9 +258,9 @@ namespace Amanita
 		/// <summary>
 		/// Fade out, move camera to view and then fade back in.
 		/// </summary>
-		public virtual void FadeToView(Camera camera, View view, float fadeDuration, bool fadeOut, Action onComplete, 
-			LeanTweenType fadeType = LeanTweenType.easeInOutQuad, LeanTweenType sizeTweenType = LeanTweenType.easeInOutQuad, 
-			LeanTweenType posTweenType = LeanTweenType.easeInOutQuad, LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad)
+		public virtual void FadeToView(Camera camera, View view, float fadeDuration, bool fadeOut, Action onComplete,
+			IGeneralTweenAdapter<float> fadeTweener = null, ICameraTweenAdapter sizeTweener = null,
+			ITransformTweenAdapter posTweener = null, ITransformTweenAdapter rotTweener = null)
 		{
 			Debug.LogWarning("LeanTweenType arguments in CameraManager FadeToView func are being ignored.");
 
@@ -279,19 +286,17 @@ namespace Amanita
 			{
 
 				// Snap to new view
-				PanToPosition(camera, view.transform.position, view.transform.rotation, view.ViewSize, 0f, null, sizeTweenType, posTweenType, rotTweenType);
+				PanToPosition(camera, view.transform.position, view.transform.rotation,
+					view.ViewSize, 0f, null, sizeTweener, posTweener, rotTweener);
 
 				// Fade in
 				Fade(0f, inDuration, () =>
 				{
-					
-					if (onComplete != null)
-					{
-						onComplete();
-					}
-				}, fadeType);
-			}, fadeType);
+					onComplete?.Invoke();
+				}, fadeTweener);
+			}, fadeTweener);
 		}
+
 
 		/// <summary>
 		/// Stop all camera tweening.
@@ -305,11 +310,6 @@ namespace Amanita
 		protected void StopFadeTween()
 		{
 			_neoFadeTween?.FullKill();
-			//if (fadeTween != null)
-			//{
-			//	LeanTween.cancel(fadeTween.id, true);
-			//	fadeTween = null;
-			//}
 		}
 
 		protected void StopPosTweens()
@@ -317,10 +317,6 @@ namespace Amanita
 			_camOrthoSizeTween?.OnCompleteKill();
 			_neoCamPosTween?.OnCompleteKill();
 			_neoCamRotTween?.OnCompleteKill();
-
-			//_camOrthoSizeTween = null;
-			//_neoCamPosTween = null;
-			//_neoCamRotTween = null;
 		}
 
 		protected Tween<float> _camOrthoSizeTween;
@@ -332,10 +328,12 @@ namespace Amanita
 		/// </summary>
 		public virtual void PanToPosition(Camera camera, Vector3 targetPosition, Quaternion targetRotation,
 			float targetSize, float duration, Action onPanDone,
-			LeanTweenType sizeTweenType = LeanTweenType.easeInOutQuad, LeanTweenType posTweenType = LeanTweenType.easeInOutQuad, LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad)
+			ICameraTweenAdapter sizeTweener = null,
+			ITransformTweenAdapter posTweener = null,
+			ITransformTweenAdapter rotationTweener = null)
 		{
 			Debug.LogWarning("LeanTweenType args in CameraManager PanToPosition are being ignored.");
-			
+
 			if (camera == null)
 			{
 				Debug.LogWarning("Camera is null");
@@ -360,7 +358,7 @@ namespace Amanita
 			}
 			else
 			{
-				_camOrthoSizeTween = TweenManager.TweenBasic(
+				_camOrthoSizeTween = AmanitaManager.DefaultTweener.TweenBasic(
 					() => camera.orthographicSize,
 					UpdateCamOrthoSize,
 					targetSize, duration,
@@ -386,16 +384,25 @@ namespace Amanita
 				//		sizeTween = null;
 				//	});
 
-				
-				_neoCamPosTween = TweenManager.TweenBasic(
-					() => camera.transform.position,
-					UpdateCamPos,
-					targetPosition, duration)
-					.SetOnComplete(OnCamPosTweenDone);
-				void UpdateCamPos(Vector3 newPos)
+				if (posTweener != null)
 				{
-					camera.transform.position = newPos;
+					posTweener.MoveTo(camera.transform, targetPosition, duration)
+						.SetOnComplete(OnCamPosTweenDone);
 				}
+				else
+				{
+					_neoCamPosTween = AmanitaManager.DefaultTweener.TweenBasic(
+						() => camera.transform.position,
+						UpdateCamPos,
+						targetPosition, duration)
+						.SetOnComplete(OnCamPosTweenDone);
+					void UpdateCamPos(Vector3 newPos)
+					{
+						camera.transform.position = newPos;
+					}
+					
+				}
+
 				void OnCamPosTweenDone()
 				{
 					camera.transform.position = targetPosition;
@@ -411,10 +418,17 @@ namespace Amanita
 				//	});
 
 				Transform camTrans = camera.transform;
-				_neoCamRotTween = TweenManager.TweenBasic<Quaternion>(() => camTrans.rotation,
-					UpdateCamRot,
-					targetRotation, duration,
-					OnCamRotTweenDone);
+				if (rotationTweener != null)
+				{
+					rotationTweener.RotateTo(camera.transform, targetRotation, duration).SetOnComplete(OnCamRotTweenDone);
+				}
+				else
+				{
+					_neoCamRotTween = AmanitaManager.DefaultTweener.TweenBasic<Quaternion>(() => camTrans.rotation,
+						UpdateCamRot,
+						targetRotation, duration,
+						OnCamRotTweenDone);
+				}
 				void UpdateCamRot(Quaternion newRot)
 				{
 					camTrans.rotation = newRot;
@@ -434,6 +448,7 @@ namespace Amanita
 				//	});
 			}
 		}
+
 
 		/// <summary>
 		/// Activates swipe panning mode. The player can pan the camera within the area between viewA & viewB.
