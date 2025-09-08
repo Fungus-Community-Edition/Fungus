@@ -688,10 +688,23 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Android: CROSS_PLATFORM_INPUT;MOBILE_INPUT
-    Standalone: CROSS_PLATFORM_INPUT
-    Windows Store Apps: MOBILE_INPUT
-    iPhone: CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    Android: CROSS_PLATFORM_INPUT;MOBILE_INPUT;DOTWEEN
+    EmbeddedLinux: DOTWEEN
+    GameCoreScarlett: DOTWEEN
+    GameCoreXboxOne: DOTWEEN
+    LinuxHeadlessSimulation: DOTWEEN
+    Nintendo Switch: DOTWEEN
+    PS4: DOTWEEN
+    PS5: DOTWEEN
+    QNX: DOTWEEN
+    ReservedCFE: DOTWEEN
+    Standalone: CROSS_PLATFORM_INPUT;DOTWEEN
+    VisionOS: DOTWEEN
+    WebGL: DOTWEEN
+    Windows Store Apps: MOBILE_INPUT;DOTWEEN
+    XboxOne: DOTWEEN
+    iPhone: CROSS_PLATFORM_INPUT;MOBILE_INPUT;DOTWEEN
+    tvOS: DOTWEEN
   additionalCompilerArguments: {}
   platformArchitecture:
     iPhone: 1

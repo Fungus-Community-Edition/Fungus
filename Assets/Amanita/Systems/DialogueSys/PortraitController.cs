@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using MoonSharp.Interpreter;
+using Amanita.Tweening;
 
 namespace Amanita.DialogueSys
 {
@@ -311,7 +312,7 @@ namespace Amanita.DialogueSys
             //    .setEase(stage.FadeEaseType);
             
             Vector3 targetPos = options.toPosition.position;
-            _moveTween = TweenManager.TweenPosition(stateHolder, stateHolder.transform.position, targetPos, duration);
+            _moveTween = AmanitaManager.DefaultTweener.TweenPosition(stateHolder, stateHolder.transform.position, targetPos, duration);
             if (options.waitUntilFinished)
             {
                 waitTimer = duration;
@@ -450,22 +451,15 @@ namespace Amanita.DialogueSys
             Image portraitImage = options.character.State.portraitImage;
             if (portraitImage.color != Color.white)
             {
-                //LeanTween.color(options.character.State.portraitImage.rectTransform, Color.white, duration)
-                //    .setEase(stage.FadeEaseType)
-                //    .setRecursive(false);
-                TweenManager.TweenBasic(() => portraitImage.color,
+                AmanitaManager.DefaultTweener.TweenBasic(() => portraitImage.color,
                     (newCol) => portraitImage.color = newCol,
                     Color.white, duration);
             }
 
-            //LeanTween.alpha(options.character.State.portraitImage.rectTransform, 1f, duration)
-            //    .setEase(stage.FadeEaseType)
-            //    .setRecursive(false);
-
             Color withTargetAlpha = portraitImage.color;
             withTargetAlpha.a = 1f;
 
-            TweenManager.TweenBasic(() => portraitImage.color,
+            AmanitaManager.DefaultTweener.TweenBasic(() => portraitImage.color,
                     (newCol) => portraitImage.color = newCol,
                     withTargetAlpha, duration);
 
@@ -489,17 +483,12 @@ namespace Amanita.DialogueSys
 
         protected virtual void HidePortrait(RectTransform rectTransform, float duration)
         {
-            //LeanTween.alpha(rectTransform, 0f, duration)
-            //    .setEase(stage.FadeEaseType)
-            //    .setRecursive(false)
-            //    .setOnComplete(() => rectTransform.gameObject.SetActive(false));
-
             void HideTheRect()
             {
                 rectTransform.gameObject.SetActive(false);
             }
             Image image = rectTransform.GetComponent<Image>();
-            TweenManager.TweenGraphicAlpha(image, image.color.a, 0f, duration, HideTheRect);
+            AmanitaManager.DefaultTweener.TweenGraphicAlpha(image, image.color.a, 0f, duration, HideTheRect);
         }
 
         /// <summary>
@@ -556,7 +545,7 @@ namespace Amanita.DialogueSys
             //LeanTween.color(character.State.portraitImage.rectTransform, targetColor, duration).setEase(stage.FadeEaseType).setRecursive(false);
 
             Image image = character.State.portraitImage;
-            TweenManager.TweenBasic(() => image.color,
+            AmanitaManager.DefaultTweener.TweenBasic(() => image.color,
                 (newCol) => image.color = newCol,
                 targetColor, duration);
         }

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Amanita.VScripting;
 
-namespace Amanita.Myceliaudio
+namespace Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand, ISerializationCallbackReceiver
@@ -358,8 +358,8 @@ namespace Amanita.Myceliaudio
 
         public virtual TrackGroup TrackGroup { get { return trackGroup; } }
         public virtual int Track { get { return track; } }
-        public virtual AudioClip MainClip { get { return mainClip; } set { mainClip.Value = value; } }
-        public virtual AudioClip IntroClip { get { return introClip; } set { introClip.Value = value; } }
+        public virtual AudioClip MainClip { get { return mainClip.Value; } set { mainClip.Value = value; } }
+        public virtual AudioClip IntroClip { get { return introClip.Value; } set { introClip.Value = value; } }
         public virtual bool Loop { get { return loop; } }
         public virtual double LoopStartPoint {  get { return loopStartPoint; } }
         public virtual double LoopEndPoint { get { return loopEndPoint; } }

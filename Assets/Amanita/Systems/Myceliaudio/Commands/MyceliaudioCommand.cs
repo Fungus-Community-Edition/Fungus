@@ -1,6 +1,7 @@
 using UnityEngine;
+using Amanita.VScripting;
 
-namespace Amanita.Myceliaudio
+namespace Amanita.Myceliaudio.VScripting
 {
     public abstract class MyceliaudioCommand : Command
     {

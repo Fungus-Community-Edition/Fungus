@@ -11,7 +11,6 @@ using Amanita.VScripting.UI;
 using Amanita.VScripting.EventHandlers;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityEngine.Serialization;
-using System.Reflection;
 
 namespace Amanita.VScripting
 {
