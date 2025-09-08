@@ -19,11 +19,11 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(string), typeof(StringVariable))]
-    public class StringData : VariableData<string, IVariable<string>>
+    public class StringData : VariableData<string>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(StringVariable))]
-        public StringVariable stringRef;
+        public IVariable<string> stringRef;
 
         public StringData() : base(default) { }
 
@@ -36,24 +36,9 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return stringRef; }
-            set
-            {
-                if (value == null) { stringRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    stringRef = value as StringVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= stringRef;
         }
 
         public override string Value
@@ -67,7 +52,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    result = _valOfType;
+                    result = valOfType;
                 }
 
                 // To make sure we never return a null value
@@ -78,7 +63,7 @@ namespace Amanita.VScripting
                     {
                         VarRef.Value = result;
                     }
-                    base.Value = _valOfType = result;
+                    base.Value = valOfType = result;
                 }
 
                 return result;
@@ -92,7 +77,7 @@ namespace Amanita.VScripting
                 else
                 {
                     base.Value = value;
-                    _valOfType = value;
+                    valOfType = value;
                 }
             }
         }

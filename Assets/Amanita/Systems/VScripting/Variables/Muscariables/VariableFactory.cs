@@ -5,6 +5,7 @@ namespace Amanita.VScripting
 {
     public static class VariableFactory
     {
+        #region Muscariables
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
             return Create(typeof(T), toMakeCopyOf) as Muscariable<T>;
@@ -38,7 +39,7 @@ namespace Amanita.VScripting
                     result.Key = toMakeCopyOf.Key;
                     result.Scope = toMakeCopyOf.Scope;
                     result.ItemID = toMakeCopyOf.ItemID;
-                    if (toMakeCopyOf.Value == null || result.ContentType.IsInstanceOfType(toMakeCopyOf.Value))
+                    if (toMakeCopyOf.Value == null || toMakeCopyOf.ContentType.Equals(contentType))
                     {
                         result.Value = toMakeCopyOf.Value;
                     }
@@ -48,20 +49,17 @@ namespace Amanita.VScripting
             return result;
         }
 
-        public static TMuscari CreateMuscari<TMuscari, TVal>(TVal startingValue = default) 
-            where TMuscari : Muscariable<TVal>
-        {
-            TMuscari result = (TMuscari)Create(startingValue);
-            return result;
-        }
-
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = Create(typeof(T)) as Muscariable<T>;
+            Muscariable<T> result = Create(typeof(T), null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }
 
+        #endregion
+
+
+        #region Legacy Variables
         // The reason we require a holder for the legacy vars hers is because they're all
         // MonoBehaviours, meaning that they need to be attached to a GameObject. 
         // Or in our case, a Flowchart.
@@ -100,5 +98,6 @@ namespace Amanita.VScripting
             return result;
         }
 
+        #endregion
     }
 }

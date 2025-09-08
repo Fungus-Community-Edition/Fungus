@@ -18,30 +18,38 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    return _valObj;
+                    return valObj;
                 }
             }
             set
             {
+                var prevValue = Value;
                 if (VarRef != null)
                 {
                     VarRef.Value = value;
                 }
                 else
                 {
-                    _valObj = value;
+                    valObj = value;
                 }
+
+                OnBaseValueSet(prevValue);
             }
         }
 
-        [SerializeReference, SerializeField] protected object _valObj;
+        [SerializeReference, SerializeField] protected object valObj;
         public abstract IVariable VarRef { get; set; }
+
+        protected virtual void OnBaseValueSet(object prevValue)
+        {
+
+        }
 
         public abstract string GetDescription();
 
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
-            this._valObj = (otherVarData as VariableData)._valObj;
+            this.valObj = (otherVarData as VariableData).valObj;
         }
 
         public virtual IVariableData GetCopy()
@@ -52,6 +60,9 @@ namespace Amanita.VScripting
             theCopy.SetContentsTo(this);
             return theCopy;
         }
+
+        
+        public virtual void Refresh() { }
     }
 
     public interface IVariableData
@@ -72,25 +83,26 @@ namespace Amanita.VScripting
 
     }
 
-    public abstract class VariableData<TValue, TVar> : VariableData where TVar : IVariable<TValue>
+    public abstract class VariableData<TValue> : VariableData
     {
         [SerializeField, SerializeReference]
-        protected IVariable<TValue> _varRef;
+        protected IVariable varRef;
 
-        public static implicit operator TValue(VariableData<TValue, TVar> someData)
+        public static implicit operator TValue(VariableData<TValue> someData)
         {
+            someData.Refresh();
             return someData.Value;
         }
 
         public VariableData()
         {
-            _valOfType = default;
+            valOfType = default;
             VarRef = null;
         }
 
         public VariableData(TValue startVal = default)
         {
-            _valOfType = startVal;
+            valOfType = startVal;
             VarRef = null;
         }
 
@@ -102,13 +114,11 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    //Debug.Log($"{GetType().Name}.Value get: {VarRef.Value} (hash: {GetHashCode()})");
                     return (TValue)VarRef.Value;
                 }
                 else
                 {
-                    //Debug.Log($"{GetType().Name}.Value get: {_valOfType} (hash: {GetHashCode()})");
-                    return _valOfType;
+                    return valOfType;
                 }
             }
             set
@@ -119,22 +129,21 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    //Debug.Log($"{GetType().Name}.Value set: {value} (hash: {GetHashCode()})");
                     base.Value = value;
-                    _valOfType = value;
+                    valOfType = value;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected TValue _valOfType = default;
+        [SerializeReference, SerializeField] protected TValue valOfType = default;
 
         public override string GetDescription()
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (VarRef == null && _valOfType != null)
+            if (VarRef == null && valOfType != null)
             {
-                result = _valOfType.ToString();
+                result = valOfType.ToString();
             }
             else if (VarRef != null)
             {
@@ -150,31 +159,36 @@ namespace Amanita.VScripting
             var theirType = otherVarData.GetType();
             if (ourType.Equals(theirType))
             {
-                SetContentsTo(otherVarData as VariableData<TValue, TVar>);
+                SetContentsTo(otherVarData as VariableData<TValue>);
             }
         }
 
-        public virtual void SetContentsTo(VariableData<TValue, TVar> otherVarData)
+        public virtual void SetContentsTo(VariableData<TValue> otherVarData)
         {
-            this._valObj = this._valOfType = otherVarData._valOfType;
+            this.valObj = this.valOfType = otherVarData.valOfType;
             this.VarRef = otherVarData.VarRef;
+        }
+
+        protected override void OnBaseValueSet(object prevValue)
+        {
+            valOfType = (TValue)valObj;
         }
 
         public override IVariable VarRef
         {
-            get { return _varRef; }
+            get { return varRef; }
             set
             {
-                if (value == null) { _varRef = null; return; }
+                if (value == null) { varRef = null; return; }
 
-                if (value.ContentType.Equals(this.ContentType))
+                if (this.ContentType.IsAssignableFrom(value.ContentType)) // We want to allow polymorphism
                 {
-                    _varRef = value as IVariable<TValue>;
+                    varRef = (IVariable<TValue>)value;
                 }
                 else
                 {
                     string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
+                    throw new InvalidCastException(errorMessage);
                 }
 
             }

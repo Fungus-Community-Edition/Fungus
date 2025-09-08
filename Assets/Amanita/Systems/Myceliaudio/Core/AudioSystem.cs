@@ -238,7 +238,7 @@ namespace Amanita.Myceliaudio
             return manager.GetLoopEndPoint(track);
         }
 
-        protected virtual void OnDestroy()
+        public virtual void OnDestroy()
         {
             if (S == this)
             {
