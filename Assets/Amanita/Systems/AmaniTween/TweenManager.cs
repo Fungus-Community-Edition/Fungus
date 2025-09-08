@@ -1,13 +1,18 @@
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Amanita.Tweening
 {
-    public class TweenManager : MonoBehaviour
+    public class TweenManager : MonoBehaviour, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
+        IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
+        IGraphicTweenAdapter, ICameraTweenAdapter
     {
+        public static DefaultTweenAdapter TweenAdapter { get; protected set; } =
+            ScriptableObject.CreateInstance<DefaultTweenAdapter>();
+
         protected static TweenManager _s;
         public static TweenManager S
         {
@@ -87,6 +92,20 @@ namespace Amanita.Tweening
                     color.a = val;
                     renderer.color = color;
                 });
+            return result;
+        }
+
+        public static Tween<Color> TweenSpriteColor(SpriteRenderer renderer, Color startCol, Color endCol, float duration, Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = $"SpriteRenderer_{renderer.GetInstanceID()}_Color";
+
+            Tween<Color> result = new Tween<Color>(renderer.gameObject, id, startCol,
+                endCol, duration, val =>
+                {
+                    renderer.color = val;
+                })
+                .SetOnComplete(onComplete);
             return result;
         }
 
@@ -183,6 +202,18 @@ namespace Amanita.Tweening
                 endPos, duration, value =>
                 {
                     transform.position = value;
+                });
+
+            return result;
+        }
+        
+        public static Tween<Quaternion> TweenRotation(Transform transform, Quaternion startRot, Quaternion endRot, float duration)
+        {
+            string id = $"Transform_{transform.GetInstanceID()}_Rot";
+            Tween<Quaternion> result = new Tween<Quaternion>(transform, id, startRot,
+                endRot, duration, value =>
+                {
+                    transform.rotation = value;
                 });
 
             return result;
@@ -309,6 +340,290 @@ namespace Amanita.Tweening
                            select elem).Count() > 0;
 
             return result;
+        }
+
+        public ITweenHandle MoveTo(Transform target, Vector3 position, float duration)
+        {
+            var tweenPos = TweenPosition(target, target.position, position, duration);
+            return DefaultTweenHandle.From(tweenPos);
+        }
+
+        public ITweenHandle ScaleTo(Transform target, Vector3 scale, float duration)
+        {
+            var tweenScale = TweenScale(target, target.localScale, scale, duration);
+            return DefaultTweenHandle.From(tweenScale);
+        }
+
+        public ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration)
+        {
+            var tweenRot = TweenRotation(transform, target.rotation, rotation, duration);
+            return DefaultTweenHandle.From(tweenRot);
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector2> getter, Action<Vector2> setter, Vector2 endVal,
+            float duration, Action onComplete = null)
+        {
+            var tween = TweenBasic(getter, setter, endVal, duration, onComplete);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector3> getter, Action<Vector3> setter, Vector3 endVal,
+            float duration, Action onComplete = null)
+        {
+            var tween = TweenBasic(getter, setter, endVal, duration, onComplete);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<int> getter, Action<int> setter, int endVal,
+            float duration, Action onComplete = null)
+        {
+            var tween = TweenBasic(getter, setter, endVal, duration, onComplete);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle TweenGeneral(Func<float> getter, Action<float> setter, float endVal,
+            float duration, Action onComplete = null)
+        {
+            var tween = TweenBasic(getter, setter, endVal, duration, onComplete);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
+        {
+            var tween = TweenGraphicColor(target, target.color, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
+        {
+            var tween = TweenGraphicAlpha(target, target.color.a, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
+        {
+            var tween = TweenSpriteColor(target, target.color, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration)
+        {
+            var tween = TweenSpriteAlpha(target, target.color.a, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
+        {
+            var tween = TweenCanvasGroupAlpha(target, target.alpha, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle ShiftFillTo(Image target, float endVal, float duration)
+        {
+            var tween = TweenImageFill(target, target.fillAmount, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public static Tween<float> TweenImageFill(Image img, float startVal, float endVal, float duration)
+        {
+            string id = $"Image_{img.GetInstanceID()}_Fill";
+
+            Tween<float> result = new Tween<float>(img.gameObject, id, startVal,
+                endVal, duration, val =>
+                {
+                    img.fillAmount = val;
+                });
+            return result;
+        }
+
+        public ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration)
+        {
+            var tween = TweenCameraFOC(target, target.fieldOfView, targetVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public static Tween<float> TweenCameraFOC(Camera target, float startVal, float targetVal, float duration)
+        {
+            string id = $"Camera_{target.GetInstanceID()}_ShiftFieldOfView";
+            Tween<float> result = new Tween<float>(target.gameObject, id, target.fieldOfView,
+                targetVal, duration, val =>
+                {
+                    target.fieldOfView = val;
+                });
+            return result;
+        }
+
+        public ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration)
+        {
+            var tween = TweenCameraOrthoSize(target, target.orthographicSize, targetVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public static Tween<float> TweenCameraOrthoSize(Camera target, float startSize, float endSize, float duration)
+        {
+            string id = $"Camera_{target.GetInstanceID()}_CameraOrthoSize";
+            Tween<float> result = new Tween<float>(target.gameObject, id, target.orthographicSize,
+                endSize, duration, val =>
+                {
+                    target.orthographicSize = val;
+                });
+            return result;
+        }
+
+        public ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration)
+        {
+            var tween = TweenCameraBGColor(target, target.backgroundColor, targetVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public Tween<Color> TweenCameraBGColor(Camera target, Color startVal, Color targetVal, float duration)
+        {
+            string id = $"Camera_{target.GetInstanceID()}_CameraBGColor";
+            Tween<Color> result = new Tween<Color>(target, id, target.backgroundColor, targetVal, duration,
+                val =>
+                {
+                    target.backgroundColor = val;
+                });
+            return result;
+        }
+    }
+
+    public class DefaultTweenHandle : ITweenHandle
+    {
+        public static DefaultTweenHandle From(ITween tween)
+        {
+            var result = new DefaultTweenHandle(tween);
+            return result;
+        }
+
+        public DefaultTweenHandle(ITween tween)
+        {
+            Tween = tween;
+        }
+
+        public virtual void Kill()
+        {
+            Tween?.FullKill();
+        }
+
+        public virtual ITween Tween { get; set; }
+
+        public virtual bool IsPlaying => Tween != null && !Tween.IsPaused;
+
+        public virtual ITweenHandle SetOnComplete(Action arg)
+        {
+            OnComplete = arg;
+            return this;
+        }
+
+        public virtual Action OnComplete
+        {
+            get
+            {
+                Action result = delegate { };
+                if (Tween != null)
+                {
+                    result = () => Tween.OnComplete();
+                }
+
+                return result;
+            }
+            set
+            {
+                if (Tween != null)
+                {
+                    Tween.OnComplete = value;
+                }
+            }
+        }
+    }
+
+    public class DefaultTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
+        IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,
+        IGraphicTweenAdapter, ICameraTweenAdapter
+    {
+        public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
+        {
+            return TweenManager.S.FadeTo(target, endVal, duration);
+        }
+
+        public ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration)
+        {
+            return TweenManager.S.FadeTo(target, endVal, duration);
+        }
+
+        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
+        {
+            return TweenManager.S.FadeTo(target, endVal, duration);
+        }
+
+        public ITweenHandle MoveTo(Transform target, Vector3 position, float duration)
+        {
+            return TweenManager.S.MoveTo(target, position, duration);
+        }
+
+        public ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration)
+        {
+            return TweenManager.S.RotateTo(target, rotation, duration);
+        }
+
+        public ITweenHandle ScaleTo(Transform target, Vector3 scale, float duration)
+        {
+            return TweenManager.S.ScaleTo(target, scale, duration);
+        }
+
+        public ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle ShiftFillTo(Image target, float endVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector2> getter, Action<Vector2> setter, Vector2 endVal,
+            float duration, Action onComplete = null)
+        {
+            return TweenManager.S.TweenGeneral(getter, setter, endVal, duration, onComplete);
+        }
+
+        public ITweenHandle TweenGeneral(Func<Vector3> getter, Action<Vector3> setter, Vector3 endVal,
+            float duration, Action onComplete = null)
+        {
+            return TweenManager.S.TweenGeneral(getter, setter, endVal, duration, onComplete);
+        }
+
+        public ITweenHandle TweenGeneral(Func<float> getter, Action<float> setter, float endVal,
+            float duration, Action onComplete = null)
+        {
+            return TweenManager.S.TweenGeneral(getter, setter, endVal, duration, onComplete);
+        }
+
+        public ITweenHandle TweenGeneral(Func<int> getter, Action<int> setter, int endVal,
+            float duration, Action onComplete = null)
+        {
+            return TweenManager.S.TweenGeneral(getter, setter, endVal, duration, onComplete);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Amanita.DentedPixel;
+using Amanita.Tweening;
 
 namespace Amanita.VScripting
 {
@@ -51,7 +52,7 @@ namespace Amanita.VScripting
                 {
                     Continue();
                 }
-            }, fadeTweenType);
+            }, doFadeTween);
             
             if (!waitUntilFinished)
             {
@@ -70,5 +71,12 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+        }
+
+        protected IGeneralTweenAdapter<float> doFadeTween;
     }    
 }

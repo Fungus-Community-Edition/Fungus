@@ -1,3 +1,4 @@
+using Amanita.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,6 +25,13 @@ namespace Amanita.VScripting
 
         [Tooltip("Wait until the fade has finished before executing the next command")]
         [SerializeField] protected bool waitUntilFinished = true;
+
+        [SerializeField] protected ScriptableObject fadeTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
 
         #region Public members
 
@@ -91,5 +99,33 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+            
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            if (fadeTweener == null)
+            {
+                fadeTweener = TweenManager.TweenAdapter;
+                return;
+            }
+
+            doFadeTween = fadeTweener as IGraphicTweenAdapter;
+
+            if (doFadeTween == null && fadeTweener != null)
+            {
+                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter. Going back to the default.");
+                fadeTweener = null;
+                doFadeTween = TweenManager.TweenAdapter;
+                fadeTweener = TweenManager.TweenAdapter;
+            }
+        }
+
+        protected IGraphicTweenAdapter doFadeTween;
     }
 }

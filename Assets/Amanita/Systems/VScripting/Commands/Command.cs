@@ -151,6 +151,8 @@ namespace Amanita
             }
         }
 
+        public Action<Command> StartedContinue = delegate { };
+
         /// <summary>
         /// End execution of this command and continue execution at a specific command index.
         /// </summary>
@@ -162,6 +164,7 @@ namespace Amanita
             {
                 ParentBlock.JumpToCommandIndex = nextCommandIndex;
             }
+            StartedContinue(this);
         }
 
         /// <summary>
@@ -201,13 +204,21 @@ namespace Amanita
         /// Called when this command starts execution.
         /// </summary>
         public virtual void OnEnter()
-        {}
+        {
+            Entered(this);
+        }
+
+        public Action<Command> Entered = delegate { };
 
         /// <summary>
         /// Called when this command ends execution.
         /// </summary>
         public virtual void OnExit()
-        {}
+        {
+            Exited(this);
+        }
+
+        public Action<Command> Exited = delegate { };
 
         /// <summary>
         /// Called when this command is reset. This happens when the Reset command is used.

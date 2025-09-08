@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.DentedPixel;
+using Amanita.Tweening;
 
 namespace Amanita.VScripting
 {
@@ -25,9 +26,12 @@ namespace Amanita.VScripting
         [Tooltip("Camera to use for the pan. Will use main camera if set to none.")]
         [SerializeField] protected Camera targetCamera;
 
-        [SerializeField] protected LeanTweenType orthoSizeTweenType = LeanTweenType.easeInOutQuad;
-        [SerializeField] protected LeanTweenType posTweenType = LeanTweenType.easeInOutQuad;
-        [SerializeField] protected LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad;
+        [SerializeField] protected ScriptableObject orthoSizeTweener, posTweener, rotTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
 
         protected virtual void AcquireCamera()
         {
@@ -70,13 +74,16 @@ namespace Amanita.VScripting
             Quaternion targetRotation = targetView.transform.rotation;
             float targetSize = targetView.ViewSize;
 
-            cameraManager.PanToPosition(targetCamera, targetPosition, targetRotation, targetSize, duration, delegate {
+            cameraManager.PanToPosition(targetCamera, targetPosition, targetRotation, targetSize,
+                duration, OnMovementDone, doOrthoSizeTween, doPosTween, doRotTween);
+
+            void OnMovementDone()
+            {
                 if (waitUntilFinished)
                 {
                     Continue();
                 }
-            }, orthoSizeTweenType, posTweenType, rotTweenType);
-
+            }
             if (!waitUntilFinished)
             {
                 Continue();
@@ -108,5 +115,67 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            SetNullsToDefaults();
+            void SetNullsToDefaults()
+            {
+                if (orthoSizeTweener == null)
+                {
+                    orthoSizeTweener = TweenManager.TweenAdapter;
+                }
+
+                if (posTweener == null)
+                {
+                    posTweener = TweenManager.TweenAdapter;
+                }
+
+                if (rotTweener == null)
+                {
+                    rotTweener = TweenManager.TweenAdapter;
+                    return;
+                }
+            }
+
+            CheckAssignedTweeners();
+            void CheckAssignedTweeners()
+            { 
+                doOrthoSizeTween = orthoSizeTweener as ICameraTweenAdapter;
+                doPosTween = posTweener as ITransformTweenAdapter;
+                doRotTween = rotTweener as ITransformTweenAdapter;
+
+                if (doOrthoSizeTween == null)
+                {
+                    Debug.LogWarning($"Ortho size tweener passed is invalid. It does not implement " +
+                        $"ICameraTweenAdapter. Reverting to the default.");
+                    doOrthoSizeTween = TweenManager.TweenAdapter;
+                }
+
+                if (doPosTween == null)
+                {
+                    Debug.LogWarning($"Pos tweener passed is invalid. It does not implement " +
+                        $"ITransformTweenAdapter. Reverting to the default.");
+                    doPosTween = TweenManager.TweenAdapter;
+                }
+
+                if (doRotTween == null)
+                {
+                    Debug.LogWarning($"Rot tweener passed is invalid. It does not implement " +
+                        $"ITransformTweenAdapter. Reverting to the default.");
+                    doRotTween = TweenManager.TweenAdapter;
+                }
+            }
+        
+        }
+
+        protected ICameraTweenAdapter doOrthoSizeTween;
+        protected ITransformTweenAdapter doPosTween, doRotTween;
     }
 }

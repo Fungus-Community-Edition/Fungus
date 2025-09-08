@@ -6,6 +6,6 @@ namespace Amanita.Tweening
     {
         void Kill();
         bool IsPlaying { get; }
-        Action OnComplete { get; set; }
+        ITweenHandle SetOnComplete(Action onComplete);
     }
 }

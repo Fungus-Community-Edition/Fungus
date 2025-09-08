@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,6 +42,11 @@ namespace Amanita.Tweening
         /// On a scale of 0-300 for min to 300 for max. Note that the default pitch here is 100.
         /// </summary>
         ITweenHandle ShiftPitch02To(AudioSource target, float targVal, float duration);
+    }
+
+    public interface IGeneralTweenAdapter<T>
+    {
+        ITweenHandle TweenGeneral(Func<T> getter, Action<T> setter, T endVal, float duration, Action onComplete = null);
     }
 
     public interface ICameraTweenAdapter

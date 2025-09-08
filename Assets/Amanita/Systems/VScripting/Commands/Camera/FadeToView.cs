@@ -1,5 +1,6 @@
-using UnityEngine;
 using Amanita.DentedPixel;
+using Amanita.Tweening;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
@@ -33,10 +34,12 @@ namespace Amanita.VScripting
         [Tooltip("Camera to use for the fade. Will use main camera if set to none.")]
         [SerializeField] protected Camera targetCamera;
 
-        [SerializeField] protected LeanTweenType fadeTweenType = LeanTweenType.easeInOutQuad;
-        [SerializeField] protected LeanTweenType orthoSizeTweenType = LeanTweenType.easeInOutQuad;
-        [SerializeField] protected LeanTweenType posTweenType = LeanTweenType.easeInOutQuad;
-        [SerializeField] protected LeanTweenType rotTweenType = LeanTweenType.easeInOutQuad;
+        [SerializeField] protected ScriptableObject fadeTweener, orthoSizeTweener, posTweener, rotTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
 
         protected virtual void Start()
         {
@@ -94,7 +97,7 @@ namespace Amanita.VScripting
                 {
                     Continue();
                 }
-            }, fadeTweenType, orthoSizeTweenType, posTweenType, rotTweenType);
+            }, doFadeTween, doOrthoSizeTween, doPosTween, doPosTween);
 
             if (!waitUntilFinished)
             {
@@ -127,5 +130,84 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+            
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            ApplyDefaultsAsInits();
+            void ApplyDefaultsAsInits()
+            {
+                if (fadeTweener == null)
+                {
+                    fadeTweener = TweenManager.TweenAdapter;
+                }
+
+                if (orthoSizeTweener == null)
+                {
+                    orthoSizeTweener = TweenManager.TweenAdapter;
+                }
+
+                if (posTweener == null)
+                {
+                    posTweener = TweenManager.TweenAdapter;
+                }
+
+                if (rotTweener == null)
+                {
+                    rotTweener = TweenManager.TweenAdapter;
+                    return;
+                }
+            }
+
+            CheckCurrentlyAppliedTweeners();
+            void CheckCurrentlyAppliedTweeners()
+            {
+                doFadeTween = fadeTweener as IGeneralTweenAdapter<float>;
+                doOrthoSizeTween = orthoSizeTweener as ICameraTweenAdapter;
+                doPosTween = posTweener as ITransformTweenAdapter;
+                doRotTween = rotTweener as ITransformTweenAdapter;
+
+                string logMessage = "";
+                if (doFadeTween == null)
+                {
+                    logMessage = "Fade tweener assigned is invalid. It needs to implement IGeneralTweenAdapter<float>.\n";
+                    doFadeTween = TweenManager.TweenAdapter;
+                }
+
+                if (doOrthoSizeTween == null)
+                {
+                    logMessage += "Ortho size tweener assigned is invalid. It needs to implement ICameraTweenAdapter.\n";
+                    doOrthoSizeTween = TweenManager.TweenAdapter;
+                }
+
+                if (doPosTween == null)
+                {
+                    logMessage += "Pos tweener assigned is invalid. I needs to implement ITransformTweenAdapter.\n";
+                    doPosTween = TweenManager.TweenAdapter;
+                }
+
+                if (doRotTween == null)
+                {
+                    logMessage = "Rotation tweener assigned is invalid. It needs to implement ITransformTweenAdapter.\n";
+                    doRotTween = TweenManager.TweenAdapter;
+                }
+
+                if (!string.IsNullOrEmpty(logMessage))
+                {
+                    logMessage += "Reverting to defaults.";
+                    Debug.LogWarning(logMessage);
+                }
+            }
+        }
+
+        protected IGeneralTweenAdapter<float> doFadeTween;
+        protected ICameraTweenAdapter doOrthoSizeTween;
+        protected ITransformTweenAdapter doPosTween, doRotTween;
     }
 }
