@@ -1,6 +1,5 @@
 using Amanita.VScripting;
 using NUnit.Framework;
-using System.Reflection;
 
 namespace Amanita.Tests.EditMode
 {

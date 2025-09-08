@@ -62,7 +62,7 @@ namespace Amanita.DialogueSys.Commands
                 return;
             }
 
-            TweenManager.TweenBasic(() => canvasGroup.alpha,
+            AmanitaManager.DefaultTweener.TweenBasic(() => canvasGroup.alpha,
                 (newVal) => canvasGroup.alpha = newVal,
                 targetAlpha, duration,
                 OnComplete);

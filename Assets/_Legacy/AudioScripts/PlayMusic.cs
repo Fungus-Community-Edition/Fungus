@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Plays looping game music. If any game music is already playing, it is stopped. Game music will continue playing across scene loads.

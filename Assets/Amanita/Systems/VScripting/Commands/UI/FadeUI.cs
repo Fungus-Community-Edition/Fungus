@@ -55,11 +55,11 @@ namespace Amanita.VScripting.Commands.Legacy
                     {
                         case FadeMode.Alpha:
                             //LeanTween.alpha(image.rectTransform, targetAlpha, duration).setEase(tweenType).setEase(tweenType);
-                            TweenManager.TweenGraphicAlpha(image, image.color.a, targetAlpha, duration);
+                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(image, image.color.a, targetAlpha, duration);
                             break;
                         case FadeMode.Color:
                             //LeanTween.color(image.rectTransform, targetColor, duration).setEase(tweenType).setEase(tweenType);
-                            TweenManager.TweenGraphicColor(image, image.color, targetColor, duration);
+                            AmanitaManager.DefaultTweener.TweenGraphicColor(image, image.color, targetColor, duration);
                             break;
                     }
                 }
@@ -89,11 +89,11 @@ namespace Amanita.VScripting.Commands.Legacy
                     {
                         case FadeMode.Alpha:
                             //LeanTween.textAlpha(text.rectTransform, targetAlpha, duration).setEase(tweenType);
-                            TweenManager.TweenGraphicAlpha(text, text.color.a, targetAlpha, duration);
+                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(text, text.color.a, targetAlpha, duration);
                             break;
                         case FadeMode.Color:
                             //LeanTween.textColor(text.rectTransform, targetColor, duration).setEase(tweenType);
-                            TweenManager.TweenGraphicColor(text, text.color, targetColor, duration);
+                            AmanitaManager.DefaultTweener.TweenGraphicColor(text, text.color, targetColor, duration);
                             break;
                     }
                 }
@@ -125,13 +125,13 @@ namespace Amanita.VScripting.Commands.Legacy
                             //LeanTween.alpha(go, targetAlpha, duration).setEase(tweenType);
                             Color withTargetAlpha = textMesh.color;
                             withTargetAlpha.a = targetAlpha;
-                            TweenManager.TweenBasic<Color>(() => textMesh.color,
+                            AmanitaManager.DefaultTweener.TweenBasic<Color>(() => textMesh.color,
                                 (newCol) => textMesh.color = newCol,
                                 withTargetAlpha, duration);
                             break;
                         case FadeMode.Color:
                             //LeanTween.color(go, targetColor, duration).setEase(tweenType);
-                            TweenManager.TweenBasic<Color>(() => textMesh.color,
+                            AmanitaManager.DefaultTweener.TweenBasic<Color>(() => textMesh.color,
                                 (newCol) => textMesh.color = newCol,
                                 targetColor, duration);
                             break;
@@ -172,7 +172,7 @@ namespace Amanita.VScripting.Commands.Legacy
                             //             tempColor.a = alphaValue;
                             //             tmpro.color = tempColor;
                             //         });
-                            TweenManager.TweenGraphicAlpha(tmpro, tmpro.color.a, targetAlpha.Value, duration); ;
+                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(tmpro, tmpro.color.a, targetAlpha.Value, duration); ;
 
                         break;
                     case FadeMode.Color:
@@ -182,7 +182,7 @@ namespace Amanita.VScripting.Commands.Legacy
                         //         {
                         //             tmpro.color = colorValue;
                         //         });
-                        TweenManager.TweenGraphicColor(tmpro, tmpro.color, targetColor.Value, duration);
+                        AmanitaManager.DefaultTweener.TweenGraphicColor(tmpro, tmpro.color, targetColor.Value, duration);
                         break;
                     }
                 }
@@ -211,13 +211,13 @@ namespace Amanita.VScripting.Commands.Legacy
                     {
                         case FadeMode.Alpha:
                             //LeanTween.alphaCanvas(canvasGroup, targetAlpha, duration).setEase(tweenType);
-                            TweenManager.TweenBasic<float>(() => canvasGroup.alpha,
+                            AmanitaManager.DefaultTweener.TweenBasic<float>(() => canvasGroup.alpha,
                                 (newVal) => canvasGroup.alpha = newVal,
                                 targetAlpha, duration);
                             break;
                         case FadeMode.Color:
                             //LeanTween.alphaCanvas(canvasGroup, targetColor.Value.a, duration).setEase(tweenType);
-                            TweenManager.TweenBasic<float>(() => canvasGroup.alpha,
+                            AmanitaManager.DefaultTweener.TweenBasic<float>(() => canvasGroup.alpha,
                                 (newVal) => canvasGroup.alpha = newVal,
                                 targetColor.Value.a, duration);
                             break;

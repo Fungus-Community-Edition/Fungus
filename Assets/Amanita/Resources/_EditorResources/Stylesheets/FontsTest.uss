@@ -1,7 +1,6 @@
 .root {
     flex-direction: column;
     padding: 10px;
-    row-gap: 6px;
     background-color: #222;
 }
 

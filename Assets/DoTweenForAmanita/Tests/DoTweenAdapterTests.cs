@@ -1,3 +1,4 @@
+using Amanita;
 using Amanita.ThirdPartyInt.DGDOTween;
 using DG.Tweening;
 using NUnit.Framework;
@@ -17,8 +18,17 @@ public class DoTweenAdapterTests : MonoBehaviour
     {
         DOTween.KillAll(false);
         _testGo = new GameObject("TweenTestGO");
+        AmanitaManager prefab = Resources.Load<AmanitaManager>(pathToManager);
+        if (prefab == null)
+        {
+            throw new System.MissingFieldException("Wrong path to the Amanita Manager");
+        }
+        manager = UnityObj.Instantiate(prefab);
         _adapter = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
     }
+
+    protected AmanitaManager manager;
+    protected readonly string pathToManager = "Prefabs/AmanitaManager";
 
     [TearDown]
     public virtual void TearDown()
@@ -26,5 +36,6 @@ public class DoTweenAdapterTests : MonoBehaviour
         DOTween.KillAll(false);
         if (_testGo) UnityObj.DestroyImmediate(_testGo);
         if (_adapter) UnityObj.DestroyImmediate(_adapter);
+        if (manager) UnityObj.DestroyImmediate(manager.gameObject);
     }
 }

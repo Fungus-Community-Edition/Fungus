@@ -195,7 +195,7 @@ namespace Amanita.UI.Legacy
                 targAlpha = 1;
             }
 
-            _neoFadeTween = TweenManager.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
+            _neoFadeTween = AmanitaManager.DefaultTweener.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
                     (newAlpha) => narrativeLogMenuGroup.alpha = newAlpha,
                     targAlpha, duration)
                     .SetOnComplete(() => narrativeLogMenuGroup.alpha = targAlpha);

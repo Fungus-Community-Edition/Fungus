@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +8,7 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
+using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.Tests.EditMode
 {
@@ -308,5 +308,141 @@ namespace Amanita.Tests.EditMode
             LogAssert.Expect(LogType.Warning, "Tried to add a null variable to VariableListView.");
             _view.AddVariable(nullVar);
         }
+
+        [Test]
+        public void AcquireFlowchartIfLost_ReacquiresViaGlobalObjectId()
+        {
+            // Arrange: create a Flowchart in the scene
+            var go = new GameObject("FlowchartHost");
+            var flowchart = go.AddComponent<Flowchart>();
+
+            // Hook it into the view
+            _view.SetFlowchart(flowchart);
+
+            // Simulate losing the reference (as if after undo/redo)
+            var fiFlowchart = typeof(VariableListView)
+                .GetField("_flowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            fiFlowchart.SetValue(_view, null);
+
+            // Act: call AcquireFlowchartIfLost
+            var miAcquire = typeof(VariableListView)
+                .GetMethod("AcquireFlowchartIfLost", BindingFlags.Instance | BindingFlags.NonPublic);
+            bool reacquired = (bool)miAcquire.Invoke(_view, null);
+
+            // Assert: reacquired and matches original
+            Assert.IsTrue(reacquired, "Flowchart should be reacquired");
+            var reacquiredFlowchart = (Flowchart)fiFlowchart.GetValue(_view);
+            Assert.AreSame(flowchart, reacquiredFlowchart);
+        }
+
+        [Test]
+        public void HandleUndoRedoPerformed_CallsSyncFromFlowchart()
+        {
+            var go = new GameObject("FlowchartHost");
+            try
+            {
+                var flowchart = go.AddComponent<Flowchart>();
+
+                // Directly set the serialized legacy list
+                AssignLegacyVariables(flowchart, new List<Variable>());
+
+                var testView = new TestVariableListView(new VariableListViewInitArgs
+                {
+                    List = new ListView(),
+                    CountLabel = new UitkLabel(),
+                    RowFactory = _factory
+                });
+
+                testView.SetFlowchart(flowchart);
+
+                // Act
+                var miHandleUndoRedo = typeof(VariableListView)
+                    .GetMethod("HandleUndoRedoPerformed", BindingFlags.Instance | BindingFlags.NonPublic);
+                miHandleUndoRedo.Invoke(testView, null);
+
+                // Assert
+                Assert.IsTrue(testView.SyncCalled, "SyncFromFlowchart should be called after undo/redo");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+            }
+        }
+
+        [Test]
+        public void SyncFromFlowchart_PopulatesVariablesFromFlowchart()
+        {
+            // Arrange
+            var go = new GameObject("FlowchartHost");
+            var flowchart = go.AddComponent<Flowchart>();
+
+            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
+            var v2 = CreateVar<StringVariable, string>("s1", "a");
+
+
+            AssignLegacyVariables(flowchart, new List<Variable> { v1, v2 });
+
+            _view.SetFlowchart(flowchart);
+
+            // Act
+            var miSync = typeof(VariableListView)
+                .GetMethod("SyncFromFlowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            miSync.Invoke(_view, null);
+
+            // Assert
+            var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
+            CollectionAssert.AreEqual(new IVariable[] { v1, v2 }, internalVars);
+        }
+
+        [Test]
+        public void SyncFromFlowchart_SkipsNullOrDestroyedVariables()
+        {
+            // Arrange
+            var go = new GameObject("FlowchartHost");
+            var flowchart = go.AddComponent<Flowchart>();
+
+            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
+            var destroyedVar = CreateVar<StringVariable, string>("s1", "a");
+            UnityEngine.Object.DestroyImmediate((UnityEngine.Object)destroyedVar);
+
+            AssignLegacyVariables(flowchart, new List<Variable> { v1, destroyedVar, null });
+
+            _view.SetFlowchart(flowchart);
+
+            // Act
+            var miSync = typeof(VariableListView)
+                .GetMethod("SyncFromFlowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            miSync.Invoke(_view, null);
+
+            // Assert
+            var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
+            CollectionAssert.AreEqual(new[] { v1 }, internalVars);
+        }
+
+        static void AssignLegacyVariables(Flowchart flowchart, List<Variable> variables)
+        {
+            var field = typeof(Flowchart).GetField("_legacyVariables",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null)
+                Assert.Fail("Could not find _legacyVariables field on Flowchart");
+
+            field.SetValue(flowchart, variables);
+        }
+
+        class TestVariableListView : VariableListView
+        {
+            public bool SyncCalled;
+
+            public TestVariableListView(VariableListViewInitArgs initArgs) : base(initArgs) { }
+
+            protected override void SyncFromFlowchart()
+            {
+                SyncCalled = true;
+                base.SyncFromFlowchart();
+            }
+        }
     }
+
 }
+
+    

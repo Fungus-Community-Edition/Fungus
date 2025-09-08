@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Amanita.Myceliaudio
 {
-    public interface IAudioTrackTweenables
+    public interface IAudioTrack
     {
         float BaseVolume { get; set; }
         GameObject GameObject { get; }
