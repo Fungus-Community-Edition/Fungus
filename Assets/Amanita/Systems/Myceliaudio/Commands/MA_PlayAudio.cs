@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Amanita.VScripting;
 
-namespace Amanita.Myceliaudio
+namespace Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Play Audio", "")]
     public class MA_PlayAudio : MyceliaudioCommand, ISerializationCallbackReceiver

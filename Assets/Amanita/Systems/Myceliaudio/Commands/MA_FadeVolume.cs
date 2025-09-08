@@ -1,7 +1,7 @@
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace Amanita.Myceliaudio
+namespace Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Fade Vol", "Fades the volume of an individual track")]
     public class MA_FadeVolume : MyceliaudioCommand, ISerializationCallbackReceiver

@@ -1,6 +1,7 @@
 using UnityEngine;
+using Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Sets a custom menu dialog to use when displaying multiple choice menus.

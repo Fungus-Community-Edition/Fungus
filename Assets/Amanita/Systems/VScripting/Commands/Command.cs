@@ -2,9 +2,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
-using Amanita.VScripting;
 
-namespace Amanita
+namespace Amanita.VScripting
 {   
     /// <summary>
     /// Attribute class for Fungus commands.
