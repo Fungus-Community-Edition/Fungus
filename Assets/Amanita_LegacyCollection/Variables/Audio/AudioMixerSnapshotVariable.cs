@@ -20,9 +20,9 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioMixerSnapshot), typeof(AudioMixerSnapshotVariable))]
 	public class AudioMixerSnapshotData : VariableData<AudioMixerSnapshot>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(AudioMixerSnapshotVariable))]
-		public AudioMixerSnapshotVariable audioMixerSnapshotRef;
+		public IVariable<AudioMixerSnapshot> audioMixerSnapshotRef;
 
 		public static implicit operator UnityEngine.Audio.AudioMixerSnapshot(AudioMixerSnapshotData AudioMixerSnapshotData)
 		{

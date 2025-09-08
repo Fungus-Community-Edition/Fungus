@@ -45,9 +45,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Color), typeof(ColorVariable))]
     public class ColorData : VariableData<Color>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(ColorVariable))]
-        public ColorVariable colorRef;
+        public IVariable<Color> colorRef;
 
         public ColorData() : base(default) { }
         public ColorData(Color startVal = default) : base(startVal) { }

@@ -19,9 +19,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Sprite), typeof(SpriteVariable))]
     public class SpriteData : VariableData<Sprite>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
-        public SpriteVariable spriteRef;
+        public IVariable<Sprite> spriteRef;
 
         public SpriteData() : base(default) { }
         public SpriteData(Sprite startVal = null) : base(startVal) { }

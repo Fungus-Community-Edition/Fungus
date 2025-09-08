@@ -21,9 +21,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(string), typeof(StringVariable))]
     public class StringData : VariableData<string>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(StringVariable))]
-        public StringVariable stringRef;
+        public IVariable<string> stringRef;
 
         public StringData() : base(default) { }
 
@@ -67,7 +67,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    result = _valOfType;
+                    result = valOfType;
                 }
 
                 // To make sure we never return a null value
@@ -78,7 +78,7 @@ namespace Amanita.VScripting
                     {
                         VarRef.Value = result;
                     }
-                    base.Value = _valOfType = result;
+                    base.Value = valOfType = result;
                 }
 
                 return result;
@@ -92,7 +92,7 @@ namespace Amanita.VScripting
                 else
                 {
                     base.Value = value;
-                    _valOfType = value;
+                    valOfType = value;
                 }
             }
         }

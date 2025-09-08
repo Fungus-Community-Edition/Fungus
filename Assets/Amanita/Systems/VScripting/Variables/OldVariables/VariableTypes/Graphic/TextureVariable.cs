@@ -19,9 +19,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Texture), typeof(TextureVariable))]
     public class TextureData : VariableData<Texture>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(TextureVariable))]
-        public TextureVariable textureRef;
+        public IVariable<Texture> textureRef;
         
         public TextureData() : base(default) { }
 

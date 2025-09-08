@@ -51,9 +51,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Quaternion), typeof(QuaternionVariable))]
     public class QuaternionData : VariableData<Quaternion>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(QuaternionVariable))]
-        public QuaternionVariable quaternionRef;
+        public IVariable<Quaternion> quaternionRef;
 
         public QuaternionData() : base(default) { }
 

@@ -1,15 +1,15 @@
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {
     /// <summary>
     /// Object variable type.
     /// </summary>
-    [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObject))]
+    [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObj))]
     [AddComponentMenu("")]
     [System.Serializable]
-    public class ObjectVariable : VariableBase<UnityObject>
+    public class ObjectVariable : VariableBase<UnityObj>
     {
     }
 
@@ -17,17 +17,17 @@ namespace Amanita.VScripting
     /// Container for an Object variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    [VariableData(typeof(UnityObject), typeof(ObjectVariable))]
-    public class ObjectData : VariableData<UnityObject>
+    [VariableData(typeof(UnityObj), typeof(ObjectVariable))]
+    public class ObjectData : VariableData<UnityObj>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(ObjectVariable))]
-        public ObjectVariable objectRef;
+        public IVariable<UnityObj> objectRef;
 
         public ObjectData() : base(default) { }
-        public ObjectData(UnityObject startVal = null) : base(startVal) { }
+        public ObjectData(UnityObj startVal = null) : base(startVal) { }
         
-        public static implicit operator UnityObject(ObjectData objectData)
+        public static implicit operator UnityObj(ObjectData objectData)
         {
             return objectData.Value;
         }

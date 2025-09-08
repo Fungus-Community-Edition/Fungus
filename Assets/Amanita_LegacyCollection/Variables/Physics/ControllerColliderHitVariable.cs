@@ -15,9 +15,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(ControllerColliderHit), typeof(ControllerColliderHitVariable))]
     public class ControllerColliderHitData : VariableData<ControllerColliderHit>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(ControllerColliderHitVariable))]
-        public ControllerColliderHitVariable controllerColliderHitRef;
+        public IVariable<ControllerColliderHit> controllerColliderHitRef;
 
         public ControllerColliderHitData() : base(default) { }
 

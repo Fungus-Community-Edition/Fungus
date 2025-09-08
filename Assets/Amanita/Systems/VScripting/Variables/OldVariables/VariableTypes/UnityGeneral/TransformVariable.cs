@@ -19,9 +19,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Transform), typeof(TransformVariable))]
     public class TransformData : VariableData<Transform>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(TransformVariable))]
-        public TransformVariable transformRef;
+        public IVariable<Transform> transformRef;
 
         public static implicit operator Transform(TransformData vector3Data)
         {

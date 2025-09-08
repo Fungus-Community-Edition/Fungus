@@ -19,9 +19,9 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioClip), typeof(AudioClipVariable))]
 	public class AudioClipData : VariableData<AudioClip>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(AudioClipVariable))]
-		public AudioClipVariable audioClipRef;
+		public IVariable<AudioClip> audioClipRef;
 
 		public static implicit operator AudioClip(AudioClipData AudioClipData)
 		{

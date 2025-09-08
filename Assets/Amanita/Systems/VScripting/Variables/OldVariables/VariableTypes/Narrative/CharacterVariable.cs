@@ -19,9 +19,9 @@ namespace Amanita.VScripting
 	[VariableData(typeof(Character), typeof(CharacterVariable))]
 	public class CharacterData : VariableData<Character>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]
-		public CharacterVariable characterRef;
+		public IVariable<Character> characterRef;
 
 
 		public static implicit operator Amanita.Character(CharacterData CharacterData)

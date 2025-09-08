@@ -15,9 +15,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Collision2D), typeof(Collision2DVariable))]
     public class Collision2DData : VariableData<Collision2D>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(Collision2DVariable))]
-        public Collision2DVariable collision2dRef;
+        public IVariable<Collision2D> collision2dRef;
 
         public static implicit operator Collision2D(Collision2DData Collision2DData)
         {

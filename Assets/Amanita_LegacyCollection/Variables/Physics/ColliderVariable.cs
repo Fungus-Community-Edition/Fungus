@@ -18,12 +18,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Collider), typeof(ColliderVariable))]
     public class ColliderData : VariableData<Collider>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(ColliderVariable))]
-        public ColliderVariable colliderRef;
-
-        [SerializeField]
-        public UnityEngine.Collider colliderVal;
+        public IVariable<Collider> colliderRef;
 
         public ColliderData() : base(default) { }
 

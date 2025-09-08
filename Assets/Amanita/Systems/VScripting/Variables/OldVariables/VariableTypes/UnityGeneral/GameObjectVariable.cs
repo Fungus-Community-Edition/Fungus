@@ -19,9 +19,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(GameObject), typeof(GameObjectVariable))]
     public class GameObjectData : VariableData<GameObject>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(GameObjectVariable))]
-        public GameObjectVariable gameObjectRef;
+        public IVariable<GameObject> gameObjectRef;
 
         public GameObjectData() : base(default) { }
         public GameObjectData(GameObject startVal = null) : base(startVal) { }

@@ -36,9 +36,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(bool), typeof(BooleanVariable))]
     public class BooleanData : VariableData<bool>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(BooleanVariable))]
-        public BooleanVariable booleanRef;
+        public IVariable<bool> booleanRef;
 
         [SerializeField]
         public bool booleanVal;

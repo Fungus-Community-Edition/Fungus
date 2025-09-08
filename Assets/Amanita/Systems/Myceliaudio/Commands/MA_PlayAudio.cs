@@ -304,7 +304,7 @@ namespace Amanita.Myceliaudio.VScripting
             else
             {
                 AudioClipData clipData = mainPlayConfig.ClipData;
-                AudioClipVariable clipRef = clipData.audioClipRef;
+                IVariable<AudioClip> clipRef = clipData.audioClipRef;
                 bool assignedVar = clipRef != null;
 
                 if (assignedVar)

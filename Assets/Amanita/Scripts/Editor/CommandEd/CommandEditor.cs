@@ -157,6 +157,7 @@ namespace Amanita.VScripting.EditorUtils
             serializedObject.Update();
             SerializedProperty iterator = serializedObject.GetIterator();
             bool enterChildren = true;
+            int index = 0;
             while (iterator.NextVisible(enterChildren))
             {
                 enterChildren = false;
@@ -204,7 +205,9 @@ namespace Amanita.VScripting.EditorUtils
                 else
                 {
                     EditorGUILayout.PropertyField(iterator, true, new GUILayoutOption[0]);
+                    Debug.Log($"Drew property {index} named {iterator.name}" );
                 }
+                index++;
             }
 
             serializedObject.ApplyModifiedProperties();

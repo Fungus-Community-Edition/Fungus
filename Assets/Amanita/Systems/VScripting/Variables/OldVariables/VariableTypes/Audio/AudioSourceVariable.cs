@@ -19,9 +19,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(AudioSource), typeof(AudioSourceVariable))]
     public class AudioSourceData : VariableData<AudioSource>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(AudioSourceVariable))]
-        public AudioSourceVariable audioSourceRef;
+        public IVariable<AudioSource> audioSourceRef;
         
         public static implicit operator AudioSource(AudioSourceData audioSourceData)
         {

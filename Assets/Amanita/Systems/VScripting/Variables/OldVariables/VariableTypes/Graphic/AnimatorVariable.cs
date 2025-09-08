@@ -16,8 +16,8 @@ namespace Amanita.VScripting
     [VariableData(typeof(Animator), typeof(AnimatorVariable))]
     public class AnimatorData : VariableData<Animator>
     {
-        [SerializeField] [VariableProperty("<Value>", typeof(AnimatorVariable))]
-        public AnimatorVariable animatorRef;
+        [SerializeField, SerializeReference] [VariableProperty("<Value>", typeof(AnimatorVariable))]
+        public IVariable<Animator> animatorRef;
 
         public static implicit operator Animator(AnimatorData animatorData)
         {

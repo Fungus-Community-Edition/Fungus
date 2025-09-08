@@ -18,7 +18,7 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    return _valObj;
+                    return valObj;
                 }
             }
             set
@@ -29,19 +29,19 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    _valObj = value;
+                    valObj = value;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected object _valObj;
+        [SerializeReference, SerializeField] protected object valObj;
         public abstract IVariable VarRef { get; set; }
 
         public abstract string GetDescription();
 
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
-            this._valObj = (otherVarData as VariableData)._valObj;
+            this.valObj = (otherVarData as VariableData).valObj;
         }
 
         public virtual IVariableData GetCopy()
@@ -75,7 +75,7 @@ namespace Amanita.VScripting
     public abstract class VariableData<TValue> : VariableData
     {
         [SerializeField, SerializeReference]
-        protected IVariable<TValue> _varRef;
+        protected IVariable<TValue> varRef;
 
         public static implicit operator TValue(VariableData<TValue> someData)
         {
@@ -84,13 +84,13 @@ namespace Amanita.VScripting
 
         public VariableData()
         {
-            _valOfType = default;
+            valOfType = default;
             VarRef = null;
         }
 
         public VariableData(TValue startVal = default)
         {
-            _valOfType = startVal;
+            valOfType = startVal;
             VarRef = null;
         }
 
@@ -108,7 +108,7 @@ namespace Amanita.VScripting
                 else
                 {
                     //Debug.Log($"{GetType().Name}.Value get: {_valOfType} (hash: {GetHashCode()})");
-                    return _valOfType;
+                    return valOfType;
                 }
             }
             set
@@ -121,20 +121,20 @@ namespace Amanita.VScripting
                 {
                     //Debug.Log($"{GetType().Name}.Value set: {value} (hash: {GetHashCode()})");
                     base.Value = value;
-                    _valOfType = value;
+                    valOfType = value;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected TValue _valOfType = default;
+        [SerializeReference, SerializeField] protected TValue valOfType = default;
 
         public override string GetDescription()
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (VarRef == null && _valOfType != null)
+            if (VarRef == null && valOfType != null)
             {
-                result = _valOfType.ToString();
+                result = valOfType.ToString();
             }
             else if (VarRef != null)
             {
@@ -156,20 +156,20 @@ namespace Amanita.VScripting
 
         public virtual void SetContentsTo(VariableData<TValue> otherVarData)
         {
-            this._valObj = this._valOfType = otherVarData._valOfType;
+            this.valObj = this.valOfType = otherVarData.valOfType;
             this.VarRef = otherVarData.VarRef;
         }
 
         public override IVariable VarRef
         {
-            get { return _varRef; }
+            get { return varRef; }
             set
             {
-                if (value == null) { _varRef = null; return; }
+                if (value == null) { varRef = null; return; }
 
                 if (value.ContentType.Equals(this.ContentType))
                 {
-                    _varRef = value as IVariable<TValue>;
+                    varRef = value as IVariable<TValue>;
                 }
                 else
                 {

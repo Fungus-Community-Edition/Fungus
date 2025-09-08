@@ -82,7 +82,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(int), typeof(IntegerVariable))]
     public class IntegerData : VariableData<int>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(IntegerVariable))]
         public IntegerVariable integerRef;
 

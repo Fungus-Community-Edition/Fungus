@@ -57,9 +57,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Vector4), typeof(Vector4Variable))]
     public class Vector4Data : VariableData<Vector4>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(Vector4Variable))]
-        public Vector4Variable vector4Ref;
+        public IVariable<Vector4> vector4Ref;
 
         public Vector4Data() : base(default) { }
         public Vector4Data(Vector4 startVal = default) : base(startVal) { }

@@ -52,9 +52,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Vector3), typeof(Vector3Variable))]
     public class Vector3Data : VariableData<Vector3>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(Vector3Variable))]
-        public Vector3Variable vector3Ref;
+        public IVariable<Vector3> vector3Ref;
         
         public static implicit operator Vector3(Vector3Data vector3Data)
         {

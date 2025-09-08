@@ -19,9 +19,9 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioMixerGroup), typeof(AudioMixerGroupVariable))]
 	public class AudioMixerGroupData : VariableData<AudioMixerGroup>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(AudioMixerGroupVariable))]
-		public AudioMixerGroupVariable audioMixerGroupRef;
+		public IVariable<AudioMixerGroup> audioMixerGroupRef;
 
 		public static implicit operator AudioMixerGroup(AudioMixerGroupData AudioMixerGroupData)
 		{

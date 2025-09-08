@@ -51,9 +51,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Matrix4x4), typeof(Matrix4x4Variable))]
     public class Matrix4x4Data : VariableData<Matrix4x4>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(Matrix4x4Variable))]
-        public Matrix4x4Variable matrix4x4Ref;
+        public IVariable<Matrix4x4> matrix4x4Ref;
 
         public Matrix4x4Data() : base(default) { }
 

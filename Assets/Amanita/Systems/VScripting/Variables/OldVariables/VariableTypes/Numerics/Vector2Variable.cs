@@ -60,9 +60,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Vector2), typeof(Vector2Variable))]
     public class Vector2Data : VariableData<Vector2>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(Vector2Variable))]
-        public Vector2Variable vector2Ref;
+        public IVariable<Vector2> vector2Ref;
 
         public Vector2Data() : base(default) { }
         public Vector2Data(Vector2 startVal = default) : base(startVal) { }

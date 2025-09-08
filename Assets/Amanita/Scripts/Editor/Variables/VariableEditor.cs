@@ -160,6 +160,7 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
+    // For drawing fields in Commands that should ONLY accept variable inputs
     [CustomPropertyDrawer(typeof(VariablePropertyAttribute))]
     public class VariableDrawer : PropertyDrawer
     {   
@@ -220,6 +221,7 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
+    // For the fields that can accept either a variable or a literal value
     public class VariableDataDrawer<T> : PropertyDrawer where T : Variable
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

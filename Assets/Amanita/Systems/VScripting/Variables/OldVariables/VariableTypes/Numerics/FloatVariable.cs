@@ -82,9 +82,9 @@ namespace Amanita.VScripting
     [System.Serializable]
     public class FloatData : VariableData<float>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(FloatVariable))]
-        public FloatVariable floatRef;
+        public IVariable<float> floatRef;
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
@@ -98,7 +98,14 @@ namespace Amanita.VScripting
 
         public override IVariable VarRef
         {
-            get { return floatRef; }
+            get
+            {
+                if (varRef != null)
+                {
+
+                }
+                return floatRef;
+            }
             set
             {
                 if (value == null) { floatRef = null; return; }
@@ -115,6 +122,8 @@ namespace Amanita.VScripting
                 
             }
         }
-    
+
+
+
     }
 }

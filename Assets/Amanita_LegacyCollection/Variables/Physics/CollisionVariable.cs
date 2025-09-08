@@ -15,9 +15,9 @@ namespace Amanita.VScripting
     [VariableData(typeof(Collision), typeof(CollisionVariable))]
     public class CollisionData : VariableData<Collision>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(CollisionVariable))]
-        public CollisionVariable collisionRef;
+        public IVariable<Collision> collisionRef;
 
         public CollisionData() : base(default) { }
 
