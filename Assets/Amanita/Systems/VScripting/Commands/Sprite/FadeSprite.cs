@@ -1,3 +1,4 @@
+using Amanita.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,13 +18,20 @@ namespace Amanita.VScripting
         [SerializeField] protected SpriteRenderer spriteRenderer;
 
         [Tooltip("Length of time to perform the fade")]
-        [SerializeField] protected FloatData _duration = new FloatData(1f);
+        [SerializeField] protected FloatData duration = new FloatData(1f);
 
         [Tooltip("Target color to fade to. To only fade transparency level, set the color to white and set the alpha to required transparency.")]
-        [SerializeField] protected ColorData _targetColor = new ColorData(Color.white);
+        [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
 
         [Tooltip("Wait until the fade has finished before executing the next command")]
         [SerializeField] protected bool waitUntilFinished = true;
+
+        [SerializeField] protected ScriptableObject fadeTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
 
         #region Public members
 
@@ -35,7 +43,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            SpriteFader.FadeSprite(spriteRenderer, _targetColor.Value, _duration.Value, Vector2.zero, delegate {
+            SpriteFader.FadeSprite(spriteRenderer, targetColor.Value, duration.Value, Vector2.zero, delegate {
                 if (waitUntilFinished)
                 {
                     Continue();
@@ -55,7 +63,7 @@ namespace Amanita.VScripting
                 return "Error: No sprite renderer selected";
             }
 
-            return spriteRenderer.name + " to " + _targetColor.Value.ToString();
+            return spriteRenderer.name + " to " + targetColor.Value.ToString();
         }
 
         public override Color GetButtonColor()
@@ -65,7 +73,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _duration.floatRef == variable || _targetColor.colorRef == variable ||
+            return duration.floatRef == variable || targetColor.colorRef == variable ||
                 base.HasReference(variable);
         }
 
@@ -80,16 +88,42 @@ namespace Amanita.VScripting
         {
             if (durationOLD != default(float))
             {
-                _duration.Value = durationOLD;
+                duration.Value = durationOLD;
                 durationOLD = default(float);
             }
             if (targetColorOLD != default(Color))
             {
-                _targetColor.Value = targetColorOLD;
+                targetColor.Value = targetColorOLD;
                 targetColorOLD = default(Color);
             }
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+            
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            if (fadeTweener == null)
+            {
+                doFadeTween = AmanitaManager.DefaultTweener;
+                return;
+            }
+
+            doFadeTween = fadeTweener as IGraphicTweenAdapter;
+
+            if (doFadeTween == null && fadeTweener != null)
+            {
+                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
+                fadeTweener = null;
+            }
+        }
+
+        protected IGraphicTweenAdapter doFadeTween;
     }
 }

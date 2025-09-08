@@ -1,4 +1,5 @@
 using UnityEngine;
+using Amanita.Tweening;
 
 namespace Amanita
 {
@@ -93,7 +94,7 @@ namespace Amanita
                     audioSourceMusic.Play();
                 };
 
-                TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
+                AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
             }
         }
 
@@ -149,8 +150,8 @@ namespace Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            TweenManager.TweenAudioSourcePitch(fadeMusicPitch);
-            TweenManager.TweenAudioSourcePitch(fadeAmbiancePitch);
+            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeMusicPitch);
+            AmanitaManager.DefaultTweener.ShiftPitchTo(fadeAmbiancePitch);
         }
 
         /// <summary>
@@ -178,8 +179,8 @@ namespace Amanita
             // ^ Best assign this to just one of the args; we don't want onComplete to execute twice
             // through just one call of this func
 
-            TweenManager.TweenAudioSourceVolume(fadeMusicVolume);
-            TweenManager.TweenAudioSourceVolume(fadeAmbianceVolume);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeMusicVolume);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(fadeAmbianceVolume);
         }
 
         /// <summary>

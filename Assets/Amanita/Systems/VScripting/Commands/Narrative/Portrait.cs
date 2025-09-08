@@ -55,7 +55,7 @@ namespace Amanita.VScripting.Commands
 
         [Tooltip("Wait until the tween has finished before executing the next command")]
         [SerializeField] protected bool waitUntilFinished = false;
-
+                
         #region Public members
 
         /// <summary>

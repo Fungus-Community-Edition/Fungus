@@ -8,6 +8,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting.EventHandlers;
 using Attribute = System.Attribute;
+using Amanita.VScripting;
 
 namespace Amanita.EditorUtils
 {
