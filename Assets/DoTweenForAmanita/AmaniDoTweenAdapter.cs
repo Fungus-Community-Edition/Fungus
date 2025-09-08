@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 namespace Amanita.ThirdPartyInt.DGDOTween
 {
-
     [CreateAssetMenu(fileName = "NewAmanitaDoTweenAdapter", menuName = "Amanita/DOTween/TweenAdapter")]
     public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter,
         IGraphicTweenAdapter, IAudioSourceTweenAdapter, ICameraTweenAdapter,
@@ -79,21 +78,34 @@ namespace Amanita.ThirdPartyInt.DGDOTween
 
         #region AudioSource
 
+        /// <summary>
+        /// 0 for silent, 100 for max
+        /// </summary>
+        /// <returns></returns>
         public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
         {
-            return ShiftVolumeTo(target, targVal / 100f, duration);
+            return ShiftVolume01To(target, targVal / 100f, duration);
         }
 
+        /// <summary>
+        /// 0 for silent, 1 for max
+        /// </summary>
         public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
         {
+            targVal = Mathf.Clamp01(targVal);
             Tween tween = target.DOFade(targVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
+        /// <summary>
+        /// -300 for min, 300 for max. Normal pitch is 100
+        /// </summary>
         public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
         {
-            Tween tween = target.DOPitch(targVal / 100f, duration).SetEase(_ease);
+            targVal /= 100f;
+            targVal = Mathf.Clamp(targVal, -3, 3);
+            Tween tween = target.DOPitch(targVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
@@ -265,9 +277,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
         }
         #endregion
 
-
     }
-
 
 }
 

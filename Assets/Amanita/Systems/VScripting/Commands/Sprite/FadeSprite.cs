@@ -119,10 +119,8 @@ namespace Amanita.VScripting
 
             if (doFadeTween == null && fadeTweener != null)
             {
-                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter. Going back to the default.");
+                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
                 fadeTweener = null;
-                doFadeTween = TweenManager.TweenAdapter;
-                fadeTweener = TweenManager.TweenAdapter;
             }
         }
 

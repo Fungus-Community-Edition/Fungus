@@ -146,48 +146,60 @@ namespace Amanita.Tweening
 
         protected virtual void SetRawResultForBasicTypes(T start, T end, float progress, ref object rawResult)
         {
-            // Numerics
-            if (start is int startInt && end is int endInt)
+            HandleNumerics(ref rawResult);
+            void HandleNumerics(ref object rawResult)
             {
-                rawResult = Mathf.Lerp(startInt, endInt, progress);
+                if (start is int startInt && end is int endInt)
+                {
+                    rawResult = Mathf.Lerp(startInt, endInt, progress);
+                }
+
+                if (start is long startLong && end is long endLong)
+                {
+                    rawResult = Mathf.Lerp(startLong, endLong, progress);
+                }
+
+                if (start is float startFloat && end is float endFloat)
+                {
+                    rawResult = Mathf.Lerp(startFloat, endFloat, progress);
+                }
             }
 
-            if (start is long startLong && end is long endLong)
+            HandleVecs(ref rawResult);
+            void HandleVecs(ref object rawResult)
             {
-                rawResult = Mathf.Lerp(startLong, endLong, progress);
+                if (start is Vector2 startVec2 && end is Vector2 endVec2)
+                {
+                    rawResult = Vector2.Lerp(startVec2, endVec2, progress);
+                }
+
+                if (start is Vector3 startVec3 && end is Vector3 endVec3)
+                {
+                    rawResult = Vector3.Lerp(startVec3, endVec3, progress);
+                }
             }
 
-            if (start is float startFloat && end is float endFloat)
+            HandleColors(ref rawResult);
+            void HandleColors(ref object rawResult)
             {
-                rawResult = Mathf.Lerp(startFloat, endFloat, progress);
+                if (start is Color startColor && end is Color endColor)
+                {
+                    rawResult = Color.Lerp(startColor, endColor, progress);
+                }
+
+                if (start is Color32 startCol32 && end is Color32 endCol32)
+                {
+                    rawResult = Color32.Lerp(startCol32, endCol32, progress);
+                }
             }
 
-            // Vecs
-            if (start is Vector2 startVec2 && end is Vector2 endVec2)
+            HandleRotations(ref rawResult);
+            void HandleRotations(ref object rawResult)
             {
-                rawResult = Vector2.Lerp(startVec2, endVec2, progress);
-            }
-
-            if (start is Vector3 startVec3 && end is Vector3 endVec3)
-            {
-                rawResult = Vector3.Lerp(startVec3, endVec3, progress);
-            }
-
-            // Colors
-            if (start is Color startColor && end is Color endColor)
-            {
-                rawResult = Color.Lerp(startColor, endColor, progress);
-            }
-
-            if (start is Color32 startCol32 && end is Color32 endCol32)
-            {
-                rawResult = Color32.Lerp(startCol32, endCol32, progress);
-            }
-
-            // Rotations
-            if (start is Quaternion startRot && end is Quaternion endRot)
-            {
-                rawResult = Quaternion.Lerp(startRot, endRot, progress);
+                if (start is Quaternion startRot && end is Quaternion endRot)
+                {
+                    rawResult = Quaternion.Lerp(startRot, endRot, progress);
+                }
             }
         }
 
@@ -228,7 +240,17 @@ namespace Amanita.Tweening
         }
 
         public virtual bool WasKilled { get; protected set; }
-        public virtual Action OnComplete { get; set; } = delegate { };
+        public virtual Action OnComplete
+        {
+            get => onComplete;
+            set
+            {
+                onComplete = value;
+                onComplete ??= delegate { };
+            }
+        }
+
+        protected Action onComplete = delegate { };
 
         public virtual bool IsTargetDestroyed()
         {

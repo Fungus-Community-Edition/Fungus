@@ -50,7 +50,7 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
     public virtual void TearDown()
     {
         Object.DestroyImmediate(go);
-        Object.DestroyImmediate(manager);
+        Object.DestroyImmediate(manager.gameObject);
         go = null;
         manager = null;
         SaveSystem.ResetStaticsForTest();

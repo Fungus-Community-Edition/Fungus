@@ -1,12 +1,13 @@
-﻿using Amanita.ThirdPartyInt.DGDOTween;
+﻿
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Amanita.Tweening;
 
-namespace BuiltinCompat
+namespace Amanita.Tweening.BuiltinCompat
 {
-    public class AudioSourceCompatTests : DoTweenAdapterTests
+    public class AudioSourceCompatTests : DefaultAdapterTests
     {
         private static readonly TweenCase<AudioSource, float> ShiftVolumeCase = new TweenCase<AudioSource, float>
         {
@@ -21,7 +22,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftVolume01Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftVolume01To",
-            CreateTween = (adapter, src) => adapter.ShiftVolume01To(src, 0.5f, Duration), 
+            CreateTween = (adapter, src) => adapter.ShiftVolume01To(src, 0.5f, Duration),
             GetValue = src => src.volume,
             SetValue = (src, val) => src.volume = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -41,7 +42,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftPitchN33Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftPitchN33To",
-            CreateTween = (adapter, src) => adapter.ShiftPitchN33To(src, -1.50f, Duration), 
+            CreateTween = (adapter, src) => adapter.ShiftPitchN33To(src, -1.50f, Duration),
             GetValue = src => src.pitch,
             SetValue = (src, val) => src.pitch = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -54,8 +55,8 @@ namespace BuiltinCompat
         {
             var comp = tCase.CreateComponent(_testGo);
             var handle = tCase.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<DefaultTweenHandle>(handle);
+            Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
         }
 
         private static readonly object[] AudioCases =
@@ -69,8 +70,8 @@ namespace BuiltinCompat
         [TestCaseSource(nameof(AudioCases))]
         public void Kill_DoesNotThrow(TweenCase<AudioSource, float> tCase)
         {
-            var comp = tCase.CreateComponent(_testGo);
-            var handle = tCase.CreateTween(_adapter, comp);
+            AudioSource audSource = tCase.CreateComponent(_testGo);
+            var handle = tCase.CreateTween(_adapter, audSource);
             Assert.DoesNotThrow(() => handle.Kill());
             Assert.IsFalse(handle.IsPlaying);
         }
@@ -80,14 +81,14 @@ namespace BuiltinCompat
         public IEnumerator Tween_CompletesWithExpectedValue(
             [ValueSource(nameof(AudioCases))] TweenCase<AudioSource, float> tCase)
         {
-            var comp = tCase.CreateComponent(_testGo);
-            tCase.SetValue(comp, 0f); // start from zero for volume/pitch
+            AudioSource audSource = tCase.CreateComponent(_testGo);
+            tCase.SetValue(audSource, 0f); // start from zero for volume/pitch
 
-            tCase.CreateTween(_adapter, comp);
+            tCase.CreateTween(_adapter, audSource);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 
-            var actual = tCase.GetValue(comp);
+            var actual = tCase.GetValue(audSource);
             Assert.AreEqual(tCase.TargetValue, actual, Epsilon, tCase.Name);
         }
 
@@ -165,10 +166,10 @@ namespace BuiltinCompat
 
         private static readonly object[] Volume01EdgeCases =
         {
-            new object[] { 0f, 0f },     // 0% → 0.0
-            new object[] { 100f, 1f },   // 100% → 1.0
-            new object[] { -50f, 0f }    // negative → clamp to 0.0
-        };
+        new object[] { 0f, 0f },     // 0% → 0.0
+        new object[] { 100f, 1f },   // 100% → 1.0
+        new object[] { -50f, 0f }    // negative → clamp to 0.0
+    };
 
         [UnityTest]
         public IEnumerator ShiftPitchTo_EdgeCases(
@@ -188,9 +189,9 @@ namespace BuiltinCompat
 
         private static readonly object[] PitchEdgeCases =
         {
-            new object[] { 0f, 0f },     // 0% → 0.0
-            new object[] { 200f, 2f },   // 200% → 2.0
-            new object[] { 300f, 3f }    // >200% → scale above 2.0
-        };
+        new object[] { 0f, 0f },     // 0% → 0.0
+        new object[] { 200f, 2f },   // 200% → 2.0
+        new object[] { 300f, 3f }    // >200% → scale above 2.0
+    };
     }
 }

@@ -22,9 +22,9 @@ namespace CommandCompat
             // Assign private fields via reflection
             typeof(FadeSprite).GetField("spriteRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, spriteRenderer);
-            typeof(FadeSprite).GetField("_duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            typeof(FadeSprite).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new FloatData(Duration));
-            typeof(FadeSprite).GetField("_targetColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            typeof(FadeSprite).GetField("targetColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, new ColorData(TargetColor));
             typeof(FadeSprite).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(cmd, ScriptableObject.CreateInstance<AmaniDoTweenAdapter>());
