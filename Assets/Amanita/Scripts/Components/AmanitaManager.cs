@@ -7,9 +7,8 @@ using UnityEngine;
 namespace Amanita
 {
     /// <summary>
-    /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
+    /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
-    [ExecuteInEditMode]
     public sealed class AmanitaManager : MonoBehaviour
     {
         public static DefaultTweenAdapter DefaultTweener
@@ -54,10 +53,12 @@ namespace Amanita
                 if (existing != null)
                 {
                     _s = existing;
+                    _s.Init(); 
                     return _s;
                 }
 
                 AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
+                _s = null; // Since the Rasource.Load call triggers this class's Awake method
                 _s = Instantiate(prefab);
                 _s.gameObject.name = prefab.name; // We don't want "Clone" in the name.
                 
@@ -134,7 +135,14 @@ namespace Amanita
             }
             else if (_s != this)
             {
-                DestroyImmediate(gameObject); // Immediate in edit mode to avoid lingering
+                if (!Application.isPlaying)
+                {
+                    // Since DestroyImmediate doesn't call OnDestroy...
+                    OnDestroy();
+                    DestroyImmediate(gameObject); // Prevents duplicates in edit mode
+                }
+                else
+                    Destroy(gameObject);
                 return;
             }
             else if (IsInitted == false)
@@ -206,10 +214,12 @@ namespace Amanita
 
         private void OnDestroy()
         {
-            if (S == this)
+            if (_s == this)
             {
-                S = null;
+                _s = null;
                 IsInitted = false;
+
+                SaveSystem.S = null;
             }
         }
     }

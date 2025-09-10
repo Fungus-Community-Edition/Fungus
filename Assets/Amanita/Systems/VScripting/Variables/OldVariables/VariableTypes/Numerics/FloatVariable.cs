@@ -96,33 +96,6 @@ namespace Amanita.VScripting
             return floatData.Value;
         }
 
-        //public override IVariable VarRef
-        //{
-        //    get
-        //    {
-        //        if (varRef != null)
-        //        {
-
-        //        }
-        //        return floatRef;
-        //    }
-        //    set
-        //    {
-        //        if (value == null) { floatRef = null; return; }
-
-        //        if (value.ContentType.Equals(this.ContentType))
-        //        {
-        //            floatRef = value as FloatVariable;
-        //        }
-        //        else
-        //        {
-        //            string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-        //            throw new System.InvalidCastException(errorMessage);
-        //        }
-                
-        //    }
-        //}
-
         public override void Refresh()
         {
             varRef ??= floatRef;

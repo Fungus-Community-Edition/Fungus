@@ -1647,19 +1647,13 @@ namespace Amanita.VScripting
         /// </summary>
         public string UniqueId => uniqueId;
 
-#if UNITY_EDITOR
         private void OnValidate()
         {
-            EnsureAmanitaManagerIsInScene();
-            void EnsureAmanitaManagerIsInScene()
-            {
-                if (!Application.isPlaying)
-                {
-                    AmanitaManager.EnsureExists();
-                }
+            legacyVariables.RemoveAll((elem) => elem == null);
+            muscariables.RemoveAll((elem) => elem == null);
 
-            }
-
+            AmanitaManager.EnsureExists();
+            
             if (UIModel == null)
             {
                 uiModel = new FlowchartUIModel();
@@ -1697,7 +1691,6 @@ namespace Amanita.VScripting
             }
 
         }
-#endif
 
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>

@@ -1,6 +1,8 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
+using System.Reflection;
 
 namespace Amanita.VScripting
 {
@@ -18,7 +20,7 @@ namespace Amanita.VScripting
             switch (varRefProp.propertyType)
             {
                 case SerializedPropertyType.ObjectReference:
-                    varRefProp.objectReferenceValue = chosen as UnityEngine.Object;
+                    varRefProp.objectReferenceValue = chosen as UnityObj;
                     break;
 
                 case SerializedPropertyType.ManagedReference:
@@ -27,15 +29,24 @@ namespace Amanita.VScripting
                     {
                         varRefProp.managedReferenceValue = null;
                     }
-                    else if (typeof(UnityEngine.Object).IsAssignableFrom(contentType))
+                    else if (typeof(UnityObj).IsAssignableFrom(contentType))
                     {
                         // Wrap the UnityEngine.Object in a VariablePointer<T>
-                        if (chosen is UnityEngine.Object uo)
+                        if (chosen is UnityObj unityObj)
                         {
                             var pointerType = typeof(VariablePointer<>).MakeGenericType(contentType);
-                            var wrapper = (IVariablePointer)Activator.CreateInstance(pointerType, uo);
-                            wrapper.Component = uo;
-                            varRefProp.managedReferenceValue = wrapper;
+                            var wrapper = Activator.CreateInstance(pointerType); // default ctor
+                            varRefProp.managedReferenceValue = (object)wrapper;
+
+                            // Now set the _component field on the *serialized* object
+                            varRefProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                            varRefProp.serializedObject.Update();
+
+                            var field = pointerType.GetField("_component", BindingFlags.NonPublic | BindingFlags.Instance);
+                            field.SetValue(varRefProp.managedReferenceValue, unityObj);
+
+                            varRefProp.serializedObject.ApplyModifiedProperties();
+
                         }
                         else
                         {
