@@ -1,6 +1,7 @@
 using Amanita.Lua;
 using Amanita.VScripting.EventHandlers;
 using Amanita.VScripting.UI;
+using Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -275,15 +276,39 @@ namespace Amanita.VScripting
 
         protected virtual void GetAndInitVars()
         {
-            // Muscariables get automatically serialized as part of the list, and thus 
-            // we don't need anything like GetComponentsInChildren for them
-            legacyVariables = GetComponentsInChildren<Variable>().ToList();
+            // Muscariables get automatically serialized as part of the list
+
             IList<IVariable> allVars = legacyVariables.Cast<IVariable>()
                 .Concat(muscariables.Cast<IVariable>())
                 .ToList();
-            for (int i = 0; i < allVars.Count; i++)
+
+            for (int i = 0; i < legacyVariables.Count; i++)
             {
-                var currentVar = allVars[i];
+                var currentVar = legacyVariables[i];
+                currentVar.Init();
+            }
+
+            //ReplaceLegacyWithMuscaris(); // TODO: Fix editor issues and then uncomment
+            void ReplaceLegacyWithMuscaris()
+            {
+                // Just floats for now
+                IList<IVariable<float>> legacyFloats = (from elem in legacyVariables
+                                                        where elem.ContentType == typeof(float)
+                                                        select elem as IVariable<float>).ToList();
+
+                for (int i = 0; i < legacyFloats.Count; i++)
+                {
+                    IVariable<float> currentLegacyFloat = legacyFloats[i];
+                    Muscariable<float> floatMuscari = VariableFactory.Create<float>(currentLegacyFloat);
+                    floatMuscari.ParentFlowchart = this;
+                    RemoveVariable(currentLegacyFloat);
+                    AddVariable(floatMuscari);
+                }
+            }
+
+            for (int i = 0; i < muscariables.Count; i++)
+            {
+                var currentVar = muscariables[i];
                 currentVar.Init();
             }
         }
@@ -1625,6 +1650,16 @@ namespace Amanita.VScripting
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            EnsureAmanitaManagerIsInScene();
+            void EnsureAmanitaManagerIsInScene()
+            {
+                if (!Application.isPlaying)
+                {
+                    AmanitaManager.EnsureExists();
+                }
+
+            }
+
             if (UIModel == null)
             {
                 uiModel = new FlowchartUIModel();
@@ -1663,7 +1698,7 @@ namespace Amanita.VScripting
 
         }
 #endif
-        
+
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
         {
@@ -1704,7 +1739,8 @@ namespace Amanita.VScripting
 
         public virtual void AddVariable(IVariable toAdd)
         {
-            bool alreadyRegistered = legacyVariables.Contains(toAdd) || muscariables.Contains(toAdd);
+            var equalityComparer = ReferenceEqualityComparer<Muscariable>.Instance;
+            bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) || muscariables.ContainsReference(toAdd);
             if (alreadyRegistered)
             {
                 return;
@@ -1721,6 +1757,11 @@ namespace Amanita.VScripting
 
             toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
             VariableAdded(toAdd);
+        }
+
+        protected virtual bool CheckRefEquals(IVariable firstVar, IVariable secondVar)
+        {
+            return ReferenceEquals(firstVar, secondVar);
         }
 
         public static void ResetStaticsForTest()
@@ -1745,7 +1786,7 @@ namespace Amanita.VScripting
 
             for (int i = 0; i < newOrder.Count; i++)
             {
-                if (newOrder[i] is Variable legacy && legacyVariables.Contains(legacy) && seen.Add(legacy))
+                if (newOrder[i] is Variable legacy && legacyVariables.ContainsReference(legacy) && seen.Add(legacy))
                     ordered.Add(legacy);
             }
 
@@ -1760,5 +1801,7 @@ namespace Amanita.VScripting
                 legacyVariables = ordered;
         }
 
+
+        
     }
 }

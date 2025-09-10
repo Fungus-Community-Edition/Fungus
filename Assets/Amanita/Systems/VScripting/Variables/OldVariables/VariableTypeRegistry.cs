@@ -88,7 +88,7 @@ namespace Amanita.VScripting
                 foreach (var varType in varTypesToCheck)
                 {
                     VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
-                    if (attr.ContentType.Equals(contentType))
+                    if (attr != null && attr.ContentType.Equals(contentType))
                     {
                         result = varType;
                         _contentTypeToVarType.Add(attr.ContentType, varType);

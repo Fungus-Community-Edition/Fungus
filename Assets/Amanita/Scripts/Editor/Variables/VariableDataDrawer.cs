@@ -1,152 +1,252 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Type = System.Type;
+using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
     // For the fields that can accept either a variable or a literal value
-    public class VariableDataDrawer<T> : PropertyDrawer where T : Variable
+    [CustomPropertyDrawer(typeof(VariableData), true)]
+    public class VariableDataDrawer<T> : PropertyDrawer
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
-            SafeIMGUI.Draw(() =>
+            EditorGUI.BeginProperty(position, label, varDataProp);
+            VariableData varData = varDataProp.boxedValue as VariableData;
+            varData.Refresh();
+            // Find the two key sub-properties
+            SerializedProperty valueProp, referenceProp;
+            try
             {
-                EditorGUI.BeginProperty(position, label, property);
-
-                VariableInfoAttribute attr;
-                var typeInfo = VariableEditor.GetVariableInfo(typeof(T));
-                if (typeInfo == null)
-                {
-                    EditorGUI.LabelField(position, label.text, "No VariableInfoAttribute");
-                    return;
-                }
-
-                string propNameBase = char.ToLowerInvariant(typeInfo.OptionDisplayName[0]) + typeInfo.OptionDisplayName.Substring(1);
-                string refPropName = propNameBase + "Ref"; // Example: integerRef
-
-                // Reference and literal lookups with compatibility fallbacks
-                var referenceProp = property.FindPropertyRelative(refPropName);
-                var valueProp = FindLiteralProp(property, propNameBase);
-
-                // If both are missing, show a small warning but don’t break the GUI
-                if (referenceProp == null && valueProp == null)
-                {
-                    EditorGUI.LabelField(position, label.text, "Invalid variable data fields");
-                    return;
-                }
-
-                // If the reference slot exists, draw per the original UX:
-                // - If ref is null: show literal + compact ref popup
-                // - If ref is set: show just the ref field
-                var flowchart = (property.serializedObject.targetObject as Command)?.GetFlowchart();
-                if (flowchart == null || flowchart.VariableCount == 0)
-                {
-                    EditorGUI.LabelField(noContentFoundRect, "No Flowchart or Variables found");
-                    return;
-                }
-
-                // Decide layout based on value property height (if we have one)
-                float valueHeight = valueProp != null
-                    ? EditorGUI.GetPropertyHeight(valueProp, label)
-                    : EditorGUIUtility.singleLineHeight;
-
-                if (valueHeight <= EditorGUIUtility.singleLineHeight * 2f)
-                {
-                    DrawSingleLine(position, label, referenceProp, valueProp);
-                }
-                else
-                {
-                    DrawMultiLine(position, label, referenceProp, valueProp);
-                }
-
-            }, property.displayName);
-
-        }
-
-        protected static Rect noContentFoundRect = new Rect(0, 0, 100, 20);
-
-        // Compatibility finder for literal value fields across legacy/new layouts
-        private static SerializedProperty FindLiteralProp(SerializedProperty root, string baseName)
-        {
-            // 1) Legacy explicit value naming: floatVal, vector3Val, etc.
-            string legacyValueName = baseName + "Val";
-            SerializedProperty propFound = root.FindPropertyRelative(legacyValueName);
-            if (propFound != null) return propFound;
-
-            // 2) New generic field in VariableData<T>
-            propFound = root.FindPropertyRelative("_valOfType");
-            if (propFound != null) return propFound;
-
-            // 3) Very old generic ‘value’ naming in some data types
-            propFound = root.FindPropertyRelative("value");
-            if (propFound != null) return propFound;
-
-            // 4) Base class object fallback (valObj). This is the last resort
-            propFound = root.FindPropertyRelative("valObj");
-
-            return propFound;
-        }
-
-        private static void DrawSingleLine(Rect rect, GUIContent label, SerializedProperty referenceProp,
-            SerializedProperty valueProp)
-        {
-            // If there’s no reference field at all, just draw the literal
-            if (referenceProp == null)
-            {
-                EditorGUI.PropertyField(rect, valueProp ?? referenceProp, label, true);
-                return;
+                valueProp = varDataProp.FindPropertyRelative("valOfType");
             }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Exception trying to find 'valOfType' property relative to {varDataProp.propertyPath}. " +
+                    $"Its display name: {varDataProp.displayName}. Make sure the VariableData class still has a field named 'valOfType'. Exception: {e}");
+                throw;
+            }
+            referenceProp = varDataProp.FindPropertyRelative("varRef");
 
+            // Layout: label, then value/reference side-by-side
             int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
             const int popupGap = 5;
-
-            Rect controlRect = EditorGUI.PrefixLabel(rect, label);
-            Rect valueRect = controlRect;
-            valueRect.width = Mathf.Max(0, controlRect.width - popupWidth - popupGap);
-            Rect popupRect = controlRect;
+            Rect wholeFieldRect = EditorGUI.PrefixLabel(position, label);
+            Rect valueRect = wholeFieldRect;
+            int spaceForPopup = popupWidth + popupGap;
+            valueRect.width = Mathf.Max(0, wholeFieldRect.width - spaceForPopup);
+            // ^We want to make sure that the rect for the value field leaves enough space for the popup
+            Rect popupRect = wholeFieldRect; 
+            popupRect.x += valueRect.width + popupGap;
+            popupRect.width = popupWidth;
 
             int prevIndent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            bool shouldDrawLiteral = referenceProp.objectReferenceValue == null && valueProp != null;
+            // We only want to draw the literal value when the varRef is null
+            bool shouldDrawLiteral = !VarRefPropHasAnythingAssigned(referenceProp);
             if (shouldDrawLiteral)
+                EditorGUI.PropertyField(valueRect, valueProp, GUIContent.none);
+
+            // Draw the variable reference (branch on propertyType)
+            // Going to need to define some new logic here, since the old stuff was predicated
+            // on the var refs having VariableInfo attributes, which they no longer do.
+
+            DrawReferenceField();
+            void DrawReferenceField()
             {
-                CustomVariableDrawerLookup.DrawCustomOrPropertyField(typeof(T), valueRect, valueProp, GUIContent.none);
-                popupRect.x += valueRect.width + popupGap;
-                popupRect.width = popupWidth;
+                Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
+                if (localFlowchart == null)
+                {
+                    Debug.LogWarning($"No flowchart is open in the Flowchart window. Cannot draw variable reference field for {varDataProp.propertyPath}.");
+                    return;
+                }
+
+                int index = 0, selectedIndex = 0;
+                // ^So we can track which var in the dropdown is currently selected
+                IVariablePointer selectedVariable = referenceProp.boxedValue as IVariablePointer;
+
+                RegisterValidVars();
+                void RegisterValidVars()
+                {
+                    var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
+                    var contentType = dataAttr.ContentType;
+                    validVarLookup.Clear();
+                    validVarLookup.Add("<Value>", null); // Option to switch back to literal value
+
+                    RegisterLocalVars();
+                    void RegisterLocalVars()
+                    {
+                        IList<IVariable> validLocalVars = localFlowchart.Variables
+                            .Where(elem => elem.ContentType.Equals(contentType))
+                            .ToList();
+                        for (int i = 0; i < validLocalVars.Count; i++)
+                        {
+                            var elem = validLocalVars[i];
+                            if (!validVarLookup.ContainsKey(elem.Key))
+                            {
+                                validVarLookup.Add(elem.Key, elem);
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"Variable key collision when trying to add variable {elem.Key} to the dropdown for {varDataProp.propertyPath}. " +
+                                    $"There is already a variable with that key in the dropdown. Skipping this one.");
+                            }
+
+                            index++;
+
+                            // Since selectedVariable a VariablePointer, we'd best go with semantic equality.
+                            // And make sure to call it from selectedVariable, given how VariablePointer.Equals is implemented.
+                            if (selectedVariable != null && selectedVariable.Equals(elem)) 
+                            {
+                                selectedIndex = index;
+                                Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                            }
+                        }
+                    }
+
+                    RegisterVarsFromOtherFlowcharts();
+                    void RegisterVarsFromOtherFlowcharts()
+                    {
+                        IList<Flowchart> otherFlowchartsInScene = Flowchart.CachedFlowcharts.Where
+                            ((elem) => elem != localFlowchart).ToList();
+                        for (int i = 0; i < otherFlowchartsInScene.Count; i++)
+                        {
+                            var otherChart = otherFlowchartsInScene[i];
+                            IList<IVariable> validVarsInOtherChart = otherChart.Variables
+                                .Where(elem => elem.ContentType.Equals(contentType) && elem.Scope == VariableScope.Public)
+                                .ToList();
+                            for (int j = 0; j < validVarsInOtherChart.Count; j++)
+                            {
+                                var elem = validVarsInOtherChart[j];
+                                string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
+                                if (!validVarLookup.ContainsKey(namespacedKey))
+                                {
+                                    validVarLookup.Add(namespacedKey, elem);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"Variable key collision when trying to add variable {namespacedKey} to the dropdown for {varDataProp.propertyPath}. " +
+                                        $"There is already a variable with that key in the dropdown. Skipping this one.");
+                                }
+
+                                index++;
+
+                                if (selectedVariable != null && selectedVariable.Equals(elem))
+                                {
+                                    selectedIndex = index;
+                                    Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                                }
+                            }
+                        }
+                    }
+
+                    RegisterGlobalVars();
+                    void RegisterGlobalVars()
+                    {
+                        GlobalVariables globalVars = AmanitaManager.S.GlobalVariables;
+                        IList<IVariable> validGlobalVars = globalVars.Variables
+                            .Where(elem => elem.ContentType.Equals(contentType))
+                            .ToList();
+
+                        for (int i = 0; i < validGlobalVars.Count; i++)
+                        {
+                            var elem = validGlobalVars[i];
+                            string namespacedKey = $"Global/{elem.Key}";
+                            if (!validVarLookup.ContainsKey(namespacedKey))
+                            {
+                                validVarLookup.Add(namespacedKey, elem);
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"Variable key collision when trying to add variable {namespacedKey} to the dropdown for {varDataProp.propertyPath}. " +
+                                    $"There is already a variable with that key in the dropdown. Skipping this one.");
+                            }
+
+                            index++;
+
+                            if (selectedVariable != null && selectedVariable.Equals(elem))
+                            {
+                                selectedIndex = index;
+                                Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                            }
+                        }
+                    }
+                }
+
+                IList<string> options = validVarLookup.Keys.ToList();
+                int prevSelectedIndex = selectedIndex;
+                IVariable chosenBefore = validVarLookup[options[prevSelectedIndex]];
+
+                if (!shouldDrawLiteral && chosenBefore != null)
+                {
+                    popupRect = wholeFieldRect;
+                }
+
+                selectedIndex = EditorGUI.Popup(popupRect, selectedIndex, options.ToArray());
+
+                IVariable chosenNow = validVarLookup[options[selectedIndex]];
+                referenceProp.AssignVarRef(chosenNow, varData.ContentType);
+
+                if (selectedIndex != prevSelectedIndex)
+                {
+                    Debug.Log($"Selected something else");
+                }
+
+                if (chosenNow != null)
+                {
+
+                }
+
             }
 
-            EditorGUI.PropertyField(popupRect, referenceProp, GUIContent.none);
             EditorGUI.indentLevel = prevIndent;
+
+            EditorGUI.EndProperty();
         }
 
-        private static void DrawMultiLine(Rect rect, GUIContent label, SerializedProperty referenceProp, SerializedProperty valueProp)
+        protected IDictionary<string, IVariable> validVarLookup = new Dictionary<string, IVariable>();
+
+        protected virtual bool VarRefPropHasAnythingAssigned(SerializedProperty varRefProp)
         {
-            // If there’s no reference field at all, just draw the literal with label
-            if (referenceProp == null)
+            bool result = false;
+
+            switch (varRefProp.propertyType)
             {
-                EditorGUI.PropertyField(rect, valueProp ?? referenceProp, label, true);
-                return;
+                case SerializedPropertyType.ObjectReference:
+                    // UnityEngine.Object or ScriptableObject-backed variable
+                    result = varRefProp.objectReferenceValue != null;
+                    break;
+                case SerializedPropertyType.Generic:
+                case SerializedPropertyType.ManagedReference:
+                    // [SerializeReference] polymorphic variable
+                    result = varRefProp.managedReferenceValue != null;
+                    break;
+
+                default:
+                    Debug.LogError($"[VarRefPropHasAnythingAssigned] Did not account for var ref prop being of serialized property type {varRefProp.propertyType}");
+                    break;
             }
 
-            const int popupWidth = 100;
-            Rect popupRect;
-
-            if (referenceProp.objectReferenceValue == null && valueProp != null)
-            {
-                CustomVariableDrawerLookup.DrawCustomOrPropertyField(typeof(T), rect, valueProp, label);
-                Vector2 popupRectPos = new Vector2(rect.x + rect.width - popupWidth + 5, rect.y);
-                Vector2 popupRectSize = new Vector2(popupWidth, EditorGUIUtility.singleLineHeight);
-                popupRect = new Rect(popupRectPos, popupRectSize);
-            }
-            else
-            {
-                popupRect = EditorGUI.PrefixLabel(rect, label);
-            }
-
-            EditorGUI.PropertyField(popupRect, referenceProp, GUIContent.none);
+            return result;
         }
-
+        
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            var referenceProp = property.FindPropertyRelative("varRef");
+            if (referenceProp != null && referenceProp.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                // Let Unity calculate height for polymorphic managed refs
+                return EditorGUI.GetPropertyHeight(referenceProp, true);
+            }
+            return EditorGUIUtility.singleLineHeight;
+        }
     }
+
+
 
     [CustomPropertyDrawer(typeof(BooleanData))]
     public class BooleanDataDrawer : VariableDataDrawer<BooleanVariable>

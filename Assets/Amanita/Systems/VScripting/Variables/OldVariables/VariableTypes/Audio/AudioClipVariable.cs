@@ -32,24 +32,29 @@ namespace Amanita.VScripting
 
 		public AudioClipData(AudioClip startVal) : base(startVal) { }
 
-		public override IVariable VarRef
+		//public override IVariable VarRef
+		//{
+		//	get { return audioClipRef; }
+		//	set
+		//	{
+		//		if (value == null) { audioClipRef = null; return; }
+
+		//		if (value.ContentType.Equals(this.ContentType))
+		//		{
+		//			audioClipRef = value as AudioClipVariable;
+		//		}
+		//		else
+		//		{
+		//			string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
+		//			throw new System.InvalidCastException(errorMessage);
+		//		}
+
+		//	}
+		//}
+
+		public override void Refresh()
 		{
-			get { return audioClipRef; }
-			set
-			{
-				if (value == null) { audioClipRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					audioClipRef = value as AudioClipVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
+			varRef ??= audioClipRef;
 		}
 	}
 }

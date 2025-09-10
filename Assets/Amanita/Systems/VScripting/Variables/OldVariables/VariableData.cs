@@ -23,6 +23,7 @@ namespace Amanita.VScripting
             }
             set
             {
+                var prevValue = Value;
                 if (VarRef != null)
                 {
                     VarRef.Value = value;
@@ -31,11 +32,18 @@ namespace Amanita.VScripting
                 {
                     valObj = value;
                 }
+
+                OnBaseValueSet(prevValue);
             }
         }
 
         [SerializeReference, SerializeField] protected object valObj;
         public abstract IVariable VarRef { get; set; }
+
+        protected virtual void OnBaseValueSet(object prevValue)
+        {
+
+        }
 
         public abstract string GetDescription();
 
@@ -52,6 +60,9 @@ namespace Amanita.VScripting
             theCopy.SetContentsTo(this);
             return theCopy;
         }
+
+        
+        public virtual void Refresh() { }
     }
 
     public interface IVariableData
@@ -79,6 +90,7 @@ namespace Amanita.VScripting
 
         public static implicit operator TValue(VariableData<TValue> someData)
         {
+            someData.Refresh();
             return someData.Value;
         }
 
@@ -158,6 +170,11 @@ namespace Amanita.VScripting
         {
             this.valObj = this.valOfType = otherVarData.valOfType;
             this.VarRef = otherVarData.VarRef;
+        }
+
+        protected override void OnBaseValueSet(object prevValue)
+        {
+            valOfType = (TValue)valObj;
         }
 
         public override IVariable VarRef

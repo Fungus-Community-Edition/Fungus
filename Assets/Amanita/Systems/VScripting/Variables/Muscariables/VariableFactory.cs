@@ -38,7 +38,7 @@ namespace Amanita.VScripting
                     result.Key = toMakeCopyOf.Key;
                     result.Scope = toMakeCopyOf.Scope;
                     result.ItemID = toMakeCopyOf.ItemID;
-                    if (toMakeCopyOf.Value == null || result.ContentType.IsInstanceOfType(toMakeCopyOf.Value))
+                    if (toMakeCopyOf.Value == null || toMakeCopyOf.ContentType.Equals(contentType))
                     {
                         result.Value = toMakeCopyOf.Value;
                     }

@@ -92,11 +92,6 @@ namespace Amanita.VScripting
         {
         }
 
-        public static implicit operator int(IntegerData integerData)
-        {
-            return integerData.Value;
-        }
-
         public override IVariable VarRef
         {
             get { return integerRef; }
@@ -118,6 +113,11 @@ namespace Amanita.VScripting
                 }
 
             }
+        }
+
+        public override void Refresh()
+        {
+            varRef ??= integerRef;
         }
 
     }

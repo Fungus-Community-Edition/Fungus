@@ -73,68 +73,72 @@ namespace Amanita.VScripting.EditorUtils
             int selectedIndex = 0;
             IList<string> variableKeys = new List<string>() { defaultText };
             IList<IVariable> variableObjects = new List<IVariable>() { null };
-            RegisterLocalVarsToShowInDropdown();
-            void RegisterLocalVarsToShowInDropdown()
+            RegisterVarsToShowInDropdown();
+            void RegisterVarsToShowInDropdown()
             {
-                // As in local to the Flowchart the Command belongs to
-                for (int i = 0; i < varsToCheck.Count; i++)
+                RegisterLocalVarsToShowInDropdown();
+                void RegisterLocalVarsToShowInDropdown()
                 {
-                    var elem = varsToCheck[i];
-                    if (!shouldBeOptionInDropdown(elem))
+                    // As in local to the Flowchart the Command belongs to
+                    for (int i = 0; i < varsToCheck.Count; i++)
                     {
-                        continue;
-                    }
-
-                    variableKeys.Add(elem.Key);
-                    variableObjects.Add(elem);
-                    index++;
-
-                    // Given the nature of Unity's serialization system, we'll assume that 
-                    // all IVariables here are in UnityObject's family tree. We'll probably
-                    // want to use an editor-only holder of sorts for Muscariables when
-                    // we get around to integrating those.
-                    if ((UnityObject)elem == selectedVariable)
-                    {
-                        selectedIndex = index;
-                    }
-                }
-            }
-
-            // We want the appropriate public variables of other Flowcharts in the scene
-            // to be selectable as well. Thus, we'll scan those too.
-            RegisterOtherPublicVarsToShowInDropdown();
-            void RegisterOtherPublicVarsToShowInDropdown()
-            {
-                List<Flowchart> fcList = Flowchart.CachedFlowcharts;
-
-                for (int fcListIndex = 0; fcListIndex < fcList.Count; fcListIndex++)
-                {
-                    Flowchart fcElem = fcList[fcListIndex];
-                    if (fcElem == flowchartBelongingToCommand)
-                    {
-                        continue;
-                    }
-
-                    IList<IVariable> publicVars = fcElem.GetPublicVariables();
-                    for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
-                    { 
-                        IVariable varElem = publicVars[publicVarIndex];
-                        if (!shouldBeOptionInDropdown(varElem))
+                        var elem = varsToCheck[i];
+                        if (!shouldBeOptionInDropdown(elem))
                         {
                             continue;
                         }
 
-                        string publicVarKey = $"{fcElem.name}/{varElem.Key}";
-                        // ^To make it easy to see that the var belongs to another
-                        // flowchart
-                        variableKeys.Add(publicVarKey);
-                        variableObjects.Add(varElem);
-
+                        variableKeys.Add(elem.Key);
+                        variableObjects.Add(elem);
                         index++;
 
-                        if ((UnityObject)varElem == selectedVariable)
+                        // Given the nature of Unity's serialization system, we'll assume that 
+                        // all IVariables here are in UnityObject's family tree. We'll probably
+                        // want to use an editor-only holder of sorts for Muscariables when
+                        // we get around to integrating those.
+                        if ((UnityObject)elem == selectedVariable)
                         {
                             selectedIndex = index;
+                        }
+                    }
+                }
+
+                // We want the appropriate public variables of other Flowcharts in the scene
+                // to be selectable as well. Thus, we'll scan those too.
+                RegisterOtherPublicVarsToShowInDropdown();
+                void RegisterOtherPublicVarsToShowInDropdown()
+                {
+                    List<Flowchart> fcList = Flowchart.CachedFlowcharts;
+
+                    for (int fcListIndex = 0; fcListIndex < fcList.Count; fcListIndex++)
+                    {
+                        Flowchart fcElem = fcList[fcListIndex];
+                        if (fcElem == flowchartBelongingToCommand)
+                        {
+                            continue;
+                        }
+
+                        IList<IVariable> publicVars = fcElem.GetPublicVariables();
+                        for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
+                        {
+                            IVariable varElem = publicVars[publicVarIndex];
+                            if (!shouldBeOptionInDropdown(varElem))
+                            {
+                                continue;
+                            }
+
+                            string publicVarKey = $"{fcElem.name}/{varElem.Key}";
+                            // ^To make it easy to see that the var belongs to another
+                            // flowchart
+                            variableKeys.Add(publicVarKey);
+                            variableObjects.Add(varElem);
+
+                            index++;
+
+                            if ((UnityObject)varElem == selectedVariable)
+                            {
+                                selectedIndex = index;
+                            }
                         }
                     }
                 }

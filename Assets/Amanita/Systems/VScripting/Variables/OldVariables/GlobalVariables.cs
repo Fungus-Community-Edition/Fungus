@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Amanita.VScripting;
+using System.Linq;
 
 namespace Amanita
 {
@@ -81,5 +82,16 @@ namespace Amanita
 		}
 
 		Dictionary<string, Muscariable> muscariables = new Dictionary<string, Muscariable>();
+
+		/// <summary>
+		/// Returns a copy of the list of variables registered here, be they legacy or muscari.
+		/// </summary>
+		public virtual IReadOnlyList<IVariable> Variables
+		{
+			get
+			{
+				return holder.Variables;
+			}
+		}
 	}
 }

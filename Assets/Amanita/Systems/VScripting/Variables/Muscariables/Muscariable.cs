@@ -60,7 +60,9 @@ namespace Amanita.VScripting
             get { return this.value; }
             set
             {
-                if (value != null && value.Equals(this.value)) // For some reason, == won't work here
+                bool sameAsAssignedVal = !ReferenceEquals(value, null) && value.Equals(this.value); 
+                // ^For some reason, == won't work here
+                if (sameAsAssignedVal) 
                 {
                     return;
                 }
@@ -83,7 +85,7 @@ namespace Amanita.VScripting
         {
             bool result;
 
-            if (obj == null)
+            if (ReferenceEquals(obj, null))
             {
                 result = ContentType.IsClass;
             }
@@ -267,7 +269,17 @@ namespace Amanita.VScripting
 
         public virtual bool Equals(IVariable<T> otherVar)
         {
-            return this.Value.Equals(otherVar.Value);
+            return ValEquals(otherVar) && this.Key == otherVar.Key;
+        }
+
+        public virtual bool ValEquals(T other)
+        {
+            return this.Value.Equals(other);
+        }
+
+        public virtual bool ValEquals(IVariable<T> otherVar)
+        {
+            return otherVar != null && this.Value.Equals(otherVar.Value);
         }
 
         protected override void OnBaseValueSet(object previousValue)

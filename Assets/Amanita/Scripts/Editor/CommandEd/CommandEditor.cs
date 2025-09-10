@@ -205,7 +205,7 @@ namespace Amanita.VScripting.EditorUtils
                 else
                 {
                     EditorGUILayout.PropertyField(iterator, true, new GUILayoutOption[0]);
-                    Debug.Log($"Drew property {index} named {iterator.name}" );
+                    //Debug.Log($"Drew property {index} named {iterator.name}" );
                 }
                 index++;
             }
