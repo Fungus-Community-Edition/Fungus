@@ -27,7 +27,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return lastInsteadOfFirst.booleanRef == variable || base.HasReference(variable);
+            return ReferenceEquals(lastInsteadOfFirst.VarRef, variable) || base.HasReference(variable);
         }
 
         public override string GetSummary()

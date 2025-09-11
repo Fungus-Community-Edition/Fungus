@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Amanita.VScripting;
-using System.Linq;
 
 namespace Amanita
 {

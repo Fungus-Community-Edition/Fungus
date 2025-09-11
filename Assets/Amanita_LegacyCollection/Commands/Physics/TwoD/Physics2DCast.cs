@@ -114,15 +114,15 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == position1.vector3Ref ||
-                variable == radius.floatRef ||
-                variable == shapeSize.vector3Ref ||
-                variable == shapeAngle.floatRef ||
-                variable == minDepth.floatRef ||
-                variable == maxDepth.floatRef ||
-                variable == direction.vector3Ref ||
-                variable == maxDistance.floatRef ||
-                variable == lineEnd.vector3Ref ||
+            return ReferenceEquals(variable, position1.VarRef) ||
+                ReferenceEquals(variable, radius.VarRef) ||
+                ReferenceEquals(variable, shapeSize.VarRef) ||
+                ReferenceEquals(variable, shapeAngle.VarRef) ||
+                ReferenceEquals(variable, minDepth.VarRef) ||
+                ReferenceEquals(variable, maxDepth.VarRef) ||
+                ReferenceEquals(variable, direction.VarRef) ||
+                ReferenceEquals(variable, maxDistance.VarRef) ||
+                ReferenceEquals(variable, lineEnd.VarRef) ||
                 base.HasReference(variable);
         }
 

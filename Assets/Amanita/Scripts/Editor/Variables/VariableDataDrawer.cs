@@ -3,8 +3,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Type = System.Type;
-using UnityObject = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {

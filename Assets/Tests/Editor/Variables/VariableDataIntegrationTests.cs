@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
@@ -38,13 +37,12 @@ namespace Amanita.Tests.EditMode
             base.TearDown();
         }
 
-
-        //[TestCase(typeof(Animator))]
-        //[TestCase(typeof(Sprite))]
-        //[TestCase(typeof(GameObject))]
-        //[TestCase(typeof(Transform))]
-        //[TestCase(typeof(Material))]
-        //[TestCase(typeof(Texture))]
+        [TestCase(typeof(Animator))]
+        [TestCase(typeof(Sprite))]
+        [TestCase(typeof(GameObject))]
+        [TestCase(typeof(Transform))]
+        [TestCase(typeof(Material))]
+        [TestCase(typeof(Texture))]
         [TestCase(typeof(AudioClip))]
         public void SelectingLegacyUnityObjVariable_WrapsInPointer_AndResolvesValue(Type contentType)
         {

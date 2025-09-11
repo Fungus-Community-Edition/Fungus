@@ -1,7 +1,5 @@
-using System;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEditor;
 using Amanita.VScripting;
 using System.Collections.Generic;
 using UnityObj = UnityEngine.Object;
