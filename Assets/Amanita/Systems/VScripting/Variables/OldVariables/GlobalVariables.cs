@@ -16,6 +16,11 @@ namespace Amanita
 
 		public virtual void Init()
 		{
+			EnsureWeHaveFlowchart();
+		}
+
+		protected virtual void EnsureWeHaveFlowchart()
+		{
 			holder = GetComponent<Flowchart>();
 
 			if (holder == null)
@@ -81,5 +86,22 @@ namespace Amanita
 		}
 
 		Dictionary<string, Muscariable> muscariables = new Dictionary<string, Muscariable>();
+
+		/// <summary>
+		/// Returns a copy of the list of variables registered here, be they legacy or muscari.
+		/// </summary>
+		public virtual IReadOnlyList<IVariable> Variables
+		{
+			get
+			{
+				EnsureWeHaveFlowchart();
+				return holder.Variables;
+			}
+		}
+
+		public virtual void OnDestroy()
+		{
+
+		}
 	}
 }

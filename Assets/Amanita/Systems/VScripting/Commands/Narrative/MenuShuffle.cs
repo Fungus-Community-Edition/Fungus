@@ -1,6 +1,7 @@
 using UnityEngine;
+using Amanita.VScripting;
 
-namespace Amanita.DialogueSys
+namespace Amanita.DialogueSys.VScripting
 {
 	/// <summary>
 	/// Shuffle the order of the items in a Fungus Menu

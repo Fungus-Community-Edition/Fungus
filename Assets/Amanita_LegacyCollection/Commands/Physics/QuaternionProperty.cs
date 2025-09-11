@@ -2,136 +2,136 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Get or Set a property of a Quaternion component
-    /// </summary>
-    [CommandInfo("Property",
-                 "Quaternion",
-                 "Get or Set a property of a Quaternion component")]
-    [AddComponentMenu("")]
-    public class QuaternionProperty : BaseVariableProperty
-    {
+	/// <summary>
+	/// Get or Set a property of a Quaternion component
+	/// </summary>
+	[CommandInfo("Property",
+				 "Quaternion",
+				 "Get or Set a property of a Quaternion component")]
+	[AddComponentMenu("")]
+	public class QuaternionProperty : BaseVariableProperty
+	{
 		//generated property
-        public enum Property 
-        { 
-            X, 
-            Y, 
-            Z, 
-            W, 
-            EulerAngles, 
-            Normalized, 
-        }
+		public enum Property 
+		{ 
+			X, 
+			Y, 
+			Z, 
+			W, 
+			EulerAngles, 
+			Normalized, 
+		}
 
 		
-        [SerializeField]
-        protected Property property;
+		[SerializeField]
+		protected Property property;
 		
-        [SerializeField]
-        protected QuaternionData quaternionData;
+		[SerializeField]
+		protected QuaternionData quaternionData;
 
-        [SerializeField]
-        [VariableProperty(typeof(FloatVariable),
-                          typeof(Vector3Variable),
-                          typeof(QuaternionVariable))]
-        protected Variable inOutVar;
+		[SerializeField]
+		[VariableProperty(typeof(FloatVariable),
+						  typeof(Vector3Variable),
+						  typeof(QuaternionVariable))]
+		protected Variable inOutVar;
 
-        public override void OnEnter()
-        {
-            var iof = inOutVar as FloatVariable;
-            var iov = inOutVar as Vector3Variable;
+		public override void OnEnter()
+		{
+			var iof = inOutVar as FloatVariable;
+			var iov = inOutVar as Vector3Variable;
 #if UNITY_2019_2_OR_NEWER
-            var ioq = inOutVar as QuaternionVariable;
+			var ioq = inOutVar as QuaternionVariable;
 #endif
 
 
-            var target = quaternionData.Value;
+			var target = quaternionData.Value;
 
-            switch (getOrSet)
-            {
-                case GetSet.Get:
-                    switch (property)
-                    {
-                        case Property.X:
-                            iof.Value = target.x;
-                            break;
-                        case Property.Y:
-                            iof.Value = target.y;
-                            break;
-                        case Property.Z:
-                            iof.Value = target.z;
-                            break;
-                        case Property.W:
-                            iof.Value = target.w;
-                            break;
-                        case Property.EulerAngles:
-                            iov.Value = target.eulerAngles;
-                            break;
+			switch (getOrSet)
+			{
+				case GetSet.Get:
+					switch (property)
+					{
+						case Property.X:
+							iof.Value = target.x;
+							break;
+						case Property.Y:
+							iof.Value = target.y;
+							break;
+						case Property.Z:
+							iof.Value = target.z;
+							break;
+						case Property.W:
+							iof.Value = target.w;
+							break;
+						case Property.EulerAngles:
+							iov.Value = target.eulerAngles;
+							break;
 #if UNITY_2019_2_OR_NEWER
-                        case Property.Normalized:
-                            ioq.Value = target.normalized;
-                            break;
+						case Property.Normalized:
+							ioq.Value = target.normalized;
+							break;
 #endif
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
-                case GetSet.Set:
-                    switch (property)
-                    {
-                        case Property.X:
-                            target.x = iof.Value;
-                            break;
-                        case Property.Y:
-                            target.y = iof.Value;
-                            break;
-                        case Property.Z:
-                            target.z = iof.Value;
-                            break;
-                        case Property.W:
-                            target.w = iof.Value;
-                            break;
-                        case Property.EulerAngles:
-                            target.eulerAngles = iov.Value;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+					break;
+				case GetSet.Set:
+					switch (property)
+					{
+						case Property.X:
+							target.x = iof.Value;
+							break;
+						case Property.Y:
+							target.y = iof.Value;
+							break;
+						case Property.Z:
+							target.z = iof.Value;
+							break;
+						case Property.W:
+							target.w = iof.Value;
+							break;
+						case Property.EulerAngles:
+							target.eulerAngles = iov.Value;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
-                default:
-                    break;
-            }
+					break;
+				default:
+					break;
+			}
 
-            quaternionData.Value = target;
+			quaternionData.Value = target;
 
-            Continue();
-        }
+			Continue();
+		}
 
-        public override string GetSummary()
-        {
-            if (inOutVar == null)
-            {
-                return "Error: no variable set to push or pull data to or from";
-            }
+		public override string GetSummary()
+		{
+			if (inOutVar == null)
+			{
+				return "Error: no variable set to push or pull data to or from";
+			}
 
-            return getOrSet.ToString() + " " + property.ToString();
-        }
+			return getOrSet.ToString() + " " + property.ToString();
+		}
 
-        public override Color GetButtonColor()
-        {
-            return new Color32(235, 191, 217, 255);
-        }
+		public override Color GetButtonColor()
+		{
+			return new Color32(235, 191, 217, 255);
+		}
 
-        public override bool HasReference(Variable variable)
-        {
-            if (quaternionData.quaternionRef == variable || inOutVar == variable)
-                return true;
+		public override bool HasReference(Variable variable)
+		{
+			if (ReferenceEquals(quaternionData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+				return true;
 
-            return false;
-        }
+			return false;
+		}
 
-    }
+	}
 }

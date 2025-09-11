@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections;
+using Amanita.Tweening;
 
 namespace Amanita.VScripting
 {
@@ -115,7 +116,7 @@ namespace Amanita.VScripting
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual IEnumerator WaitAndContinue()
@@ -165,7 +166,7 @@ namespace Amanita.VScripting
             tweenArgs.TargetValue = endVolume;
             tweenArgs.HowLongToTake = fadeDuration;
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void PauseLoop()
@@ -209,7 +210,7 @@ namespace Amanita.VScripting
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void StopLoop(AudioSource source)
@@ -253,7 +254,7 @@ namespace Amanita.VScripting
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void ChangeVolume()
@@ -285,7 +286,7 @@ namespace Amanita.VScripting
                 }
             };
 
-            TweenManager.TweenAudioSourceVolume(tweenArgs);
+            AmanitaManager.DefaultTweener.TweenAudioSourceVolume(tweenArgs);
         }
 
         protected virtual void AudioFinished()

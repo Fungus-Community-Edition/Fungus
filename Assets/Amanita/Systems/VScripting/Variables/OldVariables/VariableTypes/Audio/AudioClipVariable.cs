@@ -17,11 +17,11 @@ namespace Amanita.VScripting
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioClip), typeof(AudioClipVariable))]
-	public class AudioClipData : VariableData<AudioClip, IVariable<AudioClip>>
+	public class AudioClipData : VariableData<AudioClip>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(AudioClipVariable))]
-		public AudioClipVariable audioClipRef;
+		public IVariable<AudioClip> audioClipRef;
 
 		public static implicit operator AudioClip(AudioClipData AudioClipData)
 		{
@@ -32,24 +32,9 @@ namespace Amanita.VScripting
 
 		public AudioClipData(AudioClip startVal) : base(startVal) { }
 
-		public override IVariable VarRef
+		public override void Refresh()
 		{
-			get { return audioClipRef; }
-			set
-			{
-				if (value == null) { audioClipRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					audioClipRef = value as AudioClipVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
+			varRef ??= audioClipRef;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Sets the global pitch level for audio played with Play Music and Play Sound commands.

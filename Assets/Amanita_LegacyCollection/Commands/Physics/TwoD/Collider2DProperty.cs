@@ -162,7 +162,7 @@ namespace Amanita.VScripting
 
 		public override bool HasReference(Variable variable)
 		{
-			if (collider2DData.collider2DRef == variable || inOutVar == variable)
+			if (ReferenceEquals(collider2DData.VarRef, variable) || inOutVar == variable)
 				return true;
 
 			return false;

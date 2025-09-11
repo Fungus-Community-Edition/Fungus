@@ -152,7 +152,6 @@ namespace Amanita.VScripting.EditorUtils
         protected Block dragBlock;
         protected bool hasDraggedSelected = false;
 
-        static protected VariableListAdaptor variableListAdaptor;
 
         protected bool wasControl;
         protected ExecutingBlocks executingBlocks = new ExecutingBlocks();
@@ -777,7 +776,9 @@ namespace Amanita.VScripting.EditorUtils
             get { return _gridLineColor; }
             set { _gridLineColor = value; }
         }
+
         protected Color _gridLineColor = Color.black;
+
         protected virtual void DrawOverlay(Event guiEvent)
         {
             DrawMainToolbarGroup();
@@ -836,72 +837,6 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 GUILayout.EndHorizontal();
             }
-
-            //DrawVariablesBlock(guiEvent);
-        }
-
-        // Keeping this around for when we want to use the old variables block
-        protected virtual void DrawVariablesBlock(Event guiEvent)
-        {
-            // Variables group
-            const int groupWidth = 440, scrollbarWidth = 40;
-            const int varListWidth = groupWidth - scrollbarWidth;
-            GUILayout.BeginHorizontal();
-            {
-                GUILayout.BeginVertical(GUILayout.Width(groupWidth));
-                {
-                    GUILayout.FlexibleSpace();
-
-                    Debug.Log($"Flowchart variables scroll pos: {Flowchart.VariablesScrollPos}");
-                    Flowchart.VariablesScrollPos = GUILayout.BeginScrollView(Flowchart.VariablesScrollPos);
-                    {
-                        GUILayout.Space(8);
-                        EditorGUI.BeginChangeCheck();
-
-                        if (variableListAdaptor != null)
-                        {
-                            if (variableListAdaptor.TargetFlowchart != null)
-                            {
-                                variableListAdaptor.DrawVarList(varListWidth);
-                            }
-                            else
-                            {
-                                variableListAdaptor = null;
-                            }
-                        }
-
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            EditorUtility.SetDirty(Flowchart);
-                        }
-                    }
-
-                    GUILayout.EndScrollView();
-
-                    EatMouseEvents();
-                    void EatMouseEvents()
-                    {
-                        if (guiEvent.type == EventType.MouseDown)
-                        {
-                            Rect variableWindowRect = GUILayoutUtility.GetLastRect();
-                            if (Flowchart.VariablesExpanded && Flowchart.Variables.Count > 0)
-                            {
-                                variableWindowRect.y -= 20;
-                                variableWindowRect.height += 20;
-                            }
-
-                            if (variableWindowRect.Contains(guiEvent.mousePosition))
-                            {
-                                guiEvent.Use();
-                            }
-                        }
-                    }
-                }
-                GUILayout.EndVertical();
-
-                GUILayout.FlexibleSpace();
-            }
-            GUILayout.EndHorizontal();
         }
 
         protected virtual bool IsBeingRepainted => Event.current.type == EventType.Repaint;

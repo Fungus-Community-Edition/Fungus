@@ -3280,6 +3280,74 @@ MonoBehaviour:
   tagEndSymbol: '{/instant}'
   replaceTagStartWith: '{s=0}'
   replaceTagEndWith: '{/s}'
+--- !u!1001 &1113250554
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 819678433502044778, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_Name
+      value: AmanitaManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878556027373521807, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
 --- !u!1 &1116253974
 GameObject:
   m_ObjectHideFlags: 0
@@ -4138,10 +4206,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555371}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 0
   references:
@@ -4168,17 +4239,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -4204,17 +4281,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -4234,13 +4317,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    _selectedBlocks:
+    - {fileID: 1390555298}
+    _selectedCommands:
+    - {fileID: 1390555442}
+    <ScrollPos>k__BackingField: {x: 3152.309, y: 1357.3031}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <Zoom>k__BackingField: 0.94000006
+    <BlockViewHeight>k__BackingField: 232
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -4249,7 +4334,7 @@ MonoBehaviour:
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  variables:
+  legacyVariables:
   - {fileID: 1390555396}
   - {fileID: 1390555441}
   - {fileID: 1390555443}
@@ -4267,8 +4352,8 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
-  luaBindingName: flowchart
+  _luaEnvironment: {fileID: 0}
+  luaBindingName: flowcharts
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
@@ -4449,17 +4534,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555362}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -4520,10 +4611,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555304}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 0
   references:
@@ -4583,17 +4677,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555308}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -4717,17 +4817,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -4753,17 +4859,23 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   references:
     version: 2
@@ -5006,7 +5118,7 @@ MonoBehaviour:
   waitUntilFinished: 0
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1390555319
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5026,7 +5138,7 @@ MonoBehaviour:
   waitUntilFinished: 0
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1390555320
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5439,10 +5551,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555298}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 0
   references:
@@ -5467,10 +5582,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555440}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 0
   references:
@@ -5553,17 +5671,24 @@ MonoBehaviour:
   itemId: 33
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -5586,17 +5711,24 @@ MonoBehaviour:
   itemId: 32
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -5710,10 +5842,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
@@ -6093,17 +6228,24 @@ MonoBehaviour:
   itemId: 85
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6131,87 +6273,6 @@ MonoBehaviour:
       rid: 858308029448265
   setOperator: 2
   variable: {fileID: 0}
-  booleanData:
-    _valObj:
-      rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  integerData:
-    _valObj:
-      rid: -2
-    _valOfType: 0
-    integerRef: {fileID: 0}
-  floatData:
-    _valObj:
-      rid: -2
-    _valOfType: 0
-    floatRef: {fileID: 0}
-  stringData:
-    _valObj:
-      rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
-  animatorData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    animatorRef: {fileID: 0}
-  audioSourceData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
-  colorData:
-    _valObj:
-      rid: -2
-    _valOfType: {r: 0, g: 0, b: 0, a: 0}
-    colorRef: {fileID: 0}
-  gameObjectData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  materialData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    materialRef: {fileID: 0}
-  objectData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    objectRef: {fileID: 0}
-  rigidbody2DData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    rigidbody2DRef: {fileID: 0}
-  spriteData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    spriteRef: {fileID: 0}
-  textureData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    textureRef: {fileID: 0}
-  transformData:
-    _valObj:
-      rid: -2
-    _valOfType: {fileID: 0}
-    transformRef: {fileID: 0}
-  vector2Data:
-    _valObj:
-      rid: -2
-    _valOfType: {x: 0, y: 0}
-    vector2Ref: {fileID: 0}
-  vector3Data:
-    _valObj:
-      rid: -2
-    _valOfType: {x: 0, y: 0, z: 0}
-    vector3Ref: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -6220,16 +6281,18 @@ MonoBehaviour:
     - rid: 858308029448265
       type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
       data:
-        _valObj:
+        valObj:
           rid: -2
         data:
           rid: 858308029448266
     - rid: 858308029448266
       type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
       data:
-        _valObj:
+        valObj:
           rid: -2
-        _valOfType: 0
+        varRef:
+          rid: -2
+        valOfType: 0
         integerRef: {fileID: 0}
 --- !u!114 &1390555359
 MonoBehaviour:
@@ -6246,17 +6309,24 @@ MonoBehaviour:
   itemId: 84
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6279,10 +6349,13 @@ MonoBehaviour:
   itemId: 83
   indentLevel: 0
   _duration:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    floatRef:
+      rid: -2
   durationOLD: 0
   references:
     version: 2
@@ -6304,17 +6377,24 @@ MonoBehaviour:
   itemId: 82
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6376,7 +6456,7 @@ MonoBehaviour:
   waitUntilFinished: 1
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1390555364
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6483,7 +6563,7 @@ MonoBehaviour:
   waitUntilFinished: 1
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1390555368
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6500,10 +6580,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
@@ -7028,17 +7111,24 @@ MonoBehaviour:
   itemId: 81
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7061,17 +7151,24 @@ MonoBehaviour:
   itemId: 91
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7094,17 +7191,24 @@ MonoBehaviour:
   itemId: 90
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
-  _duration:
-    _valObj:
+  duration:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
-  _targetColor:
-    _valObj:
+    varRef:
       rid: -2
-    _valOfType: {r: 1, g: 1, b: 1, a: 1}
-    colorRef: {fileID: 0}
+    valOfType: 1
+    floatRef:
+      rid: -2
+  targetColor:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 1, g: 1, b: 1, a: 1}
+    colorRef:
+      rid: -2
   waitUntilFinished: 0
+  fadeTweener: {fileID: 0}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7128,10 +7232,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 1
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
@@ -7158,10 +7265,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 0
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 0
@@ -7188,10 +7298,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 2
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 1
@@ -7218,10 +7331,13 @@ MonoBehaviour:
   indentLevel: 0
   control: 1
   _audioSource:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: {fileID: 0}
-    audioSourceRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   startVolume: 1
   endVolume: 1
   fadeDuration: 0
@@ -7248,10 +7364,13 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   _visible:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
@@ -7276,10 +7395,13 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   _visible:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
@@ -7304,10 +7426,13 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   _visible:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   affectChildren: 1
   visibleOLD: 0
@@ -7398,53 +7523,79 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
+      varRef:
+        rid: -2
+      valOfType: 0
       integerRef: {fileID: 1390555443}
     introClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     mainClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 1390555441}
+      varRef:
+        rid: 4382208283303477860
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     loop:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 1
     loopStartPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     loopEndPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     oneShot:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 0
   skipIfAlreadyPlaying:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 1
   useConfigSO:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   configSO: {fileID: 0}
   references:
@@ -7452,6 +7603,11 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 4382208283303477860
+      type: {class: 'VariablePointer`1[[UnityEngine.AudioClip, UnityEngine.AudioModule]]',
+        ns: Amanita.VScripting, asm: Amanita}
+      data:
+        _component: {fileID: 1390555441}
 --- !u!114 &1390555443
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7486,53 +7642,79 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
+      varRef:
+        rid: -2
+      valOfType: 0
       integerRef: {fileID: 1390555443}
     introClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     mainClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 1390555441}
+      varRef:
+        rid: -2
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     loop:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 1
     loopStartPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     loopEndPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     oneShot:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 0
   skipIfAlreadyPlaying:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   useConfigSO:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   configSO: {fileID: 0}
   references:
@@ -7572,26 +7754,38 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 1390555443}
   targetVol:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    floatRef: {fileID: 1390555451}
+    varRef:
+      rid: -2
+    valOfType: 0
+    floatRef:
+      rid: -2
   duration:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 1390555445}
+    varRef:
+      rid: -2
+    valOfType: 1
+    floatRef:
+      rid: -2
   waitUntilFinished:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
+  fadeTween: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   references:
     version: 2
     RefIds:
@@ -7647,53 +7841,79 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 3
     track:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
+      varRef:
+        rid: -2
+      valOfType: 0
       integerRef: {fileID: 1390555447}
     introClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     mainClip:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: {fileID: 0}
-      audioClipRef: {fileID: 1390555448}
+      varRef:
+        rid: -2
+      valOfType: {fileID: 0}
+      audioClipRef:
+        rid: -2
     loop:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 0
     loopStartPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     loopEndPoint:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      floatRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      floatRef:
+        rid: -2
     oneShot:
-      _valObj:
+      valObj:
         rid: -2
-      _valOfType: 0
-      booleanRef: {fileID: 0}
+      varRef:
+        rid: -2
+      valOfType: 0
+      booleanRef:
+        rid: -2
       booleanVal: 1
   skipIfAlreadyPlaying:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   useConfigSO:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   configSO: {fileID: 0}
   references:
@@ -7764,10 +7984,13 @@ MonoBehaviour:
   itemId: 113
   indentLevel: 0
   _duration:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    floatRef:
+      rid: -2
   durationOLD: 0
   references:
     version: 2
@@ -7791,10 +8014,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 2
   references:
@@ -7819,10 +8045,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 2
   references:
@@ -7847,9 +8076,11 @@ MonoBehaviour:
   stopMode: 2
   trackGroup: 2
   track:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
   references:
     version: 2
@@ -7872,26 +8103,38 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 1390555443}
   targetVol:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 0
-    floatRef: {fileID: 1390555452}
+    varRef:
+      rid: -2
+    valOfType: 0
+    floatRef:
+      rid: -2
   duration:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    floatRef: {fileID: 1390555450}
+    varRef:
+      rid: -2
+    valOfType: 1
+    floatRef:
+      rid: -2
   waitUntilFinished:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 1
-    booleanRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 1
+    booleanRef:
+      rid: -2
     booleanVal: 1
+  fadeTween: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   references:
     version: 2
     RefIds:
@@ -7944,10 +8187,13 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    _valObj:
+    valObj:
       rid: -2
-    _valOfType: 
-    stringRef: {fileID: 0}
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   startIndex: 0
   callMode: 2
   references:
@@ -9194,3 +9440,4 @@ SceneRoots:
   - {fileID: 1390555296}
   - {fileID: 1675553599}
   - {fileID: 20194188}
+  - {fileID: 1113250554}

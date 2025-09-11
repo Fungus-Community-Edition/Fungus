@@ -108,10 +108,20 @@ namespace Amanita.VScripting
         public virtual object Value
         {
             get { return baseVal; }
-            set { baseVal = value; }
+            set
+            {
+                object prevValue = baseVal;
+                baseVal = value;
+                OnBaseValueSet(prevValue);
+            }
         }
 
         protected object baseVal;
+
+        protected virtual void OnBaseValueSet(object prevValue)
+        {
+
+        }
         /// <summary>
         /// Set value in inherited types via Boxed value.
         /// Not recommended for direct use, primarily intended for use in editor code.
@@ -184,6 +194,12 @@ namespace Amanita.VScripting
             }
         }
 
+        protected override void OnBaseValueSet(object prevValue)
+        {
+            base.OnBaseValueSet(prevValue);
+            this.value = (T)baseVal;
+        }
+
         public override object GetValue()
         {
             return value;
@@ -238,7 +254,7 @@ namespace Amanita.VScripting
         protected virtual void Init(T startVal)
         {
             this.startValue = startVal;
-            base.Value = startValue;
+            baseVal = startVal;
         }
 
         //Apply to get from base system.object to T

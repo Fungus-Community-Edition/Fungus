@@ -1,6 +1,7 @@
 using UnityEngine;
+using Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Writes text in a dialog box.

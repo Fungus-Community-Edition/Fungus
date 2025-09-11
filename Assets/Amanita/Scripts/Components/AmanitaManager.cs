@@ -1,22 +1,64 @@
-﻿using Amanita.Myceliaudio;
+﻿using Amanita.DialogueSys;
+using Amanita.Myceliaudio;
 using Amanita.SaveSys;
+using Amanita.Tweening;
 using UnityEngine;
-using Amanita.DialogueSys;
 
 namespace Amanita
 {
     /// <summary>
-    /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
+    /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
+        public static DefaultTweenAdapter DefaultTweener
+        {
+            get
+            {
+                if (_defaultTweener == null)
+                {
+                    _defaultTweener = Resources.Load<DefaultTweenAdapter>(pathToAdapter);
+#if UNITY_EDITOR
+                    if (_defaultTweener == null)
+                    {
+                        Debug.LogWarning($"No TweenAdapter found at Resources/{pathToAdapter}. Creating a new one.");
+                        _defaultTweener = TweenAdapterUtility.GetOrCreateDefaultAdapter();
+                    }
+#else
+                    if (_adapter == null)
+                    {
+                        _adapter = ScriptableObject.CreateInstance<DefaultTweenAdapter>();
+                    }
+#endif
+                }
+
+                return _defaultTweener;
+            }
+        }
+
+        static DefaultTweenAdapter _defaultTweener;
+        static string pathToAdapter = "DefaultTweenAdapter";
 
         // Best avoid setting up the singleton through the getter
         public static AmanitaManager EnsureExists()
         {
             if (_s == null)
             {
+                AmanitaManager existing;
+#if UNITY_6000
+                existing = FindFirstObjectByType<AmanitaManager>();
+#else
+                existing = FindObjectOfType<AmanitaManager>();
+#endif
+                if (existing != null)
+                {
+                    _s = existing;
+                    _s.Init(); 
+                    return _s;
+                }
+
                 AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
+                _s = null; // Since the Rasource.Load call triggers this class's Awake method
                 _s = Instantiate(prefab);
                 _s.gameObject.name = prefab.name; // We don't want "Clone" in the name.
                 
@@ -48,18 +90,26 @@ namespace Amanita
                 Debug.LogError($"AmanitaManager's claim to the S field was ignored.");
             }
 
-            FetchSubmodules();
-            void FetchSubmodules()
+            PrepSubmodules();
+
+            if (Application.isPlaying)
             {
-                // We assume that these are each on separate GameObjects (for the sake of easier testing)
-                CameraManager = GetComponentInChildren<CameraManager>();
-                EventDispatcher = GetComponentInChildren<EventDispatcher>();
-                GlobalVariables = GetComponentInChildren<GlobalVariables>();
-                MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
-                NarrativeLog = GetComponentInChildren<NarrativeLog>();
-                AudioSystem = GetComponentInChildren<AudioSystem>();
-                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
+                DontDestroyOnLoad(_s.gameObject);
             }
+            IsInitted = true;
+
+        }
+
+        private void PrepSubmodules()
+        {
+            // We assume that these are each on separate GameObjects (for the sake of easier testing)
+            CameraManager = GetComponentInChildren<CameraManager>();
+            EventDispatcher = GetComponentInChildren<EventDispatcher>();
+            GlobalVariables = GetComponentInChildren<GlobalVariables>();
+            MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
+            NarrativeLog = GetComponentInChildren<NarrativeLog>();
+            AudioSystem = GetComponentInChildren<AudioSystem>();
+            SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
 
             InitAll();
             void InitAll()
@@ -71,10 +121,38 @@ namespace Amanita
                 GlobalVariables.Init();
                 SaveSysInstaller.Init();
             }
+        }
 
-            DontDestroyOnLoad(_s.gameObject);
-            IsInitted = true;
+        private void Awake()
+        {
+            if (_s == null)
+            {
+                _s = this;
+                if (Application.isPlaying)
+                    DontDestroyOnLoad(gameObject);
 
+                Init();
+            }
+            else if (_s != this)
+            {
+                if (!Application.isPlaying)
+                {
+                    // Since DestroyImmediate doesn't call OnDestroy...
+                    OnDestroy();
+                    if (AudioSystem != null)
+                    {
+                        AudioSystem?.OnDestroy();
+                    }
+                    DestroyImmediate(gameObject); // Prevents duplicates in edit mode
+                }
+                else
+                    Destroy(gameObject);
+                return;
+            }
+            else if (IsInitted == false)
+            {
+                Init();
+            }
         }
 
         public bool IsInitted { get; private set; } = false;
@@ -116,7 +194,7 @@ namespace Amanita
         /// </summary>
         public NarrativeLog NarrativeLog { get; private set; }
         
-        #endif
+#endif
 
         /// <summary>
         /// Gets the FungusManager singleton instance.
@@ -137,5 +215,16 @@ namespace Amanita
         }
 
         public AudioSystem AudioSystem { get; private set; }
+
+        private void OnDestroy()
+        {
+            if (_s == this)
+            {
+                _s = null;
+                IsInitted = false;
+
+                SaveSystem.S = null;
+            }
+        }
     }
 }

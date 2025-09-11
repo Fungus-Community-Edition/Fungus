@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -422,10 +421,10 @@ namespace Amanita.Tests.EditMode
 
         static void AssignLegacyVariables(Flowchart flowchart, List<Variable> variables)
         {
-            var field = typeof(Flowchart).GetField("_legacyVariables",
+            var field = typeof(Flowchart).GetField("legacyVariables",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             if (field == null)
-                Assert.Fail("Could not find _legacyVariables field on Flowchart");
+                Assert.Fail("Could not find legacyVariables field on Flowchart");
 
             field.SetValue(flowchart, variables);
         }

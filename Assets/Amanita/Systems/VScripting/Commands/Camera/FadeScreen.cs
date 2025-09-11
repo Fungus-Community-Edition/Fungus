@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Amanita.DentedPixel;
+using Amanita.Tweening;
 
 namespace Amanita.VScripting
 {
@@ -29,7 +29,33 @@ namespace Amanita.VScripting
         [Tooltip("Optional texture to use when rendering the fullscreen fade effect.")]
         [SerializeField] protected Texture2D fadeTexture;
 
-        [SerializeField] protected LeanTweenType fadeTweenType = LeanTweenType.easeInOutQuad;
+        [SerializeField] protected ScriptableObject fadeTweener;
+
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
+
+        protected virtual void ValidateTweeners()
+        {
+            if (fadeTweener == null)
+            {
+                doFade = AmanitaManager.DefaultTweener;
+                return;
+            }
+
+            doFade = fadeTweener as IGeneralTweenAdapter<float>;
+
+            if (doFade == null)
+            {
+                Debug.LogWarning($"Fade tweener passed to FadeScreen is invalid. It needs to implement IGeneralTweenAdapter<float>. Going back to default.");
+                fadeTweener = AmanitaManager.DefaultTweener;
+                doFade = AmanitaManager.DefaultTweener;
+            }
+            
+        }
+
+        protected IGeneralTweenAdapter<float> doFade;
 
         #region Public members
 
@@ -51,7 +77,7 @@ namespace Amanita.VScripting
                 {
                     Continue();
                 }
-            }, fadeTweenType);
+            }, doFadeTween);
             
             if (!waitUntilFinished)
             {
@@ -70,5 +96,14 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        public override void OnValidate()
+        {
+            base.OnValidate();
+            ValidateTweeners();
+        }
+
+        protected IGeneralTweenAdapter<float> doFadeTween;
+
     }    
 }

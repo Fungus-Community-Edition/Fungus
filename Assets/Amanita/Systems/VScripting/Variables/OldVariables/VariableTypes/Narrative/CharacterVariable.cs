@@ -17,11 +17,11 @@ namespace Amanita.VScripting
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(Character), typeof(CharacterVariable))]
-	public class CharacterData : VariableData<Character, IVariable<Character>>
+	public class CharacterData : VariableData<Character>
 	{
-		[SerializeField]
+		[SerializeField, SerializeReference]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]
-		public CharacterVariable characterRef;
+		public IVariable<Character> characterRef;
 
 
 		public static implicit operator Amanita.Character(CharacterData CharacterData)
@@ -32,24 +32,9 @@ namespace Amanita.VScripting
 		public CharacterData() : base(default) { }
 		public CharacterData(Character startVal = null) : base(startVal) { }
 
-		public override IVariable VarRef
+		public override void Refresh()
 		{
-			get { return characterRef; }
-			set
-			{
-				if (value == null) { characterRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					characterRef = value as CharacterVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
+			varRef ??= characterRef;
 		}
 	}
 }

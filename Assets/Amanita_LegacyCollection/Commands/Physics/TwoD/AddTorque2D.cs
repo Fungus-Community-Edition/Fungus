@@ -45,7 +45,7 @@ namespace Amanita.VScripting
         
         public override bool HasReference(Variable variable)
         {
-            if (rb.rigidbody2DRef == variable || force.floatRef == variable)
+            if (ReferenceEquals(rb.VarRef, variable) || ReferenceEquals(force.floatRef, variable))
                 return true;
 
             return false;

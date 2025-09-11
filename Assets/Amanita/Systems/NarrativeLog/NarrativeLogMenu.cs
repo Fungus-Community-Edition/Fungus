@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Amanita.DentedPixel;
 using Amanita.VScripting;
 using Amanita.DialogueSys;
+using Amanita.Tweening;
 
 namespace Amanita.UI.Legacy
 {
@@ -194,7 +195,7 @@ namespace Amanita.UI.Legacy
                 targAlpha = 1;
             }
 
-            _neoFadeTween = TweenManager.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
+            _neoFadeTween = AmanitaManager.DefaultTweener.TweenBasic<float>(() => narrativeLogMenuGroup.alpha,
                     (newAlpha) => narrativeLogMenuGroup.alpha = newAlpha,
                     targAlpha, duration)
                     .SetOnComplete(() => narrativeLogMenuGroup.alpha = targAlpha);
