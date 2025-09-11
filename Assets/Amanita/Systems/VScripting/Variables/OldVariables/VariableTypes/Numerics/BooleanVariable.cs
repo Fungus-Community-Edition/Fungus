@@ -51,24 +51,9 @@ namespace Amanita.VScripting
             return booleanData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return booleanRef; }
-            set
-            {
-                if (value == null) { booleanRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    booleanRef = value as BooleanVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= booleanRef;
         }
     }
 }

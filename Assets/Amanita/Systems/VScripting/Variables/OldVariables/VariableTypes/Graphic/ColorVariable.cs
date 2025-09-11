@@ -57,24 +57,9 @@ namespace Amanita.VScripting
             return colorData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return colorRef; }
-            set
-            {
-                if (value == null) { colorRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    colorRef = value as ColorVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= colorRef;
         }
 
     }

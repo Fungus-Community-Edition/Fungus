@@ -31,24 +31,9 @@ namespace Amanita.VScripting
             return materialData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return materialRef; }
-            set
-            {
-                if (value == null) { materialRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    materialRef = value as MaterialVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= materialRef;
         }
     }
 }

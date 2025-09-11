@@ -4317,7 +4317,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 1390555298}
     _selectedCommands:
     - {fileID: 1390555442}
     <ScrollPos>k__BackingField: {x: 3152.309, y: 1357.3031}
@@ -7540,7 +7541,7 @@ MonoBehaviour:
       valObj:
         rid: -2
       varRef:
-        rid: 4382208281711739658
+        rid: 4382208283303477860
       valOfType: {fileID: 0}
       audioClipRef:
         rid: -2
@@ -7602,7 +7603,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 4382208281711739658
+    - rid: 4382208283303477860
       type: {class: 'VariablePointer`1[[UnityEngine.AudioClip, UnityEngine.AudioModule]]',
         ns: Amanita.VScripting, asm: Amanita}
       data:

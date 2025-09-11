@@ -17,6 +17,11 @@ namespace Amanita
 
 		public virtual void Init()
 		{
+			EnsureWeHaveFlowchart();
+		}
+
+		protected virtual void EnsureWeHaveFlowchart()
+		{
 			holder = GetComponent<Flowchart>();
 
 			if (holder == null)
@@ -90,8 +95,14 @@ namespace Amanita
 		{
 			get
 			{
+				EnsureWeHaveFlowchart();
 				return holder.Variables;
 			}
+		}
+
+		public virtual void OnDestroy()
+		{
+
 		}
 	}
 }

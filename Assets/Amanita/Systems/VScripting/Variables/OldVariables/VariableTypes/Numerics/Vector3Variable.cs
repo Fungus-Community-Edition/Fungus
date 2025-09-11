@@ -56,32 +56,12 @@ namespace Amanita.VScripting
         [VariableProperty("<Value>", typeof(Vector3Variable))]
         public IVariable<Vector3> vector3Ref;
         
-        public static implicit operator Vector3(Vector3Data vector3Data)
-        {
-            return vector3Data.Value;
-        }
-
         public Vector3Data() : base(default) { }
         public Vector3Data(Vector3 startVal = default) : base(startVal) { }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return vector3Ref; }
-            set
-            {
-                if (value == null) { vector3Ref = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    vector3Ref = value as Vector3Variable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= vector3Ref;
         }
     }
 }

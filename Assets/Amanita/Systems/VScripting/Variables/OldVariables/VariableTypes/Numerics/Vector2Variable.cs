@@ -67,29 +67,9 @@ namespace Amanita.VScripting
         public Vector2Data() : base(default) { }
         public Vector2Data(Vector2 startVal = default) : base(startVal) { }
 
-        public static implicit operator Vector2(Vector2Data vector2Data)
+        public override void Refresh()
         {
-            return vector2Data.Value;
-        }
-
-        public override IVariable VarRef
-        {
-            get { return vector2Ref; }
-            set
-            {
-                if (value == null) { vector2Ref = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    vector2Ref = value as Vector2Variable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= vector2Ref;
         }
     }
 }

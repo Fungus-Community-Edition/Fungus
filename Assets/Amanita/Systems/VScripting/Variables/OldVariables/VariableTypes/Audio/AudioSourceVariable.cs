@@ -31,24 +31,9 @@ namespace Amanita.VScripting
         public AudioSourceData() : base(default) { }
         public AudioSourceData(AudioSource startVal = null) : base(startVal) { }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return audioSourceRef; }
-            set
-            {
-                if (value == null) { audioSourceRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    audioSourceRef = value as AudioSourceVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= audioSourceRef;
         }
 
     }

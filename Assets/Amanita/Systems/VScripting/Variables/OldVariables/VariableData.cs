@@ -114,12 +114,10 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    //Debug.Log($"{GetType().Name}.Value get: {VarRef.Value} (hash: {GetHashCode()})");
                     return (TValue)VarRef.Value;
                 }
                 else
                 {
-                    //Debug.Log($"{GetType().Name}.Value get: {_valOfType} (hash: {GetHashCode()})");
                     return valOfType;
                 }
             }
@@ -131,7 +129,6 @@ namespace Amanita.VScripting
                 }
                 else
                 {
-                    //Debug.Log($"{GetType().Name}.Value set: {value} (hash: {GetHashCode()})");
                     base.Value = value;
                     valOfType = value;
                 }
@@ -184,14 +181,14 @@ namespace Amanita.VScripting
             {
                 if (value == null) { varRef = null; return; }
 
-                if (value.ContentType.Equals(this.ContentType))
+                if (this.ContentType.IsAssignableFrom(value.ContentType)) // We want to allow polymorphism
                 {
-                    varRef = value as IVariable<TValue>;
+                    varRef = (IVariable<TValue>)value;
                 }
                 else
                 {
                     string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
+                    throw new InvalidCastException(errorMessage);
                 }
 
             }

@@ -92,29 +92,6 @@ namespace Amanita.VScripting
         {
         }
 
-        public override IVariable VarRef
-        {
-            get { return integerRef; }
-            set
-            {
-                if (value == null)
-                {
-                    integerRef = null; return;
-                }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    integerRef = value as IntegerVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
-        }
-
         public override void Refresh()
         {
             varRef ??= integerRef;

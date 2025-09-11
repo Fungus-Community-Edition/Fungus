@@ -15,10 +15,6 @@ namespace Amanita.VScripting
     [VariableData(typeof(Collision2D), typeof(Collision2DVariable))]
     public class Collision2DData : VariableData<Collision2D>
     {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(Collision2DVariable))]
-        public IVariable<Collision2D> collision2dRef;
-
         public static implicit operator Collision2D(Collision2DData Collision2DData)
         {
             return Collision2DData.Value;
@@ -28,24 +24,5 @@ namespace Amanita.VScripting
 
         public Collision2DData(Collision2D startVal) : base(startVal) { }
 
-        public override IVariable VarRef
-        {
-            get { return collision2dRef; }
-            set
-            {
-                if (value == null) { collision2dRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    collision2dRef = value as Collision2DVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
-        }
     }
 }

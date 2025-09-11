@@ -32,24 +32,9 @@ namespace Amanita.VScripting
 		public CharacterData() : base(default) { }
 		public CharacterData(Character startVal = null) : base(startVal) { }
 
-		public override IVariable VarRef
+		public override void Refresh()
 		{
-			get { return characterRef; }
-			set
-			{
-				if (value == null) { characterRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					characterRef = value as CharacterVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
+			varRef ??= characterRef;
 		}
 	}
 }

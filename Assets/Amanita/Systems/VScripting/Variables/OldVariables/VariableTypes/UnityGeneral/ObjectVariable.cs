@@ -27,20 +27,34 @@ namespace Amanita.VScripting
         public ObjectData() : base(default) { }
         public ObjectData(UnityObj startVal = null) : base(startVal) { }
         
-        public static implicit operator UnityObj(ObjectData objectData)
+        // Ensure runtime/backing-field synchronization when serialized fields are manipulated
+        public override void Refresh()
         {
-            return objectData.Value;
+            // Try to populate the derived field from the serialized protected varRef if possible.
+            // Note: varRef may be a VariablePointer<T> (for legacy vars of more specific Unity types).
+            // We won't force a cast from VariablePointer<T> to IVariable<UnityObj> here — keep objectRef only
+            // when it's truly an ObjectVariable. Always ensure the base protected varRef is populated if objectRef exists.
+            objectRef ??= varRef as ObjectVariable;
+            varRef ??= objectRef;
         }
 
         public override IVariable VarRef
         {
-            get { return objectRef; }
+            get
+            {
+                // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
+                return varRef ?? (IVariable)objectRef;
+            }
             set
             {
-                if (value == null) { objectRef = null; return; }
+                if (value == null) { varRef = null; objectRef = null; return; }
 
-                if (value.ContentType.Equals(this.ContentType))
+                // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
+                if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
+                    // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
+                    varRef = value;
+                    // If it's directly an ObjectVariable, populate objectRef for older code paths that use it.
                     objectRef = value as ObjectVariable;
                 }
                 else
@@ -48,7 +62,6 @@ namespace Amanita.VScripting
                     string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
                     throw new System.InvalidCastException(errorMessage);
                 }
-
             }
         }
     }

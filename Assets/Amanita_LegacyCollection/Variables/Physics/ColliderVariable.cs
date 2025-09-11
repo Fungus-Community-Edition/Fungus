@@ -18,34 +18,10 @@ namespace Amanita.VScripting
     [VariableData(typeof(Collider), typeof(ColliderVariable))]
     public class ColliderData : VariableData<Collider>
     {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(ColliderVariable))]
-        public IVariable<Collider> colliderRef;
-
         public ColliderData() : base(default) { }
 
         public ColliderData(Collider startVal) : base(startVal)
         {
-        }
-
-        public override IVariable VarRef
-        {
-            get { return colliderRef; }
-            set
-            {
-                if (value == null) { colliderRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    colliderRef = value as ColliderVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
         }
 
     }

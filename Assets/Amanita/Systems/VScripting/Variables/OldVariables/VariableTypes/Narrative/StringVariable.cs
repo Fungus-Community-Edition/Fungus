@@ -36,24 +36,9 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return stringRef; }
-            set
-            {
-                if (value == null) { stringRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    stringRef = value as StringVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= stringRef;
         }
 
         public override string Value

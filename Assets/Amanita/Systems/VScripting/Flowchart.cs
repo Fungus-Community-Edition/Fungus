@@ -160,8 +160,15 @@ namespace Amanita.VScripting
 
             if (Application.IsPlaying(this))
             {
-                AmanitaManager.EnsureExists();
                 GetAndInitVars();
+            }
+        }
+
+        protected virtual void Start()
+        {
+            if (Application.IsPlaying(this))
+            {
+                AmanitaManager.EnsureExists();
                 StartCoroutine(HandleGameStartedBlock());
             }
         }
@@ -1652,8 +1659,6 @@ namespace Amanita.VScripting
             legacyVariables.RemoveAll((elem) => elem == null);
             muscariables.RemoveAll((elem) => elem == null);
 
-            AmanitaManager.EnsureExists();
-            
             if (UIModel == null)
             {
                 uiModel = new FlowchartUIModel();

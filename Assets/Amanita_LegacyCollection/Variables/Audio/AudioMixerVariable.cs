@@ -20,38 +20,8 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioMixer), typeof(AudioMixerVariable))]
 	public class AudioMixerData : VariableData<AudioMixer>
 	{
-		[SerializeField, SerializeReference]
-		[VariableProperty("<Value>", typeof(AudioMixerVariable))]
-		public IVariable<AudioMixer> audioMixerRef;
-
-
-		public static implicit operator UnityEngine.Audio.AudioMixer(AudioMixerData AudioMixerData)
-		{
-			return AudioMixerData.Value;
-		}
-
-
 		public AudioMixerData() : base(default) { }
 		public AudioMixerData(AudioMixer startVal = null) : base(startVal) { }
 
-		public override IVariable VarRef
-		{
-			get { return audioMixerRef; }
-			set
-			{
-				if (value == null) { audioMixerRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					audioMixerRef = value as AudioMixerVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
-		}
 	}
 }

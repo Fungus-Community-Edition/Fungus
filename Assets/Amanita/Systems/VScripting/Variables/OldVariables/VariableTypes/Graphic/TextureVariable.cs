@@ -29,25 +29,10 @@ namespace Amanita.VScripting
         {
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return textureRef; }
-            set
-            {
-                if (value == null) { textureRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    textureRef = value as TextureVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= textureRef;
         }
-    
+
     }
 }

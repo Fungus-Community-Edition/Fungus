@@ -19,37 +19,8 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioMixerGroup), typeof(AudioMixerGroupVariable))]
 	public class AudioMixerGroupData : VariableData<AudioMixerGroup>
 	{
-		[SerializeField, SerializeReference]
-		[VariableProperty("<Value>", typeof(AudioMixerGroupVariable))]
-		public IVariable<AudioMixerGroup> audioMixerGroupRef;
-
-		public static implicit operator AudioMixerGroup(AudioMixerGroupData AudioMixerGroupData)
-		{
-			return AudioMixerGroupData.Value;
-		}
-
 		public AudioMixerGroupData() : base(default) { }
 		public AudioMixerGroupData(AudioMixerGroup startVal = null) : base(startVal) { }
-
-		public override IVariable VarRef
-		{
-			get { return audioMixerGroupRef; }
-			set
-			{
-				if (value == null) { audioMixerGroupRef = null; return; }
-
-				if (value.ContentType.Equals(this.ContentType))
-				{
-					audioMixerGroupRef = value as AudioMixerGroupVariable;
-				}
-				else
-				{
-					string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-					throw new System.InvalidCastException(errorMessage);
-				}
-
-			}
-		}
 
 	}
 }

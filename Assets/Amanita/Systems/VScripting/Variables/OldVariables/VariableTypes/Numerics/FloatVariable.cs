@@ -91,11 +91,6 @@ namespace Amanita.VScripting
         {
         }
 
-        public static implicit operator float(FloatData floatData)
-        {
-            return floatData.Value;
-        }
-
         public override void Refresh()
         {
             varRef ??= floatRef;

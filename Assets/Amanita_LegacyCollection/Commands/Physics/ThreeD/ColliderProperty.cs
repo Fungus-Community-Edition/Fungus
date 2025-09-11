@@ -2,121 +2,121 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Get or Set a property of a Collider component
-    /// </summary>
-    [CommandInfo("Property",
-                 "Collider",
-                 "Get or Set a property of a Collider component")]
-    [AddComponentMenu("")]
-    public class ColliderProperty : BaseVariableProperty
-    {
+	/// <summary>
+	/// Get or Set a property of a Collider component
+	/// </summary>
+	[CommandInfo("Property",
+				 "Collider",
+				 "Get or Set a property of a Collider component")]
+	[AddComponentMenu("")]
+	public class ColliderProperty : BaseVariableProperty
+	{
 		//generated property
-        public enum Property 
-        { 
-            Enabled, 
-            AttachedRigidbody, 
-            IsTrigger, 
-            ContactOffset, 
-        }
+		public enum Property 
+		{ 
+			Enabled, 
+			AttachedRigidbody, 
+			IsTrigger, 
+			ContactOffset, 
+		}
 
 
-        [SerializeField]
-        protected Property property;
+		[SerializeField]
+		protected Property property;
 
-        [SerializeField]
-        protected ColliderData colliderData;
+		[SerializeField]
+		protected ColliderData colliderData;
 
-        [SerializeField]
-        [VariableProperty(typeof(BooleanVariable),
-                          typeof(RigidbodyVariable),
-                          typeof(FloatVariable))]
-        protected Variable inOutVar;
+		[SerializeField]
+		[VariableProperty(typeof(BooleanVariable),
+						  typeof(RigidbodyVariable),
+						  typeof(FloatVariable))]
+		protected Variable inOutVar;
 
-        public override void OnEnter()
-        {
-            var iob = inOutVar as BooleanVariable;
-            var iorb = inOutVar as RigidbodyVariable;
-            var iof = inOutVar as FloatVariable;
+		public override void OnEnter()
+		{
+			var iob = inOutVar as BooleanVariable;
+			var iorb = inOutVar as RigidbodyVariable;
+			var iof = inOutVar as FloatVariable;
 
 
-            var target = colliderData.Value;
+			var target = colliderData.Value;
 
-            switch (getOrSet)
-            {
-                case GetSet.Get:
-                    switch (property)
-                    {
-                        case Property.Enabled:
-                            iob.Value = target.enabled;
-                            break;
-                        case Property.AttachedRigidbody:
-                            iorb.Value = target.attachedRigidbody;
-                            break;
-                        case Property.IsTrigger:
-                            iob.Value = target.isTrigger;
-                            break;
-                        case Property.ContactOffset:
-                            iof.Value = target.contactOffset;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+			switch (getOrSet)
+			{
+				case GetSet.Get:
+					switch (property)
+					{
+						case Property.Enabled:
+							iob.Value = target.enabled;
+							break;
+						case Property.AttachedRigidbody:
+							iorb.Value = target.attachedRigidbody;
+							break;
+						case Property.IsTrigger:
+							iob.Value = target.isTrigger;
+							break;
+						case Property.ContactOffset:
+							iof.Value = target.contactOffset;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                case GetSet.Set:
-                    switch (property)
-                    {
-                        case Property.Enabled:
-                            target.enabled = iob.Value;
-                            break;
-                        case Property.IsTrigger:
-                            target.isTrigger = iob.Value;
-                            break;
-                        case Property.ContactOffset:
-                            target.contactOffset = iof.Value;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+				case GetSet.Set:
+					switch (property)
+					{
+						case Property.Enabled:
+							target.enabled = iob.Value;
+							break;
+						case Property.IsTrigger:
+							target.isTrigger = iob.Value;
+							break;
+						case Property.ContactOffset:
+							target.contactOffset = iof.Value;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                default:
-                    break;
-            }
+				default:
+					break;
+			}
 
-            Continue();
-        }
+			Continue();
+		}
 
-        public override string GetSummary()
-        {
-            if (colliderData.Value == null)
-            {
-                return "Error: no collider set";
-            }
-            if (inOutVar == null)
-            {
-                return "Error: no variable set to push or pull data to or from";
-            }
+		public override string GetSummary()
+		{
+			if (colliderData.Value == null)
+			{
+				return "Error: no collider set";
+			}
+			if (inOutVar == null)
+			{
+				return "Error: no variable set to push or pull data to or from";
+			}
 
-            return getOrSet.ToString() + " " + property.ToString();
-        }
+			return getOrSet.ToString() + " " + property.ToString();
+		}
 
-        public override Color GetButtonColor()
-        {
-            return new Color32(235, 191, 217, 255);
-        }
+		public override Color GetButtonColor()
+		{
+			return new Color32(235, 191, 217, 255);
+		}
 
-        public override bool HasReference(Variable variable)
-        {
-            if (colliderData.colliderRef == variable || inOutVar == variable)
-                return true;
+		public override bool HasReference(Variable variable)
+		{
+			if (ReferenceEquals(colliderData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+				return true;
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 }

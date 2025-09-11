@@ -17,6 +17,8 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUI.BeginProperty(position, label, varDataProp);
             VariableData varData = varDataProp.boxedValue as VariableData;
             varData.Refresh();
+            varDataProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+
             // Find the two key sub-properties
             SerializedProperty valueProp, referenceProp;
             try

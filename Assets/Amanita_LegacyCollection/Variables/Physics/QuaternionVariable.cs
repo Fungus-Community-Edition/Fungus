@@ -51,35 +51,13 @@ namespace Amanita.VScripting
     [VariableData(typeof(Quaternion), typeof(QuaternionVariable))]
     public class QuaternionData : VariableData<Quaternion>
     {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(QuaternionVariable))]
-        public IVariable<Quaternion> quaternionRef;
-
         public QuaternionData() : base(default) { }
 
         public QuaternionData(Quaternion startVal) : base(startVal)
         {
         }
 
-        public override IVariable VarRef
-        {
-            get { return quaternionRef; }
-            set
-            {
-                if (value == null) { quaternionRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    quaternionRef = value as QuaternionVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
-        }
+        
 
     }
 }

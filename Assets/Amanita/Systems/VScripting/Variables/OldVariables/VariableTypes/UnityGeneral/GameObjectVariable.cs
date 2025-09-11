@@ -26,29 +26,9 @@ namespace Amanita.VScripting
         public GameObjectData() : base(default) { }
         public GameObjectData(GameObject startVal = null) : base(startVal) { }
 
-        public static implicit operator GameObject(GameObjectData gameObjectData)
+        public override void Refresh()
         {
-            return gameObjectData.Value;
-        }
-
-        public override IVariable VarRef
-        {
-            get { return gameObjectRef; }
-            set
-            {
-                if (value == null) { gameObjectRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    gameObjectRef = value as GameObjectVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= gameObjectRef;
         }
     }
 }

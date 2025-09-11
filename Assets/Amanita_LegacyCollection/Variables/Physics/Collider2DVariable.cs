@@ -28,15 +28,28 @@ namespace Amanita.VScripting
         {
         }
 
+        public override void Refresh()
+        {
+            varRef ??= collider2DRef;
+        }
+
         public override IVariable VarRef
         {
-            get { return collider2DRef; }
+            get
+            {
+                // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
+                return varRef ?? collider2DRef;
+            }
             set
             {
-                if (value == null) { collider2DRef = null; return; }
+                if (value == null) { varRef = null; collider2DRef = null; return; }
 
-                if (value.ContentType.Equals(this.ContentType))
+                // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
+                if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
+                    // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
+                    varRef = value;
+
                     collider2DRef = value as Collider2DVariable;
                 }
                 else
@@ -44,7 +57,6 @@ namespace Amanita.VScripting
                     string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
                     throw new System.InvalidCastException(errorMessage);
                 }
-
             }
         }
 

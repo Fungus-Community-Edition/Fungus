@@ -139,6 +139,10 @@ namespace Amanita
                 {
                     // Since DestroyImmediate doesn't call OnDestroy...
                     OnDestroy();
+                    if (AudioSystem != null)
+                    {
+                        AudioSystem?.OnDestroy();
+                    }
                     DestroyImmediate(gameObject); // Prevents duplicates in edit mode
                 }
                 else

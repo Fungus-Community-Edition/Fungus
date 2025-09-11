@@ -10,7 +10,7 @@ namespace Amanita.VScripting
     {
         /// <summary>
         /// Assigns a chosen variable or literal to a VariableData's varRef property,
-        /// wrapping UnityEngine.Object variables in a VariablePointer<T> if needed.
+        /// wrapping UnityObj variables in a VariablePointer<T> if needed.
         /// </summary>
         public static void AssignVarRef(this SerializedProperty varRefProp, object chosen, Type contentType)
         {
@@ -25,32 +25,41 @@ namespace Amanita.VScripting
 
                 case SerializedPropertyType.ManagedReference:
                 case SerializedPropertyType.Generic: // Unity sometimes reports SerializeReference as Generic
+                    bool contentTypeIsUnityObj = typeof(UnityObj).IsAssignableFrom(contentType);
                     if (chosen == null)
                     {
                         varRefProp.managedReferenceValue = null;
                     }
-                    else if (typeof(UnityObj).IsAssignableFrom(contentType))
+                    else if (contentTypeIsUnityObj)
                     {
-                        // Wrap the UnityEngine.Object in a VariablePointer<T>
-                        if (chosen is UnityObj unityObj)
+                        bool wrappingUnityObj = chosen is UnityObj;
+                        if (wrappingUnityObj)
                         {
+                            UnityObj uo = (UnityObj)chosen;
                             var pointerType = typeof(VariablePointer<>).MakeGenericType(contentType);
-                            var wrapper = Activator.CreateInstance(pointerType); // default ctor
-                            varRefProp.managedReferenceValue = (object)wrapper;
 
-                            // Now set the _component field on the *serialized* object
-                            varRefProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-                            varRefProp.serializedObject.Update();
+                            // Look for a ctor that takes a UnityObj
+                            var ctor = pointerType.GetConstructor(new[] { typeof(UnityObj) });
 
-                            var field = pointerType.GetField("_component", BindingFlags.NonPublic | BindingFlags.Instance);
-                            field.SetValue(varRefProp.managedReferenceValue, unityObj);
+                            object wrapper;
+                            if (ctor != null)
+                            {
+                                // Preferred: construct with the component already set
+                                wrapper = ctor.Invoke(new object[] { uo });
+                            }
+                            else
+                            {
+                                // Fallback: default-construct, then set _component via reflection
+                                wrapper = Activator.CreateInstance(pointerType);
+                                var field = pointerType.GetField("_component", BindingFlags.NonPublic | BindingFlags.Instance);
+                                field?.SetValue(wrapper, uo);
+                            }
 
-                            varRefProp.serializedObject.ApplyModifiedProperties();
-
+                            varRefProp.managedReferenceValue = wrapper;
                         }
                         else
                         {
-                            Debug.LogWarning($"AssignVarRef: Expected UnityEngine.Object for {contentType}, got {chosen.GetType()}");
+                            Debug.LogWarning($"AssignVarRef: Expected UnityObj for {contentType}, got {chosen?.GetType()}");
                             varRefProp.managedReferenceValue = null;
                         }
                     }

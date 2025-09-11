@@ -25,23 +25,31 @@ namespace Amanita.VScripting
         [SerializeField]
         public Collection collectionVal;
 
-        public static implicit operator Collection(CollectionData CollectionData)
-        {
-            return CollectionData.Value;
-        }
-
         public CollectionData() : base(default) { }
         public CollectionData(Collection startVal) : base(startVal) { }
 
+        public override void Refresh()
+        {
+            varRef ??= collectionRef;
+        }
+
         public override IVariable VarRef
         {
-            get { return collectionRef; }
+            get
+            {
+                // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
+                return varRef ?? collectionRef;
+            }
             set
             {
-                if (value == null) { collectionRef = null; return; }
+                if (value == null) { varRef = null; collectionRef = null; return; }
 
-                if (value.ContentType.Equals(this.ContentType))
+                // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
+                if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
+                    // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
+                    varRef = value;
+
                     collectionRef = value as CollectionVariable;
                 }
                 else
@@ -49,9 +57,7 @@ namespace Amanita.VScripting
                     string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
                     throw new System.InvalidCastException(errorMessage);
                 }
-
             }
         }
-
     }
 }
