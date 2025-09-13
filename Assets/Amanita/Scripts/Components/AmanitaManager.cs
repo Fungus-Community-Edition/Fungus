@@ -11,6 +11,7 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
+
         public static DefaultTweenAdapter DefaultTweener
         {
             get
