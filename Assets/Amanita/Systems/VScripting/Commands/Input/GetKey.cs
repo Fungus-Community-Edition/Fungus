@@ -164,7 +164,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (keyCodeName.stringRef == variable || outValue == variable || keyCodeNameNegative.stringRef == variable)
+            if (ReferenceEquals(keyCodeName.VarRef, variable) || 
+                outValue == variable || 
+                ReferenceEquals(keyCodeNameNegative.VarRef, variable))
                 return true;
 
             return false;

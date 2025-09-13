@@ -54,7 +54,7 @@ namespace Amanita.VScripting.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return blockName.stringRef == variable || base.HasReference(variable);
+            return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
         }
 
         public bool MayCallBlock(Block block)

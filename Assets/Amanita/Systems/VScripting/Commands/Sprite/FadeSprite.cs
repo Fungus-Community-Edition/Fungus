@@ -73,7 +73,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return duration.floatRef == variable || targetColor.colorRef == variable ||
+            return ReferenceEquals(duration.VarRef, variable) || 
+                ReferenceEquals(targetColor.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

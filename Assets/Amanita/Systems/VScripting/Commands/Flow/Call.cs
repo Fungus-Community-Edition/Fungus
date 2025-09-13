@@ -150,7 +150,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return startLabel.stringRef == variable || base.HasReference(variable);
+            return ReferenceEquals(startLabel.VarRef, variable) || base.HasReference(variable);
         }
 
         public bool MayCallBlock(Block block)
