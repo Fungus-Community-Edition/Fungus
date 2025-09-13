@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "VectorTwo", typeof(Vector2))]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
-        public VectorTwoMuscariable() { }
+        public VectorTwoMuscariable() : base() { }
 
         public override bool IsArithmeticSupported => true;
         public override bool IsRelationalSupported => true;
@@ -147,7 +147,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "VectorThree", typeof(Vector3))]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
-        public VectorThreeMuscariable() { }
+        public VectorThreeMuscariable() : base() { }
 
         public override bool IsArithmeticSupported => true;
         public override bool IsRelationalSupported => true;

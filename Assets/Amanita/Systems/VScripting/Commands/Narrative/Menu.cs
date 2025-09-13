@@ -95,7 +95,8 @@ namespace Amanita.DialogueSys.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return interactable.booleanRef == variable || hideThisOption.booleanRef == variable ||
+            return ReferenceEquals(interactable.VarRef, variable) || 
+                ReferenceEquals(hideThisOption.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

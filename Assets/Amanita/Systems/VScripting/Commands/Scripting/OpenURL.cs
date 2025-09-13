@@ -34,7 +34,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return url.stringRef == variable || base.HasReference(variable);
+            return ReferenceEquals(url.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

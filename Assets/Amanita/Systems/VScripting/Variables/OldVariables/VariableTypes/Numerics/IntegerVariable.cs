@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -72,6 +73,12 @@ namespace Amanita.VScripting
             }
 
             return condition;
+        }
+
+        protected override object FilteredForValueSet(object valueToConvert)
+        {
+            int result = (int)Convert.ToSingle(valueToConvert);
+            return result;
         }
     }
 

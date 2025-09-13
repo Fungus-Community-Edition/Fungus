@@ -50,7 +50,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _toTransform.transformRef == variable || _toPosition.vector3Ref == variable || base.HasReference(variable);
+            return ReferenceEquals(_toTransform.VarRef, variable) || 
+                ReferenceEquals(_toPosition.VarRef, variable) || base.HasReference(variable);
         }
     }
 }

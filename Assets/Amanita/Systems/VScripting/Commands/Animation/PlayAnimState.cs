@@ -52,8 +52,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return animator.animatorRef == variable || stateName.stringRef == variable || 
-                layer.integerRef == variable || time.floatRef == variable || 
+            return ReferenceEquals(animator.VarRef, variable) || ReferenceEquals(stateName.VarRef, variable) || 
+                ReferenceEquals(layer.VarRef, variable) || ReferenceEquals(time.VarRef, variable) || 
                 base.HasReference(variable);
         }
 

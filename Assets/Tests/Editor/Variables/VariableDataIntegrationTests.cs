@@ -55,7 +55,6 @@ namespace Amanita.Tests.EditMode
             if (testValue != null)
             {
                 legacyVar.Value = testValue;
-                Debug.Log($"Legacy var instance Id is {legacyVar.GetInstanceID()}, test value instance Id is {testValue.GetInstanceID()}");
             }
 
             // quick sanity-check: make sure the legacy var still holds the test value immediately
@@ -78,7 +77,7 @@ namespace Amanita.Tests.EditMode
             var compField = wrapper.GetType().GetField("_component", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var comp = (UnityEngine.Object)compField.GetValue(wrapper);
             Assert.IsTrue(comp, "Pointer _component is destroyed (Unity null).");
-            Assert.AreSame((UnityEngine.Object)legacyVar, comp, "Pointer is not wrapping the selected variable component.");
+            Assert.AreSame(legacyVar, comp, "Pointer is not wrapping the selected variable component.");
 
             // Round-trip before reading Value
             // Keep using WithoutUndo to avoid serialization that strips scene refs
@@ -94,7 +93,6 @@ namespace Amanita.Tests.EditMode
             _serializedObj.Update();
 
             var resolved = _unityObjDataHolder.data.Value as UnityEngine.Object;
-            Debug.Log("Get instance ID for resolved: " + (resolved != null ? resolved.GetInstanceID().ToString() : "null"));
             Assert.IsTrue(resolved, "Resolved Unity object is destroyed (Unity null).");
             if (testValue != null)
                 Assert.AreSame(testValue, resolved, "Resolved value does not match test value.");

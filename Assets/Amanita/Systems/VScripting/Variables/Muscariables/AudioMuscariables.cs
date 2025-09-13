@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     [VariableInfo("Audio", "AudioClip", typeof(AudioClip))]
     public class AudioClipMuscariable : Muscariable<AudioClip>
     {
-        public AudioClipMuscariable() { }
+        public AudioClipMuscariable() : base() { }
 
         public static bool operator ==(AudioClipMuscariable a, AudioClipMuscariable b)
         {
@@ -45,7 +45,7 @@ namespace Amanita.VScripting
     [VariableInfo("Audio", "AudioSource", typeof(AudioSource))]
     public class AudioSourceMuscariable : Muscariable<AudioSource>
     {
-        public AudioSourceMuscariable() { }
+        public AudioSourceMuscariable() : base() { }
 
         public static bool operator ==(AudioSourceMuscariable a, AudioSourceMuscariable b)
         {
