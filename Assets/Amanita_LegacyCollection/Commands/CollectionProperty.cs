@@ -115,7 +115,7 @@ namespace Amanita.VScripting
 
 		public override bool HasReference(Variable variable)
 		{
-			if (collectionData.collectionRef == variable || inOutVar == variable)
+			if (ReferenceEquals(collectionData.VarRef, variable) || inOutVar == variable)
 				return true;
 
 			return false;

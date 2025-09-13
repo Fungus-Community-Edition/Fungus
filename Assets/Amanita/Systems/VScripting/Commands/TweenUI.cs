@@ -132,7 +132,8 @@ namespace Amanita.VScripting.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return waitUntilFinished.booleanRef == variable || duration.floatRef == variable || base.HasReference(variable);
+            return ReferenceEquals(waitUntilFinished.VarRef, variable) || 
+                ReferenceEquals(duration.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

@@ -14,10 +14,10 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableData(typeof(Animator), typeof(AnimatorVariable))]
-    public class AnimatorData : VariableData<Animator, IVariable<Animator>>
+    public class AnimatorData : VariableData<Animator>
     {
-        [SerializeField] [VariableProperty("<Value>", typeof(AnimatorVariable))]
-        public AnimatorVariable animatorRef;
+        [SerializeField, SerializeReference] [VariableProperty("<Value>", typeof(AnimatorVariable))]
+        public IVariable<Animator> animatorRef;
 
         public static implicit operator Animator(AnimatorData animatorData)
         {
@@ -27,24 +27,9 @@ namespace Amanita.VScripting
         public AnimatorData() : base(default) { }
         public AnimatorData(Animator startVal = default) : base(startVal) { }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return animatorRef; }
-            set
-            {
-                if (value == null) { animatorRef = null; return; }
-                // TODO: Refactor this setter so it works with polymorphism
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    animatorRef = value as AnimatorVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= animatorRef;
         }
     }
 

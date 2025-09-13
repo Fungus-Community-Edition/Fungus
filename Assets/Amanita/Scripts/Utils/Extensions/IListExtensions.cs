@@ -6,6 +6,19 @@ namespace Collections
 {
     public static class IListExtensions
     {
+        public static bool ContainsReference<T>(this IList<T> list, object item) where T : class
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (ReferenceEquals(list[i], item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Adds the item if the list isn't at capacity
         public static void Add<T>(this IList<T> list, T item, int capacity)
         {

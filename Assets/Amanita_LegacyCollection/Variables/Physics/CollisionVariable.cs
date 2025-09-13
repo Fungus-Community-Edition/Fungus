@@ -13,37 +13,14 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableData(typeof(Collision), typeof(CollisionVariable))]
-    public class CollisionData : VariableData<Collision, IVariable<Collision>>
+    public class CollisionData : VariableData<Collision>
     {
-        [SerializeField]
-        [VariableProperty("<Value>", typeof(CollisionVariable))]
-        public CollisionVariable collisionRef;
-
         public CollisionData() : base(default) { }
 
         public CollisionData(Collision startVal) : base(startVal)
         {
         }
 
-        public override IVariable VarRef
-        {
-            get { return collisionRef; }
-            set
-            {
-                if (value == null) { collisionRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    collisionRef = value as CollisionVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
-        }
 
     }
 }

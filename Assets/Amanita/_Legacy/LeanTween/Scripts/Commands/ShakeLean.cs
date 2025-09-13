@@ -96,8 +96,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _targetObject.gameObjectRef || variable == _duration.floatRef ||
-                _axisScale.vector3Ref == variable || _axisSpeedRange.vector2Ref == variable;
+            return ReferenceEquals(variable, _targetObject.VarRef) || ReferenceEquals(variable, _duration.VarRef) ||
+                ReferenceEquals(_axisScale.VarRef, variable) || ReferenceEquals(_axisSpeedRange.VarRef, variable);
         }
 
         public abstract LTDescr ExecuteTween();

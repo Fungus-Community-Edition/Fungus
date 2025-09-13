@@ -50,7 +50,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == message.stringRef || base.HasReference(variable);
+            return ReferenceEquals(variable, message.VarRef) || base.HasReference(variable);
         }
     }
 }

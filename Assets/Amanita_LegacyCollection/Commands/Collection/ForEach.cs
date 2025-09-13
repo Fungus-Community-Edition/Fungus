@@ -60,7 +60,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return collection.collectionRef == variable || item == variable ||
+            return ReferenceEquals(collection.VarRef, variable) || item == variable ||
                 base.HasReference(variable);
         }
 

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -73,6 +74,12 @@ namespace Amanita.VScripting
 
             return condition;
         }
+
+        protected override object FilteredForValueSet(object valueToConvert)
+        {
+            int result = (int)Convert.ToSingle(valueToConvert);
+            return result;
+        }
     }
 
     /// <summary>
@@ -80,9 +87,9 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(int), typeof(IntegerVariable))]
-    public class IntegerData : VariableData<int, IVariable<int>>
+    public class IntegerData : VariableData<int>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(IntegerVariable))]
         public IntegerVariable integerRef;
 
@@ -92,32 +99,9 @@ namespace Amanita.VScripting
         {
         }
 
-        public static implicit operator int(IntegerData integerData)
+        public override void Refresh()
         {
-            return integerData.Value;
-        }
-
-        public override IVariable VarRef
-        {
-            get { return integerRef; }
-            set
-            {
-                if (value == null)
-                {
-                    integerRef = null; return;
-                }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    integerRef = value as IntegerVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= integerRef;
         }
 
     }

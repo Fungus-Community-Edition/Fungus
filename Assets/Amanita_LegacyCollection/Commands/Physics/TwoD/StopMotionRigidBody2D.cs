@@ -65,7 +65,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (rb.rigidbody2DRef == variable)
+            if (ReferenceEquals(rb.VarRef, variable))
                 return true;
 
             return false;

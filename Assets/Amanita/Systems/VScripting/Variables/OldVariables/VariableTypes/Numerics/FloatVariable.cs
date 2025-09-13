@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -73,6 +74,12 @@ namespace Amanita.VScripting
 
             return condition;
         }
+
+        protected override object FilteredForValueSet(object valueToConvert)
+        {
+            float result = (float)Convert.ToSingle(valueToConvert);
+            return result;
+        }
     }
 
     /// <summary>
@@ -80,41 +87,21 @@ namespace Amanita.VScripting
     /// </summary>
     [VariableData(typeof(float), typeof(FloatVariable))]
     [System.Serializable]
-    public class FloatData : VariableData<float, IVariable<float>>
+    public class FloatData : VariableData<float>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(FloatVariable))]
-        public FloatVariable floatRef;
+        public IVariable<float> floatRef;
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
         {
         }
 
-        public static implicit operator float(FloatData floatData)
+        public override void Refresh()
         {
-            return floatData.Value;
+            varRef ??= floatRef;
         }
 
-        public override IVariable VarRef
-        {
-            get { return floatRef; }
-            set
-            {
-                if (value == null) { floatRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    floatRef = value as FloatVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-                
-            }
-        }
-    
     }
 }

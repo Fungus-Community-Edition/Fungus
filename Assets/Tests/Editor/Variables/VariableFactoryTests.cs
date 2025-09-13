@@ -150,6 +150,40 @@ namespace Amanita.Tests.EditMode
             }
         }
 
+        // Cases: (contentType, expectedMuscariType)
+        public static object[] MuscariCreationCases =
+        {
+            new object[] { typeof(float),  typeof(FloatMuscariable) },
+            new object[] { typeof(int),    typeof(IntMuscariable) },
+            
+            new object[] { typeof(bool), typeof(BoolMuscariable) },
+            new object[] { typeof(Vector2), typeof(VectorTwoMuscariable) },
+            new object[] { typeof(Vector3), typeof(VectorThreeMuscariable) },
+
+            new object[] { typeof(string), typeof(StringMuscariable) },
+            new object[] { typeof(GameObject), typeof(GameObjectMuscariable) },
+            new object[] { typeof(Transform), typeof(TransformMuscariable) },
+            
+            new object[] { typeof(AudioClip), typeof(AudioClipMuscariable) },
+            new object[] { typeof(AudioSource), typeof(AudioSourceMuscariable) },
+
+            new object[] { typeof(Sprite), typeof(SpriteMuscariable) },
+            new object[] { typeof(Animator), typeof(AnimatorMuscariable) },
+            new object[] { typeof(Material), typeof(MaterialMuscariable) },
+            new object[] { typeof(Texture), typeof(TextureMuscariable) },
+
+        };
+
+        [TestCaseSource(nameof(MuscariCreationCases))]
+        public void Create_Returns_Registered_Muscariable_Type(Type contentType, Type expectedMuscariType)
+        {
+            VariableTypeDiscovery.DiscoverAndRegister();
+            var created = VariableFactory.Create(contentType, null);
+            Assert.IsNotNull(created, "VariableFactory.Create returned null for contentType " + contentType.Name);
+            Assert.AreEqual(expectedMuscariType, created.GetType(), $"Factory did not return the expected Muscariable type for {contentType.Name}");
+            Assert.AreEqual(contentType, created.ContentType, "Created Muscariable did not report correct ContentType.");
+        }
+
     }
 
 }
