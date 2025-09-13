@@ -13,6 +13,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Amanita.VScripting
 {
     /// <summary>
@@ -22,6 +26,15 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, IVariableSource
     {
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        public static void InitOnLoad()
+        {
+            AmanitaManager.EnsureExists();
+            Debug.Log($"Flowchart InitOnLoad method executed");
+        }
+#endif
+
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
         // What the editor utils use to decide how to render this FC's data in the 

@@ -248,6 +248,7 @@ namespace Amanita.VScripting.EditorUtils
 
             ListenForEvents();
 
+            AmanitaManager.EnsureExists();
         }
 
         protected GridRenderer _gridRenderer;
