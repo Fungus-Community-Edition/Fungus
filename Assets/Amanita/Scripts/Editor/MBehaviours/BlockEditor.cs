@@ -46,6 +46,7 @@ namespace Amanita.VScripting.EditorUtils
 				return;
 			}
 
+			AmanitaManager.EnsureExists();
 			upIcon = AmanitaEditorResources.Up;
 			downIcon = AmanitaEditorResources.Down;
 			addIcon = AmanitaEditorResources.Add;
