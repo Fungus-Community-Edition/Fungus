@@ -48,7 +48,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (axisName.stringRef == variable || outValue.floatRef == variable)
+            if (ReferenceEquals(axisName.VarRef, variable) || ReferenceEquals(outValue.VarRef, variable))
                 return true;
 
             return false;

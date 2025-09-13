@@ -10,10 +10,10 @@ namespace Amanita.VScripting
     public static class VariableTypeDiscovery
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-        [UnityEditor.InitializeOnLoadMethod]
+        [InitializeOnLoadMethod]
         public static void DiscoverAndRegister()
         {
-            UnityEngine.Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
+            Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
             RefreshVariableTypeRegistry();
             RefreshVariableDataTypeRegistry();
 

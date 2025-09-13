@@ -35,7 +35,7 @@ namespace Amanita.VScripting
             set => itemID = value;
         }
 
-        public Muscariable() { }
+        public Muscariable() : base() { }
 
         public Muscariable (IVariable otherVar)
         {
@@ -73,13 +73,19 @@ namespace Amanita.VScripting
                 }
 
                 object prevValue = this.value;
-                this.value = value;
+                object filtered = FilterForValueSet(value);
+                this.value = filtered;
                 OnBaseValueSet(prevValue);
             }
         }
 
         [SerializeField, SerializeReference]
         protected System.Object value;
+
+        protected virtual object FilterForValueSet(object valueToConvert)
+        {
+            return valueToConvert;
+        }
 
         protected virtual bool CanHoldAsValue(System.Object obj)
         {
@@ -161,11 +167,68 @@ namespace Amanita.VScripting
         {
 
         }
+
+        /// <summary>
+        /// When you expect the value to be a value type (as opposed to a ref type), use this rather than 
+        /// directly casting to that specific value type. One quirk of C# is that when casting a
+        /// System.Object, it only works if said System.Object is of the type you're casting to.
+        /// </summary>
+        public TVal GetValueAs<TVal>()
+        {
+            object val = Value;
+            if (val == null)
+            {
+                return default;
+            }
+
+            var targetType = typeof(TVal);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            // If already the right runtime type
+            if (underlying.IsInstanceOfType(val))
+            {
+                return (TVal)val;
+            }
+
+            // Enums
+            if (underlying.IsEnum)
+            {
+                if (val is string enumStr)
+                {
+                    return (TVal)Enum.Parse(underlying, enumStr);
+                }
+                return (TVal)Enum.ToObject(underlying, val);
+            }
+
+            // Use IConvertible / Convert.ChangeType for primitives
+            if (val is IConvertible)
+            {
+                object changed = Convert.ChangeType(val, underlying);
+                return (TVal)changed;
+            }
+
+            // Last resort - try direct cast (may throw)
+            return (TVal)val;
+        }
     }
 
     [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
+        // We have these constructors to make sure that the base value starts out synced 
+        // with the strongly typed one
+        public Muscariable() : base()
+        {
+            valOfType = default;
+            value = valOfType;
+        }
+
+        public Muscariable(T startVal) : this()
+        {
+            valOfType = startVal;
+            value = startVal;
+        }
+
         public static implicit operator T(Muscariable<T> genericMuscari)
         {
             return genericMuscari.Value;

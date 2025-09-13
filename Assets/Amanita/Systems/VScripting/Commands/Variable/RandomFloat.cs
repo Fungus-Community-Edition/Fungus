@@ -45,7 +45,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return (variable == this.variable) || minValue.floatRef == variable || maxValue.floatRef == variable;
+            return (variable == this.variable) || 
+                ReferenceEquals(minValue.VarRef, variable) || 
+                ReferenceEquals(maxValue.VarRef, variable);
         }
 
         public override Color GetButtonColor()

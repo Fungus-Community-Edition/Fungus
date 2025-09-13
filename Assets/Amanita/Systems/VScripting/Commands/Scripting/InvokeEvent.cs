@@ -152,8 +152,10 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return booleanParameter.booleanRef == variable || integerParameter.integerRef == variable ||
-                floatParameter.floatRef == variable || stringParameter.stringRef == variable ||
+            return ReferenceEquals(booleanParameter.VarRef, variable) || 
+                ReferenceEquals(integerParameter.VarRef, variable) ||
+                ReferenceEquals(floatParameter.VarRef, variable) || 
+                ReferenceEquals(stringParameter.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

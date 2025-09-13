@@ -43,7 +43,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (variable == vec3.vector3Ref || variable == vec2.vector2Ref)
+            if (ReferenceEquals(variable, vec3.VarRef) || ReferenceEquals(variable, vec2.VarRef))
                 return true;
 
             return false;

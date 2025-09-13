@@ -63,8 +63,10 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return lower.floatRef == variable || upper.floatRef == variable || value.floatRef == variable ||
-                   outValue.floatRef == variable;
+            return ReferenceEquals(lower.VarRef, variable) || 
+                ReferenceEquals(upper.VarRef, variable) || 
+                ReferenceEquals(value.VarRef, variable) ||
+                   ReferenceEquals(outValue.VarRef, variable);
         }
 
         public override Color GetButtonColor()
