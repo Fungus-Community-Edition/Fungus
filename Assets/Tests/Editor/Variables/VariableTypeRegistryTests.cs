@@ -1,6 +1,8 @@
 using Amanita.VScripting;
 using NUnit.Framework;
+using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.TestTools;
 using Type = System.Type;
 
@@ -61,47 +63,53 @@ namespace Amanita.Tests.EditMode
             Assert.AreSame(secondActions, actions, "Duplicate registration should overwrite previous mapping");
         }
 
-        [Test]
-        public void MuscariTypeFor_UnregisteredContentType_ReturnsGenericMuscariable()
+        [TestCaseSource(nameof(WillNeverBecomeLegitVarTypes))]
+        public void MuscariTypeFor_UnregisteredContentType_ReturnsGenericMuscariable(Type unregisteredType)
         {
             // Act
-            var type = VariableTypeRegistry.MuscariTypeFor(typeof(string));
+            var type = VariableTypeRegistry.MuscariTypeFor(unregisteredType);
 
             // Assert
             Assert.AreEqual(typeof(GenericMuscariable), type, "Should fall back to GenericMuscariable for unknown content type");
         }
 
-        [Test]
-        public void LegacyTypeFor_UnregisteredContentType_ReturnsNull()
+        public static Type[] WillNeverBecomeLegitVarTypes =
+        {
+            typeof(RandomAttribute),
+            typeof(Directory),
+            typeof(SerializeField),
+        };
+
+        [TestCaseSource(nameof(WillNeverBecomeLegitVarTypes))]
+        public void LegacyTypeFor_UnregisteredContentType_ReturnsNull(Type unregisteredType)
         {
             // Act
-            var type = VariableTypeRegistry.LegacyTypeFor(typeof(string));
+            var type = VariableTypeRegistry.LegacyTypeFor(unregisteredType);
 
             // Assert
             Assert.IsNull(type, "Should return null when no legacy type is registered for content type");
         }
 
-        [Test]
-        public void ActionsFor_UnregisteredType_ReturnsNull()
+        [TestCaseSource(nameof(WillNeverBecomeLegitVarTypes))]
+        public void ActionsFor_UnregisteredType_ReturnsNull(Type unregisteredType)
         {
             UnityEngine.Debug.unityLogger.logEnabled = false;
             VariableTypeRegistry.Clear();
-            VariableTypeRegistry.TryGetTypeActionsFor(typeof(IntMuscariable), out var actions);
+            VariableTypeRegistry.TryGetTypeActionsFor(unregisteredType, out var actions);
 
             // Assert
             Assert.IsNull(actions, "Should return null when no actions are registered for type");
         }
 
-        [Test]
-        public void ActionsFor_UnregisteredType_LogsError()
+        [TestCaseSource(nameof(WillNeverBecomeLegitVarTypes))]
+        public void ActionsFor_UnregisteredType_LogsError(Type unregisteredType)
         {
             VariableTypeRegistry.Clear();
 
-            Type unregistered = typeof(IntMuscariable);
-            string expectedLogMessage = $"Could not get type actions for type {unregistered.Name}.";
+            string expectedLogMessage = $"Could not get type actions for type {unregisteredType.Name}.";
             LogAssert.Expect(UnityEngine.LogType.Error, expectedLogMessage);
 
-            VariableTypeRegistry.TryGetTypeActionsFor(unregistered, out var actions);
+            VariableTypeRegistry.TryGetTypeActionsFor(unregisteredType, out var actions);
         }
 
 
