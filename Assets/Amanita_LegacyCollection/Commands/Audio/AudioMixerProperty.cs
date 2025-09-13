@@ -2,99 +2,99 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Get or Set a property of a AudioMixer component
-    /// </summary>
-    [CommandInfo("Property",
-                 "AudioMixer",
-                 "Get or Set a property of a AudioMixer component")]
-    [AddComponentMenu("")]
-    public class AudioMixerProperty : BaseVariableProperty
-    {
+	/// <summary>
+	/// Get or Set a property of a AudioMixer component
+	/// </summary>
+	[CommandInfo("Property",
+				 "AudioMixer",
+				 "Get or Set a property of a AudioMixer component")]
+	[AddComponentMenu("")]
+	public class AudioMixerProperty : BaseVariableProperty
+	{
 		//generated property
-        public enum Property 
-        { 
-            OutputAudioMixerGroup, 
-        }
+		public enum Property 
+		{ 
+			OutputAudioMixerGroup, 
+		}
 
 
-        [SerializeField]
-        protected Property property;
+		[SerializeField]
+		protected Property property;
 
-        [SerializeField]
-        protected AudioMixerData audioMixerData;
+		[SerializeField]
+		protected AudioMixerData audioMixerData;
 
-        [SerializeField]
-        [VariableProperty(typeof(AudioMixerGroupVariable))]
-        protected Variable inOutVar;
+		[SerializeField]
+		[VariableProperty(typeof(AudioMixerGroupVariable))]
+		protected Variable inOutVar;
 
-        public override void OnEnter()
-        {
-            var ioamg = inOutVar as AudioMixerGroupVariable;
+		public override void OnEnter()
+		{
+			var ioamg = inOutVar as AudioMixerGroupVariable;
 
 
-            var target = audioMixerData.Value;
+			var target = audioMixerData.Value;
 
-            switch (getOrSet)
-            {
-                case GetSet.Get:
-                    switch (property)
-                    {
-                        case Property.OutputAudioMixerGroup:
-                            ioamg.Value = target.outputAudioMixerGroup;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+			switch (getOrSet)
+			{
+				case GetSet.Get:
+					switch (property)
+					{
+						case Property.OutputAudioMixerGroup:
+							ioamg.Value = target.outputAudioMixerGroup;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                case GetSet.Set:
-                    switch (property)
-                    {
-                        case Property.OutputAudioMixerGroup:
-                            target.outputAudioMixerGroup = ioamg.Value;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+				case GetSet.Set:
+					switch (property)
+					{
+						case Property.OutputAudioMixerGroup:
+							target.outputAudioMixerGroup = ioamg.Value;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                default:
-                    break;
-            }
+				default:
+					break;
+			}
 
-            Continue();
-        }
+			Continue();
+		}
 
-        public override string GetSummary()
-        {
-            if (audioMixerData.Value == null)
-            {
-                return "Error: no audioMixer set";
-            }
-            if (inOutVar == null)
-            {
-                return "Error: no variable set to push or pull data to or from";
-            }
+		public override string GetSummary()
+		{
+			if (audioMixerData.Value == null)
+			{
+				return "Error: no audioMixer set";
+			}
+			if (inOutVar == null)
+			{
+				return "Error: no variable set to push or pull data to or from";
+			}
 
-            return getOrSet.ToString() + " " + property.ToString();
-        }
+			return getOrSet.ToString() + " " + property.ToString();
+		}
 
-        public override Color GetButtonColor()
-        {
-            return new Color32(235, 191, 217, 255);
-        }
+		public override Color GetButtonColor()
+		{
+			return new Color32(235, 191, 217, 255);
+		}
 
-        public override bool HasReference(Variable variable)
-        {
-            if (audioMixerData.audioMixerRef == variable || inOutVar == variable)
-                return true;
+		public override bool HasReference(Variable variable)
+		{
+			if (ReferenceEquals(audioMixerData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+				return true;
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 }

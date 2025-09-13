@@ -74,7 +74,7 @@ namespace Amanita.Tests.EditMode
         }
 
         [VariableData(typeof(float), typeof(StringMuscariable))]
-        public class FakeStringVariableData : VariableData<string, IVariable<string>>
+        public class FakeStringVariableData : VariableData<string>
         {
         }
 
@@ -82,7 +82,7 @@ namespace Amanita.Tests.EditMode
 
     [VariableData(typeof(int), typeof(IntMuscariable))]
     [System.Serializable]
-    public class FakeIntVariableData : VariableData<int, IntMuscariable>
+    public class FakeIntVariableData : VariableData<int>
     {
         [VariableProperty("<Value>", typeof(IntMuscariable))]
         [SerializeField] protected IntMuscariable _intRef = new IntMuscariable();

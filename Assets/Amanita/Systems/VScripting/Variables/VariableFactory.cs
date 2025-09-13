@@ -5,6 +5,7 @@ namespace Amanita.VScripting
 {
     public static class VariableFactory
     {
+        #region Muscariables
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
             return Create(typeof(T), toMakeCopyOf) as Muscariable<T>;
@@ -38,9 +39,18 @@ namespace Amanita.VScripting
                     result.Key = toMakeCopyOf.Key;
                     result.Scope = toMakeCopyOf.Scope;
                     result.ItemID = toMakeCopyOf.ItemID;
-                    if (toMakeCopyOf.Value == null || result.ContentType.IsInstanceOfType(toMakeCopyOf.Value))
+
+                    if (toMakeCopyOf.Value == null || toMakeCopyOf.ContentType.Equals(contentType))
                     {
-                        result.Value = toMakeCopyOf.Value;
+                        // Convert legacy boxed numeric types (e.g. boxed double) into the target contentType
+                        // so that Muscariable.CanHoldAsValue (which checks runtime type) accepts it.
+                        object srcVal = toMakeCopyOf.Value;
+                        if (srcVal != null)
+                        {
+                            srcVal = ConvertValueToType(srcVal, contentType);
+                        }
+
+                        result.Value = srcVal;
                     }
                 }
             }
@@ -48,20 +58,57 @@ namespace Amanita.VScripting
             return result;
         }
 
-        public static TMuscari CreateMuscari<TMuscari, TVal>(TVal startingValue = default) 
-            where TMuscari : Muscariable<TVal>
+        // Helper: attempt to convert boxed value to the requested runtime type so assignment
+        // to a Muscariable (which checks obj.GetType()) will succeed. Handles numeric conversions
+        // (e.g. boxed double -> float), enums and nullable underlying types.
+        private static object ConvertValueToType(object source, Type targetType)
         {
-            TMuscari result = (TMuscari)Create(startingValue);
-            return result;
+            if (source == null) return null;
+
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            // If already the right runtime type, return as-is.
+            if (underlying.IsInstanceOfType(source)) return source;
+
+            try
+            {
+                // Enum handling
+                if (underlying.IsEnum)
+                {
+                    if (source is string sourceStr)
+                    {
+                        return Enum.Parse(underlying, sourceStr);
+                    }
+                    return Enum.ToObject(underlying, source);
+                }
+
+                // Use IConvertible -> Convert.ChangeType for primitive-like conversions
+                if (source is IConvertible)
+                {
+                    return Convert.ChangeType(source, underlying);
+                }
+
+                // Fallback: try direct cast (may throw)
+                return Convert.ChangeType(source, underlying);
+            }
+            catch
+            {
+                // If conversion fails, return original value and let Muscariable.Value validation fail as before.
+                return source;
+            }
         }
 
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = Create(typeof(T)) as Muscariable<T>;
+            Muscariable<T> result = Create(typeof(T), null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }
 
+        #endregion
+
+
+        #region Legacy Variables
         // The reason we require a holder for the legacy vars hers is because they're all
         // MonoBehaviours, meaning that they need to be attached to a GameObject. 
         // Or in our case, a Flowchart.
@@ -89,7 +136,7 @@ namespace Amanita.VScripting
                 {
                     varHolder.AddVariable(newVariable);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Debug.LogWarning(errorMessage);
                     result = null;
@@ -100,5 +147,8 @@ namespace Amanita.VScripting
             return result;
         }
 
+        #endregion
+
+        
     }
 }

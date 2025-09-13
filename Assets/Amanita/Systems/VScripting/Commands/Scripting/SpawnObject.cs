@@ -91,9 +91,11 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (_sourceObject.gameObjectRef == variable || _parentTransform.transformRef == variable ||
-                _spawnAtSelf.booleanRef == variable || _spawnPosition.vector3Ref == variable ||
-                _spawnRotation.vector3Ref == variable)
+            if (ReferenceEquals(_sourceObject.VarRef, variable) || 
+                ReferenceEquals(_parentTransform.VarRef, variable) ||
+                ReferenceEquals(_spawnAtSelf.VarRef, variable) || 
+                ReferenceEquals(_spawnPosition.VarRef, variable) ||
+                ReferenceEquals(_spawnRotation.VarRef, variable))
                 return true;
 
             return false;

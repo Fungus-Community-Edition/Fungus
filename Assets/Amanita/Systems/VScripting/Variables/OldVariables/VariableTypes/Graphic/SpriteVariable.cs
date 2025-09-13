@@ -17,11 +17,11 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Sprite), typeof(SpriteVariable))]
-    public class SpriteData : VariableData<Sprite, IVariable<Sprite>>
+    public class SpriteData : VariableData<Sprite>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
-        public SpriteVariable spriteRef;
+        public IVariable<Sprite> spriteRef;
 
         public SpriteData() : base(default) { }
         public SpriteData(Sprite startVal = null) : base(startVal) { }
@@ -31,24 +31,10 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return spriteRef; }
-            set
-            {
-                if (value == null) { spriteRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    spriteRef = value as SpriteVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= spriteRef;
         }
+
     }
 }

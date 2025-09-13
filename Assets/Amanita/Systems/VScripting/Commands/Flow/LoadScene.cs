@@ -49,7 +49,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _sceneName.stringRef == variable ||
+            return ReferenceEquals(_sceneName.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

@@ -155,7 +155,9 @@ namespace Amanita.DialogueSys
 
         public override bool HasReference(Variable variable)
         {
-            return text.stringRef == variable || setAlpha.floatRef == variable || setColor.colorRef == variable || base.HasReference(variable);
+            return ReferenceEquals(text.VarRef, variable) || 
+                ReferenceEquals(setAlpha.VarRef, variable) || 
+                ReferenceEquals(setColor.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

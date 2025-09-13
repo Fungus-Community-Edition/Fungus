@@ -40,7 +40,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _duration.floatRef == variable || base.HasReference(variable);
+            return ReferenceEquals(_duration.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

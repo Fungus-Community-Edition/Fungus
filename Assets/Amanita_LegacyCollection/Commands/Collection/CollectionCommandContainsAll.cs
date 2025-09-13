@@ -39,7 +39,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return result == variable || inSameOrder.booleanRef == variable || base.HasReference(variable);
+            return result == variable || ReferenceEquals(inSameOrder.VarRef, variable) || base.HasReference(variable);
         }
 
         public override string GetSummary()

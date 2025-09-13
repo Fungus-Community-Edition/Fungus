@@ -260,7 +260,7 @@ namespace Amanita.VScripting
 
 		public override bool HasReference(Variable variable)
 		{
-			if (audioSourceData.audioSourceRef == variable || inOutVar == variable)
+			if (ReferenceEquals(audioSourceData.VarRef, variable) || inOutVar == variable)
 				return true;
 
 			return false;

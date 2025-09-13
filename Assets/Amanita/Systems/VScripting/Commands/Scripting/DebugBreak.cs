@@ -28,7 +28,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == enabled.booleanRef;
+            return ReferenceEquals(variable, enabled.VarRef);
         }
 
         public override Color GetButtonColor()

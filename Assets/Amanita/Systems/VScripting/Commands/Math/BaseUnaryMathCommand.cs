@@ -23,13 +23,13 @@ namespace Amanita.VScripting
 
         public override string GetSummary()
         {
-            return "in: " + (inValue.floatRef != null ? inValue.floatRef.Key : inValue.Value.ToString()) + 
-                   ", out: " + (outValue.floatRef != null ? outValue.floatRef.Key : outValue.Value.ToString());
+            return "in: " + (inValue.VarRef != null ? inValue.VarRef.Key : inValue.Value.ToString()) + 
+                   ", out: " + (outValue.VarRef != null ? outValue.VarRef.Key : outValue.Value.ToString());
         }
 
         public override bool HasReference(Variable variable)
         {
-            return variable == inValue.floatRef || variable == outValue.floatRef;
+            return ReferenceEquals(variable, inValue.VarRef) || ReferenceEquals(variable, outValue.VarRef);
         }
     }
 }

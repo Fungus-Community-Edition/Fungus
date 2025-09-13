@@ -93,7 +93,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return activeState.booleanRef == variable || base.HasReference(variable);
+            return ReferenceEquals(activeState.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion
