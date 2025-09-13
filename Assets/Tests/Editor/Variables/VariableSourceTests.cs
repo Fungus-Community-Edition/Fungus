@@ -19,6 +19,7 @@ namespace Amanita.Tests.EditMode
             fcHolder = new GameObject("Flowchart");
             flowchart = fcHolder.AddComponent<Flowchart>();
             src = ScriptableObject.CreateInstance<VariableSource>();
+            VariableTypeDiscovery.DiscoverAndRegister();
 
             toDestroy.Add(manager.gameObject);
             toDestroy.Add(flowchart.gameObject);
