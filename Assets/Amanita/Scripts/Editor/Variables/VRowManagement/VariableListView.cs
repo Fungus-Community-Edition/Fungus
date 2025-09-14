@@ -17,14 +17,14 @@ namespace Amanita.VScripting.EditorUtils
         {
             _listDisplay = initArgs.List;
             _countDisplay = initArgs.CountLabel;
-            _factory = initArgs.RowFactory;
+            _rowFactory = initArgs.RowFactory;
             if (_listDisplay != null)
                 InitListViewStructure();
         }
 
         protected ListView _listDisplay;
         protected UITKLabel _countDisplay;
-        protected IVariableRowFactory _factory;
+        protected IVariableRowFactory _rowFactory;
 
         protected Flowchart _flowchart;
         protected int _flowchartInstanceID;
@@ -188,10 +188,10 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual VariableRow GetOrCreateRow(IVariable variable)
         {
-            if (variable == null || _factory == null) return null;
+            if (variable == null || _rowFactory == null) return null;
             if (_activeRows.TryGetValue(variable, out var existing)) return existing;
 
-            var row = _factory.Create(variable);
+            var row = _rowFactory.Create(variable);
             if (row != null)
                 _activeRows[variable] = row;
             return row;
@@ -205,7 +205,7 @@ namespace Amanita.VScripting.EditorUtils
             if (_activeRows.TryGetValue(variable, out var row))
             {
                 _activeRows.Remove(variable);
-                _factory?.Release(row);
+                _rowFactory?.Release(row);
             }
         }
 
@@ -292,7 +292,7 @@ namespace Amanita.VScripting.EditorUtils
                 _countDisplay.text = $"Count: {_variables.Count}";
         }
 
-        public event Action<IReadOnlyList<IVariable>> OrderChanged;
+        public event Action<IList<IVariable>> OrderChanged;
 
         public void Dispose()
         {
@@ -316,7 +316,7 @@ namespace Amanita.VScripting.EditorUtils
             _listDisplay?.RemoveFromHierarchy();
             _countDisplay?.RemoveFromHierarchy();
             _countDisplay = null;
-            _factory = null;
+            _rowFactory = null;
 
             _flowchart = null;
             _flowchartInstanceID = 0;
@@ -456,7 +456,7 @@ namespace Amanita.VScripting.EditorUtils
         void Refresh();
         IReadOnlyList<VariableRow> Rows { get; }
         bool Contains(VariableRow row);
-        event Action<IReadOnlyList<IVariable>> OrderChanged;
+        event Action<IList<IVariable>> OrderChanged;
     }
 
     public class VariableListViewInitArgs

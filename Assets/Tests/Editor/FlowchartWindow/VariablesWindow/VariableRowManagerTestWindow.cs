@@ -268,7 +268,7 @@ namespace Amanita.VScripting.EditorUtils
                 HoldsManager = _holdsManager,
                 Root = _root,
                 AddButton = addButton,
-                Flowchart = _flowchart,
+                VariableSource = _flowchart,
                 VariableListView = view,
             };
 

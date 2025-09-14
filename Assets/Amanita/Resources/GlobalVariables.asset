@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: GlobalVariables
+  m_EditorClassIdentifier: 
+  variables:
+  - rid: 4382208383175622748
+  - rid: 4382208383368298500
+  - rid: 4382208383368298505
+  _nextVarID: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4382208383175622748
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var
+        itemID: 1
+        value:
+          rid: -2
+        valOfType: 
+    - rid: 4382208383368298500
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var1
+        itemID: 2
+        value:
+          rid: -2
+        valOfType: 
+    - rid: 4382208383368298505
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var2
+        itemID: 3
+        value:
+          rid: 4382208383368298506
+        valOfType: 0
+    - rid: 4382208383368298506
+      type: {class: Int32, ns: System, asm: mscorlib}
+      data: 

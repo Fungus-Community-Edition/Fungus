@@ -74,7 +74,7 @@ namespace Amanita.Tests.EditMode
                     HoldsManager = _holdsManager,
                     Root = _root,
                     AddButton = _addButton,
-                    Flowchart = _firstFc,
+                    VariableSource = _firstFc,
                     VariableListView = _firstListView,
                 };
 
@@ -316,7 +316,7 @@ namespace Amanita.Tests.EditMode
                 Root = newRoot,
                 HoldsManager = newManagerHolder,
                 AddButton = newAdd,
-                Flowchart = secondFc,
+                VariableSource = secondFc,
                 VariableListView = secondView,
             };
 
@@ -349,7 +349,7 @@ namespace Amanita.Tests.EditMode
                 Root = thirdRoot,
                 HoldsManager = thirdManagerHolder,
                 AddButton = thirdAdd,
-                Flowchart = thirdFc,
+                VariableSource = thirdFc,
                 VariableListView = thirdView,
             });
 

@@ -2,7 +2,7 @@ using Amanita.VScripting;
 
 namespace Amanita.Tests.EditMode
 {
-    [VariableInfo("", "", typeof(int))]
+    [VariableInfo("", "", typeof(int), ShowInMenu = false)]
     public class HookedIntMuscariable : Muscariable<int>
     {
         public object LastBasePrev;

@@ -3,11 +3,10 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public abstract class Muscariable : IVariable
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
@@ -386,5 +385,7 @@ namespace Amanita.VScripting
         }
 
     }
+
+    
 
 }

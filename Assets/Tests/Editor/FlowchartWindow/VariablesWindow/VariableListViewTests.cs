@@ -227,7 +227,7 @@ namespace Amanita.Tests.EditMode
 
             IReadOnlyList<IVariable> lastOrder = null;
             int eventCount = 0;
-            _view.OrderChanged += o => { eventCount++; lastOrder = o; };
+            _view.OrderChanged += o => { eventCount++; lastOrder = (IReadOnlyList<IVariable>)o; };
 
             // Simulate Unity internal reorder (list already mutated)
             InternalVariables.RemoveAt(0);
@@ -248,7 +248,7 @@ namespace Amanita.Tests.EditMode
             _view.SetVariables(new IVariable[] { v1, v2, v3 });
 
             IReadOnlyList<IVariable> lastOrder = null;
-            _view.OrderChanged += o => lastOrder = o;
+            _view.OrderChanged += elem => lastOrder = (IReadOnlyList<IVariable>)elem;
 
             InternalVariables.RemoveAt(2);
             InternalVariables.Insert(0, v3);
