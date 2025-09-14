@@ -25,17 +25,15 @@ namespace Amanita.VScripting
 
                 case SerializedPropertyType.ManagedReference:
                 case SerializedPropertyType.Generic: // Unity sometimes reports SerializeReference as Generic
-                    bool contentTypeIsUnityObj = typeof(UnityObj).IsAssignableFrom(contentType);
                     if (chosen == null)
                     {
                         varRefProp.managedReferenceValue = null;
                     }
-                    else if (contentTypeIsUnityObj)
+                    else if (chosen is UnityObj unityObj && chosen is IVariable)
                     {
-                        bool wrappingUnityObj = chosen is UnityObj;
-                        if (wrappingUnityObj)
+                        WrapVarIntoPointer();
+                        void WrapVarIntoPointer()
                         {
-                            UnityObj uo = (UnityObj)chosen;
                             var pointerType = typeof(VariablePointer<>).MakeGenericType(contentType);
 
                             // Look for a ctor that takes a UnityObj
@@ -45,22 +43,17 @@ namespace Amanita.VScripting
                             if (ctor != null)
                             {
                                 // Preferred: construct with the component already set
-                                wrapper = ctor.Invoke(new object[] { uo });
+                                wrapper = ctor.Invoke(new object[] { unityObj });
                             }
                             else
                             {
                                 // Fallback: default-construct, then set _component via reflection
                                 wrapper = Activator.CreateInstance(pointerType);
                                 var field = pointerType.GetField("_component", BindingFlags.NonPublic | BindingFlags.Instance);
-                                field?.SetValue(wrapper, uo);
+                                field?.SetValue(wrapper, unityObj);
                             }
 
                             varRefProp.managedReferenceValue = wrapper;
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"AssignVarRef: Expected UnityObj for {contentType}, got {chosen?.GetType()}");
-                            varRefProp.managedReferenceValue = null;
                         }
                     }
                     else

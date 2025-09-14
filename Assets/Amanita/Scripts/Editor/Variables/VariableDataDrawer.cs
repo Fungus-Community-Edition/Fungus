@@ -73,6 +73,11 @@ namespace Amanita.VScripting.EditorUtils
                 void RegisterValidVars()
                 {
                     var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
+                    if (dataAttr == null)
+                    {
+                        Debug.LogWarning($"VariableDataAttribute for {varData.GetType().Name} not found. May be sign of underlying problem.");
+                        return;
+                    }
                     var contentType = dataAttr.ContentType;
                     validVarLookup.Clear();
                     validVarLookup.Add("<Value>", null); // Option to switch back to literal value
@@ -177,8 +182,14 @@ namespace Amanita.VScripting.EditorUtils
                     }
                 }
 
+                bool noVarsFound = validVarLookup.Count == 0;
+                if (noVarsFound)
+                {
+                    return;
+                }
                 IList<string> options = validVarLookup.Keys.ToList();
-                int prevSelectedIndex = selectedIndex;
+                int prevSelectedIndex = Mathf.Min(options.Count, selectedIndex);
+                
                 IVariable chosenBefore = validVarLookup[options[prevSelectedIndex]];
 
                 if (!shouldDrawLiteral && chosenBefore != null)
