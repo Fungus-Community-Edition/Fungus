@@ -12,7 +12,6 @@ namespace Amanita.Tests.EditMode
         public void SetUp()
         {
             VariableDataTypeRegistry.Clear();
-
             Type fakeDataType = typeof(FakeIntVariableData);
             VariableDataTypeRegistry.Register(fakeDataType);
         }

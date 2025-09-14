@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.VScripting
 {
@@ -74,6 +75,7 @@ namespace Amanita.VScripting
             T result = (T)Convert.ChangeType(valueToConvert, this.ContentType);
             return result;
         }
+        
     }
 
     [System.Serializable]

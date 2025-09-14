@@ -58,7 +58,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Root = rootElem,
                 AddButton = addBtn,
-                Flowchart = flowchart,
+                VariableSource = flowchart,
                 VariableListView = view,
             });
         }
