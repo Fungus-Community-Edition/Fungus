@@ -1,4 +1,4 @@
-﻿using Amanita.ThirdPartyInt.DGDOTween;
+﻿using DoTweenita;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -11,7 +11,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftVolumeCase = new TweenCase<AudioSource, float>
         {
             Name = "ShiftVolumeTo",
-            CreateTween = (adapter, src) => adapter.ShiftVolumeTo(src, 50f, Duration), // 50% → 0.5f
+            CreateTween = (adapter, src) => adapter.FadeVolume(src, 50f, Duration), // 50% → 0.5f
             GetValue = src => src.volume,
             SetValue = (src, val) => src.volume = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -21,7 +21,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftVolume01Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftVolume01To",
-            CreateTween = (adapter, src) => adapter.ShiftVolume01To(src, 0.5f, Duration), 
+            CreateTween = (adapter, src) => adapter.FadeVolume01(src, 0.5f, Duration), 
             GetValue = src => src.volume,
             SetValue = (src, val) => src.volume = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -31,7 +31,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftPitchCase = new TweenCase<AudioSource, float>
         {
             Name = "ShiftPitchTo",
-            CreateTween = (adapter, src) => adapter.ShiftPitchTo(src, 150f, Duration), // 150% → 1.5f
+            CreateTween = (adapter, src) => adapter.FadePitch(src, 150f, Duration), // 150% → 1.5f
             GetValue = src => src.pitch,
             SetValue = (src, val) => src.pitch = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -41,7 +41,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftPitchN33Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftPitchN33To",
-            CreateTween = (adapter, src) => adapter.ShiftPitchN33To(src, -1.50f, Duration), 
+            CreateTween = (adapter, src) => adapter.FadePitchN33(src, -1.50f, Duration), 
             GetValue = src => src.pitch,
             SetValue = (src, val) => src.pitch = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -96,7 +96,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume01To_ZeroPercent_YieldsZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume01To(src, 0f, Duration);
+            var handle = _adapter.FadeVolume01(src, 0f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0f, src.volume, Epsilon);
         }
@@ -105,7 +105,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume01To_HundredPercent_YieldsOne()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume01To(src, 100f, Duration);
+            var handle = _adapter.FadeVolume01(src, 100f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(1f, src.volume, Epsilon);
         }
@@ -114,7 +114,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitchN33To_ZeroPercent_YieldsZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitchN33To(src, 0f, Duration);
+            var handle = _adapter.FadePitchN33(src, 0f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0f, src.pitch, Epsilon);
         }
@@ -123,7 +123,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitchN33To_ThreeHundredPercent_YieldsThree()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitchN33To(src, 200f, Duration);
+            var handle = _adapter.FadePitchN33(src, 200f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(3f, src.pitch, Epsilon);
         }
@@ -132,7 +132,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftVolume01To_NegativePercent_ScalesToZero()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftVolume01To(src, -50f, Duration);
+            var handle = _adapter.FadeVolume01(src, -50f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(0, src.volume, Epsilon);
         }
@@ -141,7 +141,7 @@ namespace BuiltinCompat
         public IEnumerator ShiftPitchN33To_AboveThreeHundredPercent_ScalesUpToThree()
         {
             var src = _testGo.AddComponent<AudioSource>();
-            var handle = _adapter.ShiftPitchN33To(src, 300f, Duration);
+            var handle = _adapter.FadePitchN33(src, 300f, Duration);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(3f, src.pitch, Epsilon);
         }
@@ -155,7 +155,7 @@ namespace BuiltinCompat
             float expected = (float)caseData[1];
 
             var src = _testGo.AddComponent<AudioSource>();
-            _adapter.ShiftVolume01To(src, inputPercent, Duration);
+            _adapter.FadeVolume01(src, inputPercent, Duration);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 
@@ -178,7 +178,7 @@ namespace BuiltinCompat
             float expected = (float)caseData[1];
 
             var src = _testGo.AddComponent<AudioSource>();
-            _adapter.ShiftPitchTo(src, inputPercent, Duration);
+            _adapter.FadePitch(src, inputPercent, Duration);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 

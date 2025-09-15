@@ -1,9 +1,11 @@
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Reflection;
+using Type = System.Type;
 
 namespace CommandCompat
 {
@@ -18,14 +20,19 @@ namespace CommandCompat
             spriteRenderer.color = Color.white;
 
             // Assign private fields via reflection
-            typeof(FadeSprite).GetField("spriteRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            Type cmdType = typeof(FadeSprite);
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            cmdType.GetField("spriteRenderer", flags)
                 .SetValue(cmd, spriteRenderer);
-            typeof(FadeSprite).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, new FloatData(Duration));
-            typeof(FadeSprite).GetField("targetColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetColor", flags)
                 .SetValue(cmd, new ColorData(TargetColor));
-            typeof(FadeSprite).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, ScriptableObject.CreateInstance<AmaniDoTweenAdapter>());
+
+            cmdType.GetField("fadeTweener", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doFadeTween", flags)
+                .SetValue(cmd, adapter);
         }
 
         protected override void AssertFinalState()

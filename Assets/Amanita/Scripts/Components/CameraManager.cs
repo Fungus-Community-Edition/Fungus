@@ -332,8 +332,6 @@ namespace Amanita
 			ITransformTweenAdapter posTweener = null,
 			ITransformTweenAdapter rotationTweener = null)
 		{
-			Debug.LogWarning("LeanTweenType args in CameraManager PanToPosition are being ignored.");
-
 			if (camera == null)
 			{
 				Debug.LogWarning("Camera is null");
@@ -358,97 +356,36 @@ namespace Amanita
 			}
 			else
 			{
-				_camOrthoSizeTween = AmanitaManager.DefaultTweener.TweenBasic(
-					() => camera.orthographicSize,
-					UpdateCamOrthoSize,
-					targetSize, duration,
-					OnCamPosPanTweenDone);
-				void UpdateCamOrthoSize(float newSize)
-				{
-					camera.orthographicSize = newSize;
-				}
-				void OnCamPosPanTweenDone()
+				sizeTweener.ShiftOrthographicSizeTo(camera, targetSize, duration)
+					.SetOnComplete(OnOrthoSizeTweenDone);
+				void OnOrthoSizeTweenDone()
 				{
 					camera.orthographicSize = targetSize;
 					onPanDone?.Invoke();
-					sizeTween = null;
+					// ^The size, motion, and rotation tweens should be set to the same duration.
+					// Thus, placing just one call of onPanDone in any of the end-of-tween 
+					// callbacks should be okay.
 				}
 
-				//sizeTween = LeanTween.value(camera.orthographicSize, targetSize, duration)
-				//	.setEase(sizeTweenType)
-				//	.setOnUpdate(x => camera.orthographicSize = x)
-				//	.setOnComplete(() =>
-				//	{
-				//		camera.orthographicSize = targetSize;
-				//		if (onPanDone != null) onPanDone();
-				//		sizeTween = null;
-				//	});
-
-				if (posTweener != null)
-				{
-					posTweener.MoveTo(camera.transform, targetPosition, duration)
+				posTweener.MoveTo(camera.transform, targetPosition, duration)
 						.SetOnComplete(OnCamPosTweenDone);
-				}
-				else
-				{
-					_neoCamPosTween = AmanitaManager.DefaultTweener.TweenBasic(
-						() => camera.transform.position,
-						UpdateCamPos,
-						targetPosition, duration)
-						.SetOnComplete(OnCamPosTweenDone);
-					void UpdateCamPos(Vector3 newPos)
-					{
-						camera.transform.position = newPos;
-					}
-					
-				}
-
 				void OnCamPosTweenDone()
 				{
 					camera.transform.position = targetPosition;
 					_neoCamPosTween = null;
 				}
 
-				//camPosTween = LeanTween.move(camera.gameObject, targetPosition, duration)
-				//	.setEase(posTweenType)
-				//	.setOnComplete(() =>
-				//	{
-				//		camera.transform.position = targetPosition;
-				//		camPosTween = null;
-				//	});
-
 				Transform camTrans = camera.transform;
-				if (rotationTweener != null)
-				{
-					rotationTweener.RotateTo(camera.transform, targetRotation, duration).SetOnComplete(OnCamRotTweenDone);
-				}
-				else
-				{
-					_neoCamRotTween = AmanitaManager.DefaultTweener.TweenBasic<Quaternion>(() => camTrans.rotation,
-						UpdateCamRot,
-						targetRotation, duration,
-						OnCamRotTweenDone);
-				}
-				void UpdateCamRot(Quaternion newRot)
-				{
-					camTrans.rotation = newRot;
-				}
+				rotationTweener.RotateTo(camera.transform, targetRotation, duration)
+					.SetOnComplete(OnCamRotTweenDone);
 				void OnCamRotTweenDone()
 				{
 					camTrans.rotation = targetRotation;
 					camRotTween = null;
 				}
 
-				//camRotTween = LeanTween.rotate(camera.gameObject, targetRotation.eulerAngles, duration)
-				//	.setEase(rotTweenType)
-				//	.setOnComplete(() =>
-				//	{
-				//		camera.transform.rotation = targetRotation;
-				//		camRotTween = null;
-				//	});
 			}
 		}
-
 
 		/// <summary>
 		/// Activates swipe panning mode. The player can pan the camera within the area between viewA & viewB.

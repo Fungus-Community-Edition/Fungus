@@ -43,14 +43,18 @@ namespace Amanita.VScripting
                 return;
             }
 
-            SpriteFader.FadeSprite(spriteRenderer, targetColor.Value, duration.Value, Vector2.zero, delegate {
-                if (waitUntilFinished)
-                {
-                    Continue();
-                }
-            });
+            SpriteFader.FadeSprite(spriteRenderer, targetColor.Value, duration.Value,
+                Vector2.zero, doFadeTween, ContinueAfterWait);
 
             if (!waitUntilFinished)
+            {
+                Continue();
+            }
+        }
+
+        protected virtual void ContinueAfterWait()
+        {
+            if (waitUntilFinished)
             {
                 Continue();
             }
@@ -121,7 +125,8 @@ namespace Amanita.VScripting
             if (doFadeTween == null && fadeTweener != null)
             {
                 Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
-                fadeTweener = null;
+                fadeTweener = AmanitaManager.DefaultTweener;
+                doFadeTween = AmanitaManager.DefaultTweener;
             }
         }
 

@@ -1,11 +1,13 @@
 using Amanita;
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for equality comparers
+using Type = System.Type;
+using System.Reflection;
 
 namespace CommandCompat
 {
@@ -31,25 +33,26 @@ namespace CommandCompat
             targetView.ViewSize = 2.5f;
 
             // Assign private fields
-            typeof(FadeToView).GetField("targetCamera", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            Type cmdType = typeof(FadeToView);
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            cmdType.GetField("targetCamera", flags)
                 .SetValue(cmd, cameraGO);
-            typeof(FadeToView).GetField("targetView", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetView", flags)
                 .SetValue(cmd, targetView);
-            typeof(FadeToView).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, Duration);
-            typeof(FadeToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
 
             // Inject AmaniDoTweenAdapter for all tweeners
-            var amani = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
-            typeof(FadeToView).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
-            typeof(FadeToView).GetField("orthoSizeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
-            typeof(FadeToView).GetField("posTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
-            typeof(FadeToView).GetField("rotTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
+            cmdType.GetField("doFadeTween", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doOrthoSizeTween", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doPosTween", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doRotTween", flags)
+                .SetValue(cmd, adapter);
         }
 
         protected override void AssertFinalState()
