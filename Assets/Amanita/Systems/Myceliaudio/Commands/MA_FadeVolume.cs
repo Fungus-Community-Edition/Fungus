@@ -70,7 +70,7 @@ namespace Amanita.Myceliaudio.VScripting
 
         protected virtual void FadeWithTweener(AlterAudioSourceArgs args, IAudioTrack track)
         {
-            doFade.ShiftVolumeTo(track, args.TargetValue, args.FadeDuration)
+            doFade.FadeVolume(track, args.TargetValue, args.FadeDuration)
                 .SetOnComplete(() => args.OnComplete(args));
         }
 

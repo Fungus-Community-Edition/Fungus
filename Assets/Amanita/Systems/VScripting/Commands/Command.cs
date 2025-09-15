@@ -72,6 +72,7 @@ namespace Amanita.VScripting
                 referencedVariables.Clear();
             }
         }
+
 #endif
         #endregion Editor caches
 
@@ -242,7 +243,15 @@ namespace Amanita.VScripting
 
         public virtual string GetLocationIdentifier()
         {
-            return ParentBlock.GetFlowchart().GetName() + ":" + ParentBlock.BlockName + "." + this.GetType().Name + "#" + CommandIndex.ToString(); 
+            if (ParentBlock == null)
+            {
+                return "";
+            }
+            string fcName = ParentBlock.GetFlowchart().GetName();
+            string thisTypeName = this.GetType().Name;
+            string indexStr = CommandIndex.ToString();
+
+            return fcName + ":" + ParentBlock.BlockName + "." + thisTypeName + "#" + indexStr; 
         }
 
         /// <summary>

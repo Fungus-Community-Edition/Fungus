@@ -1,7 +1,5 @@
 using Amanita.EditorUtils;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
@@ -31,10 +29,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected Texture2D addTexture;
 
-        protected VariableListAdaptor variableListAdaptor;
-
-        protected UitkVariableListAdaptor _uitkVarListAdaptor;
-
         public static bool FlowchartDataStale { get; set; }
 
         protected virtual void OnEnable()
@@ -47,8 +41,6 @@ namespace Amanita.VScripting.EditorUtils
             addTexture = AmanitaEditorResources.AddSmall;
 
             _manager?.Dispose();
-            _uitkVarListAdaptor?.Dispose();
-            //uitkVarListAdaptor = new UitkVariableListAdaptor(variablesProp, target as Flowchart);
         }
 
         protected void BuildManager(VisualElement rootElem)
@@ -98,7 +90,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnDisable()
         {
-            _uitkVarListAdaptor?.Dispose();
             _manager?.Dispose();
         }
 
@@ -106,118 +97,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             var _rootElement = new VisualElement();
             
-            VisualElement OldWay()
-            {
-                Flowchart fcTarget = (Flowchart)target;
-
-                FetchSerializedProperties();
-
-                PropertyField descField = new PropertyField(descriptionProp),
-                    colorCommandsField = new PropertyField(colorCommandsProp),
-                     hideComponentsField = new PropertyField(hideComponentsProp),
-                    stepPauseField = new PropertyField(stepPauseProp),
-                    saveSelectionField = new PropertyField(saveSelectionProp),
-                    localizationIDField = new PropertyField(localizationIdProp),
-                    showLineNumbersField = new PropertyField(showLineNumbersProp),
-                    luaEnvironmentField = new PropertyField(luaEnvironmentProp),
-                    luaBindingNameField = new PropertyField(luaBindingNameProp),
-                    hideCommandsField = new PropertyField(hideCommandsProp),
-
-                    includeInSaveField = new PropertyField(includeInSaveProp),
-                    saveBlocksField = new PropertyField(saveBlocksProp),
-                    saveVariablesField = new PropertyField(saveVariablesProp),
-                    loadPriorityField = new PropertyField(loadPriorityProp);
-
-                Foldout editorOnlyFoldout = new Foldout(),
-                    hidingFoldout = new Foldout(),
-                    saveSysInvolvementFoldout = new Foldout(),
-                    luaFoldout = new Foldout(),
-                    varsFoldout = new Foldout();
-
-                Button openFlowchartWindowButton = new Button()
-                {
-                    text = "Open Flowchart Window"
-                };
-
-                openFlowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
-
-                VisualElement varsUi = _uitkVarListAdaptor.CreateVariablesUI();
-                var imguiArea = new IMGUIContainer(() =>
-                {
-                    serializedObject.Update();
-                    serializedObject.ApplyModifiedProperties();
-                });
-
-                PrepFields();
-                void PrepFields()
-                {
-                    SetLabels();
-                    void SetLabels()
-                    {
-                        descField.label = "Description";
-                        colorCommandsField.label = "Color Commands";
-                        hideComponentsField.label = "Hide Components";
-                        stepPauseField.label = "Step Pause";
-                        saveSelectionField.label = "Save Selection";
-                        localizationIDField.label = "Localization ID";
-                        luaEnvironmentField.label = "Lua Environment";
-                        luaBindingNameField.label = "Lua Binding Name";
-                        hideCommandsField.label = ""; // To prevent double labeling
-
-                        includeInSaveField.label = "Include in Saves";
-                        saveBlocksField.label = "Save Blocks";
-                        saveVariablesField.label = "Save Variables";
-                        loadPriorityField.label = "Load Priority";
-                    }
-
-                    editorOnlyFoldout.text = "Editor Only";
-                    editorOnlyFoldout.tooltip = "For most of the stuff that only matters in the editor.";
-                    editorOnlyFoldout.Add(colorCommandsField);
-                    editorOnlyFoldout.Add(hideComponentsField);
-                    editorOnlyFoldout.Add(stepPauseField);
-                    editorOnlyFoldout.Add(saveSelectionField);
-                    editorOnlyFoldout.Add(hideCommandsField);
-
-                    luaFoldout.text = "Lua Support";
-                    luaFoldout.tooltip = "For stuff that involves using Flowcharts with Lua";
-                    luaFoldout.Add(luaEnvironmentField);
-                    luaFoldout.Add(luaBindingNameField);
-
-                    descField.style.marginBottom = 4;
-                    openFlowchartWindowButton.style.marginTop = 10;
-
-                    saveSysInvolvementFoldout.text = "Save Sys Involvement";
-                    saveSysInvolvementFoldout.Add(includeInSaveField);
-                    saveSysInvolvementFoldout.Add(saveBlocksField);
-                    saveSysInvolvementFoldout.Add(saveVariablesField);
-                    saveSysInvolvementFoldout.Add(loadPriorityField);
-
-                    varsFoldout.text = "Variables";
-                    varsFoldout.value = fcTarget.VariablesExpanded;
-                    varsFoldout.RegisterValueChangedCallback(evt =>
-                    {
-                        fcTarget.VariablesExpanded = evt.newValue;
-                    });
-
-                }
-
-                IList<VisualElement> fields = new List<VisualElement>()
-                {
-                    descField, localizationIDField, editorOnlyFoldout, luaFoldout,
-                    saveSysInvolvementFoldout, openFlowchartWindowButton, varsUi,
-                    imguiArea,
-                };
-
-                foreach (var elem in fields)
-                {
-                    _rootElement.Add(elem);
-                }
-
-                _rootElement.Bind(serializedObject);
-
-                return _rootElement;
-            }
-        
             VisualElement NewWay()
             {
                 // Clone the uxml

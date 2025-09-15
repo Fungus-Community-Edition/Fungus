@@ -43,11 +43,11 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Color), typeof(ColorVariable))]
-    public class ColorData : VariableData<Color, IVariable<Color>>
+    public class ColorData : VariableData<Color>
     {
-        [SerializeField]
+        [SerializeField, SerializeReference]
         [VariableProperty("<Value>", typeof(ColorVariable))]
-        public ColorVariable colorRef;
+        public IVariable<Color> colorRef;
 
         public ColorData() : base(default) { }
         public ColorData(Color startVal = default) : base(startVal) { }
@@ -57,24 +57,9 @@ namespace Amanita.VScripting
             return colorData.Value;
         }
 
-        public override IVariable VarRef
+        public override void Refresh()
         {
-            get { return colorRef; }
-            set
-            {
-                if (value == null) { colorRef = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    colorRef = value as ColorVariable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
+            varRef ??= colorRef;
         }
 
     }

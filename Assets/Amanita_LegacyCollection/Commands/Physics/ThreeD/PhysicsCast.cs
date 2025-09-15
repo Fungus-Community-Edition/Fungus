@@ -106,13 +106,13 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == direction.vector3Ref ||
-                variable == maxDistance.floatRef ||
-                variable == position1.vector3Ref ||
-                variable == capsulePosition2.vector3Ref ||
-                variable == radius.floatRef ||
-                variable == boxHalfExtends.vector3Ref ||
-                variable == boxOrientation.quaternionRef ||
+            return ReferenceEquals(variable, direction.VarRef) ||
+                ReferenceEquals(variable, maxDistance.VarRef) ||
+                ReferenceEquals(variable, position1.VarRef) ||
+                ReferenceEquals(variable, capsulePosition2.VarRef) ||
+                ReferenceEquals(variable, radius.VarRef) ||
+                ReferenceEquals(variable, boxHalfExtends.VarRef) ||
+                ReferenceEquals(variable, boxOrientation.VarRef) ||
                 base.HasReference(variable);
         }
 

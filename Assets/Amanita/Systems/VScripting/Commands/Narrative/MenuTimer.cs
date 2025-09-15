@@ -62,7 +62,7 @@ namespace Amanita.DialogueSys.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return _duration.floatRef == variable ||
+            return ReferenceEquals(_duration.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

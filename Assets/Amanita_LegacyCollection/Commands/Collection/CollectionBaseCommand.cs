@@ -18,7 +18,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return variable == collection.collectionRef;
+            return ReferenceEquals(variable, collection.VarRef);
         }
 
         public override string GetSummary()

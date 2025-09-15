@@ -48,7 +48,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _animator.animatorRef == variable || _parameterName.stringRef == variable ||
+            return ReferenceEquals(_animator.VarRef, variable) || 
+                ReferenceEquals(_parameterName.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

@@ -51,10 +51,12 @@ namespace Amanita.VScripting
             if (isLegacy)
             {
                 _legacyTypes.Add(varType);
+                Debug.Log($"Registered legacy var type: {varType}");
             }
             else
             {
                 _muscariableTypes.Add(varType);
+                Debug.Log($"Registered muscari var type: {varType}");
             }
 
             VariableInfoAttribute att = varType.GetCustomAttribute<VariableInfoAttribute>();
@@ -75,32 +77,34 @@ namespace Amanita.VScripting
 
         public static Type LegacyTypeFor(Type contentType)
         {
-            return VarTypeFor(_legacyTypes, contentType);
+            return VarTypeFor(_legacyTypes, _contentTypeToLegacyVarType, contentType);
         }
 
-        private static Type VarTypeFor(IEnumerable<Type> varTypesToCheck, Type contentType)
+        private static Type VarTypeFor(IEnumerable<Type> varTypesToCheck, IDictionary<Type, Type> typeLookup, Type contentType)
         {
             Type result = null;
 
-            bool alreadyRegistered = _contentTypeToVarType.TryGetValue(contentType, out result);
+            bool alreadyRegistered = typeLookup.TryGetValue(contentType, out result);
             if (!alreadyRegistered)
             {
                 foreach (var varType in varTypesToCheck)
                 {
                     VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
-                    if (attr.ContentType.Equals(contentType))
+                    if (attr != null && attr.ContentType.Equals(contentType))
                     {
                         result = varType;
-                        _contentTypeToVarType.Add(attr.ContentType, varType);
+                        typeLookup.Add(attr.ContentType, varType);
                         break;
                     }
                 }
             }
-
+            
             return result;
         }
 
-        private static readonly IDictionary<Type, Type> _contentTypeToVarType = new Dictionary<Type, Type>(new TypeNameComparer());
+        private static readonly IDictionary<Type, Type> _contentTypeToLegacyVarType = new Dictionary<Type, Type>(new TypeNameComparer());
+        private static readonly IDictionary<Type, Type> _contentTypeToMuscariType = new Dictionary<Type, Type>(new TypeNameComparer());
+
 
         /// <summary>
         /// If there is no Muscariable specifically for the passed content type,
@@ -108,14 +112,10 @@ namespace Amanita.VScripting
         /// </summary>
         public static Type MuscariTypeFor(Type contentType)
         {
-            Type result = VarTypeFor(_muscariableTypes, contentType);
+            Type result = VarTypeFor(_muscariableTypes, _contentTypeToMuscariType, contentType);
 
             // Generic fallback
-            if (result == null)
-            {
-                result = typeof(GenericMuscariable);
-            }
-
+            result ??= typeof(GenericMuscariable);
             return result;
         }
 
@@ -135,7 +135,7 @@ namespace Amanita.VScripting
         public static void Clear()
         {
             _typeMap.Clear();
-            _contentTypeToVarType.Clear();
+            _contentTypeToLegacyVarType.Clear();
             _legacyTypes.Clear();
             _muscariableTypes.Clear();
             _actionsRegistered.Clear();

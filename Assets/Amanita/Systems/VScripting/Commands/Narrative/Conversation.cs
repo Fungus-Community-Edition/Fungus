@@ -63,8 +63,10 @@ namespace Amanita.DialogueSys.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return clearPrevious.booleanRef == variable || waitForInput.booleanRef == variable || 
-                waitForSeconds.floatRef == variable || fadeWhenDone.booleanRef == variable ||
+            return ReferenceEquals(clearPrevious.VarRef, variable) || 
+                ReferenceEquals(waitForInput.VarRef, variable) || 
+                ReferenceEquals(waitForSeconds.VarRef, variable) || 
+                ReferenceEquals(fadeWhenDone.VarRef, variable) ||
                 base.HasReference(variable);
         }
 

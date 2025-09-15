@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    [System.Serializable]
+    [Serializable]
     public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>, IComparable<NumericMuscariable<T>>
         where T : IComparable<T>, IEquatable<T>
     {
@@ -69,13 +69,18 @@ namespace Amanita.VScripting
             return Value.CompareTo(otherNumericVar.Value);
         }
 
+        protected override object FilterForValueSet(object valueToConvert)
+        {
+            T result = (T)Convert.ChangeType(valueToConvert, this.ContentType);
+            return result;
+        }
     }
 
     [System.Serializable]
     [VariableInfo("Numeric", "Integer", typeof(int))]
     public class IntMuscariable : NumericMuscariable<int>
     {
-        public IntMuscariable() { }
+        public IntMuscariable() : base() { }
 
         public static IntMuscariable operator +(IntMuscariable a, IntMuscariable b)
             => new IntMuscariable { Value = a.Value + b.Value };
@@ -122,7 +127,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Float", typeof(float))]
     public class FloatMuscariable : NumericMuscariable<float>
     {
-        public FloatMuscariable() { }
+        public FloatMuscariable(): base() { }
 
         public static FloatMuscariable operator +(FloatMuscariable a, FloatMuscariable b)
             => new FloatMuscariable { Value = a.Value + b.Value };
@@ -169,7 +174,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Boolean", typeof(bool))]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
-        public BoolMuscariable() { }
+        public BoolMuscariable() : base() { }
 
         public static bool operator ==(BoolMuscariable a, BoolMuscariable b)
         {
@@ -203,7 +208,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Double", typeof(double))]
     public class DoubleMuscariable : NumericMuscariable<double>
     {
-        public DoubleMuscariable() { }
+        public DoubleMuscariable() : base() { }
 
         public static DoubleMuscariable operator +(DoubleMuscariable a, DoubleMuscariable b)
             => new DoubleMuscariable { Value = a.Value + b.Value };

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -30,6 +31,8 @@ namespace Amanita.VScripting
         [SerializeField] private int itemID = InvalidID;
 
         public static readonly int InvalidID = -1;
+
+        public virtual bool IsScalar() => false;
 
         // Non-global variables each belong to a particular Flowchart. Thus, rather
         // than a unique string ID, it's best for them to get an int that their
@@ -108,10 +111,27 @@ namespace Amanita.VScripting
         public virtual object Value
         {
             get { return baseVal; }
-            set { baseVal = value; }
+            set
+            {
+                object prevValue = baseVal;
+                object filtered = FilteredForValueSet(value);
+                baseVal = filtered;
+                OnBaseValueSet(prevValue);
+            }
         }
 
         protected object baseVal;
+
+        protected virtual object FilteredForValueSet(object valueToConvert)
+        {
+            return valueToConvert;
+        }
+
+        protected virtual void OnBaseValueSet(object prevValue)
+        {
+
+        }
+
         /// <summary>
         /// Set value in inherited types via Boxed value.
         /// Not recommended for direct use, primarily intended for use in editor code.
@@ -124,6 +144,7 @@ namespace Amanita.VScripting
             return GetComponent<Flowchart>();
         }
         #endregion
+
     }
 
     /// <summary>
@@ -131,44 +152,16 @@ namespace Amanita.VScripting
     /// </summary>
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
-        //caching mechanism for global static variables
-        private VariableBase<T> _globalStaicRef;
-        private VariableBase<T> GlobalStaticRef
-        {
-            get
-            {
-
-                if (_globalStaicRef != null)
-                {
-                    return _globalStaicRef;
-                }
-                else if (Application.isPlaying && AmanitaManager.S != null)
-                {
-                    return _globalStaicRef = AmanitaManager.S.GlobalVariables.GetOrAddVariable(Key, value, this.GetType());
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
         public override System.Type ContentType => typeof(T);
 
         [SerializeField] protected T value;
+
+        // Preserve the typed Value required by IVariable<T>
         public virtual new T Value
         {
             get
             {
                 return this.value;
-                //if (scope != VariableScope.Global || !Application.isPlaying)
-                //{
-                //    return this.value;
-                //}
-                //else
-                //{ 
-                //    return globalStaicRef.value;
-                //}
             }
             set
             {
@@ -177,11 +170,14 @@ namespace Amanita.VScripting
                     this.value = value;
                     baseVal = value;
                 }
-                else
-                {
-                    GlobalStaticRef.Value = value;
-                }
             }
+        }
+
+        protected override void OnBaseValueSet(object prevValue)
+        {
+            base.OnBaseValueSet(prevValue);
+            // Use a safe conversion path instead of direct unboxing cast to handle legacy boxed numerics (e.g. boxed double -> float)
+            this.value = ConvertTo(baseVal);
         }
 
         public override object GetValue()
@@ -191,7 +187,8 @@ namespace Amanita.VScripting
 
         public override void SetValue(object value)
         {
-            this.value = (T)value;
+            // Use conversion helper so callers setting with boxed primitives (double) can be converted to T (float) safely.
+            this.value = ConvertTo(value);
         }
 
         protected T startValue;
@@ -223,7 +220,9 @@ namespace Amanita.VScripting
                     return;
                 }
 
-                Init((T)startValue);
+                baseVal = default(T);
+                // Use conversion helper to handle boxed numbers that don't match T's exact CLR type.
+                Init(ConvertTo(startValue));
                 initted = true;
             }
             catch (System.Exception ex)
@@ -238,7 +237,7 @@ namespace Amanita.VScripting
         protected virtual void Init(T startVal)
         {
             this.startValue = startVal;
-            base.Value = startValue;
+            baseVal = startVal;
         }
 
         //Apply to get from base system.object to T
@@ -333,5 +332,55 @@ namespace Amanita.VScripting
             }
             return result;
         }
+
+        // Helper: attempts safe conversion from boxed object to T.
+        // Covers common boxed numeric -> numeric conversions (e.g. boxed double -> float).
+        private static T ConvertTo(object src)
+        {
+            if (src == null)
+            {
+                return default;
+            }
+
+            // If already the right type, just return it.
+            if (src is T direct)
+            {
+                return direct;
+            }
+
+            var targetType = typeof(T);
+
+            try
+            {
+                // Handle nullable<> by converting to underlying type then wrapping
+                var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+                // Enum handling
+                if (underlying.IsEnum)
+                {
+                    if (src is string s)
+                    {
+                        return (T)Enum.Parse(underlying, s);
+                    }
+                    return (T)Enum.ToObject(underlying, src);
+                }
+
+                // If source implements IConvertible, use Convert.ChangeType
+                if (src is IConvertible)
+                {
+                    object changed = System.Convert.ChangeType(src, underlying);
+                    return (T)changed;
+                }
+
+                // Last resort: try direct cast (will throw if incompatible)
+                return (T)src;
+            }
+            catch (Exception)
+            {
+                // Preserve original exception behavior for callers expecting a cast failure.
+                throw;
+            }
+        }
+        
     }
 }

@@ -40,8 +40,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return baseValue.floatRef == variable || exponentValue.floatRef == variable ||
-                   outValue.floatRef == variable;
+            return ReferenceEquals(baseValue.VarRef, variable) || 
+                ReferenceEquals(exponentValue.VarRef, variable) ||
+                   ReferenceEquals(outValue.VarRef, variable);
         }
     }
 }
