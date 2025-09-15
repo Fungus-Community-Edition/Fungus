@@ -2,7 +2,7 @@ using Amanita.Tweening;
 using System;
 using DG.Tweening;
 
-namespace Amanita.ThirdPartyInt.DGDOTween
+namespace DoTweenita
 {
     public class DOTweenHandle : ITweenHandle
     {

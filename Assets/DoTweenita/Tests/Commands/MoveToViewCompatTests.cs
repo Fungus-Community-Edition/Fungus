@@ -1,11 +1,13 @@
 using Amanita;
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for equality comparers
+using Type = System.Type;
+using System.Reflection;
 
 namespace CommandCompat
 {
@@ -18,8 +20,7 @@ namespace CommandCompat
         {
             var camGO = new GameObject("TestCamera");
             cameraGO = camGO.AddComponent<Camera>();
-            cameraGO.transform.position = Vector3.zero;
-            cameraGO.transform.rotation = Quaternion.identity;
+            cameraGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             cameraGO.orthographicSize = 5f;
 
             var viewGO = new GameObject("TargetView");
@@ -28,22 +29,30 @@ namespace CommandCompat
             targetView.transform.rotation = Quaternion.Euler(15f, 45f, 0f);
             targetView.ViewSize = 3f;
 
-            typeof(MoveToView).GetField("targetCamera", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            Type cmdType = typeof(MoveToView);
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            cmdType.GetField("targetCamera", flags)
                 .SetValue(cmd, cameraGO);
-            typeof(MoveToView).GetField("targetView", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetView", flags)
                 .SetValue(cmd, targetView);
-            typeof(MoveToView).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, Duration);
-            typeof(MoveToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
 
-            var amani = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
-            typeof(MoveToView).GetField("orthoSizeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
-            typeof(MoveToView).GetField("posTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
-            typeof(MoveToView).GetField("rotTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, amani);
+            cmdType.GetField("orthoSizeTweener", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("posTweener", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("rotTweener", flags)
+                .SetValue(cmd, adapter);
+
+            cmdType.GetField("doOrthoSizeTween", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doPosTween", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("doRotTween", flags)
+                .SetValue(cmd, adapter);
         }
 
         protected override void AssertFinalState()

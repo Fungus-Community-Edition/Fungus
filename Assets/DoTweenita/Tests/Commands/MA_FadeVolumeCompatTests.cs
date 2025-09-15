@@ -1,11 +1,13 @@
 using Amanita.Myceliaudio;
 using Amanita.Myceliaudio.VScripting;
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Type = System.Type;
+using System.Reflection;
 
 namespace CommandCompat
 {
@@ -52,18 +54,20 @@ namespace CommandCompat
             AudioSystem.S.SetTrackGroupVol(TrackGroup.Voice, 100);
 
             // Assign protected fields via reflection
-            typeof(MA_FadeVolume).GetField("trackGroup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            Type cmdType = cmd.GetType();
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            cmdType.GetField("trackGroup", flags)
                 .SetValue(cmd, currentGroup);
-            typeof(MA_FadeVolume).GetField("track", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("track", flags)
                 .SetValue(cmd, new IntegerData(currentIndex));
-            typeof(MA_FadeVolume).GetField("targetVol", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetVol", flags)
                 .SetValue(cmd, new FloatData(targetVolume));
-            typeof(MA_FadeVolume).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, new FloatData(Duration));
-            typeof(MA_FadeVolume).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, new BooleanData(true));
-            typeof(MA_FadeVolume).GetField("fadeTween", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, ScriptableObject.CreateInstance<AmaniDoTweenAdapter>());
+            cmdType.GetField("doFade", flags)
+                .SetValue(cmd, adapter);
         }
 
         protected override void AssertFinalState()

@@ -1,10 +1,12 @@
 using Amanita;
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System;
+using System.Reflection;
 
 namespace CommandCompat
 {
@@ -12,21 +14,25 @@ namespace CommandCompat
     {
         private CameraManager cameraManager;
 
-        protected override void ConfigureCommand(FadeScreen cmd)
+        protected override void ConfigureCommand(FadeScreen command)
         {
             // Ensure CameraManager exists
             cameraManager = AmanitaManager.S.CameraManager;
             cameraManager.ScreenFadeTexture = null;
 
             // Assign private fields via reflection
-            typeof(FadeScreen).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, Duration);
-            typeof(FadeScreen).GetField("targetAlpha", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, 0.75f);
-            typeof(FadeScreen).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, true);
-            typeof(FadeScreen).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(cmd, ScriptableObject.CreateInstance<AmaniDoTweenAdapter>());
+            Type fadeScreenType = typeof(FadeScreen);
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            fadeScreenType.GetField("duration", flags)
+                .SetValue(command, Duration);
+            fadeScreenType.GetField("targetAlpha", flags)
+                .SetValue(command, 0.75f);
+            fadeScreenType.GetField("waitUntilFinished", flags)
+                .SetValue(command, true);
+            fadeScreenType.GetField("fadeTweener", flags)
+                .SetValue(command, adapter);
+            fadeScreenType.GetField("doFadeTween", flags).
+                SetValue(command, adapter);
         }
 
         protected override void AssertFinalState()
@@ -50,7 +56,7 @@ namespace CommandCompat
             bool continued = false;
             command.StartedContinue += _ => continued = true;
 
-            flowchart.StartCoroutine(block.Execute());
+            flowchart.ExecuteBlock(block);
 
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 
