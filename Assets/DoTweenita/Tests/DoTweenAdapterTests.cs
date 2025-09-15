@@ -1,5 +1,5 @@
 using Amanita;
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using DG.Tweening;
 using NUnit.Framework;
 using UnityEngine;

@@ -1,4 +1,4 @@
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<SpriteRenderer, Color> ShiftSpriteCase = new TweenCase<SpriteRenderer, Color>
         {
             Name = "ShiftColorTo_SpriteRenderer",
-            CreateTween = (adapter, s) => adapter.ShiftColorTo(s, Color.green, Duration),
+            CreateTween = (adapter, s) => adapter.FadeColor(s, Color.green, Duration),
             GetValue = s => s.color,
             SetValue = (s, c) => s.color = c,
             CreateComponent = go => go.AddComponent<SpriteRenderer>(),

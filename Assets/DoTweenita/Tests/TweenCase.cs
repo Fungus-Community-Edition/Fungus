@@ -1,4 +1,4 @@
-using Amanita.ThirdPartyInt.DGDOTween;
+using DoTweenita;
 using Amanita.Tweening;
 using System;
 using UnityEngine;

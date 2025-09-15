@@ -3,15 +3,17 @@ using UnityEngine;
 using DG.Tweening;
 using System;
 using UnityEngine.UI;
+using Amanita.Myceliaudio;
 
-namespace Amanita.ThirdPartyInt.DGDOTween
+namespace DoTweenita
 {
     [CreateAssetMenu(fileName = "NewAmanitaDoTweenAdapter", menuName = "Amanita/DOTween/TweenAdapter")]
     public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter,
         IGraphicTweenAdapter, IAudioSourceTweenAdapter, ICameraTweenAdapter,
         ILightTweenAdapter, ICanvasGroupTweenAdapter, IRectTransformTweenAdapter,
         IMaterialTweenAdapter, IAudioFilterTweenAdapter, IGeneralTweenAdapter<float>,
-        IGeneralTweenAdapter<int>, IGeneralTweenAdapter<Vector2>, IGeneralTweenAdapter<Vector3>
+        IGeneralTweenAdapter<int>, IGeneralTweenAdapter<Vector2>, IGeneralTweenAdapter<Vector3>,
+        IMyceliaudioTweenAdapter
     {
         [SerializeField] protected Ease _ease = Ease.Linear;
 
@@ -52,7 +54,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             return result;
         }
 
-        public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
+        public ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration)
         {
             Tween tween = target.DOColor(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
@@ -82,15 +84,15 @@ namespace Amanita.ThirdPartyInt.DGDOTween
         /// 0 for silent, 100 for max
         /// </summary>
         /// <returns></returns>
-        public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadeVolume(AudioSource target, float targVal, float duration)
         {
-            return ShiftVolume01To(target, targVal / 100f, duration);
+            return FadeVolume01(target, targVal / 100f, duration);
         }
 
         /// <summary>
         /// 0 for silent, 1 for max
         /// </summary>
-        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadeVolume01(AudioSource target, float targVal, float duration)
         {
             targVal = Mathf.Clamp01(targVal);
             Tween tween = target.DOFade(targVal, duration).SetEase(_ease);
@@ -101,7 +103,7 @@ namespace Amanita.ThirdPartyInt.DGDOTween
         /// <summary>
         /// -300 for min, 300 for max. Normal pitch is 100
         /// </summary>
-        public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadePitch(AudioSource target, float targVal, float duration)
         {
             targVal /= 100f;
             targVal = Mathf.Clamp(targVal, -3, 3);
@@ -110,9 +112,9 @@ namespace Amanita.ThirdPartyInt.DGDOTween
             return result;
         }
 
-        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadePitchN33(AudioSource target, float targVal, float duration)
         {
-            return ShiftPitchTo(target, targVal * 100f, duration);
+            return FadePitch(target, targVal * 100f, duration);
         }
 
         #endregion
@@ -274,6 +276,26 @@ namespace Amanita.ThirdPartyInt.DGDOTween
                 .OnComplete(() => { onComplete(); })
                 .SetEase(_ease);
             return new DOTweenHandle(tween);
+        }
+
+        /// <summary>
+        /// Scale of 0 to 100
+        /// </summary>
+        public ITweenHandle FadeVolume(IAudioTrack track, float targVal, float duration)
+        {
+            Tween tween = DOTween.To(() => track.BaseVolume, UpdateTheVol, targVal, duration)
+                .SetEase(_ease);
+            void UpdateTheVol(float newVol)
+            {
+                track.BaseVolume = newVol;
+            }
+
+            return new DOTweenHandle(tween);
+        }
+
+        public ITweenHandle FadeVolume01(IAudioTrack track, float targVal, float duration)
+        {
+            return FadeVolume01(track, targVal * 100f, duration);
         }
         #endregion
 
