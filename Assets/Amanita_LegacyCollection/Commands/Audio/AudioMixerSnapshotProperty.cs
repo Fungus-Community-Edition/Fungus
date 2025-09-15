@@ -2,96 +2,96 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Get or Set a property of a AudioMixerSnapshot component
-    /// </summary>
-    [CommandInfo("Property",
-                 "AudioMixerSnapshot",
-                 "Get or Set a property of a AudioMixerSnapshot component")]
-    [AddComponentMenu("")]
-    public class AudioMixerSnapshotProperty : BaseVariableProperty
-    {
+	/// <summary>
+	/// Get or Set a property of a AudioMixerSnapshot component
+	/// </summary>
+	[CommandInfo("Property",
+				 "AudioMixerSnapshot",
+				 "Get or Set a property of a AudioMixerSnapshot component")]
+	[AddComponentMenu("")]
+	public class AudioMixerSnapshotProperty : BaseVariableProperty
+	{
 		//generated property
-        public enum Property 
-        { 
-            AudioMixer, 
-        }
+		public enum Property 
+		{ 
+			AudioMixer, 
+		}
 
 
-        [SerializeField]
-        protected Property property;
+		[SerializeField]
+		protected Property property;
 
-        [SerializeField]
-        protected AudioMixerSnapshotData audioMixerSnapshotData;
+		[SerializeField]
+		protected AudioMixerSnapshotData audioMixerSnapshotData;
 
-        [SerializeField]
-        [VariableProperty(typeof(AudioMixerVariable))]
-        protected Variable inOutVar;
+		[SerializeField]
+		[VariableProperty(typeof(AudioMixerVariable))]
+		protected Variable inOutVar;
 
-        public override void OnEnter()
-        {
-            var ioam = inOutVar as AudioMixerVariable;
+		public override void OnEnter()
+		{
+			var ioam = inOutVar as AudioMixerVariable;
 
 
-            var target = audioMixerSnapshotData.Value;
+			var target = audioMixerSnapshotData.Value;
 
-            switch (getOrSet)
-            {
-                case GetSet.Get:
-                    switch (property)
-                    {
-                        case Property.AudioMixer:
-                            ioam.Value = target.audioMixer;
-                            break;
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+			switch (getOrSet)
+			{
+				case GetSet.Get:
+					switch (property)
+					{
+						case Property.AudioMixer:
+							ioam.Value = target.audioMixer;
+							break;
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                case GetSet.Set:
-                    switch (property)
-                    {
-                        default:
-                            Debug.Log("Unsupported get or set attempted");
-                            break;
-                    }
+				case GetSet.Set:
+					switch (property)
+					{
+						default:
+							Debug.Log("Unsupported get or set attempted");
+							break;
+					}
 
-                    break;
+					break;
 
-                default:
-                    break;
-            }
+				default:
+					break;
+			}
 
-            Continue();
-        }
+			Continue();
+		}
 
-        public override string GetSummary()
-        {
-            if (audioMixerSnapshotData.Value == null)
-            {
-                return "Error: no audioMixerSnapshot set";
-            }
-            if (inOutVar == null)
-            {
-                return "Error: no variable set to push or pull data to or from";
-            }
+		public override string GetSummary()
+		{
+			if (audioMixerSnapshotData.Value == null)
+			{
+				return "Error: no audioMixerSnapshot set";
+			}
+			if (inOutVar == null)
+			{
+				return "Error: no variable set to push or pull data to or from";
+			}
 
-            return getOrSet.ToString() + " " + property.ToString();
-        }
+			return getOrSet.ToString() + " " + property.ToString();
+		}
 
-        public override Color GetButtonColor()
-        {
-            return new Color32(235, 191, 217, 255);
-        }
+		public override Color GetButtonColor()
+		{
+			return new Color32(235, 191, 217, 255);
+		}
 
-        public override bool HasReference(Variable variable)
-        {
-            if (audioMixerSnapshotData.audioMixerSnapshotRef == variable || inOutVar == variable)
-                return true;
+		public override bool HasReference(Variable variable)
+		{
+			if (ReferenceEquals(audioMixerSnapshotData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+				return true;
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 }

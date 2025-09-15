@@ -48,7 +48,8 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _targetGameObject.gameObjectRef == variable || activeState.booleanRef == variable || 
+            return ReferenceEquals(_targetGameObject.VarRef, variable) || 
+                ReferenceEquals(activeState.VarRef, variable) || 
                 base.HasReference(variable);
         }
 

@@ -45,7 +45,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _targetObject.gameObjectRef == variable;
+            return ReferenceEquals(_targetObject.VarRef, variable);
         }
     }
 }

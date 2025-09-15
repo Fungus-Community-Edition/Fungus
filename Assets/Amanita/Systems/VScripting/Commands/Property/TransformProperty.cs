@@ -184,7 +184,7 @@ namespace Amanita.VScripting
 
 		public override bool HasReference(Variable variable)
 		{
-			if (transformData.transformRef == variable || inOutVar == variable)
+			if (ReferenceEquals(transformData.VarRef, variable) || inOutVar == variable)
 				return true;
 
 			return false;

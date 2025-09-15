@@ -71,7 +71,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (lhs.vector3Ref == variable || rhs.vector3Ref == variable || output.vector3Ref == variable)
+            if (ReferenceEquals(lhs.VarRef, variable) || 
+                ReferenceEquals(rhs.VarRef, variable) || 
+                ReferenceEquals(output.VarRef, variable))
                 return true;
 
             return false;

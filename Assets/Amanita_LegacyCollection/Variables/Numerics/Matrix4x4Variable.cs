@@ -49,38 +49,13 @@ namespace Amanita.VScripting
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Matrix4x4), typeof(Matrix4x4Variable))]
-    public class Matrix4x4Data : VariableData<Matrix4x4, IVariable<Matrix4x4>>
+    public class Matrix4x4Data : VariableData<Matrix4x4>
     {
-        [SerializeField]
-        [VariableProperty("<Value>", typeof(Matrix4x4Variable))]
-        public Matrix4x4Variable matrix4x4Ref;
-
         public Matrix4x4Data() : base(default) { }
 
         public Matrix4x4Data(Matrix4x4 startVal) : base(startVal)
         {
         }
-
-        public override IVariable VarRef
-        {
-            get { return matrix4x4Ref; }
-            set
-            {
-                if (value == null) { matrix4x4Ref = null; return; }
-
-                if (value.ContentType.Equals(this.ContentType))
-                {
-                    matrix4x4Ref = value as Matrix4x4Variable;
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
-                }
-
-            }
-        }
-
 
     }
 }

@@ -61,9 +61,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return mixer.audioMixerRef == variable ||
-                paramName.stringRef == variable ||
-                val.floatRef == variable ||
+            return ReferenceEquals(mixer.VarRef, variable) ||
+                ReferenceEquals(paramName.VarRef, variable) ||
+                ReferenceEquals(val.floatRef, variable) ||
                 base.HasReference(variable);
         }
     }

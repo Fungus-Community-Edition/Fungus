@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using Amanita.VScripting.EventHandlers;
 using Amanita.VScripting;
-using Amanita.Tweening;
 
 namespace Amanita
 {

@@ -52,7 +52,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _languageCode.stringRef == variable || base.HasReference(variable);
+            return ReferenceEquals(_languageCode.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

@@ -52,7 +52,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            if (_targetGameObject.gameObjectRef == variable || destroyInXSeconds.floatRef == variable)
+            if (ReferenceEquals(_targetGameObject.VarRef, variable) || ReferenceEquals(destroyInXSeconds.VarRef, variable))
                 return true;
 
             return false;

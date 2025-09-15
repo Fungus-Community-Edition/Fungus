@@ -274,7 +274,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration)
+        public ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration)
         {
             var tween = TweenSpriteColor(target, target.color, endVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -390,7 +390,7 @@ namespace Amanita.Tweening
             return result;
         }
 
-        public ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadePitchN33(AudioSource target, float targVal, float duration)
         {
             var tween = TweenAudioSourcePitchN33(target, target.pitch, targVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -420,15 +420,15 @@ namespace Amanita.Tweening
 
         public ITweenHandle ShiftPitchTo(AudioTweenArgs tweenArgs)
         {
-            return ShiftPitchTo(tweenArgs.Target, tweenArgs.TargetValue, tweenArgs.HowLongToTake);
+            return FadePitch(tweenArgs.Target, tweenArgs.TargetValue, tweenArgs.HowLongToTake);
         }
 
         public ITweenHandle TweenAudioSourceVolume(AudioTweenArgs tweenArgs)
         {
-            return ShiftVolumeTo(tweenArgs.Target, tweenArgs.TargetValue, tweenArgs.HowLongToTake);
+            return FadeVolume(tweenArgs.Target, tweenArgs.TargetValue, tweenArgs.HowLongToTake);
         }
 
-        public ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadePitch(AudioSource target, float targVal, float duration)
         {
             var tween = TweenAudioSourcePitch(target, target.pitch, targVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -477,7 +477,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration)
+        public ITweenHandle FadeVolume01(AudioSource target, float targVal, float duration)
         {
             targVal = Mathf.Clamp01(targVal);
             var tween = TweenAudioSourceVolume01(target, target.volume, targVal, duration);
@@ -504,14 +504,12 @@ namespace Amanita.Tweening
             return result;
         }
 
-        public ITweenHandle ShiftVolume01To(IAudioTrack track, int targVal, float duration)
+        /// <summary>
+        /// Scale of 0 to 100
+        /// </summary>
+        public ITweenHandle FadeVolume(AudioSource target, float targVal, float duration)
         {
-            return ShiftVolumeTo(track, targVal / 100f, duration);
-        }
-
-        public ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration)
-        {
-            var tween = TweenAudioSourceVolume(target, target.volume * 100, targVal, duration);
+            var tween = TweenAudioSourceVolume(target, target.volume, targVal, duration);
             return DefaultTweenHandle.From(tween);
         }
 
@@ -525,7 +523,15 @@ namespace Amanita.Tweening
             return TweenAudioSourceVolume01(source, startVol / 100, endVol / 100, duration, onComplete);
         }
 
-        public ITweenHandle ShiftVolumeTo(IAudioTrack track, float targVal, float duration)
+        public ITweenHandle FadeVolume01(IAudioTrack track, float targVal, float duration)
+        {
+            return FadeVolume(track, targVal * 100f, duration);
+        }
+
+        /// <summary>
+        /// Scale of 0 to 100
+        /// </summary>
+        public ITweenHandle FadeVolume(IAudioTrack track, float targVal, float duration)
         {
             string id = GenIDFor(track.GameObject, "MyceliaudioVolume");
             void UpdateTheVol(float newVol)

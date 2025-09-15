@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using Amanita.Tweening;
 
 namespace Amanita
 {
@@ -65,7 +66,8 @@ namespace Amanita
         /// <summary>
         /// Attaches a SpriteFader component to a sprite object to transition its color over time.
         /// </summary>
-        public static void FadeSprite(SpriteRenderer spriteRenderer, Color targetColor, float duration, Vector2 slideOffset, Action onComplete = null)
+        public static void FadeSprite(SpriteRenderer spriteRenderer, Color targetColor, float duration,
+            Vector2 slideOffset, IGraphicTweenAdapter tweener, Action onComplete = null)
         {
             if (spriteRenderer == null)
             {
@@ -82,7 +84,7 @@ namespace Amanita
                 {
                     continue;
                 }
-                FadeSprite(sr, targetColor, duration, slideOffset);
+                tweener.FadeColor(spriteRenderer, targetColor, duration);
             }
 
             // Destroy any existing fader component
@@ -96,21 +98,12 @@ namespace Amanita
             if (Mathf.Approximately(duration, 0f))
             {
                 spriteRenderer.color = targetColor;
-                if (onComplete != null)
-                {
-                    onComplete();
-                }
+                onComplete?.Invoke();
                 return;
             }
 
             // Set up color transition to be applied during update
-            SpriteFader spriteFader = spriteRenderer.gameObject.AddComponent<SpriteFader>();
-            spriteFader.fadeDuration = duration;
-            spriteFader.startColor = spriteRenderer.color;
-            spriteFader.endColor = targetColor;
-            spriteFader.endPosition = spriteRenderer.transform.position;
-            spriteFader.slideOffset = slideOffset;
-            spriteFader.onFadeComplete = onComplete;
+            tweener.FadeColor(spriteRenderer, targetColor, duration).SetOnComplete(onComplete);
         }
 
         #endregion
