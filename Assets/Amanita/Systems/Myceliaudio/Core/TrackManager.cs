@@ -14,8 +14,13 @@ namespace Amanita.Myceliaudio
         {
             this.trackHolder = this.gameObject;
             this.Group = trackGroup;
-            SetUpInitialTracks();
             this.Anchor = _anchor; // To get volumes adjusted properly
+            if (this.Group == TrackGroup.Master)
+            {
+                return;
+            }
+            SetUpInitialTracks();
+            
         }
 
         protected GameObject trackHolder;
@@ -27,6 +32,24 @@ namespace Amanita.Myceliaudio
 
         protected virtual void SetUpInitialTracks()
         {
+            CleanupForTheEditor();
+            void CleanupForTheEditor()
+            {
+                Transform[] children = trackHolder.GetComponentsInChildren<Transform>();
+                trackHolder.transform.DetachChildren();
+                foreach (Transform child in children)
+                {
+                    if (child.gameObject == trackHolder)
+                    {
+                        continue;
+                    }
+                    DestroyImmediate(child.gameObject);
+                }
+            }
+
+            tracks.Clear(); 
+            _defaultFadeTweens.Clear();
+
             for (int i = 0; i < initTrackCount; i++)
             {
                 EnsureTrackExists(i);

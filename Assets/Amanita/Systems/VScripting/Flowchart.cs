@@ -13,6 +13,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Amanita.VScripting
 {
     /// <summary>
@@ -20,8 +24,18 @@ namespace Amanita.VScripting
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IVariableSource
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
+        IReorderableVariableSource, IReorderableMuscariableSource
     {
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        public static void InitOnLoad()
+        {
+            AmanitaManager.EnsureExists();
+            Debug.Log($"Flowchart InitOnLoad method executed");
+        }
+#endif
+
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
         // What the editor utils use to decide how to render this FC's data in the 
@@ -913,7 +927,6 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual string GetUniqueVariableKey(string originalKey, IVariable ignoreVariable = null)
         {
-            int suffix = 0;
             string baseKey = originalKey;
 
             // Only letters and digits allowed
@@ -933,7 +946,8 @@ namespace Amanita.VScripting
 
             vars.AddRange(legacyVariables);
             vars.AddRange(muscariables);
-            string key = baseKey;
+            string resultKey = baseKey;
+            int suffix = 0;
             while (true)
             {
                 bool collision = false;
@@ -944,17 +958,17 @@ namespace Amanita.VScripting
                     {
                         continue;
                     }
-                    if (variable.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    if (variable.Key.Equals(resultKey, StringComparison.CurrentCultureIgnoreCase))
                     {
                         collision = true;
                         suffix++;
-                        key = baseKey + suffix;
+                        resultKey = baseKey + suffix;
                     }
                 }
 
                 if (!collision)
                 {
-                    return key;
+                    return resultKey;
                 }
             }
         }
@@ -1774,7 +1788,7 @@ namespace Amanita.VScripting
         /// Variables not present in newOrder retain their relative order at the end.
         /// Does not raise add/remove events (pure reordering).
         /// </summary>
-        public virtual void ReorderVariables(IReadOnlyList<IVariable> newOrder)
+        public virtual void ReorderVariables(IList<IVariable> newOrder)
         {
             if (newOrder == null || newOrder.Count == 0) return;
 
@@ -1791,15 +1805,37 @@ namespace Amanita.VScripting
             // Append the rest (not explicitly positioned)
             for (int i = 0; i < legacyVariables.Count; i++)
             {
-                var v = legacyVariables[i];
-                if (!seen.Contains(v))
-                    ordered.Add(v);
+                var elem = legacyVariables[i];
+                if (!seen.Contains(elem))
+                    ordered.Add(elem);
             }
             if (ordered.Count == legacyVariables.Count)
                 legacyVariables = ordered;
         }
 
+        Muscariable IMuscariableSource.GetVariable(string name)
+        {
+            Muscariable result = muscariables.Find(elem => elem.Key == name);
+            return result;
+        }
 
-        
+        Muscariable IMuscariableSource.AddVariable(IVariable toAdd)
+        {
+            if (toAdd is not Muscariable muscaVar)
+            {
+                muscaVar = VariableFactory.Create(toAdd.ContentType, toAdd);
+                IntegrateMuscariable(muscaVar);
+                return muscaVar;
+            }
+            IntegrateMuscariable(muscaVar);
+            return muscaVar;
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            Muscariable muscaVar = VariableFactory.Create(contentType, null);
+            IntegrateMuscariable(muscaVar);
+            return muscaVar;
+        }
     }
 }

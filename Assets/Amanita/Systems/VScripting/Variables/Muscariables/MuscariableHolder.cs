@@ -94,14 +94,8 @@ namespace Amanita.VScripting
 
         public virtual void Init(IVariable variable)
         {
-            if (variable is Muscariable)
-            {
-                muscariable = (Muscariable)variable;
-            }
-            else
-            {
-                muscariable = VariableFactory.Create(muscariable.ContentType, variable);
-            }
+            muscariable = variable as Muscariable;
+            muscariable ??= VariableFactory.Create(variable?.ContentType, variable);
 
             Init();
         }
@@ -133,7 +127,6 @@ namespace Amanita.VScripting
             Dirty();
         }
 
-        
         protected virtual void Dirty()
         {
 #if UNITY_EDITOR

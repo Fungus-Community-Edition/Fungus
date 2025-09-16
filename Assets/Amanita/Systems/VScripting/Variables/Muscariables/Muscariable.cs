@@ -3,11 +3,10 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public abstract class Muscariable : IVariable
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
@@ -79,7 +78,6 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeField, SerializeReference]
         protected System.Object value;
 
         protected virtual object FilterForValueSet(object valueToConvert)
@@ -215,18 +213,20 @@ namespace Amanita.VScripting
     [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
+        [SerializeField] protected new T value;
+
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
         public Muscariable() : base()
         {
-            valOfType = default;
-            value = valOfType;
+            value = default;
+            base.value = value;
         }
 
         public Muscariable(T startVal) : this()
         {
-            valOfType = startVal;
             value = startVal;
+            base.value = startVal;
         }
 
         public static implicit operator T(Muscariable<T> genericMuscari)
@@ -238,28 +238,26 @@ namespace Amanita.VScripting
 
         public virtual new T Value
         {
-            get { return valOfType; }
+            get { return value; }
             set
             {
-                if (value != null && value.Equals(valOfType))
+                if (value != null && value.Equals(this.value))
                 {
                     return;
                 }
 
                 // We call base.Value here so that when this instance is being
                 // cast as a non-generic Muscariable, clients can still access the right value
-                T prev = valOfType;
+                T prev = this.value;
                 base.Value = value;
                 OnGenericValueSet(prev);
                 InvokeOnValueChanged();
             }
         }
 
-        [SerializeField] protected T valOfType;
-
         protected virtual void InvokeOnValueChanged()
         {
-            OnValueChanged?.Invoke(valOfType);
+            OnValueChanged?.Invoke(value);
         }
 
         public event Action<T> OnValueChanged = delegate { };
@@ -350,7 +348,7 @@ namespace Amanita.VScripting
             // We don't care about the prev val here. We're just making sure that
             // the generic field stays in sync with the base field when appropriate.
             // Say, when this instance's Value property is set through a base class.
-            valOfType = (T)base.value;
+            value = (T)base.value;
         }
 
         protected virtual void OnGenericValueSet(T previousValue)
@@ -361,7 +359,7 @@ namespace Amanita.VScripting
     }
 
     [Serializable]
-    [VariableInfo("NoShow", "", typeof(object))]
+    [VariableInfo("NoShow", "", typeof(object), showInMenu: false)]
     public class GenericMuscariable : Muscariable<object>
     {
         // Keep defaults: Assign supported; Equals/NotEquals from base are fine.
@@ -386,5 +384,7 @@ namespace Amanita.VScripting
         }
 
     }
+
+    
 
 }
