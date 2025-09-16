@@ -51,13 +51,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5822172677840050586}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 793, y: 446, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5822172678259928990}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5822172677840050618
 MonoBehaviour:
@@ -71,21 +72,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: -48, y: -73}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 447
-  zoom: 1
-  scrollViewRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
-  selectedBlocks: []
-  selectedCommands: []
-  variables:
+  legacyVariables:
   - {fileID: 5822172677840050623}
   - {fileID: 5822172677840050611}
   - {fileID: 5822172677840050587}
@@ -98,8 +101,14 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
+  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  nextValidVarID: 5
+  uniqueId: de8bbcaf-7673-4a15-a365-53b3f1a32420
 --- !u!114 &5822172677840050621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,6 +142,8 @@ MonoBehaviour:
   - {fileID: 5822172677840050622}
   - {fileID: 5822172677840050609}
   - {fileID: 8557577880712409359}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &5822172677840050620
 MonoBehaviour:
@@ -148,144 +159,167 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 2
+    anyVar:
+      variable: {fileID: 5822172677840050623}
+      data:
+        rid: 1000
   compareOperator: 2
   anyVar:
-    variable: {fileID: 5822172677840050623}
+    variable: {fileID: 0}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 50
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
+      rid: 1001
   variable: {fileID: 0}
   booleanData:
-    booleanRef: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   integerData:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    floatRef:
+      rid: -2
   stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    animatorRef:
+      rid: -2
   audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 0, g: 0, b: 0, a: 0}
+    colorRef:
+      rid: -2
   gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    gameObjectRef:
+      rid: -2
   materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    materialRef:
+      rid: -2
   objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    objectRef:
+      rid: -2
   spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    spriteRef:
+      rid: -2
   textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    textureRef:
+      rid: -2
   transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    transformRef:
+      rid: -2
   vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0}
+    vector2Ref:
+      rid: -2
   vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0, z: 0}
+    vector3Ref:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: 1002
+    - rid: 1001
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: -2
+    - rid: 1002
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        varRef:
+          rid: -2
+        valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &5822172677840050623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,6 +334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: while_counter
+  itemID: 1
   value: 0
 --- !u!114 &5822172677840050622
 MonoBehaviour:
@@ -318,141 +353,30 @@ MonoBehaviour:
   anyVar:
     variable: {fileID: 5822172677840050623}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 1
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
+      rid: 1000
   setOperator: 2
   variable: {fileID: 0}
-  booleanData:
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  integerData:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
-  animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
-  audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
-  colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
-  gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
-  objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
-  spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
-  textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
-  transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
-  vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
-  vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: 1001
+    - rid: 1001
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        varRef:
+          rid: -2
+        valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &5822172677840050609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -499,6 +423,8 @@ MonoBehaviour:
   - {fileID: 5822172677840050613}
   - {fileID: 5822172677840050604}
   - {fileID: 4503329534016678598}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &5822172677840050611
 MonoBehaviour:
@@ -514,6 +440,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: looprange
+  itemID: 2
   value: 0
 --- !u!114 &5822172677840050610
 MonoBehaviour:
@@ -530,17 +457,41 @@ MonoBehaviour:
   itemId: 5
   indentLevel: 0
   startingValue:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   endValue:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 50
   counter:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 5822172677840050611}
-    integerVal: 0
   step:
+    valObj:
+      rid: 4382208465003610208
+    varRef:
+      rid: -2
+    valOfType: 1
     integerRef: {fileID: 0}
-    integerVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4382208465003610208
+      type: {class: Int32, ns: System, asm: mscorlib}
+      data: 
 --- !u!114 &5822172677840050613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,144 +520,167 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 1
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 5
+    anyVar:
+      variable: {fileID: 5822172677840050623}
+      data:
+        rid: 1000
   compareOperator: 5
   anyVar:
-    variable: {fileID: 5822172677840050623}
+    variable: {fileID: 0}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 7983348174402538734}
-        integerVal: 5
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
+      rid: 1001
   variable: {fileID: 0}
   booleanData:
-    booleanRef: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   integerData:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    floatRef:
+      rid: -2
   stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    animatorRef:
+      rid: -2
   audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 0, g: 0, b: 0, a: 0}
+    colorRef:
+      rid: -2
   gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    gameObjectRef:
+      rid: -2
   materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    materialRef:
+      rid: -2
   objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    objectRef:
+      rid: -2
   spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    spriteRef:
+      rid: -2
   textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    textureRef:
+      rid: -2
   transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    transformRef:
+      rid: -2
   vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0}
+    vector2Ref:
+      rid: -2
   vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0, z: 0}
+    vector3Ref:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: 1002
+    - rid: 1001
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: -2
+    - rid: 1002
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        varRef:
+          rid: -2
+        valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &5822172677840050603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -749,144 +723,167 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 14
   indentLevel: 1
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 5
+    anyVar:
+      variable: {fileID: 5822172677840050611}
+      data:
+        rid: 1000
   compareOperator: 5
   anyVar:
-    variable: {fileID: 5822172677840050611}
+    variable: {fileID: 0}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 7983348174402538734}
-        integerVal: 5
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
+      rid: 1001
   variable: {fileID: 0}
   booleanData:
-    booleanRef: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    booleanRef:
+      rid: -2
     booleanVal: 0
   integerData:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
+    floatRef:
+      rid: -2
   stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    animatorRef:
+      rid: -2
   audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    audioSourceRef:
+      rid: -2
   colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {r: 0, g: 0, b: 0, a: 0}
+    colorRef:
+      rid: -2
   gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    gameObjectRef:
+      rid: -2
   materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    materialRef:
+      rid: -2
   objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    objectRef:
+      rid: -2
   spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    spriteRef:
+      rid: -2
   textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    textureRef:
+      rid: -2
   transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    transformRef:
+      rid: -2
   vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0}
+    vector2Ref:
+      rid: -2
   vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {x: 0, y: 0, z: 0}
+    vector3Ref:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: 1002
+    - rid: 1001
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: -2
+    - rid: 1002
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        varRef:
+          rid: -2
+        valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &5822172677840050604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -945,6 +942,8 @@ MonoBehaviour:
   - {fileID: 5822172677840050599}
   - {fileID: 1133737071121446639}
   - {fileID: 5822172677840050592}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &5822172677840050593
 MonoBehaviour:
@@ -961,12 +960,27 @@ MonoBehaviour:
   itemId: 18
   indentLevel: 0
   collection:
-    collectionRef: {fileID: 0}
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: {fileID: 0}
+    collectionRef:
+      rid: -2
     collectionVal: {fileID: 5822172678259928977}
-  item: {fileID: 5822172677840050587}
+  item: {fileID: 0}
   curIndex:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 0
     integerRef: {fileID: 5822172677840050623}
-    integerVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &5822172677840050592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -998,141 +1012,30 @@ MonoBehaviour:
   anyVar:
     variable: {fileID: 5822172677840050587}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 1
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 0
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
+      rid: 1000
   setOperator: 0
   variable: {fileID: 0}
-  booleanData:
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  integerData:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
-  animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
-  audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
-  colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
-  gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
-  objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
-  spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
-  textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
-  transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
-  vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
-  vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 1000
+      type: {class: AnyVariableData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        data:
+          rid: 1001
+    - rid: 1001
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        valObj:
+          rid: -2
+        varRef:
+          rid: -2
+        valOfType: 0
+        integerRef: {fileID: 0}
 --- !u!114 &5822172677840050597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1148,8 +1051,17 @@ MonoBehaviour:
   itemId: 22
   indentLevel: 1
   frameCount:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 1
     integerRef: {fileID: 0}
-    integerVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &5822172677840050596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1165,8 +1077,17 @@ MonoBehaviour:
   itemId: 23
   indentLevel: 1
   frameCount:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 1
     integerRef: {fileID: 0}
-    integerVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &5822172677840050599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1182,8 +1103,17 @@ MonoBehaviour:
   itemId: 24
   indentLevel: 1
   frameCount:
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 1
     integerRef: {fileID: 0}
-    integerVal: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &5822172677840050587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1198,6 +1128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: int_item
+  itemID: 3
   value: 0
 --- !u!114 &7983348174402538734
 MonoBehaviour:
@@ -1213,6 +1144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: while_limit
+  itemID: 4
   value: 5
 --- !u!114 &8557577880712409359
 MonoBehaviour:
@@ -1229,11 +1161,21 @@ MonoBehaviour:
   itemId: 25
   indentLevel: 0
   message:
-    stringRef: {fileID: 0}
-    stringVal: While loop beyond break count
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   a: {fileID: 7983348174402538734}
   b: {fileID: 5822172677840050623}
   method: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &4503329534016678598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1249,11 +1191,21 @@ MonoBehaviour:
   itemId: 26
   indentLevel: 0
   message:
-    stringRef: {fileID: 0}
-    stringVal: for limit exceeded
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   a: {fileID: 5822172677840050611}
   b: {fileID: 7983348174402538734}
   method: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1133737071121446639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1269,11 +1221,21 @@ MonoBehaviour:
   itemId: 27
   indentLevel: 1
   message:
-    stringRef: {fileID: 0}
-    stringVal: for limit exceeded
+    valObj:
+      rid: -2
+    varRef:
+      rid: -2
+    valOfType: 
+    stringRef:
+      rid: -2
   a: {fileID: 5822172677840050587}
   b: {fileID: 5822172677840050623}
   method: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &5822172678259928976
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,12 +1260,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5822172678259928976}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -793, y: -446, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5822172677840050619}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5822172678259928977
 MonoBehaviour:

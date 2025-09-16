@@ -106,7 +106,7 @@ namespace Amanita.VScripting
         public abstract object GetValue();
 
 
-        public abstract System.Type ContentType { get; }
+        public abstract Type ContentType { get; }
 
         public virtual object Value
         {
@@ -144,6 +144,8 @@ namespace Amanita.VScripting
             return GetComponent<Flowchart>();
         }
         #endregion
+
+        public virtual IVariableSource Owner { get { return GetComponent<Flowchart>(); } }
 
     }
 

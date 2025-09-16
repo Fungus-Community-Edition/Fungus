@@ -64,7 +64,7 @@ namespace Amanita.Tests.EditMode
                     List = _listContainer,
                     CountLabel = _countLabel,
                     RowFactory = _rowFactory,
-                    
+                    VariableSource = _firstFc,
                 };
 
                 _firstListView = new VariableListView(listViewArgs);

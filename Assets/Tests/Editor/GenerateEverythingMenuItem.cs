@@ -63,7 +63,7 @@ namespace Amanita.EditorUtils
             foreach (var varType in TypeCache.GetTypesWithAttribute<VariableInfoAttribute>())
             {
                 Variable newVariable = newGO.AddComponent(varType) as Variable;
-                newVariable.Key = flow.GetUniqueVariableKey(varType.Name);
+                newVariable.Key = UniqueKeyGenerator.GetUniqueKeyFor(varType.Name, (IList<IVariable>)flow.Variables);
                 flow.AddVariable(newVariable);
             }
         }
