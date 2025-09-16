@@ -6,6 +6,20 @@ namespace Collections
 {
     public static class IListExtensions
     {
+        /// <summary>
+        /// Returns true if both lists contain the same elements
+        /// (but not necessarily in the same order).
+        /// </summary>
+        public static bool SameContentsAs<T>(this IList<T> thisList, IList<T> otherList)
+        {
+            if (thisList.Count != otherList.Count) return false;
+
+            HashSet<T> thisSet = new HashSet<T>(thisList);
+            HashSet<T> otherSet = new HashSet<T>(otherList);
+
+            return thisSet.SetEquals(otherSet);
+        }
+
         public static bool ContainsReference<T>(this IList<T> list, object item) where T : class
         {
             for (int i = 0; i < list.Count; i++)

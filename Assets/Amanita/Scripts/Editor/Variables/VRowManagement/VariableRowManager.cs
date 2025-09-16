@@ -23,7 +23,7 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                if (initArgs.Flowchart == null)
+                if (initArgs.VariableSource == null)
                 {
                     Debug.LogError("VariableRowManager was not given a Flowchart to work with.");
                     errorLogs++;
@@ -63,53 +63,53 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             InitVisuals(initArgs);
+            void InitVisuals(VRowManagerInitArgs initArgs)
+            {
+                Root = initArgs.Root;
+                _addButton = initArgs.AddButton;
+            }
 
             PrepFcEventListeners();
             void PrepFcEventListeners()
             {
-                ToggleSubscriptions(false);
-                _flowchart = initArgs.Flowchart;
-                ToggleSubscriptions(true);
+                ToggleSubs(false);
+                variableSource = initArgs.VariableSource;
+                ToggleSubs(true);
             }
 
             Refresh();
         }
 
         protected bool _isDisposed;
-        protected Flowchart _flowchart;
+        protected IReorderableVariableSource variableSource;
+        protected Flowchart Flowchart => variableSource as Flowchart;
         protected IVariableListView _listView;
         protected Button _addButton;
 
         public VisualElement Root { get; protected set; }
 
         #region Event Wiring / Visual Init
-        protected virtual void ToggleSubscriptions(bool on)
+        protected virtual void ToggleSubs(bool on)
         {
-            if (_flowchart == null || _listView == null)
+            if (variableSource == null || _listView == null)
             {
                 return;
             }
 
             if (on)
             {
-                _flowchart.VariableAdded += OnVariableAdded;
-                _flowchart.VariableRemoved += OnVariableRemoved;
+                variableSource.VariableAdded += OnVariableAdded;
+                variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
             }
             else
             {
-                _flowchart.VariableAdded -= OnVariableAdded;
-                _flowchart.VariableRemoved -= OnVariableRemoved;
+                variableSource.VariableAdded -= OnVariableAdded;
+                variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
             }
-        }
-
-        protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
-        {
-            Root = initArgs.Root;
-            _addButton = initArgs.AddButton;
         }
 
         #endregion
@@ -129,15 +129,23 @@ namespace Amanita.VScripting.EditorUtils
             _listView?.Refresh();
         }
 
-        protected virtual void OnOrderChanged(IReadOnlyList<IVariable> newlyOrderedVars)
+        protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
         {
-            _flowchart.ReorderVariables(newlyOrderedVars);
+            variableSource.ReorderVariables(newlyOrderedVars);
         }
 
         protected virtual void OnAddButtonClicked()
         {
             Rect rect = _addButton.worldBound;
-            VariableSelectPopupWindowContent.DoAddVariable(rect, "", _flowchart);
+            if (Flowchart != null)
+            {
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
+            }
+            else if (variableSource is IReorderableMuscariableSource muscaSource)
+            {
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
+            }
+            
         }
         #endregion
 
@@ -147,10 +155,10 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public void Refresh()
         {
-            if (_isDisposed || _flowchart == null || _listView == null)
+            if (_isDisposed || variableSource == null || _listView == null)
                 return;
 
-            _listView.SetVariables(_flowchart.Variables);
+            _listView.SetVariables(variableSource.Variables);
             _listView.Refresh();
         }
         #endregion
@@ -166,13 +174,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (_isDisposed) return;
 
-            ToggleSubscriptions(false);
+            ToggleSubs(false);
             ReleaseRowsFromList();
 
             _listView?.Dispose();
 
             _listView = null;
-            _flowchart = null;
+            variableSource = null;
             Root = null;
             _isDisposed = true;
         }

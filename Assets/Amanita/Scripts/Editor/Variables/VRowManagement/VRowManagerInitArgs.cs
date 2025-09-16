@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
         public VisualElement HoldsManager;
         public VisualElement Root;
         public Button AddButton;
-        public Flowchart Flowchart;
+        public IReorderableVariableSource VariableSource;
         public IVariableListView VariableListView;          // NEW (optional)
     }
 }
