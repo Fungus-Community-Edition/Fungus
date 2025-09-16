@@ -7,7 +7,7 @@ using Type = System.Type;
 
 namespace Amanita.VScripting
 {
-    [CreateAssetMenu(fileName = "NewVariableSource", menuName = "Amanita/VariableSource")]
+    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource
     {
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
