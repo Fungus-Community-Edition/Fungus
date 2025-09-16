@@ -5,21 +5,14 @@ using System.Linq;
 using UnityEngine;
 using Type = System.Type;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSource", menuName = "Amanita/VariableSource")]
-    public class VariableSource : ScriptableObject, IReorderableMuscariableSource
+    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource
     {
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
 
         public IReadOnlyList<IVariable> Variables => variables.ToList();
-
-        public event Action<IVariable> VariableAdded = delegate { };
-        public event Action<IVariable> VariableRemoved = delegate { };
 
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
@@ -47,45 +40,29 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Muscariable AddVariable(IVariable var)
         {
-            Muscariable muscari = ConvertAsNeeded(var);
+            Muscariable muscari = var.ToMuscariable();
             if (muscari != null && !variables.ContainsReference(muscari))
             {
-                muscari.Key = UniqueKeyGenerator.GetUniqueKeyFor(muscari.Key, variables, muscari);
-                IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
-                muscari.ItemID = UniqueIDGenerator.GetUniqueIDFor(muscari, toPass, _nextVarID);
+                MakeUniqueForThisSource(muscari);
+                _nextVarID = muscari.ItemID + 1;
+
                 variables.Add(muscari);
                 VariableAdded(muscari);
-                SetDirtyAndSave();
             }
 
             return muscari;
         }
 
-        public virtual void SetDirtyAndSave()
+        // So that we can avoid what (at least look like) duplicates
+        protected virtual void MakeUniqueForThisSource(Muscariable var)
         {
-#if UNITY_EDITOR
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-#endif
+            var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables, var);
+            IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
+            var.ItemID = UniqueIDGenerator.GetUniqueIDFor(var, toPass, _nextVarID);
         }
 
-        [SerializeField] protected int _nextVarID = 0;
-
-        protected virtual Muscariable ConvertAsNeeded(IVariable var)
-        {
-            Muscariable muscari = var as Muscariable;
-            bool needToConvert = muscari == null;
-            if (needToConvert)
-            {
-                muscari = VariableFactory.Create(var.ContentType, var);
-                bool conversionSuccess = muscari != null && !variables.ContainsReference(muscari);
-                if (!conversionSuccess)
-                {
-                    Debug.LogWarning($"Could not convert legacy variable {var.Key} to a Muscariable.");
-                }
-            }
-            return muscari;
-        }
+        [SerializeField, HideInInspector] protected int _nextVarID = 0;
+        public event Action<IVariable> VariableAdded = delegate { };
 
         public Muscariable GetVariable(string name)
         {
@@ -99,8 +76,7 @@ namespace Amanita.VScripting
 
         public virtual IList<Muscariable> GetVarsByContentType(Type contentType)
         {
-            IList<Muscariable> result = variables.Where(VarIsOfContentType)
-                .ToList();
+            IList<Muscariable> result = variables.Where(VarIsOfContentType).ToList();
 
             bool VarIsOfContentType(Muscariable elem)
             {
@@ -109,7 +85,6 @@ namespace Amanita.VScripting
 
             return result;
         }
-
 
         public virtual IList<Muscariable> GetVarsByType<TVar>() where TVar : Muscariable
         {
@@ -136,9 +111,42 @@ namespace Amanita.VScripting
             {
                 variables.Clear();
                 variables.AddRange(toCompareTo);
-                SetDirtyAndSave();
+                VariablesReordered();
             }
         }
+
+        public event Action VariablesReordered = delegate { };
+
+        public virtual void RemoveVariable(string key)
+        {
+            IVariable toRemove = variables.Find(elem => elem.Key == key);
+            RemoveVariable(toRemove);
+        }
+
+        public virtual void RemoveVariable(IVariable variable)
+        {
+            Muscariable muscari = variable as Muscariable;
+            if (muscari == null)
+            {
+                string logMessage = $"Cannot remove {variable} (a non-Muscariable) from a VariableSource asset; " +
+                    $"it can't hold that in the first place.";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+
+            variables.Remove(muscari);
+            VariableRemoved(muscari);
+        }
+
+        public event Action<IVariable> VariableRemoved = delegate { };
+
+        public virtual void Refresh()
+        {
+            variables.RemoveAll(elem => elem == null);
+            Refreshed();
+        }
+
+        public event Action Refreshed = delegate { };
 
     }
 

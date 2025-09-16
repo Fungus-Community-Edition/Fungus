@@ -1,4 +1,5 @@
 using Amanita.EditorUtils;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,21 +7,61 @@ using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    [CustomEditor(typeof(VariableSource))]
+    [CustomEditor(typeof(VariableSourceAsset))]
     public class VariableSourceInspector : Editor
     {
         protected virtual void OnEnable()
         {
-            AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
+            ToggleSubs(true);
+        }
+
+        protected virtual void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
+
+                VariableSourceAsset source = (VariableSourceAsset)target;
+                source.VariableAdded += OnVariableAdded;
+                source.VariableRemoved += OnVariableRemoved;
+                source.VariablesReordered += UpdateSourceAssetFile;
+                source.Refreshed += UpdateSourceAssetFile;
+            }
+            else
+            {
+                AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
+
+                VariableSourceAsset source = (VariableSourceAsset)target;
+                source.VariableAdded -= OnVariableAdded;
+                source.VariableRemoved -= OnVariableRemoved;
+                source.VariablesReordered -= UpdateSourceAssetFile;
+                source.Refreshed -= UpdateSourceAssetFile;
+            }
         }
 
         protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
         {
-            if (target is VariableSource source)
+            UpdateSourceAssetFile();
+        }
+
+        protected virtual void UpdateSourceAssetFile()
+        {
+            if (target is VariableSourceAsset source)
             {
-                source.SetDirtyAndSave();
-                Debug.Log($"VariableSourceInspector: set source dirty and saved on control lost focus");
+                EditorUtility.SetDirty(source);
+                AssetDatabase.SaveAssetIfDirty(source);
+                Debug.Log($"VariableSourceInspector: Updated source asset file");
             }
+        }
+
+        private void OnVariableRemoved(IVariable variable)
+        {
+            UpdateSourceAssetFile();
+        }
+
+        private void OnVariableAdded(IVariable variable)
+        {
+            UpdateSourceAssetFile();
         }
 
         protected RowVisualHandlerPool handlerPool;
@@ -31,7 +72,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void BuildManager(VisualElement rootElem)
         {
-            var varSource = (VariableSource)target;
+            var varSource = (VariableSourceAsset)target;
             if (varSource == null)
                 return;
 
@@ -110,7 +151,7 @@ namespace Amanita.VScripting.EditorUtils
             _manager?.Dispose();
             inspectorRoot = null;
             rootElement = null;
-            AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
+            ToggleSubs(false);
         }
 
     }

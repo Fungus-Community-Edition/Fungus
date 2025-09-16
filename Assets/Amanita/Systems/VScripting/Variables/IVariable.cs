@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
@@ -31,7 +31,5 @@ namespace Amanita.VScripting
         new T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
     }
-
-    
 
 }

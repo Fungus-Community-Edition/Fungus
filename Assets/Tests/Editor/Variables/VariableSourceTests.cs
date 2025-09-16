@@ -10,7 +10,7 @@ namespace Amanita.Tests.EditMode
 {
     public class VariableSourceTests
     {
-        private VariableSource src;
+        private VariableSourceAsset src;
 
         [SetUp]
         public void SetUp()
@@ -18,7 +18,7 @@ namespace Amanita.Tests.EditMode
             manager = AmanitaManager.EnsureExists();
             fcHolder = new GameObject("Flowchart");
             flowchart = fcHolder.AddComponent<Flowchart>();
-            src = ScriptableObject.CreateInstance<VariableSource>();
+            src = ScriptableObject.CreateInstance<VariableSourceAsset>();
             VariableTypeDiscovery.DiscoverAndRegister();
 
             toDestroy.Add(manager.gameObject);

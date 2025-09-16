@@ -26,18 +26,18 @@ MonoBehaviour:
         scope: 1
         key: Naruto
         itemID: 1
-        value: srhrths
+        value: Believe it! Dattebayo!
     - rid: 4382208390134760341
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Sakura
         itemID: 2
-        value: egaeg3g
+        value: Now it's my turn to take the lead!
     - rid: 4382208408140120668
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Sasuke
         itemID: 3
-        value: What is the meaning of life? sehvsguyeiuyg
+        value: Just shut up for once! Just what do you know about it?!

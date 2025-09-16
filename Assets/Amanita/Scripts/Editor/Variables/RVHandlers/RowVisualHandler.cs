@@ -1,6 +1,7 @@
 ﻿using Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -177,15 +178,27 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             DecideBindingPaths();
-            
+
             RowRoot?.Bind(SerializedVar);
             ToggleSubs(false);
             ToggleSubs(true);
         }
 
+        protected IList<VisualElement> _subscribedToFocusLoss = new List<VisualElement>();
+        
+
+        protected virtual void OnAnyControlValueChanged(ChangeEvent<Enum> evt)
+        {
+            AnyControlValueChanged();
+            AmanitaEditorSignals.ControlValueChanged(evt);
+        }
+
+        public event Action AnyControlValueChanged = delegate { };
+
         protected virtual void ToggleSubs(bool on)
         {
-            if (_removeButton == null || _keyField == null || _scopeField == null)
+            ToggleSubsForSignalingToTheOutside(on);
+            if (_removeButton == null)
             {
                 return;
             }
@@ -193,14 +206,38 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 _removeButton.clicked += OnRemoveButtonClicked;
-                _keyField.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
-                _scopeField.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
             }
             else
             {
                 _removeButton.clicked -= OnRemoveButtonClicked;
-                _keyField.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
-                _scopeField.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
+            }
+        }
+
+        protected virtual void ToggleSubsForSignalingToTheOutside(bool on)
+        {
+            bool shouldDoToggle = _keyField != null &&
+                _scopeField != null &&
+                toRespondToFocusLoss.All((elem) => elem != null);
+            if (!shouldDoToggle)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                foreach (var elem in toRespondToFocusLoss)
+                {
+                    elem.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
+                }
+                _scopeField.RegisterValueChangedCallback(OnAnyControlValueChanged);
+            }
+            else
+            {
+                foreach (var elem in toRespondToFocusLoss)
+                {
+                    elem.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
+                }
+                _scopeField.UnregisterValueChangedCallback(OnAnyControlValueChanged);
             }
         }
 
@@ -311,10 +348,34 @@ namespace Amanita.VScripting.EditorUtils
             if (_objField != null)
             {
                 _objField.objectType = typeof(TVarContentType);
+                toRespondToFocusLoss.Add(_objField);
             }
         }
 
         protected EditorObjectField _objField;
+
+        protected override void ToggleSubsForSignalingToTheOutside(bool on)
+        {
+            base.ToggleSubsForSignalingToTheOutside(on);
+            if (_objField == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                _objField.RegisterValueChangedCallback(OnObjectFieldChanged);
+            }
+            else
+            {
+                _objField.UnregisterValueChangedCallback(OnObjectFieldChanged);
+            }
+        }
+
+        protected virtual void OnObjectFieldChanged(ChangeEvent<UnityEngine.Object> evt)
+        {
+            AmanitaEditorSignals.ControlValueChanged(evt);
+        }
 
     }
 

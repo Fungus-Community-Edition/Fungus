@@ -9,13 +9,13 @@ namespace Amanita.Tests.EditMode
     [TestFixture]
     public class UniqueKeyGeneratorTests
     {
-        VariableSource src;
+        VariableSourceAsset src;
 
         [SetUp]
         public void SetUp()
         {
             // fresh VariableSource per test
-            src = ScriptableObject.CreateInstance<VariableSource>();
+            src = ScriptableObject.CreateInstance<VariableSourceAsset>();
         }
 
         [TearDown]
