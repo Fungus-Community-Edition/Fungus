@@ -163,7 +163,7 @@ namespace Amanita.VScripting.EditorUtils
             void HandleRemainingSubs()
             {
                 _listDisplay.canStartDrag += OnCanStartDrag;
-                _listDisplay.itemIndexChanged += OnItemIndexChanged;
+                _listDisplay.itemIndexChanged += OnItemReordered;
                 Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
                 Undo.undoRedoPerformed += HandleUndoRedoPerformed;
             }
@@ -200,7 +200,6 @@ namespace Amanita.VScripting.EditorUtils
             IVariable variable = row.VarToRepresent;
             varsToDisplay.Remove(variable);
             Refresh();
-
             ReleaseRow(variable);
             // ^Why after refresh? To avoid mid-bind detach.
 
@@ -237,12 +236,11 @@ namespace Amanita.VScripting.EditorUtils
             return true;
         }
 
-        protected virtual void OnItemIndexChanged(int from, int to)
+        protected virtual void OnItemReordered(int from, int to)
         {
             if (from == to) return;
             if (varsToDisplay.Count == 0) return;
             OrderChanged?.Invoke(varsToDisplay);
-            UpdateCount();
         }
 
         protected GlobalObjectId _flowchartGlobalId;
@@ -250,11 +248,19 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual VariableRow GetOrCreateRow(IVariable variable)
         {
             if (variable == null || _rowFactory == null) return null;
-            if (_activeRows.TryGetValue(variable, out var existing)) return existing;
+
+            bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
+            if (rowAlreadyAssignedToIt)
+            {
+                return existing;
+            }
 
             var row = _rowFactory.Create(variable);
             if (row != null)
+            {
                 _activeRows[variable] = row;
+            }
+
             return row;
         }
 
@@ -368,7 +374,7 @@ namespace Amanita.VScripting.EditorUtils
                 _listDisplay.bindItem = null;
                 _listDisplay.unbindItem = null;
                 _listDisplay.destroyItem = null;
-                _listDisplay.itemIndexChanged -= OnItemIndexChanged;
+                _listDisplay.itemIndexChanged -= OnItemReordered;
                 _listDisplay.canStartDrag -= OnCanStartDrag;
                 _listDisplay.Clear();
                 _listDisplay = null;

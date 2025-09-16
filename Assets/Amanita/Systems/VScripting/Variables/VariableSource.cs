@@ -5,12 +5,16 @@ using System.Linq;
 using UnityEngine;
 using Type = System.Type;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSource", menuName = "Amanita/VariableSource")]
     public class VariableSource : ScriptableObject, IReorderableMuscariableSource
     {
-        [SerializeField, SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
+        [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
 
         public IReadOnlyList<IVariable> Variables => variables.ToList();
 
@@ -51,14 +55,18 @@ namespace Amanita.VScripting
                 muscari.ItemID = UniqueIDGenerator.GetUniqueIDFor(muscari, toPass, _nextVarID);
                 variables.Add(muscari);
                 VariableAdded(muscari);
-
-#if UNITY_EDITOR
-                UnityEditor.EditorUtility.SetDirty(this);
-#endif
-
+                SetDirtyAndSave();
             }
 
             return muscari;
+        }
+
+        public virtual void SetDirtyAndSave()
+        {
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssetIfDirty(this);
+#endif
         }
 
         [SerializeField] protected int _nextVarID = 0;
@@ -118,7 +126,8 @@ namespace Amanita.VScripting
         {
             if (newOrder == null || newOrder.Count == 0) return;
 
-            if (variables.SameContentsAs((IList<Muscariable>)newOrder) == false)
+            IList<Muscariable> toCompareTo = newOrder.OfType<Muscariable>().ToList();
+            if (variables.SameContentsAs(toCompareTo) == false)
             {
                 Debug.LogWarning("VariableSource: ReorderVariables called with a list that doesn't contain the same elements as this source.");
                 return;
@@ -126,9 +135,11 @@ namespace Amanita.VScripting
             else
             {
                 variables.Clear();
-                variables.AddRange(newOrder.Cast<Muscariable>());
+                variables.AddRange(toCompareTo);
+                SetDirtyAndSave();
             }
         }
+
     }
 
     public interface IVariableSource
