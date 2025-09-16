@@ -63,13 +63,18 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             InitVisuals(initArgs);
+            void InitVisuals(VRowManagerInitArgs initArgs)
+            {
+                Root = initArgs.Root;
+                _addButton = initArgs.AddButton;
+            }
 
             PrepFcEventListeners();
             void PrepFcEventListeners()
             {
-                ToggleSubscriptions(false);
+                ToggleSubs(false);
                 variableSource = initArgs.VariableSource;
-                ToggleSubscriptions(true);
+                ToggleSubs(true);
             }
 
             Refresh();
@@ -84,7 +89,7 @@ namespace Amanita.VScripting.EditorUtils
         public VisualElement Root { get; protected set; }
 
         #region Event Wiring / Visual Init
-        protected virtual void ToggleSubscriptions(bool on)
+        protected virtual void ToggleSubs(bool on)
         {
             if (variableSource == null || _listView == null)
             {
@@ -105,12 +110,6 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
             }
-        }
-
-        protected virtual void InitVisuals(VRowManagerInitArgs initArgs)
-        {
-            Root = initArgs.Root;
-            _addButton = initArgs.AddButton;
         }
 
         #endregion
@@ -138,15 +137,14 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnAddButtonClicked()
         {
             Rect rect = _addButton.worldBound;
-            if (variableSource is IReorderableMuscariableSource muscaSource)
-            {
-                VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
-            }
-            else if (Flowchart != null)
+            if (Flowchart != null)
             {
                 VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
             }
-
+            else if (variableSource is IReorderableMuscariableSource muscaSource)
+            {
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
+            }
             
         }
         #endregion
@@ -176,7 +174,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (_isDisposed) return;
 
-            ToggleSubscriptions(false);
+            ToggleSubs(false);
             ReleaseRowsFromList();
 
             _listView?.Dispose();

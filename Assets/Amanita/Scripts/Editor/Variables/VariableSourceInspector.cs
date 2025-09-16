@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,7 +11,16 @@ namespace Amanita.VScripting.EditorUtils
     {
         protected virtual void OnEnable()
         {
-            
+            AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
+        }
+
+        protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
+        {
+            if (target is VariableSource source)
+            {
+                source.SetDirtyAndSave();
+                Debug.Log($"VariableSourceInspector: set source dirty and saved on control lost focus");
+            }
         }
 
         protected RowVisualHandlerPool handlerPool;
@@ -75,6 +85,8 @@ namespace Amanita.VScripting.EditorUtils
         protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
         protected VariableRowFactory _rowFactory = new VariableRowFactory();
 
+        // This executes twice in a row when the asset is clicked, and then once again when you click some
+        // other asset
         public override VisualElement CreateInspectorGUI()
         {
             var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
@@ -98,6 +110,7 @@ namespace Amanita.VScripting.EditorUtils
             _manager?.Dispose();
             inspectorRoot = null;
             rootElement = null;
+            AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
         }
 
     }

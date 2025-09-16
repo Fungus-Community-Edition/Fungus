@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amanita.EditorUtils;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -9,18 +10,6 @@ using EditorObjectField = UnityEditor.UIElements.ObjectField;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public interface IRowVisualHandler : IDisposable
-    {
-        void Init(IVariable variable);
-        IVariable Variable { get; set; }
-        VisualElement RowRoot { get; }
-        VisualTreeAsset Template { get; }
-        Type VarContentType { get; }
-        SerializedObject SerializedVar { get; set; }
-        void Refresh();
-        event Action<IRowVisualHandler> RemoveButtonClicked;
-    }
-
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {
         public abstract Type VarContentType { get; }
@@ -66,6 +55,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 visTreeAsset = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
+
                 if (visTreeAsset == null)
                 {
                     string errorMessage = string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate);
@@ -75,6 +65,11 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 _templateCache[key] = visTreeAsset;
+                Debug.Log($"RowVisualHandler.GetOrResolveTemplate: Loaded template for {handlerType.Name} from '{attr.PathToTemplate}'");
+            }
+            else
+            {
+                Debug.Log($"RowVisualHandler.GetOrResolveTemplate: Using cached template for {handlerType.Name}");
             }
 
             return _templateCache[key];
@@ -127,13 +122,46 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             RowRoot = _template.CloneTree();
+            Debug.Log($"RowVisualHandler.RegisterVisualElements: Cloned template for handler={GetType().Name}, RowRoot != null: {RowRoot != null}");
             _keyField = RowRoot.Q<TextField>("KeyInput");
             _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
             _scopeField = RowRoot.Q<EnumField>("Scope");
             _removeButton = RowRoot.Q<Button>("RemoveButton");
+
+            toRespondToFocusLoss.Add(_keyField);
+            toRespondToFocusLoss.Add(_scopeField);
         }
 
         protected Button _removeButton;
+
+        // This is to help make sure that changes to variables stick, what with how finicky
+        // Unity's serialization can be
+        protected IList<VisualElement> toRespondToFocusLoss = new List<VisualElement>();
+
+        protected virtual void DecideBindingPaths()
+        {
+            ApplyDefaultBindingPaths();
+
+            if (_serializedVar != null && _serializedVar.targetObject is MuscariableHolder)
+            {
+                // We want to bind to the muscariable it is holding
+                ApplyMuscariableBindingPathOverrides();
+            }
+        }
+
+        protected virtual void ApplyDefaultBindingPaths()
+        {
+            _keyField.bindingPath = "key";
+            _scopeField.bindingPath = "scope";
+        }
+
+        protected virtual void ApplyMuscariableBindingPathOverrides()
+        {
+            _keyField.bindingPath = $"{muscariableMemberName}.{_keyField.bindingPath}";
+            _scopeField.bindingPath = $"{muscariableMemberName}.{_scopeField.bindingPath}";
+        }
+
+        protected static readonly string muscariableMemberName = "muscariable";
 
         protected virtual void UnbindFields()
         {
@@ -147,6 +175,8 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
+
+            DecideBindingPaths();
             
             RowRoot?.Bind(SerializedVar);
             ToggleSubs(false);
@@ -155,7 +185,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void ToggleSubs(bool on)
         {
-            if (_removeButton == null)
+            if (_removeButton == null || _keyField == null || _scopeField == null)
             {
                 return;
             }
@@ -163,10 +193,14 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 _removeButton.clicked += OnRemoveButtonClicked;
+                _keyField.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
+                _scopeField.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
             }
             else
             {
                 _removeButton.clicked -= OnRemoveButtonClicked;
+                _keyField.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
+                _scopeField.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
             }
         }
 
@@ -176,6 +210,14 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
+
+        protected virtual void OnAnyControlFocusLost(FocusOutEvent evt)
+        {
+            FocusLostOnControl(evt);
+            AmanitaEditorSignals.VarRowControlLostFocus(evt);
+        }
+
+        public event Action<FocusOutEvent> FocusLostOnControl = delegate { };
 
         public virtual SerializedObject SerializedVar
         {
@@ -226,12 +268,26 @@ namespace Amanita.VScripting.EditorUtils
             if (_isDisposed) return;
             _isDisposed = true;
             Reset();
+            toRespondToFocusLoss.Clear();
             _currentVariable = _prevVariable = null;
             RemoveButtonClicked = delegate { };
         }
 
         public virtual VisualTreeAsset Template => _template;
 
+    }
+
+    public interface IRowVisualHandler : IDisposable
+    {
+        void Init(IVariable variable);
+        IVariable Variable { get; set; }
+        VisualElement RowRoot { get; }
+        VisualTreeAsset Template { get; }
+        Type VarContentType { get; }
+        SerializedObject SerializedVar { get; set; }
+        void Refresh();
+        event Action<IRowVisualHandler> RemoveButtonClicked;
+        event Action<FocusOutEvent> FocusLostOnControl;
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
@@ -250,7 +306,7 @@ namespace Amanita.VScripting.EditorUtils
             base.RegisterVisualElements();
 
             // For those classes that simply need to hook up a single type to a single ObjectField
-            _objField = RowRoot.Q<ObjectField>("UnityObjectField");
+            _objField = RowRoot.Q<EditorObjectField>("UnityObjectField");
 
             if (_objField != null)
             {
@@ -260,12 +316,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected EditorObjectField _objField;
 
-    }
-
-    [RowVisualHandler("Primitives", typeof(string), "String",
-        "_EditorResources/UIToolkitTemplates/VarRows/StringVariableRow")]
-    public class StringRowVisualHandler : RowVisualHandler<object>
-    {
     }
 
     [RowVisualHandler("Hidden", typeof(object), "Generic",

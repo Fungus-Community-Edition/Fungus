@@ -13,42 +13,31 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   variables:
-  - rid: 4382208383175622748
-  - rid: 4382208383368298500
-  - rid: 4382208383368298505
+  - rid: 4382208390134760340
+  - rid: 4382208390134760341
+  - rid: 4382208408140120668
   _nextVarID: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 4382208383175622748
+    - rid: 4382208390134760340
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
-        scope: 0
-        key: Var
+        scope: 1
+        key: Naruto
         itemID: 1
-        value:
-          rid: -2
-        valOfType: 
-    - rid: 4382208383368298500
+        value: srhrths
+    - rid: 4382208390134760341
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: Var1
+        key: Sakura
         itemID: 2
-        value:
-          rid: -2
-        valOfType: 
-    - rid: 4382208383368298505
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+        value: egaeg3g
+    - rid: 4382208408140120668
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: Var2
+        key: Sasuke
         itemID: 3
-        value:
-          rid: 4382208383368298506
-        valOfType: 0
-    - rid: 4382208383368298506
-      type: {class: Int32, ns: System, asm: mscorlib}
-      data: 
+        value: What is the meaning of life? sehvsguyeiuyg

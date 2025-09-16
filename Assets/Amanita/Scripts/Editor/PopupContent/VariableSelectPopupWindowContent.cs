@@ -187,7 +187,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Always build / show the legacy menu (mirrors CommandSelector pattern).
-            ShowLegacyMenu(toAddVarTo);
+            ShowLegacyMenu(curFlowchart);
         }
 
         protected const int POPUP_WIDTH = 200;
@@ -275,11 +275,11 @@ namespace Amanita.VScripting.EditorUtils
         /// Creates a new Variable component of the supplied type on the active flowchart.
         /// Optionally attempts to place it after an existing variable with the suggested name.
         /// </summary>
-        /// <param name="varToAdd">Type expected.</param>
+        /// <param name="varTypeToAdd">Type expected.</param>
         /// <param name="suggestedName">Optional preferred key (used also to attempt positional insertion).</param>
-        public static void AddVariable(object varToAdd, string suggestedName)
+        public static void AddVariable(object varTypeToAdd, string suggestedName)
         {
-            if (varToAdd is not Type variableType)
+            if (varTypeToAdd is not Type variableType)
                 return;
 
             UnityObj varSourceObj = curSource as UnityObj;
@@ -299,7 +299,7 @@ namespace Amanita.VScripting.EditorUtils
                 Undo.RecordObject(varSourceObj, "Add Variable");
                 curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             }
-            else if (curFlowchart != null)
+            else
             {
                 var flowchart = curFlowchart != null ? curFlowchart : FlowchartWindow.GetFlowchart();
                 if (flowchart == null)
