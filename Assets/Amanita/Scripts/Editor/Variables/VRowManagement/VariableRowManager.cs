@@ -119,14 +119,12 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (_isDisposed || added == null) return;
             _listView?.AddVariable(added);
-            _listView?.Refresh();
         }
 
         protected virtual void OnVariableRemoved(IVariable removed)
         {
             if (_isDisposed || removed == null) return;
             _listView?.RemoveVariable(removed);
-            _listView?.Refresh();
         }
 
         protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
@@ -147,6 +145,12 @@ namespace Amanita.VScripting.EditorUtils
             }
             
         }
+
+        protected virtual void OnRemoveButtonClicked(IVariable toRemove)
+        {
+            if (toRemove == null || variableSource == null) return;
+            variableSource.RemoveVariable(toRemove);
+        }
         #endregion
 
         #region Refresh APIs
@@ -159,7 +163,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
 
             _listView.SetVariables(variableSource.Variables);
-            _listView.Refresh();
         }
         #endregion
 

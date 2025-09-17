@@ -76,8 +76,7 @@ namespace Amanita.VScripting.EditorUtils
             if (varSource == null)
                 return;
 
-            _manager?.Dispose();
-            _manager = new VariableRowManager();
+            
 
             var holder = rootElem;
 
@@ -118,6 +117,9 @@ namespace Amanita.VScripting.EditorUtils
                     VariableSource = varSource,
                     VariableListView = view,
                 };
+
+                _manager?.Dispose();
+                _manager = new VariableRowManager();
                 _manager.Init(managerInitArgs);
             }
         }

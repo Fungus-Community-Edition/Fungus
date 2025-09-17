@@ -1819,23 +1819,28 @@ namespace Amanita.VScripting
             return result;
         }
 
-        Muscariable IMuscariableSource.AddVariable(IVariable toAdd)
-        {
-            if (toAdd is not Muscariable muscaVar)
-            {
-                muscaVar = VariableFactory.Create(toAdd.ContentType, toAdd);
-                IntegrateMuscariable(muscaVar);
-                return muscaVar;
-            }
-            IntegrateMuscariable(muscaVar);
-            return muscaVar;
-        }
+        //public Muscariable AddVariable(IVariable toAdd)
+        //{
+        //    if (toAdd is not Muscariable muscaVar)
+        //    {
+        //        muscaVar = VariableFactory.Create(toAdd.ContentType, toAdd);
+        //        IntegrateMuscariable(muscaVar);
+        //        return muscaVar;
+        //    }
+        //    IntegrateMuscariable(muscaVar);
+        //    return muscaVar;
+        //}
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             Muscariable muscaVar = VariableFactory.Create(contentType, null);
             IntegrateMuscariable(muscaVar);
             return muscaVar;
+        }
+
+        IVariable IVariableSource.AddVariable(IVariable toAdd)
+        {
+            throw new NotImplementedException();
         }
     }
 }

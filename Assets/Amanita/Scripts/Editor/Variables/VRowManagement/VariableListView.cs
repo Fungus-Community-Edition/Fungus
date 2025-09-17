@@ -200,6 +200,10 @@ namespace Amanita.VScripting.EditorUtils
             IVariable variable = row.VarToRepresent;
             varsToDisplay.Remove(variable);
             Refresh();
+
+            VariableRow hasSerializedVar = GetOrCreateRow(variable);
+            SerializedObject serializedVar = hasSerializedVar.SerializedVar; 
+            // ^We'll need this if the var is being wrapped by a MuscariableHolder
             ReleaseRow(variable);
             // ^Why after refresh? To avoid mid-bind detach.
 
@@ -210,15 +214,35 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     int group = Undo.GetCurrentGroup();
                     string contentTypeName = variable.ContentType.Name;
+                    if (contentTypeName == "Single")
+                    {
+                        contentTypeName = "Float";
+                    }
                     string groupName = $"Remove {contentTypeName} Variable";
                     Undo.SetCurrentGroupName(groupName);
 
                     if (_flowchart != null)
                         Undo.RegisterCompleteObjectUndo(_flowchart, groupName);
+                    else
+                    {
+                        VariableSourceAsset vsAsset = Selection.activeObject as VariableSourceAsset;
+                        if (vsAsset != null)
+                        {
+                            Debug.Log($"Registering undo for VariableSourceAsset {vsAsset.name}");
+                            Undo.RegisterCompleteObjectUndo(vsAsset, groupName);
+                        }
+                    }
 
                     // The legacy vars are MonoBehaviours, so...
                     if (variable is UnityObj legacyVar && legacyVar != null)
+                    {
                         Undo.DestroyObjectImmediate(legacyVar);
+                    }
+                    else
+                    {
+                        //MuscariableHolder holder = (MuscariableHolder)serializedVar.targetObject;
+                        //Undo.DestroyObjectImmediate(holder);
+                    }
 
                     Undo.CollapseUndoOperations(group);
                 }
@@ -314,13 +338,13 @@ namespace Amanita.VScripting.EditorUtils
             Refresh();
         }
 
-        public virtual void SetVariables(IEnumerable<IVariable> vars)
+        public virtual void SetVariables(IEnumerable<IVariable> varsToSet)
         {
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
-            if (vars != null)
+            if (varsToSet != null)
             {
-                foreach (var elem in vars)
+                foreach (var elem in varsToSet)
                     if (elem != null)
                         varsToDisplay.Add(elem);
             }
@@ -486,19 +510,29 @@ namespace Amanita.VScripting.EditorUtils
             if (_listDisplay == null || varsToDisplay.Count == 0)
                 return;
 
-            var container = _listDisplay.contentContainer;
-            if (container == null)
+            VisualElement container;
+            EnsureWeHaveContainer();
+            void EnsureWeHaveContainer()
             {
-                if (_testMaterializedContainer == null)
+                container = _listDisplay.contentContainer;
+                if (container == null)
                 {
-                    _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
-                    _listDisplay.hierarchy.Add(_testMaterializedContainer);
+                    if (_testMaterializedContainer == null)
+                    {
+                        _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
+                        _listDisplay.hierarchy.Add(_testMaterializedContainer);
+                        Debug.Log($"Added test materialized container");
+                    }
+                    container = _testMaterializedContainer;
                 }
-                container = _testMaterializedContainer;
             }
 
-            if (container.childCount >= varsToDisplay.Count && _activeRows.Count >= varsToDisplay.Count)
+            bool tooManyChildrenOrActiveRows = container.childCount >= varsToDisplay.Count || _activeRows.Count >= varsToDisplay.Count;
+            if (tooManyChildrenOrActiveRows)
+            {
+                Debug.Log($"Skipping materialization: container.childCount={container.childCount}, varsToDisplay.Count={varsToDisplay.Count}, _activeRows.Count={_activeRows.Count}");
                 return;
+            }
 
             for (int i = 0; i < varsToDisplay.Count; i++)
             {
@@ -510,6 +544,8 @@ namespace Amanita.VScripting.EditorUtils
 
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
+                row.RemoveButtonClicked -= OnRemoveButtonClicked;
+                row.RemoveButtonClicked += OnRemoveButtonClicked;
             }
         }
 

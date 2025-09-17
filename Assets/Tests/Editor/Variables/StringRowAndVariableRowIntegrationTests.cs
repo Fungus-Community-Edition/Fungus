@@ -6,8 +6,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using Amanita.EditorUtils;
-using UnityEngine.TestTools;
-using System.Collections;
+using UnityEditor;
+using System.Reflection;
+using System;
+using BaseObj = System.Object;
+using UnityObj = UnityEngine.Object;
+using System.Linq;
 
 namespace Amanita.Tests.EditMode
 {
@@ -38,6 +42,7 @@ namespace Amanita.Tests.EditMode
             PrepUIElements();
             void PrepUIElements()
             {
+                uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _resolver = new RowVisualHandlerResolver();
                 _handlerPool = new RowVisualHandlerPool(_resolver, RowVisualHandlerRegistry.VisualHandlerLookup);
                 _rowPool = new VariableRowPool();
@@ -60,9 +65,29 @@ namespace Amanita.Tests.EditMode
                     RowFactory = _rowFactory
                 });
 
-                // Bind source variables to the list view and materialize rows for tests
-                _listView.SetVariables(_source.Variables);
+                InitManager();
+                void InitManager()
+                {
+                    VisualElement rootElem = uxml.CloneTree();
+                    var list = rootElem.Q<ListView>("rowList");
+                    var count = rootElem.Q<UITKLabel>("varCountLabel");
+                    var addBtn = rootElem.Q<Button>("addVarButton");
+
+                    VRowManagerInitArgs managerInitArgs = new VRowManagerInitArgs
+                    {
+                        Root = rootElem,
+                        AddButton = addBtn,
+                        VariableSource = _source,
+                        VariableListView = _listView,
+                    };
+
+                    manager?.Dispose();
+                    manager = new VariableRowManager();
+                    manager.Init(managerInitArgs);
+                }
+
                 _listView.ForceMaterializeAllRowsForTests();
+
             }
 
             GatherUpDestructables();
@@ -110,8 +135,11 @@ namespace Amanita.Tests.EditMode
         protected ListView _uiList;
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
+        protected VariableRowManager manager;
+        protected readonly string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+        protected VisualTreeAsset uxml;
 
-        protected readonly List<Object> _toDestroy = new();
+        protected readonly List<UnityObj> _toDestroy = new();
 
         [TearDown]
         public void TearDown()
@@ -129,7 +157,7 @@ namespace Amanita.Tests.EditMode
             foreach (var elem in _toDestroy)
             {
                 if (Application.isEditor && elem != null)
-                    Object.DestroyImmediate(elem);
+                    UnityObj.DestroyImmediate(elem);
             }
 
             ReleaseNullRefs();
@@ -139,16 +167,22 @@ namespace Amanita.Tests.EditMode
                 _listView = null;
                 _rowFactory = null;
                 _uiList = null;
-                _count_label_safe();
+                _count_label_safe_clear();
                 _rowPool = null;
-                _handlerPool = null;
+                _handler_pool_safe_clear();
                 _resolver = null;
                 _source = null;
+                manager = null;
             }
 
-            void _count_label_safe()
+            void _count_label_safe_clear()
             {
                 _countLabel = null;
+            }
+
+            void _handler_pool_safe_clear()
+            {
+                _handlerPool = null;
             }
         }
 
@@ -177,12 +211,6 @@ namespace Amanita.Tests.EditMode
                 var valProp = so.FindProperty("muscariable.value");
                 if (valProp != null)
                     valProp.stringValue = valueField?.value;
-
-                //// Also ensure key is kept if present (not needed for this test but harmless)
-                //var keyProp = so.FindProperty("muscariable.key");
-                //if (keyProp != null)
-                //    keyProp.stringValue = keyField?.value;
-
                 so.ApplyModifiedPropertiesWithoutUndo();
             };
 
@@ -261,5 +289,180 @@ namespace Amanita.Tests.EditMode
                 AmanitaEditorSignals.ControlValueChanged -= commitCallback;
             }
         }
+
+        [Test]
+        public void VariableAdded_Event_AddsRowTo_ListView()
+        {
+            // Add a string muscariable via the source API (raises VariableAdded)
+            var added = _source.AddNewVariableOfContentType("myKey", "myVal");
+            _listView.ForceMaterializeAllRowsForTests();
+
+            int expectedRowCount = 2; // including the initial one from SetUp
+            Assert.AreEqual(expectedRowCount, _listView.RowCount);
+
+            var row = _listView.RowAtIndex(0);
+            Assert.IsNotNull(row, "First row is null when it shouldn't be");
+            var handler = row.VisualHandler as StringRowVisualHandler;
+            Assert.IsNotNull(handler, "Expected StringRowVisualHandler for added string variable.");
+
+            // Verify the underlying value is present and matches startingVal
+            var found = _source.GetVariable("myKey") as StringMuscariable;
+            Assert.IsNotNull(found);
+            Assert.AreEqual("myVal", found.Value);
+
+        }
+
+        [Test]
+        public void VariableRemoved_Event_RemovesRowFrom_ListView()
+        {
+            // seed with one var
+            var added = _source.AddNewVariableOfContentType<string>("toRemove", "bye");
+            _listView.ForceMaterializeAllRowsForTests();
+            int expectedRowCount = 2;
+            Assert.AreEqual(expectedRowCount, _listView.RowCount);
+
+            // Remove by key (raises VariableRemoved)
+            _source.RemoveVariable("toRemove");
+            expectedRowCount--;
+
+            // Manager listens and should remove the corresponding row
+            // Force materialization to ensure virtualization cleanup happened
+            _listView.ForceMaterializeAllRowsForTests();
+
+            Assert.AreEqual(expectedRowCount, _listView.RowCount);
+            Assert.IsNull(_source.GetVariable("toRemove"));
+        }
+
+        [Test]
+        public void Refresh_Event_RemovesNullEntries_And_UIUpdatedByObserver()
+        {
+            var secondVar = _source.AddNewVariableOfContentType("a", "1");
+            var thirdVar = _source.AddNewVariableOfContentType("b", "2");
+            _listView.ForceMaterializeAllRowsForTests();
+            int expectedRowCount = 3; // including the initial one from SetUp
+            Assert.AreEqual(expectedRowCount, _listView.RowCount, "The list view doesn't have as many rows as it should.");
+
+            SimulateCorruptionByInjectingNull();
+            void SimulateCorruptionByInjectingNull()
+            {
+                BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                Type sourceType = typeof(VariableSourceAsset);
+                var varsInfo = sourceType.GetField("variables", flags);
+                Assert.IsNotNull(varsInfo, "Could not find private 'variables' field via reflection.");
+                var vars = varsInfo.GetValue(_source) as IList<Muscariable>;
+                Assert.IsNotNull(vars);
+                // set the first element to null (simulate external corruption)
+                vars[0] = null;
+                expectedRowCount--;
+            }
+
+            // The production inspector would respond to Refreshed; tests subscribe as an observer
+            Action OnRefreshed = () =>
+            {
+                // Observer updates the UI when the source is refreshed
+                _listView.SetVariables(_source.Variables);
+                _listView.ForceMaterializeAllRowsForTests();
+            };
+
+            // Wire the observer to Refreshed
+            _source.Refreshed += OnRefreshed;
+
+            try
+            {
+                // Trigger Refresh which removes nulls and raises Refreshed event
+                _source.Refresh();
+
+                // After observer runs, UI should now reflect 1 remaining valid variable
+                Assert.AreEqual(expectedRowCount, _listView.RowCount, "UI does not reflect just the remaining variable.");
+
+                // The surviving variable should be the one whose reference wasn't nulled
+                var remaining = _source.Variables;
+                Assert.AreEqual(expectedRowCount, remaining.Count, "The wrong amount of vars remains.");
+                Assert.IsNotNull(remaining[0], "The remaining var should not be null.");
+            }
+            finally
+            {
+                _source.Refreshed -= OnRefreshed;
+            }
+        }
+
+        [Test]
+        public void RemoveButton_RemovesVariableFromSourceAndListView()
+        {
+            // Arrange: add one var and materialize a row
+            var secondVar = _source.AddNewVariableOfContentType("toRemove", "bye");
+            Assert.AreEqual(2, _listView.RowCount, "There aren't as many rows registered as there should be.");
+            _listView.ForceMaterializeAllRowsForTests();
+            var row = _listView.RowAtIndex(1);
+            Assert.IsNotNull(row);
+            var handler = row.VisualHandler as StringRowVisualHandler;
+            Assert.IsNotNull(handler);
+
+            // Act: click the RemoveButton on the row template (invoke the UI click helper)
+            var btn = handler.RowRoot.Q<Button>("RemoveButton");
+
+            // Reflection-based invocation of the handler's protected click handler.
+            // This invokes the same internal path as the button's click (calls RemoveButtonClicked).
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var onRemove = handler.GetType().GetMethod("OnRemoveButtonClicked", flags);
+            Assert.IsNotNull(onRemove, "Could not find OnRemoveButtonClicked on handler.");
+            Selection.activeObject = _source; // So the list view can register the undo on it properly
+            onRemove.Invoke(handler, null);
+            _source.Refresh();
+
+            // give the list a chance to react / cleanup if virtualized
+            _listView.ForceMaterializeAllRowsForTests();
+
+            // Assert: source and UI updated
+            Assert.IsNull(_source.GetVariable("toRemove"), "Still has the var to remove after it should've been removed");
+            // After removal the list should have one remaining (initial "greeting")
+            Assert.AreEqual(1, _listView.RowCount);
+        }
+
+        [Test]
+        public void AddNewVariable_DuplicateKey_IsMadeUnique()
+        {
+            // Arrange: add initial var with key "dup"
+            var a = _source.AddNewVariableOfContentType<string>("dup", "one");
+            // Act: add another with same suggested key
+            var b = _source.AddNewVariableOfContentType<string>("dup", "two");
+
+            // Assert: both exist with different keys
+            var all = _source.Variables;
+            int dupCount = all.Count(x => x.Key != null && x.Key.StartsWith("dup"));
+            Assert.GreaterOrEqual(dupCount, 2, "Expected both variables whose keys start with 'dup' to be present");
+            Assert.AreNotEqual(a.Key, b.Key, "Second variable should have been given a unique key");
+        }
+
+        [Test]
+        public void GetVarsByContentType_ReturnsOnlyMatchingContentType()
+        {
+            // Arrange
+            _source.AddNewVariableOfContentType<string>("s1", "s");
+            _source.AddNewVariableOfContentType<int>("i1", 1);
+
+            // Act
+            var strings = _source.GetVarsByContentType<string>();
+            var ints = _source.GetVarsByContentType<int>();
+
+            // Assert
+            Assert.IsTrue(strings.Any(x => x.Key == "s1"));
+            Assert.IsFalse(strings.Any(x => x.Key == "i1"));
+            Assert.IsTrue(ints.Any(x => x.Key == "i1"));
+        }
+
+        [Test]
+        public void AddNewVariables_AssignsDistinctItemIDs()
+        {
+            var a = _source.AddNewVariableOfContentType<string>("a", "1");
+            var b = _source.AddNewVariableOfContentType<string>("b", "2");
+
+            Assert.IsNotNull(a);
+            Assert.IsNotNull(b);
+            Assert.AreNotEqual(a.ItemID, b.ItemID);
+            Assert.Greater(a.ItemID, 0);
+            Assert.Greater(b.ItemID, 0);
+        }
+
     }
 }

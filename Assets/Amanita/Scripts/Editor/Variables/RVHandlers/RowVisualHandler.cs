@@ -66,11 +66,6 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 _templateCache[key] = visTreeAsset;
-                Debug.Log($"RowVisualHandler.GetOrResolveTemplate: Loaded template for {handlerType.Name} from '{attr.PathToTemplate}'");
-            }
-            else
-            {
-                Debug.Log($"RowVisualHandler.GetOrResolveTemplate: Using cached template for {handlerType.Name}");
             }
 
             return _templateCache[key];
@@ -123,7 +118,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             RowRoot = _template.CloneTree();
-            Debug.Log($"RowVisualHandler.RegisterVisualElements: Cloned template for handler={GetType().Name}, RowRoot != null: {RowRoot != null}");
             _keyField = RowRoot.Q<TextField>("KeyInput");
             _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
             _scopeField = RowRoot.Q<EnumField>("Scope");

@@ -105,8 +105,6 @@ namespace Amanita.VScripting.EditorUtils
 
             _serializedVar?.Dispose();
 
-            Debug.Log($"VariableRow.UpdateSerializedVar: varType={( _currentVariable == null ? "null" : _currentVariable.GetType().FullName )}, ContentType={( _currentVariable?.ContentType?.FullName ?? "null")}, isUnityObj={_currentVariable is UnityObject}");
-
             if (_currentVariable != null)
             {
                 // Guard against destroyed UnityEngine.Object
@@ -115,19 +113,16 @@ namespace Amanita.VScripting.EditorUtils
                     if (unityObj == null) // Unity's overloaded null check
                     {
                         _serializedVar = null;
-                        Debug.Log("VariableRow.UpdateSerializedVar: unityObj is null (destroyed), serializedVar set to null");
                         return;
                     }
 
                     _serializedVar = new SerializedObject(unityObj);
-                    Debug.Log($"VariableRow.UpdateSerializedVar: created SerializedObject for UnityObject target={_serializedVar.targetObject?.GetType().FullName}");
                 }
                 else
                 {
                     var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
                     holder.Init(_currentVariable);
                     _serializedVar = new SerializedObject(holder);
-                    Debug.Log($"VariableRow.UpdateSerializedVar: created MuscariableHolder; holder.InnerType={(holder.Inner==null? "null": holder.Inner.GetType().FullName)}, serialized target={_serializedVar.targetObject?.GetType().FullName}");
                 }
 
                 _serializedVar.Update();
@@ -138,6 +133,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        public SerializedObject SerializedVar => _serializedVar;
         protected SerializedObject _serializedVar;
 
         public IRowVisualHandler VisualHandler { get; protected set; }

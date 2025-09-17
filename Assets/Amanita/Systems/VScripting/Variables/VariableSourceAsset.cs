@@ -38,7 +38,7 @@ namespace Amanita.VScripting
         /// If the var is a legacy one, it will be converted to a Muscariable. Returns
         /// the variable added.
         /// </summary>
-        public virtual Muscariable AddVariable(IVariable var)
+        public virtual IVariable AddVariable(IVariable var)
         {
             Muscariable muscari = var.ToMuscariable();
             if (muscari != null && !variables.ContainsReference(muscari))
@@ -155,12 +155,13 @@ namespace Amanita.VScripting
         event Action<IVariable> VariableAdded;
         event Action<IVariable> VariableRemoved;
         IReadOnlyList<IVariable> Variables { get; }
+        IVariable AddVariable(IVariable toAdd);
+        void RemoveVariable(IVariable toRemove);
     }
 
     public interface IMuscariableSource : IVariableSource
     {
         Muscariable GetVariable(string name);
-        Muscariable AddVariable(IVariable toAdd);
         Muscariable AddNewVariableOfContentType(Type contentType, string key);
     }
 
