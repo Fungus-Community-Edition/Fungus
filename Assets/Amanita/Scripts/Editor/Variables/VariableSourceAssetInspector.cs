@@ -2,42 +2,48 @@ using Amanita.EditorUtils;
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(VariableSourceAsset))]
-    public class VariableSourceInspector : Editor
+    public class VariableSourceAssetInspector : Editor
     {
         protected virtual void OnEnable()
         {
+            ToggleSubs(false);
             ToggleSubs(true);
         }
 
         protected virtual void ToggleSubs(bool on)
         {
+            var source = (VariableSourceAsset)target;
             if (on)
             {
+                if (_subsActive) return; // already subscribed
                 AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
-
-                VariableSourceAsset source = (VariableSourceAsset)target;
                 source.VariableAdded += OnVariableAdded;
                 source.VariableRemoved += OnVariableRemoved;
                 source.VariablesReordered += UpdateSourceAssetFile;
                 source.Refreshed += UpdateSourceAssetFile;
+                _subsActive = true;
             }
             else
             {
+                if (!_subsActive) return; // nothing to unsubscribe
                 AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
-
-                VariableSourceAsset source = (VariableSourceAsset)target;
                 source.VariableAdded -= OnVariableAdded;
                 source.VariableRemoved -= OnVariableRemoved;
                 source.VariablesReordered -= UpdateSourceAssetFile;
                 source.Refreshed -= UpdateSourceAssetFile;
+                _subsActive = false;
             }
         }
+
+
+        protected bool _subsActive = false;
 
         protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
         {
@@ -76,8 +82,6 @@ namespace Amanita.VScripting.EditorUtils
             if (varSource == null)
                 return;
 
-            
-
             var holder = rootElem;
 
             PrepFactory();
@@ -103,6 +107,7 @@ namespace Amanita.VScripting.EditorUtils
                     List = list,
                     CountLabel = count,
                     RowFactory = _rowFactory,
+                    VariableSource = varSource,
                 };
                 view = new VariableListView(listViewArgs);
             }

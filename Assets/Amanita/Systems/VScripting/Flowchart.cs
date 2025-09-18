@@ -35,7 +35,13 @@ namespace Amanita.VScripting
             Debug.Log($"Flowchart InitOnLoad method executed");
         }
 #endif
-
+        public virtual IVariable GetVar(int itemID)
+        {
+            IVariable result = (from elem in Variables
+                                where elem.ItemID == itemID
+                                select elem).FirstOrDefault();
+            return result;
+        }
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
         // What the editor utils use to decide how to render this FC's data in the 

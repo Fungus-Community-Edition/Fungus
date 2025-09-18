@@ -107,5 +107,8 @@ namespace Amanita.VScripting
 
         // Convenience
         public UnityObj Component { get => _component; set => _component = value; }
+
+        public virtual IVariableSource Owner =>
+            (_component as IVariable)?.Owner;
     }
 }

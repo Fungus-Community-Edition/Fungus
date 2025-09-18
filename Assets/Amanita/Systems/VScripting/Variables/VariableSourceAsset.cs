@@ -14,6 +14,8 @@ namespace Amanita.VScripting
 
         public IReadOnlyList<IVariable> Variables => variables.ToList();
 
+        protected IList<MuscariableHolder> holders = new List<MuscariableHolder>();
+
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
         /// assigning it the passed key and starting value.
@@ -23,7 +25,7 @@ namespace Amanita.VScripting
         {
             Muscariable<TContent> result = (Muscariable<TContent>)AddNewVariableOfContentType(typeof(TContent), key);
             result.Value = startingVal;
-            return result;
+            return result; 
         }
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key)
@@ -43,9 +45,12 @@ namespace Amanita.VScripting
             Muscariable muscari = var.ToMuscariable();
             if (muscari != null && !variables.ContainsReference(muscari))
             {
+
                 MakeUniqueForThisSource(muscari);
                 _nextVarID = muscari.ItemID + 1;
-
+#if UNITY_EDITOR
+                AnyRightBeforeVarAdded(muscari);
+#endif
                 variables.Add(muscari);
                 VariableAdded(muscari);
             }
@@ -53,12 +58,21 @@ namespace Amanita.VScripting
             return muscari;
         }
 
+#if UNITY_EDITOR
+        // We only want editor code to respond to these events.
+        
+        public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
+        public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
+        public event Action VariablesReordered = delegate { };
+#endif
+
         // So that we can avoid what (at least look like) duplicates
         protected virtual void MakeUniqueForThisSource(Muscariable var)
         {
             var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables, var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
             var.ItemID = UniqueIDGenerator.GetUniqueIDFor(var, toPass, _nextVarID);
+            var.Owner = this;
         }
 
         [SerializeField, HideInInspector] protected int _nextVarID = 0;
@@ -111,11 +125,11 @@ namespace Amanita.VScripting
             {
                 variables.Clear();
                 variables.AddRange(toCompareTo);
+#if UNITY_EDITOR
                 VariablesReordered();
+#endif
             }
         }
-
-        public event Action VariablesReordered = delegate { };
 
         public virtual void RemoveVariable(string key)
         {
@@ -134,6 +148,9 @@ namespace Amanita.VScripting
                 return;
             }
 
+            AnyRightBeforeVarRemoved(muscari);
+            // For the sake of Undo/Redo, we'd best NOT unregister ourselves as the owner.
+            // Even if it'd be sorta misleading...//
             variables.Remove(muscari);
             VariableRemoved(muscari);
         }
@@ -143,10 +160,26 @@ namespace Amanita.VScripting
         public virtual void Refresh()
         {
             variables.RemoveAll(elem => elem == null);
+
+            AssertOwnership();
+            void AssertOwnership()
+            {
+                foreach (var elem in variables)
+                {
+                    elem.Owner = this;
+                }
+            }
+
             Refreshed();
         }
 
         public event Action Refreshed = delegate { };
+
+        public virtual IVariable GetVar(int itemID)
+        {
+            IVariable result = variables.Where((elem) => elem.ItemID == itemID).FirstOrDefault();
+            return result;
+        }
 
     }
 
@@ -157,6 +190,7 @@ namespace Amanita.VScripting
         IReadOnlyList<IVariable> Variables { get; }
         IVariable AddVariable(IVariable toAdd);
         void RemoveVariable(IVariable toRemove);
+        IVariable GetVar(int itemId);
     }
 
     public interface IMuscariableSource : IVariableSource

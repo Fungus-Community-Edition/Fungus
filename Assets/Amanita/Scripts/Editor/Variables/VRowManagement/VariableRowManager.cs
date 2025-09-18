@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Amanita.EditorUtils;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -102,6 +105,7 @@ namespace Amanita.VScripting.EditorUtils
                 variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
+                AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
             }
             else
             {
@@ -109,12 +113,74 @@ namespace Amanita.VScripting.EditorUtils
                 variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
+                AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
             }
         }
 
         #endregion
 
         #region Variable Event Handlers
+
+        protected virtual void OnVarRowRemovalButtonClicked(VariableRow row)
+        {
+            if (row == null || row.VarToRepresent == null)
+            {
+                string logMessage = "VariableRowManager was given a null VariableRow or VariableRow with " +
+                    "null VarToRepresent.";
+                Debug.LogError(logMessage);
+                return;
+            }
+
+            IVariable varInvolved = row.VarToRepresent;
+            var owner = varInvolved.Owner;
+            owner.RemoveVariable(varInvolved);
+
+            UnityObj destroyTarget = GetDestroyTarget(varInvolved);
+            if (destroyTarget != null)
+            {
+                Debug.Log($"Destroying variable asset: {destroyTarget.name} ({destroyTarget.GetType().Name})");
+                Undo.DestroyObjectImmediate(destroyTarget);
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find a persistent asset to destroy for variable '{varInvolved.Key}'. " +
+                    $"Type of the var itself: {varInvolved.GetType()}.");
+            }
+
+        }
+
+        private UnityObj GetDestroyTarget(IVariable variable)
+        {
+            if (variable is UnityObj unityObj)
+                return unityObj; // Legacy variable
+
+            // Muscariable path — find its holder in the variable source
+            return FindPersistentHolderFor(variable);
+        }
+
+        private static MuscariableHolder FindPersistentHolderFor(IVariable variable)
+        {
+            UnityObj context = variable.Owner as UnityObj;
+            var path = AssetDatabase.GetAssetPath(context);
+            Debug.Log($"[DEBUG] Context: {context} | Asset path: '{path}'");
+
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            Debug.Log($"[DEBUG] Found {subAssets.Length} sub-assets at path '{path}'");
+
+            foreach (var asset in subAssets)
+            {
+                Debug.Log($"[DEBUG] Sub-asset: {asset} ({asset.GetType().Name})");
+
+                if (asset is MuscariableHolder holder)
+                {
+                    Debug.Log($"[DEBUG] Holder.Inner == variable? {ReferenceEquals(holder.Inner, variable)}");
+                    if (holder.Inner == variable)
+                        return holder;
+                }
+            }
+            return null;
+        }
+
         protected virtual void OnVariableAdded(IVariable added)
         {
             if (_isDisposed || added == null) return;
@@ -146,11 +212,6 @@ namespace Amanita.VScripting.EditorUtils
             
         }
 
-        protected virtual void OnRemoveButtonClicked(IVariable toRemove)
-        {
-            if (toRemove == null || variableSource == null) return;
-            variableSource.RemoveVariable(toRemove);
-        }
         #endregion
 
         #region Refresh APIs

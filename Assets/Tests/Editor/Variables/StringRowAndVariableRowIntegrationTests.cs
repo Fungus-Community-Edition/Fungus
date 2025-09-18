@@ -26,13 +26,24 @@ namespace Amanita.Tests.EditMode
     /// </summary>
     public class StringRowAndVariableSourceIntegrationTests
     {
+        private const string TestAssetPath = "Assets/TestVariableSource.asset";
+
+
         [SetUp]
         public void SetUp()
         {
+            // Clean up any leftover test asset from previous runs
+            AssetDatabase.DeleteAsset(TestAssetPath);
+
             PrepSourceAsset();
             void PrepSourceAsset()
             {
+                // We want to make it an actual asset file so that it handles MuscariableHolders 
+                // like it should in production.
                 _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                AssetDatabase.CreateAsset(_source, TestAssetPath);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
 
                 // We want to give the UI something to render right away, hence this initial var
                 var stringVar = _source.AddNewVariableOfContentType<string>(initStringVarKey);
@@ -62,7 +73,8 @@ namespace Amanita.Tests.EditMode
                 {
                     List = _uiList,
                     CountLabel = _countLabel,
-                    RowFactory = _rowFactory
+                    RowFactory = _rowFactory,
+                    VariableSource = _source,
                 });
 
                 InitManager();
@@ -144,6 +156,8 @@ namespace Amanita.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            AssetDatabase.DeleteAsset(TestAssetPath);
+
             try
             {
                 _listView?.Dispose();
@@ -391,6 +405,7 @@ namespace Amanita.Tests.EditMode
         {
             // Arrange: add one var and materialize a row
             var secondVar = _source.AddNewVariableOfContentType("toRemove", "bye");
+            _source.MarkDirtyAndSave();
             Assert.AreEqual(2, _listView.RowCount, "There aren't as many rows registered as there should be.");
             _listView.ForceMaterializeAllRowsForTests();
             var row = _listView.RowAtIndex(1);
@@ -409,6 +424,7 @@ namespace Amanita.Tests.EditMode
             Selection.activeObject = _source; // So the list view can register the undo on it properly
             onRemove.Invoke(handler, null);
             _source.Refresh();
+            _source.MarkDirtyAndSave();
 
             // give the list a chance to react / cleanup if virtualized
             _listView.ForceMaterializeAllRowsForTests();
