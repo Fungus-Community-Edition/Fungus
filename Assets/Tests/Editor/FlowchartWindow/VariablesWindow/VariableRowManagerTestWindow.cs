@@ -257,7 +257,7 @@ namespace Amanita.VScripting.EditorUtils
                 List = listContainer,
                 CountLabel = countLabel,
                 RowFactory = varRowFactory,
-                
+                VariableSource = _flowchart,
             };
 
             var view = new VariableListView(listViewArgs);
@@ -397,52 +397,24 @@ namespace Amanita.VScripting.EditorUtils
                         var = AddVariableComponent<ColorVariable>(theCol);
                         break;
                     case 11:
-                        if (_colliderTwoDObjects.Count > 0)
-                        {
-                            var collValue = _colliderTwoDObjects.GetRandom();
-                            var = AddVariableComponent<Collider2DVariable>(collValue);
-                        }
-                        break;
-                    case 12:
-                        if (_colliderThreeDObjects.Count > 0)
-                        {
-                            var collValue = _colliderThreeDObjects.GetRandom();
-                            var = AddVariableComponent<ColliderVariable>(collValue);
-                        }
-                        break;
-                    case 13: 
                         if (_textures.Count > 0)
                         {
                             var texVal = _textures.GetRandom();
                             var = AddVariableComponent<TextureVariable>(texVal);
                         }
                         break;
-                    case 14:
+                    case 12:
                         if (_materials.Count > 0)
                         {
                             var matVal = _materials.GetRandom();
                             var = AddVariableComponent<MaterialVariable>(matVal);
                         }
                         break;
-                    case 15:
+                    case 13:
                         if (_sprites.Count > 0)
                         {
                             var spriteVal = _sprites.GetRandom();
                             var = AddVariableComponent<SpriteVariable>(spriteVal);
-                        }
-                        break;
-                    case 16:
-                        if (_rigidbodyTwoDs.Count > 0)
-                        {
-                            var rbVal = _rigidbodyTwoDs.GetRandom();
-                            var = AddVariableComponent<Rigidbody2DVariable>(rbVal);
-                        }
-                        break;
-                    case 17:
-                        if (_rigidbodyThreeDs.Count > 0)
-                        {
-                            var rbVal = _rigidbodyThreeDs.GetRandom();
-                            var = AddVariableComponent<RigidbodyVariable>(rbVal);
                         }
                         break;
 
@@ -454,7 +426,7 @@ namespace Amanita.VScripting.EditorUtils
                     var desired = $"var_{var.GetType().Name}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                     try
                     {
-                        var.Key = _flowchart.GetUniqueVariableKey(desired, var);
+                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, (IList<IVariable>)_flowchart.Variables);
                     }
                     catch
                     {

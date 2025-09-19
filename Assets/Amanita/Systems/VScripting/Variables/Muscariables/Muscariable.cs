@@ -208,6 +208,13 @@ namespace Amanita.VScripting
             // Last resort - try direct cast (may throw)
             return (TVal)val;
         }
+
+        public virtual IVariableSource Owner
+        {
+            get { return _owner; }
+            set { _owner = value; }
+        }
+        [SerializeField] protected IVariableSource _owner;
     }
 
     [Serializable]

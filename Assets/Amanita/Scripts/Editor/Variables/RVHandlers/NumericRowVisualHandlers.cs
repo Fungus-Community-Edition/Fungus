@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
@@ -8,6 +9,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             base.RegisterVisualElements();
             valueField = RowRoot.Q<TextValueField<T>>("ValueField");
+            toRespondToFocusLoss.Add(valueField);
         }
 
         protected TextValueField<T> valueField;
@@ -22,6 +24,28 @@ namespace Amanita.VScripting.EditorUtils
         {
             base.ApplyMuscariableBindingPathOverrides();
             valueField.bindingPath = $"{muscariableMemberName}.{valueField.bindingPath}";
+        }
+
+        protected override void ToggleSubsForSignalingToTheOutside(bool on)
+        {
+            base.ToggleSubsForSignalingToTheOutside(on);
+            if (valueField == null)
+            {
+                return;
+            }
+            if (on)
+            {
+                valueField.RegisterValueChangedCallback(OnValueFieldChanged);
+            }
+            else
+            {
+                valueField.UnregisterValueChangedCallback(OnValueFieldChanged);
+            }
+        }
+
+        protected virtual void OnValueFieldChanged(ChangeEvent<T> evt)
+        {
+            AmanitaEditorSignals.ControlValueChanged(evt);
         }
     }
 

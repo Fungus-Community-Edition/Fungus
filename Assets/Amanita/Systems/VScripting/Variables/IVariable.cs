@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace Amanita.VScripting
 {
@@ -24,6 +24,7 @@ namespace Amanita.VScripting
         bool Evaluate(CompareOperator compareOperator, object value);
 
         void Apply(SetOperator setOperator, object value);
+        IVariableSource Owner { get; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
@@ -31,7 +32,5 @@ namespace Amanita.VScripting
         new T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
     }
-
-    
 
 }

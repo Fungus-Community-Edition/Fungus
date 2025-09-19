@@ -30,8 +30,6 @@ namespace Amanita.Tests.EditMode
             new ColorData(),
             new Vector2Data(),
             new Vector3Data(),
-            new Vector4Data(),
-            new QuaternionData(),
             new ObjectData(),
             new AudioSourceData()
         };
