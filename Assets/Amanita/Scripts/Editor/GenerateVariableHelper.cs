@@ -194,7 +194,6 @@ namespace Amanita.EditorUtils
 			//typeof(Boolean),
 			typeof(Character),
 			typeof(Color),
-			typeof(Collection),
 			typeof(Collider),
 			typeof(Collider2D),
 			typeof(Collision),
@@ -532,33 +531,22 @@ namespace Amanita.VScripting
 		{
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Animator), typeof(AnimatorVariable), "ioani"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(AudioClip), typeof(AudioClipVariable), "ioac"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(UnityEngine.Audio.AudioMixer), typeof(AudioMixerVariable), "ioam"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(UnityEngine.Audio.AudioMixerGroup), typeof(AudioMixerGroupVariable), "ioamg"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(UnityEngine.Audio.AudioMixerSnapshot), typeof(AudioMixerSnapshotVariable), "ioams"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(AudioSource), typeof(AudioSourceVariable), "ioaud"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(bool), typeof(BooleanVariable), "iob"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Collider2D), typeof(Collider2DVariable), "ioc2d"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Collider), typeof(ColliderVariable), "ioc"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Character), typeof(CharacterVariable), "iochar"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Collection), typeof(CollectionVariable), "iocollect"));
 			//we don't need to do collision varaibles
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Color), typeof(ColorVariable), "iocol"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(float), typeof(FloatVariable), "iof"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(GameObject), typeof(GameObjectVariable), "iogo"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(int), typeof(IntegerVariable), "ioi"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Material), typeof(MaterialVariable), "iomat"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Matrix4x4), typeof(Matrix4x4Variable), "iom4"));
 			//we skip object
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Quaternion), typeof(QuaternionVariable), "ioq"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Rigidbody2D), typeof(Rigidbody2DVariable), "iorb2d"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Rigidbody), typeof(RigidbodyVariable), "iorb"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(string), typeof(StringVariable), "ios"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Sprite), typeof(SpriteVariable), "iospr"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Texture), typeof(TextureVariable), "iotex"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Transform), typeof(TransformVariable), "iot"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Vector2), typeof(Vector2Variable), "iov2"));
 			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Vector3), typeof(Vector3Variable), "iov"));
-			helper.AddHandler(new FungusVariableTypeHelper.TypeHandler(typeof(Vector4), typeof(Vector4Variable), "iov4"));
 
 			types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToList();
 		}

@@ -1,29 +1,45 @@
-using System;
-using System.Linq;
-using NUnit.Framework;
-using UnityEngine;
 using Amanita.VScripting;
-using UnityObj = UnityEngine.Object;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.Tests.EditMode
 {
     public class VariableSourceTests
     {
-        private VariableSource src;
+        private VariableSourceAsset _source;
 
         [SetUp]
         public void SetUp()
         {
+            AssetDatabase.DeleteAsset(TestAssetPath);
+            PrepSourceAsset();
+            void PrepSourceAsset()
+            {
+                // We want to make it an actual asset file so that it handles MuscariableHolders 
+                // like it should in production.
+                _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                AssetDatabase.CreateAsset(_source, TestAssetPath);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+
+                // We want to give the UI something to render right away, hence this initial var
+                var stringVar = _source.AddNewVariableOfContentType<string>(initStringVarKey);
+                stringVar.Value = initStringVarValue;
+            }
+
             manager = AmanitaManager.EnsureExists();
             fcHolder = new GameObject("Flowchart");
             flowchart = fcHolder.AddComponent<Flowchart>();
-            src = ScriptableObject.CreateInstance<VariableSource>();
             VariableTypeDiscovery.DiscoverAndRegister();
 
             toDestroy.Add(manager.gameObject);
             toDestroy.Add(flowchart.gameObject);
-            toDestroy.Add(src);
+            toDestroy.Add(_source);
         }
 
         protected AmanitaManager manager;
@@ -31,9 +47,15 @@ namespace Amanita.Tests.EditMode
         protected Flowchart flowchart;
         protected readonly IList<UnityObj> toDestroy = new List<UnityObj>();
 
+        private const string TestAssetPath = "Assets/TestVariableSource.asset";
+        protected readonly string initStringVarKey = "greeting";
+        protected readonly string initStringVarValue = "hello";
+
         [TearDown]
         public void TearDown()
         {
+            AssetDatabase.DeleteAsset(TestAssetPath);
+
             foreach (UnityObj obj in toDestroy)
             {
                 if (obj != null)
@@ -51,44 +73,44 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void AddNewVariableOfContentType_Generic_CreatesMuscariableWithKeyAndValue()
         {
-            var v = src.AddNewVariableOfContentType<float>("myFloat", 3.5f);
-            Assert.IsNotNull(v);
-            Assert.AreEqual("myFloat", v.Key);
-            Assert.AreEqual(3.5f, ((Muscariable<float>)v).Value);
-            Assert.AreSame(v, src.GetVariable("myFloat"));
+            var floatVar = _source.AddNewVariableOfContentType<float>("myFloat", 3.5f);
+            Assert.IsNotNull(floatVar);
+            Assert.AreEqual("myFloat", floatVar.Key);
+            Assert.AreEqual(3.5f, ((Muscariable<float>)floatVar).Value);
+            Assert.AreSame(floatVar, _source.GetVariable("myFloat"));
         }
 
         [Test]
         public void AddNewVariableOfContentType_TypeOverload_CreatesMuscariableWithKey()
         {
-            var v = src.AddNewVariableOfContentType(typeof(int), "myInt");
-            Assert.IsNotNull(v);
-            Assert.AreEqual("myInt", v.Key);
-            Assert.AreSame(v, src.GetVariable("myInt"));
+            var intVar = _source.AddNewVariableOfContentType(typeof(int), "myInt");
+            Assert.IsNotNull(intVar);
+            Assert.AreEqual("myInt", intVar.Key);
+            Assert.AreSame(intVar, _source.GetVariable("myInt"));
         }
 
         [Test]
         public void AddVariable_AddsMuscariableAndPreventsDuplicates()
         {
-            var m = VariableFactory.Create<int>(7);
-            m.Key = "dup";
-            src.AddVariable(m);
-            src.AddVariable(m); // second should no-op
-            var list = src.Variables;
-            Assert.AreEqual(1, list.Count(v => v.Key == "dup"));
+            var intVar = VariableFactory.Create<int>(7);
+            intVar.Key = "dup";
+            _source.AddVariable(intVar);
+            _source.AddVariable(intVar); // second should no-op
+            var list = _source.Variables;
+            Assert.AreEqual(1, list.Count(elem => elem.Key == "dup"));
         }
 
         [Test]
         public void GetVarsByContentType_ReturnsMatchingContentType()
         {
-            var f = VariableFactory.Create<float>(1f);
-            f.Key = "f";
-            var i = VariableFactory.Create<int>(2);
-            i.Key = "i";
-            src.AddVariable(f);
-            src.AddVariable(i);
+            var floatVar = VariableFactory.Create<float>(1f);
+            floatVar.Key = "f";
+            var intVar = VariableFactory.Create<int>(2);
+            intVar.Key = "i";
+            _source.AddVariable(floatVar);
+            _source.AddVariable(intVar);
 
-            var floats = src.GetVarsByContentType<float>();
+            var floats = _source.GetVarsByContentType<float>();
             Assert.IsTrue(floats.Any(x => x.Key == "f"));
             Assert.IsFalse(floats.Any(x => x.Key == "i"));
         }
@@ -100,10 +122,10 @@ namespace Amanita.Tests.EditMode
             floatVar.Key = "f";
             var otherFloat = VariableFactory.Create(2f);
             otherFloat.Key = "f2";
-            src.AddVariable(floatVar);
-            src.AddVariable(otherFloat);
+            _source.AddVariable(floatVar);
+            _source.AddVariable(otherFloat);
             Debug.Log($"Float var is float muscariable: {floatVar is Muscariable<float>}");
-            var results = src.GetVarsByType(typeof(Muscariable<float>));
+            var results = _source.GetVarsByType(typeof(Muscariable<float>));
             Assert.IsTrue(results.Any(x => x.Key == "f"));
             Assert.IsTrue(results.Any(x => x.Key == "f2"));//
         }
@@ -115,8 +137,8 @@ namespace Amanita.Tests.EditMode
             legacy.Key = $"some{numericContentType.Name}Lol";
             legacy.Value = 1.23;
 
-            src.AddVariable(legacy);
-            var found = src.GetVariable(legacy.Key);
+            _source.AddVariable(legacy);
+            var found = _source.GetVariable(legacy.Key);
 
             Assert.IsNotNull(found, "Converted variable not added");
             Assert.AreEqual(numericContentType, found.ContentType);
@@ -138,7 +160,7 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void GetVariable_ReturnsNullWhenNotFound()
         {
-            Assert.IsNull(src.GetVariable("nope"));
+            Assert.IsNull(_source.GetVariable("nope"));
         }
     }
 }

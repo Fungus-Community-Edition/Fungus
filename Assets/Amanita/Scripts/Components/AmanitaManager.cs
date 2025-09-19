@@ -12,7 +12,7 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-        [SerializeField] private VariableSource globalVariables;
+        [SerializeField] private VariableSourceAsset globalVariables;
         public static DefaultTweenAdapter DefaultTweener
         {
             get

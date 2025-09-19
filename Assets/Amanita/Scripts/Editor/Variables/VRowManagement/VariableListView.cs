@@ -20,6 +20,17 @@ namespace Amanita.VScripting.EditorUtils
             _listDisplay = initArgs.List;
             _countDisplay = initArgs.CountLabel;
             _rowFactory = initArgs.RowFactory;
+            _variableSourceContext = initArgs.VariableSource as UnityObj;
+            
+            if (_variableSourceContext == null)
+            {
+                Debug.LogWarning($"VariableListView was not given a valid variable source context" +
+                    $" (Flowchart or VariableSourceAsset). Some operations may not work as intended.");
+            }
+            else
+            {
+                SetVariables(initArgs.VariableSource.Variables);
+            }
             if (_listDisplay != null)
                 InitListViewStructure();
         }
@@ -30,6 +41,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected Flowchart _flowchart;
         protected int _flowchartInstanceID;
+        protected UnityObj _variableSourceContext;
 
         public virtual void SetFlowchart(Flowchart flowchart)
         {
@@ -97,6 +109,7 @@ namespace Amanita.VScripting.EditorUtils
                         }
 
                         rowHolder.Clear();
+                        rowHolder.userData = null;
                         VariableRow row = GetRowFor(currentVar);
                         VariableRow GetRowFor(IVariable variable)
                         {
@@ -104,12 +117,10 @@ namespace Amanita.VScripting.EditorUtils
                             if (row == null)
                             {
                                 Debug.LogWarning($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
-                                rowHolder.userData = null;
                             }
                             else if (row.RootElement == null)
                             {
                                 Debug.LogWarning($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
-                                rowHolder.userData = null;
                                 row = null;
                             }
 
@@ -121,9 +132,15 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
-                        // Keep subscriptions stable, dedupe to avoid duplicates
-                        row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                        row.RemoveButtonClicked += OnRemoveButtonClicked;
+                        // **Resolve the correct binding target**
+                        var targetObj = GetBindingTarget(currentVar);
+
+                        // **Inject the SerializedObject into the already-initialized row**
+                        if (targetObj != null)
+                        {
+                            var so = new SerializedObject(targetObj);
+                            row.VisualHandler.SerializedVar = so;
+                        }
 
                         // Attach visual
                         rowHolder.Add(row.RootElement);
@@ -176,58 +193,30 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly List<IVariable> varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
 
-        // Schedules the actual removal to the next editor update to avoid
-        // mutating ListView data source while it's mid-binding (which can cause orphan/phantom rows).
-        protected virtual void OnRemoveButtonClicked(VariableRow row)
+        private UnityObj GetBindingTarget(IVariable variable)
         {
-            if (!WeShouldCare())
+            if (variable is UnityObj unityObj)
+                return unityObj; // Legacy variable
+
+            return FindPersistentHolderFor(variable, _variableSourceContext);
+        }
+
+        private static MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
+        {
+            var path = AssetDatabase.GetAssetPath(context);
+
+            IList<VariableSourceAsset> sources = Resources.LoadAll<VariableSourceAsset>("");
+            IList<MuscariableHolder> holders = AssetDatabase.LoadAllAssetsAtPath(path)
+                .OfType<MuscariableHolder>()
+                .ToList();
+
+            foreach (var elem in holders)
             {
-                return;
-            }
-            bool WeShouldCare()
-            {
-                if (row == null || row.VarToRepresent == null)
-                {
-                    return false;
-                }
-
-                var variable = row.VarToRepresent;
-                int index = varsToDisplay.IndexOf(variable);
-                bool isRegisteredWithUs = index >= 0;
-                return isRegisteredWithUs;
+                if (elem.Inner == variable)
+                    return elem;
             }
 
-            IVariable variable = row.VarToRepresent;
-            varsToDisplay.Remove(variable);
-            Refresh();
-            ReleaseRow(variable);
-            // ^Why after refresh? To avoid mid-bind detach.
-
-            DestroyUnderlyingObjectWithProperUndo();
-            void DestroyUnderlyingObjectWithProperUndo()
-            {
-                if (!Application.isPlaying)
-                {
-                    int group = Undo.GetCurrentGroup();
-                    string contentTypeName = variable.ContentType.Name;
-                    string groupName = $"Remove {contentTypeName} Variable";
-                    Undo.SetCurrentGroupName(groupName);
-
-                    if (_flowchart != null)
-                        Undo.RegisterCompleteObjectUndo(_flowchart, groupName);
-
-                    // The legacy vars are MonoBehaviours, so...
-                    if (variable is UnityObj legacyVar && legacyVar != null)
-                        Undo.DestroyObjectImmediate(legacyVar);
-
-                    Undo.CollapseUndoOperations(group);
-                }
-                else
-                {
-                    if (variable is UnityObj legacyVar && legacyVar != null)
-                        UnityObj.Destroy(legacyVar);
-                }
-            }
+            return null;
         }
 
         protected virtual bool OnCanStartDrag(CanStartDragArgs args)
@@ -314,13 +303,13 @@ namespace Amanita.VScripting.EditorUtils
             Refresh();
         }
 
-        public virtual void SetVariables(IEnumerable<IVariable> vars)
+        public virtual void SetVariables(IEnumerable<IVariable> varsToSet)
         {
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
-            if (vars != null)
+            if (varsToSet != null)
             {
-                foreach (var elem in vars)
+                foreach (var elem in varsToSet)
                     if (elem != null)
                         varsToDisplay.Add(elem);
             }
@@ -486,19 +475,29 @@ namespace Amanita.VScripting.EditorUtils
             if (_listDisplay == null || varsToDisplay.Count == 0)
                 return;
 
-            var container = _listDisplay.contentContainer;
-            if (container == null)
+            VisualElement container;
+            EnsureWeHaveContainer();
+            void EnsureWeHaveContainer()
             {
-                if (_testMaterializedContainer == null)
+                container = _listDisplay.contentContainer;
+                if (container == null)
                 {
-                    _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
-                    _listDisplay.hierarchy.Add(_testMaterializedContainer);
+                    if (_testMaterializedContainer == null)
+                    {
+                        _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
+                        _listDisplay.hierarchy.Add(_testMaterializedContainer);
+                        Debug.Log($"Added test materialized container");
+                    }
+                    container = _testMaterializedContainer;
                 }
-                container = _testMaterializedContainer;
             }
 
-            if (container.childCount >= varsToDisplay.Count && _activeRows.Count >= varsToDisplay.Count)
+            bool tooManyChildrenOrActiveRows = container.childCount >= varsToDisplay.Count || _activeRows.Count >= varsToDisplay.Count;
+            if (tooManyChildrenOrActiveRows)
+            {
+                //Debug.Log($"Skipping materialization: container.childCount={container.childCount}, varsToDisplay.Count={varsToDisplay.Count}, _activeRows.Count={_activeRows.Count}");
                 return;
+            }
 
             for (int i = 0; i < varsToDisplay.Count; i++)
             {
@@ -510,6 +509,15 @@ namespace Amanita.VScripting.EditorUtils
 
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
+
+                var targetObj = GetBindingTarget(elem);
+
+                // **Inject the SerializedObject into the already-initialized row**
+                if (targetObj != null)
+                {
+                    var so = new SerializedObject(targetObj);
+                    row.VisualHandler.SerializedVar = so;
+                }
             }
         }
 
@@ -536,5 +544,6 @@ namespace Amanita.VScripting.EditorUtils
         public IVariableRowFactory RowFactory { get; set; }
         public ListView List { get; set; }
         public UITKLabel CountLabel { get; set; }
+        public IVariableSource VariableSource { get; set; }
     }
 }

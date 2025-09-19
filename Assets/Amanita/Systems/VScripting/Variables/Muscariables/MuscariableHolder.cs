@@ -92,6 +92,8 @@ namespace Amanita.VScripting
 
         public Muscariable Inner => muscariable; // For Inspectors and such
 
+        public IVariableSource Owner => ((IVariable)muscariable).Owner;
+
         public virtual void Init(IVariable variable)
         {
             muscariable = variable as Muscariable;
@@ -104,6 +106,7 @@ namespace Amanita.VScripting
         {
             Ensure();
             muscariable.Init();
+            this.name = $"{muscariable.Key}_Holder";
         }
 
         protected virtual void Ensure()

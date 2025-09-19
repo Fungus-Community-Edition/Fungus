@@ -17,18 +17,6 @@ namespace Amanita.VScripting.EditorUtils
         public static Dictionary<System.Type, System.Action<UnityEngine.Rect, UnityEditor.SerializedProperty, GUIContent>> typeToDrawer =
             new Dictionary<System.Type, System.Action<Rect, UnityEditor.SerializedProperty, GUIContent>>()
             {
-                {
-                    typeof(QuaternionVariable),
-                    (rect, valueProp, con) => {valueProp.quaternionValue = UnityEngine.Quaternion.Euler(UnityEditor.EditorGUI.Vector3Field(rect, con, valueProp.quaternionValue.eulerAngles)); }
-                },
-                {
-                    typeof(Vector4Variable),
-                    (rect, valueProp, con) => {valueProp.vector4Value = UnityEditor.EditorGUI.Vector4Field(rect, con, valueProp.vector4Value); }
-                },
-                {
-                    typeof(Matrix4x4Variable),
-                    (rect, valueProp, con) => {UnityEditor.EditorGUI.PropertyField(rect, valueProp, con, true); }
-                },
             };
 
         /// <summary>

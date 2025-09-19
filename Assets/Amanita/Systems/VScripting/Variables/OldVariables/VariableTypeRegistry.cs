@@ -42,8 +42,6 @@ namespace Amanita.VScripting
 
             if (alreadyRegistered && sameActions)
             {
-                logMessage = $"Already registered variable type {varType.Name} under the actions passed.";
-                Debug.LogWarning(logMessage);
                 return;
             }
 
@@ -51,12 +49,10 @@ namespace Amanita.VScripting
             if (isLegacy)
             {
                 _legacyTypes.Add(varType);
-                Debug.Log($"Registered legacy var type: {varType}");
             }
             else
             {
                 _muscariableTypes.Add(varType);
-                Debug.Log($"Registered muscari var type: {varType}");
             }
 
             VariableInfoAttribute att = varType.GetCustomAttribute<VariableInfoAttribute>();
