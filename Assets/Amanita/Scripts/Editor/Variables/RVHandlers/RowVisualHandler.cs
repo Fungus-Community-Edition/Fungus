@@ -140,7 +140,7 @@ namespace Amanita.VScripting.EditorUtils
             if (_serializedVar != null && _serializedVar.targetObject is MuscariableHolder)
             {
                 // We want to bind to the muscariable it is holding
-                ApplyMuscariableBindingPathOverrides(); //
+                ApplyMuscariableBindingPathOverrides();
             }
         }
 

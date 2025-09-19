@@ -13,17 +13,25 @@ MonoBehaviour:
   m_Name: Naruto_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208473061392386
+    rid: 4382208477245997056
   references:
     version: 2
     RefIds:
-    - rid: 4382208473061392386
+    - rid: 4382208477245997056
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Naruto
         itemID: 1
-        value: Believe it!
+        value: 'dgui seagerthg
+
+          adha
+
+          dgdea
+
+          gd
+
+          asgasdh'
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   variables:
   - rid: 4382208464457039955
-  _nextVarID: 2
+  _nextVarID: 30
   references:
     version: 2
     RefIds:
@@ -48,4 +56,12 @@ MonoBehaviour:
         scope: 0
         key: Naruto
         itemID: 1
-        value: Believe it!
+        value: 'dgui seagerthg
+
+          adha
+
+          dgdea
+
+          gd
+
+          asgasdh'

@@ -128,10 +128,6 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
-                        // Keep subscriptions stable, dedupe to avoid duplicates
-                        row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                        row.RemoveButtonClicked += OnRemoveButtonClicked;
-
                         // **Resolve the correct binding target**
                         var targetObj = GetBindingTarget(currentVar);
 
@@ -193,68 +189,30 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly List<IVariable> varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
 
-        // Schedules the actual removal to the next editor update to avoid
-        // mutating ListView data source while it's mid-binding (which can cause orphan/phantom rows).
-        private void OnRemoveButtonClicked(VariableRow row)
-        {
-            return; // Leaving the destruction logic to another module. 
-            if (row?.VarToRepresent == null)
-                return;
-
-            // Remove from the in‑memory list and refresh UI
-            IVariable varToRemove = row.VarToRepresent;
-            // ^Need to fetch the var here. Trying to fetch it from the row after
-            // the RemoveAt call means the row's var is already null.
-            varsToDisplay.Remove(row.VarToRepresent);
-            Refresh();
-            ReleaseRow(row.VarToRepresent);
-
-            // Destroy the underlying Unity object (legacy var or MuscariableHolder)
-            var targetToDestroy = GetDestroyTarget(varToRemove);
-            VariableDestructionHandler.DestroyWithUndo(
-                targetToDestroy,
-                _variableSourceContext // Flowchart or VariableSourceAsset
-            );
-        }
-
-        private UnityObj GetDestroyTarget(IVariable variable)
-        {
-            if (variable is UnityObj unityObj)
-                return unityObj; // Legacy variable
-
-            // Muscariable path — find its holder in the variable source
-            return FindPersistentHolderFor(variable, _variableSourceContext);
-        }
-
-        private static MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
-        {
-            var path = AssetDatabase.GetAssetPath(context);
-            Debug.Log($"[DEBUG] Context: {context} | Asset path: '{path}'");
-
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
-            Debug.Log($"[DEBUG] Found {subAssets.Length} sub-assets at path '{path}'");
-
-            foreach (var asset in subAssets)
-            {
-                Debug.Log($"[DEBUG] Sub-asset: {asset} ({asset.GetType().Name})");
-
-                if (asset is MuscariableHolder holder)
-                {
-                    Debug.Log($"Is muscariable null: {holder.Inner == null}");
-                    Debug.Log($"[DEBUG] Holder.Inner == variable? {ReferenceEquals(holder.Inner, variable)}");
-                    if (holder.Inner == variable)
-                        return holder;
-                }
-            }
-            return null;
-        }
-
         private UnityObj GetBindingTarget(IVariable variable)
         {
             if (variable is UnityObj unityObj)
                 return unityObj; // Legacy variable
 
             return FindPersistentHolderFor(variable, _variableSourceContext);
+        }
+
+        private static MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
+        {
+            var path = AssetDatabase.GetAssetPath(context);
+
+            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+
+            foreach (var asset in subAssets)
+            {
+                if (asset is MuscariableHolder holder)
+                {
+                    if (holder.Inner == variable)
+                        return holder;
+                }
+            }
+
+            return null;
         }
 
         protected virtual bool OnCanStartDrag(CanStartDragArgs args)
@@ -547,8 +505,6 @@ namespace Amanita.VScripting.EditorUtils
 
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
-                row.RemoveButtonClicked -= OnRemoveButtonClicked;
-                row.RemoveButtonClicked += OnRemoveButtonClicked;
             }
         }
 

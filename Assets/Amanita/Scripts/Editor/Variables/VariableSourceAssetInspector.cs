@@ -1,8 +1,6 @@
 using Amanita.EditorUtils;
-using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
@@ -13,9 +11,13 @@ namespace Amanita.VScripting.EditorUtils
     {
         protected virtual void OnEnable()
         {
+            _manager = new VariableRowManager();
+            PrepGUI();
             ToggleSubs(false);
             ToggleSubs(true);
         }
+
+        protected VariableRowManager _manager;
 
         protected virtual void ToggleSubs(bool on)
         {
@@ -123,13 +125,11 @@ namespace Amanita.VScripting.EditorUtils
                     VariableListView = view,
                 };
 
-                _manager?.Dispose();
-                _manager = new VariableRowManager();
                 _manager.Init(managerInitArgs);
             }
         }
 
-        protected VariableRowManager _manager;
+        
         protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
         protected VariableRowFactory _rowFactory = new VariableRowFactory();
 
@@ -137,17 +137,21 @@ namespace Amanita.VScripting.EditorUtils
         // other asset
         public override VisualElement CreateInspectorGUI()
         {
+            return rootElement;
+        }
+
+        protected virtual void PrepGUI()
+        {
             var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
             handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
             rowPool ??= new VariableRowPool();
             uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
 
             rootElement = new VisualElement();
-            
+
             inspectorRoot = uxml.CloneTree();
             rootElement.Add(inspectorRoot);
             BuildManager(inspectorRoot);
-            return rootElement;
         }
 
         protected VisualElement rootElement;
@@ -156,6 +160,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnDisable()
         {
             _manager?.Dispose();
+            _manager = null;
             inspectorRoot = null;
             rootElement = null;
             ToggleSubs(false);

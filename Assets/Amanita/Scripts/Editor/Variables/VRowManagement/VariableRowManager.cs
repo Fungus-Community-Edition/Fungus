@@ -12,6 +12,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         public virtual void Init(VRowManagerInitArgs initArgs)
         {
+            Debug.Log($"[VRM] Init called. Hash: {GetHashCode()}");
             _isDisposed = false;
 
             bool allWentWell;
@@ -99,30 +100,38 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (on)
+            if (on && !subsActive)
             {
                 variableSource.VariableAdded += OnVariableAdded;
                 variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
+                subsActive = true;
             }
-            else
+            else if (!on)
             {
                 variableSource.VariableAdded -= OnVariableAdded;
                 variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
+                subsActive = false;
             }
         }
 
+        protected bool subsActive = false;
         #endregion
 
         #region Variable Event Handlers
 
         protected virtual void OnVarRowRemovalButtonClicked(VariableRow row)
         {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
             if (row == null || row.VarToRepresent == null)
             {
                 string logMessage = "VariableRowManager was given a null VariableRow or VariableRow with " +
@@ -148,6 +157,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
         }
+
+        protected virtual bool WeAreManaging(VariableRow row) => row.VarToRepresent.Owner == variableSource;
 
         private UnityObj GetDestroyTarget(IVariable variable)
         {

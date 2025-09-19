@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 
 namespace Amanita.EditorUtils
 {
@@ -9,8 +10,8 @@ namespace Amanita.EditorUtils
         /// </summary>
         public static void MarkDirtyAndSave(this ScriptableObject so)
         {
-            UnityEditor.EditorUtility.SetDirty(so);
-            UnityEditor.AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(so);
+            AssetDatabase.SaveAssetIfDirty(so);
         }
     }
 }

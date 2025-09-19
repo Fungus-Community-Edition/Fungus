@@ -13,6 +13,7 @@ namespace Amanita.VScripting.EditorUtils
             base.RegisterVisualElements();
             textField = RowRoot.Q<TextField>("ValueField");
             textField.isDelayed = true; // This way, the change events only fire when the user presses enter
+            textField.multiline = true;
             toRespondToFocusLoss.Add(textField);
         }
 

@@ -29,7 +29,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             // We only count the assets in a Resources folder
             IList<VariableSourceAsset> allAssets = Resources.LoadAll<VariableSourceAsset>("");
-
+            AssetDatabase.StartAssetEditing();
             foreach (var asset in allAssets)
             {
                 asset.Refresh();
@@ -57,8 +57,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 Debug.Log($"Refreshed VariableSourceAsset {asset.name}");
             }
-
-            AssetDatabase.SaveAssets();
+            AssetDatabase.StopAssetEditing();
             AssetDatabase.Refresh();
         }
     
