@@ -26,9 +26,6 @@ namespace Amanita.Tests.EditMode
     /// </summary>
     public class StringRowAndVariableSourceIntegrationTests
     {
-        private const string TestAssetPath = "Assets/TestVariableSource.asset";
-
-
         [SetUp]
         public void SetUp()
         {
@@ -138,6 +135,7 @@ namespace Amanita.Tests.EditMode
         protected VariableSourceAsset _source;
         protected readonly string initStringVarKey = "greeting";
         protected readonly string initStringVarValue = "hello";
+        private const string TestAssetPath = "Assets/TestVariableSource.asset";
 
         protected RowVisualHandlerResolver _resolver;
         protected RowVisualHandlerPool _handlerPool;
@@ -181,22 +179,12 @@ namespace Amanita.Tests.EditMode
                 _listView = null;
                 _rowFactory = null;
                 _uiList = null;
-                _count_label_safe_clear();
+                _countLabel = null;
                 _rowPool = null;
-                _handler_pool_safe_clear();
+                _handlerPool = null;
                 _resolver = null;
                 _source = null;
                 manager = null;
-            }
-
-            void _count_label_safe_clear()
-            {
-                _countLabel = null;
-            }
-
-            void _handler_pool_safe_clear()
-            {
-                _handlerPool = null;
             }
         }
 
@@ -253,6 +241,7 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void EnterOnKeyField_RenamesVariable_In_VariableSourceAsset_and_keeps_value()
         {
+            _listView.ForceMaterializeAllRowsForTests();
             var row = _listView.RowAtIndex(0);
             var handler = row.VisualHandler as StringRowVisualHandler;
             var keyField = handler.RowRoot.Q<TextField>("KeyInput");
@@ -260,24 +249,23 @@ namespace Amanita.Tests.EditMode
             var original = _source.GetVariable("greeting") as StringMuscariable;
 
             // Observer-style commit callback — copy UI values into the serialized object then apply.
-            System.Action<object> commitCallback = null;
-            commitCallback = (_) =>
+            void ApplyChangesToVar(object _)
             {
-                var so = handler.SerializedVar;
-                if (so == null) return;
+                var serializedObj = handler.SerializedVar;
+                if (serializedObj == null) return;
 
-                var keyProp = so.FindProperty("muscariable.key");
+                var keyProp = serializedObj.FindProperty("muscariable.key");
                 if (keyProp != null)
                     keyProp.stringValue = keyField?.value;
 
-                var valProp = so.FindProperty("muscariable.value");
+                var valProp = serializedObj.FindProperty("muscariable.value");
                 if (valProp != null)
                     valProp.stringValue = valueField?.value;
 
-                so.ApplyModifiedPropertiesWithoutUndo();
-            };
+                serializedObj.ApplyModifiedPropertiesWithoutUndo();
+            }
 
-            AmanitaEditorSignals.ControlValueChanged += commitCallback;
+            AmanitaEditorSignals.ControlValueChanged += ApplyChangesToVar;
             try
             {
                 // Change key and value via UI fields
@@ -300,7 +288,7 @@ namespace Amanita.Tests.EditMode
             }
             finally
             {
-                AmanitaEditorSignals.ControlValueChanged -= commitCallback;
+                AmanitaEditorSignals.ControlValueChanged -= ApplyChangesToVar;
             }
         }
 

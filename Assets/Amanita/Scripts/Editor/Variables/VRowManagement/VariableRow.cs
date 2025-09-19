@@ -124,13 +124,6 @@ namespace Amanita.VScripting.EditorUtils
 
                     _serializedVar = new SerializedObject(unityObj);
                 }
-                else
-                {
-                    // MuscariableHolder-creation moved to VariableSourceAsset.AddVariable
-                    //var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
-                    //holder.Init(_currentVariable);
-                    //_serializedVar = new SerializedObject(holder);
-                }
 
                 _serializedVar?.Update();
             }
@@ -161,6 +154,8 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     VisualHandler.Variable = value;
                 }
+
+                UpdateSerializedVar();
             }
         }
 

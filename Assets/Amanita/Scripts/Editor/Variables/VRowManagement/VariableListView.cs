@@ -201,15 +201,15 @@ namespace Amanita.VScripting.EditorUtils
         {
             var path = AssetDatabase.GetAssetPath(context);
 
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            IList<VariableSourceAsset> sources = Resources.LoadAll<VariableSourceAsset>("");
+            IList<MuscariableHolder> holders = AssetDatabase.LoadAllAssetsAtPath(path)
+                .OfType<MuscariableHolder>()
+                .ToList();
 
-            foreach (var asset in subAssets)
+            foreach (var elem in holders)
             {
-                if (asset is MuscariableHolder holder)
-                {
-                    if (holder.Inner == variable)
-                        return holder;
-                }
+                if (elem.Inner == variable)
+                    return elem;
             }
 
             return null;
@@ -505,6 +505,15 @@ namespace Amanita.VScripting.EditorUtils
 
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
+
+                var targetObj = GetBindingTarget(elem);
+
+                // **Inject the SerializedObject into the already-initialized row**
+                if (targetObj != null)
+                {
+                    var so = new SerializedObject(targetObj);
+                    row.VisualHandler.SerializedVar = so;
+                }
             }
         }
 

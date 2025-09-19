@@ -1,7 +1,7 @@
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Amanita.Tests.EditMode
@@ -9,22 +9,40 @@ namespace Amanita.Tests.EditMode
     [TestFixture]
     public class UniqueKeyGeneratorTests
     {
-        VariableSourceAsset src;
-
         [SetUp]
         public void SetUp()
         {
-            // fresh VariableSource per test
-            src = ScriptableObject.CreateInstance<VariableSourceAsset>();
+            AssetDatabase.DeleteAsset(TestAssetPath);
+            PrepSourceAsset();
+            void PrepSourceAsset()
+            {
+                // We want to make it an actual asset file so that it handles MuscariableHolders 
+                // like it should in production.
+                _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                AssetDatabase.CreateAsset(_source, TestAssetPath);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+
+                // We want to give the UI something to render right away, hence this initial var
+                var stringVar = _source.AddNewVariableOfContentType<string>(initStringVarKey);
+                stringVar.Value = initStringVarValue;
+            }
         }
+
+        VariableSourceAsset _source;
+        private const string TestAssetPath = "Assets/TestVariableSource.asset";
+        protected readonly string initStringVarKey = "greeting";
+        protected readonly string initStringVarValue = "hello";
 
         [TearDown]
         public void TearDown()
         {
+            AssetDatabase.DeleteAsset(TestAssetPath);
+
             // Destroy the ScriptableObject instance we created to avoid leaks in the editor tests
-            if (Application.isEditor && src != null)
+            if (Application.isEditor && _source != null)
             {
-                Object.DestroyImmediate(src);
+                Object.DestroyImmediate(_source);
             }
         }
 
@@ -69,15 +87,15 @@ namespace Amanita.Tests.EditMode
         public void AppendsNumericSuffix_ToAvoidCollisions_IncreasingUntilUnique()
         {
             // Arrange: populate source with "score", "score1", "score2"
-            src.AddVariable(new IntMuscariable { Key = "score" });
-            src.AddVariable(new FloatMuscariable { Key = "score1" });
-            src.AddVariable(new DoubleMuscariable { Key = "score2" });
+            _source.AddVariable(new IntMuscariable { Key = "score" });
+            _source.AddVariable(new FloatMuscariable { Key = "score1" });
+            _source.AddVariable(new DoubleMuscariable { Key = "score2" });
 
             // New variable wants "score"
             var newVar = new IntMuscariable { Key = "score" };
 
             // Take the current variables from the source as a List<Muscariable>
-            IList<Muscariable> varsFetched = src.GetVarsByType<Muscariable>();
+            IList<Muscariable> varsFetched = _source.GetVarsByType<Muscariable>();
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, varsFetched, newVar);
 
@@ -88,10 +106,10 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void Collision_IsCaseInsensitive()
         {
-            src.AddVariable(new IntMuscariable { Key = "SCORE" });
+            _source.AddVariable(new IntMuscariable { Key = "SCORE" });
 
             var newVar = new IntMuscariable { Key = "score" };
-            var group = new List<Muscariable>(src.GetVarsByType(typeof(Muscariable)));
+            var group = new List<Muscariable>(_source.GetVarsByType(typeof(Muscariable)));
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, group, newVar);
 
@@ -105,10 +123,10 @@ namespace Amanita.Tests.EditMode
         {
             // Add variable and then ask for uniqueness while ignoring that same variable
             var existing = new IntMuscariable { Key = "keepMe" };
-            src.AddVariable(existing);
+            _source.AddVariable(existing);
 
             // When we ignore the existing variable, requesting "keepMe" should be allowed
-            var vars = src.GetVarsByType<Muscariable>();
+            var vars = _source.GetVarsByType<Muscariable>();
             string result = UniqueKeyGenerator.GetUniqueKeyFor("keepMe", vars, existing);
 
             Assert.AreEqual("keepMe", result);

@@ -139,8 +139,7 @@ namespace Amanita.VScripting
 
         public virtual void RemoveVariable(IVariable variable)
         {
-            Muscariable muscari = variable as Muscariable;
-            if (muscari == null)
+            if (variable is not Muscariable muscari)
             {
                 string logMessage = $"Cannot remove {variable} (a non-Muscariable) from a VariableSource asset; " +
                     $"it can't hold that in the first place.";

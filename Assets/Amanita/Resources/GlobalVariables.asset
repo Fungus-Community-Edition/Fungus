@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Naruto_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208477245997056
+    rid: 4382208479513280649
   references:
     version: 2
     RefIds:
-    - rid: 4382208477245997056
+    - rid: 4382208479513280649
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0

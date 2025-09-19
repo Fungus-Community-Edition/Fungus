@@ -63,7 +63,7 @@ namespace Amanita.VScripting.EditorUtils
     
         private static void OnRightBeforeAnyAssetAddVariable(Muscariable muscari)
         {
-            RegisterHolderUnderIt();//
+            RegisterHolderUnderIt();
             void RegisterHolderUnderIt()
             {
                 VariableSourceAsset source = muscari.Owner as VariableSourceAsset;
