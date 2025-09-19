@@ -21,11 +21,15 @@ namespace Amanita.VScripting.EditorUtils
             _countDisplay = initArgs.CountLabel;
             _rowFactory = initArgs.RowFactory;
             _variableSourceContext = initArgs.VariableSource as UnityObj;
-            SetVariables(initArgs.VariableSource.Variables);
+            
             if (_variableSourceContext == null)
             {
                 Debug.LogWarning($"VariableListView was not given a valid variable source context" +
                     $" (Flowchart or VariableSourceAsset). Some operations may not work as intended.");
+            }
+            else
+            {
+                SetVariables(initArgs.VariableSource.Variables);
             }
             if (_listDisplay != null)
                 InitListViewStructure();

@@ -69,7 +69,7 @@ namespace Amanita.VScripting
         // So that we can avoid what (at least look like) duplicates
         protected virtual void MakeUniqueForThisSource(Muscariable var)
         {
-            var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables, var);
+            var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
             var.ItemID = UniqueIDGenerator.GetUniqueIDFor(var, toPass, _nextVarID);
             var.Owner = this;

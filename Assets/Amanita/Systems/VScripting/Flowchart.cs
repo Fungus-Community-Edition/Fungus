@@ -879,9 +879,9 @@ namespace Amanita.VScripting
                 return false;
             }
 
-            if (((Block)block).gameObject != gameObject)
+            if (block.gameObject != gameObject)
             {
-                Debug.LogError("Block must belong to the same gameobject as this Flowchart");
+                Debug.LogError("Block must belong to the same gameObject as this Flowchart");
                 return false;                
             }
 
@@ -927,58 +927,6 @@ namespace Amanita.VScripting
                 eventHandler.OnSendFungusMessage(messageName);
             }
         }
-
-        /// <summary>
-        /// Returns a new variable key that is guaranteed not to clash with any existing variable in the list.
-        /// </summary>
-        public virtual string GetUniqueVariableKey(string originalKey, IVariable ignoreVariable = null)
-        {
-            string baseKey = originalKey;
-
-            // Only letters and digits allowed
-            char[] arr = baseKey.Where(c => (char.IsLetterOrDigit(c) || c == '_')).ToArray(); 
-            baseKey = new string(arr);
-
-            // No leading digits allowed
-            baseKey = baseKey.TrimStart('0','1','2','3','4','5','6','7','8','9');
-
-            // No empty keys allowed
-            if (baseKey.Length == 0)
-            {
-                baseKey = "Var";
-            }
-
-            List<IHasKey> vars = new List<IHasKey>(); // We want to consider the old and new var types
-
-            vars.AddRange(legacyVariables);
-            vars.AddRange(muscariables);
-            string resultKey = baseKey;
-            int suffix = 0;
-            while (true)
-            {
-                bool collision = false;
-                for (int i = 0; i < vars.Count; i++)
-                {
-                    var variable = vars[i];
-                    if (variable == null || (variable as IVariable) == ignoreVariable || variable.Key == null)
-                    {
-                        continue;
-                    }
-                    if (variable.Key.Equals(resultKey, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        collision = true;
-                        suffix++;
-                        resultKey = baseKey + suffix;
-                    }
-                }
-
-                if (!collision)
-                {
-                    return resultKey;
-                }
-            }
-        }
-
 
         /// <summary>
         /// Returns a new Block key that is guaranteed not to clash with any existing Block in the Flowchart.
@@ -1562,7 +1510,7 @@ namespace Amanita.VScripting
             int newId = nextMuscariableID;
             toAdd.ItemID = newId;
             toAdd.ParentFlowchart = this;
-            toAdd.Key = GetUniqueVariableKey(toAdd.Key);
+            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
             muscariables.Add(toAdd);
 
             nextMuscariableID++;
@@ -1744,7 +1692,7 @@ namespace Amanita.VScripting
             where TVarType : VariableBase<TValHeld>
         {
             TVarType newVar = gameObject.AddComponent<TVarType>();
-            newVar.Key = GetUniqueVariableKey(key, newVar);
+            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
             newVar.Scope = scope;
             newVar.gameObject.hideFlags = HideFlags.HideInInspector;
@@ -1764,6 +1712,8 @@ namespace Amanita.VScripting
                 return;
             }
 
+            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables);
+
             if (toAdd is Variable legacyVar)
             {
                 legacyVariables.Add(legacyVar);
@@ -1773,7 +1723,6 @@ namespace Amanita.VScripting
                 muscariables.Add(muscaVar);
             }
 
-            toAdd.Key = GetUniqueVariableKey(toAdd.Key, toAdd);
             VariableAdded(toAdd);
         }
 

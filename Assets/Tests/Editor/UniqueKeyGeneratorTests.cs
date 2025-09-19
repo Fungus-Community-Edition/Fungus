@@ -1,6 +1,7 @@
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ namespace Amanita.Tests.EditMode
             var muscari = new IntMuscariable { Key = "origKey" };
             // suggestedKey contains digits, spaces and punctuation
             string suggested = "123!@ my-Var";
-            var group = new List<Muscariable>(); // empty existing set
+            var group = new List<IVariable>(); // empty existing set
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, group, muscari);
 
@@ -64,7 +65,7 @@ namespace Amanita.Tests.EditMode
         {
             var muscari = new FloatMuscariable { Key = null };
             string suggested = "@@@123"; // after stripping non-alnum and trimming leading digits -> empty
-            var group = new List<Muscariable>();
+            var group = new List<IVariable>();
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, group, muscari);
 
@@ -75,7 +76,7 @@ namespace Amanita.Tests.EditMode
         public void UsesVariableKeyWhenSuggestedIsNull()
         {
             var muscari = new BoolMuscariable { Key = "MyBool" };
-            var group = new List<Muscariable>();
+            var group = new List<IVariable>();
 
             // pass suggestedKey as the variable's key (function doesn't accept null suggested; keep usage consistent)
             string result = UniqueKeyGenerator.GetUniqueKeyFor(muscari.Key, group, muscari);
@@ -95,7 +96,7 @@ namespace Amanita.Tests.EditMode
             var newVar = new IntMuscariable { Key = "score" };
 
             // Take the current variables from the source as a List<Muscariable>
-            IList<Muscariable> varsFetched = _source.GetVarsByType<Muscariable>();
+            IList<IVariable> varsFetched = _source.GetVarsByType<Muscariable>().Cast<IVariable>().ToList();
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, varsFetched, newVar);
 
@@ -109,7 +110,7 @@ namespace Amanita.Tests.EditMode
             _source.AddVariable(new IntMuscariable { Key = "SCORE" });
 
             var newVar = new IntMuscariable { Key = "score" };
-            var group = new List<Muscariable>(_source.GetVarsByType(typeof(Muscariable)));
+            var group = new List<IVariable>(_source.GetVarsByType(typeof(Muscariable)));
 
             string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, group, newVar);
 
@@ -126,7 +127,7 @@ namespace Amanita.Tests.EditMode
             _source.AddVariable(existing);
 
             // When we ignore the existing variable, requesting "keepMe" should be allowed
-            var vars = _source.GetVarsByType<Muscariable>();
+            var vars = _source.GetVarsByType<Muscariable>().Cast<IVariable>().ToList();
             string result = UniqueKeyGenerator.GetUniqueKeyFor("keepMe", vars, existing);
 
             Assert.AreEqual("keepMe", result);
@@ -136,7 +137,7 @@ namespace Amanita.Tests.EditMode
         public void HandlesNullEntriesAndNullKeysInGroup()
         {
             // Build a list that contains null entries and a variable with null Key
-            var list = new List<Muscariable>
+            IList<IVariable> list = new List<IVariable>
             {
                 null,
                 new IntMuscariable { Key = null }
@@ -151,7 +152,7 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void PreservesUnderscores_InSuggestedKey()
         {
-            var list = new List<Muscariable>();
+            var list = new List<IVariable>();
             string suggested = "__my_var__123";
             string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, list, null);
 
@@ -162,7 +163,7 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void ReturnsSuggestedWhenItIsUnique()
         {
-            var list = new List<Muscariable>();
+            var list = new List<IVariable>();
             string suggested = "completelyUnique";
             string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, list, null);
 

@@ -6,7 +6,7 @@ namespace Amanita.VScripting
 {
     public static class UniqueKeyGenerator
     {
-        public static string GetUniqueKeyFor(string suggestedKey, IList<Muscariable> varGroup, IVariable ignoreVariable = null)
+        public static string GetUniqueKeyFor(string suggestedKey, IList<IVariable> varGroup, IVariable ignoreVariable = null)
         {
             string baseKey = suggestedKey;
 

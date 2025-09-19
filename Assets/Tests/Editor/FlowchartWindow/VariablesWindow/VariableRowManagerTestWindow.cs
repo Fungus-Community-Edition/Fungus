@@ -426,7 +426,7 @@ namespace Amanita.VScripting.EditorUtils
                     var desired = $"var_{var.GetType().Name}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                     try
                     {
-                        var.Key = _flowchart.GetUniqueVariableKey(desired, var);//
+                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, (IList<IVariable>)_flowchart.Variables);
                     }
                     catch
                     {
