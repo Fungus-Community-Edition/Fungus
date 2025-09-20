@@ -1,12 +1,12 @@
-﻿
+﻿using DoTweenita;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tweening.BuiltinCompat
+namespace BuiltinCompat
 {
-    public class AudioSourceCompatTests : DefaultAdapterTests
+    public class AudioSourceCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<AudioSource, float> ShiftVolumeCase = new TweenCase<AudioSource, float>
         {
@@ -21,7 +21,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftVolume01Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftVolume01To",
-            CreateTween = (adapter, src) => adapter.FadeVolume01(src, 0.5f, Duration),
+            CreateTween = (adapter, src) => adapter.FadeVolume01(src, 0.5f, Duration), 
             GetValue = src => src.volume,
             SetValue = (src, val) => src.volume = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -41,7 +41,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<AudioSource, float> ShiftPitchN33Case = new TweenCase<AudioSource, float>
         {
             Name = "ShiftPitchN33To",
-            CreateTween = (adapter, src) => adapter.FadePitchN33(src, -1.50f, Duration),
+            CreateTween = (adapter, src) => adapter.FadePitchN33(src, -1.50f, Duration), 
             GetValue = src => src.pitch,
             SetValue = (src, val) => src.pitch = val,
             CreateComponent = go => go.AddComponent<AudioSource>(),
@@ -54,8 +54,8 @@ namespace Amanita.Tweening.BuiltinCompat
         {
             var comp = tCase.CreateComponent(_testGo);
             var handle = tCase.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DefaultTweenHandle>(handle);
-            Assert.IsNotNull(((DefaultTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<DOTweenHandle>(handle);
+            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
         }
 
         private static readonly object[] AudioCases =
@@ -69,8 +69,8 @@ namespace Amanita.Tweening.BuiltinCompat
         [TestCaseSource(nameof(AudioCases))]
         public void Kill_DoesNotThrow(TweenCase<AudioSource, float> tCase)
         {
-            AudioSource audSource = tCase.CreateComponent(_testGo);
-            var handle = tCase.CreateTween(_adapter, audSource);
+            var comp = tCase.CreateComponent(_testGo);
+            var handle = tCase.CreateTween(_adapter, comp);
             Assert.DoesNotThrow(() => handle.Kill());
             Assert.IsFalse(handle.IsPlaying);
         }
@@ -80,14 +80,14 @@ namespace Amanita.Tweening.BuiltinCompat
         public IEnumerator Tween_CompletesWithExpectedValue(
             [ValueSource(nameof(AudioCases))] TweenCase<AudioSource, float> tCase)
         {
-            AudioSource audSource = tCase.CreateComponent(_testGo);
-            tCase.SetValue(audSource, 0f); // start from zero for volume/pitch
+            var comp = tCase.CreateComponent(_testGo);
+            tCase.SetValue(comp, 0f); // start from zero for volume/pitch
 
-            tCase.CreateTween(_adapter, audSource);
+            tCase.CreateTween(_adapter, comp);
 
             yield return new WaitForSeconds(Duration + 0.05f);
 
-            var actual = tCase.GetValue(audSource);
+            var actual = tCase.GetValue(comp);
             Assert.AreEqual(tCase.TargetValue, actual, Epsilon, tCase.Name);
         }
 
@@ -165,10 +165,10 @@ namespace Amanita.Tweening.BuiltinCompat
 
         private static readonly object[] Volume01EdgeCases =
         {
-        new object[] { 0f, 0f },     // 0% → 0.0
-        new object[] { 100f, 1f },   // 100% → 1.0
-        new object[] { -50f, 0f }    // negative → clamp to 0.0
-    };
+            new object[] { 0f, 0f },     // 0% → 0.0
+            new object[] { 100f, 1f },   // 100% → 1.0
+            new object[] { -50f, 0f }    // negative → clamp to 0.0
+        };
 
         [UnityTest]
         public IEnumerator ShiftPitchTo_EdgeCases(
@@ -188,9 +188,9 @@ namespace Amanita.Tweening.BuiltinCompat
 
         private static readonly object[] PitchEdgeCases =
         {
-        new object[] { 0f, 0f },     // 0% → 0.0
-        new object[] { 200f, 2f },   // 200% → 2.0
-        new object[] { 300f, 3f }    // >200% → scale above 2.0
-    };
+            new object[] { 0f, 0f },     // 0% → 0.0
+            new object[] { 200f, 2f },   // 200% → 2.0
+            new object[] { 300f, 3f }    // >200% → scale above 2.0
+        };
     }
 }

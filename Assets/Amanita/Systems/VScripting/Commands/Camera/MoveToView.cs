@@ -32,6 +32,62 @@ namespace Amanita.VScripting
             ValidateTweeners();
         }
 
+        protected virtual void ValidateTweeners()
+        {
+            SetNullsToDefaults();
+            void SetNullsToDefaults()
+            {
+                if (orthoSizeTweener == null)
+                {
+                    orthoSizeTweener = AmanitaManager.DefaultTweener;
+                }
+
+                if (posTweener == null)
+                {
+                    posTweener = AmanitaManager.DefaultTweener;
+                }
+
+                if (rotTweener == null)
+                {
+                    rotTweener = AmanitaManager.DefaultTweener;
+                    return;
+                }
+            }
+
+            CheckAssignedTweeners();
+            void CheckAssignedTweeners()
+            {
+                doOrthoSizeTween = orthoSizeTweener as ICameraTweenAdapter;
+                doPosTween = posTweener as ITransformTweenAdapter;
+                doRotTween = rotTweener as ITransformTweenAdapter;
+
+                if (doOrthoSizeTween == null)
+                {
+                    Debug.LogWarning($"Ortho size tweener passed is invalid. It does not implement " +
+                        $"ICameraTweenAdapter. Reverting to the default.");
+                    doOrthoSizeTween = AmanitaManager.DefaultTweener;
+                }
+
+                if (doPosTween == null)
+                {
+                    Debug.LogWarning($"Pos tweener passed is invalid. It does not implement " +
+                        $"ITransformTweenAdapter. Reverting to the default.");
+                    doPosTween = AmanitaManager.DefaultTweener;
+                }
+
+                if (doRotTween == null)
+                {
+                    Debug.LogWarning($"Rot tweener passed is invalid. It does not implement " +
+                        $"ITransformTweenAdapter. Reverting to the default.");
+                    doRotTween = AmanitaManager.DefaultTweener;
+                }
+            }
+
+        }
+
+        protected ICameraTweenAdapter doOrthoSizeTween;
+        protected ITransformTweenAdapter doPosTween, doRotTween;
+
         protected virtual void AcquireCamera()
         {
             if (targetCamera != null)
@@ -60,8 +116,7 @@ namespace Amanita.VScripting
         public override void OnEnter()
         {
             AcquireCamera();
-            if (targetCamera == null ||
-                targetView == null)
+            if (targetCamera == null || targetView == null)
             {
                 Continue();
                 return;
@@ -121,60 +176,6 @@ namespace Amanita.VScripting
             ValidateTweeners();
         }
 
-        protected virtual void ValidateTweeners()
-        {
-            SetNullsToDefaults();
-            void SetNullsToDefaults()
-            {
-                if (orthoSizeTweener == null)
-                {
-                    orthoSizeTweener = AmanitaManager.DefaultTweener;
-                }
-
-                if (posTweener == null)
-                {
-                    posTweener = AmanitaManager.DefaultTweener;
-                }
-
-                if (rotTweener == null)
-                {
-                    rotTweener = AmanitaManager.DefaultTweener;
-                    return;
-                }
-            }
-
-            CheckAssignedTweeners();
-            void CheckAssignedTweeners()
-            { 
-                doOrthoSizeTween = orthoSizeTweener as ICameraTweenAdapter;
-                doPosTween = posTweener as ITransformTweenAdapter;
-                doRotTween = rotTweener as ITransformTweenAdapter;
-
-                if (doOrthoSizeTween == null)
-                {
-                    Debug.LogWarning($"Ortho size tweener passed is invalid. It does not implement " +
-                        $"ICameraTweenAdapter. Reverting to the default.");
-                    doOrthoSizeTween = AmanitaManager.DefaultTweener;
-                }
-
-                if (doPosTween == null)
-                {
-                    Debug.LogWarning($"Pos tweener passed is invalid. It does not implement " +
-                        $"ITransformTweenAdapter. Reverting to the default.");
-                    doPosTween = AmanitaManager.DefaultTweener;
-                }
-
-                if (doRotTween == null)
-                {
-                    Debug.LogWarning($"Rot tweener passed is invalid. It does not implement " +
-                        $"ITransformTweenAdapter. Reverting to the default.");
-                    doRotTween = AmanitaManager.DefaultTweener;
-                }
-            }
         
-        }
-
-        protected ICameraTweenAdapter doOrthoSizeTween;
-        protected ITransformTweenAdapter doPosTween, doRotTween;
     }
 }

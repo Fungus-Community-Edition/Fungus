@@ -112,11 +112,13 @@ namespace Amanita
             NarrativeLog = GetComponentInChildren<NarrativeLog>();
             AudioSystem = GetComponentInChildren<AudioSystem>();
             SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
+            TweenManager = GetComponentInChildren<TweenManager>();
 
             InitAll();
             void InitAll()
             {
                 // The order here matters
+                TweenManager.Init();
                 NarrativeLog.Init();
                 MainAudioMixer.Init();
                 AudioSystem.Init();
@@ -161,6 +163,7 @@ namespace Amanita
 
         private SaveSystemInstaller SaveSysInstaller { get; set; }
 
+        private TweenManager TweenManager { get; set; }
         #region Public methods
 
         /// <summary>
