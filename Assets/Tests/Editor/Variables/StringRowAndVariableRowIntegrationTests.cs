@@ -72,6 +72,7 @@ namespace Amanita.Tests.EditMode
                     CountLabel = _countLabel,
                     RowFactory = _rowFactory,
                     VariableSource = _source,
+                    AssetResolver = new DefaultEditorAssetResolver(),
                 });
 
                 InitManager();

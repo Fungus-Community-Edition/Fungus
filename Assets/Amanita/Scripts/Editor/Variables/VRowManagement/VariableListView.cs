@@ -1,4 +1,5 @@
-﻿using Collections;
+﻿using Amanita.EditorUtils;
+using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).
+    /// Handles making sure that the VariableRows are shown correctly.
     /// </summary>
     public partial class VariableListView : IVariableListView
     {
@@ -21,7 +23,10 @@ namespace Amanita.VScripting.EditorUtils
             _countDisplay = initArgs.CountLabel;
             _rowFactory = initArgs.RowFactory;
             _variableSourceContext = initArgs.VariableSource as UnityObj;
-            
+
+            // Resolver: prefer explicit injection, fallback to the global maintenance resolver.
+            _assetResolver = initArgs.AssetResolver ?? VariableSourceAssetMaintenance.AssetResolver;
+
             if (_variableSourceContext == null)
             {
                 Debug.LogWarning($"VariableListView was not given a valid variable source context" +
@@ -42,6 +47,9 @@ namespace Amanita.VScripting.EditorUtils
         protected Flowchart _flowchart;
         protected int _flowchartInstanceID;
         protected UnityObj _variableSourceContext;
+
+        // New: resolver used for asset lookups so editor code can be tested/mocked.
+        protected IEditorAssetResolver _assetResolver;
 
         public virtual void SetFlowchart(Flowchart flowchart)
         {
@@ -193,7 +201,7 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly List<IVariable> varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
 
-        private UnityObj GetBindingTarget(IVariable variable)
+        protected virtual UnityObj GetBindingTarget(IVariable variable)
         {
             if (variable is UnityObj unityObj)
                 return unityObj; // Legacy variable
@@ -201,19 +209,32 @@ namespace Amanita.VScripting.EditorUtils
             return FindPersistentHolderFor(variable, _variableSourceContext);
         }
 
-        private static MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
+        protected virtual MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
         {
-            var path = AssetDatabase.GetAssetPath(context);
+            if (context == null || _assetResolver == null) return null;
 
-            IList<VariableSourceAsset> sources = Resources.LoadAll<VariableSourceAsset>("");
-            IList<MuscariableHolder> holders = AssetDatabase.LoadAllAssetsAtPath(path)
+            var path = _assetResolver.GetAssetPath(context);
+
+            // Use resolver to enumerate holders (testable / mockable)
+            IList<MuscariableHolder> holders = _assetResolver.LoadAllAssetsAtPath<MuscariableHolder>(path)
                 .OfType<MuscariableHolder>()
                 .ToList();
 
             foreach (var elem in holders)
             {
-                if (elem.Inner == variable)
-                    return elem;
+                // Some holders may expose Inner property/field; prefer property check if available
+                try
+                {
+                    if (elem.Inner == variable)
+                        return elem;
+                }
+                catch
+                {
+                    // be defensive: if holder implementation differs, fall back to reference equality on available fields
+                    var inner = elem.Inner;
+                    if (inner == variable)
+                        return elem;
+                }
             }
 
             return null;
@@ -545,5 +566,6 @@ namespace Amanita.VScripting.EditorUtils
         public ListView List { get; set; }
         public UITKLabel CountLabel { get; set; }
         public IVariableSource VariableSource { get; set; }
+        public IEditorAssetResolver AssetResolver { get; set; } // optional; testing override
     }
 }

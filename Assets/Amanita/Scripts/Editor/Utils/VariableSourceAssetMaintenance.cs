@@ -1,8 +1,8 @@
-using Amanita.EditorUtils;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -14,6 +14,9 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public static class VariableSourceAssetMaintenance
     {
+        // Allows tests to swap out filesystem/asset behavior.
+        internal static IEditorAssetResolver AssetResolver { get; set; } = new DefaultEditorAssetResolver();
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
         public static void Init()
@@ -28,23 +31,24 @@ namespace Amanita.VScripting.EditorUtils
         private static void RefreshVariableSourceAssets()
         {
             // We only count the assets in a Resources folder
-            IList<VariableSourceAsset> allAssets = Resources.LoadAll<VariableSourceAsset>("");
-            AssetDatabase.StartAssetEditing();
+            IList<VariableSourceAsset> allAssets = AssetResolver.LoadAllFromResources<VariableSourceAsset>("").ToList();
+            AssetResolver.StartAssetEditing();
             foreach (var asset in allAssets)
             {
                 asset.Refresh();
                 FixMuscariableHolders();
                 void FixMuscariableHolders()
                 {
+
                     // We need to access the MuscariableHolders too, to make sure they get updated
-                    var holders = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(asset)).OfType<MuscariableHolder>();
+                    var path = AssetResolver.GetAssetPath(asset);
+                    var holders = AssetResolver.LoadAllAssetsAtPath<MuscariableHolder>(path);
                     foreach (var toFix in holders)
                     {
                         Muscariable realVar = asset.Variables.Where((varWeHave) => varWeHave.ItemID == toFix.ItemID)
-                            .FirstOrDefault() as Muscariable; //
+                            .FirstOrDefault() as Muscariable;
                         if (realVar == null)
                         {
-                            // There is a serious problem. Best log it.
                             Debug.LogWarning($"VariableSourceAsset.Refresh: Found a MuscariableHolder (ItemID {toFix.ItemID}) " +
                                 $"that doesn't correspond to any Muscariable in the VariableSourceAsset ({asset.name}).");
                             continue;
@@ -57,10 +61,10 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 Debug.Log($"Refreshed VariableSourceAsset {asset.name}");
             }
-            AssetDatabase.StopAssetEditing();
-            AssetDatabase.Refresh();
+            AssetResolver.StopAssetEditing();
+            AssetResolver.RefreshAssets();
         }
-    
+
         private static void OnRightBeforeAnyAssetAddVariable(Muscariable muscari)
         {
             RegisterHolderUnderIt();
@@ -69,8 +73,7 @@ namespace Amanita.VScripting.EditorUtils
                 VariableSourceAsset source = muscari.Owner as VariableSourceAsset;
                 var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
                 holder.Init(muscari);
-                AssetDatabase.AddObjectToAsset(holder, source);
-                //AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(source));
+                AssetResolver.AddObjectToAsset(holder, source);
                 Debug.Log($"Registered new MuscariableHolder inside VariableSourceAsset {source.name}" +
                     $" (ItemID {muscari.ItemID}, Key {muscari.Key})");
             }

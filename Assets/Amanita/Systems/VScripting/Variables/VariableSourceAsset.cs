@@ -180,6 +180,16 @@ namespace Amanita.VScripting
             return result;
         }
 
+#if UNITY_EDITOR
+        public virtual MuscariableHolder GetHolderFor(IVariable variable)
+        {
+            string pathToThis = UnityEditor.AssetDatabase.GetAssetPath(this);
+            IList<MuscariableHolder> holders = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(pathToThis)
+                .OfType<MuscariableHolder>().ToList();
+            return holders.FirstOrDefault(holder => holder.ItemID == variable.ItemID && holder.ContentType.Equals(variable.ContentType));
+        }
+#endif
+
     }
 
     public interface IVariableSource

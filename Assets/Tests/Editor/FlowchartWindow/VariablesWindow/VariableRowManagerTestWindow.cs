@@ -5,11 +5,11 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObject = UnityEngine.Object;
-
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
 
 // Optional: avoid pulling conflicting types into the global scope
+using Amanita.EditorUtils;
 using Amanita.Tests.EditMode;
 using Collections;
 // using Amanita.VScripting.EditorUtils; // if you keep helpers here
@@ -258,6 +258,7 @@ namespace Amanita.VScripting.EditorUtils
                 CountLabel = countLabel,
                 RowFactory = varRowFactory,
                 VariableSource = _flowchart,
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
 
             var view = new VariableListView(listViewArgs);
