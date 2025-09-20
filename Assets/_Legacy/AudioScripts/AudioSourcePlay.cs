@@ -92,9 +92,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return audioSource.audioSourceRef == variable ||
-                audioClip.audioClipRef == variable ||
-                delay.floatRef == variable ||
+            return ReferenceEquals(audioSource.VarRef, variable) ||
+                ReferenceEquals(audioClip.audioClipRef, variable) ||
+                ReferenceEquals(delay.floatRef, variable) ||
                 base.HasReference(variable);
         }
     }
