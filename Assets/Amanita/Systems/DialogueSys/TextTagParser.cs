@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Amanita
+namespace Amanita.DialogueSys
 {
     /// <summary>
     /// Parses a string for special Fungus text tags.

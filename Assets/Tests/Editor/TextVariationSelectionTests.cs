@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Amanita.Tests
+namespace DialogueSys
 {
     [TestFixture]
     public class TextVariationSelectionTests

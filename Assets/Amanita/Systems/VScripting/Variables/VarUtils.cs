@@ -48,8 +48,6 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// If the arg is a legacy one, this will create and return a Muscariable version of it.
-        /// If conversion fails, returns null.
         /// If the arg is already a Muscariable, it (unaltered) will be the return value. 
         /// </summary>
         public static Muscariable ToMuscariable(this IVariable var)
@@ -61,12 +59,6 @@ namespace Amanita.VScripting
             else
             {
                 muscari = VariableFactory.Create(var.ContentType, var);
-                bool conversionSuccess = muscari != null;
-                if (!conversionSuccess)
-                {
-                    Debug.LogWarning($"Could not convert legacy {var.ContentType.Name} Variable {var.Key} " +
-                        $"to a Muscariable.");
-                }
             }
 
             return muscari;

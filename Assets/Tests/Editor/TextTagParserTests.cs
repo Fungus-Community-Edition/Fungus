@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-
-#if UNITY_5_3_OR_NEWER
-
 using NUnit.Framework;
+using Amanita.DialogueSys;
 
-namespace Amanita.Tests
+namespace DialogueSys
 {
     [TestFixture]
     public class TextTagParserTests
@@ -213,6 +211,4 @@ namespace Amanita.Tests
             Assert.That(tokens.Count == 8);
         }
     }
-
-#endif
 }

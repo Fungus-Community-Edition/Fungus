@@ -110,6 +110,7 @@ namespace Amanita.VScripting.EditorUtils
                     CountLabel = count,
                     RowFactory = _rowFactory,
                     VariableSource = varSource,
+                    AssetResolver = new DefaultEditorAssetResolver(),
                 };
                 view = new VariableListView(listViewArgs);
             }

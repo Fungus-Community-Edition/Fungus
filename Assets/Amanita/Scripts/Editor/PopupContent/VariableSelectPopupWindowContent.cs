@@ -174,8 +174,7 @@ namespace Amanita.VScripting.EditorUtils
         /// <param name="onVarAdded">Optional callback after addition (currently unused).</param>
         public static void DoAddVariable(Rect position,
                                          string currentHandlerName,
-                                         Flowchart toAddVarTo,
-                                         System.Action onVarAdded = null)
+                                         Flowchart toAddVarTo)
         {
             curFlowchart = toAddVarTo;
             curSource = toAddVarTo;

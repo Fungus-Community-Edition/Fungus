@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace Amanita.Tests
+namespace Commands
 {
     [TestFixture]
     /// <summary>

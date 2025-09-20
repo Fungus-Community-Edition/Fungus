@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.Tests.EditMode
+namespace General
 {
     [TestFixture]
     public class UniqueKeyGeneratorTests

@@ -13,7 +13,7 @@ using BaseObj = System.Object;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Integration tests exercising StringRowVisualHandler together with VariableSourceAsset,
@@ -72,6 +72,7 @@ namespace Amanita.Tests.EditMode
                     CountLabel = _countLabel,
                     RowFactory = _rowFactory,
                     VariableSource = _source,
+                    AssetResolver = new DefaultEditorAssetResolver(),
                 });
 
                 InitManager();
