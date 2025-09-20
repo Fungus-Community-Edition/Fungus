@@ -12,7 +12,6 @@ namespace Amanita.VScripting.EditorUtils
     {
         public virtual void Init(VRowManagerInitArgs initArgs)
         {
-            Debug.Log($"[VRM] Init called. Hash: {GetHashCode()}");
             _isDisposed = false;
 
             bool allWentWell;
@@ -173,18 +172,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             UnityObj context = variable.Owner as UnityObj;
             var path = AssetDatabase.GetAssetPath(context);
-            Debug.Log($"[DEBUG] Context: {context} | Asset path: '{path}'");
 
             var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
-            Debug.Log($"[DEBUG] Found {subAssets.Length} sub-assets at path '{path}'");
 
             foreach (var asset in subAssets)
             {
-                Debug.Log($"[DEBUG] Sub-asset: {asset} ({asset.GetType().Name})");
-
                 if (asset is MuscariableHolder holder)
                 {
-                    Debug.Log($"[DEBUG] Holder.Inner == variable? {ReferenceEquals(holder.Inner, variable)}");
                     if (holder.Inner == variable)
                         return holder;
                 }
