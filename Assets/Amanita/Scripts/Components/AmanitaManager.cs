@@ -2,6 +2,7 @@
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Tweening;
+using Amanita.VScripting;
 using UnityEngine;
 
 namespace Amanita
@@ -11,7 +12,7 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-
+        [SerializeField] private VariableSourceAsset globalVariables;
         public static DefaultTweenAdapter DefaultTweener
         {
             get

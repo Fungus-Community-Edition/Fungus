@@ -368,7 +368,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return _audioSource.audioSourceRef == variable || base.HasReference(variable);
+            return _audioSource.VarRef == variable || base.HasReference(variable);
         }
 
         #endregion

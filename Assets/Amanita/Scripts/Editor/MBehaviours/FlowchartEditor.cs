@@ -9,24 +9,6 @@ namespace Amanita.VScripting.EditorUtils
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 
     {
-        protected SerializedProperty descriptionProp;
-        protected SerializedProperty colorCommandsProp;
-        protected SerializedProperty hideComponentsProp;
-        protected SerializedProperty stepPauseProp;
-        protected SerializedProperty saveSelectionProp;
-        protected SerializedProperty localizationIdProp;
-        protected SerializedProperty variablesProp;
-        protected SerializedProperty showLineNumbersProp;
-        protected SerializedProperty hideCommandsProp;
-        protected SerializedProperty luaEnvironmentProp;
-        protected SerializedProperty luaBindingNameProp;
-
-        protected SerializedProperty includeInSaveProp;
-        protected SerializedProperty saveBlocksProp;
-        protected SerializedProperty saveVariablesProp;
-        protected SerializedProperty loadPriorityProp;
-
-
         protected Texture2D addTexture;
 
         public static bool FlowchartDataStale { get; set; }
@@ -36,10 +18,8 @@ namespace Amanita.VScripting.EditorUtils
             if (EraseOrphanedInstance()) // Check for an orphaned editor instance
                 return;
 
-            FetchSerializedProperties();
-
+            AmanitaManager.EnsureExists();
             addTexture = AmanitaEditorResources.AddSmall;
-
             _manager?.Dispose();
         }
 
@@ -71,6 +51,7 @@ namespace Amanita.VScripting.EditorUtils
                 List = list,
                 CountLabel = count,
                 RowFactory = _rowFactory,
+                VariableSource = flowchart,
             };
             var view = new VariableListView(listViewArgs);
 
@@ -78,7 +59,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Root = rootElem,
                 AddButton = addBtn,
-                Flowchart = flowchart,
+                VariableSource = flowchart,
                 VariableListView = view,
             });
         }
@@ -99,8 +80,6 @@ namespace Amanita.VScripting.EditorUtils
             
             VisualElement NewWay()
             {
-                // Clone the uxml
-                //string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
                 string pathToUxml = "_EditorResources/UIToolkitTemplates/FlowchartInspector";
                 var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
                 var inspectorRoot = uxml.CloneTree();
@@ -114,26 +93,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             return NewWay();
-        }
-
-        protected virtual void FetchSerializedProperties()
-        {
-            descriptionProp = serializedObject.FindProperty("description");
-            colorCommandsProp = serializedObject.FindProperty("colorCommands");
-            hideComponentsProp = serializedObject.FindProperty("hideComponents");
-            stepPauseProp = serializedObject.FindProperty("_stepPause");
-            saveSelectionProp = serializedObject.FindProperty("saveSelection");
-            localizationIdProp = serializedObject.FindProperty("localizationId");
-            variablesProp = serializedObject.FindProperty("_legacyVariables");
-            showLineNumbersProp = serializedObject.FindProperty("showLineNumbers");
-            hideCommandsProp = serializedObject.FindProperty("hideCommands");
-            luaEnvironmentProp = serializedObject.FindProperty("_luaEnvironment");
-            luaBindingNameProp = serializedObject.FindProperty("_luaBindingName");
-
-            includeInSaveProp = serializedObject.FindProperty("_includeInSaves");
-            saveBlocksProp = serializedObject.FindProperty("_saveBlocks");
-            saveVariablesProp = serializedObject.FindProperty("_saveVariables");
-            loadPriorityProp = serializedObject.FindProperty("_loadPriority");
         }
 
         /// <summary>

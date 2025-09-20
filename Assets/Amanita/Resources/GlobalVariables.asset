@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1930287489488375301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Naruto_Holder
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208483534569534
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208483534569534
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Naruto
+        itemID: 1
+        value: 'dgui seagerthg
+
+          adha
+
+          dgdea
+
+          gd
+
+          asgasdh'
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: GlobalVariables
+  m_EditorClassIdentifier: 
+  variables:
+  - rid: 4382208464457039955
+  _nextVarID: 30
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208464457039955
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Naruto
+        itemID: 1
+        value: 'dgui seagerthg
+
+          adha
+
+          dgdea
+
+          gd
+
+          asgasdh'

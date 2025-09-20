@@ -22,7 +22,7 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return audioSource.audioSourceRef == variable ||
+            return audioSource.VarRef == variable ||
                 base.HasReference(variable);
         }
     }

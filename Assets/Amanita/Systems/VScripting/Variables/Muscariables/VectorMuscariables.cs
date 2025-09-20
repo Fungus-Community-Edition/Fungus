@@ -125,7 +125,7 @@ namespace Amanita.VScripting
                 scope = src.scope,
                 key = src.key,
                 itemID = src.itemID,
-                valOfType = src.valOfType
+                value = src.value
             };
         }
 

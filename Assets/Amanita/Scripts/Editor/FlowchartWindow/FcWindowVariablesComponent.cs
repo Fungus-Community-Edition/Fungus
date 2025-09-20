@@ -62,6 +62,7 @@ namespace Amanita.VScripting.EditorUtils
                 List = list,
                 CountLabel = count,
                 RowFactory = _rowFactory,
+                VariableSource = flowchart,
             };
             var view = new VariableListView(listViewArgs);
 
@@ -69,7 +70,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Root = _rootElement,
                 AddButton = addBtn,
-                Flowchart = flowchart,
+                VariableSource = flowchart,
                 VariableListView = view,
             });
         }

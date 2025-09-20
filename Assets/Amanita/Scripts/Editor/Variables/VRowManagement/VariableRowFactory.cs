@@ -31,7 +31,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             VariableRow row = _rowPool.GetOrCreate();
             IRowVisualHandler handler = _handlerPool.GetHandlerFor(variable.ContentType, variable);
-            row.Init(variable, handler);
+            row.Init(variable, handler, null);
             return row;
         }
 
