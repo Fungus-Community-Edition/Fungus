@@ -162,16 +162,6 @@ namespace Amanita.VScripting
             set => UIModel.SelectedCommandsStale = value;
         }
 #endif
-        protected virtual void OnLevelWasLoaded(int level) 
-        {
-            LevelWasLoaded();
-        }
-
-        protected virtual void LevelWasLoaded()
-        {
-            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
-            eventSystemPresent = false;
-        }
             
         protected virtual void Awake()
         {
@@ -340,9 +330,11 @@ namespace Amanita.VScripting
             }
         }
 
-        private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
+        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene arg0,
+            UnityEngine.SceneManagement.Scene arg1)
         {
-            LevelWasLoaded();
+            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
+            eventSystemPresent = false;
         }
 
         protected virtual void OnEnable()
@@ -351,7 +343,7 @@ namespace Amanita.VScripting
             {
                 cachedFlowcharts.Add(this);
                 //TODO these pairs could be replaced by something static that manages all active flowcharts
-                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
 
             CheckItemIds();
@@ -364,7 +356,7 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             cachedFlowcharts.Remove(this);
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
         }
 

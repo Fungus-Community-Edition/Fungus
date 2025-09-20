@@ -213,7 +213,7 @@ namespace Amanita.SaveSystemTests
                 Task writeTask = saveWriter.WriteAllToDisk(withOneNull);
                 await writeTask.ConfigureAwait(false);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException _)
             {
                 threwIt = true;
             }
@@ -852,7 +852,7 @@ namespace Amanita.SaveSystemTests
                 {
                     await saveWriter.WriteOneToDisk(writeArgsLocked);
                 }
-                catch (IOException ioe)
+                catch (IOException _)
                 {
                     writeFailed = true;
                 }
