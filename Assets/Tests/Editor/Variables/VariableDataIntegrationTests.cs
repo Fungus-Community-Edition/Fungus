@@ -16,6 +16,7 @@ namespace Amanita.Tests.EditMode
         public override void SetUp()
         {
             base.SetUp();
+            VariableTypeDiscovery.DiscoverAndRegister();
             _unityObjDataHolder = ScriptableObject.CreateInstance<UnityObjTestHolder>();
             _unityObjDataHolder.data = new ObjectData { };
 

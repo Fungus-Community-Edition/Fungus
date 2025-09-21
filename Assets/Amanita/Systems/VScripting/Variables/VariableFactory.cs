@@ -8,7 +8,7 @@ namespace Amanita.VScripting
         #region Muscariables
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
-            return Create(typeof(T), toMakeCopyOf) as Muscariable<T>;
+            return (Muscariable<T>)Create(typeof(T), toMakeCopyOf);
         }
 
         public static Muscariable Create(Type contentType, IVariable toMakeCopyOf = null)

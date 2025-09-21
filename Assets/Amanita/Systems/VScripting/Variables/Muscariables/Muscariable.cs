@@ -51,10 +51,10 @@ namespace Amanita.VScripting
             this.scope = scope;
         }
 
-        public virtual System.Type ContentType => typeof(Type);
+        public virtual Type ContentType => typeof(Type);
         // ^So clients can see the type even through this non-generic interface
 
-        public virtual System.Object Value
+        public virtual object Value
         {
             get { return this.value; }
             set
@@ -78,14 +78,14 @@ namespace Amanita.VScripting
             }
         }
 
-        protected System.Object value;
+        protected object value;
 
         protected virtual object FilterForValueSet(object valueToConvert)
         {
             return valueToConvert;
         }
 
-        protected virtual bool CanHoldAsValue(System.Object obj)
+        protected virtual bool CanHoldAsValue(object obj)
         {
             bool result;
 
@@ -169,7 +169,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// When you expect the value to be a value type (as opposed to a ref type), use this rather than 
         /// directly casting to that specific value type. One quirk of C# is that when casting a
-        /// System.Object, it only works if said System.Object is of the type you're casting to.
+        /// object, it only works if said object is of the type you're casting to.
         /// </summary>
         public TVal GetValueAs<TVal>()
         {
@@ -380,8 +380,7 @@ namespace Amanita.VScripting
 
         public override bool Equals(object obj)
         {
-            var other = obj as GenericMuscariable;
-            if (other is null) return false;
+            if (obj is not GenericMuscariable other) return false;
             return this.Value == other.Value;
         }
 

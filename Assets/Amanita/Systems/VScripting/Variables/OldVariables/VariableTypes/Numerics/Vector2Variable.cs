@@ -29,22 +29,10 @@ namespace Amanita.VScripting
                 Value -= value;
                 break;
             case SetOperator.Multiply:
-#if UNITY_2019_2_OR_NEWER
                 Value *= value;
-#else
-                var tmpM = Value;
-                tmpM.Scale(value);
-                Value = tmpM;
-#endif
                 break;
             case SetOperator.Divide:
-#if UNITY_2019_2_OR_NEWER
                 Value /= value;
-#else
-                var tmpD = Value;
-                tmpD.Scale(new Vector2(1.0f / value.x, 1.0f / value.y));
-                Value = tmpD;
-#endif
                 break;
             default:
                 base.Apply(setOperator, value);

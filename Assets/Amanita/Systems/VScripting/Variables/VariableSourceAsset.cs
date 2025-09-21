@@ -14,6 +14,8 @@ namespace Amanita.VScripting
 
         public IReadOnlyList<IVariable> Variables => variables.ToList();
 
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => variables.ToList();
+
         protected IList<MuscariableHolder> holders = new List<MuscariableHolder>();
 
         /// <summary>
@@ -43,28 +45,26 @@ namespace Amanita.VScripting
         public virtual IVariable AddVariable(IVariable var)
         {
             Muscariable muscari = var.ToMuscariable();
-            if (muscari != null && !variables.ContainsReference(muscari))
+            if (muscari == null)
             {
-
-                MakeUniqueForThisSource(muscari);
-                _nextVarID = muscari.ItemID + 1;
-#if UNITY_EDITOR
-                AnyRightBeforeVarAdded(muscari);
-#endif
-                variables.Add(muscari);
-                VariableAdded(muscari);
+                string logMessage = $"Cannot add {var} (a non-Muscariable) to a VariableSource asset; " +
+                    $"it can't hold that in the first place.";
+                Debug.LogWarning(logMessage);
+                return null;
             }
-
-            return muscari;
+            else
+            {
+                return AddVariable(muscari);
+            }
         }
 
 #if UNITY_EDITOR
         // We only want editor code to respond to these events.
-        
         public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
         public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
-        public event Action VariablesReordered = delegate { };
 #endif
+
+        public event Action VariablesReordered = delegate { };
 
         // So that we can avoid what (at least look like) duplicates
         protected virtual void MakeUniqueForThisSource(Muscariable var)
@@ -125,9 +125,9 @@ namespace Amanita.VScripting
             {
                 variables.Clear();
                 variables.AddRange(toCompareTo);
-#if UNITY_EDITOR
+
                 VariablesReordered();
-#endif
+
             }
         }
 
@@ -180,16 +180,31 @@ namespace Amanita.VScripting
             return result;
         }
 
-#if UNITY_EDITOR
-        public virtual MuscariableHolder GetHolderFor(IVariable variable)
+        public Muscariable AddVariable(Muscariable toAdd)
         {
-            string pathToThis = UnityEditor.AssetDatabase.GetAssetPath(this);
-            IList<MuscariableHolder> holders = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(pathToThis)
-                .OfType<MuscariableHolder>().ToList();
-            return holders.FirstOrDefault(holder => holder.ItemID == variable.ItemID && holder.ContentType.Equals(variable.ContentType));
-        }
+            if (!variables.ContainsReference(toAdd))
+            {
+                MakeUniqueForThisSource(toAdd);
+                _nextVarID = toAdd.ItemID + 1;
+#if UNITY_EDITOR
+                AnyRightBeforeVarAdded(toAdd);
 #endif
+                variables.Add(toAdd);
+                VariableAdded(toAdd);
+            }
 
+            return toAdd;
+        }
+
+        public void RemoveVariable(Muscariable toRemove)
+        {
+            throw new NotImplementedException();
+        }
+
+        Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IVariableSource
@@ -202,7 +217,15 @@ namespace Amanita.VScripting
         IVariable GetVar(int itemId);
     }
 
-    public interface IMuscariableSource : IVariableSource
+    public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable
+    {
+        new IReadOnlyList<TVar> Variables { get; }
+        TVar AddVariable(TVar toAdd);
+        void RemoveVariable(TVar toRemove);
+        new TVar GetVar(int itemId);
+    }
+
+    public interface IMuscariableSource : IVariableSource<Muscariable>
     {
         Muscariable GetVariable(string name);
         Muscariable AddNewVariableOfContentType(Type contentType, string key);
@@ -215,6 +238,11 @@ namespace Amanita.VScripting
 
     public interface IReorderableMuscariableSource : IReorderableVariableSource, IMuscariableSource
     {
+        
+    }
 
+    public interface IVarConvertible<TTargetType> where TTargetType : IVariable
+    {
+        TTargetType ToVar();
     }
 }

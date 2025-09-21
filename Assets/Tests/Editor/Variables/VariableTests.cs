@@ -11,6 +11,7 @@ namespace Amanita.Tests.EditMode
         [SetUp]
         public virtual void SetUp()
         {
+            VariableTypeDiscovery.DiscoverAndRegister();
             manager = AmanitaManager.EnsureExists();
             fcHolder = new GameObject("FlowchartHolder");
             flowchart = fcHolder.AddComponent<Flowchart>();
