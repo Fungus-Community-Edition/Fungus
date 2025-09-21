@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     // Dummy handler types for testing
     public class GoodHandler { }

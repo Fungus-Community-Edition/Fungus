@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace FCWindowOperations
 {
     public class GridUtilsTests
     {

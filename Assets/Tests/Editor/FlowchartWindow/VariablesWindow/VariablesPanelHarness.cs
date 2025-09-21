@@ -104,8 +104,6 @@ namespace Amanita.VScripting.EditorUtils.Tests
             // or wrap FakeFlowchart in an adapter that exposes the same API.
             public new object Flowchart => _host.Flowchart;
 
-            // For the harness, return false so BuildManager only runs when we tell it to.
-            public new bool HandleFlowchartSelectionChange() => false;
         }
     }
 }

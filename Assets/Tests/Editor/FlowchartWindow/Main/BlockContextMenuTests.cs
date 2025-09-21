@@ -6,7 +6,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.EditMode
+namespace FCWindowOperations
 {
     [TestFixture]
     class BlockContextMenuHandlerTests

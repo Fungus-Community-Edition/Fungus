@@ -17,6 +17,11 @@ namespace Amanita.Tweening
 
         protected Dictionary<string, ITween> _activeTweens = new();
 
+        public virtual void Init()
+        {
+            Awake();
+        }
+
         protected virtual void Awake()
         {
             if (_s != null && _s != this)

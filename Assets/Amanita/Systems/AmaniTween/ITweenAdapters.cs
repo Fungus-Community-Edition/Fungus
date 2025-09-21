@@ -16,7 +16,7 @@ namespace Amanita.Tweening
     {
         ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration);
         ITweenHandle FadeTo(Graphic target, float endVal, float duration);
-        ITweenHandle ShiftColorTo(SpriteRenderer target, Color endVal, float duration);
+        ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration);
         ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration);
 
         ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration);
@@ -27,28 +27,28 @@ namespace Amanita.Tweening
     {
         /// <summary>
         /// On a scale of 0 for silent to 100 for max.
-        ITweenHandle ShiftVolumeTo(AudioSource target, float targVal, float duration);
+        ITweenHandle FadeVolume(AudioSource target, float targVal, float duration);
 
         /// <summary>
         /// On a scale of 0 for silent to 1 for max.
         /// </summary>
-        ITweenHandle ShiftVolume01To(AudioSource target, float targVal, float duration);
+        ITweenHandle FadeVolume01(AudioSource target, float targVal, float duration);
 
         /// <summary>
         /// On a scale of -300 for min to 300 for max. Note that the default pitch here is 100.
         /// </summary>
-        ITweenHandle ShiftPitchTo(AudioSource target, float targVal, float duration);
+        ITweenHandle FadePitch(AudioSource target, float targVal, float duration);
 
         /// <summary>
         /// On a scale of -3 for min to 3 for max. Note that the default pitch here is 1.
         /// </summary>
-        ITweenHandle ShiftPitchN33To(AudioSource target, float targVal, float duration);
+        ITweenHandle FadePitchN33(AudioSource target, float targVal, float duration);
     }
 
     public interface IMyceliaudioTweenAdapter
     {
-        ITweenHandle ShiftVolumeTo(IAudioTrack track, float targVal, float duration);
-        ITweenHandle ShiftVolume01To(IAudioTrack track, int targVal, float duration);
+        ITweenHandle FadeVolume(IAudioTrack track, float targVal, float duration);
+        ITweenHandle FadeVolume01(IAudioTrack track, float targVal, float duration);
     }
 
     public interface IGeneralTweenAdapter<T>
