@@ -76,7 +76,7 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
         protected VariableRowPool rowPool;
         protected VisualTreeAsset uxml;
-        protected readonly string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+        protected readonly string pathToUxml = "UIToolkitTemplates/VariableDisplayEditor";
 
         protected void BuildManager(VisualElement rootElem)
         {

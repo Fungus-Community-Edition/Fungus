@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Amanita.VScripting.EditorUtils
 {
     [RowVisualHandler("Primitives", typeof(string), "String",
-        "_EditorResources/UIToolkitTemplates/VarRows/StringVariableRow")]
+        "UIToolkitTemplates/VarRows/StringVariableRow")]
     public class StringRowVisualHandler : RowVisualHandler<object>
     {
         protected override void RegisterVisualElements()

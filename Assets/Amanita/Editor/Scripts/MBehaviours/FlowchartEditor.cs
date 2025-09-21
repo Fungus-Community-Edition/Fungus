@@ -81,7 +81,7 @@ namespace Amanita.VScripting.EditorUtils
             
             VisualElement NewWay()
             {
-                string pathToUxml = "_EditorResources/UIToolkitTemplates/FlowchartInspector";
+                string pathToUxml = "UIToolkitTemplates/FlowchartInspector";
                 var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
                 var inspectorRoot = uxml.CloneTree();
                 Button flowchartWindowButton = inspectorRoot.Q<Button>("OpenFlowchartWindow");

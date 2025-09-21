@@ -50,14 +50,14 @@ namespace Amanita.VScripting.EditorUtils
     }
 
     [RowVisualHandler("Primitives", typeof(float), "Float",
-        "_EditorResources/UIToolkitTemplates/VarRows/FloatVariableRow")]
+        "UIToolkitTemplates/VarRows/FloatVariableRow")]
     public class FloatRowVisualHandler : NumericRowVisualHandler<float>
     {
         
     }
 
     [RowVisualHandler("Primitives", typeof(int), "Integer",
-        "_EditorResources/UIToolkitTemplates/VarRows/IntVariableRow")]
+        "UIToolkitTemplates/VarRows/IntVariableRow")]
     public class IntRowVisualHandler : NumericRowVisualHandler<int>
     {
         
@@ -65,7 +65,7 @@ namespace Amanita.VScripting.EditorUtils
 
     // Bools work off toggles, not text value fields, so...
     [RowVisualHandler("Primitives", typeof(bool), "Boolean",
-        "_EditorResources/UIToolkitTemplates/VarRows/BoolVariableRow")]
+        "UIToolkitTemplates/VarRows/BoolVariableRow")]
     public class BoolRowVisualHandler : RowVisualHandler<bool>
     {
         

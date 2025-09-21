@@ -374,7 +374,7 @@ namespace Amanita.VScripting.EditorUtils
     }
 
     [RowVisualHandler("Hidden", typeof(object), "Generic",
-        "_EditorResources/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
+        "UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
     }

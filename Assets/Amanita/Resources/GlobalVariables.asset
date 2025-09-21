@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Naruto_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208513186726238
+    rid: 4382208542805590016
   references:
     version: 2
     RefIds:
-    - rid: 4382208513186726238
+    - rid: 4382208542805590016
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1
@@ -38,7 +38,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   variables:
   - rid: 4382208464457039955
-  _nextVarID: 32
+  - rid: 4382208527121776733
+  - rid: 4382208527121776735
+  _nextVarID: 36
   references:
     version: 2
     RefIds:
@@ -49,3 +51,65 @@ MonoBehaviour:
         key: Naruto
         itemID: 1
         value: Believe it!
+    - rid: 4382208527121776733
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var
+        itemID: 33
+        value: 
+    - rid: 4382208527121776735
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var1
+        itemID: 35
+        value: 0
+--- !u!114 &517708918120640263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Var_Holder
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208542805590017
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208542805590017
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var
+        itemID: 33
+        value: 
+--- !u!114 &7436477831597692082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Var1_Holder
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208542805590018
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208542805590018
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var1
+        itemID: 35
+        value: 0

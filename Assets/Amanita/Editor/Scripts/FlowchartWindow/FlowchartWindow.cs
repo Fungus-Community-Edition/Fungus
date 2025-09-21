@@ -237,7 +237,7 @@ namespace Amanita.VScripting.EditorUtils
                 void PrepVarsComponent()
                 {
                     var varsComponent = new FcWindowVariablesComponent();
-                    string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                    string pathToUxml = "UIToolkitTemplates/VariableDisplayEditor";
                     var uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
                     varsComponent.VariableDisplayEditorUxml = uxml;
                     _components.Add(varsComponent);
