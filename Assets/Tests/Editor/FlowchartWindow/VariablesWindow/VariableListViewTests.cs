@@ -10,8 +10,9 @@ using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
+using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Focused tests for VariableListView independent of VariableRowManager.
@@ -59,6 +60,7 @@ namespace Amanita.Tests.EditMode
                 List = _uiList,
                 CountLabel = _countLabel,
                 RowFactory = _factory,
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             _view = new VariableListView(listViewArgs);
 

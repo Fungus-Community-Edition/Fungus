@@ -52,6 +52,7 @@ namespace Amanita.VScripting.EditorUtils
                 CountLabel = count,
                 RowFactory = _rowFactory,
                 VariableSource = flowchart,
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             var view = new VariableListView(listViewArgs);
 

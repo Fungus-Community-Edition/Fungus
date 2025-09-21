@@ -162,16 +162,6 @@ namespace Amanita.VScripting
             set => UIModel.SelectedCommandsStale = value;
         }
 #endif
-        protected virtual void OnLevelWasLoaded(int level) 
-        {
-            LevelWasLoaded();
-        }
-
-        protected virtual void LevelWasLoaded()
-        {
-            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
-            eventSystemPresent = false;
-        }
             
         protected virtual void Awake()
         {
@@ -315,7 +305,7 @@ namespace Amanita.VScripting
                 currentVar.Init();
             }
 
-            //ReplaceLegacyWithMuscaris(); // TODO: Fix editor issues and then uncomment
+            ReplaceLegacyWithMuscaris();
             void ReplaceLegacyWithMuscaris()
             {
                 // Just floats for now
@@ -340,9 +330,11 @@ namespace Amanita.VScripting
             }
         }
 
-        private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
+        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene arg0,
+            UnityEngine.SceneManagement.Scene arg1)
         {
-            LevelWasLoaded();
+            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
+            eventSystemPresent = false;
         }
 
         protected virtual void OnEnable()
@@ -351,7 +343,7 @@ namespace Amanita.VScripting
             {
                 cachedFlowcharts.Add(this);
                 //TODO these pairs could be replaced by something static that manages all active flowcharts
-                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
 
             CheckItemIds();
@@ -364,7 +356,7 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             cachedFlowcharts.Remove(this);
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
         }
 
@@ -1622,6 +1614,14 @@ namespace Amanita.VScripting
         /// </summary>
         public string UniqueId => uniqueId;
 
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
+        {
+            get
+            {
+                return muscariables.ToList();
+            }
+        }
+
         private void OnValidate()
         {
             legacyVariables.RemoveAll((elem) => elem == null);
@@ -1636,12 +1636,13 @@ namespace Amanita.VScripting
             {
                 UIModel.Owner = this.gameObject;
             }
-
+#if UNITY_EDITOR
             if (string.IsNullOrEmpty(uniqueId))
             {
                 uniqueId = System.Guid.NewGuid().ToString();
                 UnityEditor.EditorUtility.SetDirty(this);
             }
+#endif
 
             CheckItemIds();
 
@@ -1774,18 +1775,6 @@ namespace Amanita.VScripting
             return result;
         }
 
-        //public Muscariable AddVariable(IVariable toAdd)
-        //{
-        //    if (toAdd is not Muscariable muscaVar)
-        //    {
-        //        muscaVar = VariableFactory.Create(toAdd.ContentType, toAdd);
-        //        IntegrateMuscariable(muscaVar);
-        //        return muscaVar;
-        //    }
-        //    IntegrateMuscariable(muscaVar);
-        //    return muscaVar;
-        //}
-
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             Muscariable muscaVar = VariableFactory.Create(contentType, null);
@@ -1795,7 +1784,23 @@ namespace Amanita.VScripting
 
         IVariable IVariableSource.AddVariable(IVariable toAdd)
         {
-            throw new NotImplementedException();
+            return AddVariable(toAdd.ToMuscariable());
+        }
+
+        public Muscariable AddVariable(Muscariable toAdd)
+        {
+            Muscariable result = null;
+            if (!muscariables.ContainsReference(toAdd))
+            {
+                IntegrateMuscariable(toAdd);
+                result = toAdd;
+            }
+            return result;
+        }
+
+        Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
+        {
+            return muscariables.Where((elem) => elem.ItemID == itemId).FirstOrDefault();
         }
     }
 }

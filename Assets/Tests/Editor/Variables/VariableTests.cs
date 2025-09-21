@@ -3,14 +3,16 @@ using UnityEngine;
 using Amanita.VScripting;
 using System.Collections.Generic;
 using UnityObj = UnityEngine.Object;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public abstract class VariableTests 
     {
         [SetUp]
         public virtual void SetUp()
         {
+            VariableTypeDiscovery.DiscoverAndRegister();
             manager = AmanitaManager.EnsureExists();
             fcHolder = new GameObject("FlowchartHolder");
             flowchart = fcHolder.AddComponent<Flowchart>();

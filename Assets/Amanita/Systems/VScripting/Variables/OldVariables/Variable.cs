@@ -154,9 +154,26 @@ namespace Amanita.VScripting
     /// </summary>
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
-        public override System.Type ContentType => typeof(T);
+        public override Type ContentType => typeof(T);
 
         [SerializeField] protected T value;
+
+        // Explicit IVariable implementation for object-typed access
+        object IVariable.Value
+        {
+            get => value; // boxes T correctly (works for structs like Vector2)
+            set
+            {
+                if (value != null && ContentType.IsAssignableFrom(value.GetType()))
+                {
+                    this.value = (T)value;
+                    return;
+                }
+                // Optional: allow numeric conversions or throw
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+            }
+        }
+
 
         // Preserve the typed Value required by IVariable<T>
         public virtual new T Value

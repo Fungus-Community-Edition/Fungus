@@ -62,12 +62,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
         {
-            // Response to the handler's version of the event
-            RemoveButtonClicked(this);
             AmanitaEditorSignals.VarRowRemoveButtonClicked(this);
         }
-
-        public event Action<VariableRow> RemoveButtonClicked = delegate { };
 
         protected virtual void OnFocusLostOnControl(FocusOutEvent evt)
         {
@@ -99,9 +95,6 @@ namespace Amanita.VScripting.EditorUtils
 
             VisualHandler?.Dispose();
             VisualHandler = null;
-            
-            // Clear external subscribers to avoid lingering references if pooled.
-            RemoveButtonClicked = delegate { };
         }
 
         protected virtual void UpdateSerializedVar()

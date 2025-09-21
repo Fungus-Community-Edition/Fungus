@@ -5,8 +5,9 @@ using UnityEditor;
 using Amanita.VScripting;
 using System.Collections.Generic; // adjust namespace to match your project
 using UnityObj = UnityEngine.Object;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableDataEditorTests
     {

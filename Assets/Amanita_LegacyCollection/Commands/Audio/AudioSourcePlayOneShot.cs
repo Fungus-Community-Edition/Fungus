@@ -64,9 +64,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return audioSource.VarRef == variable ||
-                audioClip.audioClipRef == variable ||
-                volumeScale.floatRef == variable ||
+            return ReferenceEquals(audioSource.VarRef, variable) ||
+                ReferenceEquals(audioClip.VarRef, variable) ||
+                ReferenceEquals(volumeScale.VarRef, variable) ||
                 base.HasReference(variable);
         }
     }

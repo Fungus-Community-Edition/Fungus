@@ -1,8 +1,9 @@
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections.Generic;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace General
 {
     [TestFixture]
     public class UniqueIDGeneratorTests

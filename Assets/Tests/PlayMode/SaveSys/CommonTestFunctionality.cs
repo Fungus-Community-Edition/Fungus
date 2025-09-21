@@ -83,12 +83,8 @@ namespace Amanita.SaveSystemTests
             LoadCodecs();
             void LoadCodecs()
             {
-                string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
-                //flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
 
-                pathToCodec = "SaveCodecs/BlockSaveCodec";
-                //blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
             
@@ -288,8 +284,11 @@ namespace Amanita.SaveSystemTests
                 DestroyEventSystems();
                 void DestroyEventSystems()
                 {
+#if UNITY_6000_0_OR_NEWER
+                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+#else
                     EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-
+#endif
                     foreach (var elem in possiblyMadeByFlowchart)
                     {
                         UnityObject.DestroyImmediate(elem.gameObject);
