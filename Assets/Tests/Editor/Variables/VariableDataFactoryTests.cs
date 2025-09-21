@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableDataFactoryTests
     {

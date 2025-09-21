@@ -10,7 +10,7 @@ using System.Reflection;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Tests for VariableListView interacting with IEditorAssetResolver without touching AssetDatabase.

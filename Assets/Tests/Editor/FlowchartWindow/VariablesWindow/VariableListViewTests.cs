@@ -12,7 +12,7 @@ using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Focused tests for VariableListView independent of VariableRowManager.

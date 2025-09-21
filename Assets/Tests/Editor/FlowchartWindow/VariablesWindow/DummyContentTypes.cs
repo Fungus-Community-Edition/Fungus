@@ -1,6 +1,6 @@
 using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.Tests
+namespace VariableOperations
 {
     class Animal { }
     class Mammal : Animal { }

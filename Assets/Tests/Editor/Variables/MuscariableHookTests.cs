@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class MuscariableHookTests
     {

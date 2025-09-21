@@ -6,8 +6,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableSourceTests
     {

@@ -13,7 +13,7 @@ using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
 using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableRowManagerTests 
     {

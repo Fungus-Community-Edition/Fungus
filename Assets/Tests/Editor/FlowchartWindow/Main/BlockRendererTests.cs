@@ -6,7 +6,7 @@ using Amanita.EditorUtils;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace FCWindowOperations
 {
     [TestFixture]
     public class BlockRendererTests

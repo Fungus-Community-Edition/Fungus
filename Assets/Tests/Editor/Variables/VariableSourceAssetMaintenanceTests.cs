@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Unit tests for VariableSourceAssetMaintenance. These tests replace the real
