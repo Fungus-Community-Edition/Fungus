@@ -11,72 +11,33 @@ namespace Amanita.VScripting.EditorUtils
     {
         protected virtual void OnEnable()
         {
-            _manager = new VariableRowManager();
             PrepGUI();
             ToggleSubs(false);
             ToggleSubs(true);
         }
 
+        protected virtual void PrepGUI()
+        {
+            _manager = new VariableRowManager();
+            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
+            handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
+            rowPool ??= new VariableRowPool();
+            uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+
+            rootElement = new VisualElement();
+
+            inspectorRoot = uxml.CloneTree();
+            rootElement.Add(inspectorRoot);
+            BuildManager(inspectorRoot);
+        }
+
         protected VariableRowManager _manager;
-
-        protected virtual void ToggleSubs(bool on)
-        {
-            var source = (VariableSourceAsset)target;
-            if (on)
-            {
-                if (_subsActive) return; // already subscribed
-                AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
-                source.VariableAdded += OnVariableAdded;
-                source.VariableRemoved += OnVariableRemoved;
-                source.VariablesReordered += UpdateSourceAssetFile;
-                source.Refreshed += UpdateSourceAssetFile;
-                _subsActive = true;
-            }
-            else
-            {
-                if (!_subsActive) return; // nothing to unsubscribe
-                AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
-                source.VariableAdded -= OnVariableAdded;
-                source.VariableRemoved -= OnVariableRemoved;
-                source.VariablesReordered -= UpdateSourceAssetFile;
-                source.Refreshed -= UpdateSourceAssetFile;
-                _subsActive = false;
-            }
-        }
-
-
-        protected bool _subsActive = false;
-
-        protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
-        {
-            UpdateSourceAssetFile();
-        }
-
-        protected virtual void UpdateSourceAssetFile()
-        {
-            if (target is VariableSourceAsset source)
-            {
-                EditorUtility.SetDirty(source);
-                AssetDatabase.SaveAssetIfDirty(source);
-                Debug.Log($"VariableSourceInspector: Updated source asset file");
-            }
-        }
-
-        private void OnVariableRemoved(IVariable variable)
-        {
-            UpdateSourceAssetFile();
-        }
-
-        private void OnVariableAdded(IVariable variable)
-        {
-            UpdateSourceAssetFile();
-        }
-
         protected RowVisualHandlerPool handlerPool;
-        protected readonly IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
         protected VariableRowPool rowPool;
         protected VisualTreeAsset uxml;
         protected readonly string pathToUxml = "UIToolkitTemplates/VariableDisplayEditor";
+        protected VisualElement rootElement;
+        protected TemplateContainer inspectorRoot;
 
         protected void BuildManager(VisualElement rootElem)
         {
@@ -130,33 +91,72 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        
         protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
         protected VariableRowFactory _rowFactory = new VariableRowFactory();
 
+        protected virtual void ToggleSubs(bool on)
+        {
+            var source = (VariableSourceAsset)target;
+            if (on)
+            {
+                AmanitaEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
+                source.VariableAdded += OnVariableAdded;
+                source.VariableRemoved += OnVariableRemoved;
+                source.VariablesReordered += UpdateSourceAssetFile;
+                source.Refreshed += UpdateSourceAssetFile;
+                AmanitaEditorSignals.ControlValueChanged += OnControlValueChanged;
+            }
+            else
+            {
+                AmanitaEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
+                source.VariableAdded -= OnVariableAdded;
+                source.VariableRemoved -= OnVariableRemoved;
+                source.VariablesReordered -= UpdateSourceAssetFile;
+                source.Refreshed -= UpdateSourceAssetFile;
+                AmanitaEditorSignals.ControlValueChanged -= OnControlValueChanged;
+            }
+        }
+
+        protected virtual void OnControlValueChanged(object obj)
+        {
+            // Go through the MuscariableHolders and refresh those
+            VariableSourceAsset source = target as VariableSourceAsset;
+            source.RefreshHolders();
+        }
+
+        protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
+        {
+            UpdateSourceAssetFile();
+        }
+
+        protected virtual void UpdateSourceAssetFile()
+        {
+            if (target is VariableSourceAsset source)
+            {
+                EditorUtility.SetDirty(source);
+                AssetDatabase.SaveAssetIfDirty(source);
+                Debug.Log($"VariableSourceInspector: Updated source asset file");
+            }
+        }
+
+        private void OnVariableRemoved(IVariable variable)
+        {
+            UpdateSourceAssetFile();
+        }
+
+        private void OnVariableAdded(IVariable variable)
+        {
+            UpdateSourceAssetFile();
+        }
+
+        protected readonly IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
+        
         // This executes twice in a row when the asset is clicked, and then once again when you click some
         // other asset
         public override VisualElement CreateInspectorGUI()
         {
             return rootElement;
         }
-
-        protected virtual void PrepGUI()
-        {
-            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
-            rowPool ??= new VariableRowPool();
-            uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
-
-            rootElement = new VisualElement();
-
-            inspectorRoot = uxml.CloneTree();
-            rootElement.Add(inspectorRoot);
-            BuildManager(inspectorRoot);
-        }
-
-        protected VisualElement rootElement;
-        protected TemplateContainer inspectorRoot;
 
         protected virtual void OnDisable()
         {

@@ -1,14 +1,3 @@
-.varRowTypeLabel 
-{
-	background-image: url("project://database/Assets/Amanita/Resources/_EditorResources/Textures/rainbowTex.png");
-	-unity-background-scale-mode: stretch-to-fill;
-
-	color: white;        /* ensure text stays readable */
-	-unity-font-style: bold;
-	-unity-text-outline-width: 1px;
-	-unity-text-outline-color: black;
-}
-
 #TypeLabel
 {
 	font-size: 16px;

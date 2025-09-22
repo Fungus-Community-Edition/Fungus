@@ -1,7 +1,13 @@
-﻿#VarRowRoot
+﻿:root 
+{
+	--vector3-axis-label-width: 15px;
+	--vector3-input-field-width: 28%;
+}
+
+#VarRowRoot
 {
 	flex-grow: 1;
-	height: 60px; /* Twice the size of a regular all-in-one-row row */
+	height: 60px; /* Twice the size of a regular all-in-one row */
 	flex-direction: column;
 }
 
@@ -19,9 +25,11 @@
 
 #TopRow
 {
+	flex-grow: 1;
+	margin: var(--slight-bottom-margin-only);
 	flex-direction: row;
 	height: 30px;
-	margin: 0px 0px 2px 0px;
+	
 }
 
 .varRowTypeLabel 
@@ -42,7 +50,7 @@
 	flex-grow: 1;
 }
 
-#VectorThreeField
+#ValueField
 {
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -52,9 +60,15 @@
 
 	font-size: 12px;
 
-	padding: 0px;
+	padding: 0px 3px 0px 3px;
 	margin: 0px;
 
+}
+
+#ValueField > VisualElement /* Holds the inputs for the 3 floats */
+{
+	width: 100%;
+	flex-direction: row;
 }
 
 #ValueFieldHolder
@@ -64,26 +78,9 @@
 	margin: 0px 2px 0px 0px;
 }
 
-#VectorThreeField
-{
-	padding: 0px 3px 0px 3px;
-	margin: 0px;
-}
-
-#VectorThreeField > VisualElement /* Holds the inputs for the 3 floats */
-{
-	width: 100%;
-	flex-direction: row;
-}
-
-:root 
-{
-	--vector3-axis-label-width: 15px;
-	--vector3-input-field-width: 28%;
-}
 
 /* All mini‑labels inside Vector3Field */
-#VectorThreeField .unity-base-field__label 
+#ValueField .unity-base-field__label 
 {
 	flex: 0 0 var(--vector3-axis-label-width); /* variable width: no grow, no shrink */
 	min-width: 0; /* override baked-in min-width */
@@ -91,7 +88,7 @@
 	color: rgb(230, 230, 230);
 }
 
-#VectorThreeField .unity-base-field__label > Label 
+#ValueField .unity-base-field__label > Label 
 {
 	width: 100%;
 	overflow: hidden;
@@ -100,14 +97,14 @@
 }
 
 /* unity-x-input, unity-y-input, unity-z-input */
-#VectorThreeField .unity-composite-field__input .unity-composite-field__field 
+#ValueField .unity-composite-field__input .unity-composite-field__field 
 {
 	width: var(--vector3-input-field-width);
 	margin: 0px;
 	padding-right: 10px;
 }
 
-#VectorThreeField .unity-base-text-field__input--single-line
+#ValueField .unity-base-text-field__input--single-line
 {
 	background-color: rgb(26, 26, 26);
 	color: rgb(230, 230, 230);

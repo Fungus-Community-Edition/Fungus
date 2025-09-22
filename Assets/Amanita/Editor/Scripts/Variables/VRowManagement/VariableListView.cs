@@ -3,6 +3,7 @@ using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -26,6 +27,11 @@ namespace Amanita.VScripting.EditorUtils
 
             // Resolver: prefer explicit injection, fallback to the global maintenance resolver.
             _assetResolver = initArgs.AssetResolver ?? VariableSourceAssetMaintenance.AssetResolver;
+
+            // Rebind active rows after domain/assembly reloads so SerializedObjects (holders/assets)
+            // are refreshed and UI fields don't appear empty.
+            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
+            VariableSourceAssetMaintenance.AssetsRefreshed += OnVariableSourceAssetsRefreshed;
 
             if (_variableSourceContext == null)
             {
@@ -83,7 +89,7 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _listDisplay.makeItem = () =>
                     {
-                        // The items made here will be the parents of the var rows'
+                        // The items made here will be the parents of the var row handlers'
                         // root elements
                         var rowHolder = new VisualElement { name = "VariableRowContainer" };
                         var styleForElem = rowHolder.style;
@@ -124,11 +130,11 @@ namespace Amanita.VScripting.EditorUtils
                             VariableRow row = GetOrCreateRow(currentVar);
                             if (row == null)
                             {
-                                Debug.LogWarning($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
+                                Debug.LogError($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
                             }
                             else if (row.RootElement == null)
                             {
-                                Debug.LogWarning($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
+                                Debug.LogError($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
                                 row = null;
                             }
 
@@ -143,15 +149,46 @@ namespace Amanita.VScripting.EditorUtils
                         // **Resolve the correct binding target**
                         var targetObj = GetBindingTarget(currentVar);
 
+                        // Diagnostics: log target resolution
+                        if (targetObj == null)
+                        {
+                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: null");
+                        }
+                        else
+                        {
+                            string path = null;
+                            try
+                            {
+                                path = _assetResolver?.GetAssetPath(targetObj);
+                            }
+                            catch { }
+                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
+                        }
+
                         // **Inject the SerializedObject into the already-initialized row**
                         if (targetObj != null)
                         {
-                            var so = new SerializedObject(targetObj);
-                            row.VisualHandler.SerializedVar = so;
+                            try
+                            {
+                                var so = new SerializedObject(targetObj);
+                                row.VisualHandler.SerializedVar = so;
+                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' Assigned SerializedObject targeting instanceId={targetObj.GetInstanceID()}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
+                            }
                         }
 
                         // Attach visual
-                        rowHolder.Add(row.RootElement);
+                        try
+                        {
+                            rowHolder.Add(row.RootElement);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
+                        }
 
                         // Store the row itself (not the variable) for any per-visual cleanup
                         rowHolder.userData = row;
@@ -168,6 +205,13 @@ namespace Amanita.VScripting.EditorUtils
                         // rows here can lead to empty ones getting displayed.
                         // Best leave the row-releases as responses to vars getting
                         // removed from the source list and such.
+                        // Diagnostics: log unbind
+                        try
+                        {
+                            if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
+                                Debug.Log($"[VListView.unbindItem] index={index} key='{r.VarToRepresent.Key}'");
+                        }
+                        catch { }
                         rowHolder.userData = null;
                         rowHolder.Clear();
                     };
@@ -178,6 +222,15 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _listDisplay.destroyItem = rowHolder =>
                     {
+                        // Diagnostics: log destroy
+                        try
+                        {
+                            if (rowHolder.userData is VariableRow rowAsUserData && rowAsUserData.VarToRepresent != null)
+                            {
+                                Debug.Log($"[VListView.destroyItem] destroying row for key='{rowAsUserData.VarToRepresent.Key}'");
+                            }
+                        }
+                        catch { }
                         rowHolder.userData = null;
                         rowHolder.Clear();
                     };
@@ -220,23 +273,63 @@ namespace Amanita.VScripting.EditorUtils
                 .OfType<MuscariableHolder>()
                 .ToList();
 
-            foreach (var elem in holders)
+            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'. holders.Count={holders.Count}");
+
+            LogDiscoveredHoldersForDiagnostings();
+            void LogDiscoveredHoldersForDiagnostings()
             {
-                // Some holders may expose Inner property/field; prefer property check if available
-                try
+                for (int i = 0; i < holders.Count; i++)
                 {
-                    if (elem.Inner == variable)
-                        return elem;
-                }
-                catch
-                {
-                    // be defensive: if holder implementation differs, fall back to reference equality on available fields
-                    var inner = elem.Inner;
-                    if (inner == variable)
-                        return elem;
+                    var holderElem = holders[i];
+                    int innerHash = 0;
+                    string innerKey = "(null)";
+                    try
+                    {
+                        if (holderElem.Inner != null)
+                        {
+                            innerHash = RuntimeHelpers.GetHashCode(holderElem.Inner);
+                            innerKey = holderElem.Inner.Key;
+                        }
+                    }
+                    catch { /* ignore */ }
+                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemID} innerKey='{innerKey}' innerHash={innerHash}");
                 }
             }
 
+            // 1) Prefer matching by stable ItemID (survives domain reloads)
+            if (variable != null)
+            {
+                var byId = holders.FirstOrDefault(elem => elem.ItemID == variable.ItemID);
+                if (byId != null)
+                {
+                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemID}");
+                    return byId;
+                }
+            }
+
+            // 2) Fallback: try matching by the Inner reference (existing behavior)
+            foreach (var elem in holders)
+            {
+                try
+                {
+                    if (elem.Inner == variable)
+                    {
+                        Debug.Log($"[FindPersistentHolderFor] Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
+                        return elem;
+                    }
+                }
+                catch
+                {
+                    var inner = elem.Inner;
+                    if (inner == variable)
+                    {
+                        Debug.Log($"[FindPersistentHolderFor] (fallback) Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
+                        return elem;
+                    }
+                }
+            }
+
+            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'");
             return null;
         }
 
@@ -262,25 +355,35 @@ namespace Amanita.VScripting.EditorUtils
             bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
             if (rowAlreadyAssignedToIt)
             {
+                Debug.Log($"[GetOrCreateRow] Reusing existing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 return existing;
             }
 
             var row = _rowFactory.Create(variable);
             if (row != null)
             {
+                Debug.Log($"[GetOrCreateRow] Created new row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)} handlerType={row.VisualHandler?.GetType().FullName}");
                 _activeRows[variable] = row;
+            }
+            else
+            {
+                Debug.LogWarning($"[GetOrCreateRow] Factory returned null row for key='{variable.Key}'");
             }
 
             return row;
         }
 
-        protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
+        // Use reference equality for keys to avoid value-based equality collisions that can
+        // cause distinct variable instances to be treated as the same key.
+        protected readonly Dictionary<IVariable, VariableRow> _activeRows =
+            new Dictionary<IVariable, VariableRow>(new ReferenceEqualityComparer<IVariable>());
 
         protected virtual void ReleaseRow(IVariable variable)
         {
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
             {
+                Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 _activeRows.Remove(variable);
                 _rowFactory?.Release(row);
             }
@@ -289,6 +392,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
+            Debug.Log($"[ReleaseAllActiveRows] Releasing {_activeRows.Count} active rows");
             foreach (var rowElem in _activeRows.Keys.ToList())
                 ReleaseRow(rowElem);
             _activeRows.Clear();
@@ -375,22 +479,30 @@ namespace Amanita.VScripting.EditorUtils
         {
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
 
+            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
+
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
 
-            if (_listDisplay != null)
+            DisposeListDisplay();
+            void DisposeListDisplay()
             {
-                _listDisplay.makeItem = null;
-                _listDisplay.bindItem = null;
-                _listDisplay.unbindItem = null;
-                _listDisplay.destroyItem = null;
-                _listDisplay.itemIndexChanged -= OnItemReordered;
-                _listDisplay.canStartDrag -= OnCanStartDrag;
-                _listDisplay.Clear();
-                _listDisplay = null;
+                if (_listDisplay != null)
+                {
+                    _listDisplay.makeItem = null;
+                    _listDisplay.bindItem = null;
+                    _listDisplay.unbindItem = null;
+                    _listDisplay.destroyItem = null;
+                    _listDisplay.itemIndexChanged -= OnItemReordered;
+                    _listDisplay.canStartDrag -= OnCanStartDrag;
+                    _listDisplay.Clear();
+                    _listDisplay = null;
+                }
+
+                _listDisplay?.RemoveFromHierarchy();
             }
 
-            _listDisplay?.RemoveFromHierarchy();
+            
             _countDisplay?.RemoveFromHierarchy();
             _countDisplay = null;
             _rowFactory = null;
@@ -405,67 +517,102 @@ namespace Amanita.VScripting.EditorUtils
 
         #region Undo/Redo Sync
 
-        private void HandleUndoRedoPerformed()
+        protected void HandleUndoRedoPerformed()
         {
             AcquireFlowchartIfLost();
             SyncFromFlowchart();
             UpdateCount();
         }
 
+        // Returns true if the flowchart was found (or not even lost in the first place),
+        // false otherwise.
         protected bool AcquireFlowchartIfLost()
         {
             if (_flowchart != null) return true;
 
-            // 1) Try GlobalObjectId first
-            if (_flowchartGlobalId.identifierType != 0) // default struct check
+            bool found;
+            SearchByGlobalObjectId(out found);
+            void SearchByGlobalObjectId(out bool found)
             {
-                var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
-                if (obj != null)
+                found = false;
+                if (_flowchartGlobalId.identifierType != 0)
                 {
-                    SetFlowchart(obj);
-                    return true;
+                    var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
+
+                    if (obj != null)
+                    {
+                        SetFlowchart(obj);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via GlobalObjectId: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                    }
                 }
             }
-
-            // 2) Fallback to old instance ID (may fail after undo/redo)
-            if (_flowchartInstanceID != 0)
+            if (found)
             {
-                var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
-                if (obj != null)
-                {
-                    SetFlowchart(obj);
-                    return true;
-                }
-            }
-
-            // 3) Try FlowchartWindow
-            try
-            {
-                var viaWindow = FlowchartWindow.GetFlowchart();
-                if (viaWindow != null)
-                {
-                    SetFlowchart(viaWindow);
-                    return true;
-                }
-            }
-            catch { }
-
-            // 4) Fallback: single Flowchart in scene
-            IList<Flowchart> all;
-
-#if UNITY_6000_0_OR_NEWER
-            all = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-            all = UnityObj.FindObjectsOfType<Flowchart>();
-#endif
-
-            if (all.Count == 1)
-            {
-                SetFlowchart(all[0]);
                 return true;
             }
 
-            return false;
+            SearchByOldInstanceID(out found);
+            void SearchByOldInstanceID(out bool found)
+            {
+                // This search may fail after undo/redo
+                found = false;
+                if (_flowchartInstanceID != 0)
+                {
+                    var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
+                    if (obj != null)
+                    {
+                        SetFlowchart(obj);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via old InstanceID: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                    }
+                }
+            }
+            if (found)
+            {
+                return true;
+            }
+
+            SearchThroughTheFCWindow(out found);
+            void SearchThroughTheFCWindow(out bool found)
+            {
+                found = false;
+                try
+                {
+                    var viaWindow = FlowchartWindow.GetFlowchart();
+                    if (viaWindow != null)
+                    {
+                        SetFlowchart(viaWindow);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via FlowchartWindow: name='{viaWindow.name}' instanceId={viaWindow.GetInstanceID()}");
+                    }
+                }
+                catch { }
+            }
+            if (found)
+            {
+                return true;
+            }
+
+            SearchForSingleInScene(out found);
+            void SearchForSingleInScene(out bool found)
+            {
+                IList<Flowchart> all;
+                found = false;
+#if UNITY_6000_0_OR_NEWER
+                all = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+#else
+                all = UnityObj.FindObjectsOfType<Flowchart>();
+#endif
+                if (all.Count == 1)
+                {
+                    SetFlowchart(all[0]);
+                    found = true;
+                    Debug.Log($"[AcquireFlowchartIfLost] Found single Flowchart in scene: name='{_flowchart.name}' instanceId={_flowchart.GetInstanceID()}");
+                }
+            }
+
+            return found;
         }
 
         protected virtual void SyncFromFlowchart()
@@ -481,7 +628,7 @@ namespace Amanita.VScripting.EditorUtils
             static bool IsValidVar(IVariable elem)
             {
                 // As in neither null or a destroyed UnityObj
-                return elem != null && (elem is not UnityObj uo || uo != null);
+                return elem != null && (elem is not UnityObj unityObj || unityObj != null);
             }
 
             varsToDisplay.AddRange(sourceToAdd);
@@ -544,6 +691,32 @@ namespace Amanita.VScripting.EditorUtils
 
         VisualElement _testMaterializedContainer;
         #endregion
+
+        protected virtual void OnVariableSourceAssetsRefreshed()
+        {
+            EditorApplication.delayCall += ResponseAfterDelay;
+            void ResponseAfterDelay()
+            {
+                _listDisplay.Rebuild();
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Simple reference-equality comparer used for dictionaries that must use object identity
+    /// rather than value-based equality.
+    /// </summary>
+    internal sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+        where T : class
+    {
+        public bool Equals(T x, T y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(T obj)
+        {
+            if (obj == null) return 0;
+            return RuntimeHelpers.GetHashCode(obj);
+        }
     }
 
     public interface IVariableListView : IDisposable

@@ -1,6 +1,6 @@
 .varRowTypeLabel 
 {
-	background-image: url("project://database/Assets/Amanita/Resources/_EditorResources/Textures/rainbowTex.png");
+	background-image: var(--rainbow-tex);
 	-unity-background-scale-mode: stretch-to-fill;
 
 	color: white;        /* ensure text stays readable */

@@ -1,0 +1,22 @@
+What fixed the issue with the row visuals getting emptied on assembly reload:
+
+•	Matching holders by stable ID instead of by reference: FindPersistentHolderFor now prefers the holder ItemID when locating a MuscariableHolder. This avoids failing matches when Unity rehydrates SerializeReference objects into new in-memory instances.
+•	Rebind-on-assembly-reload that rebuilds rows: VariableListView now listens to AssemblyReloadEvents.afterAssemblyReload, releases stale VariableRow instances, recreates rows from the authoritative varsToDisplay, resolves holders again, and assigns new SerializedObject instances to each row. That removes stale in-memory references and stale SerializedObject targets created before reload.
+•	Small retry/delay loop around rebind: the rebind is scheduled via EditorApplication.delayCall and retried a few times. That gives VariableSourceAssetMaintenance.RefreshVariableSourceAssets and Unity deserialization time to finish before the ListView binds.
+•	SerializedObject refresh + sanity checks in the visual handler: RowVisualHandler calls _serializedVar.Update(), checks FindProperty(...) for the binding paths, then RowRoot.Bind(_serializedVar) and calls RowRoot.MarkDirtyRepaint(). That guarantees the SerializedObject is up-to-date and that UIElements have the properties they bind to, avoiding silent bind failures.
+•	Diagnostic logs and safe unsubscribe: lots of targeted log lines were added to verify ordering and matches; handlers unsubscribe on Dispose to avoid duplicate subscriptions/leaks.
+
+Why those solved the problem:
+
+•	Root cause: domain/assembly reload + SerializeReference leads Unity to deserialize objects into different in-memory instances. Your UI code relied on reference equality and previously-created SerializedObject targets; after reload those references could be different or stale, so UIElements showed empty fields even though the underlying Muscariables and MuscariableHolders were correct on disk.
+•	Matching by ItemID uses a stable, serialized identifier that survives reloads and reliably finds the correct MuscariableHolder.
+•	Releasing and recreating rows prevents carrying forward stale VisualElement/binding state that can break after reload. Recreating SerializedObject instances ensures they target the current live ScriptableObject instances.
+•	Delaying/retrying rebind ensures the maintenance code that re-links holders runs first; otherwise the ListView can run too early and find no holders.
+•	Calling SerializedObject.Update() + validating properties + forcing a repaint addresses the UIElements binding semantics — UIElements must see consistent SerializedProperty instances and be told to repaint to reflect new data.
+
+Practical notes/Future reccomendations:
+
+•	Keep the diagnostic logs while you verify stability across editor sessions, then remove or lower verbosity.
+•	If you want a more deterministic flow, expose a completion callback from VariableSourceAssetMaintenance.RefreshVariableSourceAssets and call the ListView rebind directly after that instead of retrying. That removes the need for a retry loop.
+•	Consider adding a small integration test around an assembly reload (the codebase has test scaffolding) to catch regressions.
+•	If you later need rows to persist visually (no flicker), implement row remapping by ItemID to reuse row visuals where possible instead of full replacement — but only after the core binding is stable.

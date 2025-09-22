@@ -28,9 +28,10 @@ namespace Amanita.VScripting.EditorUtils
             VariableSourceAsset.AnyRightBeforeVarAdded += OnRightBeforeAnyAssetAddVariable;
         }
 
-        private static void RefreshVariableSourceAssets()
+        public static void RefreshVariableSourceAssets()
         {
             // We only count the assets in a Resources folder
+            Debug.Log("Calling RefreshVariableSourceAssets..."); 
             IList<VariableSourceAsset> allAssets = AssetResolver.LoadAllFromResources<VariableSourceAsset>("").ToList();
             AssetResolver.StartAssetEditing();
             foreach (var asset in allAssets)
@@ -62,8 +63,11 @@ namespace Amanita.VScripting.EditorUtils
                 Debug.Log($"Refreshed VariableSourceAsset {asset.name}");
             }
             AssetResolver.StopAssetEditing();
-            AssetResolver.RefreshAssets();
+            AssetResolver.RefreshAssets(); 
+            AssetsRefreshed();//
         }
+
+        public static System.Action AssetsRefreshed = delegate { };
 
         private static void OnRightBeforeAnyAssetAddVariable(Muscariable muscari)
         {

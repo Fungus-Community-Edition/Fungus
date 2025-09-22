@@ -39,5 +39,22 @@ namespace Amanita.VScripting.EditorUtils
                 .OfType<MuscariableHolder>().ToList();
             return fallbackHolders.FirstOrDefault(holder => holder.ItemID == variable.ItemID && holder.ContentType.Equals(variable.ContentType));
         }
+
+        public static void RefreshHolders(this VariableSourceAsset thisAsset)
+        {
+            var resolver = VariableSourceAssetMaintenance.AssetResolver;
+            if (resolver != null)
+            {
+                string pathToThis = resolver.GetAssetPath(thisAsset);
+                IList<MuscariableHolder> holders = resolver.LoadAllAssetsAtPath<MuscariableHolder>(pathToThis)
+                    .OfType<MuscariableHolder>().ToList();
+
+                foreach (var elem in holders)
+                {
+                    elem.Refresh();
+                }
+
+            }
+        }
     }
 }
