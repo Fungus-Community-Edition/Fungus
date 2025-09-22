@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
 using Amanita.VScripting;
@@ -12,13 +12,14 @@ using Amanita.VScripting;
 // Optional: avoid pulling conflicting types into the global scope
 using Amanita.EditorUtils;
 using Collections;
-using Amanita.VScripting.EditorUtils; // if you keep helpers here
+using Amanita.VScripting.EditorUtils;
+using Amanita; // if you keep helpers here
 
 namespace VariableOperations
 {
     public class VariableRowManagerTestWindow : EditorWindow
     {
-        [MenuItem("Amanita/Tests/Variable Row Manager Test")]
+        [MenuItem("Tools/Amanita/Tests/Variable Row Manager Test")]
         public static void Open()
         {
             var wnd = GetWindow<VariableRowManagerTestWindow>();
@@ -101,7 +102,7 @@ namespace VariableOperations
             _toolbar.style.paddingTop = 4;
             _toolbar.style.paddingBottom = 4;
 
-            Button Btn(string text, Action onClick)
+            static Button Btn(string text, Action onClick)
             {
                 var b = new Button(onClick) { text = text };
                 b.style.flexShrink = 0;
@@ -174,7 +175,13 @@ namespace VariableOperations
             // Reuse if still around
             if (_flowchart != null) return;
 
-            _ownerGO = GameObject.Find("__VRM_Test_Flowchart") ?? new GameObject("__VRM_Test_Flowchart");
+            _ownerGO = GameObject.Find("__VRM_Test_Flowchart");
+
+            if (_ownerGO == null)
+            {
+                _ownerGO = new GameObject("__VRM_Test_Flowchart");
+            }
+
             _ownerGO.hideFlags = HideFlags.DontSaveInEditor | HideFlags.HideInHierarchy;
 
             _flowchart = _ownerGO.GetComponent<Flowchart>();
@@ -221,9 +228,14 @@ namespace VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
-            _variableTemplate ??= Resources.Load<VisualTreeAsset>(pathToUxml);
+            const string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
             if (_variableTemplate == null)
+            {
+                _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
+            }
+
+            bool stillNothing = _variableTemplate == null;
+            if (stillNothing)
             {
                 Debug.LogError($"VariableRowManagerTestWindow: Could not load UXML at Resources/{pathToUxml}.uxml");
                 return;
@@ -317,8 +329,6 @@ namespace VariableOperations
             MountRowsUI();
         }
 
-        // ------------- Data ops -------------
-
         protected void ClearVariables()
         {
             var list = GetVariables().ToList();
@@ -328,7 +338,7 @@ namespace VariableOperations
             {
                 if (v != null)
                 {
-                    Undo.DestroyObjectImmediate(v as UnityEngine.Object);
+                    Undo.DestroyObjectImmediate(v as UnityObj);
                 }
             }
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
@@ -346,7 +356,7 @@ namespace VariableOperations
             EnsureCacheForAssets(_materials);
             EnsureCacheForAssets(_sprites);
             EnsureRigidbodiesCached();
-            EnsureUnityObjectsCached();
+            EnsureUnityObjsCached();
             
             Undo.IncrementCurrentGroup();
             int varTypeCount = _supportedTypes.Count;
@@ -389,7 +399,7 @@ namespace VariableOperations
                         var = AddVariableComponent<TransformVariable>(trans);
                         break;
                     case 9:
-                        var theObj = _unityObjects.Count > 0 ? _unityObjects[_rng.Next(_unityObjects.Count)] : null;
+                        var theObj = _UnityObjs.Count > 0 ? _UnityObjs[_rng.Next(_UnityObjs.Count)] : null;
                         var = AddVariableComponent<ObjectVariable>(theObj);
                         break;
                     case 10:
@@ -453,7 +463,7 @@ namespace VariableOperations
             typeof(Color),
             typeof(GameObject),
             typeof(Transform),
-            typeof(UnityObject),
+            typeof(UnityObj),
             typeof(Vector3),
             typeof(Vector2),
             typeof(Collider2D),
@@ -477,7 +487,7 @@ namespace VariableOperations
             for (int i = 0; i < count; i++)
             {
                 var v = vars[_rng.Next(vars.Count)];
-                var uo = v as UnityEngine.Object;
+                var uo = v as UnityObj;
                 if (uo == null) continue;
 
                 var so = new SerializedObject(uo);
@@ -499,7 +509,7 @@ namespace VariableOperations
                 {
                     MutateString(valueProp, so);
                 }
-                else if (v.ContentType != null && typeof(UnityEngine.Object).IsAssignableFrom(v.ContentType))
+                else if (v.ContentType != null && typeof(UnityObj).IsAssignableFrom(v.ContentType))
                 {
                     MutateObjectRef(valueProp, so);
                 }
@@ -516,7 +526,7 @@ namespace VariableOperations
 
             // Pick one and mutate via SerializedObject (simulates another inspector/editor change)
             var v = vars[_rng.Next(vars.Count)];
-            var uo = v as UnityEngine.Object;
+            var uo = v as UnityObj;
             if (uo == null) return;
 
             Undo.RecordObject(uo, "External Change Variable");
@@ -528,7 +538,7 @@ namespace VariableOperations
             else if (v is IntegerVariable) MutateInt(valueProp, so);
             else if (v is BooleanVariable) MutateBool(valueProp, so);
             else if (v is StringVariable) MutateString(valueProp, so);
-            else if (v.ContentType != null && typeof(UnityEngine.Object).IsAssignableFrom(v.ContentType)) MutateObjectRef(valueProp, so);
+            else if (v.ContentType != null && typeof(UnityObj).IsAssignableFrom(v.ContentType)) MutateObjectRef(valueProp, so);
 
             UpdateStatus();
         }
@@ -537,14 +547,23 @@ namespace VariableOperations
 
         protected IEnumerable<IVariable> GetVariables()
         {
-            return _flowchart?.Variables?.Cast<IVariable>() ?? Enumerable.Empty<IVariable>();
+            IEnumerable<IVariable> result = null;
+
+            if (_flowchart != null)
+            {
+                result = _flowchart.Variables.Cast<IVariable>();
+            }
+
+            result ??= Enumerable.Empty<IVariable>();
+
+            return result;
         }
 
         protected TVarType AddVariableComponent<TVarType>(object valueForInit)
     where TVarType : Component, IVariable
         {
             var varComponent = Undo.AddComponent<TVarType>(_ownerGO);
-            var unityObj = varComponent as UnityEngine.Object;
+            var unityObj = varComponent as UnityObj;
             var serializedObj = new SerializedObject(unityObj);
 
             var valueProp = FindValueProperty(serializedObj);
@@ -560,7 +579,7 @@ namespace VariableOperations
             {
                 valueProp.colorValue = colorVal;
             }
-            else if (valueForInit is UnityEngine.Object unityObject && valueProp != null) valueProp.objectReferenceValue = unityObject;
+            else if (valueForInit is UnityObj UnityObj && valueProp != null) valueProp.objectReferenceValue = UnityObj;
 
             serializedObj.ApplyModifiedProperties();
 
@@ -723,17 +742,17 @@ namespace VariableOperations
         protected List<Rigidbody> _rigidbodyThreeDs = new List<Rigidbody>();
         protected List<Rigidbody2D> _rigidbodyTwoDs = new List<Rigidbody2D>();
 
-        protected virtual void EnsureUnityObjectsCached()
+        protected virtual void EnsureUnityObjsCached()
         {
             // We want there to be a variety, hence why we're not populating by checking guids
             // like we did with the other asset types
-            if (_unityObjects.Count >= _cacheCapacity && !_unityObjects.Contains(null)) return;
+            if (_UnityObjs.Count >= _cacheCapacity && !_UnityObjs.Contains(null)) return;
 
-            _unityObjects.Clear();
+            _UnityObjs.Clear();
             int amountAdded = 0;
             foreach (var go in _gameObjects)
             {
-                _unityObjects.Add(go);
+                _UnityObjs.Add(go);
                 amountAdded++;
                 if (amountAdded > 2)
                     break;
@@ -742,7 +761,7 @@ namespace VariableOperations
             amountAdded = 0;
             foreach (var clip in _audioClips) 
             {
-                _unityObjects.Add(clip);
+                _UnityObjs.Add(clip);
                 amountAdded++;
                 if (amountAdded > 2)
                     break;
@@ -751,7 +770,7 @@ namespace VariableOperations
             amountAdded = 0;
             foreach (var coll in _colliderThreeDObjects)
             {
-                _unityObjects.Add(coll);
+                _UnityObjs.Add(coll);
                 amountAdded++;
                 if (amountAdded > 2)
                     break;
@@ -760,7 +779,7 @@ namespace VariableOperations
             amountAdded = 0;
             foreach (var coll in _colliderTwoDObjects)
             {
-                _unityObjects.Add(coll);
+                _UnityObjs.Add(coll);
                 amountAdded++;
                 if (amountAdded > 2)
                     break;
@@ -769,7 +788,7 @@ namespace VariableOperations
             // We won't need to add more stuff than this
         }
 
-        protected virtual void EnsureCacheForAssets<T>(IList<T> cacheInvolved) where T: UnityEngine.Object
+        protected virtual void EnsureCacheForAssets<T>(IList<T> cacheInvolved) where T: UnityObj
         {
             if (cacheInvolved.Count >= _cacheCapacity && !cacheInvolved.Contains(default))
             {
@@ -791,7 +810,7 @@ namespace VariableOperations
 
         }
 
-        protected IList<UnityObject> _unityObjects = new List<UnityObject>();
+        protected IList<UnityObj> _UnityObjs = new List<UnityObj>();
         protected IList<Collider> _colliderThreeDObjects = new List<Collider>();
         protected IList<Collider2D> _colliderTwoDObjects = new List<Collider2D>();
         protected IList<Texture> _textures = new List<Texture>();

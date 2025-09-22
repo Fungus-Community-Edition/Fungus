@@ -1,25 +1,32 @@
 :root
 {
 	--main-font: resource('Fonts/Exo2/Exo2-Regular');
-	--dark-mode-text-color: rgb(230, 230, 230);
-	--dark-mode-text-bg-color: rgb(26, 26, 26);
+	--dark-mode-text-color: var(--dark-mode-text-color);
+	--dark-mode-text-bg-color: #1A1A1A;
 	--text-field-font-size: 14px;
 	--text-field-border-radius: 5px;
+	--normal-row-height: 30px;
+	--rainbow-tex: url("project://database/Assets/Amanita/Editor/Resources/Textures/rainbowTex.png");
+	--slight-left-padding-only: 0px 0px 0px 5px;
+	--slight-bottom-margin-only: 0px 0px 3px 0px;
+	--slightly-rounded: 3px;
+	--default-row-width: 435px;
+	--key-field-bg-color: rgb(26, 26, 26);
 }
 
 #VarRowRoot 
 {
 	flex-direction: row;
 	height: 30px;
-	margin-bottom: 3px;
-	/*margin-right: 5px;*/
-	border-radius: 2px;
+	margin-bottom: 3px; /* Space between rows */
+	border-radius: var(--slightly-rounded);
+	width: var(--default-row-width);
 }
 
 .removeButton 
 {
 	width: 30px;
-	border-radius: 2px;
+	border-radius: var(--slightly-rounded);
 	padding: 0px;
 	margin: 0px 0px 0px 2px;
 	flex-grow: 0;
@@ -29,20 +36,21 @@
 .varRowTypeLabel
 {
 	-unity-font-definition: var(--main-font);
-	color: rgb(229, 229, 229);
+	color: var(--dark-mode-text-color);
 	-unity-text-align: middle-left;
 	width: 75px;
-	padding: 0 0 0 5px;
+	padding: var(--slight-left-padding-only);
 	margin: 0px;
 	font-size: 14px;
+	border-radius: var(--slightly-rounded);
 }
 
 .keyInput
 {
 	-unity-font-definition: var(--main-font);
-	background-color: rgb(26, 26, 26);
-	color: rgb(230, 230, 230);
-	border-radius: 2px;
+	background-color: var(--key-field-bg-color);
+	color: var(--dark-mode-text-color);
+	border-radius: var(--slightly-rounded);
 	padding: 0 2px 0 2px;
 	width: 130px;
 	margin: 0 2px 0 1px;
@@ -54,8 +62,8 @@
 {
 	-unity-font-definition: var(--main-font);
 	background-color: rgb(26, 26, 26);
-	color: rgb(230, 230, 230);
-	border-radius: 2px;
+	color: var(--dark-mode-text-color);
+	border-radius: var(--slightly-rounded);
 	padding: 2px;
 	width: 150px;
 	margin: 0;
@@ -68,11 +76,15 @@
 	width: 120px;
 	padding: 0;
 	-unity-text-align: middle-left;
-	border-radius: 2px;
+	border-radius: var(--slightly-rounded);
 	border-color: white;
 	font-size: 14px;
 	margin: 0px 3px 0px 0px;
+}
 
+#ValueField
+{
+	height: 100%;
 }
 
 .scopeRoot 
@@ -94,7 +106,7 @@
 	height: 100%;
 	padding: 0px;
 	margin: 0;
-	border-radius: 2px;
+	border-radius: var(--slightly-rounded);
 }
 
 .scopeRoot > VisualElement > VisualElement 

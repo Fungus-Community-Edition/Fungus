@@ -1,46 +1,15 @@
 using Amanita.EditorUtils;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
     public abstract class NumericRowVisualHandler<T> : RowVisualHandler<T>
     {
-        protected override void RegisterVisualElements()
+        protected override void ToggleValueChangeSubs(bool on)
         {
-            base.RegisterVisualElements();
-            valueField = RowRoot.Q<TextValueField<T>>("ValueField");
-            toRespondToFocusLoss.Add(valueField);
-        }
-
-        protected TextValueField<T> valueField;
-
-        protected override void ApplyDefaultBindingPaths()
-        {
-            base.ApplyDefaultBindingPaths();
-            valueField.bindingPath = "value";
-        }
-
-        protected override void ApplyMuscariableBindingPathOverrides()
-        {
-            base.ApplyMuscariableBindingPathOverrides();
-            valueField.bindingPath = $"{muscariableMemberName}.{valueField.bindingPath}";
-        }
-
-        protected override void ToggleSubsForSignalingToTheOutside(bool on)
-        {
-            base.ToggleSubsForSignalingToTheOutside(on);
-            if (valueField == null)
-            {
-                return;
-            }
-            if (on)
-            {
-                valueField.RegisterValueChangedCallback(OnValueFieldChanged);
-            }
-            else
-            {
-                valueField.UnregisterValueChangedCallback(OnValueFieldChanged);
-            }
+            base.ToggleValueChangeSubs(on);
+            ToggleValueChange(valueField as TextValueField<T>, OnValueFieldChanged, on);
         }
 
         protected virtual void OnValueFieldChanged(ChangeEvent<T> evt)
@@ -49,26 +18,40 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    [RowVisualHandler("Primitives", typeof(float), "Float",
-        "UIToolkitTemplates/VarRows/FloatVariableRow")]
+    [RowVisualHandler("Numeric", typeof(float), "Float",
+        "UIToolkitTemplates/VarRows/Numeric/FloatVariableRow")]
     public class FloatRowVisualHandler : NumericRowVisualHandler<float>
     {
         
     }
 
-    [RowVisualHandler("Primitives", typeof(int), "Integer",
-        "UIToolkitTemplates/VarRows/IntVariableRow")]
+    [RowVisualHandler("Numeric", typeof(int), "Integer",
+        "UIToolkitTemplates/VarRows/Numeric/IntVariableRow")]
     public class IntRowVisualHandler : NumericRowVisualHandler<int>
     {
         
     }
 
     // Bools work off toggles, not text value fields, so...
-    [RowVisualHandler("Primitives", typeof(bool), "Boolean",
-        "UIToolkitTemplates/VarRows/BoolVariableRow")]
+    [RowVisualHandler("Numeric", typeof(bool), "Boolean",
+        "UIToolkitTemplates/VarRows/Numeric/BoolVariableRow")]
     public class BoolRowVisualHandler : RowVisualHandler<bool>
     {
         
+    }
+
+    [RowVisualHandler("Numeric", typeof(Vector2), "VectorTwo",
+        "UIToolkitTemplates/VarRows/Numeric/VectorTwoVariableRow")]
+    public class VectorTwoRowVisualHandler : RowVisualHandler<Vector2>
+    {
+
+    }
+
+    [RowVisualHandler("Numeric", typeof(Vector3), "VectorThree",
+        "UIToolkitTemplates/VarRows/Numeric/VectorThreeVariableRow")]
+    public class VectorThreeRowVisualHandler : RowVisualHandler<Vector3>
+    {
+
     }
 
 }

@@ -11,48 +11,28 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            textField = RowRoot.Q<TextField>("ValueField");
-            textField.isDelayed = true; // This way, the change events only fire when the user presses enter
-            textField.multiline = true;
-            toRespondToFocusLoss.Add(textField);
-        }
+            textField = valueField as TextField;
 
-        protected TextField textField;
-
-        protected override void ApplyDefaultBindingPaths()
-        {
-            base.ApplyDefaultBindingPaths();
-            textField.bindingPath = "value";
-        }
-
-        protected override void ApplyMuscariableBindingPathOverrides()
-        {
-            base.ApplyMuscariableBindingPathOverrides();
-            textField.bindingPath = $"{muscariableMemberName}.{textField.bindingPath}";
-        }
-
-        protected override void ToggleSubsForSignalingToTheOutside(bool on)
-        {
-            base.ToggleSubsForSignalingToTheOutside(on);
             if (textField == null)
             {
+                Debug.LogError($"StringRowVisualHandler could not find a TextField named in the UXML template. Check your UXML.");
                 return;
             }
 
-            if (on)
-            {
-                textField.RegisterValueChangedCallback(OnTextFieldChanged);
-            }
-            else
-            {
-                textField.UnregisterValueChangedCallback(OnTextFieldChanged);
-            }
+            textField.isDelayed = true; // This way, the change events only fire when the user presses enter
+            textField.multiline = true;
+        }
+
+        protected TextField textField;
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            ToggleValueChange(textField, OnTextFieldChanged, on);
         }
 
         protected virtual void OnTextFieldChanged(ChangeEvent<string> evt)
         {
             AmanitaEditorSignals.ControlValueChanged(evt);
-            Debug.Log($"Triggered OnTextFieldChanged with new value {evt.newValue}");
         }
 
     }

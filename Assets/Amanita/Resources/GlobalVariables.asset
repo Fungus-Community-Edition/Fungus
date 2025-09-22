@@ -13,17 +13,27 @@ MonoBehaviour:
   m_Name: Naruto_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208542805590016
+    rid: 4382208544978763847
   references:
     version: 2
     RefIds:
-    - rid: 4382208542805590016
+    - rid: 4382208544978763847
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1
         key: Naruto
         itemID: 1
-        value: Believe it!
+        value: 'Believe it!
+
+          asfdsf
+
+          asfdasf
+
+          asdfsagfas
+
+          gas
+
+          gvd'
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,7 +60,17 @@ MonoBehaviour:
         scope: 1
         key: Naruto
         itemID: 1
-        value: Believe it!
+        value: 'Believe it!
+
+          asfdsf
+
+          asfdasf
+
+          asdfsagfas
+
+          gas
+
+          gvd'
     - rid: 4382208527121776733
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
@@ -78,11 +98,11 @@ MonoBehaviour:
   m_Name: Var_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208542805590017
+    rid: 4382208544978763848
   references:
     version: 2
     RefIds:
-    - rid: 4382208542805590017
+    - rid: 4382208544978763848
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -102,11 +122,11 @@ MonoBehaviour:
   m_Name: Var1_Holder
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208542805590018
+    rid: 4382208544978763849
   references:
     version: 2
     RefIds:
-    - rid: 4382208542805590018
+    - rid: 4382208544978763849
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
