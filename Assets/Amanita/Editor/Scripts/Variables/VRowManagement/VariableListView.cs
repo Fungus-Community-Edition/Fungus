@@ -3,6 +3,7 @@ using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -274,7 +275,10 @@ namespace Amanita.VScripting.EditorUtils
             return row;
         }
 
-        protected readonly Dictionary<IVariable, VariableRow> _activeRows = new();
+        // Use reference equality for keys to avoid value-based equality collisions that can
+        // cause distinct variable instances to be treated as the same key.
+        protected readonly Dictionary<IVariable, VariableRow> _activeRows =
+            new Dictionary<IVariable, VariableRow>(new ReferenceEqualityComparer<IVariable>());
 
         protected virtual void ReleaseRow(IVariable variable)
         {
@@ -544,6 +548,22 @@ namespace Amanita.VScripting.EditorUtils
 
         VisualElement _testMaterializedContainer;
         #endregion
+    }
+
+    /// <summary>
+    /// Simple reference-equality comparer used for dictionaries that must use object identity
+    /// rather than value-based equality.
+    /// </summary>
+    internal sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+        where T : class
+    {
+        public bool Equals(T x, T y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(T obj)
+        {
+            if (obj == null) return 0;
+            return RuntimeHelpers.GetHashCode(obj);
+        }
     }
 
     public interface IVariableListView : IDisposable

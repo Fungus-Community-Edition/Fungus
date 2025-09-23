@@ -1,7 +1,6 @@
 ﻿using Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -129,7 +128,7 @@ namespace Amanita.VScripting.EditorUtils
             toRespondToFocusLoss.Add(_scopeField);
             if (valueField != null)
             {
-                toRespondToFocusLoss.Add((VisualElement)valueField);
+                toRespondToFocusLoss.Add((BindableElement)valueField);
             }
         }
 
@@ -249,6 +248,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void ToggleValueChangeSubs(bool on)
         {
+            ToggleValueChange(_keyField, OnKeyFieldChanged, on);
             ToggleValueChange(_scopeField, OnEnumFieldChanged, on);
         }
 
@@ -269,6 +269,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 field.UnregisterValueChangedCallback(callback);
             }
+        }
+
+        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
+        {
+            AnyControlValueChanged();
+            AmanitaEditorSignals.ControlValueChanged(evt);
         }
 
         protected virtual void OnEnumFieldChanged(ChangeEvent<Enum> evt)

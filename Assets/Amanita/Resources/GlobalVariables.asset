@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1930287489488375301
+--- !u!114 &-9133047631316814205
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,30 +10,92 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Naruto_Holder
+  m_Name: One Piece
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208544978763847
+    rid: 4382208577217232897
   references:
     version: 2
     RefIds:
-    - rid: 4382208544978763847
+    - rid: 4382208577217232897
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
-        scope: 1
+        scope: 0
+        key: One Piece
+        itemID: 3
+        value: I will become the pirate king!
+--- !u!114 &-6521125577979992507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Var
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208577217232899
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208577217232899
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var
+        itemID: 7
+        value: Some other string!
+--- !u!114 &-5585494080476229275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: someNum
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208577217232900
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208577217232900
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: someNum
+        itemID: 9
+        value: 123
+--- !u!114 &-1249893618195634090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Naruto
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208577217232896
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208577217232896
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
         key: Naruto
         itemID: 1
-        value: 'Believe it!
-
-          asfdsf
-
-          asfdasf
-
-          asdfsagfas
-
-          gas
-
-          gvd'
+        value: Believe it!
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47,45 +109,51 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   variables:
-  - rid: 4382208464457039955
-  - rid: 4382208527121776733
-  - rid: 4382208527121776735
-  _nextVarID: 36
+  - rid: 4382208576841580613
+  - rid: 4382208576841580615
+  - rid: 4382208576841580617
+  - rid: 4382208576841580619
+  - rid: 4382208576841580621
+  _nextVarID: 10
   references:
     version: 2
     RefIds:
-    - rid: 4382208464457039955
+    - rid: 4382208576841580613
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
-        scope: 1
+        scope: 0
         key: Naruto
         itemID: 1
-        value: 'Believe it!
-
-          asfdsf
-
-          asfdasf
-
-          asdfsagfas
-
-          gas
-
-          gvd'
-    - rid: 4382208527121776733
+        value: Believe it!
+    - rid: 4382208576841580615
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: One Piece
+        itemID: 3
+        value: I will become the pirate king!
+    - rid: 4382208576841580617
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Bleach
+        itemID: 5
+        value: Insert quote here!
+    - rid: 4382208576841580619
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Var
-        itemID: 33
-        value: 
-    - rid: 4382208527121776735
+        itemID: 7
+        value: Some other string!
+    - rid: 4382208576841580621
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: Var1
-        itemID: 35
-        value: 0
---- !u!114 &517708918120640263
+        key: someNum
+        itemID: 9
+        value: 123
+--- !u!114 &2100220691410972989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,41 +163,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Var_Holder
+  m_Name: Bleach
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208544978763848
+    rid: 4382208577217232898
   references:
     version: 2
     RefIds:
-    - rid: 4382208544978763848
+    - rid: 4382208577217232898
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: Var
-        itemID: 33
-        value: 
---- !u!114 &7436477831597692082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Var1_Holder
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 4382208544978763849
-  references:
-    version: 2
-    RefIds:
-    - rid: 4382208544978763849
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: Var1
-        itemID: 35
-        value: 0
+        key: Bleach
+        itemID: 5
+        value: Insert quote here!
