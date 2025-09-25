@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: One Piece
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208577217232897
+    rid: 4382208629083471953
   references:
     version: 2
     RefIds:
-    - rid: 4382208577217232897
+    - rid: 4382208629083471953
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -37,11 +37,11 @@ MonoBehaviour:
   m_Name: Var
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208577217232899
+    rid: 4382208629083471955
   references:
     version: 2
     RefIds:
-    - rid: 4382208577217232899
+    - rid: 4382208629083471955
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -61,17 +61,41 @@ MonoBehaviour:
   m_Name: someNum
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208577217232900
+    rid: 4382208629083471956
   references:
     version: 2
     RefIds:
-    - rid: 4382208577217232900
+    - rid: 4382208629083471956
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: someNum
         itemID: 9
         value: 123
+--- !u!114 &-5102485489810332779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Var1
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 4382208629083471957
+  references:
+    version: 2
+    RefIds:
+    - rid: 4382208629083471957
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var1
+        itemID: 11
+        value: 
 --- !u!114 &-1249893618195634090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,11 +109,11 @@ MonoBehaviour:
   m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208577217232896
+    rid: 4382208629083471952
   references:
     version: 2
     RefIds:
-    - rid: 4382208577217232896
+    - rid: 4382208629083471952
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -114,7 +138,8 @@ MonoBehaviour:
   - rid: 4382208576841580617
   - rid: 4382208576841580619
   - rid: 4382208576841580621
-  _nextVarID: 10
+  - rid: 4382208577255506001
+  _nextVarID: 12
   references:
     version: 2
     RefIds:
@@ -153,6 +178,13 @@ MonoBehaviour:
         key: someNum
         itemID: 9
         value: 123
+    - rid: 4382208577255506001
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Var1
+        itemID: 11
+        value: 
 --- !u!114 &2100220691410972989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,11 +198,11 @@ MonoBehaviour:
   m_Name: Bleach
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208577217232898
+    rid: 4382208629083471954
   references:
     version: 2
     RefIds:
-    - rid: 4382208577217232898
+    - rid: 4382208629083471954
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0

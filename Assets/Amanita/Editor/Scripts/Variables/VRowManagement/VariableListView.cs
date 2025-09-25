@@ -28,6 +28,11 @@ namespace Amanita.VScripting.EditorUtils
             // Resolver: prefer explicit injection, fallback to the global maintenance resolver.
             _assetResolver = initArgs.AssetResolver ?? VariableSourceAssetMaintenance.AssetResolver;
 
+            // Rebind active rows after domain/assembly reloads so SerializedObjects (holders/assets)
+            // are refreshed and UI fields don't appear empty.
+            AssemblyReloadEvents.afterAssemblyReload -= HandleAfterAssemblyReload;
+            AssemblyReloadEvents.afterAssemblyReload += HandleAfterAssemblyReload;
+
             if (_variableSourceContext == null)
             {
                 Debug.LogWarning($"VariableListView was not given a valid variable source context" +
@@ -117,6 +122,13 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
+                        // Diagnostics: log bind attempt
+                        try
+                        {
+                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' varType={currentVar.GetType().FullName} varHash={RuntimeHelpers.GetHashCode(currentVar)}");
+                        }
+                        catch { }
+
                         rowHolder.Clear();
                         rowHolder.userData = null;
                         VariableRow row = GetRowFor(currentVar);
@@ -144,15 +156,46 @@ namespace Amanita.VScripting.EditorUtils
                         // **Resolve the correct binding target**
                         var targetObj = GetBindingTarget(currentVar);
 
+                        // Diagnostics: log target resolution
+                        if (targetObj == null)
+                        {
+                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: null");
+                        }
+                        else
+                        {
+                            string path = null;
+                            try
+                            {
+                                path = _assetResolver?.GetAssetPath(targetObj);
+                            }
+                            catch { }
+                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
+                        }
+
                         // **Inject the SerializedObject into the already-initialized row**
                         if (targetObj != null)
                         {
-                            var so = new SerializedObject(targetObj);
-                            row.VisualHandler.SerializedVar = so;
+                            try
+                            {
+                                var so = new SerializedObject(targetObj);
+                                row.VisualHandler.SerializedVar = so;
+                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' Assigned SerializedObject targeting instanceId={targetObj.GetInstanceID()}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogWarning($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
+                            }
                         }
 
                         // Attach visual
-                        rowHolder.Add(row.RootElement);
+                        try
+                        {
+                            rowHolder.Add(row.RootElement);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
+                        }
 
                         // Store the row itself (not the variable) for any per-visual cleanup
                         rowHolder.userData = row;
@@ -169,6 +212,13 @@ namespace Amanita.VScripting.EditorUtils
                         // rows here can lead to empty ones getting displayed.
                         // Best leave the row-releases as responses to vars getting
                         // removed from the source list and such.
+                        // Diagnostics: log unbind
+                        try
+                        {
+                            if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
+                                Debug.Log($"[VListView.unbindItem] index={index} key='{r.VarToRepresent.Key}'");
+                        }
+                        catch { }
                         rowHolder.userData = null;
                         rowHolder.Clear();
                     };
@@ -179,6 +229,13 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _listDisplay.destroyItem = rowHolder =>
                     {
+                        // Diagnostics: log destroy
+                        try
+                        {
+                            if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
+                                Debug.Log($"[VListView.destroyItem] destroying row for key='{r.VarToRepresent.Key}'");
+                        }
+                        catch { }
                         rowHolder.userData = null;
                         rowHolder.Clear();
                     };
@@ -221,23 +278,63 @@ namespace Amanita.VScripting.EditorUtils
                 .OfType<MuscariableHolder>()
                 .ToList();
 
-            foreach (var elem in holders)
+            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'. holders.Count={holders.Count}");
+
+            LogDiscoveredHoldersForDiagnostings();
+            void LogDiscoveredHoldersForDiagnostings()
             {
-                // Some holders may expose Inner property/field; prefer property check if available
-                try
+                for (int i = 0; i < holders.Count; i++)
                 {
-                    if (elem.Inner == variable)
-                        return elem;
-                }
-                catch
-                {
-                    // be defensive: if holder implementation differs, fall back to reference equality on available fields
-                    var inner = elem.Inner;
-                    if (inner == variable)
-                        return elem;
+                    var holderElem = holders[i];
+                    int innerHash = 0;
+                    string innerKey = "(null)";
+                    try
+                    {
+                        if (holderElem.Inner != null)
+                        {
+                            innerHash = RuntimeHelpers.GetHashCode(holderElem.Inner);
+                            innerKey = holderElem.Inner.Key;
+                        }
+                    }
+                    catch { /* ignore */ }
+                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemID} innerKey='{innerKey}' innerHash={innerHash}");
                 }
             }
 
+            // 1) Prefer matching by stable ItemID (survives domain reloads)
+            if (variable != null)
+            {
+                var byId = holders.FirstOrDefault(elem => elem.ItemID == variable.ItemID);
+                if (byId != null)
+                {
+                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemID}");
+                    return byId;
+                }
+            }
+
+            // 2) Fallback: try matching by the Inner reference (existing behavior)
+            foreach (var elem in holders)
+            {
+                try
+                {
+                    if (elem.Inner == variable)
+                    {
+                        Debug.Log($"[FindPersistentHolderFor] Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
+                        return elem;
+                    }
+                }
+                catch
+                {
+                    var inner = elem.Inner;
+                    if (inner == variable)
+                    {
+                        Debug.Log($"[FindPersistentHolderFor] (fallback) Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
+                        return elem;
+                    }
+                }
+            }
+
+            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'");
             return null;
         }
 
@@ -263,13 +360,19 @@ namespace Amanita.VScripting.EditorUtils
             bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
             if (rowAlreadyAssignedToIt)
             {
+                Debug.Log($"[GetOrCreateRow] Reusing existing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 return existing;
             }
 
             var row = _rowFactory.Create(variable);
             if (row != null)
             {
+                Debug.Log($"[GetOrCreateRow] Created new row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)} handlerType={row.VisualHandler?.GetType().FullName}");
                 _activeRows[variable] = row;
+            }
+            else
+            {
+                Debug.LogWarning($"[GetOrCreateRow] Factory returned null row for key='{variable.Key}'");
             }
 
             return row;
@@ -285,6 +388,7 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
             {
+                Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 _activeRows.Remove(variable);
                 _rowFactory?.Release(row);
             }
@@ -293,6 +397,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
+            Debug.Log($"[ReleaseAllActiveRows] Releasing {_activeRows.Count} active rows");
             foreach (var rowElem in _activeRows.Keys.ToList())
                 ReleaseRow(rowElem);
             _activeRows.Clear();
@@ -378,6 +483,12 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
+
+            // Unsubscribe from assembly reloads
+            AssemblyReloadEvents.afterAssemblyReload -= HandleAfterAssemblyReload;
+
+            // Prevent any pending rebind retries from running
+            _rebindCancelled = true;
 
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
@@ -548,6 +659,161 @@ namespace Amanita.VScripting.EditorUtils
 
         VisualElement _testMaterializedContainer;
         #endregion
+
+        // Called after assemblies are reloaded. The problem being addressed:
+        // SerializedObjects that back each VariableRow can end up pointing at
+        // re-created/different ScriptableObject instances after a domain reload.
+        // Re-resolving the binding target and re-assigning the SerializedObject
+        // prevents the visible UI from showing empty fields.
+        protected void HandleAfterAssemblyReload()
+        {
+            // Reset attempts and schedule the first rebind. We use a retry loop because
+            // VariableSourceAssetMaintenance (which repairs SerializeReference holders)
+            // runs on the same assembly-reload event. If we rebind too early we may not
+            // find persistent MuscariableHolders yet and end up with empty UI.
+            _rebindAttempt = 0;
+            _rebindCancelled = false;
+            ScheduleRebind();
+        }
+
+        // Retry scheduling state
+        private int _rebindAttempt;
+        private const int _maxRebindAttempts = 6;
+        private bool _rebindCancelled;
+
+        private void ScheduleRebind()
+        {
+            if (_isDisposed || _rebindCancelled) return;
+
+            // Ensure we don't spam delayCall entries: schedule a single delayed attempt.
+            EditorApplication.delayCall += RebindAttempt;
+        }
+
+        private void RebindAttempt()
+        {
+            if (_isDisposed || _rebindCancelled) return;
+
+            int unresolved = RebindAllActiveRowsInternal();
+
+            // If some bindings could not be resolved, retry a few times to allow
+            // VariableSourceAssetMaintenance and Unity to finish reconstructing sub-assets.
+            if (unresolved > 0 && ++_rebindAttempt < _maxRebindAttempts)
+            {
+                // schedule another attempt on next idle frame
+                EditorApplication.delayCall += RebindAttempt;
+            }
+            else if (unresolved > 0)
+            {
+                Debug.LogWarning($"VariableListView: Rebind completed with {unresolved} unresolved bindings after {_rebindAttempt} attempts. UI may appear empty for those entries.");
+            }
+        }
+
+        // Returns count of unresolved variables (where no persistent holder / binding target found).
+        protected int RebindAllActiveRowsInternal()
+        {
+            try
+            {
+                Debug.Log($"[RebindAllActiveRowsInternal] Starting rebind. varsToDisplay.Count={varsToDisplay?.Count ?? 0} activeRows={_activeRows.Count}");
+
+                // If there are no variables or no factory, nothing to do.
+                if (varsToDisplay == null || varsToDisplay.Count == 0 || _rowFactory == null)
+                    return 0;
+
+                // Capture snapshot of current variables (these are the authoritative objects
+                // after a domain reload). We'll rebuild _activeRows to point to these.
+                var currentVars = varsToDisplay.ToList();
+
+                // Release any rows that reference old object instances / SerializedObjects.
+                ReleaseAllActiveRows();
+
+                int unresolvedCount = 0;
+
+                // Recreate rows for the current variables and rebind their SerializedObjects.
+                foreach (var variable in currentVars)
+                {
+                    if (variable == null)
+                    {
+                        Debug.Log("[RebindAllActiveRowsInternal] encountered null variable in snapshot");
+                        continue;
+                    }
+
+                    Debug.Log($"[RebindAllActiveRowsInternal] Rebinding var key='{variable.Key}' varType={variable.GetType().FullName} varHash={RuntimeHelpers.GetHashCode(variable)}");
+
+                    var row = GetOrCreateRow(variable);
+                    if (row == null)
+                    {
+                        Debug.LogWarning($"[RebindAllActiveRowsInternal] GetOrCreateRow returned null for key='{variable.Key}'");
+                        continue;
+                    }
+
+                    // Make sure the visual handler knows the current variable
+                    try
+                    {
+                        row.VisualHandler.Variable = variable;
+                    }
+                    catch { /* defensive */ }
+
+                    // Resolve the correct target object (MuscariableHolder or legacy UnityObj)
+                    var targetObj = GetBindingTarget(variable);
+                    if (targetObj != null)
+                    {
+                        string path = null;
+                        try { path = _assetResolver?.GetAssetPath(targetObj); } catch { }
+                        Debug.Log($"[RebindAllActiveRowsInternal] Found target for '{variable.Key}': type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
+                        try
+                        {
+                            row.VisualHandler.SerializedVar = new SerializedObject(targetObj);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning($"VariableListView: failed to assign SerializedObject to re-created row for '{variable.Key}': {ex.Message}");
+                            row.VisualHandler.SerializedVar = null;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[RebindAllActiveRowsInternal] No target found for '{variable.Key}'");
+                        // If this is an asset-backed variable (not a legacy UnityObj) and we couldn't
+                        // find a holder, count it unresolved so we can retry later.
+                        bool expectsPersistentHolder = !(variable is UnityObj) && _variableSourceContext != null;
+                        if (expectsPersistentHolder)
+                            unresolvedCount++;
+
+                        // No persistent holder; keep SerializedVar null so UI won't show stale data.
+                        row.VisualHandler.SerializedVar = null;
+                    }
+
+                    // Ensure the row's visuals are refreshed so bindings are applied.
+                    try
+                    {
+                        row.VisualHandler.Refresh();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"[RebindAllActiveRowsInternal] Refresh failed for '{variable.Key}': {ex.Message}");
+                    }
+                }
+
+                // Finally refresh the ListView so bind/unbind flows re-run on the displayed rows.
+                Refresh();
+
+                Debug.Log($"[RebindAllActiveRowsInternal] Finished rebind. unresolvedCount={unresolvedCount}");
+                return unresolvedCount;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return 0;
+            }
+        }
+
+        // Public entry kept for backward compatibility: schedules the rebind flow.
+        protected void RebindAllActiveRows()
+        {
+            _rebindAttempt = 0;
+            _rebindCancelled = false;
+            ScheduleRebind();
+        }
     }
 
     /// <summary>
