@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: One Piece
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471953
+    rid: 4382208629083471961
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471953
+    - rid: 4382208629083471961
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -37,11 +37,11 @@ MonoBehaviour:
   m_Name: Var
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471955
+    rid: 4382208629083471963
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471955
+    - rid: 4382208629083471963
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -61,11 +61,11 @@ MonoBehaviour:
   m_Name: someNum
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471956
+    rid: 4382208629083471964
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471956
+    - rid: 4382208629083471964
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -85,17 +85,17 @@ MonoBehaviour:
   m_Name: Var1
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471957
+    rid: 4382208629083471965
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471957
+    - rid: 4382208629083471965
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Var1
         itemID: 11
-        value: 
+        value: xvty4iw8ty
 --- !u!114 &-1249893618195634090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,11 +109,11 @@ MonoBehaviour:
   m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471952
+    rid: 4382208629083471960
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471952
+    - rid: 4382208629083471960
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -184,7 +184,7 @@ MonoBehaviour:
         scope: 0
         key: Var1
         itemID: 11
-        value: 
+        value: xvty4iw8ty
 --- !u!114 &2100220691410972989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,11 +198,11 @@ MonoBehaviour:
   m_Name: Bleach
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 4382208629083471954
+    rid: 4382208629083471962
   references:
     version: 2
     RefIds:
-    - rid: 4382208629083471954
+    - rid: 4382208629083471962
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0

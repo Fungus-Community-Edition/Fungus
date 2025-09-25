@@ -25,7 +25,7 @@ namespace Amanita.VScripting.EditorUtils
             AssemblyReloadEvents.afterAssemblyReload += RefreshVariableSourceAssets;
 
             VariableSourceAsset.AnyRightBeforeVarAdded -= OnRightBeforeAnyAssetAddVariable;
-            VariableSourceAsset.AnyRightBeforeVarAdded += OnRightBeforeAnyAssetAddVariable;//
+            VariableSourceAsset.AnyRightBeforeVarAdded += OnRightBeforeAnyAssetAddVariable;
         }
 
         public static void RefreshVariableSourceAssets()
@@ -64,7 +64,10 @@ namespace Amanita.VScripting.EditorUtils
             }
             AssetResolver.StopAssetEditing();
             AssetResolver.RefreshAssets(); 
+            AssetsRefreshed();//
         }
+
+        public static System.Action AssetsRefreshed = delegate { };
 
         private static void OnRightBeforeAnyAssetAddVariable(Muscariable muscari)
         {

@@ -30,8 +30,8 @@ namespace Amanita.VScripting.EditorUtils
 
             // Rebind active rows after domain/assembly reloads so SerializedObjects (holders/assets)
             // are refreshed and UI fields don't appear empty.
-            AssemblyReloadEvents.afterAssemblyReload -= HandleAfterAssemblyReload;
-            AssemblyReloadEvents.afterAssemblyReload += HandleAfterAssemblyReload;
+            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
+            VariableSourceAssetMaintenance.AssetsRefreshed += OnVariableSourceAssetsRefreshed;
 
             if (_variableSourceContext == null)
             {
@@ -89,7 +89,7 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _listDisplay.makeItem = () =>
                     {
-                        // The items made here will be the parents of the var rows'
+                        // The items made here will be the parents of the var row handlers'
                         // root elements
                         var rowHolder = new VisualElement { name = "VariableRowContainer" };
                         var styleForElem = rowHolder.style;
@@ -122,13 +122,6 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
-                        // Diagnostics: log bind attempt
-                        try
-                        {
-                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' varType={currentVar.GetType().FullName} varHash={RuntimeHelpers.GetHashCode(currentVar)}");
-                        }
-                        catch { }
-
                         rowHolder.Clear();
                         rowHolder.userData = null;
                         VariableRow row = GetRowFor(currentVar);
@@ -137,11 +130,11 @@ namespace Amanita.VScripting.EditorUtils
                             VariableRow row = GetOrCreateRow(currentVar);
                             if (row == null)
                             {
-                                Debug.LogWarning($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
+                                Debug.LogError($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
                             }
                             else if (row.RootElement == null)
                             {
-                                Debug.LogWarning($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
+                                Debug.LogError($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
                                 row = null;
                             }
 
@@ -183,7 +176,7 @@ namespace Amanita.VScripting.EditorUtils
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogWarning($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
+                                Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
                             }
                         }
 
@@ -194,7 +187,7 @@ namespace Amanita.VScripting.EditorUtils
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogWarning($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
+                            Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
                         }
 
                         // Store the row itself (not the variable) for any per-visual cleanup
@@ -232,8 +225,10 @@ namespace Amanita.VScripting.EditorUtils
                         // Diagnostics: log destroy
                         try
                         {
-                            if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
-                                Debug.Log($"[VListView.destroyItem] destroying row for key='{r.VarToRepresent.Key}'");
+                            if (rowHolder.userData is VariableRow rowAsUserData && rowAsUserData.VarToRepresent != null)
+                            {
+                                Debug.Log($"[VListView.destroyItem] destroying row for key='{rowAsUserData.VarToRepresent.Key}'");
+                            }
                         }
                         catch { }
                         rowHolder.userData = null;
@@ -484,28 +479,30 @@ namespace Amanita.VScripting.EditorUtils
         {
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
 
-            // Unsubscribe from assembly reloads
-            AssemblyReloadEvents.afterAssemblyReload -= HandleAfterAssemblyReload;
-
-            // Prevent any pending rebind retries from running
-            _rebindCancelled = true;
+            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
 
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
 
-            if (_listDisplay != null)
+            DisposeListDisplay();
+            void DisposeListDisplay()
             {
-                _listDisplay.makeItem = null;
-                _listDisplay.bindItem = null;
-                _listDisplay.unbindItem = null;
-                _listDisplay.destroyItem = null;
-                _listDisplay.itemIndexChanged -= OnItemReordered;
-                _listDisplay.canStartDrag -= OnCanStartDrag;
-                _listDisplay.Clear();
-                _listDisplay = null;
+                if (_listDisplay != null)
+                {
+                    _listDisplay.makeItem = null;
+                    _listDisplay.bindItem = null;
+                    _listDisplay.unbindItem = null;
+                    _listDisplay.destroyItem = null;
+                    _listDisplay.itemIndexChanged -= OnItemReordered;
+                    _listDisplay.canStartDrag -= OnCanStartDrag;
+                    _listDisplay.Clear();
+                    _listDisplay = null;
+                }
+
+                _listDisplay?.RemoveFromHierarchy();
             }
 
-            _listDisplay?.RemoveFromHierarchy();
+            
             _countDisplay?.RemoveFromHierarchy();
             _countDisplay = null;
             _rowFactory = null;
@@ -520,67 +517,102 @@ namespace Amanita.VScripting.EditorUtils
 
         #region Undo/Redo Sync
 
-        private void HandleUndoRedoPerformed()
+        protected void HandleUndoRedoPerformed()
         {
             AcquireFlowchartIfLost();
             SyncFromFlowchart();
             UpdateCount();
         }
 
+        // Returns true if the flowchart was found (or not even lost in the first place),
+        // false otherwise.
         protected bool AcquireFlowchartIfLost()
         {
             if (_flowchart != null) return true;
 
-            // 1) Try GlobalObjectId first
-            if (_flowchartGlobalId.identifierType != 0) // default struct check
+            bool found;
+            SearchByGlobalObjectId(out found);
+            void SearchByGlobalObjectId(out bool found)
             {
-                var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
-                if (obj != null)
+                found = false;
+                if (_flowchartGlobalId.identifierType != 0)
                 {
-                    SetFlowchart(obj);
-                    return true;
+                    var obj = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(_flowchartGlobalId) as Flowchart;
+
+                    if (obj != null)
+                    {
+                        SetFlowchart(obj);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via GlobalObjectId: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                    }
                 }
             }
-
-            // 2) Fallback to old instance ID (may fail after undo/redo)
-            if (_flowchartInstanceID != 0)
+            if (found)
             {
-                var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
-                if (obj != null)
-                {
-                    SetFlowchart(obj);
-                    return true;
-                }
-            }
-
-            // 3) Try FlowchartWindow
-            try
-            {
-                var viaWindow = FlowchartWindow.GetFlowchart();
-                if (viaWindow != null)
-                {
-                    SetFlowchart(viaWindow);
-                    return true;
-                }
-            }
-            catch { }
-
-            // 4) Fallback: single Flowchart in scene
-            IList<Flowchart> all;
-
-#if UNITY_6000_0_OR_NEWER
-            all = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-            all = UnityObj.FindObjectsOfType<Flowchart>();
-#endif
-
-            if (all.Count == 1)
-            {
-                SetFlowchart(all[0]);
                 return true;
             }
 
-            return false;
+            SearchByOldInstanceID(out found);
+            void SearchByOldInstanceID(out bool found)
+            {
+                // This search may fail after undo/redo
+                found = false;
+                if (_flowchartInstanceID != 0)
+                {
+                    var obj = EditorUtility.InstanceIDToObject(_flowchartInstanceID) as Flowchart;
+                    if (obj != null)
+                    {
+                        SetFlowchart(obj);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via old InstanceID: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                    }
+                }
+            }
+            if (found)
+            {
+                return true;
+            }
+
+            SearchThroughTheFCWindow(out found);
+            void SearchThroughTheFCWindow(out bool found)
+            {
+                found = false;
+                try
+                {
+                    var viaWindow = FlowchartWindow.GetFlowchart();
+                    if (viaWindow != null)
+                    {
+                        SetFlowchart(viaWindow);
+                        found = true;
+                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via FlowchartWindow: name='{viaWindow.name}' instanceId={viaWindow.GetInstanceID()}");
+                    }
+                }
+                catch { }
+            }
+            if (found)
+            {
+                return true;
+            }
+
+            SearchForSingleInScene(out found);
+            void SearchForSingleInScene(out bool found)
+            {
+                IList<Flowchart> all;
+                found = false;
+#if UNITY_6000_0_OR_NEWER
+                all = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+#else
+                all = UnityObj.FindObjectsOfType<Flowchart>();
+#endif
+                if (all.Count == 1)
+                {
+                    SetFlowchart(all[0]);
+                    found = true;
+                    Debug.Log($"[AcquireFlowchartIfLost] Found single Flowchart in scene: name='{_flowchart.name}' instanceId={_flowchart.GetInstanceID()}");
+                }
+            }
+
+            return found;
         }
 
         protected virtual void SyncFromFlowchart()
@@ -596,7 +628,7 @@ namespace Amanita.VScripting.EditorUtils
             static bool IsValidVar(IVariable elem)
             {
                 // As in neither null or a destroyed UnityObj
-                return elem != null && (elem is not UnityObj uo || uo != null);
+                return elem != null && (elem is not UnityObj unityObj || unityObj != null);
             }
 
             varsToDisplay.AddRange(sourceToAdd);
@@ -660,160 +692,15 @@ namespace Amanita.VScripting.EditorUtils
         VisualElement _testMaterializedContainer;
         #endregion
 
-        // Called after assemblies are reloaded. The problem being addressed:
-        // SerializedObjects that back each VariableRow can end up pointing at
-        // re-created/different ScriptableObject instances after a domain reload.
-        // Re-resolving the binding target and re-assigning the SerializedObject
-        // prevents the visible UI from showing empty fields.
-        protected void HandleAfterAssemblyReload()
+        protected virtual void OnVariableSourceAssetsRefreshed()
         {
-            // Reset attempts and schedule the first rebind. We use a retry loop because
-            // VariableSourceAssetMaintenance (which repairs SerializeReference holders)
-            // runs on the same assembly-reload event. If we rebind too early we may not
-            // find persistent MuscariableHolders yet and end up with empty UI.
-            _rebindAttempt = 0;
-            _rebindCancelled = false;
-            ScheduleRebind();
-        }
-
-        // Retry scheduling state
-        private int _rebindAttempt;
-        private const int _maxRebindAttempts = 6;
-        private bool _rebindCancelled;
-
-        private void ScheduleRebind()
-        {
-            if (_isDisposed || _rebindCancelled) return;
-
-            // Ensure we don't spam delayCall entries: schedule a single delayed attempt.
-            EditorApplication.delayCall += RebindAttempt;
-        }
-
-        private void RebindAttempt()
-        {
-            if (_isDisposed || _rebindCancelled) return;
-
-            int unresolved = RebindAllActiveRowsInternal();
-
-            // If some bindings could not be resolved, retry a few times to allow
-            // VariableSourceAssetMaintenance and Unity to finish reconstructing sub-assets.
-            if (unresolved > 0 && ++_rebindAttempt < _maxRebindAttempts)
+            EditorApplication.delayCall += ResponseAfterDelay;
+            void ResponseAfterDelay()
             {
-                // schedule another attempt on next idle frame
-                EditorApplication.delayCall += RebindAttempt;
-            }
-            else if (unresolved > 0)
-            {
-                Debug.LogWarning($"VariableListView: Rebind completed with {unresolved} unresolved bindings after {_rebindAttempt} attempts. UI may appear empty for those entries.");
+                _listDisplay.Rebuild();
             }
         }
 
-        // Returns count of unresolved variables (where no persistent holder / binding target found).
-        protected int RebindAllActiveRowsInternal()
-        {
-            try
-            {
-                Debug.Log($"[RebindAllActiveRowsInternal] Starting rebind. varsToDisplay.Count={varsToDisplay?.Count ?? 0} activeRows={_activeRows.Count}");
-
-                // If there are no variables or no factory, nothing to do.
-                if (varsToDisplay == null || varsToDisplay.Count == 0 || _rowFactory == null)
-                    return 0;
-
-                // Capture snapshot of current variables (these are the authoritative objects
-                // after a domain reload). We'll rebuild _activeRows to point to these.
-                var currentVars = varsToDisplay.ToList();
-
-                // Release any rows that reference old object instances / SerializedObjects.
-                ReleaseAllActiveRows();
-
-                int unresolvedCount = 0;
-
-                // Recreate rows for the current variables and rebind their SerializedObjects.
-                foreach (var variable in currentVars)
-                {
-                    if (variable == null)
-                    {
-                        Debug.Log("[RebindAllActiveRowsInternal] encountered null variable in snapshot");
-                        continue;
-                    }
-
-                    Debug.Log($"[RebindAllActiveRowsInternal] Rebinding var key='{variable.Key}' varType={variable.GetType().FullName} varHash={RuntimeHelpers.GetHashCode(variable)}");
-
-                    var row = GetOrCreateRow(variable);
-                    if (row == null)
-                    {
-                        Debug.LogWarning($"[RebindAllActiveRowsInternal] GetOrCreateRow returned null for key='{variable.Key}'");
-                        continue;
-                    }
-
-                    // Make sure the visual handler knows the current variable
-                    try
-                    {
-                        row.VisualHandler.Variable = variable;
-                    }
-                    catch { /* defensive */ }
-
-                    // Resolve the correct target object (MuscariableHolder or legacy UnityObj)
-                    var targetObj = GetBindingTarget(variable);
-                    if (targetObj != null)
-                    {
-                        string path = null;
-                        try { path = _assetResolver?.GetAssetPath(targetObj); } catch { }
-                        Debug.Log($"[RebindAllActiveRowsInternal] Found target for '{variable.Key}': type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
-                        try
-                        {
-                            row.VisualHandler.SerializedVar = new SerializedObject(targetObj);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogWarning($"VariableListView: failed to assign SerializedObject to re-created row for '{variable.Key}': {ex.Message}");
-                            row.VisualHandler.SerializedVar = null;
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[RebindAllActiveRowsInternal] No target found for '{variable.Key}'");
-                        // If this is an asset-backed variable (not a legacy UnityObj) and we couldn't
-                        // find a holder, count it unresolved so we can retry later.
-                        bool expectsPersistentHolder = !(variable is UnityObj) && _variableSourceContext != null;
-                        if (expectsPersistentHolder)
-                            unresolvedCount++;
-
-                        // No persistent holder; keep SerializedVar null so UI won't show stale data.
-                        row.VisualHandler.SerializedVar = null;
-                    }
-
-                    // Ensure the row's visuals are refreshed so bindings are applied.
-                    try
-                    {
-                        row.VisualHandler.Refresh();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning($"[RebindAllActiveRowsInternal] Refresh failed for '{variable.Key}': {ex.Message}");
-                    }
-                }
-
-                // Finally refresh the ListView so bind/unbind flows re-run on the displayed rows.
-                Refresh();
-
-                Debug.Log($"[RebindAllActiveRowsInternal] Finished rebind. unresolvedCount={unresolvedCount}");
-                return unresolvedCount;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-                return 0;
-            }
-        }
-
-        // Public entry kept for backward compatibility: schedules the rebind flow.
-        protected void RebindAllActiveRows()
-        {
-            _rebindAttempt = 0;
-            _rebindCancelled = false;
-            ScheduleRebind();
-        }
     }
 
     /// <summary>
