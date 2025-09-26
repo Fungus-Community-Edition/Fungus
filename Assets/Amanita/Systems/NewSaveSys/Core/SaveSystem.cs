@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 { 
@@ -448,9 +449,8 @@ namespace Amanita.SaveSys
     public enum SaveDirectoryType
     {
         Null,
-        DataPath,
-        PersistentDataPath,
-        StreamingAssetsPath,
-        InTheBalls
+        DataPath, // Same folder as the exe, apk, etc
+        PersistentDataPath, // OS-dependent folder. Overall safest option
+        InTheBalls // Semantically the same as DataPath
     }
 }

@@ -45,13 +45,13 @@ namespace TiaanDotCom.Unity3D.EditorTools
     /// </summary>
     public static class LineEndingsEditMenu
     {
-//        [MenuItem("Tools/Fungus/Utilities/EOL Conversion (Windows)")]
+//        [MenuItem("Tools/Amanita/Utilities/EOL Conversion (Windows)")]
 //        public static void ConvertLineEndingsToWindowsFormat()
 //        {
 //            ConvertLineEndings(false);
 //        }
 
-        [MenuItem("Tools/Fungus/Utilities/Convert to Mac Line Endings")]
+        [MenuItem("Tools/Amanita/Utilities/Convert to Mac Line Endings")]
         public static void ConvertLineEndingsToMacFormat()
         {
             ConvertLineEndings(true);

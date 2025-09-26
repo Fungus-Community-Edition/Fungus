@@ -1,0 +1,4 @@
+namespace Amanita.VScripting.EditorUtils
+{
+    
+}

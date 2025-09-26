@@ -1,11 +1,8 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Fungus Variables are drawn via EditorGUI.Property by default, however, some types may require a custom replacement.
@@ -20,18 +17,6 @@ namespace Amanita.EditorUtils
         public static Dictionary<System.Type, System.Action<UnityEngine.Rect, UnityEditor.SerializedProperty, GUIContent>> typeToDrawer =
             new Dictionary<System.Type, System.Action<Rect, UnityEditor.SerializedProperty, GUIContent>>()
             {
-                {
-                    typeof(QuaternionVariable),
-                    (rect, valueProp, con) => {valueProp.quaternionValue = UnityEngine.Quaternion.Euler(UnityEditor.EditorGUI.Vector3Field(rect, con, valueProp.quaternionValue.eulerAngles)); }
-                },
-                {
-                    typeof(Vector4Variable),
-                    (rect, valueProp, con) => {valueProp.vector4Value = UnityEditor.EditorGUI.Vector4Field(rect, con, valueProp.vector4Value); }
-                },
-                {
-                    typeof(Matrix4x4Variable),
-                    (rect, valueProp, con) => {UnityEditor.EditorGUI.PropertyField(rect, valueProp, con, true); }
-                },
             };
 
         /// <summary>

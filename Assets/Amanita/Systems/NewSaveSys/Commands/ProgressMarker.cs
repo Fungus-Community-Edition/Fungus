@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Linq;
+using Amanita.VScripting;
 
-namespace Amanita.SaveSys
+namespace Amanita.SaveSys.VScripting
 {
     /// <summary>
     /// Helps signify where into a game the player has gotten, so that when a GameSaveData is loaded, 

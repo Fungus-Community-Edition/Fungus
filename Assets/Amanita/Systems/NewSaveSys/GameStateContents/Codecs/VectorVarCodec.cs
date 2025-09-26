@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -9,7 +10,7 @@ namespace Amanita.SaveSys
     [System.Serializable]
     public class VectorVarCodec : IVarCodec
     {
-        public virtual bool CanHandle(Variable variable) =>
+        public virtual bool CanHandle(IVariable variable) =>
             variable is Vector2Variable || variable is Vector3Variable;
 
         public virtual bool CanHandle(string typeName) =>
@@ -21,14 +22,14 @@ namespace Amanita.SaveSys
                 saveData.VarTypeName == nameof(Vector3Variable);
         }
 
-        public virtual string EncodeToString(Variable variable) => variable switch
+        public virtual string EncodeToString(IVariable variable) => variable switch
             {
             Vector2Variable vector2Var => $"{vector2Var.Value.x},{vector2Var.Value.y}",
             Vector3Variable vector3Var => $"{vector3Var.Value.x},{vector3Var.Value.y},{vector3Var.Value.z}",
             _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encodng in {this.GetType().Name}")
         };
 
-        public virtual void Decode(Variable variable, string data)
+        public virtual void Decode(IVariable variable, string data)
         {
             if (variable is Vector2Variable vecTwoVar)
             {
@@ -63,7 +64,7 @@ namespace Amanita.SaveSys
             }
         }
     
-        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = saveData.VarTypeName == nameof(Vector2Variable) ||
                 saveData.VarTypeName == nameof(Vector3Variable);
@@ -74,7 +75,7 @@ namespace Amanita.SaveSys
             }
             Decode(variable, saveData.Value);
         }
-        public virtual VariableSaveData EncodeToSave(Variable variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             string data = EncodeToString(variable);
             if (string.IsNullOrEmpty(data))

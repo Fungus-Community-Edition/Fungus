@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.Execution.VM
+﻿namespace MoonSharp.Interpreter.Execution.VM
 {
 	internal enum OpCode
 	{

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Amanita.Utils;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -10,14 +11,14 @@ namespace Amanita.SaveSys
 
         public virtual bool CanHandle(object toMakeFrom) =>
             CanHandle(toMakeFrom as Variable);
-        public virtual bool CanHandle(Variable variable) =>
+        public virtual bool CanHandle(IVariable variable) =>
             variable is BooleanVariable;
         public virtual bool CanHandle(string typeName) =>
             typeName == nameof(BooleanVariable);
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual VariableSaveData EncodeToSave(Variable variable)
+        public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             VariableSaveData result = new()
             {
@@ -29,7 +30,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual string EncodeToString(Variable toEncode)
+        public virtual string EncodeToString(IVariable toEncode)
         {
             // Try direct cast first
             BooleanVariable booleanVar = toEncode as BooleanVariable;
@@ -53,12 +54,12 @@ namespace Amanita.SaveSys
             return string.Empty;
         }
 
-        public virtual void Decode(Variable variable, VariableSaveData saveData)
+        public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
             Decode(variable, saveData.Value);
         }
 
-        public virtual void Decode(Variable toDecode, string data)
+        public virtual void Decode(IVariable toDecode, string data)
         {
             BooleanVariable booleanVar = toDecode as BooleanVariable;
             if (booleanVar == null)

@@ -1,0 +1,69 @@
+﻿using UnityEngine;
+
+namespace Amanita.VScripting.Commands
+{
+    /// <summary>
+    /// Stops executing the named Block.
+    /// </summary>
+    [CommandInfo("Flow", 
+                 "Stop Block", 
+                 "Stops executing the named Block")]
+    public class StopBlock : Command, IBlockCaller
+    {
+        [Tooltip("Flowchart containing the Block. If none is specified, the parent Flowchart is used.")]
+        [SerializeField] protected Flowchart flowchart;
+
+        [Tooltip("Name of the Block to stop")]
+        [SerializeField] protected StringData blockName = new StringData("");
+
+        #region Public members
+
+        public override void OnEnter()
+        {
+            if (blockName.Value == "")
+            {
+                Continue();
+            }
+
+            if (flowchart == null)
+            {
+                flowchart = (Flowchart)GetFlowchart();
+            }
+
+            var block = flowchart.FindBlock(blockName.Value);
+            if (block == null ||
+                !block.IsExecuting())
+            {
+                Continue();
+            }
+
+            block.Stop();
+
+            Continue();
+        }
+
+        public override string GetSummary()
+        {
+            return blockName;
+        }
+            
+        public override Color GetButtonColor()
+        {
+            return new Color32(253, 253, 150, 255);
+        }
+
+        public override bool HasReference(Variable variable)
+        {
+            return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
+        }
+
+        public bool MayCallBlock(Block block)
+        {
+            if(flowchart != null)
+                return block == flowchart.FindBlock(blockName.Value);
+            return false;
+        }
+
+        #endregion
+    }
+}

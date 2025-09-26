@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -32,7 +33,6 @@ namespace Amanita.SaveSys
                 return; // We expect the AmanitaManager to handle destroying this if needed
             }
 
-            Debug.Log("Setting SaveSystemInstaller Singleton in its Init method.");
             S = this;
 
             var globalVars = AmanitaManager.S.GlobalVariables;
@@ -46,6 +46,13 @@ namespace Amanita.SaveSys
             if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
             {
                 whereSavesAreStored = SaveDirectoryType.DataPath;
+            }
+
+            if (Application.platform == RuntimePlatform.Android ||
+                Application.platform == RuntimePlatform.IPhonePlayer ||
+                Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
             }
 
             SaveDirectoryType = whereSavesAreStored;
@@ -74,7 +81,6 @@ namespace Amanita.SaveSys
                 {
                     { SaveDirectoryType.DataPath, Application.dataPath },
                     { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                    { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
                 };
 
                 // We assume that the GlobalVariables Flowchart was already initted by this point, as well
@@ -100,7 +106,6 @@ namespace Amanita.SaveSys
                 // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
                 // it through that. 
 
-                Debug.Log("Calling SaveSystem.Init from SaveSystemInstaller");
                 saveSystem.Init();
                 saveSystem.SaveDirectoryType = whereSavesAreStored;
                 saveSystem.SaveManager = SaveManager;
@@ -146,6 +151,11 @@ namespace Amanita.SaveSys
 
         protected virtual void OnValidate()
         {
+            if (whereSavesAreStored == SaveDirectoryType.Null)
+            {
+                whereSavesAreStored = SaveDirectoryType.InTheBalls;
+            }
+
             ValidateAppliers();
             void ValidateAppliers()
             {

@@ -1,10 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Abstract base class for LeanTween commands.
@@ -115,7 +112,8 @@ namespace Amanita
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _targetObject.gameObjectRef || variable == _duration.floatRef;
+            return variable == _targetObject.VarRef as GameObjectVariable || 
+                variable == _duration.VarRef as FloatVariable;
         }
 
         #endregion

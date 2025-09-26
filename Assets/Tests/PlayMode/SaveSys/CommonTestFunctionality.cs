@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {
@@ -82,12 +83,8 @@ namespace Amanita.SaveSystemTests
             LoadCodecs();
             void LoadCodecs()
             {
-                string pathToCodec = "SaveCodecs/FlowchartSaveCodec";
-                //flowchartSaveCodec = Resources.Load<FlowchartSaveCodec>(pathToCodec);
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
 
-                pathToCodec = "SaveCodecs/BlockSaveCodec";
-                //blockSaveCodec = Resources.Load<BlockSaveCodec>(pathToCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
             
@@ -219,7 +216,7 @@ namespace Amanita.SaveSystemTests
             threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
             twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.AddVariable<string, StringVariable>("someStringVar", "Hello, World!");
+            stringVar = flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
 
             transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
         }
@@ -287,8 +284,11 @@ namespace Amanita.SaveSystemTests
                 DestroyEventSystems();
                 void DestroyEventSystems()
                 {
+#if UNITY_6000_0_OR_NEWER
+                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+#else
                     EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-
+#endif
                     foreach (var elem in possiblyMadeByFlowchart)
                     {
                         UnityObject.DestroyImmediate(elem.gameObject);
@@ -434,7 +434,6 @@ namespace Amanita.SaveSystemTests
             {
                 { SaveDirectoryType.DataPath, Application.dataPath },
                 { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                { SaveDirectoryType.StreamingAssetsPath, Application.streamingAssetsPath }
             };
 
         protected virtual async Task CommonSetupAsync()
