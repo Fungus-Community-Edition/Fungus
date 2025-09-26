@@ -5,7 +5,7 @@
         <engine:Label text="Float" name="TypeLabel" class="varRowTypeLabel" style="font-size: 18px;" />
         <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" placeholder-text="var name" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder">
-            <engine:FloatField value="0" name="FloatField" binding-path="value" class="numericField" />
+            <engine:FloatField value="0" name="ValueField" binding-path="value" class="numericField" />
         </engine:VisualElement>
         <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />

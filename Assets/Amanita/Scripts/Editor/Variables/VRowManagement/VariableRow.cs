@@ -1,8 +1,9 @@
+using Amanita.EditorUtils;
 using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -14,21 +15,25 @@ namespace Amanita.VScripting.EditorUtils
         /// Also meant to be used for reuse after disposing. It's fine for the 
         /// IRowVisualHandler passed to be in a disposed state.
         /// </summary>
-        public virtual void Init(IVariable toRepresent,
-            IRowVisualHandler visHandler)
+        public virtual void Init(IVariable toRepresent, IRowVisualHandler visHandler,
+            UnityObj targetObject)
         {
             _isDisposed = false;
-            ToggleSubs(false); // Just in case
+            ToggleSubs(false);
+
             _prevVariable = _currentVariable;
             _currentVariable = toRepresent;
 
-            UpdateSerializedVar();
+            _serializedVar?.Dispose();
+            _serializedVar = targetObject != null ? new SerializedObject(targetObject) : null;
+            _serializedVar?.Update();
 
             VisualHandler = visHandler;
+            VisualHandler.Init(toRepresent);
             VisualHandler.Variable = _currentVariable;
             VisualHandler.SerializedVar = _serializedVar;
-            VisualHandler.Init(toRepresent);
             VisualHandler.Refresh();
+
             ToggleSubs(true);
         }
 
@@ -46,20 +51,32 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 VisualHandler.RemoveButtonClicked += OnRemoveButtonClicked;
+                VisualHandler.FocusLostOnControl += OnFocusLostOnControl;
             }
             else
             {
                 VisualHandler.RemoveButtonClicked -= OnRemoveButtonClicked;
+                VisualHandler.FocusLostOnControl -= OnFocusLostOnControl;
             }
         }
 
         protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
         {
-            // Response to the handler's version of the event
-            RemoveButtonClicked(this);
+            AmanitaEditorSignals.VarRowRemoveButtonClicked(this);
         }
 
-        public event Action<VariableRow> RemoveButtonClicked = delegate { };
+        protected virtual void OnFocusLostOnControl(FocusOutEvent evt)
+        {
+            if (_serializedVar != null)
+            {
+                _serializedVar.ApplyModifiedPropertiesWithoutUndo();
+                Debug.Log("Applied changes on focus loss");
+
+            }
+            FocusLostOnControl(this);
+        }
+
+        public event Action<VariableRow> FocusLostOnControl = delegate { }; 
 
         public void Dispose()
         {
@@ -70,17 +87,14 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubs(false);
             Clear();
-            var rootParent = RootElement?.parent;
-            rootParent?.Remove(RootElement);
+            RootElement?.RemoveFromHierarchy();
             _serializedVar?.Dispose();
             _serializedVar = null;
-            VisualHandler?.Dispose();
-            VisualHandler = null;
             _currentVariable = null;
             _isDisposed = true;
 
-            // Clear external subscribers to avoid lingering references if pooled.
-            RemoveButtonClicked = delegate { };
+            VisualHandler?.Dispose();
+            VisualHandler = null;
         }
 
         protected virtual void UpdateSerializedVar()
@@ -93,7 +107,7 @@ namespace Amanita.VScripting.EditorUtils
             if (_currentVariable != null)
             {
                 // Guard against destroyed UnityEngine.Object
-                if (_currentVariable is UnityObject unityObj)
+                if (_currentVariable is UnityObj unityObj)
                 {
                     if (unityObj == null) // Unity's overloaded null check
                     {
@@ -103,14 +117,8 @@ namespace Amanita.VScripting.EditorUtils
 
                     _serializedVar = new SerializedObject(unityObj);
                 }
-                else
-                {
-                    var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
-                    holder.Init(_currentVariable);
-                    _serializedVar = new SerializedObject(holder);
-                }
 
-                _serializedVar.Update();
+                _serializedVar?.Update();
             }
             else
             {
@@ -118,6 +126,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        public SerializedObject SerializedVar => _serializedVar;
         protected SerializedObject _serializedVar;
 
         public IRowVisualHandler VisualHandler { get; protected set; }
@@ -138,6 +147,8 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     VisualHandler.Variable = value;
                 }
+
+                UpdateSerializedVar();
             }
         }
 
@@ -161,28 +172,6 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Clear()
         {
             _currentVariable = VisualHandler.Variable = null;
-        }
-
-        protected SerializedObject SerializedObjectFrom(IVariable variable)
-        {
-            SerializedObject result = null;
-
-            if (variable is UnityObject unityObj) // Should apply even when we have a MuscariableHolder passed in
-            {
-                if (unityObj != null) // Remember how the == operator is overridden for UnityObjects
-                {
-                    result = new SerializedObject(unityObj);
-                }
-                
-            }
-            else
-            {
-                MuscariableHolder holder = ScriptableObject.CreateInstance<MuscariableHolder>();
-                holder.Init(variable);
-                result = new SerializedObject(holder);
-            }
-
-            return result;
         }
 
 

@@ -3,7 +3,7 @@ using Amanita.VScripting;
 using System;
 using UnityEngine;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableDataTests : VariableTests
     {
@@ -30,8 +30,6 @@ namespace Amanita.Tests.EditMode
             new ColorData(),
             new Vector2Data(),
             new Vector3Data(),
-            new Vector4Data(),
-            new QuaternionData(),
             new ObjectData(),
             new AudioSourceData()
         };

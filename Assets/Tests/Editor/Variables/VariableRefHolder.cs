@@ -1,7 +1,7 @@
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableRefHolder : ScriptableObject
     {

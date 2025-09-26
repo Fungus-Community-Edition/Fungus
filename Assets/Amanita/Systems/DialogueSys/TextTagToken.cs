@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Amanita
+namespace Amanita.DialogueSys
 {
     /// <summary>
     /// Supported token types for use in Say / Write text.

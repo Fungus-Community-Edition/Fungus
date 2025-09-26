@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting.RuntimeTesting;
@@ -14,7 +13,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.Tests.EditMode
+namespace FCWindowOperations
 {
     public class CommandEditorTests
     {
@@ -528,4 +527,3 @@ namespace Amanita.Tests.EditMode
         #endregion
     }
 }
-#endif

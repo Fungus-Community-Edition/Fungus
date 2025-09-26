@@ -1,7 +1,4 @@
-﻿// --- Only the specified failing tests have been adapted for the virtualized VariableListView (Option A + C). ---
-// Other tests were intentionally left unchanged per request.
-
-using Amanita.VScripting;
+﻿using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
@@ -14,8 +11,9 @@ using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
+using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableRowManagerTests 
     {
@@ -64,7 +62,7 @@ namespace Amanita.Tests.EditMode
                     List = _listContainer,
                     CountLabel = _countLabel,
                     RowFactory = _rowFactory,
-                    
+                    VariableSource = _firstFc,
                 };
 
                 _firstListView = new VariableListView(listViewArgs);
@@ -74,7 +72,7 @@ namespace Amanita.Tests.EditMode
                     HoldsManager = _holdsManager,
                     Root = _root,
                     AddButton = _addButton,
-                    Flowchart = _firstFc,
+                    VariableSource = _firstFc,
                     VariableListView = _firstListView,
                 };
 
@@ -308,7 +306,7 @@ namespace Amanita.Tests.EditMode
                 List = newList,
                 CountLabel = newLabel,
                 RowFactory = new VariableRowFactory(),
-                
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             var secondView = new VariableListView(secondArgs);
             VRowManagerInitArgs initArgs = new VRowManagerInitArgs()
@@ -316,7 +314,7 @@ namespace Amanita.Tests.EditMode
                 Root = newRoot,
                 HoldsManager = newManagerHolder,
                 AddButton = newAdd,
-                Flowchart = secondFc,
+                VariableSource = secondFc,
                 VariableListView = secondView,
             };
 
@@ -341,7 +339,8 @@ namespace Amanita.Tests.EditMode
                 List = thirdList,
                 CountLabel = thirdLabel,
                 RowFactory = new VariableRowFactory(),
-                
+                AssetResolver = new DefaultEditorAssetResolver(),
+
             };
             var thirdView = new VariableListView(thirdArgs);
             _rowManager.Init(new VRowManagerInitArgs
@@ -349,7 +348,7 @@ namespace Amanita.Tests.EditMode
                 Root = thirdRoot,
                 HoldsManager = thirdManagerHolder,
                 AddButton = thirdAdd,
-                Flowchart = thirdFc,
+                VariableSource = thirdFc,
                 VariableListView = thirdView,
             });
 

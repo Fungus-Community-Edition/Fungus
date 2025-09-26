@@ -9,7 +9,7 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableEditorTests
     {

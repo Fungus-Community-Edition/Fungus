@@ -46,5 +46,22 @@ namespace Amanita.VScripting
             // Last resort - try direct cast (may throw)
             return (TVal)val;
         }
+
+        /// <summary>
+        /// If the arg is already a Muscariable, it (unaltered) will be the return value. 
+        /// </summary>
+        public static Muscariable ToMuscariable(this IVariable var)
+        {
+            if (var is Muscariable muscari)
+            {
+                return muscari;
+            }
+            else
+            {
+                muscari = VariableFactory.Create(var.ContentType, var);
+            }
+
+            return muscari;
+        }
     }
 }

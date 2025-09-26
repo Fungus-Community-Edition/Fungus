@@ -1,110 +1,119 @@
+:root
+{
+	--main-font: resource('Fonts/Exo2/Exo2-Regular');
+	--dark-mode-text-color: rgb(230, 230, 230);
+	--dark-mode-text-bg-color: rgb(26, 26, 26);
+	--text-field-font-size: 14px;
+	--text-field-border-radius: 5px;
+}
+
 #VarRowRoot 
 {
-    flex-direction: row;
-    height: 30px;
-    margin-bottom: 3px;
-    /*margin-right: 5px;*/
-    border-radius: 2px;
+	flex-direction: row;
+	height: 30px;
+	margin-bottom: 3px;
+	/*margin-right: 5px;*/
+	border-radius: 2px;
 }
 
 .removeButton 
 {
-    width: 30px;
-    border-radius: 2px;
-    padding: 0px;
-    margin: 0px 0px 0px 2px;
-    flex-grow: 0;
-    flex-shrink: 0;
+	width: 30px;
+	border-radius: 2px;
+	padding: 0px;
+	margin: 0px 0px 0px 2px;
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 .varRowTypeLabel
 {
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
-    color: rgb(229, 229, 229);
-    -unity-text-align: middle-left;
-    width: 75px;
-    padding: 0 0 0 5px;
-    margin: 0px;
-    font-size: 14px;
+	-unity-font-definition: var(--main-font);
+	color: rgb(229, 229, 229);
+	-unity-text-align: middle-left;
+	width: 75px;
+	padding: 0 0 0 5px;
+	margin: 0px;
+	font-size: 14px;
 }
 
 .keyInput
 {
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
-    background-color: rgb(26, 26, 26);
-    color: rgb(230, 230, 230);
-    border-radius: 2px;
-    padding: 0 2px 0 2px;
-    width: 130px;
-    margin: 0 2px 0 1px;
-    flex-grow: 0;
-    flex-shrink: 0;
+	-unity-font-definition: var(--main-font);
+	background-color: rgb(26, 26, 26);
+	color: rgb(230, 230, 230);
+	border-radius: 2px;
+	padding: 0 2px 0 2px;
+	width: 130px;
+	margin: 0 2px 0 1px;
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 .keyInput > #unity-text-input
 {
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
-    background-color: rgb(26, 26, 26);
-    color: rgb(230, 230, 230);
-    border-radius: 2px;
-    padding: 2px;
-    width: 150px;
-    margin: 0;
-    font-size: 14px;
+	-unity-font-definition: var(--main-font);
+	background-color: rgb(26, 26, 26);
+	color: rgb(230, 230, 230);
+	border-radius: 2px;
+	padding: 2px;
+	width: 150px;
+	margin: 0;
+	font-size: 14px;
 }
 
 #ValueFieldHolder
 {
-    flex-grow: 0;
-    width: 120px;
-    padding: 0;
-    -unity-text-align: middle-left;
-    border-radius: 2px;
-    border-color: white;
-    font-size: 14px;
-    margin: 0px 3px 0px 0px;
+	flex-grow: 0;
+	width: 120px;
+	padding: 0;
+	-unity-text-align: middle-left;
+	border-radius: 2px;
+	border-color: white;
+	font-size: 14px;
+	margin: 0px 3px 0px 0px;
 
 }
 
 .scopeRoot 
 {
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
-    width: 75px;
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    padding: 0px;
-    margin: 0px 2px 0px 0px;
-    font-size: 14px;
-    flex-grow: 0;
-    flex-shrink: 0;
+	-unity-font-definition: var(--main-font);
+	width: 75px;
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	padding: 0px;
+	margin: 0px 2px 0px 0px;
+	font-size: 14px;
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 .scopeRoot > VisualElement 
 {
-    height: 100%;
-    padding: 0px;
-    margin: 0;
-    border-radius: 2px;
+	height: 100%;
+	padding: 0px;
+	margin: 0;
+	border-radius: 2px;
 }
 
 .scopeRoot > VisualElement > VisualElement 
 {
-    width: 20%;
-    height: 50%;
-    flex-shrink: 1;
+	width: 20%;
+	height: 50%;
+	flex-shrink: 1;
 }
 
 .scopeRoot > VisualElement > TextElement 
 {
-    height: 100%;
-    flex-shrink: 0;
-    margin: 0;
-    padding-left: 3px;
-    font-size: 14px;
+	height: 100%;
+	flex-shrink: 0;
+	margin: 0;
+	padding-left: 3px;
+	font-size: 14px;
 }
 
 #KeyInput > #unity-text-input
 {
-    font-size: 14px;
+	font-size: 14px;
 }

@@ -1,8 +1,8 @@
 using Amanita.VScripting;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
-    [VariableInfo("", "", typeof(int))]
+    [VariableInfo("", "", typeof(int), ShowInMenu = false)]
     public class HookedIntMuscariable : Muscariable<int>
     {
         public object LastBasePrev;
@@ -14,8 +14,10 @@ namespace Amanita.Tests.EditMode
         {
             BaseSetCount++;
             LastBasePrev = prevValue;
-            // Keep generic in sync
-            valOfType = (int)(this.value);
+
+            // Ensure the generic field is synced with the base object field.
+            // Call base implementation which performs: value = (T)base.value;
+            base.OnBaseValueSet(prevValue);
         }
 
         protected override void OnGenericValueSet(int prev)
