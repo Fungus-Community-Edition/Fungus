@@ -74,11 +74,12 @@ namespace Amanita.VScripting
             T result = (T)Convert.ChangeType(valueToConvert, this.ContentType);
             return result;
         }
+        
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric", "Integer", typeof(int))]
-    public class IntMuscariable : NumericMuscariable<int>
+    public class IntMuscariable : NumericMuscariable<int>, IVariable<int>
     {
         public IntMuscariable() : base() { }
 
@@ -123,7 +124,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric", "Float", typeof(float))]
     public class FloatMuscariable : NumericMuscariable<float>
     {
@@ -170,7 +171,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric", "Boolean", typeof(bool))]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
@@ -204,7 +205,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric", "Double", typeof(double))]
     public class DoubleMuscariable : NumericMuscariable<double>
     {

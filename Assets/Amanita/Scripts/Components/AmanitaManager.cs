@@ -2,6 +2,7 @@
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Tweening;
+using Amanita.VScripting;
 using UnityEngine;
 
 namespace Amanita
@@ -11,34 +12,7 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-        public static DefaultTweenAdapter DefaultTweener
-        {
-            get
-            {
-                if (_defaultTweener == null)
-                {
-                    _defaultTweener = Resources.Load<DefaultTweenAdapter>(pathToAdapter);
-#if UNITY_EDITOR
-                    if (_defaultTweener == null)
-                    {
-                        Debug.LogWarning($"No TweenAdapter found at Resources/{pathToAdapter}. Creating a new one.");
-                        _defaultTweener = TweenAdapterUtility.GetOrCreateDefaultAdapter();
-                    }
-#else
-                    if (_adapter == null)
-                    {
-                        _adapter = ScriptableObject.CreateInstance<DefaultTweenAdapter>();
-                    }
-#endif
-                }
-
-                return _defaultTweener;
-            }
-        }
-
-        static DefaultTweenAdapter _defaultTweener;
-        static string pathToAdapter = "DefaultTweenAdapter";
-
+        [SerializeField] private VariableSourceAsset globalVariables;
         public static DefaultTweenAdapter DefaultTweener
         {
             get

@@ -8,9 +8,11 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
-using UitkLabel = UnityEngine.UIElements.Label;
+using UnityObj = UnityEngine.Object;
+using Type = System.Type;
+using Amanita.EditorUtils;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     /// <summary>
     /// Focused tests for VariableListView independent of VariableRowManager.
@@ -58,31 +60,34 @@ namespace Amanita.Tests.EditMode
                 List = _uiList,
                 CountLabel = _countLabel,
                 RowFactory = _factory,
-                
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             _view = new VariableListView(listViewArgs);
 
-            _fiVariables = typeof(VariableListView)
-                .GetField("_variables", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(_fiVariables, "_variables field not found");
+            _fiVariables = viewType.GetField("varsToDisplay", bindingFlags);
+            Assert.NotNull(_fiVariables, "varsToDisplay field not found");
 
-            _miOnItemIndexChanged = typeof(VariableListView)
-                .GetMethod("OnItemIndexChanged", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(_miOnItemIndexChanged, "OnItemIndexChanged method not found");
+            _miOnItemIndexChanged = viewType.GetMethod("OnItemReordered", bindingFlags);
+            Assert.NotNull(_miOnItemIndexChanged, "OnItemReordered method not found");
         }
+
+        protected static readonly Type viewType = typeof(VariableListView);
+        protected static readonly BindingFlags bindingFlags = BindingFlags.Instance | 
+            BindingFlags.NonPublic |
+            BindingFlags.Public;
 
         [TearDown]
         public void TearDown()
         {
-            foreach (var v in _createdVars)
-                if (v is Component c) UnityEngine.Object.DestroyImmediate(c);
+            foreach (var elem in _createdVars)
+                if (elem is Component legacyVarComponent) UnityObj.DestroyImmediate(legacyVarComponent);
 
             _createdVars.Clear();
             _view?.Dispose();
             _factory?.Dispose();
 
             if (_host != null)
-                UnityEngine.Object.DestroyImmediate(_host);
+                UnityObj.DestroyImmediate(_host);
         }
 
         // Helpers -------------------------------------------------------------
@@ -90,11 +95,11 @@ namespace Amanita.Tests.EditMode
         TComp CreateVar<TComp, TValue>(string key, TValue value = default)
             where TComp : Component, IVariable
         {
-            var v = _host.AddComponent<TComp>();
-            v.Key = key;
-            TrySetStrongValue(v, value);
-            _createdVars.Add(v);
-            return v;
+            var addedLegacyVar = _host.AddComponent<TComp>();
+            addedLegacyVar.Key = key;
+            TrySetStrongValue(addedLegacyVar, value);
+            _createdVars.Add(addedLegacyVar);
+            return addedLegacyVar;
         }
 
         // Fix for AmbiguousMatchException:
@@ -105,7 +110,7 @@ namespace Amanita.Tests.EditMode
             if (Equals(value, default(TValue))) return; // skip default to avoid unintended overwrite
 
             var type = variable.GetType();
-            var members = type.GetMember("Value", MemberTypes.Property, BindingFlags.Instance | BindingFlags.Public);
+            var members = type.GetMember("Value", MemberTypes.Property, bindingFlags);
             if (members == null || members.Length == 0) return;
 
             PropertyInfo chosen = null;
@@ -147,15 +152,15 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void AddVariable_UpdatesCountLabel_AndNoDuplicates()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
 
-            _view.AddVariable(v1);
+            _view.AddVariable(firstVar);
             Assert.AreEqual("Count: 1", _countLabel.text);
-            _view.AddVariable(v2);
+            _view.AddVariable(secondVar);
             Assert.AreEqual("Count: 2", _countLabel.text);
 
-            _view.AddVariable(v1); // duplicate
+            _view.AddVariable(firstVar); // duplicate
             Assert.AreEqual("Count: 2", _countLabel.text);
             Assert.AreEqual(2, InternalVariables.Count);
         }
@@ -163,41 +168,41 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void RemoveVariable_UpdatesCountLabel()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            _view.AddVariable(v1);
-            _view.AddVariable(v2);
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            _view.AddVariable(firstVar);
+            _view.AddVariable(secondVar);
 
-            _view.RemoveVariable(v1);
+            _view.RemoveVariable(firstVar);
             Assert.AreEqual("Count: 1", _countLabel.text);
-            Assert.False(InternalVariables.Contains(v1));
-            Assert.True(InternalVariables.Contains(v2));
+            Assert.False(InternalVariables.Contains(firstVar));
+            Assert.True(InternalVariables.Contains(secondVar));
         }
 
         [Test]
         public void SetVariables_ReplacesCollection()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            _view.SetVariables(new IVariable[] { v1, v2 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            _view.SetVariables(new IVariable[] { firstVar, secondVar });
 
             Assert.AreEqual(2, InternalVariables.Count);
             Assert.AreEqual("Count: 2", _countLabel.text);
 
-            var v3 = CreateVar<IntegerVariable, int>("i1", 5);
-            _view.SetVariables(new[] { v3 });
+            var thirdVar = CreateVar<IntegerVariable, int>("i1", 5);
+            _view.SetVariables(new[] { thirdVar });
 
             Assert.AreEqual(1, InternalVariables.Count);
-            Assert.AreSame(v3, InternalVariables[0]);
+            Assert.AreSame(thirdVar, InternalVariables[0]);
             Assert.AreEqual("Count: 1", _countLabel.text);
         }
 
         [Test]
         public void Clear_RemovesAll()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            _view.SetVariables(new IVariable[] { v1, v2 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            _view.SetVariables(new IVariable[] { firstVar, secondVar });
 
             _view.Clear();
             Assert.AreEqual(0, InternalVariables.Count);
@@ -207,63 +212,63 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void Refresh_DoesNotChangeOrderOrCount()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            _view.SetVariables(new IVariable[] { v1, v2 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            _view.SetVariables(new IVariable[] { firstVar, secondVar });
 
             _view.Refresh();
             Assert.AreEqual(2, InternalVariables.Count);
-            CollectionAssert.AreEqual(new IVariable[] { v1, v2 }, InternalVariables);
+            CollectionAssert.AreEqual(new IVariable[] { firstVar, secondVar }, InternalVariables);
             Assert.AreEqual("Count: 2", _countLabel.text);
         }
 
         [Test]
         public void OrderChanged_Fires_OnReorder_Down()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            var v3 = CreateVar<IntegerVariable, int>("i1", 5);
-            _view.SetVariables(new IVariable[] { v1, v2, v3 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            var thirdVar = CreateVar<IntegerVariable, int>("i1", 5);
+            _view.SetVariables(new IVariable[] { firstVar, secondVar, thirdVar });
 
             IReadOnlyList<IVariable> lastOrder = null;
             int eventCount = 0;
-            _view.OrderChanged += o => { eventCount++; lastOrder = o; };
+            _view.OrderChanged += o => { eventCount++; lastOrder = (IReadOnlyList<IVariable>)o; };
 
             // Simulate Unity internal reorder (list already mutated)
             InternalVariables.RemoveAt(0);
-            InternalVariables.Add(v1);
+            InternalVariables.Add(firstVar);
             InvokeReorder(0, 3);
 
             Assert.AreEqual(1, eventCount);
-            CollectionAssert.AreEqual(new IVariable[] { v2, v3, v1 }, lastOrder);
+            CollectionAssert.AreEqual(new IVariable[] { secondVar, thirdVar, firstVar }, lastOrder);
             CollectionAssert.AreEqual(lastOrder, InternalVariables);
         }
 
         [Test]
         public void OrderChanged_Fires_OnReorder_Up()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            var v3 = CreateVar<IntegerVariable, int>("i1", 5);
-            _view.SetVariables(new IVariable[] { v1, v2, v3 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            var thirdVar = CreateVar<IntegerVariable, int>("i1", 5);
+            _view.SetVariables(new IVariable[] { firstVar, secondVar, thirdVar });
 
             IReadOnlyList<IVariable> lastOrder = null;
-            _view.OrderChanged += o => lastOrder = o;
+            _view.OrderChanged += elem => lastOrder = (IReadOnlyList<IVariable>)elem;
 
             InternalVariables.RemoveAt(2);
-            InternalVariables.Insert(0, v3);
+            InternalVariables.Insert(0, thirdVar);
             InvokeReorder(2, 0);
 
-            CollectionAssert.AreEqual(new IVariable[] { v3, v1, v2 }, lastOrder);
+            CollectionAssert.AreEqual(new IVariable[] { thirdVar, firstVar, secondVar }, lastOrder);
             CollectionAssert.AreEqual(lastOrder, InternalVariables);
         }
 
         [Test]
         public void OnItemIndexChanged_NoChange_NoEvent()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
-            _view.SetVariables(new IVariable[] { v1, v2 });
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            _view.SetVariables(new IVariable[] { firstVar, secondVar });
 
             int eventCount = 0;
             _view.OrderChanged += _ => eventCount++;
@@ -275,16 +280,16 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void RowAtIndex_NullWhenNotMaterialized()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            _view.AddVariable(v1);
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            _view.AddVariable(firstVar);
             Assert.IsNull(_view.RowAtIndex(0));
         }
 
         [Test]
         public void Dispose_ClearsInternalState()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            _view.AddVariable(v1);
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            _view.AddVariable(firstVar);
             Assert.AreEqual(1, InternalVariables.Count);
 
             _view.Dispose();
@@ -295,10 +300,10 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void AddVariable_AfterDispose_LogWarning()
         {
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
             _view.Dispose();
             LogAssert.Expect(LogType.Warning, "Tried to add variable to disposed VariableListView.");
-            _view.AddVariable(v1);
+            _view.AddVariable(firstVar);
         }
 
         [Test]
@@ -313,20 +318,18 @@ namespace Amanita.Tests.EditMode
         public void AcquireFlowchartIfLost_ReacquiresViaGlobalObjectId()
         {
             // Arrange: create a Flowchart in the scene
-            var go = new GameObject("FlowchartHost");
-            var flowchart = go.AddComponent<Flowchart>();
+            var fcHolder = new GameObject("FlowchartHost");
+            var flowchart = fcHolder.AddComponent<Flowchart>();
 
             // Hook it into the view
             _view.SetFlowchart(flowchart);
 
             // Simulate losing the reference (as if after undo/redo)
-            var fiFlowchart = typeof(VariableListView)
-                .GetField("_flowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            var fiFlowchart = viewType.GetField("_flowchart", bindingFlags);
             fiFlowchart.SetValue(_view, null);
 
             // Act: call AcquireFlowchartIfLost
-            var miAcquire = typeof(VariableListView)
-                .GetMethod("AcquireFlowchartIfLost", BindingFlags.Instance | BindingFlags.NonPublic);
+            var miAcquire = viewType.GetMethod("AcquireFlowchartIfLost", bindingFlags);
             bool reacquired = (bool)miAcquire.Invoke(_view, null);
 
             // Assert: reacquired and matches original
@@ -338,10 +341,10 @@ namespace Amanita.Tests.EditMode
         [Test]
         public void HandleUndoRedoPerformed_CallsSyncFromFlowchart()
         {
-            var go = new GameObject("FlowchartHost");
+            var fcHost = new GameObject("FlowchartHost");
             try
             {
-                var flowchart = go.AddComponent<Flowchart>();
+                var flowchart = fcHost.AddComponent<Flowchart>();
 
                 // Directly set the serialized legacy list
                 AssignLegacyVariables(flowchart, new List<Variable>());
@@ -349,15 +352,14 @@ namespace Amanita.Tests.EditMode
                 var testView = new TestVariableListView(new VariableListViewInitArgs
                 {
                     List = new ListView(),
-                    CountLabel = new UitkLabel(),
+                    CountLabel = new UITKLabel(),
                     RowFactory = _factory
                 });
 
                 testView.SetFlowchart(flowchart);
 
                 // Act
-                var miHandleUndoRedo = typeof(VariableListView)
-                    .GetMethod("HandleUndoRedoPerformed", BindingFlags.Instance | BindingFlags.NonPublic);
+                var miHandleUndoRedo = viewType.GetMethod("HandleUndoRedoPerformed", bindingFlags);
                 miHandleUndoRedo.Invoke(testView, null);
 
                 // Assert
@@ -365,7 +367,7 @@ namespace Amanita.Tests.EditMode
             }
             finally
             {
-                UnityEngine.Object.DestroyImmediate(go);
+                UnityObj.DestroyImmediate(fcHost);
             }
         }
 
@@ -373,56 +375,52 @@ namespace Amanita.Tests.EditMode
         public void SyncFromFlowchart_PopulatesVariablesFromFlowchart()
         {
             // Arrange
-            var go = new GameObject("FlowchartHost");
-            var flowchart = go.AddComponent<Flowchart>();
+            var fcHost = new GameObject("FlowchartHost");
+            var flowchart = fcHost.AddComponent<Flowchart>();
 
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
-            var v2 = CreateVar<StringVariable, string>("s1", "a");
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var secondVar = CreateVar<StringVariable, string>("s1", "a");
 
-
-            AssignLegacyVariables(flowchart, new List<Variable> { v1, v2 });
+            AssignLegacyVariables(flowchart, new List<Variable> { firstVar, secondVar });
 
             _view.SetFlowchart(flowchart);
 
             // Act
-            var miSync = typeof(VariableListView)
-                .GetMethod("SyncFromFlowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
             miSync.Invoke(_view, null);
 
             // Assert
             var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
-            CollectionAssert.AreEqual(new IVariable[] { v1, v2 }, internalVars);
+            CollectionAssert.AreEqual(new IVariable[] { firstVar, secondVar }, internalVars);
         }
 
         [Test]
         public void SyncFromFlowchart_SkipsNullOrDestroyedVariables()
         {
             // Arrange
-            var go = new GameObject("FlowchartHost");
-            var flowchart = go.AddComponent<Flowchart>();
+            var fcHost = new GameObject("FlowchartHost");
+            var flowchart = fcHost.AddComponent<Flowchart>();
 
-            var v1 = CreateVar<FloatVariable, float>("f1", 1f);
+            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
             var destroyedVar = CreateVar<StringVariable, string>("s1", "a");
-            UnityEngine.Object.DestroyImmediate((UnityEngine.Object)destroyedVar);
+            UnityObj.DestroyImmediate((UnityObj)destroyedVar);
 
-            AssignLegacyVariables(flowchart, new List<Variable> { v1, destroyedVar, null });
+            AssignLegacyVariables(flowchart, new List<Variable> { firstVar, destroyedVar, null });
 
             _view.SetFlowchart(flowchart);
 
             // Act
-            var miSync = typeof(VariableListView)
-                .GetMethod("SyncFromFlowchart", BindingFlags.Instance | BindingFlags.NonPublic);
+            var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
             miSync.Invoke(_view, null);
 
             // Assert
             var internalVars = (List<IVariable>)_fiVariables.GetValue(_view);
-            CollectionAssert.AreEqual(new[] { v1 }, internalVars);
+            CollectionAssert.AreEqual(new[] { firstVar }, internalVars);
         }
 
         static void AssignLegacyVariables(Flowchart flowchart, List<Variable> variables)
         {
-            var field = typeof(Flowchart).GetField("legacyVariables",
-                BindingFlags.Instance | BindingFlags.NonPublic);
+            var field = typeof(Flowchart).GetField("legacyVariables", bindingFlags);
             if (field == null)
                 Assert.Fail("Could not find legacyVariables field on Flowchart");
 

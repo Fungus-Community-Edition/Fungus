@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tests.EditMode
+namespace VariableOperations
 {
     public class VariableDataFactoryTests
     {
@@ -12,7 +12,6 @@ namespace Amanita.Tests.EditMode
         public void SetUp()
         {
             VariableDataTypeRegistry.Clear();
-
             Type fakeDataType = typeof(FakeIntVariableData);
             VariableDataTypeRegistry.Register(fakeDataType);
         }

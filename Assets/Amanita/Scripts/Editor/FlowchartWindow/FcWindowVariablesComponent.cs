@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using System;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -62,6 +63,8 @@ namespace Amanita.VScripting.EditorUtils
                 List = list,
                 CountLabel = count,
                 RowFactory = _rowFactory,
+                VariableSource = flowchart,
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             var view = new VariableListView(listViewArgs);
 
@@ -69,7 +72,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Root = _rootElement,
                 AddButton = addBtn,
-                Flowchart = flowchart,
+                VariableSource = flowchart,
                 VariableListView = view,
             });
         }

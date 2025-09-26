@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 
 namespace Amanita.VScripting
 {
-    public interface IVariable : IHasKey
+    public interface IVariable : IHasKey, IHasItemID
     {
         void Init();
         new string Key { get; set; }
         object Value { get; set; }
         VariableScope Scope { get; }
-        int ItemID { get; set; }
 
         /// <summary>
         /// The type of the value that this is meant to represent. It's like how Fungus
@@ -25,19 +23,13 @@ namespace Amanita.VScripting
         bool Evaluate(CompareOperator compareOperator, object value);
 
         void Apply(SetOperator setOperator, object value);
+        IVariableSource Owner { get; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
     {
         new T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
-    }
-
-    public interface IVariableSource
-    {
-        event Action<IVariable> VariableAdded;
-        event Action<IVariable> VariableRemoved;
-        IReadOnlyList<IVariable> Variables { get; }
     }
 
 }

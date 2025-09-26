@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Amanita.DialogueSys.VScripting;
 using Amanita.EditorUtils;
+using Amanita.DialogueSys;
 
 namespace Amanita.VScripting.EditorUtils
 {
