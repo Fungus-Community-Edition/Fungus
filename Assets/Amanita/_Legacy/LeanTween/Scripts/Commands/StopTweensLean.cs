@@ -1,11 +1,8 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// 
@@ -48,7 +45,7 @@ namespace Amanita
 
         public override bool HasReference(Variable variable)
         {
-            return _targetObject.gameObjectRef == variable;
+            return ReferenceEquals(_targetObject.VarRef, variable);
         }
     }
 }

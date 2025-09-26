@@ -1,10 +1,9 @@
-// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
+using Amanita.VScripting.EventHandlers;
+using Amanita.VScripting;
 
 namespace Amanita
 {
@@ -15,7 +14,8 @@ namespace Amanita
     /// The RigidBody would typically have the Is Kinematic property set to true, unless you want the object to move around using physics.
     /// Use in conjunction with the Drag Started, Drag Completed, Drag Cancelled, Drag Entered & Drag Exited event handlers.
     /// </summary>
-    public class Draggable2D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+    public class Draggable2D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
+        IPointerEnterHandler, IPointerExitHandler
     {
         [Tooltip("Is object dragging enabled")]
         [SerializeField] protected bool dragEnabled = true;
@@ -173,14 +173,14 @@ namespace Amanita
 
                 if (returnOnCancelled)
                 {
-                    TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                    AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                     //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
                 }
             }
             else if (returnOnCompleted)
             {
-                TweenManager.TweenPosition(gameObject.transform, gameObject.transform.position,
+                AmanitaManager.DefaultTweener.TweenPosition(gameObject.transform, gameObject.transform.position,
                     startingPosition, returnDuration);
                 //LeanTween.move(gameObject, startingPosition, returnDuration).setEase(LeanTweenType.easeOutExpo);
             }

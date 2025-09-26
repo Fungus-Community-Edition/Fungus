@@ -1,4 +1,5 @@
 using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
@@ -67,7 +68,7 @@ namespace Amanita.SaveSys
             value = "null"
         };
 
-        public static new VariableSaveData DeserializeFrom(SaveDataUnit item)
+        public static VariableSaveData DeserializeFrom(SaveDataUnit item)
         {
             ValidateSerializedData(item, nameof(VariableSaveData));
             VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Content);

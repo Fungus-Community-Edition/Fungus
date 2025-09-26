@@ -1,0 +1,14 @@
+.title {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    font-size: 18px;
+    unity-text-align: middle-left;
+    padding-bottom: 8px;
+}
+
+.chart-container {
+    flex-direction: column;
+    row-gap: 6px;
+}
+.size-sample {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+}

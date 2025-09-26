@@ -1,10 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Changes a game object's scale to a specified value over time.
@@ -45,7 +42,8 @@ namespace Amanita
         
         public override bool HasReference(Variable variable)
         {
-            return variable == _toTransform.transformRef || _toScale.vector3Ref == variable || base.HasReference(variable);
+            return ReferenceEquals(variable, _toTransform.VarRef) || 
+                ReferenceEquals(_toScale.VarRef, variable) || base.HasReference(variable);
         }
     }
 }

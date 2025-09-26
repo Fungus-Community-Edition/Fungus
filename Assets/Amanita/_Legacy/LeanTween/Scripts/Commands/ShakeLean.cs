@@ -1,10 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Base class to account for the slight differences between regular leantween command
@@ -99,8 +96,8 @@ namespace Amanita
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _targetObject.gameObjectRef || variable == _duration.floatRef ||
-                _axisScale.vector3Ref == variable || _axisSpeedRange.vector2Ref == variable;
+            return ReferenceEquals(variable, _targetObject.VarRef) || ReferenceEquals(variable, _duration.VarRef) ||
+                ReferenceEquals(_axisScale.VarRef, variable) || ReferenceEquals(_axisSpeedRange.VarRef, variable);
         }
 
         public abstract LTDescr ExecuteTween();

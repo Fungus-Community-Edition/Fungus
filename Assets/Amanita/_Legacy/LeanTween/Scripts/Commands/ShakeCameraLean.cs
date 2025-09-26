@@ -1,10 +1,7 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using UnityEngine;
+﻿using UnityEngine;
 using Amanita.DentedPixel;
 
-namespace Amanita
+namespace Amanita.VScripting
 {
     /// <summary>
     /// Applies a camera shake effect to the main camera.
@@ -100,8 +97,9 @@ namespace Amanita
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _duration.floatRef ||
-                _axisScale.vector3Ref == variable || _axisSpeedRange.vector2Ref == variable;
+            return variable == _duration.VarRef as FloatVariable ||
+                _axisScale.VarRef as Vector3Variable == variable || 
+                _axisSpeedRange.VarRef as Vector2Variable == variable;
         }
     }
 }

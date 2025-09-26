@@ -1,159 +1,354 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
+using Amanita.EditorUtils;
 using System.Linq;
+using UnityObj = UnityEngine.Object;
+using Type = System.Type;
 using System.Reflection;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
-    /// Show the variable selection window as a searchable popup
+    /// Searchable popup window content used to add a Variable component to the current Flowchart.
+    /// Mirrors CommandSelectorPopupWindowContent pattern.
     /// </summary>
     public class VariableSelectPopupWindowContent : BasePopupWindowContent
     {
-        static readonly int POPUP_WIDTH = 200, POPUP_HEIGHT = 200;
-        static List<System.Type> _variableTypes;
-        static List<System.Type> VariableTypes
+        /// <summary>
+        /// All variable types available for user selection. Lazily (re)cached.
+        /// </summary>
+        protected static IReadOnlyList<Type> LegacyTypes
         {
             get
             {
-                if (_variableTypes == null || _variableTypes.Count == 0)
-                    CacheVariableTypes();
-
-                return _variableTypes;
+                if (legacyTypes == null || legacyTypes.Count == 0)
+                {
+                    RefreshVariableTypeCache();
+                }
+                return legacyTypes;
             }
         }
 
-        static void CacheVariableTypes()
+        protected static IReadOnlyList<Type> MuscariTypes
         {
-            var derivedType = typeof(Variable);
-            _variableTypes = EditorExtensions.FindDerivedTypes(derivedType)
-                .Where(x => !x.IsAbstract && derivedType.IsAssignableFrom(x))
-                .ToList();
+            get
+            {
+                if (muscariTypes == null || muscariTypes.Count == 0)
+                {
+                    RefreshVariableTypeCache();
+                }
+                return muscariTypes;
+            }
         }
+
+        /// <summary>
+        /// Flowchart in context for adding variables. (Set by DoAddVariable / legacy menu path.)
+        /// </summary>
+        protected static Flowchart curFlowchart;
+        protected static IMuscariableSource curSource;
+
+        #region Lifecycle & Caching
 
         [UnityEditor.Callbacks.DidReloadScripts]
-        private static void OnScriptsReloaded()
+        protected static void OnScriptsReloaded()
         {
-            CacheVariableTypes();
+            RefreshVariableTypeCache();
         }
 
-        protected override void PrepareAllItems()
+        /// <summary>
+        /// Refresh the cached list of variable types from the registry.
+        /// </summary>
+        protected static void RefreshVariableTypeCache()
         {
-            int i = 0;
-            foreach (var item in VariableTypes)
+            // Using registry instead of reflection scan for performance / determinism.
+            legacyTypes = VariableTypeRegistry.AllLegacyTypes.Where(ShouldBeShownInMenu).ToList();
+            muscariTypes = VariableTypeRegistry.AllMuscariableTypes.Where(ShouldBeShownInMenu).ToList();
+
+            bool ShouldBeShownInMenu(Type varType)
             {
-                VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(item);
-                if (variableInfo != null)
+                bool result = false;
+                VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
+                if (attr != null)
                 {
-                    var obsAttr = item.GetCustomAttribute<System.ObsoleteAttribute>();
-
-                    var fliStr = (variableInfo.Category.Length > 0 ? variableInfo.Category + CATEGORY_CHAR : "")
-                        + (obsAttr != null ? AmanitaConstants.UIPrefixForDeprecated_RichText : "")
-                        + variableInfo.VariableType;
-                    allItems.Add(new FilteredListItem(i, fliStr));
+                    result = attr.ShowInMenu;
                 }
-
-                i++;
+                return result;
             }
         }
 
-        protected override void SelectByOrigIndex(int index)
-        {
-            AddVariable(VariableTypes[index]);
-        }
+        // Cached list of concrete variable component types (legacy Variable system)
+        protected static IReadOnlyList<Type> legacyTypes, muscariTypes;
 
-        static public void DoAddVariable(Rect position, string currentHandlerName, Flowchart flowchart)
-        {
-            curFlowchart = flowchart;
-            if (!AmanitaEditorPreferences.useLegacyMenus)
-            {
-                //new method
-                VariableSelectPopupWindowContent win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
-                PopupWindow.Show(position, win);
-            }
-            //old method
-            DoOlderMenu(flowchart);
-        }
+        #endregion
 
-        static protected void DoOlderMenu(Flowchart flowchart)
-        {
-            GenericMenu menu = new GenericMenu();
-
-            // Add variable types without a category
-            foreach (var type in VariableTypes)
-            {
-                VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(type);
-                if (variableInfo == null ||
-                    variableInfo.Category != "")
-                {
-                    continue;
-                }
-
-                GUIContent typeName = new GUIContent(variableInfo.VariableType);
-
-                menu.AddItem(typeName, false, AddVariable, type);
-            }
-
-            // Add types with a category
-            foreach (var type in VariableTypes)
-            {
-                VariableInfoAttribute variableInfo = VariableEditor.GetVariableInfo(type);
-                if (variableInfo == null ||
-                    variableInfo.Category == "")
-                {
-                    continue;
-                }
-                
-                GUIContent typeName = new GUIContent(variableInfo.Category + CATEGORY_CHAR + variableInfo.VariableType);
-
-                menu.AddItem(typeName, false, AddVariable, type);
-            }
-
-            menu.ShowAsContext();
-        }
-
-        private static Flowchart curFlowchart;
+        #region Construction
 
         public VariableSelectPopupWindowContent(string currentHandlerName, int width, int height)
             : base(currentHandlerName, width, height)
         {
         }
 
+        #endregion
+
+        #region BasePopupWindowContent Overrides
+
+        /// <summary>
+        /// Populate the internal list for filtering / display.
+        /// </summary>
+        protected override void PrepareAllItems()
+        {
+            // Iterate with index so we can map back to original type directly.
+            IList<Type> contentTypesPreparedFor = new List<Type>();
+
+            // Check for muscariables first
+            PrepareItemsFor(MuscariTypes);
+            PrepareItemsFor(LegacyTypes);
+
+            void PrepareItemsFor(IReadOnlyList<Type> varTypes)
+            {
+                for (int typeIndex = 0; typeIndex < varTypes.Count; typeIndex++)
+                {
+                    var type = varTypes[typeIndex];
+                    var info = VariableEditor.GetVariableInfo(type);
+                    if (info == null)
+                    {
+                        string logMessage = $"Type {type.Name} does not have a variable info attribute.";
+                        Debug.LogWarning(logMessage);
+                        continue;
+                    }
+
+                    if (contentTypesPreparedFor.Contains(info.ContentType))
+                    {
+                        continue;
+                    }
+
+                    // We're not going to worry about any of the types having an ObsoleteAttribute
+                    string display = MakeDisplayLabel(info);
+
+                    // The original index into VariableTypes is preserved in 'typeIndex'.
+                    allItems.Add(new FilteredListItem(typeIndex, display));
+                }
+            }
+        }
+
+        protected static string MakeDisplayLabel(VariableInfoAttribute info)
+        {
+            string result;
+            if (info.Category.Length > 0)
+            {
+                result = string.Format(_displayLabelFormat, info.Category, info.OptionDisplayName);
+
+            }
+            else
+            {
+                result = info.OptionDisplayName;
+            }
+
+            return result;
+        }
+
+        protected static string _displayLabelFormat = "{0}/{1}";
+
+        /// <summary>
+        /// Called when user confirms a selection (keyboard enter, double click, etc).
+        /// </summary>
+        protected override void SelectByOrigIndex(int index)
+        {
+            if (index < 0 || index >= LegacyTypes.Count)
+                return;
+
+            AddVariable(LegacyTypes[index]);
+        }
+
+        #endregion
+
+        #region Public Entry Points
+
+        /// <summary>
+        /// Show variable add popup (new searchable version or legacy menu fallback).
+        /// </summary>
+        /// <param name="position">Anchor rect (button rect).</param>
+        /// <param name="currentHandlerName">Optional pre-filter / search seed.</param>
+        /// <param name="toAddVarTo">Target flowchart to add variable to.</param>
+        /// <param name="onVarAdded">Optional callback after addition (currently unused).</param>
+        public static void DoAddVariable(Rect position,
+                                         string currentHandlerName,
+                                         Flowchart toAddVarTo)
+        {
+            curFlowchart = toAddVarTo;
+            curSource = toAddVarTo;
+
+            if (!AmanitaEditorPreferences.useLegacyMenus)
+            {
+                var win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
+                PopupWindow.Show(position, win);
+            }
+
+            // Always build / show the legacy menu (mirrors CommandSelector pattern).
+            ShowLegacyMenu(curFlowchart);
+        }
+
+        protected const int POPUP_WIDTH = 200;
+        protected const int POPUP_HEIGHT = 200;
+
+        public static void DoAddVariable(Rect position, string currentHandlerName,
+            IMuscariableSource toAddVarTo, System.Action onVarAdded = null)
+        {
+            curFlowchart = null;
+            curSource = toAddVarTo;
+
+            if (!AmanitaEditorPreferences.useLegacyMenus)
+            {
+                var win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
+                PopupWindow.Show(position, win);
+            }
+
+            // Always build / show the legacy menu (mirrors CommandSelector pattern).
+            ShowLegacyMenu(toAddVarTo);
+        }
+        #endregion
+
+        #region Legacy Menu (Context GenericMenu)
+
+        /// <summary>
+        /// Build and show the old non-searchable menu variant.
+        /// </summary>
+        protected static void ShowLegacyMenu(Flowchart flowchart)
+        {
+            GenericMenu menu = PrepMenu(legacyTypes);
+            menu.ShowAsContext();
+        }
+
+        private static GenericMenu PrepMenu(IReadOnlyList<Type> varTypes)
+        {
+            GenericMenu menu = new GenericMenu();
+
+            IList<Type> typesWithCategory = varTypes.Where(TypeHasCategory).ToList();
+            static bool TypeHasCategory(Type type)
+            {
+                var info = VariableEditor.GetVariableInfo(type);
+                return info == null || !string.IsNullOrEmpty(info.Category);
+            }
+            IList<Type> uncategorized = varTypes.Where((elem) => !TypeHasCategory(elem)).ToList();
+
+            // We want to list the uncategorized types first
+            AddToMenu(uncategorized);
+            void AddToMenu(IList<Type> typesToAdd)
+            {
+                foreach (var typeEl in typesToAdd)
+                {
+                    var info = VariableEditor.GetVariableInfo(typeEl);
+                    string displayLabel = MakeDisplayLabel(info);
+                    menu.AddItem(new GUIContent(displayLabel), false, AddVariable, typeEl);
+                }
+            }
+            AddToMenu(typesWithCategory);
+            return menu;
+        }
+
+        public static void ShowLegacyMenu(IVariableSource variableSource)
+        {
+            GenericMenu menu = PrepMenu(muscariTypes);
+            menu.ShowAsContext();
+        }
+
+        #endregion
+
+        #region Variable Creation
+
+        /// <summary>
+        /// Convenience overload for GenericMenu callback signature.
+        /// </summary>
         public static void AddVariable(object obj)
         {
             AddVariable(obj, string.Empty);
         }
 
-        public static void AddVariable(object obj, string suggestedName)
+        public static void AddVariableToSource(object obj)
         {
-            System.Type t = obj as System.Type;
-            if (t == null)
-            {
+
+        }
+
+        /// <summary>
+        /// Creates a new Variable component of the supplied type on the active flowchart.
+        /// Optionally attempts to place it after an existing variable with the suggested name.
+        /// </summary>
+        /// <param name="varTypeToAdd">Type expected.</param>
+        /// <param name="suggestedName">Optional preferred key (used also to attempt positional insertion).</param>
+        public static void AddVariable(object varTypeToAdd, string suggestedName)
+        {
+            if (varTypeToAdd is not Type variableType)
                 return;
-            }
 
-            var flowchart = curFlowchart != null ? curFlowchart : FlowchartWindow.GetFlowchart();
-            Undo.RecordObject(flowchart, "Add Variable");
-            Variable newVariable = flowchart.gameObject.AddComponent(t) as Variable;
-            newVariable.Key = flowchart.GetUniqueVariableKey(suggestedName);
+            UnityObj varSourceObj = curSource as UnityObj;
 
-            //if suggested exists, then insert, if not just add
-            var existingVariable = flowchart.GetVariable(suggestedName);
-            if (existingVariable != null)
+            if (varSourceObj != null && varSourceObj is not Flowchart)
             {
-                flowchart.Variables.Insert(flowchart.Variables.IndexOf(existingVariable)+1, newVariable);
+                // We'll assume that the var type passed is a Muscariable instead of a legacy type
+                VariableInfoAttribute info = VariableEditor.GetVariableInfo(variableType);
+                Type muscariType = typeof(Muscariable);
+                if (info == null || !muscariType.IsAssignableFrom(variableType))
+                {
+                    Debug.LogError($"Type {variableType.Name} is not a Muscariable or does not " +
+                        $"have a VariableInfo attribute.");
+                    return;
+                }
+
+                Undo.RecordObject(varSourceObj, "Add Variable");
+                curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             }
             else
             {
-                flowchart.Variables.Add(newVariable);
-            }
+                var flowchart = curFlowchart != null ? curFlowchart : FlowchartWindow.GetFlowchart();
+                if (flowchart == null)
+                {
+                    Debug.LogWarning("No Flowchart available to add variable to.");
+                    return;
+                }
 
-            // Because this is an async call, we need to force prefab instances to record changes
-            PrefabUtility.RecordPrefabInstancePropertyModifications(flowchart);
+                Undo.RecordObject(flowchart, "Add Variable");
+
+                AddAndRegisterTheLegacyVar();
+                void AddAndRegisterTheLegacyVar()
+                {
+                    // Add component instance
+                    var newVariable = flowchart.gameObject.AddComponent(variableType) as Variable;
+                    if (newVariable == null)
+                    {
+                        Debug.LogError($"Failed to add variable component of type {variableType.Name} to {curFlowchart.name}");
+                        return;
+                    }
+
+                    // Determine unique key
+                    newVariable.Key = UniqueKeyGenerator.GetUniqueKeyFor(suggestedName, (IList<IVariable>)flowchart.Variables);
+
+                    // If the suggested name exists, insert after that variable; otherwise append.
+                    if (!string.IsNullOrEmpty(suggestedName))
+                    {
+                        var existingVariable = flowchart.GetVariable(suggestedName);
+                        if (existingVariable != null)
+                        {
+                            var listCopy = new List<IVariable>(flowchart.Variables);
+                            int insertionIndex = listCopy.IndexOf(existingVariable) + 1;
+                            flowchart.InsertVariable(insertionIndex, newVariable);
+                        }
+                        else
+                        {
+                            flowchart.AddVariable(newVariable);
+                        }
+                    }
+                    else
+                    {
+                        flowchart.AddVariable(newVariable);
+                    }
+
+                    // Ensure prefab instances properly record the new component state.
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(flowchart);
+                }
+            }
         }
+
+        #endregion
     }
 }

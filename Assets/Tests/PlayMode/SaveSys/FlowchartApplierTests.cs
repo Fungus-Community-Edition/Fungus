@@ -8,6 +8,7 @@ using UnityEngine.TestTools;
 using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
+using Amanita.VScripting;
 
 namespace Amanita.SaveSystemTests
 {
@@ -124,7 +125,7 @@ namespace Amanita.SaveSystemTests
             // Remove a variable from the flowchart
             var removedVar = flowchart.Variables.FirstOrDefault();
             Assume.That(removedVar != null, "Test scene must have at least one variable.");
-            flowchart.Variables.Remove(removedVar);
+            flowchart.RemoveVariable(removedVar);
 
             // SaveData still refers to the removed variable
             // Should not throw, should log a warning for the missing variable
@@ -213,7 +214,7 @@ namespace Amanita.SaveSystemTests
             string initSecondVarVal = "initial";
             secondVar.Key = "secondVar";
             secondVar.Value = initSecondVarVal;
-            secondFlowchart.Variables.Add(secondVar);
+            secondFlowchart.AddVariable(secondVar);
 
             FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
 

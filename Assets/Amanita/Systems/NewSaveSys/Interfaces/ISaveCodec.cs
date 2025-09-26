@@ -51,7 +51,7 @@ namespace Amanita.SaveSys
         where TOutput : SaveData
     {
         TOutput EncodeToSave(TInput from);
-        TOutput DecodeFrom(SaveDataUnit unit);
+        new TOutput DecodeFrom(SaveDataUnit unit);
     }
 
     public interface IMultiSaveCodec<TOutput> : ISaveCodec<TOutput>

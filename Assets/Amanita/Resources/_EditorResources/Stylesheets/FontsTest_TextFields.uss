@@ -1,0 +1,74 @@
+.root {
+    flex-direction: column;
+    padding: 12px;
+    row-gap: 10px;
+    background-color: #222;
+}
+
+.title {
+    color: #ccc;
+    font-size: 13px;
+}
+
+.tf {
+    font-size: 18px;
+    color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 32px;
+}
+
+/* Raw Amaranth */
+.raw > .root {
+    flex-direction: column;
+    padding: 12px;
+    row-gap: 10px;
+    background-color: #222;
+}
+
+.title {
+    color: #ccc;
+    font-size: 13px;
+    unity-font-style: bold;
+}
+
+.tf 
+{
+    font-size: 18px;
+    color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 32px;
+}
+
+/* Raw Amaranth */
+.raw 
+{
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+}
+
+/* Amaranth + letter-spacing tweak */
+.spaced 
+{
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    letter-spacing: -0.5px; /* adjust to taste */
+}
+
+/* System fallback (replace with an actual font in your project) */
+.fallback 
+{
+    -unity-font: resource("Arial");
+}
+
+/* Amaranth + letter-spacing tweak */
+.spaced 
+{
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    letter-spacing: -0.5px; /* adjust to taste */
+}
+
+/* System fallback (replace with an actual font in your project) */
+.fallback 
+{
+    -unity-font: resource("Arial");
+}

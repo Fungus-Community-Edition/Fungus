@@ -27,7 +27,7 @@
 		"Amanita.Task",
 		"Amanita.TextureVariable",
 		"Amanita.TransformVariable",
-		"Amanita.Variable",
+		"Variable",
 		"Amanita.Vector2Variable",
 		"Amanita.Vector3Variable",
         "Amanita.Label"

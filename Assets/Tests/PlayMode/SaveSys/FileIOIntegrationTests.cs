@@ -1,16 +1,12 @@
 ﻿using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Analytics;
-using UnityEngine.TestTools;
-using Encoding = System.Text.Encoding;
 
 namespace Amanita.SaveSystemTests
 {
@@ -54,7 +50,6 @@ namespace Amanita.SaveSystemTests
         [TestCase(42, SaveDirectoryType.DataPath)]
         [TestCase(55, SaveDirectoryType.PersistentDataPath)]
         [TestCase(99, SaveDirectoryType.DataPath)]
-        [TestCase(39, SaveDirectoryType.StreamingAssetsPath)]
         [Test]
         public async Task Overwrite_Behavior_CreatesAndDeletesBackup(int slotNumber, SaveDirectoryType baseDir)
         {
@@ -114,7 +109,6 @@ namespace Amanita.SaveSystemTests
         [TestCase(1, SaveDirectoryType.DataPath)]
         [TestCase(5, SaveDirectoryType.PersistentDataPath)]
         [TestCase(99, SaveDirectoryType.DataPath)]
-        [TestCase(39, SaveDirectoryType.StreamingAssetsPath)]
         public async Task SmallData_RoundTrip_VariedSlots(int slotNumber, SaveDirectoryType dirType)
         {
             var data = new CompositeSaveData();

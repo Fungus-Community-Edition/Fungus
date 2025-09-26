@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.Tree
+﻿namespace MoonSharp.Interpreter.Tree
 {
 	enum TokenType
 	{

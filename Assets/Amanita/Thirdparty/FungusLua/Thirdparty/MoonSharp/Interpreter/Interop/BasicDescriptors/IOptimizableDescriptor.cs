@@ -1,5 +1,4 @@
-﻿
-namespace MoonSharp.Interpreter.Interop.BasicDescriptors
+﻿namespace MoonSharp.Interpreter.Interop.BasicDescriptors
 {
 	/// <summary>
 	/// Interface for descriptors of any kind which support optimizations of their implementation according to InteropAccessMode

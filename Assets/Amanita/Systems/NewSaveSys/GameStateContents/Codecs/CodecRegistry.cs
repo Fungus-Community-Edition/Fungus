@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using AmanitaVar = Amanita.Variable;
+using IVariable = Amanita.VScripting.Variable;
 
 namespace Amanita.SaveSys
 {
@@ -18,7 +18,7 @@ namespace Amanita.SaveSys
             /* ... */
         };
 
-        public static IVarCodec GetCodec(AmanitaVar variable)
+        public static IVarCodec GetCodec(IVariable variable)
             => codecs.Find(s => s.CanHandle(variable));
 
         public static IVarCodec GetCodec(VariableSaveData saveData)

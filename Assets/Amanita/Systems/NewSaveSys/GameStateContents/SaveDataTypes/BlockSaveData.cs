@@ -46,7 +46,7 @@ namespace Amanita.SaveSys
             return data;
         }
 
-        public new static BlockSaveData DeserializeFrom(SaveDataUnit item)
+        public static BlockSaveData DeserializeFrom(SaveDataUnit item)
         {
             ValidateSerializedData(item, nameof(BlockSaveData));
             BlockSaveData data = JsonUtility.FromJson<BlockSaveData>(item.Content);
