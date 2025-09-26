@@ -1,0 +1,26 @@
+.root {
+    flex-direction: column;
+    padding: 10px;
+    background-color: #222;
+}
+
+.label {
+    font-size: 18px;
+    color: white;
+}
+
+/* Raw Amaranth */
+.raw {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+}
+
+/* Amaranth + letter-spacing tweak */
+.spaced {
+    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    letter-spacing: -0.5px; /* tweak and reimport to taste */
+}
+
+/* System fallback for baseline comparison */
+.fallback {
+    -unity-font: resource("LegacyRuntimeFont");
+}

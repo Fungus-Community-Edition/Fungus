@@ -792,6 +792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: maxFadeDur
+  itemID: 9
   value: 5
 --- !u!114 &549323052
 MonoBehaviour:
@@ -807,6 +808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: minFadeDur
+  itemID: 8
   value: 0.5
 --- !u!114 &549323053
 MonoBehaviour:
@@ -822,6 +824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingFadeDur
+  itemID: 7
   value: 2
 --- !u!114 &549323054
 MonoBehaviour:
@@ -837,6 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingMusicVol
+  itemID: 6
   value: 50
 --- !u!114 &549323055
 MonoBehaviour:
@@ -852,6 +856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: startingVol
+  itemID: 5
   value: 5
 --- !u!114 &549323056
 MonoBehaviour:
@@ -867,6 +872,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeChangeInterval
+  itemID: 4
   value: 0.5
 --- !u!114 &549323057
 MonoBehaviour:
@@ -882,6 +888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: volChangeInterval
+  itemID: 3
   value: 5
 --- !u!114 &549323058
 MonoBehaviour:
@@ -897,6 +904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: secondClip
+  itemID: 2
   value: {fileID: 8300000, guid: eb2cfabb9985f2f489e93a8e2b7db129, type: 3}
 --- !u!114 &549323059
 MonoBehaviour:
@@ -912,6 +920,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: firstClip
+  itemID: 1
   value: {fileID: 8300000, guid: 43aeed34af4338e40b8ac0f72263dc1d, type: 3}
 --- !u!114 &549323060
 MonoBehaviour:
@@ -942,7 +951,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 205.29785
+    x: 204.12138
     y: 58.297874
     width: 67.41
     height: 40
@@ -960,6 +969,8 @@ MonoBehaviour:
   - {fileID: 549323069}
   - {fileID: 549323068}
   - {fileID: 549323080}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323062
 MonoBehaviour:
@@ -973,22 +984,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: 31.85714, y: 83.22439}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 200
-  zoom: 0.8200002
-  scrollViewRect:
-    serializedVersion: 2
-    x: -343
-    y: -340
-    width: 1114
-    height: 859
-  selectedBlocks:
-  - {fileID: 549323061}
-  selectedCommands:
-  - {fileID: 549323068}
   variables:
   - {fileID: 549323059}
   - {fileID: 549323058}
@@ -1006,6 +1017,7 @@ MonoBehaviour:
   - {fileID: 549323072}
   - {fileID: 549323119}
   - {fileID: 549323114}
+  muscariables: []
   description: 
   stepPause: 0
   colorCommands: 1
@@ -1016,6 +1028,12 @@ MonoBehaviour:
   hideCommands: []
   luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  nextValidVarID: 17
+  uniqueId: 8bd9f872-5623-4e0f-82e5-41a2094bbb78
 --- !u!4 &549323063
 Transform:
   m_ObjectHideFlags: 0
@@ -1045,6 +1063,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: silent
+  itemID: 12
   value: 0
 --- !u!114 &549323065
 MonoBehaviour:
@@ -1084,6 +1103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: secondClipTrack
+  itemID: 11
   value: 1
 --- !u!114 &549323067
 MonoBehaviour:
@@ -1099,6 +1119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: firstClipTrack
+  itemID: 10
   value: 0
 --- !u!114 &549323068
 MonoBehaviour:
@@ -1120,7 +1141,10 @@ MonoBehaviour:
     track:
       integerRef: {fileID: 549323066}
       integerVal: 0
-    clip:
+    introClip:
+      audioClipRef: {fileID: 0}
+      audioClipVal: {fileID: 0}
+    mainClip:
       audioClipRef: {fileID: 549323058}
       audioClipVal: {fileID: 0}
     loop:
@@ -1162,7 +1186,10 @@ MonoBehaviour:
     track:
       integerRef: {fileID: 549323067}
       integerVal: 0
-    clip:
+    introClip:
+      audioClipRef: {fileID: 0}
+      audioClipVal: {fileID: 0}
+    mainClip:
       audioClipRef: {fileID: 549323059}
       audioClipVal: {fileID: 0}
     loop:
@@ -1222,6 +1249,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: musicGroupVol
+  itemID: 14
   value: 0
 --- !u!114 &549323073
 MonoBehaviour:
@@ -1404,7 +1432,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fadeDur
-  value: 0
+  itemID: 13
+  value: 2
 --- !u!114 &549323075
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1483,8 +1512,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 491.7014
-    y: 61.19615
+    x: 490.5249
+    y: 57.666737
     width: 150.76001
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1497,6 +1526,8 @@ MonoBehaviour:
   - {fileID: 549323078}
   - {fileID: 549323076}
   - {fileID: 549323075}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323080
 MonoBehaviour:
@@ -1775,6 +1806,8 @@ MonoBehaviour:
   - {fileID: 549323125}
   - {fileID: 549323083}
   - {fileID: 549323082}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323086
 MonoBehaviour:
@@ -1829,6 +1862,8 @@ MonoBehaviour:
   - {fileID: 549323121}
   - {fileID: 549323116}
   - {fileID: 549323103}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323088
 MonoBehaviour:
@@ -2061,6 +2096,8 @@ MonoBehaviour:
   - {fileID: 549323090}
   - {fileID: 549323123}
   - {fileID: 549323089}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323092
 MonoBehaviour:
@@ -2293,6 +2330,8 @@ MonoBehaviour:
   - {fileID: 549323094}
   - {fileID: 549323124}
   - {fileID: 549323093}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323096
 MonoBehaviour:
@@ -2550,6 +2589,8 @@ MonoBehaviour:
   - {fileID: 549323126}
   - {fileID: 549323098}
   - {fileID: 549323097}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323101
 MonoBehaviour:
@@ -2598,6 +2639,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323101}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323103
 MonoBehaviour:
@@ -2690,6 +2733,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323105}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323107
 MonoBehaviour:
@@ -2740,6 +2785,8 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 549323107}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &549323109
 MonoBehaviour:
@@ -2855,6 +2902,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: fullVol
+  itemID: 16
   value: 100
 --- !u!114 &549323115
 MonoBehaviour:
@@ -3351,6 +3399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: trackCurrentlyAudible
+  itemID: 15
   value: 0
 --- !u!114 &549323120
 MonoBehaviour:
@@ -4961,7 +5010,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1443016623}
   - component: {fileID: 1443016622}
-  - component: {fileID: 1443016621}
+  - component: {fileID: 1443016624}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -4969,26 +5018,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1443016621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443016620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!114 &1443016622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5019,6 +5048,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1443016624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443016620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &1552838394
 GameObject:
   m_ObjectHideFlags: 0

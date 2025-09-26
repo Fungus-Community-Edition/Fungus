@@ -1,12 +1,9 @@
-﻿// This code is part of the Fungus library (https://github.com/snozbot/fungus)
-// It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
-
-#if UNITY_2019_2_OR_NEWER
+﻿#if UNITY_2019_2_OR_NEWER
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 
-namespace Fungus.Tests
+namespace Amanita.Tests
 {
     [TestFixture]
     public class FungusPlayModeTest

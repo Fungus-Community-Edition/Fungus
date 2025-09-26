@@ -1,0 +1,37 @@
+﻿{
+	"registerTypes" : [
+		"Amanita.AnimatorVariable",
+		"Amanita.AudioSourceVariable",
+		"Amanita.Block",
+		"Amanita.BooleanVariable",
+		"Amanita.Character",
+		"Amanita.ColorVariable",
+		"Amanita.Command",
+		"Amanita.CommandInfoAttribute",
+		"Amanita.FacingDirection",
+		"Amanita.FloatVariable",
+		"Amanita.Flowchart",
+		"Amanita.AmanitaPrefs",
+		"Amanita.LuaEnvironment",
+		"Amanita.LuaUtils",
+		"Amanita.GameObjectVariable",
+		"Amanita.IntegerVariable",
+		"Amanita.MaterialVariable",
+		"Amanita.MenuDialog",
+		"Amanita.ObjectVariable",
+		"Amanita.PODTypeFactory",
+		"Amanita.PortraitState",
+		"Amanita.SayDialog",
+		"Amanita.SpriteVariable",
+		"Amanita.StringVariable",
+		"Amanita.Task",
+		"Amanita.TextureVariable",
+		"Amanita.TransformVariable",
+		"Variable",
+		"Amanita.Vector2Variable",
+		"Amanita.Vector3Variable",
+        "Amanita.Label"
+	],
+	"extensionTypes" : [
+	]
+}

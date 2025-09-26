@@ -31,7 +31,7 @@ namespace Amanita.Myceliaudio.Demos
 
             PlayAudioArgs playShortBgm = new PlayAudioArgs()
             {
-                Clip = bgmToPlay,
+                MainClip = bgmToPlay,
                 TrackGroup = TrackGroup.BGMusic,
                 Loop = true,
                 LoopStartPoint = loopPoint,
@@ -101,7 +101,7 @@ namespace Amanita.Myceliaudio.Demos
 
         protected virtual void OnPlaySfxClicked()
         {
-            playSfxArgs.Clip = sfx;
+            playSfxArgs.MainClip = sfx;
             AudioSys.Play(playSfxArgs);
         }
 
