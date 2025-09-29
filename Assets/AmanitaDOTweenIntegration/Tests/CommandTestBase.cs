@@ -2,7 +2,7 @@
 using Amanita.SaveSys;
 using Amanita.VScripting; // or your Flowchart namespace
 using Collections;
-using DoTweenita;
+using Amanita.DOTweenIntegration;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;

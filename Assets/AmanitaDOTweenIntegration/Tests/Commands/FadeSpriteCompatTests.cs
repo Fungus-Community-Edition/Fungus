@@ -1,4 +1,4 @@
-using DoTweenita;
+using Amanita.DOTweenIntegration;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;

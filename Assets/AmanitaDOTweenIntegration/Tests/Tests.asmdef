@@ -1,12 +1,12 @@
 {
-    "name": "DoTweenForAmanitaTests",
+    "name": "Amanita.DoTweenIntegration.Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Amanita",
-        "DoTweenForAmanita",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "Amanita.DOTweenIntegration"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

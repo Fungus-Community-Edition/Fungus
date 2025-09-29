@@ -5,7 +5,7 @@ using System;
 using UnityEngine.UI;
 using Amanita.Myceliaudio;
 
-namespace DoTweenita
+namespace Amanita.DOTweenIntegration
 {
     [CreateAssetMenu(fileName = "NewAmanitaDoTweenAdapter", menuName = "Amanita/DOTween/TweenAdapter")]
     public class AmaniDoTweenAdapter : ScriptableObject, ITransformTweenAdapter,

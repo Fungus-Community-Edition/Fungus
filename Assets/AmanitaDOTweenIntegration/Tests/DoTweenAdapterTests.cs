@@ -1,5 +1,5 @@
 using Amanita;
-using DoTweenita;
+using Amanita.DOTweenIntegration;
 using DG.Tweening;
 using NUnit.Framework;
 using UnityEngine;

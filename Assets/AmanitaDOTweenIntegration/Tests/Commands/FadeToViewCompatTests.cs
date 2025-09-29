@@ -1,5 +1,5 @@
 using Amanita;
-using DoTweenita;
+using Amanita.DOTweenIntegration;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
@@ -11,25 +11,29 @@ using System.Reflection;
 
 namespace CommandCompat
 {
-    public class MoveToViewCompatTests : CommandTestBase<MoveToView>
+    public class FadeToViewCompatTests : CommandTestBase<FadeToView>
     {
         private Camera cameraGO;
         private View targetView;
 
-        protected override void ConfigureCommand(MoveToView cmd)
+        protected override void ConfigureCommand(FadeToView cmd)
         {
+            // Camera setup
             var camGO = new GameObject("TestCamera");
             cameraGO = camGO.AddComponent<Camera>();
-            cameraGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            cameraGO.transform.position = Vector3.zero;
+            cameraGO.transform.rotation = Quaternion.identity;
             cameraGO.orthographicSize = 5f;
 
+            // Target view setup
             var viewGO = new GameObject("TargetView");
             targetView = viewGO.AddComponent<View>();
-            targetView.transform.position = new Vector3(10f, 5f, -20f);
-            targetView.transform.rotation = Quaternion.Euler(15f, 45f, 0f);
-            targetView.ViewSize = 3f;
+            targetView.transform.position = new Vector3(8f, 3f, -12f);
+            targetView.transform.rotation = Quaternion.Euler(10f, 30f, 0f);
+            targetView.ViewSize = 2.5f;
 
-            Type cmdType = typeof(MoveToView);
+            // Assign private fields
+            Type cmdType = typeof(FadeToView);
             BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
             cmdType.GetField("targetCamera", flags)
                 .SetValue(cmd, cameraGO);
@@ -40,13 +44,9 @@ namespace CommandCompat
             cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
 
-            cmdType.GetField("orthoSizeTweener", flags)
+            // Inject AmaniDoTweenAdapter for all tweeners
+            cmdType.GetField("doFadeTween", flags)
                 .SetValue(cmd, adapter);
-            cmdType.GetField("posTweener", flags)
-                .SetValue(cmd, adapter);
-            cmdType.GetField("rotTweener", flags)
-                .SetValue(cmd, adapter);
-
             cmdType.GetField("doOrthoSizeTween", flags)
                 .SetValue(cmd, adapter);
             cmdType.GetField("doPosTween", flags)
@@ -60,8 +60,7 @@ namespace CommandCompat
             var vec3Comparer = new Vector3EqualityComparer(Epsilon);
             var quatComparer = new QuaternionEqualityComparer(Epsilon);
 
-            // Let's not worry about the z pos. By default, the CameraManager doesn't pan
-            // with the z pos in mind
+            // Not going to worry about the z pos here
             Vector3 expectedPos = targetView.transform.position;
             expectedPos.z = cameraGO.transform.position.z;
 
@@ -70,17 +69,25 @@ namespace CommandCompat
             Assert.AreEqual(targetView.ViewSize, cameraGO.orthographicSize, Epsilon, "Ortho size mismatch");
         }
 
+        [TearDown]
+        public override void TearDown()
+        {
+            base.TearDown();
+            Object.DestroyImmediate(cameraGO);
+            Object.Destroy(targetView);
+        }
+
         [UnityTest]
-        public IEnumerator WaitUntilFinished_MovesCameraToView()
+        public IEnumerator WaitUntilFinished_FadesAndMovesToView()
         {
             yield return RunBlockAndWait();
             AssertFinalState();
         }
 
         [UnityTest]
-        public IEnumerator NoWait_ContinuesImmediately_AndMovesCamera()
+        public IEnumerator NoWait_ContinuesImmediately_AndFadesAndMoves()
         {
-            typeof(MoveToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            typeof(FadeToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(command, false);
 
             bool continued = false;
