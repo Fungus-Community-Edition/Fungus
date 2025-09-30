@@ -1,6 +1,5 @@
 using Amanita.VScripting;
 using NUnit.Framework;
-using System;
 using UnityEngine;
 using System.Collections;
 using Type = System.Type;

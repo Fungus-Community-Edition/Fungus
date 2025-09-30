@@ -24,13 +24,13 @@ namespace Amanita.VScripting
         [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
 
         [Tooltip("Wait until the fade has finished before executing the next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
         protected virtual void Awake()
         {
-            ValidateTweeners();
+            ValidateTweeners(false);
         }
 
         #region Public members
@@ -88,18 +88,24 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
         [HideInInspector] [FormerlySerializedAs("targetColor")] public Color targetColorOLD;
+        [SerializeField][FormerlySerializedAs("waitUntilFinished")] protected bool waitUntilFinishedOLD;
 
         protected virtual void OnEnable()
         {
-            if (durationOLD != default(float))
+            if (durationOLD != default)
             {
                 duration.Value = durationOLD;
-                durationOLD = default(float);
+                durationOLD = default;
             }
-            if (targetColorOLD != default(Color))
+            if (targetColorOLD != default)
             {
                 targetColor.Value = targetColorOLD;
-                targetColorOLD = default(Color);
+                targetColorOLD = default;
+            }
+            if (waitUntilFinishedOLD != default)
+            {
+                waitUntilFinished.Value = waitUntilFinishedOLD;
+                waitUntilFinishedOLD = default;
             }
         }
 
@@ -111,11 +117,11 @@ namespace Amanita.VScripting
             ValidateTweeners();
         }
 
-        protected virtual void ValidateTweeners()
+        protected virtual void ValidateTweeners(bool logMessages = true)
         {
             TweenUtils.EnsureValidTweener(ref fadeTweener,
                 typeof(IGraphicTweenAdapter),
-                "sprite-fading");
+                "sprite-fading", logMessages);
             doFadeTween = fadeTweener as IGraphicTweenAdapter;
         }
 
