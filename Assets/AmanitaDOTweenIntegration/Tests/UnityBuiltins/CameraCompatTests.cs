@@ -11,7 +11,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Camera, float> FOVCase = new TweenCase<Camera, float>
         {
             Name = "ShiftFieldOfViewTo",
-            CreateTween = (adapter, cam) => adapter.ShiftFieldOfViewTo(cam, 60f, Duration),
+            CreateTween = (adapter, cam) => adapter.TweenFOV(cam, 60f, Duration),
             GetValue = cam => cam.fieldOfView,
             SetValue = (cam, v) => cam.fieldOfView = v,
             CreateComponent = go => go.AddComponent<Camera>(),
@@ -21,7 +21,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Camera, float> OrthoSizeCase = new TweenCase<Camera, float>
         {
             Name = "ShiftOrthographicSizeTo",
-            CreateTween = (adapter, cam) => adapter.ShiftOrthographicSizeTo(cam, 5f, Duration),
+            CreateTween = (adapter, cam) => adapter.TweenOrthoSize(cam, 5f, Duration),
             GetValue = cam => cam.orthographicSize,
             SetValue = (cam, v) => cam.orthographicSize = v,
             CreateComponent = go => go.AddComponent<Camera>(),
@@ -31,7 +31,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Camera, Color> BgColorCase = new TweenCase<Camera, Color>
         {
             Name = "ShiftBackgroundColorTo",
-            CreateTween = (adapter, cam) => adapter.ShiftBackgroundColorTo(cam, Color.blue, Duration),
+            CreateTween = (adapter, cam) => adapter.FadeBackgroundColor(cam, Color.blue, Duration),
             GetValue = cam => cam.backgroundColor,
             SetValue = (cam, c) => cam.backgroundColor = c,
             CreateComponent = go => go.AddComponent<Camera>(),

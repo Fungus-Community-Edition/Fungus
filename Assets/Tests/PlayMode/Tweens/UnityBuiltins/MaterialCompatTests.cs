@@ -11,7 +11,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<Renderer, Color> MatColorCase = new TweenCase<Renderer, Color>
         {
             Name = "ShiftColorTo",
-            CreateTween = (adapter, rend) => adapter.ShiftColorTo(rend.material, Color.magenta, Duration),
+            CreateTween = (adapter, rend) => adapter.FadeColor(rend.material, Color.magenta, Duration),
             GetValue = rend => rend.material.color,
             SetValue = (rend, c) => rend.material.color = c,
             CreateComponent = go => go.AddComponent<MeshRenderer>(),
@@ -21,7 +21,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<Renderer, float> MatFloatCase = new TweenCase<Renderer, float>
         {
             Name = "ShiftFloatTo",
-            CreateTween = (adapter, rend) => adapter.ShiftFloatTo(rend.material, "_Glossiness", 0.75f, Duration),
+            CreateTween = (adapter, rend) => adapter.TweenFloat(rend.material, "_Glossiness", 0.75f, Duration),
             GetValue = rend => rend.material.GetFloat("_Glossiness"),
             SetValue = (rend, v) => rend.material.SetFloat("_Glossiness", v),
             CreateComponent = go => go.AddComponent<MeshRenderer>(),

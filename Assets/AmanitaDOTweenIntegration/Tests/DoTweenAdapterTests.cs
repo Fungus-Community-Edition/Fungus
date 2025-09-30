@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-public class DoTweenAdapterTests : MonoBehaviour
+public class DoTweenAdapterTests
 {
     protected GameObject _testGo;
     protected AmaniDoTweenAdapter _adapter;

@@ -352,7 +352,7 @@ namespace Amanita
 			}
 			else
 			{
-				sizeTweener.ShiftOrthographicSizeTo(camera, targetSize, duration)
+				sizeTweener.TweenOrthoSize(camera, targetSize, duration)
 					.SetOnComplete(OnOrthoSizeTweenDone);
 				void OnOrthoSizeTweenDone()
 				{

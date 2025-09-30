@@ -11,7 +11,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Light, float> IntensityCase = new TweenCase<Light, float>
         {
             Name = "ShiftIntensityTo_Light",
-            CreateTween = (adapter, light) => adapter.ShiftIntensityTo(light, 2f, Duration),
+            CreateTween = (adapter, light) => adapter.TweenIntensity(light, 2f, Duration),
             GetValue = l => l.intensity,
             SetValue = (l, v) => l.intensity = v,
             CreateComponent = go => go.AddComponent<Light>(),
@@ -21,7 +21,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Light, Color> ColorCase = new TweenCase<Light, Color>
         {
             Name = "ShiftColorTo_Light",
-            CreateTween = (adapter, light) => adapter.ShiftColorTo(light, Color.red, Duration),
+            CreateTween = (adapter, light) => adapter.FadeColor(light, Color.red, Duration),
             GetValue = l => l.color,
             SetValue = (l, c) => l.color = c,
             CreateComponent = go => go.AddComponent<Light>(),
@@ -31,7 +31,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Light, float> RangeCase = new TweenCase<Light, float>
         {
             Name = "ShiftRangeTo_Light",
-            CreateTween = (adapter, light) => adapter.ShiftRangeTo(light, 15f, Duration),
+            CreateTween = (adapter, light) => adapter.FadeColor(light, 15f, Duration),
             GetValue = l => l.range,
             SetValue = (l, v) => l.range = v,
             CreateComponent = go => go.AddComponent<Light>(),

@@ -57,6 +57,9 @@ namespace Amanita.DialogueSys
 
         [SerializeField] protected bool doReadAheadText = true;
 
+        [Tooltip("Tween adaptor that handles punching text or camera")]
+        [SerializeField] protected ScriptableObject shakerSO;
+
         // This property is true when the writer is waiting for user input to continue
         protected bool isWaitingForInput;
 
@@ -122,6 +125,12 @@ namespace Amanita.DialogueSys
 
         protected virtual void Awake()
         {
+            posShaker = shakerSO as IPositionShaker;
+            if (posShaker == null)
+            {
+                Debug.LogWarning("ShakerSO does not implement IPositionShaker");
+            }
+
             GameObject go = targetTextObject;
             if (go == null)
             {
@@ -825,10 +834,13 @@ namespace Amanita.DialogueSys
             var cameraManager = AmanitaManager.S.CameraManager;
 
             cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
-            cameraManager.Fade(1f, duration, delegate {
-                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
+            
+            cameraManager.Fade(1f, duration, OnFadeDone);
+            void OnFadeDone()
+            {
+                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f, 1f, 1f, 1f), 32, 32);
                 cameraManager.Fade(0f, duration, null);
-            });
+            }
         }
         
         protected virtual AudioSource FindAudio(string audioObjectName)

@@ -1627,19 +1627,16 @@ namespace Amanita.VScripting
             legacyVariables.RemoveAll((elem) => elem == null);
             muscariables.RemoveAll((elem) => elem == null);
 
-            if (UIModel == null)
+            uiModel ??= new FlowchartUIModel();
+            if (uiModel.Owner == null)
             {
-                uiModel = new FlowchartUIModel();
+                uiModel.Owner = this.gameObject;
             }
 
-            if (UIModel.Owner == null)
-            {
-                UIModel.Owner = this.gameObject;
-            }
 #if UNITY_EDITOR
             if (string.IsNullOrEmpty(uniqueId))
             {
-                uniqueId = System.Guid.NewGuid().ToString();
+                uniqueId = Guid.NewGuid().ToString();
                 UnityEditor.EditorUtility.SetDirty(this);
             }
 #endif

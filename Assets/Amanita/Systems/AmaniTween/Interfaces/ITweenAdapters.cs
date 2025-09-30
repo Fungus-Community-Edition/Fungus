@@ -17,7 +17,7 @@ namespace Amanita.Tweening
         ITweenHandle FadeColor(Graphic target, Color endVal, float duration);
         ITweenHandle FadeOpacity(Graphic target, float endVal, float duration);
         ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration);
-        ITweenHandle FadeOpacityTo(SpriteRenderer target, float endVal, float duration);
+        ITweenHandle FadeOpacity(SpriteRenderer target, float endVal, float duration);
 
         ITweenHandle FadeOpacity(CanvasGroup target, float endVal, float duration);
         ITweenHandle ShiftFillTo(Image target, float endVal, float duration);
@@ -58,9 +58,9 @@ namespace Amanita.Tweening
 
     public interface ICameraTweenAdapter
     {
-        ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration);
-        ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration);
-        ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration);
+        ITweenHandle TweenFOV(Camera target, float targetVal, float duration);
+        ITweenHandle TweenOrthoSize(Camera target, float targetVal, float duration);
+        ITweenHandle FadeBackgroundColor(Camera target, Color targetVal, float duration);
     }
 
     public interface ICinemachineCameraTweenAdapter : ICameraTweenAdapter
@@ -70,9 +70,9 @@ namespace Amanita.Tweening
 
     public interface ILightTweenAdapter
     {
-        ITweenHandle ShiftIntensityTo(Light target,  float targetVal, float duration);
-        ITweenHandle ShiftColorTo(Light target, Color targetVal, float duration);
-        ITweenHandle ShiftRangeTo(Light target, float targetVal, float duration);
+        ITweenHandle TweenIntensity(Light target,  float targetVal, float duration);
+        ITweenHandle FadeColor(Light target, Color targetVal, float duration);
+        ITweenHandle FadeColor(Light target, float targetVal, float duration);
     }
 
     public interface ICanvasGroupTweenAdapter
@@ -80,24 +80,33 @@ namespace Amanita.Tweening
         ITweenHandle FadeOpacity(CanvasGroup target, float alpha, float duration);
     }
 
-    public interface IRectTransformTweenAdapter
+    public interface IRectTransformTweenAdapter : ITransformTweenAdapter
     {
-        ITweenHandle ShiftAnchoredPositionTo(RectTransform target, Vector2 position, float duration);
-        ITweenHandle ShiftSizeDeltaTo(RectTransform target, Vector2 size, float duration);
-        ITweenHandle RotateTo(RectTransform target, Quaternion rotation, float duration);
-        ITweenHandle ScaleTo(RectTransform target, Vector3 scale, float duration);
+        ITweenHandle TweenAnchoredPosition(RectTransform target, Vector2 endPos, float duration);
+        ITweenHandle TweenSizeDelta(RectTransform target, Vector2 endSize, float duration);
     }
 
     public interface IMaterialTweenAdapter
     {
-        ITweenHandle ShiftColorTo(Material target, Color targetVal, float duration);
-        ITweenHandle ShiftFloatTo(Material target, string propertyName, float targetVal, float duration);
+
+        ITweenHandle FadeColor(GameObject owner, Material target, Color targetVal, float duration);
+        ITweenHandle TweenFloat(GameObject owner, Material target, string propertyName, float targetVal, float duration);
+
+        /// <summary>
+        /// Applies to all GameObjects using this material.
+        /// </summary>
+        ITweenHandle FadeColor(Material target, Color targetVal, float duration);
+
+        /// <summary>
+        /// Applies to all GameObjects using this material.
+        /// </summary>
+        ITweenHandle TweenFloat(Material target, string propertyName, float targetVal, float duration);
     }
 
     public interface IAudioFilterTweenAdapter
     {
-        ITweenHandle ShiftLowPassCutoffTo(AudioLowPassFilter target, float targetVal, float duration);
-        ITweenHandle ShiftReverbLevelTo(AudioReverbFilter target, float targetVal, float duration);
+        ITweenHandle FadeLowPassCutoff(AudioLowPassFilter target, float targetVal, float duration);
+        ITweenHandle FadeReverbLevel(AudioReverbFilter target, float targetVal, float duration);
     }
 
 }

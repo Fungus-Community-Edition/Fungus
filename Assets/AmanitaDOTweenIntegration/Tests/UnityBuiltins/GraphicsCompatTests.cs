@@ -44,7 +44,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<SpriteRenderer, Color> FadeSpriteCase = new TweenCase<SpriteRenderer, Color>
         {
             Name = "FadeTo_SpriteRenderer",
-            CreateTween = (adapter, s) => adapter.FadeOpacityTo(s, 0.25f, Duration),
+            CreateTween = (adapter, s) => adapter.FadeOpacity(s, 0.25f, Duration),
             GetValue = s => s.color,
             SetValue = (s, c) => s.color = c,
             CreateComponent = go => go.AddComponent<SpriteRenderer>(),

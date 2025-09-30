@@ -28,7 +28,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioLowPassFilter, float> LowPassCase = new TweenCase<AudioLowPassFilter, float>
         {
             Name = "ShiftLowPassCutoffTo",
-            CreateTween = (adapter, f) => adapter.ShiftLowPassCutoffTo(f, 500f, Duration),
+            CreateTween = (adapter, f) => adapter.FadeLowPassCutoff(f, 500f, Duration),
             GetValue = f => f.cutoffFrequency,
             SetValue = (f, v) => f.cutoffFrequency = v,
             CreateComponent = go => go.AddComponent<AudioLowPassFilter>(),
@@ -38,7 +38,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<AudioReverbFilter, float> ReverbCase = new TweenCase<AudioReverbFilter, float>
         {
             Name = "ShiftReverbLevelTo",
-            CreateTween = (adapter, f) => adapter.ShiftReverbLevelTo(f, -500f, Duration),
+            CreateTween = (adapter, f) => adapter.FadeReverbLevel(f, -500f, Duration),
             GetValue = f => f.reverbLevel,
             SetValue = (f, v) => f.reverbLevel = v,
             CreateComponent = go => go.AddComponent<AudioReverbFilter>(),
