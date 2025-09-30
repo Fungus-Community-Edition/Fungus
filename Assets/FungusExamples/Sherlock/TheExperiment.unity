@@ -5688,7 +5688,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -5728,7 +5728,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6245,7 +6245,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6326,7 +6326,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -6394,7 +6394,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7128,7 +7128,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7168,7 +7168,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
@@ -7208,7 +7208,7 @@ MonoBehaviour:
     colorRef:
       rid: -2
   waitUntilFinished: 0
-  fadeTweener: {fileID: 0}
+  fadeTweener: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   references:
