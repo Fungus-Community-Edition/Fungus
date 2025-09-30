@@ -118,6 +118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa59a268bb22b4646bd9a89fa66582b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  globalVariables: {fileID: 11400000, guid: 7c2778721084893428fe57687feb4226, type: 2}
+  tweenAnchorHolder: {fileID: 0}
 --- !u!1 &3624992616929410890
 GameObject:
   m_ObjectHideFlags: 0

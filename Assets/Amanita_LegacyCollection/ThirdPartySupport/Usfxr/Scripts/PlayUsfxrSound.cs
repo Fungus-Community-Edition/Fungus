@@ -83,7 +83,7 @@ using Amanita.Sfxr;
 
         public override bool HasReference(Variable variable)
         {
-            return variable == _SettingsString.stringRef;
+            return ReferenceEquals(variable, _SettingsString.VarRef);
         }
 
         #endregion

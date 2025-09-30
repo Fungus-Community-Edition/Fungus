@@ -38,7 +38,7 @@ namespace Amanita.Tweening.BuiltinCompat
         public static readonly TweenCase<AudioLowPassFilter, float> LowPassCase = new TweenCase<AudioLowPassFilter, float>
         {
             Name = "ShiftLowPassCutoffTo",
-            CreateTween = (adapter, filter) => adapter.ShiftLowPassCutoffTo(filter, 500f, Duration),
+            CreateTween = (adapter, filter) => adapter.FadeLowPassCutoff(filter, 500f, Duration),
             GetValue = filter => filter.cutoffFrequency,
             SetValue = (filter, newVal) => filter.cutoffFrequency = newVal,
             CreateComponent = go => go.AddComponent<AudioLowPassFilter>(),
@@ -58,7 +58,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<AudioReverbFilter, float> ReverbCase = new TweenCase<AudioReverbFilter, float>
         {
             Name = "ShiftReverbLevelTo",
-            CreateTween = (adapter, filter) => adapter.ShiftReverbLevelTo(filter, -500f, Duration),
+            CreateTween = (adapter, filter) => adapter.FadeReverbLevel(filter, -500f, Duration),
             GetValue = filter => filter.reverbLevel,
             SetValue = (filter, newVal) => filter.reverbLevel = newVal,
             CreateComponent = go => go.AddComponent<AudioReverbFilter>(),
