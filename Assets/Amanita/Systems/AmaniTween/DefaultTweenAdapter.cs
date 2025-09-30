@@ -12,10 +12,104 @@ namespace Amanita.Tweening
         IMaterialTweenAdapter, IRectTransformTweenAdapter, IAudioFilterTweenAdapter, ILightTweenAdapter
     {
 
-        public Tween<float> TweenSpriteAlpha(GameObject gameObject, float startAlpha, float endAlpha, float duration)
+        #region Transform and RectTransform
+        public ITweenHandle MoveTo(Transform target, Vector3 position, float duration)
         {
-            SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
-            return TweenSpriteAlpha(renderer, startAlpha, endAlpha, duration);
+            var tweenPos = TweenPosition(target, target.position, position, duration);
+            return DefaultTweenHandle.From(tweenPos);
+        }
+
+        public ITweenHandle ScaleTo(Transform target, Vector3 scale, float duration)
+        {
+            var tweenScale = TweenScale(target, target.localScale, scale, duration);
+            return DefaultTweenHandle.From(tweenScale);
+        }
+
+        public ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration)
+        {
+            var tweenRot = TweenRotation(target, target.rotation, rotation, duration);
+            return DefaultTweenHandle.From(tweenRot);
+        }
+
+        protected virtual string GenIDFor(UnityObj unityObj, string aspectName)
+        {
+            string typeName = unityObj.GetType().Name;
+            string result = $"{typeName}_{unityObj.name}_{unityObj.GetInstanceID()}_{aspectName}";
+            return result;
+        }
+
+        public ITweenHandle TweenAnchoredPosition(RectTransform target, Vector2 position, float duration)
+        {
+            string id = GenIDFor(target, "AnchoredPosition");
+            void UpdatePos(Vector2 newPos)
+            {
+                target.anchoredPosition = newPos;
+            }
+            Tween<Vector2> tween = new Tween<Vector2>(target, id, target.anchoredPosition, position, duration, UpdatePos);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle TweenSizeDelta(RectTransform target, Vector2 size, float duration)
+        {
+            string id = GenIDFor(target, "SizeDelta");
+            void UpdateSize(Vector2 newSize)
+            {
+                target.sizeDelta = newSize;
+            }
+            Tween<Vector2> tween = new Tween<Vector2>(target, id, target.sizeDelta, size, duration, UpdateSize);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        
+        #endregion
+
+        #region Graphics
+
+        public ITweenHandle FadeColor(Graphic target, Color endVal, float duration)
+        {
+            var tween = TweenGraphicColor(target, target.color, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration)
+        {
+            var tween = TweenSpriteColor(target, target.color, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeColor(GameObject owner, Material target, Color targetVal, float duration)
+        {
+            string id = GenIDFor(owner, "Color");
+            void UpdateColor(Color newCol)
+            {
+                target.color = newCol;
+            }
+            Tween<Color> newTween = new Tween<Color>(owner, id, target.color, targetVal, duration, UpdateColor);
+            return DefaultTweenHandle.From(newTween);
+        }
+
+        public ITweenHandle TweenFloat(GameObject owner, Material target, string propertyName,
+            float targetVal, float duration)
+        {
+            string id = GenIDFor(owner, propertyName);
+            void UpdateFloat(float newFloat)
+            {
+                target.SetFloat(propertyName, newFloat);
+            }
+            float startVal = target.GetFloat(propertyName);
+            Tween<float> tween = new Tween<float>(owner, id, startVal, targetVal, duration, UpdateFloat);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeColor(Material target, Color targetVal, float duration)
+        {
+            string id = GenIDFor(target, "Color");
+            void UpdateColor(Color newCol)
+            {
+                target.color = newCol;
+            }
+            Tween<Color> newTween = new Tween<Color>(target, id, target.color, targetVal, duration, UpdateColor);
+            return DefaultTweenHandle.From(newTween);
         }
 
         public Tween<float> TweenSpriteAlpha(SpriteRenderer renderer, float startAlpha, float endAlpha, float duration)
@@ -77,6 +171,42 @@ namespace Amanita.Tweening
                 .SetOnComplete(onComplete);
             return result;
         }
+
+
+        public ITweenHandle FadeOpacity(Graphic target, float endVal, float duration)
+        {
+            var tween = TweenGraphicAlpha(target, target.color.a, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeOpacity(SpriteRenderer target, float endVal, float duration)
+        {
+            var tween = TweenSpriteAlpha(target, target.color.a, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public ITweenHandle FadeOpacity(CanvasGroup target, float endVal, float duration)
+        {
+            var tween = TweenCanvasGroupAlpha(target, target.alpha, endVal, duration);
+            return DefaultTweenHandle.From(tween);
+        }
+
+        public Tween<float> TweenCanvasGroupAlpha(CanvasGroup group, float startAlpha, float targAlpha,
+            float duration, Action onComplete = null)
+        {
+            onComplete += delegate { };
+            string id = GenIDFor(group, "Alpha");
+
+            void UpdateTheAlpha(float newAlpha)
+            {
+                group.alpha = newAlpha;
+            }
+            Tween<float> result = new Tween<float>(group, id, startAlpha, targAlpha, duration, UpdateTheAlpha)
+            .SetOnComplete(onComplete);
+
+            return result;
+        }
+        #endregion
 
         public Tween<float> TweenFloat(Func<float> getFloatToTween, Action<float> setFloatToTween,
             float endValue, float duration, Action onComplete = null)
@@ -159,99 +289,8 @@ namespace Amanita.Tweening
         }
 
 
-        public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
-        {
-            var tween = TweenGraphicAlpha(target, target.color.a, endVal, duration);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration)
-        {
-            var tween = TweenSpriteAlpha(target, target.color.a, endVal, duration);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
-        {
-            var tween = TweenCanvasGroupAlpha(target, target.alpha, endVal, duration);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public Tween<float> TweenCanvasGroupAlpha(CanvasGroup group, float startAlpha, float targAlpha,
-            float duration, Action onComplete = null)
-        {
-            onComplete += delegate { };
-            string id = GenIDFor(group, "Alpha");
-
-            void UpdateTheAlpha(float newAlpha)
-            {
-                group.alpha = newAlpha;
-            }
-            Tween<float> result = new Tween<float>(group, id, startAlpha, targAlpha, duration, UpdateTheAlpha)
-            .SetOnComplete(onComplete);
-
-            return result;
-        }
-
-        public ITweenHandle MoveTo(Transform target, Vector3 position, float duration)
-        {
-            var tweenPos = TweenPosition(target, target.position, position, duration);
-            return DefaultTweenHandle.From(tweenPos);
-        }
-
-        public ITweenHandle RotateTo(Transform target, Quaternion rotation, float duration)
-        {
-            var tweenRot = TweenRotation(target, target.rotation, rotation, duration);
-            return DefaultTweenHandle.From(tweenRot);
-        }
-
-        public ITweenHandle RotateTo(RectTransform target, Quaternion rotation, float duration)
-        {
-            string id = GenIDFor(target, "Rotation");
-            void UpdateRot(Quaternion newRot)
-            {
-                target.rotation = newRot;
-            }
-            Tween<Quaternion> tween = new Tween<Quaternion>(target, id, target.rotation, rotation, duration, UpdateRot);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        protected virtual string GenIDFor(UnityObj unityObj, string aspectName)
-        {
-            string typeName = unityObj.GetType().Name;
-            string result = $"{typeName}_{unityObj.name}_{unityObj.GetInstanceID()}_{aspectName}";
-            return result;
-        }
-
-        public ITweenHandle ScaleTo(Transform target, Vector3 scale, float duration)
-        {
-            var tweenScale = TweenScale(target, target.localScale, scale, duration);
-            return DefaultTweenHandle.From(tweenScale);
-        }
-
-        public ITweenHandle ScaleTo(RectTransform target, Vector3 scale, float duration)
-        {
-            string id = GenIDFor(target, "Scale");
-            void UpdateScale(Vector3 newScale)
-            {
-                target.localScale = newScale;
-            }
-            Tween<Vector3> tween = new Tween<Vector3>(target, id, target.localScale, scale, duration, UpdateScale);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle ShiftAnchoredPositionTo(RectTransform target, Vector2 position, float duration)
-        {
-            string id = GenIDFor(target, "AnchoredPosition");
-            void UpdatePos(Vector2 newPos)
-            {
-                target.anchoredPosition = newPos;
-            }
-            Tween<Vector2> tween = new Tween<Vector2>(target, id, target.anchoredPosition, position, duration, UpdatePos);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle ShiftBackgroundColorTo(Camera target, Color targetVal, float duration)
+        
+        public ITweenHandle FadeBackgroundColor(Camera target, Color targetVal, float duration)
         {
             var tween = TweenCameraBGColor(target, target.backgroundColor, targetVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -260,7 +299,7 @@ namespace Amanita.Tweening
         public Tween<Color> TweenCameraBGColor(Camera target, Color startVal, Color targetVal, float duration)
         {
             string id = GenIDFor(target, "BackgroundColor");
-            Tween<Color> result = new Tween<Color>(target, id, target.backgroundColor, targetVal, duration,
+            Tween<Color> result = new Tween<Color>(target, id, startVal, targetVal, duration,
                 val =>
                 {
                     target.backgroundColor = val;
@@ -268,30 +307,7 @@ namespace Amanita.Tweening
             return result;
         }
 
-        public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
-        {
-            var tween = TweenGraphicColor(target, target.color, endVal, duration);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration)
-        {
-            var tween = TweenSpriteColor(target, target.color, endVal, duration);
-            return DefaultTweenHandle.From(tween);
-        }
-
-        public ITweenHandle ShiftColorTo(Material target, Color targetVal, float duration)
-        {
-            string id = GenIDFor(target, "Color");
-            void UpdateColor(Color newCol)
-            {
-                target.color = newCol;
-            }
-            Tween<Color> newTween = new Tween<Color>(target, id, target.color, targetVal, duration, UpdateColor);
-            return DefaultTweenHandle.From(newTween);
-        }
-
-        public ITweenHandle ShiftColorTo(Light target, Color targetVal, float duration)
+        public ITweenHandle FadeColor(Light target, Color targetVal, float duration)
         {
             string id = GenIDFor(target, "ShiftColor");
             void UpdateColor(Color newCol)
@@ -302,7 +318,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(newTween);
         }
 
-        public ITweenHandle ShiftFieldOfViewTo(Camera target, float targetVal, float duration)
+        public ITweenHandle TweenFOV(Camera target, float targetVal, float duration)
         {
             var tween = TweenCameraFOC(target, target.fieldOfView, targetVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -312,7 +328,7 @@ namespace Amanita.Tweening
         public Tween<float> TweenCameraFOC(Camera target, float startVal, float targetVal, float duration)
         {
             string id = GenIDFor(target, "FieldOfView");
-            Tween<float> result = new Tween<float>(target.gameObject, id, target.fieldOfView,
+            Tween<float> result = new Tween<float>(target.gameObject, id, startVal,
                 targetVal, duration, val =>
                 {
                     target.fieldOfView = val;
@@ -338,7 +354,7 @@ namespace Amanita.Tweening
             return result;
         }
 
-        public ITweenHandle ShiftFloatTo(Material target, string propertyName, float targetVal, float duration)
+        public ITweenHandle TweenFloat(Material target, string propertyName, float targetVal, float duration)
         {
             string id = GenIDFor(target, propertyName);
             void UpdateFloat(float newFloat)
@@ -350,7 +366,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftIntensityTo(Light target, float targetVal, float duration)
+        public ITweenHandle TweenIntensity(Light target, float targetVal, float duration)
         {
             string id = GenIDFor(target, "ShiftIntensity");
             void UpdateIntensity(float newIntensity)
@@ -361,7 +377,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftLowPassCutoffTo(AudioLowPassFilter target, float targetVal, float duration)
+        public ITweenHandle FadeLowPassCutoff(AudioLowPassFilter target, float targetVal, float duration)
         {
             string id = GenIDFor(target, "ShiftLowPassCutoff");
             void UpdateCutoff(float newCutoff)
@@ -373,7 +389,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftOrthographicSizeTo(Camera target, float targetVal, float duration)
+        public ITweenHandle TweenOrthoSize(Camera target, float targetVal, float duration)
         {
             var tween = TweenCameraOrthoSize(target, target.orthographicSize, targetVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -382,7 +398,7 @@ namespace Amanita.Tweening
         public Tween<float> TweenCameraOrthoSize(Camera target, float startSize, float endSize, float duration)
         {
             string id = GenIDFor(target, "OrthographicSize");
-            Tween<float> result = new Tween<float>(target.gameObject, id, target.orthographicSize,
+            Tween<float> result = new Tween<float>(target.gameObject, id, startSize,
                 endSize, duration, val =>
                 {
                     target.orthographicSize = val;
@@ -444,7 +460,7 @@ namespace Amanita.Tweening
             return TweenAudioSourcePitchN33(source, startPitch / 100, endPitch / 100, duration, onComplete);
         }
 
-        public ITweenHandle ShiftRangeTo(Light target, float targetVal, float duration)
+        public ITweenHandle FadeColor(Light target, float targetVal, float duration)
         {
             string id = GenIDFor(target, "ShiftRange");
             void UpdateRange(float newRange)
@@ -455,7 +471,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftReverbLevelTo(AudioReverbFilter target, float targetVal, float duration)
+        public ITweenHandle FadeReverbLevel(AudioReverbFilter target, float targetVal, float duration)
         {
             string id = GenIDFor(target, "ReverbLevel");
             void UpdateReverbLevel(float newReverbLevel)
@@ -466,16 +482,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle ShiftSizeDeltaTo(RectTransform target, Vector2 size, float duration)
-        {
-            string id = GenIDFor(target, "SizeDelta");
-            void UpdateSize(Vector2 newSize)
-            {
-                target.sizeDelta = newSize;
-            }
-            Tween<Vector2> tween = new Tween<Vector2>(target, id, target.sizeDelta, size, duration, UpdateSize);
-            return DefaultTweenHandle.From(tween);
-        }
+        
 
         public ITweenHandle FadeVolume01(AudioSource target, float targVal, float duration)
         {
@@ -544,6 +551,7 @@ namespace Amanita.Tweening
             return DefaultTweenHandle.From(tween);
         }
 
+        #region General
         public ITweenHandle TweenGeneral(Func<Vector2> getter, Action<Vector2> setter, Vector2 endVal,
             float duration, Action onComplete = null)
         {
@@ -571,6 +579,9 @@ namespace Amanita.Tweening
             var tween = TweenBasic(getter, setter, endVal, duration, onComplete);
             return DefaultTweenHandle.From(tween);
         }
+        #endregion
+
+
     }
 
 }

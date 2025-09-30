@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Amanita.DentedPixel;
 using Amanita.Tweening;
 
 namespace Amanita
@@ -42,9 +41,6 @@ namespace Amanita
 		protected View swipePanViewB;
 		protected Vector3 previousMousePos;
 		
-		//Coroutine handles for panning and fading commands
-		protected LTDescr fadeTween, sizeTween, camPosTween, camRotTween;
-
 		protected class CameraView
 		{
 			public Vector3 cameraPos;
@@ -356,7 +352,7 @@ namespace Amanita
 			}
 			else
 			{
-				sizeTweener.ShiftOrthographicSizeTo(camera, targetSize, duration)
+				sizeTweener.TweenOrthoSize(camera, targetSize, duration)
 					.SetOnComplete(OnOrthoSizeTweenDone);
 				void OnOrthoSizeTweenDone()
 				{
@@ -381,7 +377,6 @@ namespace Amanita
 				void OnCamRotTweenDone()
 				{
 					camTrans.rotation = targetRotation;
-					camRotTween = null;
 				}
 
 			}

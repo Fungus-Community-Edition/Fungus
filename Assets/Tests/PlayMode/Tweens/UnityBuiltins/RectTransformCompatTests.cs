@@ -11,7 +11,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<RectTransform, Vector2> AnchoredPosCase = new TweenCase<RectTransform, Vector2>
         {
             Name = "ShiftAnchoredPositionTo",
-            CreateTween = (adapter, rt) => adapter.ShiftAnchoredPositionTo(rt, new Vector2(50f, 25f), Duration),
+            CreateTween = (adapter, rt) => adapter.TweenAnchoredPosition(rt, new Vector2(50f, 25f), Duration),
             GetValue = rt => rt.anchoredPosition,
             SetValue = (rt, v) => rt.anchoredPosition = v,
             CreateComponent = go => go.AddComponent<RectTransform>(),
@@ -21,7 +21,7 @@ namespace Amanita.Tweening.BuiltinCompat
         private static readonly TweenCase<RectTransform, Vector2> SizeDeltaCase = new TweenCase<RectTransform, Vector2>
         {
             Name = "ShiftSizeDeltaTo",
-            CreateTween = (adapter, rt) => adapter.ShiftSizeDeltaTo(rt, new Vector2(200f, 100f), Duration),
+            CreateTween = (adapter, rt) => adapter.TweenSizeDelta(rt, new Vector2(200f, 100f), Duration),
             GetValue = rt => rt.sizeDelta,
             SetValue = (rt, v) => rt.sizeDelta = v,
             CreateComponent = go => go.AddComponent<RectTransform>(),

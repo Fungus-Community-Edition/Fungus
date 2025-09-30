@@ -109,25 +109,14 @@ namespace Amanita.VScripting
         {
             base.OnValidate();
             ValidateTweeners();
-            
         }
 
         protected virtual void ValidateTweeners()
         {
-            if (fadeTweener == null)
-            {
-                doFadeTween = AmanitaManager.DefaultTweener;
-                return;
-            }
-
+            TweenUtils.EnsureValidTweener(ref fadeTweener,
+                typeof(IGraphicTweenAdapter),
+                "sprite-fading");
             doFadeTween = fadeTweener as IGraphicTweenAdapter;
-
-            if (doFadeTween == null && fadeTweener != null)
-            {
-                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
-                fadeTweener = AmanitaManager.DefaultTweener;
-                doFadeTween = AmanitaManager.DefaultTweener;
-            }
         }
 
         protected IGraphicTweenAdapter doFadeTween;

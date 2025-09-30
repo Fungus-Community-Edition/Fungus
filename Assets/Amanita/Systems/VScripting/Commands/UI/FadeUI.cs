@@ -1,3 +1,5 @@
+using Amanita.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,202 +25,71 @@ namespace Amanita.VScripting.Commands.Legacy
     public class FadeUI : TweenUI 
     {
         [SerializeField] protected FadeMode fadeMode = FadeMode.Alpha;
-
         [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
-
         [SerializeField] protected FloatData targetAlpha = new FloatData(1f);
+        [SerializeField] protected ScriptableObject fadeTweener;
 
-        protected override void ApplyTween(GameObject go)
+        protected override void ValidateTweeners()
         {
-            var images = go.GetComponentsInChildren<Image>();
-            for (int i = 0; i < images.Length; i++)
+            TweenUtils.EnsureValidTweener(ref fadeTweener, typeof(IGraphicTweenAdapter), "fading graphics");
+        }
+
+        protected IGraphicTweenAdapter DoesFading => fadeTweener as IGraphicTweenAdapter;
+        protected override void ApplyTweenToSingle(GameObject go)
+        {
+            // Images, legacy UI Texts and TMP Texts are below Graphic in the family tree, thus we can 
+            // put them all in the same list and treat them the same
+            IList<Graphic> graphics = go.GetComponentsInChildren<Graphic>();
+            ApplyToGraphics();
+            void ApplyToGraphics()
             {
-                var image = images[i];
-                if (Mathf.Approximately(duration, 0f))
+                for (int i = 0; i < graphics.Count; i++)
                 {
+                    var graphicEl = graphics[i];
+                    if (graphicEl == null)
+                    {
+                        Debug.LogWarning($"{this.gameObject.name}: Null graphic found when trying to fade UI " +
+                            $"element at index {i}");
+                        continue;
+                    }
+
+                    // We assume that the tweeners know what to do when the duration is zero, and
+                    // thus we won't check for that here
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            Color tempColor = image.color;
-                            tempColor.a = targetAlpha;
-                            image.color = tempColor;
+                            DoesFading.FadeOpacity(graphicEl, targetAlpha, duration);
                             break;
                         case FadeMode.Color:
-                            image.color = targetColor;
+                            DoesFading.FadeColor(graphicEl, targetColor, duration);
+                            break;
+                        default:
+                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {fadeMode} when " +
+                                $"trying to fade UI element at index {i}");
                             break;
                     }
-                }
-                else
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            //LeanTween.alpha(image.rectTransform, targetAlpha, duration).setEase(tweenType).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(image, image.color.a, targetAlpha, duration);
-                            break;
-                        case FadeMode.Color:
-                            //LeanTween.color(image.rectTransform, targetColor, duration).setEase(tweenType).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenGraphicColor(image, image.color, targetColor, duration);
-                            break;
-                    }
+
                 }
             }
 
-            var texts = go.GetComponentsInChildren<Text>();
-            for (int i = 0; i < texts.Length; i++)
+            ApplyToCanvasGroups();
+            void ApplyToCanvasGroups()
             {
-                var text = texts[i];
-                if (Mathf.Approximately(duration, 0f))
+                // Canvas groups don't support color, but we can fade their alpha based on the
+                // target color's alpha if needed
+                var canvasGroups = go.GetComponentsInChildren<CanvasGroup>();
+                for (int i = 0; i < canvasGroups.Length; i++)
                 {
+                    var canvasGroupEl = canvasGroups[i];
                     switch (fadeMode)
                     {
                         case FadeMode.Alpha:
-                            Color tempColor = text.color;
-                            tempColor.a = targetAlpha;
-                            text.color = tempColor;
-                            break;
+                            DoesFading.FadeOpacity(canvasGroupEl, targetAlpha, duration); break;
                         case FadeMode.Color:
-                            text.color = targetColor;
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            //LeanTween.textAlpha(text.rectTransform, targetAlpha, duration).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(text, text.color.a, targetAlpha, duration);
-                            break;
-                        case FadeMode.Color:
-                            //LeanTween.textColor(text.rectTransform, targetColor, duration).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenGraphicColor(text, text.color, targetColor, duration);
-                            break;
-                    }
-                }
-            }
-
-            var textMeshes = go.GetComponentsInChildren<TextMesh>();
-            for (int i = 0; i < textMeshes.Length; i++)
-            {
-                var textMesh = textMeshes[i];
-                if (Mathf.Approximately(duration, 0f))
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            Color tempColor = textMesh.color;
-                            tempColor.a = targetAlpha;
-                            textMesh.color = tempColor;
-                            break;
-                        case FadeMode.Color:
-                            textMesh.color = targetColor;
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            //LeanTween.alpha(go, targetAlpha, duration).setEase(tweenType);
-                            Color withTargetAlpha = textMesh.color;
-                            withTargetAlpha.a = targetAlpha;
-                            AmanitaManager.DefaultTweener.TweenBasic<Color>(() => textMesh.color,
-                                (newCol) => textMesh.color = newCol,
-                                withTargetAlpha, duration);
-                            break;
-                        case FadeMode.Color:
-                            //LeanTween.color(go, targetColor, duration).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenBasic<Color>(() => textMesh.color,
-                                (newCol) => textMesh.color = newCol,
-                                targetColor, duration);
-                            break;
-                    }
-                }
-            }
-
-#if UNITY_2018_1_OR_NEWER
-            var tmpros = go.GetComponentsInChildren<TMPro.TMP_Text>();
-            for (int i = 0; i < tmpros.Length; i++)
-            {
-            
-                var tmpro = tmpros[i];
-                if (Mathf.Approximately(duration, 0f))
-                {
-                    switch (fadeMode)
-                    {
-                    case FadeMode.Alpha:
-                        Color tempColor = tmpro.color;
-                        tempColor.a = targetAlpha;
-                        tmpro.color = tempColor;
-                        break;
-                    case FadeMode.Color:
-                        tmpro.color = targetColor;
-                        break;
-                    }
-                }
-                else
-                {
-                    switch (fadeMode)
-                    {
-                    case FadeMode.Alpha:
-                            //LeanTween.value(tmpro.gameObject, tmpro.color.a, targetAlpha.Value, duration)
-                            //         .setEase(tweenType)
-                            //         .setOnUpdate((float alphaValue) =>
-                            //         {
-                            //             Color tempColor = tmpro.color;
-                            //             tempColor.a = alphaValue;
-                            //             tmpro.color = tempColor;
-                            //         });
-                            AmanitaManager.DefaultTweener.TweenGraphicAlpha(tmpro, tmpro.color.a, targetAlpha.Value, duration); ;
-
-                        break;
-                    case FadeMode.Color:
-                        //LeanTween.value(tmpro.gameObject, tmpro.color, targetColor.Value, duration)
-                        //         .setEase(tweenType)
-                        //         .setOnUpdate((Color colorValue) =>
-                        //         {
-                        //             tmpro.color = colorValue;
-                        //         });
-                        AmanitaManager.DefaultTweener.TweenGraphicColor(tmpro, tmpro.color, targetColor.Value, duration);
-                        break;
-                    }
-                }
-            }
-#endif
-            //canvas groups don't support color but we can anim the alpha IN the color
-            var canvasGroups = go.GetComponentsInChildren<CanvasGroup>();
-            for (int i = 0; i < canvasGroups.Length; i++)
-            {
-                var canvasGroup = canvasGroups[i];
-                if (Mathf.Approximately(duration, 0f))
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            canvasGroup.alpha = targetAlpha.Value;
-                            break;
-                        case FadeMode.Color:
-                            canvasGroup.alpha = targetColor.Value.a;
-                        break;
-                    }
-                }
-                else
-                {
-                    switch (fadeMode)
-                    {
-                        case FadeMode.Alpha:
-                            //LeanTween.alphaCanvas(canvasGroup, targetAlpha, duration).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenBasic<float>(() => canvasGroup.alpha,
-                                (newVal) => canvasGroup.alpha = newVal,
-                                targetAlpha, duration);
-                            break;
-                        case FadeMode.Color:
-                            //LeanTween.alphaCanvas(canvasGroup, targetColor.Value.a, duration).setEase(tweenType);
-                            AmanitaManager.DefaultTweener.TweenBasic<float>(() => canvasGroup.alpha,
-                                (newVal) => canvasGroup.alpha = newVal,
-                                targetColor.Value.a, duration);
+                            DoesFading.FadeOpacity(canvasGroupEl, targetColor.Value.a, duration); break;
+                        default:
+                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {fadeMode} when " +
+                                $"trying to fade CanvasGroup at index {i}");
                             break;
                     }
                 }
@@ -227,16 +98,17 @@ namespace Amanita.VScripting.Commands.Legacy
 
         protected override string GetSummaryValue()
         {
+            string result = "";
             if (fadeMode == FadeMode.Alpha)
             {
-                return targetAlpha.Value.ToString() + " alpha";
+                result = targetAlpha.Value.ToString() + " alpha";
             }
             else if (fadeMode == FadeMode.Color)
             {
-                return targetColor.Value.ToString()  + " color";
+                result = targetColor.Value.ToString()  + " color";
             }
 
-            return "";
+            return result;
         }
 
         #region Public members
