@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Amanita_LegacyCollection/_Examples.meta
+guid: 343dc15f4337917459b777cf462f66c2
+========
 guid: 4ea6e2fa29b69ae4d95884e137eb084f
+>>>>>>>> flowchartVarOverhaul:Assets/Amanita_LegacyCollection/ThirdPartySupport.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

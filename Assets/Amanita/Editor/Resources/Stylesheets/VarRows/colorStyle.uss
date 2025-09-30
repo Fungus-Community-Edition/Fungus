@@ -1,0 +1,34 @@
+.varRowTypeLabel 
+{
+	background-image: var(--rainbow-tex);
+	-unity-background-scale-mode: stretch-to-fill;
+
+	color: white;        /* ensure text stays readable */
+	-unity-font-style: bold;
+	-unity-text-outline-width: 1px;
+	-unity-text-outline-color: black;
+}
+
+#TypeLabel
+{
+	font-size: 18px;
+}
+
+.propertyField
+{
+	height: auto;
+	width: auto;
+}
+
+#ValueField
+{
+	flex-grow: 0;
+	flex-shrink: 0;
+	width: 100%;       
+	height: 100%;
+	min-width: 0;       
+
+
+	padding: 0px;
+	margin: 0px;
+}

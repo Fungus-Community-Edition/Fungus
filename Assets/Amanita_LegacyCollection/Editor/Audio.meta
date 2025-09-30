@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Amanita_LegacyCollection/Editor/Physics.meta
+guid: d2f33be4f840f024b8d08ed2e8239f25
+========
 guid: ce9ea30176180f54d9ad82f3ad9cdbac
+>>>>>>>> flowchartVarOverhaul:Assets/Amanita_LegacyCollection/Editor/Audio.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
