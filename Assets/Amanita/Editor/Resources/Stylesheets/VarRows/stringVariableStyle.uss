@@ -1,0 +1,76 @@
+:root
+{
+	--string-val-field-font-size: 16px;
+	--min-text-field-height: 35px;
+	--max-text-field-height: 75px;
+}
+
+#VarRowRoot 
+{
+	flex-grow: 1;
+	height: auto; /* Twice the size of a regular all-in-one row */
+	min-height: 60px;
+	flex-direction: column;
+	width: var(--default-row-width);
+}
+
+#SpaceFiller
+{
+	flex-grow: 0;
+	width: 120px;
+	padding: 0;
+	-unity-text-align: middle-left;
+	border-radius: var(--slightly-rounded);
+	border-color: white;
+	font-size: 14px;
+	margin: 0px 3px 0px 0px;
+}
+
+#TopRow
+{
+	flex-grow: 1;
+	flex-direction: row;
+	height: 30px;
+	padding: 0px;
+	margin: var(--slight-bottom-margin-only);
+}
+
+.varRowTypeLabel
+{
+	font-size: 16px;
+	background-color: #3C5E4F;
+}
+
+#ValueFieldHolder
+{
+	width: 100%;
+	flex-direction: row;
+	flex-grow: 1;
+}
+
+.textField
+{
+	-unity-font-definition: var(--main-font);
+	color: rgb(229, 229, 229);
+	font-size: var(--string-val-field-font-size);
+	height: 100%;
+	width: 100%;
+	-unity-text-align: middle-left;
+	padding: 0px;
+	margin: 0px 3px 0px 0px;
+}
+
+.textField > #unity-text-input
+{
+	flex-grow: 1;
+	min-height: var(--min-text-field-height);
+	max-height: var(--max-text-field-height);
+	width: 100%;
+	
+	padding: 5px;
+	background-color: var(--dark-mode-text-bg-color);
+	color: var(--dark-mode-text-color);
+	border-radius: var(--text-field-border-radius);
+
+}
+
