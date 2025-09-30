@@ -1,4 +1,3 @@
-Ôªøusing Amanita.DOTweenIntegration;
 using Amanita.Tweening;
 using NUnit.Framework;
 using System.Collections;
@@ -8,10 +7,9 @@ using UnityEngine.TestTools.Utils; // for Vector3EqualityComparer
 
 namespace BuiltinCompat
 {
-    public class TransformCompatTests : DoTweenAdapterTests
+    public class LTI_TransformCompatTests : LeanTweenAdapterTests
     {
-        // --- Coverage check scaffolding (static fields discovered by the audit) ---
-        private static readonly TweenCase<Transform, Vector3> MoveCase = new TweenCase<Transform, Vector3>
+        private static readonly LeanTweenCase<Transform, Vector3> MoveCase = new LeanTweenCase<Transform, Vector3>
         {
             Name = "MoveTo_Transform",
             CreateTween = (adapter, t) => adapter.MoveTo(t, new Vector3(1f, 2f, 3f), Duration),
@@ -21,7 +19,7 @@ namespace BuiltinCompat
             TargetValue = new Vector3(1f, 2f, 3f)
         };
 
-        private static readonly TweenCase<Transform, Quaternion> RotateCase = new TweenCase<Transform, Quaternion>
+        private static readonly LeanTweenCase<Transform, Quaternion> RotateCase = new LeanTweenCase<Transform, Quaternion>
         {
             Name = "RotateTo_Transform",
             CreateTween = (adapter, t) => adapter.RotateTo(t, Quaternion.Euler(0f, 90f, 0f), Duration),
@@ -31,7 +29,7 @@ namespace BuiltinCompat
             TargetValue = Quaternion.Euler(0f, 90f, 0f)
         };
 
-        private static readonly TweenCase<Transform, Vector3> ScaleCase = new TweenCase<Transform, Vector3>
+        private static readonly LeanTweenCase<Transform, Vector3> ScaleCase = new LeanTweenCase<Transform, Vector3>
         {
             Name = "ScaleTo_Transform",
             CreateTween = (adapter, t) => adapter.ScaleTo(t, new Vector3(2f, 2f, 2f), Duration),
@@ -41,14 +39,13 @@ namespace BuiltinCompat
             TargetValue = new Vector3(2f, 2f, 2f)
         };
 
-        // Minimal ‚Äúhandle validity‚Äù tests that exercise the TweenCase fields (satisfies coverage audit)
         [Test]
         public void Handle_IsValid_MoveTo_ForCoverage()
         {
             var comp = MoveCase.CreateComponent(_testGo);
             var handle = MoveCase.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [Test]
@@ -56,8 +53,8 @@ namespace BuiltinCompat
         {
             var comp = RotateCase.CreateComponent(_testGo);
             var handle = RotateCase.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [Test]
@@ -65,17 +62,16 @@ namespace BuiltinCompat
         {
             var comp = ScaleCase.CreateComponent(_testGo);
             var handle = ScaleCase.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
-        // --- Your original, detailed tests (adjusted assertions to avoid Vector3‚Üídouble overload) ---
         private ITweenHandle _nullHandle, _moveToHandle, _rotateToHandle, _scaleToHandle;
 
         public override void SetUp()
         {
             base.SetUp();
-            _nullHandle = new DOTweenHandle(null);
+            _nullHandle = new Amanita.LeanTweenIntegration.LeanTweenHandle(null);
             _moveToHandle = _adapter.MoveTo(_testGo.transform, new Vector3(1f, 2f, 3f), Duration);
             _rotateToHandle = _adapter.RotateTo(_testGo.transform, Quaternion.Euler(0f, 90f, 0f), Duration);
             _scaleToHandle = _adapter.ScaleTo(_testGo.transform, new Vector3(2f, 2f, 2f), Duration);
@@ -90,9 +86,7 @@ namespace BuiltinCompat
         [Test]
         public void CreateTween_MoveTo_ValidHandle()
         {
-            var dtHandle = _moveToHandle as DOTweenHandle;
-            Assert.IsNotNull(dtHandle, "Returned handle is not a DOTweenHandle.");
-            Assert.IsNotNull(dtHandle.Tween, "DOTweenHandle.Tween should not be null after MoveTo.");
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(_moveToHandle, "Returned handle is not a LeanTweenHandle.");
         }
 
         [Test]
@@ -105,9 +99,7 @@ namespace BuiltinCompat
         [Test]
         public void CreateTween_RotateTo_ValidHandle()
         {
-            var dtHandle = _rotateToHandle as DOTweenHandle;
-            Assert.IsNotNull(dtHandle, "Returned handle is not a DOTweenHandle.");
-            Assert.IsNotNull(dtHandle.Tween, "DOTweenHandle.Tween should not be null after RotateTo.");
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(_rotateToHandle, "Returned handle is not a LeanTweenHandle.");
         }
 
         [Test]
@@ -120,9 +112,7 @@ namespace BuiltinCompat
         [Test]
         public void CreateTween_ScaleTo_ValidHandle()
         {
-            var dtHandle = _scaleToHandle as DOTweenHandle;
-            Assert.IsNotNull(dtHandle, "Returned handle is not a DOTweenHandle.");
-            Assert.IsNotNull(dtHandle.Tween, "DOTweenHandle.Tween should not be null after ScaleTo.");
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(_scaleToHandle, "Returned handle is not a LeanTweenHandle.");
         }
 
         [Test]
@@ -135,7 +125,7 @@ namespace BuiltinCompat
         [Test]
         public void HandleWithNullTween_IsPlayingFalseOnInit()
         {
-            Assert.IsFalse(_nullHandle.IsPlaying, "New DOTweenHandle(null) should report IsPlaying = false.");
+            Assert.IsFalse(_nullHandle.IsPlaying, "New LeanTweenHandle(null) should report IsPlaying = false.");
         }
 
         [Test]
@@ -151,19 +141,13 @@ namespace BuiltinCompat
             Assert.IsFalse(_nullHandle.IsPlaying, "Handle should still report IsPlaying = false after Kill.");
         }
 
-        // PlayMode tests that assert the tweens apply to the expected Transform
         [UnityTest]
         public IEnumerator MoveTo_AppliesToTargetTransform()
         {
             var expected = new Vector3(1f, 2f, 3f);
             _testGo.transform.position = Vector3.zero;
-
-            // The tween was already created in SetUp; just wait for completion
-            yield return new WaitForSeconds(Duration + 0.05f);
-
+            yield return new UnityEngine.WaitForSeconds(Duration + 0.05f);
             var actual = _testGo.transform.position;
-
-            // Use comparer to avoid the Vector3‚Üídouble overload
             var vec3 = new Vector3EqualityComparer(Epsilon);
             Assert.That(actual, Is.EqualTo(expected).Using(vec3));
         }
@@ -173,15 +157,12 @@ namespace BuiltinCompat
         {
             var expectedEuler = new Vector3(0f, 90f, 0f);
             _testGo.transform.rotation = Quaternion.identity;
-
-            yield return new WaitForSeconds(Duration + 0.05f);
-
+            yield return new UnityEngine.WaitForSeconds(Duration + 0.05f);
             var actualEuler = _testGo.transform.rotation.eulerAngles;
-            // Compare each component with a small tolerance; handle wrap-around near 360
             float norm(float a) => Mathf.Repeat(a, 360f);
-            Assert.AreEqual(norm(expectedEuler.x), norm(actualEuler.x), 1f, "X rotation mismatch (¬±1¬∞).");
-            Assert.AreEqual(norm(expectedEuler.y), norm(actualEuler.y), 1f, "Y rotation mismatch (¬±1¬∞).");
-            Assert.AreEqual(norm(expectedEuler.z), norm(actualEuler.z), 1f, "Z rotation mismatch (¬±1¬∞).");
+            Assert.AreEqual(norm(expectedEuler.x), norm(actualEuler.x), 1f, "X rotation mismatch (±1∞).");
+            Assert.AreEqual(norm(expectedEuler.y), norm(actualEuler.y), 1f, "Y rotation mismatch (±1∞).");
+            Assert.AreEqual(norm(expectedEuler.z), norm(actualEuler.z), 1f, "Z rotation mismatch (±1∞).");
         }
 
         [UnityTest]
@@ -189,12 +170,8 @@ namespace BuiltinCompat
         {
             var expected = new Vector3(2f, 2f, 2f);
             _testGo.transform.localScale = Vector3.one;
-
-            yield return new WaitForSeconds(Duration + 0.05f);
-
+            yield return new UnityEngine.WaitForSeconds(Duration + 0.05f);
             var actual = _testGo.transform.localScale;
-
-            // Per-component with tolerance (or use Vector3EqualityComparer as above)
             Assert.AreEqual(expected.x, actual.x, Epsilon, "X scale did not reach expected value.");
             Assert.AreEqual(expected.y, actual.y, Epsilon, "Y scale did not reach expected value.");
             Assert.AreEqual(expected.z, actual.z, Epsilon, "Z scale did not reach expected value.");

@@ -9,7 +9,7 @@ using UnityEngine.TestTools.Utils;
 namespace BuiltinCompat
 {
 
-    public class GraphicsCompatTests : DoTweenAdapterTests
+    public class DTI_GraphicsCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
         {

@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace CommandCompat
 {
-    public class FadeScreenCompatTests : CommandTestBase<FadeScreen>
+    public class DTI_FadeScreenCompatTests : DTI_CommandTestBase<FadeScreen>
     {
         private CameraManager cameraManager;
 

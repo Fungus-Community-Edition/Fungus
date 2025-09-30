@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace CommandCompat
 {
-    public class MA_FadeVolumeCompatTests : CommandTestBase<MA_FadeVolume>
+    public class DTI_MA_FadeVolumeCompatTests : DTI_CommandTestBase<MA_FadeVolume>
     {
         protected const float startVolume = 1f;
         protected const float targetVolume = 25f;

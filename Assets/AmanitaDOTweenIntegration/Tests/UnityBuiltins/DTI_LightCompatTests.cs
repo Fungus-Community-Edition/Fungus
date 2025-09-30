@@ -6,7 +6,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace BuiltinCompat
 {
-    public class LightCompatTests : DoTweenAdapterTests
+    public class DTI_LightCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<Light, float> IntensityCase = new TweenCase<Light, float>
         {

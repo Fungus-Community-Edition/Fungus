@@ -6,7 +6,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace BuiltinCompat
 {
-    public class MaterialCompatTests : DoTweenAdapterTests
+    public class DTI_MaterialCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<Renderer, Color> MatColorCase = new TweenCase<Renderer, Color>
         {

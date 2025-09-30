@@ -9,7 +9,7 @@ using Type = System.Type;
 
 namespace CommandCompat
 {
-    public class FadeSpriteCompatTests : CommandTestBase<FadeSprite>
+    public class DTI_FadeSpriteCompatTests : DTI_CommandTestBase<FadeSprite>
     {
         private SpriteRenderer spriteRenderer;
         private static readonly Color TargetColor = new Color(0.2f, 0.4f, 0.6f, 0.5f);

@@ -11,29 +11,26 @@ using System.Reflection;
 
 namespace CommandCompat
 {
-    public class FadeToViewCompatTests : CommandTestBase<FadeToView>
+    // DTI is short for DOTween Integration
+    public class DTI_MoveToViewCompatTests : DTI_CommandTestBase<MoveToView>
     {
         private Camera cameraGO;
         private View targetView;
 
-        protected override void ConfigureCommand(FadeToView cmd)
+        protected override void ConfigureCommand(MoveToView cmd)
         {
-            // Camera setup
             var camGO = new GameObject("TestCamera");
             cameraGO = camGO.AddComponent<Camera>();
-            cameraGO.transform.position = Vector3.zero;
-            cameraGO.transform.rotation = Quaternion.identity;
+            cameraGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             cameraGO.orthographicSize = 5f;
 
-            // Target view setup
             var viewGO = new GameObject("TargetView");
             targetView = viewGO.AddComponent<View>();
-            targetView.transform.position = new Vector3(8f, 3f, -12f);
-            targetView.transform.rotation = Quaternion.Euler(10f, 30f, 0f);
-            targetView.ViewSize = 2.5f;
+            targetView.transform.position = new Vector3(10f, 5f, -20f);
+            targetView.transform.rotation = Quaternion.Euler(15f, 45f, 0f);
+            targetView.ViewSize = 3f;
 
-            // Assign private fields
-            Type cmdType = typeof(FadeToView);
+            Type cmdType = typeof(MoveToView);
             BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
             cmdType.GetField("targetCamera", flags)
                 .SetValue(cmd, cameraGO);
@@ -44,9 +41,13 @@ namespace CommandCompat
             cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
 
-            // Inject AmaniDoTweenAdapter for all tweeners
-            cmdType.GetField("doFadeTween", flags)
+            cmdType.GetField("orthoSizeTweener", flags)
                 .SetValue(cmd, adapter);
+            cmdType.GetField("posTweener", flags)
+                .SetValue(cmd, adapter);
+            cmdType.GetField("rotTweener", flags)
+                .SetValue(cmd, adapter);
+
             cmdType.GetField("doOrthoSizeTween", flags)
                 .SetValue(cmd, adapter);
             cmdType.GetField("doPosTween", flags)
@@ -60,7 +61,8 @@ namespace CommandCompat
             var vec3Comparer = new Vector3EqualityComparer(Epsilon);
             var quatComparer = new QuaternionEqualityComparer(Epsilon);
 
-            // Not going to worry about the z pos here
+            // Let's not worry about the z pos. By default, the CameraManager doesn't pan
+            // with the z pos in mind
             Vector3 expectedPos = targetView.transform.position;
             expectedPos.z = cameraGO.transform.position.z;
 
@@ -69,25 +71,17 @@ namespace CommandCompat
             Assert.AreEqual(targetView.ViewSize, cameraGO.orthographicSize, Epsilon, "Ortho size mismatch");
         }
 
-        [TearDown]
-        public override void TearDown()
-        {
-            base.TearDown();
-            Object.DestroyImmediate(cameraGO);
-            Object.Destroy(targetView);
-        }
-
         [UnityTest]
-        public IEnumerator WaitUntilFinished_FadesAndMovesToView()
+        public IEnumerator WaitUntilFinished_MovesCameraToView()
         {
             yield return RunBlockAndWait();
             AssertFinalState();
         }
 
         [UnityTest]
-        public IEnumerator NoWait_ContinuesImmediately_AndFadesAndMoves()
+        public IEnumerator NoWait_ContinuesImmediately_AndMovesCamera()
         {
-            typeof(FadeToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            typeof(MoveToView).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(command, false);
 
             bool continued = false;

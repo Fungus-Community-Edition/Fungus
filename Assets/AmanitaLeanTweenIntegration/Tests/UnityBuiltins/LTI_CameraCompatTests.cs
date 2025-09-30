@@ -1,4 +1,3 @@
-using Amanita.DOTweenIntegration;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -6,9 +5,9 @@ using UnityEngine.TestTools;
 
 namespace BuiltinCompat
 {
-    public class CameraCompatTests : DoTweenAdapterTests
+    public class LTI_CameraCompatTests : LeanTweenAdapterTests
     {
-        private static readonly TweenCase<Camera, float> FOVCase = new TweenCase<Camera, float>
+        private static readonly LeanTweenCase<Camera, float> FOVCase = new LeanTweenCase<Camera, float>
         {
             Name = "ShiftFieldOfViewTo",
             CreateTween = (adapter, cam) => adapter.TweenFOV(cam, 60f, Duration),
@@ -18,7 +17,7 @@ namespace BuiltinCompat
             TargetValue = 60f
         };
 
-        private static readonly TweenCase<Camera, float> OrthoSizeCase = new TweenCase<Camera, float>
+        private static readonly LeanTweenCase<Camera, float> OrthoSizeCase = new LeanTweenCase<Camera, float>
         {
             Name = "ShiftOrthographicSizeTo",
             CreateTween = (adapter, cam) => adapter.TweenOrthoSize(cam, 5f, Duration),
@@ -28,7 +27,7 @@ namespace BuiltinCompat
             TargetValue = 5f
         };
 
-        private static readonly TweenCase<Camera, Color> BgColorCase = new TweenCase<Camera, Color>
+        private static readonly LeanTweenCase<Camera, Color> BgColorCase = new LeanTweenCase<Camera, Color>
         {
             Name = "ShiftBackgroundColorTo",
             CreateTween = (adapter, cam) => adapter.FadeBackgroundColor(cam, Color.blue, Duration),
@@ -42,44 +41,41 @@ namespace BuiltinCompat
         private static readonly object[] ColorCases = { BgColorCase };
 
         [TestCaseSource(nameof(FloatCases))]
-        public void Handle_IsValid_Float<T>(TweenCase<T, float> tc) where T : Component
+        public void Handle_IsValid_Float<T>(LeanTweenCase<T, float> tc) where T : Component
         {
             var comp = tc.CreateComponent(_testGo);
             var handle = tc.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [TestCaseSource(nameof(ColorCases))]
-        public void Handle_IsValid_Color<T>(TweenCase<T, Color> tc) where T : Component
+        public void Handle_IsValid_Color<T>(LeanTweenCase<T, Color> tc) where T : Component
         {
             var comp = tc.CreateComponent(_testGo);
             var handle = tc.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [UnityTest]
-        public IEnumerator Tween_Completes_Float([ValueSource(nameof(FloatCases))] TweenCase<Camera, float> tc)
+        public IEnumerator Tween_Completes_Float([ValueSource(nameof(FloatCases))] LeanTweenCase<Camera, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
-            tc.SetValue(comp, 0f);
+            tc.SetValue(comp, 1f);
             tc.CreateTween(_adapter, comp);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name);
         }
 
         [UnityTest]
-        public IEnumerator Tween_Completes_Color([ValueSource(nameof(ColorCases))] TweenCase<Camera, Color> tc)
+        public IEnumerator Tween_Completes_Color([ValueSource(nameof(ColorCases))] LeanTweenCase<Camera, Color> tc)
         {
             var comp = tc.CreateComponent(_testGo);
             tc.SetValue(comp, Color.black);
             tc.CreateTween(_adapter, comp);
             yield return new WaitForSeconds(Duration + 0.05f);
-            var actual = tc.GetValue(comp);
-            Assert.AreEqual(tc.TargetValue.r, actual.r, Epsilon, tc.Name);
-            Assert.AreEqual(tc.TargetValue.g, actual.g, Epsilon, tc.Name);
-            Assert.AreEqual(tc.TargetValue.b, actual.b, Epsilon, tc.Name);
+            Assert.AreEqual(tc.TargetValue, tc.GetValue(comp));
         }
     }
 }

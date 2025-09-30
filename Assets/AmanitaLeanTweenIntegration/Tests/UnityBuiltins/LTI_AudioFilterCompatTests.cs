@@ -1,4 +1,3 @@
-using Amanita.DOTweenIntegration;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -6,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace BuiltinCompat
 {
-    public class AudioFilterCompatTests : DoTweenAdapterTests
+    public class LTI_AudioFilterCompatTests : LeanTweenAdapterTests
     {
         [SetUp]
         public override void SetUp()
@@ -24,8 +23,7 @@ namespace BuiltinCompat
             _audioSource = null;
         }
 
-
-        private static readonly TweenCase<AudioLowPassFilter, float> LowPassCase = new TweenCase<AudioLowPassFilter, float>
+        private static readonly LeanTweenCase<AudioLowPassFilter, float> LowPassCase = new LeanTweenCase<AudioLowPassFilter, float>
         {
             Name = "ShiftLowPassCutoffTo",
             CreateTween = (adapter, f) => adapter.FadeLowPassCutoff(f, 500f, Duration),
@@ -35,7 +33,7 @@ namespace BuiltinCompat
             TargetValue = 500f
         };
 
-        private static readonly TweenCase<AudioReverbFilter, float> ReverbCase = new TweenCase<AudioReverbFilter, float>
+        private static readonly LeanTweenCase<AudioReverbFilter, float> ReverbCase = new LeanTweenCase<AudioReverbFilter, float>
         {
             Name = "ShiftReverbLevelTo",
             CreateTween = (adapter, f) => adapter.FadeReverbLevel(f, -500f, Duration),
@@ -49,38 +47,38 @@ namespace BuiltinCompat
         private static readonly object[] ReverbCases = { ReverbCase };
 
         [TestCaseSource(nameof(LowPassCases))]
-        public void Handle_IsValid_LowPass(TweenCase<AudioLowPassFilter, float> tc)
+        public void Handle_IsValid_LowPass(LeanTweenCase<AudioLowPassFilter, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
             var handle = tc.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [TestCaseSource(nameof(ReverbCases))]
-        public void Handle_IsValid_Reverb(TweenCase<AudioReverbFilter, float> tc)
+        public void Handle_IsValid_Reverb(LeanTweenCase<AudioReverbFilter, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
             var handle = tc.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [UnityTest]
-        public IEnumerator Tween_Completes_LowPass([ValueSource(nameof(LowPassCases))] TweenCase<AudioLowPassFilter, float> tc)
+        public IEnumerator Tween_Completes_LowPass([ValueSource(nameof(LowPassCases))] LeanTweenCase<AudioLowPassFilter, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
-            tc.SetValue(comp, 22000f); // start at max cutoff
+            tc.SetValue(comp, 100f);
             tc.CreateTween(_adapter, comp);
             yield return new WaitForSeconds(Duration + 0.05f);
-            Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name, "The target and get value should be the same");
+            Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name);
         }
 
         [UnityTest]
-        public IEnumerator Tween_Completes_Reverb([ValueSource(nameof(ReverbCases))] TweenCase<AudioReverbFilter, float> tc)
+        public IEnumerator Tween_Completes_Reverb([ValueSource(nameof(ReverbCases))] LeanTweenCase<AudioReverbFilter, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
-            tc.SetValue(comp, 0f); // start at neutral
+            tc.SetValue(comp, 0f);
             tc.CreateTween(_adapter, comp);
             yield return new WaitForSeconds(Duration + 0.05f);
             Assert.AreEqual(tc.TargetValue, tc.GetValue(comp), Epsilon, tc.Name);

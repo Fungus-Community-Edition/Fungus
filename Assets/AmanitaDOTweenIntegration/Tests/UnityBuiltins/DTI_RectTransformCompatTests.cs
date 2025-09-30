@@ -6,7 +6,7 @@ using UnityEngine.TestTools.Utils; // equality comparers
 
 namespace BuiltinCompat
 {
-    public class RectTransformCompatTests : DoTweenAdapterTests
+    public class DTI_RectTransformCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<RectTransform, Vector2> AnchoredPosCase = new TweenCase<RectTransform, Vector2>
         {

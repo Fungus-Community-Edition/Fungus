@@ -1,4 +1,3 @@
-using Amanita.DOTweenIntegration;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -6,9 +5,9 @@ using UnityEngine.TestTools;
 
 namespace BuiltinCompat
 {
-    public class CanvasGroupCompatTests : DoTweenAdapterTests
+    public class LTI_CanvasGroupCompatTests : LeanTweenAdapterTests
     {
-        private static readonly TweenCase<CanvasGroup, float> FadeCase = new TweenCase<CanvasGroup, float>
+        private static readonly LeanTweenCase<CanvasGroup, float> FadeCase = new LeanTweenCase<CanvasGroup, float>
         {
             Name = "FadeTo_CanvasGroup",
             CreateTween = (adapter, cg) => adapter.FadeOpacity(cg, 0.25f, Duration),
@@ -21,16 +20,16 @@ namespace BuiltinCompat
         private static readonly object[] Cases = { FadeCase };
 
         [TestCaseSource(nameof(Cases))]
-        public void Handle_IsValid(TweenCase<CanvasGroup, float> tc)
+        public void Handle_IsValid(LeanTweenCase<CanvasGroup, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
             var handle = tc.CreateTween(_adapter, comp);
-            Assert.IsInstanceOf<DOTweenHandle>(handle);
-            Assert.IsNotNull(((DOTweenHandle)handle).Tween);
+            Assert.IsInstanceOf<Amanita.LeanTweenIntegration.LeanTweenHandle>(handle);
+            Assert.IsNotNull(handle);
         }
 
         [UnityTest]
-        public IEnumerator Tween_Completes([ValueSource(nameof(Cases))] TweenCase<CanvasGroup, float> tc)
+        public IEnumerator Tween_Completes([ValueSource(nameof(Cases))] LeanTweenCase<CanvasGroup, float> tc)
         {
             var comp = tc.CreateComponent(_testGo);
             tc.SetValue(comp, 1f);

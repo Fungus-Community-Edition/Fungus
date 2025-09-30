@@ -13,7 +13,7 @@ using UnityObj = UnityEngine.Object;
 /// Generic base for testing Flowchart commands with different tween adapters.
 /// </summary>
 /// <typeparam name="TCommand">The command type to test (e.g., FadeSprite)</typeparam>
-public abstract class CommandTestBase<TCommand> where TCommand : Command
+public abstract class DTI_CommandTestBase<TCommand> where TCommand : Command
 {
     protected const float Duration = 0.5f;
     protected const float Epsilon = 0.01f;

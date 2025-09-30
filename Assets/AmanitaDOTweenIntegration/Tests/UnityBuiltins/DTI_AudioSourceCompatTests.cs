@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace BuiltinCompat
 {
-    public class AudioSourceCompatTests : DoTweenAdapterTests
+    public class DTI_AudioSourceCompatTests : DoTweenAdapterTests
     {
         private static readonly TweenCase<AudioSource, float> ShiftVolumeCase = new TweenCase<AudioSource, float>
         {
