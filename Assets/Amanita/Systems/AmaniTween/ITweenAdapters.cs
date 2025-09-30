@@ -14,12 +14,12 @@ namespace Amanita.Tweening
 
     public interface IGraphicTweenAdapter
     {
-        ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration);
-        ITweenHandle FadeTo(Graphic target, float endVal, float duration);
+        ITweenHandle FadeColor(Graphic target, Color endVal, float duration);
+        ITweenHandle FadeOpacity(Graphic target, float endVal, float duration);
         ITweenHandle FadeColor(SpriteRenderer target, Color endVal, float duration);
-        ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration);
+        ITweenHandle FadeOpacityTo(SpriteRenderer target, float endVal, float duration);
 
-        ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration);
+        ITweenHandle FadeOpacity(CanvasGroup target, float endVal, float duration);
         ITweenHandle ShiftFillTo(Image target, float endVal, float duration);
     }
 
@@ -77,7 +77,7 @@ namespace Amanita.Tweening
 
     public interface ICanvasGroupTweenAdapter
     {
-        ITweenHandle FadeTo(CanvasGroup target, float alpha, float duration);
+        ITweenHandle FadeOpacity(CanvasGroup target, float alpha, float duration);
     }
 
     public interface IRectTransformTweenAdapter

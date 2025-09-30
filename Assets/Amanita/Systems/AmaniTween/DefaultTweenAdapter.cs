@@ -159,19 +159,19 @@ namespace Amanita.Tweening
         }
 
 
-        public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
+        public ITweenHandle FadeOpacity(Graphic target, float endVal, float duration)
         {
             var tween = TweenGraphicAlpha(target, target.color.a, endVal, duration);
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration)
+        public ITweenHandle FadeOpacityTo(SpriteRenderer target, float endVal, float duration)
         {
             var tween = TweenSpriteAlpha(target, target.color.a, endVal, duration);
             return DefaultTweenHandle.From(tween);
         }
 
-        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
+        public ITweenHandle FadeOpacity(CanvasGroup target, float endVal, float duration)
         {
             var tween = TweenCanvasGroupAlpha(target, target.alpha, endVal, duration);
             return DefaultTweenHandle.From(tween);
@@ -268,7 +268,7 @@ namespace Amanita.Tweening
             return result;
         }
 
-        public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
+        public ITweenHandle FadeColor(Graphic target, Color endVal, float duration)
         {
             var tween = TweenGraphicColor(target, target.color, endVal, duration);
             return DefaultTweenHandle.From(tween);

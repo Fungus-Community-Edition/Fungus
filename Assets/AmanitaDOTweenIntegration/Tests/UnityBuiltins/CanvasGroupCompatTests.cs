@@ -11,7 +11,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<CanvasGroup, float> FadeCase = new TweenCase<CanvasGroup, float>
         {
             Name = "FadeTo_CanvasGroup",
-            CreateTween = (adapter, cg) => adapter.FadeTo(cg, 0.25f, Duration),
+            CreateTween = (adapter, cg) => adapter.FadeOpacity(cg, 0.25f, Duration),
             GetValue = cg => cg.alpha,
             SetValue = (cg, v) => cg.alpha = v,
             CreateComponent = go => go.AddComponent<CanvasGroup>(),

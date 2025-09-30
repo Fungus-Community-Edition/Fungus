@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using Amanita.VScripting;
+using Amanita.Tweening;
 
 namespace Amanita.DialogueSys
 {
@@ -805,17 +806,19 @@ namespace Amanita.DialogueSys
         
         protected virtual void Punch(Vector3 axis, float time)
         {
-            GameObject go = punchObject;
-            if (go == null)
+            GameObject target = punchObject;
+            if (target == null)
             {
-                go = Camera.main.gameObject;
+                target = Camera.main.gameObject;
             }
 
-            if (go != null)
+            if (target != null && posShaker != null)
             {
-                LeanTweenHelpers.ShakePosition(go.transform, axis, new Vector2(30,60), time);
+                posShaker.ShakePosition(target.transform, axis, new Vector2(30,60), time);
             }
         }
+
+        protected IPositionShaker posShaker;
         
         protected virtual void Flash(float duration)
         {

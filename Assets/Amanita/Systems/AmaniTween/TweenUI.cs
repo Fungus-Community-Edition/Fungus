@@ -1,6 +1,6 @@
-using UnityEngine;
+using Amanita.Tweening;
 using System.Collections.Generic;
-using Amanita.DentedPixel;
+using UnityEngine;
 
 namespace Amanita.VScripting.Commands
 {
@@ -11,26 +11,37 @@ namespace Amanita.VScripting.Commands
     {
         [Tooltip("List of objects to be affected by the tween")]
         [SerializeField] protected List<GameObject> targetObjects = new List<GameObject>();
-        
-        [Tooltip("Type of tween easing to apply")]
-        [SerializeField] protected LeanTweenType tweenType = LeanTweenType.easeOutQuad;
-        
-        [Tooltip("Wait until this command completes before continuing execution")]
+
+        //[Tooltip("Type of tween easing to apply")]
+        //[SerializeField] protected LeanTweenType tweenType = LeanTweenType.easeOutQuad;
+
+        [Tooltip("Whether to wait until this Command completes before continuing execution")]
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
         
         [Tooltip("Time for the tween to complete")]
         [SerializeField] protected FloatData duration = new FloatData(1f);
 
+        protected virtual void Awake()
+        {
+            ValidateTweeners();
+        }
+
+        protected abstract void ValidateTweeners();
+
         protected virtual void ApplyTween()
         {
-            for (int i = 0; i < targetObjects.Count; i++)
+            ApplyToEachValidTarget();
+            void ApplyToEachValidTarget()
             {
-                var targetObject = targetObjects[i];
-                if (targetObject == null)
+                for (int i = 0; i < targetObjects.Count; i++)
                 {
-                    continue;
+                    var targetObject = targetObjects[i];
+                    if (targetObject == null)
+                    {
+                        continue;
+                    }
+                    ApplyTweenToSingle(targetObject);
                 }
-                ApplyTween(targetObject);
             }
 
             if (waitUntilFinished)
@@ -40,7 +51,7 @@ namespace Amanita.VScripting.Commands
             }
         }
 
-        protected abstract void ApplyTween(GameObject go);
+        protected abstract void ApplyTweenToSingle(GameObject go);
 
         protected virtual void OnComplete()
         {
@@ -94,7 +105,7 @@ namespace Amanita.VScripting.Commands
                 return targetObjects[0].name + " = " + GetSummaryValue();
             }
             
-            string objectList = "";
+            string namesOfGameObjects = "";
             for (int i = 0; i < targetObjects.Count; i++)
             {
                 var go = targetObjects[i];
@@ -102,17 +113,17 @@ namespace Amanita.VScripting.Commands
                 {
                     continue;
                 }
-                if (objectList == "")
+                if (namesOfGameObjects == "")
                 {
-                    objectList += go.name;
+                    namesOfGameObjects += go.name;
                 }
                 else
                 {
-                    objectList += ", " + go.name;
+                    namesOfGameObjects += ", " + go.name;
                 }
             }
             
-            return objectList + " = " + GetSummaryValue();
+            return namesOfGameObjects + " = " + GetSummaryValue();
         }
         
         public override Color GetButtonColor()

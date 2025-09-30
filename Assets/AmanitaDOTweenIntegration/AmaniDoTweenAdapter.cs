@@ -47,7 +47,7 @@ namespace Amanita.DOTweenIntegration
         #endregion
 
         #region Graphic
-        public ITweenHandle ShiftColorTo(Graphic target, Color endVal, float duration)
+        public ITweenHandle FadeColor(Graphic target, Color endVal, float duration)
         {
             Tween tween = target.DOColor(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
@@ -61,14 +61,14 @@ namespace Amanita.DOTweenIntegration
             return result;
         }
 
-        public ITweenHandle FadeTo(Graphic target, float endVal, float duration)
+        public ITweenHandle FadeOpacity(Graphic target, float endVal, float duration)
         {
             Tween tween = target.DOFade(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
             return result;
         }
 
-        public ITweenHandle FadeTo(SpriteRenderer target, float endVal, float duration)
+        public ITweenHandle FadeOpacityTo(SpriteRenderer target, float endVal, float duration)
         {
             Tween tween = target.DOFade(endVal, duration).SetEase(_ease);
             DOTweenHandle result = new DOTweenHandle(tween);
@@ -166,7 +166,7 @@ namespace Amanita.DOTweenIntegration
         #endregion
 
         #region CanvasGroup
-        public ITweenHandle FadeTo(CanvasGroup target, float endVal, float duration)
+        public ITweenHandle FadeOpacity(CanvasGroup target, float endVal, float duration)
         {
             Tween tween = target.DOFade(endVal, duration).SetEase(_ease);
             return new DOTweenHandle(tween);

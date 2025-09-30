@@ -14,7 +14,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Graphic, Color> ShiftGraphicCase = new TweenCase<Graphic, Color>
         {
             Name = "ShiftColorTo_Graphic",
-            CreateTween = (adapter, g) => adapter.ShiftColorTo(g, Color.red, Duration),
+            CreateTween = (adapter, g) => adapter.FadeColor(g, Color.red, Duration),
             GetValue = g => g.color,
             SetValue = (g, c) => g.color = c,
             CreateComponent = go => go.AddComponent<Image>(),
@@ -34,7 +34,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<Graphic, Color> FadeGraphicCase = new TweenCase<Graphic, Color>
         {
             Name = "FadeTo_Graphic",
-            CreateTween = (adapter, g) => adapter.FadeTo(g, 0.5f, Duration),
+            CreateTween = (adapter, g) => adapter.FadeOpacity(g, 0.5f, Duration),
             GetValue = g => g.color,
             SetValue = (g, c) => g.color = c,
             CreateComponent = go => go.AddComponent<Image>(),
@@ -44,7 +44,7 @@ namespace BuiltinCompat
         private static readonly TweenCase<SpriteRenderer, Color> FadeSpriteCase = new TweenCase<SpriteRenderer, Color>
         {
             Name = "FadeTo_SpriteRenderer",
-            CreateTween = (adapter, s) => adapter.FadeTo(s, 0.25f, Duration),
+            CreateTween = (adapter, s) => adapter.FadeOpacityTo(s, 0.25f, Duration),
             GetValue = s => s.color,
             SetValue = (s, c) => s.color = c,
             CreateComponent = go => go.AddComponent<SpriteRenderer>(),
