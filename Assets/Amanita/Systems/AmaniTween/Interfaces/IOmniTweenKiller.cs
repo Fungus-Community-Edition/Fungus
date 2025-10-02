@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Amanita.Tweening
 {
     /// <summary>

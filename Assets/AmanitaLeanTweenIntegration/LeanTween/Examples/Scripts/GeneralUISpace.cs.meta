@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cc2ddccee016148b189d987f564ee08e
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3595
+  packageName: LeanTween
+  packageVersion: 2.51
+  assetPath: Assets/LeanTween/Examples/Scripts/GeneralUISpace.cs
+  uploadId: 469983
