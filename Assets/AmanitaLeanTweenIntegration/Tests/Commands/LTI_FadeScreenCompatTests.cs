@@ -1,37 +1,35 @@
 using Amanita;
+using Amanita.LeanTweenIntegration;
 using Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System;
 using System.Reflection;
 
 namespace CommandCompat
 {
-    public class DTI_FadeScreenCompatTests : DTI_CommandTestBase<FadeScreen>
+    public class LTI_FadeScreenCompatTests : LTI_CommandTestBase<FadeScreen>
     {
         private CameraManager cameraManager;
 
         protected override void ConfigureCommand(FadeScreen command)
         {
-            // Ensure CameraManager exists
+            // Ensure CameraManager exists and reset fade texture for deterministic behaviour
             cameraManager = AmanitaManager.S.CameraManager;
             cameraManager.ScreenFadeTexture = null;
 
             // Assign private fields via reflection
-            Type fadeScreenType = typeof(FadeScreen);
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            fadeScreenType.GetField("duration", flags)
+            CmdType.GetField("duration", flags)
                 .SetValue(command, Duration);
-            fadeScreenType.GetField("targetAlpha", flags)
+            CmdType.GetField("targetAlpha", flags)
                 .SetValue(command, 0.75f);
-            fadeScreenType.GetField("waitUntilFinished", flags)
+            CmdType.GetField("waitUntilFinished", flags)
                 .SetValue(command, true);
-            fadeScreenType.GetField("fadeTweener", flags)
+            CmdType.GetField("fadeTweener", flags)
                 .SetValue(command, adapter);
-            fadeScreenType.GetField("doFadeTween", flags).
-                SetValue(command, adapter);
+            CmdType.GetField("doFadeTween", flags)
+                .SetValue(command, adapter);
         }
 
         protected override void AssertFinalState()
@@ -49,7 +47,7 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndFadesScreen()
         {
-            typeof(FadeScreen).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            CmdType.GetField("waitUntilFinished", flags)
                 .SetValue(command, false);
 
             bool continued = false;

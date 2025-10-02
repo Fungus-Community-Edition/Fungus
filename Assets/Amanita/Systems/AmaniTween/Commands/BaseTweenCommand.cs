@@ -1,7 +1,6 @@
 using Amanita.VScripting;
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Amanita.Tweening
 { 

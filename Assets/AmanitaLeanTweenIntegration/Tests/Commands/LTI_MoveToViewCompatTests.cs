@@ -9,7 +9,6 @@ using NUnit.Framework;
 using System.Collections;
 using Type = System.Type;
 using System.Reflection;
-using UnityObj = UnityEngine.Object;
 
 namespace CommandCompat
 {

@@ -5,12 +5,13 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Type = System.Type;
 using System.Reflection;
+using System.Collections.Generic;
+using Type = System.Type;
 
 namespace CommandCompat
 {
-    public class DTI_MA_FadeVolumeCompatTests : DTI_CommandTestBase<MA_FadeVolume>
+    public class LTI_MA_FadeVolumeCompatTests : LTI_CommandTestBase<MA_FadeVolume>
     {
         protected const float startVolume = 1f;
         protected const float targetVolume = 25f;
@@ -23,14 +24,14 @@ namespace CommandCompat
             TrackGroup.Voice
         };
 
-        // Track indexes 0–2
+        // Track indexes 0..2
         protected static readonly int[] TestTrackIndexes = { 0, 1, 2 };
 
-        // Cartesian product of groups × indexes
+        // Cartesian product of groups & indexes
         protected static readonly object[] GroupIndexCases = BuildCases();
         protected static object[] BuildCases()
         {
-            var list = new System.Collections.Generic.List<object>();
+            var list = new List<object>();
             foreach (var group in TestTrackGroups)
             {
                 foreach (var index in TestTrackIndexes)
@@ -53,37 +54,51 @@ namespace CommandCompat
             AudioSystem.S.SetTrackGroupVol(TrackGroup.Voice, 100);
 
             // Assign protected fields via reflection
-            Type cmdType = cmd.GetType();
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            cmdType.GetField("trackGroup", flags)
+            CmdType.GetField("trackGroup", flags)
                 .SetValue(cmd, currentGroup);
-            cmdType.GetField("track", flags)
+            CmdType.GetField("track", flags)
                 .SetValue(cmd, new IntegerData(currentIndex));
-            cmdType.GetField("targetVol", flags)
+            CmdType.GetField("targetVol", flags)
                 .SetValue(cmd, new FloatData(targetVolume));
-            cmdType.GetField("duration", flags)
+            CmdType.GetField("duration", flags)
                 .SetValue(cmd, new FloatData(Duration));
-            cmdType.GetField("waitUntilFinished", flags)
+            CmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, new BooleanData(true));
-            cmdType.GetField("doFade", flags)
+            CmdType.GetField("doFade", flags)
                 .SetValue(cmd, adapter);
         }
 
         protected override void AssertFinalState()
         {
             float actual = AudioSystem.S.GetTrackVol(currentGroup, currentIndex);
-            Assert.AreEqual(targetVolume, actual, Epsilon,
-                $"Track volume mismatch for {currentGroup} track {currentIndex}");
+            Assert.AreEqual(targetVolume, actual, Epsilon, "Track volume mismatch");
         }
 
         [UnityTest]
-        public IEnumerator WaitUntilFinished_FadesVolume(
-            [ValueSource(nameof(GroupIndexCases))] object[] caseData)
+        public IEnumerator WaitUntilFinished_FadesTrackGroup([ValueSource(nameof(GroupIndexCases))] object[] caseData)
         {
             ConfigFor(caseData);
-            AudioSystem.S.SetTrackVol(currentGroup, currentIndex, startVolume);
 
             yield return RunBlockAndWait();
+            AssertFinalState();
+        }
+
+        [UnityTest]
+        public IEnumerator NoWait_ContinuesImmediately_AndFades([ValueSource(nameof(GroupIndexCases))] object[] caseData)
+        {
+            ConfigFor(caseData);
+
+            CmdType.GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(false));
+
+            bool continued = false;
+            command.StartedContinue += _ => continued = true;
+
+            flowchart.StartCoroutine(block.Execute());
+
+            Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
+
+            yield return new WaitForSeconds(Duration + 0.05f);
             AssertFinalState();
         }
 
@@ -93,36 +108,12 @@ namespace CommandCompat
             currentIndex = (int)caseData[1];
 
             // We want to make sure that the Command has the right inputs before we run it
-            Type cmdType = command.GetType();
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            cmdType.GetField("trackGroup", flags)
+            CmdType.GetField("trackGroup", flags)
                 .SetValue(command, currentGroup);
-            cmdType.GetField("track", flags)
+            CmdType.GetField("track", flags)
                 .SetValue(command, new IntegerData(currentIndex));
 
             AudioSystem.S.SetTrackVol(currentGroup, currentIndex, startVolume);
-        }
-
-        [UnityTest]
-        public IEnumerator NoWait_ContinuesImmediately_AndFadesVolume(
-            [ValueSource(nameof(GroupIndexCases))] object[] caseData)
-        {
-            ConfigFor(caseData);
-
-            typeof(MA_FadeVolume).GetField("waitUntilFinished", BindingFlags.NonPublic | BindingFlags.Instance)
-                .SetValue(command, new BooleanData(false));
-
-            bool continued = false;
-            command.StartedContinue += _ => continued = true;
-
-            flowchart.ExecuteBlock(block);
-
-            Assert.IsTrue(continued,
-                $"Continue() should be called immediately when waitUntilFinished is false for " +
-                $"{currentGroup} track {currentIndex}");
-
-            yield return new WaitForSeconds(Duration + 0.05f);
-            AssertFinalState();
         }
     }
 }

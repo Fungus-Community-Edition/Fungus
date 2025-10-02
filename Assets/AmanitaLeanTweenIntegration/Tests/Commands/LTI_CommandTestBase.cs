@@ -1,13 +1,14 @@
 ﻿using Amanita;
 using Amanita.SaveSys;
-using Amanita.VScripting; 
-using Collections;
+using Amanita.VScripting;
 using Amanita.LeanTweenIntegration;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Type = System.Type;
+using BindingFlags = System.Reflection.BindingFlags;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
@@ -15,6 +16,7 @@ using UnityObj = UnityEngine.Object;
 /// <typeparam name="TCommand">The command type to test (e.g., FadeSprite)</typeparam>
 public abstract class LTI_CommandTestBase<TCommand> where TCommand : Command
 {
+    protected BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
     protected const float Duration = 0.5f;
     protected const float Epsilon = 0.01f;
 
@@ -58,6 +60,7 @@ public abstract class LTI_CommandTestBase<TCommand> where TCommand : Command
     protected AmanitaManager manager;
     protected AmaniLeanTweenAdapter adapter;
     protected readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
+    protected Type CmdType => command.GetType();
 
     [TearDown]
     public virtual void TearDown()

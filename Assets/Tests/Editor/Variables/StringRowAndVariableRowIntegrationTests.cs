@@ -9,7 +9,6 @@ using Amanita.EditorUtils;
 using UnityEditor;
 using System.Reflection;
 using System;
-using BaseObj = System.Object;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
 

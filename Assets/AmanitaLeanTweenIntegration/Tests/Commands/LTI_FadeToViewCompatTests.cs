@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace CommandCompat
 {
-    public class DTI_FadeToViewCompatTests : DTI_CommandTestBase<FadeToView>
+    public class LTI_FadeToViewCompatTests : LTI_CommandTestBase<FadeToView>
     {
         private Camera cameraGO;
         private View targetView;
@@ -43,7 +43,7 @@ namespace CommandCompat
             cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
 
-            // Inject AmaniDoTweenAdapter for all tweeners
+            // Inject AmaniLeanTweenAdapter for all tweeners
             cmdType.GetField("doFadeTween", flags)
                 .SetValue(cmd, adapter);
             cmdType.GetField("doOrthoSizeTween", flags)
@@ -73,7 +73,7 @@ namespace CommandCompat
         {
             base.TearDown();
             Object.DestroyImmediate(cameraGO);
-            Object.Destroy(targetView);
+            Object.DestroyImmediate(targetView.gameObject);
         }
 
         [UnityTest]
