@@ -6,9 +6,9 @@ namespace Amanita.Tweening
     public static class TweenUtils
     {
         public static bool EnsureValidTweener(ref ScriptableObject tweener, Type interfaceTypeNeeded,
-            string whatItIsFor)
+            string whatItIsFor, bool logMessages = true)
         {
-            bool isItValid = ValidateTweener(tweener, interfaceTypeNeeded, whatItIsFor);
+            bool isItValid = ValidateTweener(tweener, interfaceTypeNeeded, whatItIsFor, logMessages);
             if (!isItValid)
             {
                 tweener = AmanitaManager.DefaultTweener;
@@ -17,12 +17,15 @@ namespace Amanita.Tweening
         }
 
         public static bool ValidateTweener(ScriptableObject tweener, Type interfaceTypeNeeded,
-            string whatItIsFor)
+            string whatItIsFor, bool logMessages = true)
         {
             bool implementsCorrectInterface = false;
             if (tweener == null)
             {
-                Debug.LogWarning($"No tweener assigned. Switching to default linear tweener.");
+                if (logMessages)
+                {
+                    Debug.LogWarning($"No tweener assigned. Switching to default linear tweener.");
+                }
             }
             else
             {
