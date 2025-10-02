@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class SaveReaderTests : CommonTestFunctionality
     {

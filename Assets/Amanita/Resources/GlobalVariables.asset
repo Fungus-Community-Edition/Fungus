@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Naruto_Holder
+  m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271062115352654
+    rid: 846271073858093285
   references:
     version: 2
     RefIds:
-    - rid: 846271062115352654
+    - rid: 846271073858093285
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1

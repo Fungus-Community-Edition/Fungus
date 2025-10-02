@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // equality comparers
 
-namespace Amanita.Tweening.BuiltinCompat
+namespace TweeningTests.BuiltinCompat
 {
     public class RectTransformCompatTests : DefaultAdapterTests
     {

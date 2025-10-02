@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace Amanita.MuscariableTests.DataOnly
+namespace VScriptingTests.MuscariableTests.DataOnly
 {
     [TestFixture]
     public class GraphicMuscariableTests

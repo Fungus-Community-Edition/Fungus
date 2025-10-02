@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Amanita.MuscariableTests.DataOnly
+namespace VScriptingTests.MuscariableTests.DataOnly
 {
     [TestFixture]
     public class UnityGeneralMuscariableTests

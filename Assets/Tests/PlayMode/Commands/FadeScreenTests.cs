@@ -3,8 +3,9 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Amanita;
 
-namespace Amanita.Commands
+namespace VScriptingTests.Commands
 {
     public class FadeScreenTests : CommandTestBase<FadeScreen>
     {
@@ -17,13 +18,13 @@ namespace Amanita.Commands
             cameraManager.ScreenFadeTexture = null;
 
             // Assign private fields via reflection
-            typeof(FadeScreen).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, Duration);
-            typeof(FadeScreen).GetField("targetAlpha", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetAlpha", flags)
                 .SetValue(cmd, 0.75f);
-            typeof(FadeScreen).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(cmd, true);
-            typeof(FadeScreen).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("fadeTweener", flags)
                 .SetValue(cmd, null); // triggers default adapter
         }
 
@@ -42,7 +43,7 @@ namespace Amanita.Commands
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndFadesScreen()
         {
-            typeof(FadeScreen).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(command, false);
 
             bool continued = false;

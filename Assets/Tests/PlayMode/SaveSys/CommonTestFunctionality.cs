@@ -14,8 +14,9 @@ using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using Amanita.VScripting;
+using Amanita;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public abstract class CommonTestFunctionality
     {
