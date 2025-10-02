@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Amanita.Commands
+namespace VScriptingTests.Commands
 {
     public class FadeSpriteTests : CommandTestBase<FadeSprite>
     {
