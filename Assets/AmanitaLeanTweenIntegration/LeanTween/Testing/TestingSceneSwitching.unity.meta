@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2eedc500c8611491798b66b64c118120
+timeCreated: 1469703823
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3595
+  packageName: LeanTween
+  packageVersion: 2.51
+  assetPath: Assets/LeanTween/Testing/TestingSceneSwitching.unity
+  uploadId: 469983

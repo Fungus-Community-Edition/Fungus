@@ -2,7 +2,7 @@ using Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class FakeVersionProvider : IVersionProvider
     {

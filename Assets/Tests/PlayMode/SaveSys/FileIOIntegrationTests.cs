@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class FileIOIntegrationTests : CommonTestFunctionality
     {

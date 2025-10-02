@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Amanita.DentedPixel;
 using Amanita.Tweening;
 
 namespace Amanita
@@ -42,9 +41,6 @@ namespace Amanita
 		protected View swipePanViewB;
 		protected Vector3 previousMousePos;
 		
-		//Coroutine handles for panning and fading commands
-		protected LTDescr fadeTween, sizeTween, camPosTween, camRotTween;
-
 		protected class CameraView
 		{
 			public Vector3 cameraPos;
@@ -231,6 +227,7 @@ namespace Amanita
 		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete,
 			IGeneralTweenAdapter<float> tweenAdapter = null)
 		{
+			tweenAdapter ??= AmanitaManager.DefaultTweener;
 			if (Mathf.Approximately(fadeDuration, 0))
 			{
 				fadeAlpha = targetAlpha;
@@ -238,15 +235,8 @@ namespace Amanita
 				return;
 			}
 
-			if (tweenAdapter == null)
-			{
-				_neoFadeTween = AmanitaManager.DefaultTweener.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha,
-					fadeDuration, onComplete);
-			}
-			else
-			{
-				tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
-			}
+			tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
+			
 		}
 
 		protected Tween<float> _neoFadeTween;
@@ -356,7 +346,7 @@ namespace Amanita
 			}
 			else
 			{
-				sizeTweener.ShiftOrthographicSizeTo(camera, targetSize, duration)
+				sizeTweener.TweenOrthoSize(camera, targetSize, duration)
 					.SetOnComplete(OnOrthoSizeTweenDone);
 				void OnOrthoSizeTweenDone()
 				{
@@ -381,7 +371,6 @@ namespace Amanita
 				void OnCamRotTweenDone()
 				{
 					camTrans.rotation = targetRotation;
-					camRotTween = null;
 				}
 
 			}

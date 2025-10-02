@@ -1,12 +1,11 @@
 using Amanita.VScripting;
 using NUnit.Framework;
-using System;
 using UnityEngine;
 using System.Collections;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace Tests.VScripting
+namespace VScriptingTests
 {
     public class VarUtilsTests
     {

@@ -4,8 +4,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for equality comparers
+using Amanita;
 
-namespace Amanita.Commands
+namespace VScriptingTests.Commands
 {
     public class MoveToViewTests : CommandTestBase<MoveToView>
     {

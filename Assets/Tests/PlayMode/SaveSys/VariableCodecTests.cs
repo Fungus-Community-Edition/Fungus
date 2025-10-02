@@ -3,7 +3,7 @@ using UnityEngine;
 using Amanita.SaveSys;
 using Amanita.VScripting;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class VariableCodecTests : CommonTestFunctionality
     {
