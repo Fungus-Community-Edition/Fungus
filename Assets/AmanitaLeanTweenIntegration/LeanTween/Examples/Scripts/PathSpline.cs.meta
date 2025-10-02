@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ef4235237d8d8413c9d5807cf0a1f77b
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3595
+  packageName: LeanTween
+  packageVersion: 2.51
+  assetPath: Assets/LeanTween/Examples/Scripts/PathSpline.cs
+  uploadId: 469983
