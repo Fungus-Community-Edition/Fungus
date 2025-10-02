@@ -5,9 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Reflection;
 using System.Collections.Generic;
-using Type = System.Type;
 
 namespace CommandCompat
 {

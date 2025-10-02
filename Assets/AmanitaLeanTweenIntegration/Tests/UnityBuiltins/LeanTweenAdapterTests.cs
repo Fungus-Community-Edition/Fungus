@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Amanita.LeanTweenIntegration;
-using Amanita.DentedPixel;
+
 
 public class LeanTweenAdapterTests
 {

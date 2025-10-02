@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Reflection;
 using Type = System.Type;
 
 namespace CommandCompat
@@ -20,7 +19,6 @@ namespace CommandCompat
 
             // Assign private fields via reflection
             Type cmdType = typeof(FadeSprite);
-            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
             cmdType.GetField("spriteRenderer", flags)
                 .SetValue(cmd, spriteRenderer);
             cmdType.GetField("duration", flags)
@@ -49,8 +47,8 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator WaitUntilFinished_ChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, true);
+            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(true));
 
             yield return RunBlockAndWait();
             AssertFinalState();
@@ -62,8 +60,8 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, false);
+            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(false));
 
             bool continued = false;
             command.StartedContinue += OnFadeStartedContinue;

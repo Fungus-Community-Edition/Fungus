@@ -49,8 +49,8 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator WaitUntilFinished_ChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, true);
+            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(true));
 
             yield return RunBlockAndWait();
             AssertFinalState();
@@ -62,8 +62,8 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, false);
+            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(false));
 
             bool continued = false;
             command.StartedContinue += OnFadeStartedContinue;

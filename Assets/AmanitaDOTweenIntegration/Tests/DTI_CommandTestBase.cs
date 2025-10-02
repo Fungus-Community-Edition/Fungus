@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using System.Reflection;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
@@ -21,6 +22,7 @@ public abstract class DTI_CommandTestBase<TCommand> where TCommand : Command
     protected Flowchart flowchart;
     protected Block block;
     protected TCommand command;
+    protected BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
 
     [SetUp]
     public virtual void SetUp()
