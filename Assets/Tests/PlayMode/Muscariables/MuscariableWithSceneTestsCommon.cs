@@ -8,8 +8,9 @@ using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using Amanita.VScripting;
+using Amanita;
 
-namespace Amanita.MuscariableTests
+namespace VScriptingTests.MuscariableTests
 {
     public abstract class MuscariableWithSceneTestsCommon : MuscariableTestsCommon
     {

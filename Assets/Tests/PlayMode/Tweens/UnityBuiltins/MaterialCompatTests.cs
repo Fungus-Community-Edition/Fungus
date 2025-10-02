@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils;
 
-namespace Amanita.Tweening.BuiltinCompat
+namespace TweeningTests.BuiltinCompat
 {
     public class MaterialCompatTests : DefaultAdapterTests
     {

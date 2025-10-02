@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class EncryptorTests : CommonTestFunctionality
     {

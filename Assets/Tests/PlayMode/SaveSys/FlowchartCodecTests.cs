@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine.TestTools;
 using Amanita.VScripting;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class FlowchartCodecTests : CommonTestFunctionality
     {

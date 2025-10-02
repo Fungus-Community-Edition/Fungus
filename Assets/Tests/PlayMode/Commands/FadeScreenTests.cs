@@ -53,7 +53,7 @@ namespace VScriptingTests.Commands
 
             Assert.IsTrue(continued, "Continue() should be called immediately when waitUntilFinished is false.");
 
-            yield return new WaitForSeconds(Duration + 1.05f);
+            yield return new WaitForSeconds(Duration + 0.05f);
             AssertFinalState();
         }
     }

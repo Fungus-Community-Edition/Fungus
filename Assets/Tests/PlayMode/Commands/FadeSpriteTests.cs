@@ -17,13 +17,13 @@ namespace VScriptingTests.Commands
             spriteRenderer.color = Color.white;
 
             // Assign private fields via reflection
-            typeof(FadeSprite).GetField("spriteRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("spriteRenderer", flags)
                 .SetValue(cmd, spriteRenderer);
-            typeof(FadeSprite).GetField("duration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("duration", flags)
                 .SetValue(cmd, new FloatData(Duration));
-            typeof(FadeSprite).GetField("targetColor", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("targetColor", flags)
                 .SetValue(cmd, new ColorData(TargetColor));
-            typeof(FadeSprite).GetField("fadeTweener", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            cmdType.GetField("fadeTweener", flags)
                 .SetValue(cmd, null); // triggers default adapter
         }
 
@@ -42,8 +42,8 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator WaitUntilFinished_ChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, true);
+            cmdType.GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(true));
 
             yield return RunBlockAndWait();
             AssertFinalState();
@@ -55,8 +55,8 @@ namespace VScriptingTests.Commands
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(command, false);
+            cmdType.GetField("waitUntilFinished", flags)
+                .SetValue(command, new BooleanData(false));
 
             bool continued = false;
             command.StartedContinue += OnFadeStartedContinue;

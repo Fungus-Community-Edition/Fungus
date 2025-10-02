@@ -37,6 +37,7 @@ namespace VScriptingTests
         [SetUp]
         public void Setup()
         {
+            AmanitaManager.EnsureExists();
             testGo = new GameObject("FlowchartTest_GO");
             testFc = testGo.AddComponent<Flowchart>();
             toDestroyInTearDown.Add(testGo);
@@ -44,7 +45,7 @@ namespace VScriptingTests
 
         protected GameObject testGo;
         protected Flowchart testFc;
-        protected readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
+        protected static readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
 
         [TearDown]
         public void TearDown()
@@ -88,12 +89,12 @@ namespace VScriptingTests
             
             // Unity general
             yield return new FLCTestCase(typeof(GameObject), typeof(GameObjectVariable),
-                typeof(GameObjectMuscariable), AmanitaManager.S.gameObject);
+                typeof(GameObjectMuscariable), null);
             yield return new FLCTestCase(typeof(Transform), typeof(TransformVariable),
-                typeof(TransformMuscariable), AmanitaManager.S.transform);
+                typeof(TransformMuscariable), null);
             yield return new FLCTestCase(typeof(UnityObj), typeof(ObjectVariable),
-                typeof(UnityObjectMuscariable), AmanitaManager.S);
-            
+                typeof(UnityObjectMuscariable), null);
+
             // Audio
             yield return new FLCTestCase(typeof(AudioClip), typeof(AudioClipVariable),
                 typeof(AudioClipMuscariable), null);

@@ -1,4 +1,4 @@
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class MainSaveDataTests : CommonTestFunctionality
     {
