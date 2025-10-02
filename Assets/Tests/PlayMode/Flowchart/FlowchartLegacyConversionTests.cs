@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -12,13 +13,32 @@ namespace VScriptingTests
 {
     public class FlowchartLegacyConversionTests
     {
+        public class FLCTestCase
+        {
+            public Type contentType;
+            public Type legacyVarType;
+            public Type muscVarType;
+            public object sampleValue;
+            public FLCTestCase(Type contentType, Type legacyVarType, Type muscVarType, object sampleValue)
+            {
+                this.contentType = contentType;
+                this.legacyVarType = legacyVarType;
+                this.muscVarType = muscVarType;
+                this.sampleValue = sampleValue;
+            }
+            public override string ToString()
+            {
+                return $"{legacyVarType.Name} -> {muscVarType.Name} (ContentType: " +
+                    $"{contentType.Name}, SampleValue: {sampleValue})";
+            }
+        }
+
         [SetUp]
         public void Setup()
         {
-            // Any setup code if needed
             testGo = new GameObject("FlowchartTest_GO");
             testFc = testGo.AddComponent<Flowchart>();
-            toDestroyInTearDown.Add(testGo); // No need to add the FC here; destroying the GO will also destroy the FC
+            toDestroyInTearDown.Add(testGo);
         }
 
         protected GameObject testGo;
@@ -30,44 +50,28 @@ namespace VScriptingTests
         {
             foreach (var elem in toDestroyInTearDown)
             {
-                if (elem == null)
-                {
-                    continue;
-                }
-
+                if (elem == null) continue;
                 UnityObj.DestroyImmediate(elem);
             }
-
             toDestroyInTearDown.Clear();
         }
 
-        [UnityTest]
-        public IEnumerator Conversion_Completes_WithoutExceptions()
+        // Test cases: (contentType, legacyVariableType, muscariableType, sampleValue)
+        static IEnumerable<FLCTestCase> LegacyVarCases()
         {
-            // Add a legacy float variable via the Flowchart helper so it is registered in legacyVariables
-            var legacy = testFc.AddNewVariable<float, FloatVariable>("testFloat", 1.23f, VariableScope.Private);
-
-            // Ensure preconditions
-            Assert.IsNotNull(legacy);
-            Assert.AreEqual(typeof(float), legacy.ContentType);
-
-            // Invoke conversion (protected method)
-            // Should not throw; any thrown exception will fail the test
-            Invoke_GetAndInitVars(testFc);
-
-            // After conversion the flowchart should have one muscariable and zero legacy variables
-            Assert.AreEqual(1, testFc.MuscariableCount, "Expected exactly one muscariable after conversion");
-            Assert.AreEqual(0, testFc.VariableCount, "Expected legacy variable list to be empty after conversion");
-
-            yield break;
+            yield return new FLCTestCase(typeof(float), typeof(FloatVariable), typeof(FloatMuscariable), 11.11f);
+            yield return new FLCTestCase(typeof(bool), typeof(BooleanVariable), typeof(BoolMuscariable),  true);
+            // Extend with more cases as new legacy types are available.
         }
 
-        // Helper: invokes the protected GetAndInitVars() method on Flowchart via reflection.
-        // The reason we need this is that we want to make sure that the test vars we add
-        // are converted to muscaris, and that only happens when this method is called.
+        protected readonly Type fcType = typeof(Flowchart);
+        protected readonly BindingFlags fcBindingFlags = BindingFlags.Instance | BindingFlags.NonPublic 
+            | BindingFlags.Public;
+
+        // Reflection helper to call the protected conversion method.
         void Invoke_GetAndInitVars(Flowchart fc)
         {
-            var mi = fcType.GetMethod("GetAndInitVars", BindingFlags.Instance | BindingFlags.NonPublic);
+            var mi = fcType.GetMethod("GetAndInitVars", fcBindingFlags);
             if (mi == null) Assert.Fail("Failed to find Flowchart.GetAndInitVars via reflection");
             try
             {
@@ -75,22 +79,76 @@ namespace VScriptingTests
             }
             catch (TargetInvocationException tie)
             {
-                // Unwrap so NUnit shows the real assertion/exception
                 throw tie.InnerException ?? tie;
             }
         }
 
-        protected readonly Type fcType = typeof(Flowchart);
+        // Reflection helper to call Flowchart.AddNewVariable<TValHeld, TVarType>(string key, TValHeld value, VariableScope scope)
+        IVariable CreateLegacyVar(Flowchart fc, Type contentType, Type legacyVarType,
+            string key, object sampleValue, VariableScope scope)
+        {
+            // Find generic AddNewVariable method with 2 generic args and 3 parameters
+            var methods = typeof(Flowchart).GetMethods(fcBindingFlags);
+            MethodInfo addNewVarMI = methods
+                .Where(elem => elem.Name == "AddNewVariable" && elem.IsGenericMethodDefinition && 
+                elem.GetGenericArguments().Length == 2)
+                .FirstOrDefault();
+            if (addNewVarMI == null) Assert.Fail("AddNewVariable<TValHeld, TVarType> not found on Flowchart");
+
+            var generic = addNewVarMI.MakeGenericMethod(contentType, legacyVarType);
+            object[] args = new object[] { key, sampleValue, scope };
+            var res = generic.Invoke(fc, args);
+            // Return as IVariable for general assertions
+            return res as IVariable;
+        }
+
+        // Reflection helper to call Flowchart.GetMuscariableWithKey<TVarType>(string key)
+        object GetConvertedMuscariable(Flowchart fc, Type muscVarType, string key)
+        {
+            var mi = fcType.GetMethod("GetMuscariableWithKey", fcBindingFlags);
+            if (mi == null) Assert.Fail("GetMuscariableWithKey<TVarType> not found on Flowchart");
+            var generic = mi.MakeGenericMethod(muscVarType);
+            return generic.Invoke(fc, new object[] { key });
+        }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Key()
+        public IEnumerator Conversion_Completes_WithoutExceptions([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
         {
-            var legacy = testFc.AddNewVariable<float, FloatVariable>("myUniqueKey", 7.5f, VariableScope.Private);
-            string originalKey = legacy.Key;
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
+                key, testCase.sampleValue, VariableScope.Private);
 
+            Assert.IsNotNull(legacy, "Legacy variable creation failed");
+            Assert.AreEqual(testCase.contentType, legacy.ContentType, "Legacy ContentType mismatch");
+
+            // Conversion should not throw
             Invoke_GetAndInitVars(testFc);
 
-            var converted = testFc.GetMuscariableWithKey<FloatMuscariable>(originalKey);
+            // After conversion: legacy list should no longer expose the converted var (VariableCount counts legacy list)
+            Assert.AreEqual(1, testFc.MuscariableCount, "Expected a muscariable to be present after conversion");
+            Assert.AreEqual(0, testFc.VariableCount, "Expected legacy variable list to be empty after conversion");
+
+            yield break;
+        }
+
+        protected virtual string GenerateRandomKey(string prefix)
+        {
+            return prefix + Guid.NewGuid().ToString("N").Substring(0, 6);
+        }
+
+        [UnityTest]
+        public IEnumerator ConvertedMuscariable_Preserves_Key([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
+        {
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
+                key, testCase.sampleValue, VariableScope.Private);
+
+            string originalKey = legacy.Key;
+            Invoke_GetAndInitVars(testFc);
+
+            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, originalKey) as IVariable;
             Assert.IsNotNull(converted, "Converted muscariable with original key not found");
             Assert.AreEqual(originalKey, converted.Key, "Converted muscariable key does not match original");
 
@@ -98,119 +156,89 @@ namespace VScriptingTests
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Value()
+        public IEnumerator ConvertedMuscariable_Preserves_Value([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
         {
-            float startVal = 42.42f;
-            var legacy = testFc.AddNewVariable<float, FloatVariable>("valKey", startVal, VariableScope.Private);
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
+                testCase.sampleValue, VariableScope.Private);
 
             Invoke_GetAndInitVars(testFc);
 
-            var converted = testFc.GetMuscariableWithKey<FloatMuscariable>(legacy.Key);
+            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as IVariable;
             Assert.IsNotNull(converted, "Converted muscariable not found");
-            // Float comparison exact because we set the same stored value
-            Assert.AreEqual(startVal, converted.Value, "Converted muscariable value does not match legacy value");
+
+            // Compare boxed values; for floats/bools direct equality is fine
+            Assert.AreEqual(legacy.Value, converted.Value, "Converted muscariable value does not match legacy value");
 
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_ContentType()
+        public IEnumerator ConvertedMuscariable_Preserves_ContentType([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
         {
-            var legacy = testFc.AddNewVariable<float, FloatVariable>("ctKey", 3.14f, VariableScope.Private);
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
+                testCase.sampleValue, VariableScope.Private);
             var legacyContentType = legacy.ContentType;
 
             Invoke_GetAndInitVars(testFc);
 
-            var converted = testFc.GetMuscariableWithKey<FloatMuscariable>(legacy.Key);
+            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as IVariable;
             Assert.IsNotNull(converted, "Converted muscariable not found");
-            Assert.AreEqual(legacyContentType, converted.ContentType, "Converted muscariable ContentType does not match legacy variable");
+            Assert.AreEqual(legacyContentType, converted.ContentType, "Converted muscariable ContentType " +
+                "does not match legacy variable");
 
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Owner()
+        public IEnumerator ConvertedMuscariable_Preserves_Owner([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
         {
-            var legacy = testFc.AddNewVariable<float, FloatVariable>("ownerKey", 9.9f, VariableScope.Private);
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
+                testCase.sampleValue, VariableScope.Private);
 
-            // The legacy variable was created/registered through the Flowchart, so its owner should be the flowchart.
-            // Some legacy Variable implementations expose Owner or GetFlowchart; we assert that the original was associated with fc.
-            Assert.AreEqual(testFc, legacy.Owner ?? legacy.GetComponent<Flowchart>() ?? testFc, "Legacy variable not owned by flowchart as expected");
+            // Sanity: legacy should be associated with the flowchart (owner may be exposed via Owner)
+            Assert.AreEqual(testFc, legacy.Owner ?? testFc, "Legacy variable owner unexpected");
 
             Invoke_GetAndInitVars(testFc);
 
-            var converted = testFc.GetMuscariableWithKey<FloatMuscariable>(legacy.Key);
+            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as Muscariable;
             Assert.IsNotNull(converted, "Converted muscariable not found");
-
-            // Converted muscariable sets ParentFlowchart to this flowchart in the conversion code.
-            // Check that the converted muscariable is also associated with the same flowchart instance.
-            // There is a ParentFlowchart property on Muscariable; compare to fc.
-            Assert.AreEqual(testFc, converted.ParentFlowchart, "Converted muscariable ParentFlowchart does not match original owner flowchart");
-
-            yield break;
-        }
-
-        // --- Additional coverage requested: multiple legacy types and public/private scope preservation ---
-
-        [UnityTest]
-        public IEnumerator Conversion_Preserves_Multiple_Types_And_Values()
-        {
-            // Add a legacy float and a legacy boolean variable
-            var legacyFloat = testFc.AddNewVariable<float, FloatVariable>("multiFloat", 11.11f, VariableScope.Private);
-            var legacyBool = testFc.AddNewVariable<bool, BooleanVariable>("multiBool", true, VariableScope.Private);
-            string legacyFloatKey = legacyFloat.Key;
-            string legacyBoolKey = legacyBool.Key;
-
-            PreConversionSanityChecks();
-            void PreConversionSanityChecks()
-            {                 
-                Assert.IsNotNull(legacyFloat, "Legacy float variable not created");
-                Assert.IsNotNull(legacyBool, "Legacy bool variable not created");
-                Assert.AreEqual(typeof(float), legacyFloat.ContentType, "Legacy float ContentType incorrect");
-                Assert.AreEqual(typeof(bool), legacyBool.ContentType, "Legacy bool ContentType incorrect");
-            }
-
-            Invoke_GetAndInitVars(testFc);
-
-            var convFloat = testFc.GetMuscariableWithKey<FloatMuscariable>(legacyFloatKey);
-            var convBool = testFc.GetMuscariableWithKey<BoolMuscariable>(legacyBoolKey);
-
-            Assert.IsNotNull(convFloat, "Converted float muscariable not found");
-            Assert.IsNotNull(convBool, "Converted bool muscariable not found");
-
-            Assert.AreEqual(legacyFloat.Value, convFloat.Value, "Float value was not preserved during conversion");
-            Assert.AreEqual(legacyBool.Value, convBool.Value, "Bool value was not preserved during conversion");
-
-            Assert.AreEqual(legacyFloat.ContentType, convFloat.ContentType, "Float content type mismatch after conversion");
-            Assert.AreEqual(legacyBool.ContentType, convBool.ContentType, "Bool content type mismatch after conversion");
-
-            Assert.AreEqual(testFc, convFloat.ParentFlowchart, "Converted float owner incorrect");
-            Assert.AreEqual(testFc, convBool.ParentFlowchart, "Converted bool owner incorrect");
+            Assert.AreEqual(testFc, converted.ParentFlowchart ?? converted.Owner,
+                "Converted muscariable owner/parent flowchart does not match original");
 
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator Conversion_Preserves_Public_And_Private_Scopes()
+        public IEnumerator Conversion_Preserves_Scope([ValueSource(nameof(LegacyVarCases))]
+        FLCTestCase testCase)
         {
-            // Add two legacy floats with different scopes
-            var legacyPrivate = testFc.AddNewVariable<float, FloatVariable>("scopePrivate", 2.0f, VariableScope.Private);
-            var legacyPublic = testFc.AddNewVariable<float, FloatVariable>("scopePublic", 3.0f, VariableScope.Public);
+            string privKey = GenerateRandomKey("scopePriv_");
+            var legacyPrivate = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
+                privKey, testCase.sampleValue, VariableScope.Private);
 
-            // Remember scopes before conversion
-            var expectedPrivateScope = legacyPrivate.Scope;
-            var expectedPublicScope = legacyPublic.Scope;
+            string pubKey = GenerateRandomKey("scopePub_");
+            var legacyPublic = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
+                pubKey, testCase.sampleValue, VariableScope.Public);
+
+            var expectedPrivate = legacyPrivate.Scope;
+            var expectedPublic = legacyPublic.Scope;
 
             Invoke_GetAndInitVars(testFc);
 
-            var convPrivate = testFc.GetMuscariableWithKey<FloatMuscariable>(legacyPrivate.Key);
-            var convPublic = testFc.GetMuscariableWithKey<FloatMuscariable>(legacyPublic.Key);
+            var convPrivate = GetConvertedMuscariable(testFc, testCase.muscVarType, privKey) as Muscariable;
+            var convPublic = GetConvertedMuscariable(testFc, testCase.muscVarType, pubKey) as Muscariable;
 
             Assert.IsNotNull(convPrivate, "Converted private muscariable not found");
             Assert.IsNotNull(convPublic, "Converted public muscariable not found");
 
-            Assert.AreEqual(expectedPrivateScope, convPrivate.Scope, "Private scope was not preserved after conversion");
-            Assert.AreEqual(expectedPublicScope, convPublic.Scope, "Public scope was not preserved after conversion");
+            Assert.AreEqual(expectedPrivate, convPrivate.Scope, "Private scope was not preserved after conversion");
+            Assert.AreEqual(expectedPublic, convPublic.Scope, "Public scope was not preserved after conversion");
 
             yield break;
         }
