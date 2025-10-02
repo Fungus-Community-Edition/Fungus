@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Amanita.VScripting;
+using Amanita;
 
 namespace VScriptingTests
 {
@@ -56,11 +57,48 @@ namespace VScriptingTests
             toDestroyInTearDown.Clear();
         }
 
-        // Test cases: (contentType, legacyVariableType, muscariableType, sampleValue)
+        // In this test suite, we will only include cases for variable types that
+        // will come with the base package. This means that stuff like Matrix4x4Variable,
+        // CollisionVariable, etc. will not be included here.
         static IEnumerable<FLCTestCase> LegacyVarCases()
         {
-            yield return new FLCTestCase(typeof(float), typeof(FloatVariable), typeof(FloatMuscariable), 11.11f);
-            yield return new FLCTestCase(typeof(bool), typeof(BooleanVariable), typeof(BoolMuscariable),  true);
+            // Numerics
+            yield return new FLCTestCase(typeof(float), typeof(FloatVariable),
+                typeof(FloatMuscariable), 11.11f);
+            yield return new FLCTestCase(typeof(bool), typeof(BooleanVariable),
+                typeof(BoolMuscariable), true);
+            yield return new FLCTestCase(typeof(int), typeof(IntegerVariable),
+                typeof(IntMuscariable), 42);
+            yield return new FLCTestCase(typeof(Vector2), typeof(Vector2Variable),
+                typeof(VectorTwoMuscariable), new Vector2(1, 2));
+            yield return new FLCTestCase(typeof(Vector3), typeof(Vector3Variable),
+                typeof(VectorThreeMuscariable), new Vector3(1, 2, 3));
+
+            // Graphics
+            yield return new FLCTestCase(typeof(string), typeof(StringVariable),
+                typeof(StringMuscariable), "test string");
+            yield return new FLCTestCase(typeof(Color), typeof(ColorVariable),
+                typeof(ColorMuscariable), Color.cyan);
+            yield return new FLCTestCase(typeof(Sprite), typeof(SpriteVariable),
+                typeof(SpriteMuscariable), null);
+            yield return new FLCTestCase(typeof(Texture), typeof(TextureVariable),
+                typeof(TextureMuscariable), null);
+            yield return new FLCTestCase(typeof(Material), typeof(MaterialVariable),
+                typeof(MaterialMuscariable), null);
+            
+            // Unity general
+            yield return new FLCTestCase(typeof(GameObject), typeof(GameObjectVariable),
+                typeof(GameObjectMuscariable), AmanitaManager.S.gameObject);
+            yield return new FLCTestCase(typeof(Transform), typeof(TransformVariable),
+                typeof(TransformMuscariable), AmanitaManager.S.transform);
+            yield return new FLCTestCase(typeof(UnityObj), typeof(ObjectVariable),
+                typeof(UnityObjectMuscariable), AmanitaManager.S);
+            
+            // Audio
+            yield return new FLCTestCase(typeof(AudioClip), typeof(AudioClipVariable),
+                typeof(AudioClipMuscariable), null);
+            yield return new FLCTestCase(typeof(AudioSource), typeof(AudioSourceVariable),
+                typeof(AudioSourceMuscariable), null);
             // Extend with more cases as new legacy types are available.
         }
 
