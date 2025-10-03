@@ -152,8 +152,8 @@ namespace Amanita.VScripting.EditorUtils
                     RegisterGlobalVars();
                     void RegisterGlobalVars()
                     {
-                        GlobalVariables globalVars = AmanitaManager.S.GlobalVariables;
-                        IList<IVariable> validGlobalVars = globalVars.Variables
+                        IList<IVariable> globalVars = AmanitaManager.S.GlobalVariables;
+                        IList<IVariable> validGlobalVars = globalVars
                             .Where(elem => elem.ContentType.Equals(contentType))
                             .ToList();
 

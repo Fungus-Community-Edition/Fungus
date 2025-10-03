@@ -62,7 +62,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(235, 191, 217, 255);
+            return CommandColors.Flow;
         }
     }
 }

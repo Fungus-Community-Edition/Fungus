@@ -6,7 +6,7 @@ using Amanita.VScripting;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityObj= UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita
 {
@@ -15,9 +15,35 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-        [SerializeField] private VariableSourceAsset globalVariables;
+        [SerializeField] private List<VariableSourceAsset> globalVariables;
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
+        public IList<IVariable> GlobalVariables
+        {
+            get
+            {
+                List<IVariable> result = new List<IVariable>();
+                foreach (var src in globalVariables)
+                {
+                    if (src == null)
+                    {
+                        continue;
+                    }
+                    result.AddRange(src.Variables.Where(v => v != null));
+                }
+                return result;
+            }
+        }
+
+        public IList<VariableSourceAsset> GlobalVariableSources
+        {
+            get => globalVariables;
+            set
+            {
+                globalVariables.Clear();
+                globalVariables.AddRange(value);
+            }
+        }
         public static DefaultTweenAdapter DefaultTweener
         {
             get
@@ -213,7 +239,6 @@ namespace Amanita
             // We assume that these are each on separate GameObjects (for the sake of easier testing)
             CameraManager = GetComponentInChildren<CameraManager>();
             EventDispatcher = GetComponentInChildren<EventDispatcher>();
-            GlobalVariables = GetComponentInChildren<GlobalVariables>();
             MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
             NarrativeLog = GetComponentInChildren<NarrativeLog>();
             AudioSystem = GetComponentInChildren<AudioSystem>();
@@ -228,7 +253,6 @@ namespace Amanita
                 NarrativeLog.Init();
                 MainAudioMixer.Init();
                 AudioSystem.Init();
-                GlobalVariables.Init();
                 SaveSysInstaller.Init();
             }
         }
@@ -301,11 +325,6 @@ namespace Amanita
         /// Gets the event dispatcher singleton instance.
         /// </summary>
         public EventDispatcher EventDispatcher { get; private set; }
-
-        /// <summary>
-        /// Gets the global variable singleton instance.
-        /// </summary>
-        public GlobalVariables GlobalVariables { get; private set; }
 
         public MainAudioMixer MainAudioMixer { get; private set; }
 

@@ -33,7 +33,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(200, 200, 253, 255);
+            return CommandColors.Label;
         }
 
         #endregion
