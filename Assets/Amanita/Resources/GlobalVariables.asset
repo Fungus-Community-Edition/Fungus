@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: someAudio
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271081222767367
+    rid: 846271083485332293
   references:
     version: 2
     RefIds:
-    - rid: 846271081222767367
+    - rid: 846271083485332293
       type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -37,11 +37,11 @@ MonoBehaviour:
   m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271081222767368
+    rid: 846271083485332294
   references:
     version: 2
     RefIds:
-    - rid: 846271081222767368
+    - rid: 846271083485332294
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1
@@ -110,11 +110,11 @@ MonoBehaviour:
   m_Name: someInt
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271081222767369
+    rid: 846271083485332295
   references:
     version: 2
     RefIds:
-    - rid: 846271081222767369
+    - rid: 846271083485332295
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -134,11 +134,11 @@ MonoBehaviour:
   m_Name: someFloat
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271081222767370
+    rid: 846271083485332296
   references:
     version: 2
     RefIds:
-    - rid: 846271081222767370
+    - rid: 846271083485332296
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0

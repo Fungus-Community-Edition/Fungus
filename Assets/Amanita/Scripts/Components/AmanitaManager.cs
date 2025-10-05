@@ -44,6 +44,7 @@ namespace Amanita
                 globalVariables.AddRange(value);
             }
         }
+
         public static DefaultTweenAdapter DefaultTweener
         {
             get
