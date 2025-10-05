@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Amanita.LeanTweenIntegration;
+using UnityEngine;
 
 
 namespace Amanita.VScripting
@@ -107,7 +108,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(233, 163, 180, 255);
+            return LeanTweenCommandColors.Tween;
         }
 
         public override bool HasReference(Variable variable)

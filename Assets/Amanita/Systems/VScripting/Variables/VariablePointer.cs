@@ -12,10 +12,10 @@ namespace Amanita.VScripting
 
     public class VariablePointer<T> : IVariable<T>, IVariablePointer
     {
-        [SerializeField] private UnityEngine.Object _component; // MonoBehaviour or ScriptableObject
+        [SerializeField] private UnityObj _component; // MonoBehaviour or ScriptableObject
         public VariablePointer() { }
 
-        public VariablePointer(UnityEngine.Object component)
+        public VariablePointer(UnityObj component)
         {
             _component = component;
         }

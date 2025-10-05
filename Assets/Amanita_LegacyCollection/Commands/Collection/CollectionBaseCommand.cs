@@ -13,7 +13,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(191, 217, 235, 255);
+            return LegaCollCommandColors.Collection;
         }
 
         public override bool HasReference(Variable variable)

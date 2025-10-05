@@ -35,12 +35,6 @@ namespace Amanita.SaveSys
 
             S = this;
 
-            var globalVars = AmanitaManager.S.GlobalVariables;
-            if (globalVars == null)
-            {
-                throw new InvalidOperationException("AmanitaManager.GlobalVariables is null. Ensure AmanitaManager.Init() has run before SaveSystemInstaller.Init().");
-            }
-
             SaveWriter = saveWriter;
             SaveReader = saveReader;
             if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
@@ -83,14 +77,6 @@ namespace Amanita.SaveSys
                     { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
                 };
 
-                // We assume that the GlobalVariables Flowchart was already initted by this point, as well
-                // as AmanitaManager.S being non-null.
-
-                var globalVars = AmanitaManager.S.GlobalVariables;
-
-                StringVariable saveNameVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNameKey, "Slot");
-                StringVariable saveNamePrefixVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNamePrefixKey, "");
-                StringVariable saveNameSuffixVar = globalVars.GetOrAddVariable<string, StringVariable>(SaveNameSuffixKey, "");
 
             }
 
