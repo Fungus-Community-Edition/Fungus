@@ -62,23 +62,28 @@ namespace Amanita.VScripting
         public override void OnEnter()
         {
             var cameraManager = AmanitaManager.S.CameraManager;
-            
-            if (fadeTexture)
+
+            cameraManager.ScreenFadeTexture = DecideFadeTex();
+            Texture2D DecideFadeTex()
             {
-                cameraManager.ScreenFadeTexture = fadeTexture;
+                Texture2D result = fadeTexture;
+                if (result == null)
+                {
+                    result = CameraManager.CreateColorTexture(fadeColor, 32, 32);
+                }
+
+                return result;
             }
-            else
+
+            cameraManager.Fade(targetAlpha, duration, OnFadeDone, DoFadeTween);
+            void OnFadeDone()
             {
-                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(fadeColor, 32, 32);
-            }
-            
-            cameraManager.Fade(targetAlpha, duration, delegate { 
                 if (waitUntilFinished)
                 {
                     Continue();
                 }
-            }, doFadeTween);
-            
+            }
+
             if (!waitUntilFinished)
             {
                 Continue();
@@ -103,7 +108,7 @@ namespace Amanita.VScripting
             ValidateTweeners();
         }
 
-        protected IGeneralTweenAdapter<float> doFadeTween;
+        protected IGeneralTweenAdapter<float> DoFadeTween => doFade as IGeneralTweenAdapter<float>;
 
     }    
 }

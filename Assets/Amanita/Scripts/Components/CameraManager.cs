@@ -227,6 +227,7 @@ namespace Amanita
 		public virtual void Fade(float targetAlpha, float fadeDuration, Action onComplete,
 			IGeneralTweenAdapter<float> tweenAdapter = null)
 		{
+			tweenAdapter ??= AmanitaManager.DefaultTweener;
 			if (Mathf.Approximately(fadeDuration, 0))
 			{
 				fadeAlpha = targetAlpha;
@@ -234,15 +235,8 @@ namespace Amanita
 				return;
 			}
 
-			if (tweenAdapter == null)
-			{
-				_neoFadeTween = AmanitaManager.DefaultTweener.TweenFloat(() => fadeAlpha, UpdateFadeAlpha, targetAlpha,
-					fadeDuration, onComplete);
-			}
-			else
-			{
-				tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
-			}
+			tweenAdapter.TweenGeneral(() => fadeAlpha, UpdateFadeAlpha, targetAlpha, fadeDuration, onComplete);
+			
 		}
 
 		protected Tween<float> _neoFadeTween;

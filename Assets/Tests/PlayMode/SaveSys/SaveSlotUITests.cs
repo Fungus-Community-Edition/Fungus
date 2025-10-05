@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using Amanita.UI;
+using Amanita;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
-
     public class SaveSlotUITests : CommonTestFunctionality
     {
         protected override string PathToTestScene => "ScenePrefabs/SaveSlotUITestScene";

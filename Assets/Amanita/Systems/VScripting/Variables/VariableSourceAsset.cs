@@ -205,6 +205,11 @@ namespace Amanita.VScripting
         {
             throw new NotImplementedException();
         }
+
+        public virtual bool ContainsVar(IVariable var)
+        {
+            return variables.ContainsReference(var);
+        }
     }
 
     public interface IVariableSource

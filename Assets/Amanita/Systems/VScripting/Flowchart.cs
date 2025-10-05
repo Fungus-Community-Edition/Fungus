@@ -308,19 +308,20 @@ namespace Amanita.VScripting
             ReplaceLegacyWithMuscaris();
             void ReplaceLegacyWithMuscaris()
             {
-                // Just floats for now
-                IList<IVariable<float>> legacyFloats = (from elem in legacyVariables
-                                                        where elem.ContentType == typeof(float)
-                                                        select elem as IVariable<float>).ToList();
+                IList<Muscariable> newMuscaris = (from elem in legacyVariables
+                                                        select elem.ToMuscariable()).ToList();
 
-                for (int i = 0; i < legacyFloats.Count; i++)
+                while (legacyVariables.Count > 0)
                 {
-                    IVariable<float> currentLegacyFloat = legacyFloats[i];
-                    Muscariable<float> floatMuscari = VariableFactory.Create<float>(currentLegacyFloat);
-                    floatMuscari.ParentFlowchart = this;
-                    RemoveVariable(currentLegacyFloat);
-                    AddVariable(floatMuscari);
+                    RemoveVariableAtIndex(0);
                 }
+
+                foreach (var elem in newMuscaris)
+                {
+                    elem.ParentFlowchart = this;
+                    AddVariable(elem);
+                }
+
             }
 
             for (int i = 0; i < muscariables.Count; i++)
@@ -1537,7 +1538,8 @@ namespace Amanita.VScripting
         {
             TVarType result = (from elem in muscariables
                                where elem.Key == key
-                               select elem).Cast<TVarType>().FirstOrDefault();
+                               where elem is TVarType
+                               select elem).FirstOrDefault() as TVarType;
             return result;
 
         }
