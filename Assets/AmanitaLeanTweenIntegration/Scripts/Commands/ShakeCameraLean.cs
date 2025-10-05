@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
+using Amanita.VScripting;
 
-
-namespace Amanita.VScripting
+namespace Amanita.LeanTweenIntegration.VScripting
 {
     /// <summary>
     /// Applies a camera shake effect to the main camera.
