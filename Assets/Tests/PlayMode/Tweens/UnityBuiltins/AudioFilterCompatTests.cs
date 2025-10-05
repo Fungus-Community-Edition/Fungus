@@ -3,8 +3,9 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Amanita.Tweening;
 
-namespace Amanita.Tweening.BuiltinCompat
+namespace TweeningTests.BuiltinCompat
 {
     public class AudioFilterCompatTests : DefaultAdapterTests
     {

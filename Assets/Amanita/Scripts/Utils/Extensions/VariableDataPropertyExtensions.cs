@@ -20,11 +20,13 @@ namespace Amanita.VScripting
             switch (varRefProp.propertyType)
             {
                 case SerializedPropertyType.ObjectReference:
+                    Debug.Log($"Assigning chosen object {chosen} directly to ObjectReference property {varRefProp.propertyPath}");
                     varRefProp.objectReferenceValue = chosen as UnityObj;
                     break;
 
                 case SerializedPropertyType.ManagedReference:
                 case SerializedPropertyType.Generic: // Unity sometimes reports SerializeReference as Generic
+
                     if (chosen == null)
                     {
                         varRefProp.managedReferenceValue = null;
@@ -34,6 +36,7 @@ namespace Amanita.VScripting
                         WrapVarIntoPointer();
                         void WrapVarIntoPointer()
                         {
+                            Debug.Log($"Wrapping chosen variable {unityObj.name} into VariablePointer<{contentType.Name}>");
                             var pointerType = typeof(VariablePointer<>).MakeGenericType(contentType);
 
                             // Look for a ctor that takes a UnityObj
@@ -58,7 +61,7 @@ namespace Amanita.VScripting
                     }
                     else
                     {
-                        // Pure CLR type — assign directly
+                        // Pure CLR type (like the Muscariables themselves); assign directly
                         varRefProp.managedReferenceValue = chosen;
                     }
                     break;

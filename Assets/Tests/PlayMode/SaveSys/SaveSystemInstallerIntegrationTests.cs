@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class SaveSystemInstallerIntegrationTests : CommonTestFunctionality
     {

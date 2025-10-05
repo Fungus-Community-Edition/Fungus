@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
 
     public class SaveManagerTests : CommonTestFunctionality

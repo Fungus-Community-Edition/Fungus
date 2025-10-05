@@ -41,7 +41,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(253, 253, 150, 255);
+            return CommandColors.ConditionalLogic;
         }
 
         #endregion
