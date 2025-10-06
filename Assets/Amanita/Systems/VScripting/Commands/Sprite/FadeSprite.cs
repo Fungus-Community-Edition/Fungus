@@ -24,13 +24,13 @@ namespace Amanita.VScripting
         [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
 
         [Tooltip("Wait until the fade has finished before executing the next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
         protected virtual void Awake()
         {
-            ValidateTweeners();
+            ValidateTweeners(false);
         }
 
         #region Public members
@@ -72,7 +72,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(221, 184, 169, 255);
+            return CommandColors.Sprite;
         }
 
         public override bool HasReference(Variable variable)
@@ -88,18 +88,24 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
         [HideInInspector] [FormerlySerializedAs("targetColor")] public Color targetColorOLD;
+        [SerializeField][FormerlySerializedAs("waitUntilFinished")] protected bool waitUntilFinishedOLD;
 
         protected virtual void OnEnable()
         {
-            if (durationOLD != default(float))
+            if (durationOLD != default)
             {
                 duration.Value = durationOLD;
-                durationOLD = default(float);
+                durationOLD = default;
             }
-            if (targetColorOLD != default(Color))
+            if (targetColorOLD != default)
             {
                 targetColor.Value = targetColorOLD;
-                targetColorOLD = default(Color);
+                targetColorOLD = default;
+            }
+            if (waitUntilFinishedOLD != default)
+            {
+                waitUntilFinished.Value = waitUntilFinishedOLD;
+                waitUntilFinishedOLD = default;
             }
         }
 
@@ -109,25 +115,14 @@ namespace Amanita.VScripting
         {
             base.OnValidate();
             ValidateTweeners();
-            
         }
 
-        protected virtual void ValidateTweeners()
+        protected virtual void ValidateTweeners(bool logMessages = true)
         {
-            if (fadeTweener == null)
-            {
-                doFadeTween = AmanitaManager.DefaultTweener;
-                return;
-            }
-
+            TweenUtils.EnsureValidTweener(ref fadeTweener,
+                typeof(IGraphicTweenAdapter),
+                "sprite-fading", logMessages);
             doFadeTween = fadeTweener as IGraphicTweenAdapter;
-
-            if (doFadeTween == null && fadeTweener != null)
-            {
-                Debug.LogWarning("Tweener passed is invalid. Needs to implement IGraphicTweenAdapter.");
-                fadeTweener = AmanitaManager.DefaultTweener;
-                doFadeTween = AmanitaManager.DefaultTweener;
-            }
         }
 
         protected IGraphicTweenAdapter doFadeTween;

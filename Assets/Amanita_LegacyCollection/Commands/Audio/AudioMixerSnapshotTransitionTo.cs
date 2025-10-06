@@ -53,7 +53,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(242, 209, 176, 255);
+            return CommandColors.Audio;
         }
 
         public override bool HasReference(Variable variable)

@@ -5,8 +5,9 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Amanita;
 
-namespace Amanita.Commands
+namespace VScriptingTests.Commands
 {
     public class MA_FadeVolumeTests : CommandTestBase<MA_FadeVolume>
     {

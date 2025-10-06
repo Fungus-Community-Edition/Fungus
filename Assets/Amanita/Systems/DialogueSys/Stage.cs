@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
-using Amanita.DentedPixel;
 
 namespace Amanita.DialogueSys
 {
@@ -26,9 +25,6 @@ namespace Amanita.DialogueSys
 
         [Tooltip("Duration for moving characters to a new position")]
         [SerializeField] protected float moveDuration = 1f;
-
-        [Tooltip("Ease type for the fade tween.")]
-        [SerializeField] protected LeanTweenType fadeEaseType;
 
         [Tooltip("Constant offset to apply to portrait position.")]
         [SerializeField] protected Vector2 shiftOffset;
@@ -113,11 +109,6 @@ namespace Amanita.DialogueSys
         public virtual float MoveDuration { get { return moveDuration; } set { moveDuration = value; } }
 
         /// <summary>
-        /// Ease type for the fade tween.
-        /// </summary>
-        public virtual LeanTweenType FadeEaseType { get { return fadeEaseType; } }
-
-        /// <summary>
         /// Constant offset to apply to portrait position.
         /// </summary>
         public virtual Vector2 ShiftOffset { get { return shiftOffset; } }
@@ -150,7 +141,7 @@ namespace Amanita.DialogueSys
 
             for (int i = 0; i < positions.Count; i++)
             {
-                if ( String.Compare(positions[i].name, positionString, true) == 0 )
+                if (String.Compare(positions[i].name, positionString, true) == 0 )
                 {
                     return positions[i];
                 }

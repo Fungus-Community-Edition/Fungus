@@ -8,10 +8,8 @@ namespace Amanita.Myceliaudio.VScripting
         protected virtual AudioSystem AudioSys { get { return AudioSystem.S; } }
         public override Color GetButtonColor()
         {
-            return audioCommandColor;
+            return CommandColors.Audio;
         }
-
-        protected static Color32 audioCommandColor = new Color32(242, 209, 176, 255);
     }
 
 }

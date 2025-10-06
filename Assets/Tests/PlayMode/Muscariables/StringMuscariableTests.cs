@@ -2,7 +2,7 @@ using Amanita.VScripting;
 using NUnit.Framework;
 using System;
 
-namespace Amanita.MuscariableTests.DataOnly
+namespace VScriptingTests.MuscariableTests.DataOnly
 {
     public class StringMuscariableTests : MuscariableTestsCommon
     {

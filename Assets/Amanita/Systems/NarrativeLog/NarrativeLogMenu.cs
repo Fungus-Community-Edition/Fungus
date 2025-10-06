@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Amanita.DentedPixel;
 using Amanita.VScripting;
 using Amanita.DialogueSys;
 using Amanita.Tweening;
@@ -35,8 +34,6 @@ namespace Amanita.UI.Legacy
         protected static bool narrativeLogActive = false;
         
         protected AudioSource clickAudioSource;
-
-        protected LTDescr fadeTween;
 
         protected static NarrativeLogMenu instance;
 

@@ -9,9 +9,9 @@ using Amanita.EditorUtils;
 using UnityEditor;
 using System.Reflection;
 using System;
-using BaseObj = System.Object;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
+using Amanita;
 
 namespace VariableOperations
 {
@@ -147,7 +147,7 @@ namespace VariableOperations
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
         protected VariableRowManager manager;
-        protected readonly string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+        protected readonly string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
         protected VisualTreeAsset uxml;
 
         protected readonly List<UnityObj> _toDestroy = new();

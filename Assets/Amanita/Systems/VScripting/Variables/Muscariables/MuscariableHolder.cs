@@ -106,12 +106,17 @@ namespace Amanita.VScripting
         {
             Ensure();
             muscariable.Init();
-            this.name = $"{muscariable.Key}_Holder";
+            UpdateName();
         }
 
         protected virtual void Ensure()
         {
             muscariable ??= VariableFactory.Create(typeof(object));
+        }
+
+        protected virtual void UpdateName()
+        {
+            this.name = $"{muscariable.Key}";
         }
 
         public virtual void SetFrom(IVariable src)
@@ -155,6 +160,11 @@ namespace Amanita.VScripting
         public void Apply(SetOperator setOperator, object value)
         {
             ((IVariable)muscariable).Apply(setOperator, value);
+        }
+
+        public virtual void Refresh()
+        {
+            UpdateName();
         }
     }
 }

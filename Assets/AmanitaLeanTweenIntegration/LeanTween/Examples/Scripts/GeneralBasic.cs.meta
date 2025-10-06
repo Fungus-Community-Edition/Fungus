@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a2605544ab2e14c93a780ca20c108cfe
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3595
+  packageName: LeanTween
+  packageVersion: 2.51
+  assetPath: Assets/LeanTween/Examples/Scripts/GeneralBasic.cs
+  uploadId: 469983
