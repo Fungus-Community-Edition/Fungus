@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System;
 using UnityEngine;
 
-namespace Amanita.MuscariableTests.DataOnly
+namespace VScriptingTests.MuscariableTests.DataOnly
 {
     public class VectorMuscariableTests : MuscariableTestsCommon
     {

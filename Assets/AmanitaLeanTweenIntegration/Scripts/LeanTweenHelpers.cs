@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-
-namespace Amanita
+namespace Amanita.LeanTweenIntegration
 {
     public static class LeanTweenHelpers
     {

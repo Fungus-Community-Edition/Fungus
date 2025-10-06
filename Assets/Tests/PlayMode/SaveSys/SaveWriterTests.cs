@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {

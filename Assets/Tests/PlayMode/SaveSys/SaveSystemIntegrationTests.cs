@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amanita.VScripting;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class SaveSystemIntegrationTests : CommonTestFunctionality
     {

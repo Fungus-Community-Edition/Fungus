@@ -25,17 +25,26 @@ namespace Amanita.VScripting
 
         public override void OnEnter()
         {
-            Invoke ("OnWaitComplete", _duration.Value);
+            Invoke (nameof(OnWaitComplete), _duration.Value);
         }
 
         public override string GetSummary()
         {
-            return _duration.Value.ToString() + " seconds";
+            string result = $"{_duration.Value} second(s)";
+            IVariable varRef = _duration.VarRef;
+            bool durationIsVar = varRef != null;
+            
+            if (durationIsVar)
+            {
+                result = $"{varRef.Key} ({_duration.Value}) second(s)";
+            }
+
+            return result;
         }
 
         public override Color GetButtonColor()
         {
-            return new Color32(235, 191, 217, 255);
+            return CommandColors.Flow;
         }
 
         public override bool HasReference(Variable variable)

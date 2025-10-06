@@ -50,6 +50,11 @@ namespace Amanita
         public const string PathToAmanitaManagerPrefab = "Prefabs/AmanitaManager";
 
         /// <summary>
+        /// This is relative to a Resources folder.
+        /// </summary>
+        public const string PathToAmanitaVariableDisplayEditorUxml = "UIToolkitTemplates/VariableDisplayEditor";
+
+        /// <summary>
         /// The default name of the Input EventSystem, stored in the resources folder.
         /// </summary>
         public const string EventSystemPrefabName =

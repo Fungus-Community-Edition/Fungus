@@ -47,7 +47,7 @@ namespace Amanita.VScripting
 
         public override Color GetButtonColor()
         {
-            return new Color32(170, 204, 169, 255);
+            return CommandColors.Animation;
         }
 
         public override bool HasReference(Variable variable)
