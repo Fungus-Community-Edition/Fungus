@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
+using Amanita.VScripting;
 
-
-namespace Amanita.VScripting
+namespace Amanita.LeanTweenIntegration.VScripting
 {
     /// <summary>
     /// Impulse style shake of an object's scale, using LeanTween internally.
