@@ -9,7 +9,7 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using Amanita;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class BlockDragHandlerTests
     {

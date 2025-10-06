@@ -15,7 +15,7 @@ using Collections;
 using Amanita.VScripting.EditorUtils;
 using Amanita; // if you keep helpers here
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableRowManagerTestWindow : EditorWindow
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using UnityEngine.TestTools;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableFactoryTests
     {

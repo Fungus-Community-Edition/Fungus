@@ -10,14 +10,15 @@ namespace Amanita.SaveSys
     public class StringVarCodec : IVarCodec
     {
         public virtual bool CanHandle(IVariable variable) =>
-            variable is StringVariable;
+            variable is IVariable<string>;
         public virtual bool CanHandle(string typeName) =>
-            typeName == nameof(StringVariable);
+            typeName == nameof(StringVariable) ||
+            typeName == nameof(StringMuscariable);
 
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
-        public virtual string EncodeToString(IVariable variable) => ((StringVariable)variable).Value;
+        public virtual string EncodeToString(IVariable variable) => ((IVariable<string>)variable).Value;
 
         public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
@@ -34,7 +35,7 @@ namespace Amanita.SaveSys
         }
         public virtual void Decode(IVariable variable, string data)
         {
-            if (variable is StringVariable strVar)
+            if (variable is IVariable<string> strVar)
             {
                 strVar.Value = data;
             }
@@ -46,20 +47,13 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
-            if (saveData.VarTypeName != nameof(StringVariable))
+            if (variable is not IVariable<string> strVar)
             {
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
                 return;
             }
 
-            if (variable is StringVariable strVar)
-            {
-                strVar.Value = saveData.Value;
-            }
-            else
-            {
-                Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
-            }
+            strVar.Value = saveData.Value;
         }
 
         public virtual T DecodeTo<T>(string data)

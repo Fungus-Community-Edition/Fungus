@@ -1,25 +1,34 @@
 using System;
 using UnityEngine;
 using Amanita.VScripting;
+using System.Linq;
 
 namespace Amanita.SaveSys
 {
     public class NumericVarCodec : IVarCodec
     {
         public virtual bool CanHandle(IVariable variable) =>
-            variable is IntegerVariable || variable is FloatVariable;
+            supportedVarTypes.Contains(variable.GetType());
+
+        protected static Type[] supportedVarTypes = new Type[]
+        {
+            typeof(IntegerVariable),
+            typeof(FloatVariable),
+            typeof(IntMuscariable),
+            typeof(FloatMuscariable),
+        };
 
         public virtual bool CanHandle(string typeName) =>
-            typeName == nameof(IntegerVariable) || typeName == nameof(FloatVariable);
+            supportedVarTypes.Any(type => type.Name == typeName);
 
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
         public virtual string EncodeToString(IVariable variable) => variable switch
         {
-            IntegerVariable intVar => intVar.Value.ToString(),
-            FloatVariable floatVar => floatVar.Value.ToString(roundTripFormat),
-            _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarEncoder.")
+            IVariable<int> intVar => intVar.Value.ToString(),
+            IVariable<float> floatVar => floatVar.Value.ToString(roundTripFormat),
+            _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarCodec.")
         };
 
         protected static string roundTripFormat = "R";
@@ -41,9 +50,9 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, string data)
         {
-            if (variable is IntegerVariable intVar)
+            if (variable is IVariable<int> intVar)
                 intVar.Value = int.Parse(data);
-            else if (variable is FloatVariable floatVar)
+            else if (variable is IVariable<float> floatVar)
                 floatVar.Value = float.Parse(data);
             else
             {
@@ -53,24 +62,16 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
-            bool validVarType = saveData.VarTypeName == nameof(IntegerVariable) ||
-                saveData.VarTypeName == nameof(FloatVariable);
+            bool validVarType = variable is IVariable<int> ||
+                variable is IVariable<float>;
 
-            if (saveData.VarTypeName != nameof(IntegerVariable) &&
-                saveData.VarTypeName != nameof(FloatVariable))
+            if (!validVarType)
             {
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in NumericVarEncoder.");
                 return;
             }
 
-            if (variable is IntegerVariable intVar || variable is FloatVariable floatVar)
-            {
-                Decode(variable, saveData.Value);
-            }
-            else
-            {
-                Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in NumericVarEncoder.");
-            }
+            Decode(variable, saveData.Value);
         }
 
         public virtual T DecodeTo<T>(string data)

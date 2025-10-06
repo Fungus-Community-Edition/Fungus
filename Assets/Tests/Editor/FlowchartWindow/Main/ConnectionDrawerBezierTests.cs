@@ -2,7 +2,7 @@
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class ConnectionDrawerBezierTests
     {

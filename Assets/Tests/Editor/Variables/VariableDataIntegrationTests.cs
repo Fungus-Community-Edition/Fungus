@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using Amanita.VScripting;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataIntegrationTests : VariableTests
     {

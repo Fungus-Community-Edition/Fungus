@@ -10,7 +10,7 @@ using System.Reflection;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Tests for VariableListView interacting with IEditorAssetResolver without touching AssetDatabase.

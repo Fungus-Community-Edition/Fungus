@@ -14,10 +14,11 @@ namespace Amanita.SaveSys
             return CanHandle(toMakeFrom as IVariable);
         }
         public virtual bool CanHandle(IVariable variable) =>
-            variable is ColorVariable;
+            variable is IVariable<Color>;
 
         public virtual bool CanHandle(string typeName) =>
-            typeName == nameof(ColorVariable);
+            typeName == nameof(ColorVariable) ||
+            typeName == nameof(ColorMuscariable);
 
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
@@ -36,7 +37,7 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(IVariable toEncode)
         {
-            ColorVariable colorVar = toEncode as ColorVariable;
+            IVariable<Color> colorVar = toEncode as IVariable<Color>;
             if (colorVar == null)
             {
                 Debug.LogError($"Variable type {toEncode.GetType()} is not supported for encoding in ColorEncoder.");
@@ -50,7 +51,7 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable toDecode, string data)
         {
-            ColorVariable colorVar = toDecode as ColorVariable;
+            IVariable<Color> colorVar = toDecode as IVariable<Color>;
             if (colorVar == null)
             {
                 Debug.LogError($"Variable type {toDecode.GetType()} is not supported for decoding in ColorEncoder.");
@@ -74,13 +75,14 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
-            if (saveData.VarTypeName != nameof(ColorVariable))
+            if (saveData.VarTypeName != nameof(ColorVariable) &&
+                saveData.VarTypeName != nameof(ColorMuscariable))
             {
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
                 return;
             }
 
-            if (variable is ColorVariable colorVar)
+            if (variable is IVariable<Color> colorVar)
             {
                 Decode(colorVar, saveData.Value);
             }

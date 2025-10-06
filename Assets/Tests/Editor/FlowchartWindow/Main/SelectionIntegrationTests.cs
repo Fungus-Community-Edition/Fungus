@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace FCWindowOperations.Integration
+namespace VScriptingTests.FCWindowOperations.Integration
 {
     public class SelectionIntegrationTests : FlowchartWindowTestsCommon
     {
