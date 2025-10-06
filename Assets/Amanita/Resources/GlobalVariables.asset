@@ -13,17 +13,45 @@ MonoBehaviour:
   m_Name: someAudio
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271083485332293
+    rid: 846271150850048067
   references:
     version: 2
     RefIds:
-    - rid: 846271083485332293
+    - rid: 846271150850048067
       type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: someAudio
         itemID: 35
         value: {fileID: 0}
+--- !u!114 &-5531436058782884368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: Bleach
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 846271150850048108
+  references:
+    version: 2
+    RefIds:
+    - rid: 846271150850048108
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Bleach
+        itemID: 41
+        value: Throwing away victory for the sake of manners is a rookie mistake.
+          Captains don't have the time to waste on that kind of thing. Don't waste
+          your time trying to play the good guy. No matter what debts you may owe,
+          from the instant you find yourself on the battleground, both sides are
+          evil.
 --- !u!114 &-1930287489488375301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37,11 +65,11 @@ MonoBehaviour:
   m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271083485332294
+    rid: 846271150850048068
   references:
     version: 2
     RefIds:
-    - rid: 846271083485332294
+    - rid: 846271150850048068
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1
@@ -62,10 +90,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   variables:
   - rid: 4382208464457039955
+  - rid: 846271150850048107
+  - rid: 846271150850048109
   - rid: 846271081115025503
   - rid: 846271081115025505
   - rid: 846271081115025507
-  _nextVarID: 38
+  _nextVarID: 42
   references:
     version: 2
     RefIds:
@@ -90,6 +120,26 @@ MonoBehaviour:
         key: someFloat
         itemID: 37
         value: 1.23
+    - rid: 846271150850048107
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: One Piece
+        itemID: 39
+        value: 'I will become the
+
+          Pirate King!'
+    - rid: 846271150850048109
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: Bleach
+        itemID: 41
+        value: Throwing away victory for the sake of manners is a rookie mistake.
+          Captains don't have the time to waste on that kind of thing. Don't waste
+          your time trying to play the good guy. No matter what debts you may owe,
+          from the instant you find yourself on the battleground, both sides are
+          evil.
     - rid: 4382208464457039955
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
@@ -97,6 +147,32 @@ MonoBehaviour:
         key: Naruto
         itemID: 1
         value: Believe it!
+--- !u!114 &2811847826421824449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
+  m_Name: One Piece
+  m_EditorClassIdentifier: 
+  muscariable:
+    rid: 846271150850048106
+  references:
+    version: 2
+    RefIds:
+    - rid: 846271150850048106
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: One Piece
+        itemID: 39
+        value: 'I will become the
+
+          Pirate King!'
 --- !u!114 &4471989307993070508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,11 +186,11 @@ MonoBehaviour:
   m_Name: someInt
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271083485332295
+    rid: 846271150850048069
   references:
     version: 2
     RefIds:
-    - rid: 846271083485332295
+    - rid: 846271150850048069
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -134,11 +210,11 @@ MonoBehaviour:
   m_Name: someFloat
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271083485332296
+    rid: 846271150850048070
   references:
     version: 2
     RefIds:
-    - rid: 846271083485332296
+    - rid: 846271150850048070
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
