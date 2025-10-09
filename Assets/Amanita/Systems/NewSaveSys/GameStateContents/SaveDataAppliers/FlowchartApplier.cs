@@ -14,12 +14,50 @@ namespace Amanita.SaveSys
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
+        [SerializeField] protected ScriptableObject[] varCodecs = Array.Empty<ScriptableObject>();
+
+        public virtual void RegisterVarCodec(IVarCodec codec)
+        {
+            if (codec == null)
+            {
+                Debug.LogWarning("Cannot register a null codec.");
+                return;
+            }
+            if (!validVarCodecs.Contains(codec))
+            {
+                validVarCodecs.Add(codec);
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            RefreshValidCodecs();
+        }
+
+        protected virtual void RefreshValidCodecs()
+        {
+            validVarCodecs.Clear();
+            foreach (var codecObj in varCodecs)
+            {
+                if (codecObj is IVarCodec codec)
+                {
+                    validVarCodecs.Add(codec);
+                }
+                else if (codecObj != null)
+                {
+                    Debug.LogWarning($"Object {codecObj.name} is not an IVarCodec.");
+                }
+            }
+        }
+        protected IList<IVarCodec> validVarCodecs = new List<IVarCodec>();
+
         protected virtual void OnValidate()
         {
             if (allFlowcharts != null)
             {
                 allFlowcharts = allFlowcharts.Where(fc => fc != null).ToList();
             }
+            RefreshValidCodecs();
         }
 
         protected IList<Flowchart> allFlowcharts = new List<Flowchart>();
@@ -55,18 +93,15 @@ namespace Amanita.SaveSys
             {
                 foreach (VariableSaveData varSaveData in saveData.SavedVars)
                 {
-                    IVarCodec forThisVar = CodecRegistry.GetCodec(varSaveData);
+                    IVarCodec forThisVar = validVarCodecs.FirstOrDefault(c => c.CanHandle(varSaveData));
                     if (forThisVar == null)
                     {
-                        Debug.LogWarning($"No serializer found for variable type: {varSaveData.GetType().Name}");
+                        Debug.LogWarning($"No codec found for variable type: {varSaveData.GetType().Name}");
                         continue;
                     }
 
                     IVariable varEl = flowchart.GetVariableById(varSaveData.ItemID);
-                    if (varEl == null)
-                    {
-                        varEl = flowchart.GetVariable(varSaveData.VarName);
-                    }
+                    varEl ??= flowchart.GetVariable(varSaveData.VarName); // Fallback to searching by name
 
                     bool stillGotNothing = varEl == null;
                     if (stillGotNothing)

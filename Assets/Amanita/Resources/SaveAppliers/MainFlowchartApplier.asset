@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05c64d37223753429d9157702a86582, type: 3}
   m_Name: MainFlowchartApplier
   m_EditorClassIdentifier: 
-  priority: 0
+  order: 0
+  varCodecs:
+  - {fileID: 11400000, guid: 99af32feb8c4a354489456433da49e02, type: 2}
