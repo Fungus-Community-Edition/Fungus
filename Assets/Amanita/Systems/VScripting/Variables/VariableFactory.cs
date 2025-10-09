@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -11,8 +12,20 @@ namespace Amanita.VScripting
             return (Muscariable<T>)Create(typeof(T), toMakeCopyOf);
         }
 
+        public static Muscariable CreateByVarType(Type varType, IVariable toMakeCopyOf = null)
+        {
+            VariableInfoAttribute varInfo = varType.GetCustomAttribute<VariableInfoAttribute>();
+            if (varInfo == null)
+            {
+                Debug.LogWarning($"Type {varType.Name} is not a valid Muscariable type. Returning null.");
+                return null;
+            }
+            Type contentType = varInfo.ContentType;
+            return Create(contentType, toMakeCopyOf);
+        }
         public static Muscariable Create(Type contentType, IVariable toMakeCopyOf = null)
         {
+
             Muscariable result = null;
             Type muscariType = VariableTypeRegistry.MuscariTypeFor(contentType);
 

@@ -12,6 +12,19 @@ namespace Amanita.SaveSys
 
         public string UniqueID => uniqueID;
 
+        protected virtual void Awake()
+        {
+            if (string.IsNullOrEmpty(uniqueID))
+            {
+                uniqueID = latestValidGenerated = GenerateID();
+                //uniqueID = theOneGeneratedOnAwake;
+            }
+            else
+            {
+                latestValidGenerated = uniqueID;
+            }
+        }
+
         private void Reset()
         {
             if (latestValidGenerated.Length == 0)

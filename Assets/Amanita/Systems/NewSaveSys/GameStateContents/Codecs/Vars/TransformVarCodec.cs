@@ -14,11 +14,12 @@ namespace Amanita.SaveSys
     {
         public virtual bool CanHandle(IVariable variable)
         {
-            return variable is TransformVariable;
+            return variable is IVariable<Transform>;
         }
         public virtual bool CanHandle(string typeName)
         {
-            return typeName == nameof(TransformVariable);
+            return typeName == nameof(TransformVariable) ||
+                typeName == nameof(TransformMuscariable);
         }
 
         public virtual bool CanHandle(VariableSaveData saveData)
@@ -40,7 +41,7 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(IVariable toEncode)
         {
-            TransformVariable transformVar = toEncode as TransformVariable;
+            IVariable<Transform> transformVar = toEncode as IVariable<Transform>;
             Transform varValue = null;
             if (transformVar != null)
             {
@@ -83,8 +84,7 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, string data)
         {
-            TransformVariable transformVar = variable as TransformVariable;
-            if (transformVar == null)
+            if (variable is not IVariable<Transform> transformVar)
             {
                 Debug.LogError($"{this.GetType().Name}: Cannot decode variable of type {variable.GetType()}");
                 return;
@@ -131,8 +131,17 @@ namespace Amanita.SaveSys
             else
             {
                 // Ow! Right in the clock cycles!
-                IList<Transform> allTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None).ToList();
-                whatWeFound = (allTransforms.Where(elem => elem.name == state.name)).FirstOrDefault();
+                UseNameAsFallback();
+                void UseNameAsFallback()
+                {
+                    IList<Transform> allTransforms;
+#if UNITY_6000_0_OR_NEWER
+                    allTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None).ToList();
+#else
+                    allTransforms = GameObject.FindObjectsOfType<Transform>().ToList();
+#endif
+                    whatWeFound = (allTransforms.Where(elem => elem.name == state.name)).FirstOrDefault();
+                }
             }
 
             return whatWeFound;
@@ -140,7 +149,7 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
-            TransformVariable transformVar = variable as TransformVariable;
+            IVariable<Transform> transformVar = variable as IVariable<Transform>;
             if (transformVar == null)
             {
                 Debug.LogError($"{this.GetType().Name}: Cannot decode variable of type {variable.GetType()}");
@@ -233,7 +242,7 @@ namespace Amanita.SaveSys
 
         public static TransformState From(Transform trans)
         {
-            TransformState result = default(TransformState);
+            TransformState result = default;
             if (trans != null)
             {
                 // Using the properties here so the backing fields get set properly.
