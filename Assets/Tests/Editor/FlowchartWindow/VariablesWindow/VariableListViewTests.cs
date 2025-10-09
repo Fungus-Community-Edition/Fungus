@@ -12,7 +12,7 @@ using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using Amanita.EditorUtils;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Focused tests for VariableListView independent of VariableRowManager.
@@ -285,6 +285,62 @@ namespace VariableOperations
             Assert.IsNull(_view.RowAtIndex(0));
         }
 
+        // New test reproducing the old phantom-row behavior and verifying the reference-equality fix.
+        [Test]
+        public void AddMultiple_Variables_WithValueBasedEquals_DoNotCollide_InActiveRowMap()
+        {
+            // Arrange: create three distinct component variables that intentionally override equality
+            var a = _host.AddComponent<ValueEqualsVariable>();
+            a.Key = "same-key";
+            a.ItemID = 1;
+            _createdVars.Add(a);
+
+            var b = _host.AddComponent<ValueEqualsVariable>();
+            b.Key = "same-key";
+            b.ItemID = 2;
+            _createdVars.Add(b);
+
+            var c = _host.AddComponent<ValueEqualsVariable>();
+            c.Key = "same-key";
+            c.ItemID = 3;
+            _createdVars.Add(c);
+
+            // Sanity: distinct references but value-equality says they are equal
+            Assert.AreNotSame(a, b);
+            Assert.IsTrue(a.Equals(b) && b.Equals(c));
+
+            // Act: add them to the view
+            _view.AddVariable(a);
+            _view.AddVariable(b);
+            _view.AddVariable(c);
+
+            // Ensure the source list contains all three
+            Assert.AreEqual(3, InternalVariables.Count);
+
+            // Materialize rows as the ListView virtualization would do
+            _view.ForceMaterializeAllRowsForTests();
+
+            // Assert: each variable has its own materialized row (no collisions in _activeRows)
+            Assert.AreEqual(3, _view.Rows.Count, "Expected three active rows; value-based Equals should not collapse distinct instances.");
+
+            var row0 = _view.RowAtIndex(0);
+            var row1 = _view.RowAtIndex(1);
+            var row2 = _view.RowAtIndex(2);
+
+            Assert.IsNotNull(row0);
+            Assert.IsNotNull(row1);
+            Assert.IsNotNull(row2);
+
+            Assert.AreNotSame(row0, row1);
+            Assert.AreNotSame(row1, row2);
+            Assert.AreNotSame(row0, row2);
+
+            // Also ensure the visuals were created
+            Assert.IsNotNull(row0.RootElement);
+            Assert.IsNotNull(row1.RootElement);
+            Assert.IsNotNull(row2.RootElement);
+        }
+
         [Test]
         public void Dispose_ClearsInternalState()
         {
@@ -439,8 +495,75 @@ namespace VariableOperations
                 base.SyncFromFlowchart();
             }
         }
+
+        /// <summary>
+        /// Test helper variable type that intentionally implements value-based equality
+        /// (e.g. compares solely by Key). This simulates legacy or domain types that
+        /// override Equals/GetHashCode and caused the previous phantom-row bug when
+        /// the active-row dictionary used value-based equality for keys.
+        /// </summary>
+        public class ValueEqualsVariable : MonoBehaviour, IVariable
+        {
+            // Minimal backing storage to satisfy the IVariable contract in tests.
+            string _key;
+            object _value;
+            int _itemId;
+
+            // IHasKey / IVariable.Key
+            public string Key
+            {
+                get => _key;
+                set => _key = value;//
+            }
+
+            // IHasItemID
+            public int ItemID
+            {
+                get => _itemId;
+                set => _itemId = value;
+            }
+
+            // IVariable.Value
+            public object Value
+            {
+                get => _value;
+                set => _value = value;
+            }
+
+            // IVariable.Scope (readonly)
+            public VariableScope Scope => VariableScope.Private;
+
+            // IVariable.Owner
+            public IVariableSource Owner => null;
+
+            // ContentType - for tests we can return typeof(object)
+            public Type ContentType => typeof(object);
+
+            // Init is a no-op for test helper
+            public void Init() { }
+
+            // Comparison helpers (minimal)
+            public bool IsComparisonSupported() => false;
+            public bool Evaluate(CompareOperator compareOperator, object value) => false;
+
+            // Apply operator (no-op here)
+            public void Apply(SetOperator setOperator, object value) { }
+
+            // Value-based equality: two distinct instances are equal if their Key is equal.
+            public override bool Equals(object obj)
+            {
+                if (obj is IVariable other)
+                {
+                    return string.Equals(Key, other.Key, System.StringComparison.Ordinal);
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return (Key != null) ? Key.GetHashCode() : 0;
+            }
+        }
     }
 
 }
-
-    

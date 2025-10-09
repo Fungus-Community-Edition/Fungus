@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: a90f780154ffd401a9a868c44269cf15
+timeCreated: 1533927105
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3595
+  packageName: LeanTween
+  packageVersion: 2.51
+  assetPath: Assets/LeanTween/Testing/FollowingTests.cs
+  uploadId: 469983

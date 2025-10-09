@@ -12,8 +12,9 @@ using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
 using Amanita.EditorUtils;
+using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableRowManagerTests 
     {
@@ -49,7 +50,7 @@ namespace VariableOperations
             PrepRowManager();
             void PrepRowManager()
             {
-                string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
                 _rootTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _root = _rootTemplate.CloneTree();
                 _holdsManager = new VisualElement();
@@ -397,19 +398,6 @@ namespace VariableOperations
             Assert.AreEqual(1, poolMap[stringHandlerType].Count,
                 "String handler stack count mismatch.");
         }
-
-        // ---------------------------------------------------------------------------------
-        // UNCHANGED TESTS (left as-is intentionally) 
-        // ---------------------------------------------------------------------------------
-
-        [Test] public void ReadyTheTemplates_LogsError_WhenTemplateMissing() { /* unchanged */ }
-        [Test] public void AllRowVisualHandlers_HaveAttribute() { /* unchanged */ }
-        [Test] public void Refresh_Idempotent_DoesNotGrowHandlerPool() { /* unchanged */ }
-        [Test] public void AddingSameVariableTwice_NoDuplicateRow() { /* unchanged */ }
-        [Test] public void RemoveAlreadyRemoved_Variable_NoCrash_NoPoolChange() { /* unchanged */ }
-        [Test] public void PreviousRootRowsPersist_AfterReinit() { /* unchanged */ }
-        [Test] public void Refresh_ReleasesOnlyCurrentRootRows() { /* unchanged */ }
-        [Test] public void Dispose_IgnoresSubsequentFlowchartEvents() { /* unchanged */ }
 
         protected static readonly string countLabelFormat = "Count: {0}";
 

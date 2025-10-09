@@ -3,7 +3,7 @@ using Amanita.VScripting;
 using System;
 using UnityEngine;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataTests : VariableTests
     {

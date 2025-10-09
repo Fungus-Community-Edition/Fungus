@@ -1,6 +1,5 @@
 using Amanita.SaveSys;
 using NUnit.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +10,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {

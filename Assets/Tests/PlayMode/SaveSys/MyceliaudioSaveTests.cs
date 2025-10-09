@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 using Amanita.Myceliaudio;
 using System.Threading.Tasks;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class MyceliaudioSaveTests : CommonTestFunctionality
     {

@@ -3,8 +3,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils; // for Vector3EqualityComparer
+using Amanita.Tweening;
 
-namespace Amanita.Tweening.BuiltinCompat
+namespace TweeningTests.BuiltinCompat
 {
     public class TransformCompatTests : DefaultAdapterTests
     {

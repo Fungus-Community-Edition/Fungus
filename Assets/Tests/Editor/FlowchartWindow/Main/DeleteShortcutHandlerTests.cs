@@ -5,7 +5,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     [TestFixture]
     public class DeleteShortcutHandlerTests : FlowchartWindowTestsCommon

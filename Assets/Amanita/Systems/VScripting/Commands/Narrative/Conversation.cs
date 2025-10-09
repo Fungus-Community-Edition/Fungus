@@ -58,7 +58,7 @@ namespace Amanita.DialogueSys.Commands
 
         public override Color GetButtonColor()
         {
-            return new Color32(184, 210, 235, 255);
+            return CommandColors.Narrative;
         }
 
         public override bool HasReference(Variable variable)
