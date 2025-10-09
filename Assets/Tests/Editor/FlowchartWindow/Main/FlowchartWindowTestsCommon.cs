@@ -5,7 +5,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class FlowchartWindowTestsCommon 
     {

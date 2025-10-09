@@ -1,6 +1,6 @@
 using Amanita.VScripting;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     [VariableInfo("", "", typeof(int), ShowInMenu = false)]
     public class HookedIntMuscariable : Muscariable<int>

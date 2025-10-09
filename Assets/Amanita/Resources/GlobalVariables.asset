@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: someAudio
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739984
+    rid: 846271214109065476
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739984
+    - rid: 846271214109065476
       type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -37,11 +37,11 @@ MonoBehaviour:
   m_Name: Bleach
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739985
+    rid: 846271214109065477
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739985
+    - rid: 846271214109065477
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -65,11 +65,11 @@ MonoBehaviour:
   m_Name: Naruto
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739986
+    rid: 846271214109065478
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739986
+    - rid: 846271214109065478
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 1
@@ -160,11 +160,11 @@ MonoBehaviour:
   m_Name: One Piece
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739987
+    rid: 846271214109065479
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739987
+    - rid: 846271214109065479
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -186,11 +186,11 @@ MonoBehaviour:
   m_Name: someInt
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739988
+    rid: 846271214109065480
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739988
+    - rid: 846271214109065480
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -210,11 +210,11 @@ MonoBehaviour:
   m_Name: someFloat
   m_EditorClassIdentifier: 
   muscariable:
-    rid: 846271188106739989
+    rid: 846271214109065481
   references:
     version: 2
     RefIds:
-    - rid: 846271188106739989
+    - rid: 846271214109065481
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0

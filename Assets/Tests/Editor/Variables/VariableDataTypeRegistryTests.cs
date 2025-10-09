@@ -1,7 +1,7 @@
 using Amanita.VScripting;
 using NUnit.Framework;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataTypeRegistryTests
     {

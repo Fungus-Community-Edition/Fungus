@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class MuscariableInterfaceRoundTripTests
     {

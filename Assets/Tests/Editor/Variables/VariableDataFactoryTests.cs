@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.TestTools;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataFactoryTests
     {

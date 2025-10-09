@@ -18,14 +18,17 @@ namespace Amanita.SaveSys
         {
             if (variable == null)
             {
-                string errorMessage = "Variable passed to CanHandle is null. Cannot handle.";
-                throw new System.NullReferenceException(errorMessage);
+                string logMessage = "Variable passed to CanHandle is null. Cannot handle.";
+                Debug.LogWarning(logMessage);
+                return false;
             }
 
             bool result = subCodecs.ContainsKey(variable.GetType());
             if (!result)
             {
-                Debug.LogWarning($"No codec found for variable type {variable.GetType()}. Cannot handle.");
+                string logMessage = $"No codec found for variable type {variable.GetType()}. Cannot handle.";
+                Debug.LogWarning(logMessage);
+                return false;
             }
             return result;
         }
@@ -78,7 +81,10 @@ namespace Amanita.SaveSys
         {
             if (!CanHandle(toApplyStateTo))
             {
-                Debug.LogWarning($"No codec found for variable type {toApplyStateTo.GetType()}. Cannot decode.");
+                if (toApplyStateTo != null)
+                {
+                    Debug.LogWarning($"No codec found for variable type {toApplyStateTo.GetType()}. Cannot decode.");
+                }
                 return;
             }
 
@@ -114,7 +120,10 @@ namespace Amanita.SaveSys
         {
             if (!CanHandle(variable))
             {
-                Debug.LogWarning($"No codec found for variable type {variable.GetType()}. Cannot encode.");
+                if (variable != null)
+                {
+                    Debug.LogWarning($"No codec found for variable type {variable?.GetType()}. Cannot encode.");
+                }
                 return null;
             }
             IVarCodec codec = subCodecs[variable.GetType()];
@@ -125,7 +134,10 @@ namespace Amanita.SaveSys
         {
             if (!CanHandle(variable))
             {
-                Debug.LogWarning($"No codec found for variable type {variable.GetType()}. Cannot encode.");
+                if (variable != null)
+                {
+                    Debug.LogWarning($"No codec found for variable type {variable.GetType()}. Cannot encode.");
+                }
                 return string.Empty;
             }
 

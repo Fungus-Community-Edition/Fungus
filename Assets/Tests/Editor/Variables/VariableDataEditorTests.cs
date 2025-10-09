@@ -7,7 +7,7 @@ using System.Collections.Generic; // adjust namespace to match your project
 using UnityObj = UnityEngine.Object;
 using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataEditorTests
     {

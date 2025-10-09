@@ -13,7 +13,7 @@ using UnityObj = UnityEngine.Object;
 using System.Linq;
 using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Integration tests exercising StringRowVisualHandler together with VariableSourceAsset,

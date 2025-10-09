@@ -9,8 +9,9 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Amanita.SaveSys;
+using UnityEngine.TestTools;
 
-namespace SaveSys.Tests
+namespace SaveSys
 {
     // Editor tests (uses ScriptableObject.CreateInstance and GameObject)
     public class BuiltinVarSaveCodecTests
@@ -149,7 +150,7 @@ namespace SaveSys.Tests
         }
 
         [Test]
-        public void CanHandle_ReturnsTrue_For_All_Mapped_Types_AndFalse_For_Others()
+        public void CanHandle_ReturnsTrueForAllMappedTypesAndFalseForOthers()
         {
             // Access the protected static 'subCodecs' using reflection to obtain expected handled types.
             Type codecType = typeof(BuiltinVarSaveCodec);
@@ -215,25 +216,27 @@ namespace SaveSys.Tests
         }
 
         [Test]
-        public void NullHandling_Methods_Throw_Or_Handle_Null_Gracefully()
+        public void NullHandlingMethods_ThrowOrHandleNullGracefully()
         {
-            // The current implementation will generally throw (NullReferenceException) when given null IVariable.
-            // Assert that an exception is thrown, but accept either NullReferenceException or ArgumentNullException.
-            void AssertNullThrows(Action a)
-            {
-                var ex = Assert.Throws<Exception>(() => a());
-                Assert.IsTrue(ex is NullReferenceException || ex is ArgumentNullException, $"Expected NullReferenceException or ArgumentNullException, got {ex.GetType()}");
-            }
+            string logMessageForNull = "Variable passed to CanHandle is null. Cannot handle.";
+            LogAssert.Expect(LogType.Warning, logMessageForNull);
+            codec.CanHandle((IVariable)null);
 
-            AssertNullThrows(() => codec.CanHandle((IVariable)null));
-            AssertNullThrows(() => codec.EncodeToSave(null));
-            AssertNullThrows(() => codec.EncodeToString(null));
+            LogAssert.Expect(LogType.Warning, logMessageForNull);
+            codec.EncodeToSave(null);
+
+            LogAssert.Expect(LogType.Warning, logMessageForNull);
+            codec.EncodeToString(null);
 
             // For Decode variants: we expect an exception when supplying a null target variable.
-            AssertNullThrows(() => codec.Decode((IVariable)null, "dummy"));
+            LogAssert.Expect(LogType.Warning, logMessageForNull);
+            codec.Decode(null, "dummy");
             // Passing null VariableSaveData to Decode should also throw (or be handled). We accept an exception here.
             var dummyVar = ScriptableObject.CreateInstance<DummyVariable>();
-            AssertNullThrows(() => codec.Decode(dummyVar, (VariableSaveData)null));
+
+            string logMessageForNoCodecFound = $"No codec found for variable type {dummyVar.GetType()}. Cannot handle.";
+            LogAssert.Expect(LogType.Warning, logMessageForNoCodecFound);
+            codec.Decode(dummyVar, (VariableSaveData)null);
         }
 
         #region Helpers

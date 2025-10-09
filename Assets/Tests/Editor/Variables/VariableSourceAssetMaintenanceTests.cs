@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Unit tests for VariableSourceAssetMaintenance. These tests replace the real
