@@ -5,7 +5,7 @@ namespace Amanita.SaveSys
 {
     public class BooleanVarCodec : IVarCodec
     {
-        public int Priority => 0;
+        public int Order => 0;
 
         public virtual bool NeedsInput => true;
 

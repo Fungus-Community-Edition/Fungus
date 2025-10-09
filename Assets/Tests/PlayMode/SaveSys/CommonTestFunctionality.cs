@@ -48,6 +48,11 @@ namespace SaveSystemTests
             PrepAmanitaManagerAndItsSubmodules();
             void PrepAmanitaManagerAndItsSubmodules()
             {
+                if (AmanitaManager.S != null)
+                {
+                    UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+                }
+
                 pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
                 AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
                 ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
@@ -210,26 +215,26 @@ namespace SaveSystemTests
 
         protected virtual void PrepVars()
         {
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
-            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
-            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+            nameVar = (IVariable<string>)flowchart.GetVariable("name");
+            scoreVar = (IVariable<int>)flowchart.GetVariable("score");
+            isNewPlayerVar = (IVariable<bool>)flowchart.GetVariable("newPlayer");
+            fastestTimeVar = (IVariable<float>)flowchart.GetVariable("fastestTimeInSeconds");
+            threeDPosVar = (IVariable<Vector3>)flowchart.GetVariable("threeDPos");
+            twoDPosVar = (IVariable<Vector2>)flowchart.GetVariable("twoDPos");
 
             stringVar = flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
 
-            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
+            transformVar = (IVariable<Transform>)flowchart.GetVariable("someTrans");
         }
 
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable isNewPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
+        protected IVariable<string> nameVar = null;
+        protected IVariable<int> scoreVar = null;
+        protected IVariable<bool> isNewPlayerVar = null;
+        protected IVariable<float> fastestTimeVar = null;
+        protected IVariable<Vector3> threeDPosVar = null;
+        protected IVariable<Vector2> twoDPosVar = null;
+        protected IVariable<string> stringVar = null;
+        protected IVariable<Transform> transformVar = null;
 
         protected string initNameVal;
         protected int initScoreVal;

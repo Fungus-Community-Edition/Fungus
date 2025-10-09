@@ -1014,24 +1014,18 @@ namespace Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable("MyBool") as BooleanVariable;
         /// boolVar.Value = false;
         /// </summary>
-        public Variable GetVariable(string key)
+        public IVariable GetVariable(string key)
         {
-            for (int i = 0; i < legacyVariables.Count; i++)
-            {
-                var variable = legacyVariables[i];
-                if (variable != null && variable.Key == key)
-                {
-                    return variable;
-                }
-            }
+            IVariable result = muscariables.Where(v => v.Key == key).FirstOrDefault();
+            result ??= legacyVariables.Where(v => v.Key == key).FirstOrDefault();
 
-            return null;
+            return result;
         }
 
         /// <summary>
         /// Alias for the GetVariable(string key) method.
         /// </summary>
-        public Variable GetVariableByName(string name)
+        public IVariable GetVariableByName(string name)
         {
             return GetVariable(name);
         }
@@ -1439,7 +1433,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual void DetermineSubstituteVariables(string str, List<IVariable> vars)
+        public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
         {
             Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
 
@@ -1452,26 +1446,6 @@ namespace Amanita.VScripting
                 if (v != null)
                 {
                     vars.Add(v);
-                }
-            }
-        }
-
-        public virtual void DetermineSubstituteVariables(string str, List<Variable> vars)
-        {
-            Regex regex = new Regex(Flowchart.SubstituteVariableRegexString);
-            if (str == null)
-            {
-                Debug.LogError("Str in DetermineSubstituteVariables is null");
-            }
-            // Match the regular expression pattern against a text string.
-            var results = regex.Matches(str);
-            for (int i = 0; i < results.Count; i++)
-            {
-                var match = results[i];
-                var varFound = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
-                if (varFound != null)
-                {
-                    vars.Add(varFound);
                 }
             }
         }

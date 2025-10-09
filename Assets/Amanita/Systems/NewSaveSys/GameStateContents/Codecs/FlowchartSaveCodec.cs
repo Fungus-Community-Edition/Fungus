@@ -11,6 +11,8 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSys/Codecs/FlowchartSaveCodec")]
     public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec
     {
+        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
+
         public new Flowchart ToMakeFrom
         {
             get { return base.ToMakeFrom; }
@@ -23,9 +25,32 @@ namespace Amanita.SaveSys
             {
                 blockCodec = CreateInstance<BlockSaveCodec>();
             }
+
+            RefreshValidCodecs();
         }
 
         protected BlockSaveCodec blockCodec;
+
+        protected virtual void RefreshValidCodecs()
+        {
+            validCodecs.Clear();
+            for (int i = 0; i < varCodecs.Length; i++)
+            {
+                ScriptableObject toCheck = varCodecs[i];
+                if (toCheck is not IVarCodec && toCheck != null)
+                {
+                    string name = toCheck.name;
+                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
+                        $"Please fix this.");
+                }
+                else if (toCheck is IVarCodec codecFound)
+                {
+                    validCodecs.Add(codecFound);
+                }
+            }
+        }
+
+        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
 
         public override FlowchartSaveData EncodeToSave(Flowchart toCreateFrom)
         {
@@ -95,28 +120,32 @@ namespace Amanita.SaveSys
             }
             else 
             {
-                foreach (Variable varEl in variables)
+                foreach (IVariable varEl in variables)
                 {
-                    IVarCodec forThisVar = CodecRegistry.GetCodec(varEl);
+                    IVarCodec forThisVar = FindCodecFor(varEl);
                     if (forThisVar == null)
                     {
-                        Debug.LogWarning($"No serializer found for variable type: {varEl.GetType().Name}");
+                        Debug.LogWarning($"No codec found for variable type: {varEl.GetType().Name}");
                         continue;
                     }
 
-                    var varSave = forThisVar.EncodeToSave(varEl);
+                    VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
                     if (varSave == null)
                     {
-                        Debug.LogError($"Failed to encode variable: {varEl.name}");
-                    }
-                    else
-                    {
-                        result.Add(varSave);
+                        Debug.LogError($"Failed to encode variable: {varEl.Key}");
+                        continue;
                     }
 
+                    result.Add(varSave);
                 }
             }
 
+            return result;
+        }
+
+        protected virtual IVarCodec FindCodecFor(IVariable variable)
+        {
+            IVarCodec result = validCodecs.Where((elem) => elem.CanHandle(variable)).FirstOrDefault();
             return result;
         }
 
@@ -188,6 +217,13 @@ namespace Amanita.SaveSys
         public override bool CanHandle(string typeName)
         {
             return typeName == nameof(Flowchart) || typeName == nameof(FlowchartSaveData);
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            RefreshValidCodecs();
         }
 
     }
