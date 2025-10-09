@@ -30,7 +30,7 @@ namespace CommandCompat
                 .SetValue(command, true);
             fadeScreenType.GetField("fadeTweener", flags)
                 .SetValue(command, adapter);
-            fadeScreenType.GetField("doFadeTween", flags).
+            fadeScreenType.GetField("doFade", flags).
                 SetValue(command, adapter);
         }
 

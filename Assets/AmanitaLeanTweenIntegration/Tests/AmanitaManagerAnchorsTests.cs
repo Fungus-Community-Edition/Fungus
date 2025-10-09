@@ -19,12 +19,7 @@ public class AmanitaManagerAnchorsTests
         AmanitaManager.ResetStaticsForTest();
 
         // Destroy any existing AmanitaManager instances to avoid test interference.
-        List<AmanitaManager> existing;
-#if UNITY_6000_0_OR_NEWER
-        existing = UnityObj.FindObjectsByType<AmanitaManager>(FindObjectsSortMode.None).ToList();
-#else
-        existing = UnityObj.FindObjectsOfType<AmanitaManager>(true).ToList();
-#endif
+        List<AmanitaManager> existing = UnityObj.FindObjectsByType<AmanitaManager>(FindObjectsSortMode.None).ToList();
         foreach (var ex in existing)
         {
 #if UNITY_EDITOR
@@ -144,10 +139,6 @@ public class AmanitaManagerAnchorsTests
 
     protected virtual IList<GameObject> GetAllGameObjectsInScene()
     {
-#if UNITY_6000_0_OR_NEWER
         return UnityObj.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
-#else
-        return UnityObj.FindObjectsOfType<GameObject>(true);
-#endif
     }
 }

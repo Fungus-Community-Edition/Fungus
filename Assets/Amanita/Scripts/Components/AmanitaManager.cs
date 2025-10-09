@@ -95,13 +95,7 @@ namespace Amanita
 
 #if UNITY_EDITOR
                 // In the editor, include inactive scene objects but skip prefab assets in Resources
-                List<AmanitaManager> allManagers;
-
-#if UNITY_6000_0_OR_NEWER
-                allManagers = UnityObj.FindObjectsByType<AmanitaManager>(FindObjectsSortMode.None).ToList();
-#else
-                allManagers = UnityObj.FindObjectsOfType<AmanitaManager>(true);
-#endif
+                List<AmanitaManager> allManagers = UnityObj.FindObjectsByType<AmanitaManager>(FindObjectsSortMode.None).ToList();
                 AmanitaManager sceneInstance = allManagers.FirstOrDefault();
                 if (sceneInstance != null)
                 {

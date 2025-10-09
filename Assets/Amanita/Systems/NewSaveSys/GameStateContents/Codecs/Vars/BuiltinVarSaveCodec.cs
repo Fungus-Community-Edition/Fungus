@@ -12,6 +12,8 @@ namespace Amanita.SaveSys
     /// This codec will not handle custom user variable types; you'll have to 
     /// code those yourself.
     /// </summary>
+    [CreateAssetMenu(fileName = "BuiltinVarSaveCodec",
+    menuName = "Amanita/SaveSystem/Codecs/BuiltinVar SaveCodec", order = 0)]
     public class BuiltinVarSaveCodec : ScriptableObject, IVarCodec
     {
         public bool CanHandle(IVariable variable)
@@ -65,7 +67,7 @@ namespace Amanita.SaveSys
             
             
         };
-        
+
         public bool CanHandle(VariableSaveData variable)
         {
             return CanHandle(variable.VarTypeName);
@@ -144,5 +146,25 @@ namespace Amanita.SaveSys
             IVarCodec codec = subCodecs[variable.GetType()];
             return codec.EncodeToString(variable);
         }
+#if UNITY_EDITOR
+        public static BuiltinVarSaveCodec GetOrCreate()
+        {
+            const string assetName = "BuiltinVarSaveCodec";
+            const string resourcesPath = "Assets/Amanita/Resources/";
+            // Try to load from Resources
+            var codec = Resources.Load<BuiltinVarSaveCodec>(assetName);
+            if (codec != null)
+                return codec;
+
+            // If not found, create a new instance
+            codec = CreateInstance<BuiltinVarSaveCodec>();
+            string fullPath = System.IO.Path.Combine(resourcesPath, assetName + ".asset");
+            Debug.Log($"Creating a BuiltinVarSaveCodec at {fullPath}");
+            UnityEditor.AssetDatabase.CreateAsset(codec, fullPath);
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.Refresh();
+            return codec;
+        }
+#endif
     }
 }

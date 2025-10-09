@@ -7,7 +7,7 @@ namespace Amanita.VScripting
         void Init();
         new string Key { get; set; }
         object Value { get; set; }
-        VariableScope Scope { get; }
+        VariableScope Scope { get; set; }
 
         /// <summary>
         /// The type of the value that this is meant to represent. It's like how Fungus

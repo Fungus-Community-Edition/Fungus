@@ -42,11 +42,7 @@ namespace Amanita.DialogueSys
 			void EnsureEventSystemExists()
 			{
 			// There must be an Event System in the scene for Say and Menu input to work.
-#if UNITY_6000
-			EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
-	#else
-				EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
-	#endif
+				EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
 				if (eventSystem == null)
 				{
 					Debug.LogWarning("No EventSystem found in the scene. Auto-spawning one from prefab.");
@@ -147,11 +143,7 @@ namespace Amanita.DialogueSys
 			if (ActiveMenuDialog == null)
 			{
 				// Use first Menu Dialog found in the scene (if any)
-			#if UNITY_6000
 				var menuDialogFound = FindFirstObjectByType<MenuDialog>();
-#else
-				var menuDialogFound = GameObject.FindObjectOfType<MenuDialog>();
-#endif
 				if (menuDialogFound != null)
 				{
 					ActiveMenuDialog = menuDialogFound;

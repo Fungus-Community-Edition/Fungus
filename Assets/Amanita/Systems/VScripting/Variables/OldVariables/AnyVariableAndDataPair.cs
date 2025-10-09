@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -55,9 +56,9 @@ namespace Amanita.VScripting
         }
 
 #if UNITY_EDITOR
-        public void RefreshVariableCacheHelper(Flowchart flowchart, ref List<Variable> referencedVariables)
+        public void RefreshVariableCacheHelper(Flowchart flowchart, ref IList<IVariable> referencedVariables)
         {
-            if (variable is StringVariable asStringVar && 
+            if (variable is IVariable<string> asStringVar && 
                 asStringVar != null && 
                 !string.IsNullOrEmpty(asStringVar.Value))
                 flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
