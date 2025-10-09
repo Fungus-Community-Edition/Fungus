@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Amanita.VScripting;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -10,7 +11,7 @@ namespace Amanita.SaveSys
     /// Make sure that this class is NOT used outside the main thread. Unity doesn't
     /// like it when you try to mess with Vector or Transform properties from a different thread.
     /// </summary>
-    public class TransformVarCodec : IVarCodec
+    public class TransformVarCodec : fsDirectConverter<Transform>, IVarCodec
     {
         public virtual bool CanHandle(IVariable variable)
         {
@@ -178,6 +179,26 @@ namespace Amanita.SaveSys
                 return default;
             }
         }
+
+        protected override fsResult DoSerialize(Transform model, Dictionary<string, fsData> serialized)
+        {
+            TransformState tFormState = TransformState.From(model);
+            SerializeMember(serialized, null, nameof(TransformState), tFormState);
+            return fsResult.Success;
+        }
+
+        protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Transform model)
+        {
+            // Get the TransformState
+            DeserializeMember(data, null, nameof(TransformState), out TransformState tFormState);
+            if (!string.IsNullOrEmpty(tFormState.uniqueID))
+            {
+                model.name = tFormState.name;
+            }
+            model.SetPositionAndRotation(tFormState.Position, tFormState.Rotation);
+            model.localScale = tFormState.LocalScale;
+            return fsResult.Success;
+        }
     }
 
     [System.Serializable]
@@ -186,42 +207,21 @@ namespace Amanita.SaveSys
         public Vector3 Position
         {
             get { return position; }
-            set
-            {
-                position = value;
-                xPos = position.x;
-                yPos = position.y;
-                zPos = position.z;
-            }
+            set { position = value; }
         }
 
         public Quaternion Rotation
         {
             get { return rotation; }
-            set
-            {
-                rotation = value;
-                xRot = rotation.x;
-                yRot = rotation.y;
-                zRot = rotation.z;
-                wRot = rotation.w;
-            }
+            set { rotation = value; }
         }
 
         public Vector3 LocalScale
         {
             get { return localScale; }
-            set
-            {
-                localScale = value;
-                xScale = localScale.x;
-                yScale = localScale.y;
-                zScale = localScale.z;
-            }
+            set { localScale = value; }
         }
-        private Vector3 position;
-        private Quaternion rotation;
-        private Vector3 localScale;
+
         public string name;
         public string uniqueID;
 
@@ -229,20 +229,27 @@ namespace Amanita.SaveSys
         // so we need to store them as floats.
         public float XPos
         {
-            get { return xPos; }
-            set { xPos = value; position.x = value; }
+            get { return position.x; }
+            set { position.x = value; position.x = value; }
         }
 
-        [SerializeField]
-        private float xPos, yPos, zPos;
-        [SerializeField]
-        private float xRot, yRot, zRot, wRot;
-        [SerializeField]
-        private float xScale, yScale, zScale;
+        [SerializeField] private Vector3State position;
+        [SerializeField] private Vector3State localScale;
+        [SerializeField] private QuaternionState rotation;
+
+        //public TransformState()
+        //{
+        //    position = Vector3State.From(Vector3.zero);
+        //    rotation = QuaternionState.From(Quaternion.identity);
+        //    localScale = Vector3State.From(Vector3.one);
+        //    name = string.Empty;
+        //    uniqueID = string.Empty;
+        //}
 
         public static TransformState From(Transform trans)
         {
             TransformState result = default;
+            result.uniqueID = string.Empty;
             if (trans != null)
             {
                 // Using the properties here so the backing fields get set properly.
@@ -267,28 +274,122 @@ namespace Amanita.SaveSys
 
         public readonly bool Equals(TransformState otherState)
         {
-            return position == otherState.position &&
-                   rotation == otherState.rotation &&
-                   localScale == otherState.localScale &&
-                   name == otherState.name &&
-                   uniqueID == otherState.uniqueID;
+            bool samePos = position.Equals(otherState.position);
+            bool sameRotation = rotation.Equals(otherState.rotation);
+            bool sameScale = localScale.Equals(otherState.localScale);
+            bool sameName = name == otherState.name;
+            bool sameID = uniqueID == otherState.uniqueID;
+            bool result = samePos &&
+                   sameRotation &&
+                   sameScale &&
+                   sameName &&
+                   sameID;
+            // ^Did it this way for easier debugging
+
+            return result;
         }
 
         public void OnDeserialize()
         {
-            position.x = xPos;
-            position.y = yPos;
-            position.z = zPos;
-
-            rotation.x = xRot;
-            rotation.y = yRot;
-            rotation.z = zRot;
-            rotation.w = wRot;
-
-            localScale.x = xScale;
-            localScale.y = yScale;
-            localScale.z = zScale;
         }
 
+        public override string ToString()
+        {
+            return $"TransformState(Name: {name}, UniqueID: {uniqueID},\n" +
+                $"Pos: {Position},\nRot: {Rotation.eulerAngles},\nScale: {LocalScale})";
+        }
+
+    }
+
+    [System.Serializable]
+    public struct Vector3State : IEquatable<Vector3State>, IEquatable<Vector3>
+    {
+        public float x, y, z;
+
+        public static Vector3State From(Vector3 vec)
+        {
+            return new Vector3State { x = vec.x, y = vec.y, z = vec.z };
+        }
+
+        public readonly Vector3 ToVector3()
+        {
+            return new Vector3(x, y, z);
+        }
+
+        public static implicit operator Vector3(Vector3State other)
+        {
+            return other.ToVector3();
+        }
+
+        public static implicit operator Vector3State(Vector3 vec)
+        {
+            return From(vec);
+        }
+
+        public static implicit operator Vector2(Vector3State other)
+        {
+            return new Vector2(other.x, other.y);
+        }
+
+        public readonly bool Equals(Vector3State other)
+        {
+            return x == other.x && 
+                y == other.y && 
+                z == other.z;
+        }
+
+        public readonly bool Equals(Vector3 other)
+        {
+            return x == other.x && 
+                y == other.y && 
+                z == other.z;
+        }
+    }
+
+    [System.Serializable]
+    public struct QuaternionState : IEquatable<QuaternionState>, IEquatable<Quaternion>
+    {
+        public float x, y, z, w;
+
+        public static QuaternionState From(Quaternion quat)
+        {
+            return new QuaternionState { x = quat.x, y = quat.y, z = quat.z, w = quat.w };
+        }
+
+        public readonly Quaternion ToQuaternion()
+        {
+            return new Quaternion(x, y, z, w);
+        }
+
+        public static implicit operator Quaternion(QuaternionState other)
+        {
+            return other.ToQuaternion();
+        }
+
+        public static implicit operator QuaternionState(Quaternion quat)
+        {
+            return From(quat);
+        }
+
+        public readonly bool Equals(QuaternionState other)
+        {
+            return x == other.x &&
+                y == other.y &&
+                z == other.z &&
+                w == other.w;
+        }
+
+        public readonly bool Equals(Quaternion other)
+        {
+            return x == other.x &&
+                y == other.y &&
+                z == other.z &&
+                w == other.w;
+        }
+
+        public override string ToString()
+        {
+            return $"Quaternion({x}, {y}, {z}, {w})";
+        }
     }
 }

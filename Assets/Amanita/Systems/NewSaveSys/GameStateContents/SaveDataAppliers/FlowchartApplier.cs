@@ -215,6 +215,7 @@ namespace Amanita.SaveSys
         protected virtual Flowchart FindFlowchartByName(string name)
         {
             Flowchart result = (from flowchart in allFlowcharts
+                                where flowchart != null
                                 where flowchart.name == name
                                 select flowchart).FirstOrDefault();
             return result;

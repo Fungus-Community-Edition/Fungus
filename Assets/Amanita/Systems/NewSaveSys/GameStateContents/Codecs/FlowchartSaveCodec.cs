@@ -13,6 +13,21 @@ namespace Amanita.SaveSys
     {
         [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
 
+        public virtual void RegisterVarCodec(IVarCodec codec)
+        {
+            if (codec == null)
+            {
+                Debug.LogError("Cannot register a null codec.");
+                return;
+            }
+            if (validCodecs.Contains(codec))
+            {
+                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
+                return;
+            }
+            validCodecs.Add(codec);
+        }
+
         public new Flowchart ToMakeFrom
         {
             get { return base.ToMakeFrom; }

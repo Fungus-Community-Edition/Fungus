@@ -249,6 +249,8 @@ namespace Amanita.VScripting
             {
                 IVariable toRemove = legacyVariables[index];
                 legacyVariables.RemoveAt(index);
+                MonoBehaviour component = toRemove as MonoBehaviour;
+                Destroy(component);
                 VariableRemoved(toRemove);
             }
         }
@@ -1658,7 +1660,8 @@ namespace Amanita.VScripting
 
         /// <summary>
         /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
-        /// a unique key will be generated.
+        /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
+        /// into its Muscariable equivalent and the legacy variable will be destroyed.
         /// </summary>
         public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key = default,
             TValHeld value = default,
@@ -1672,9 +1675,28 @@ namespace Amanita.VScripting
             newVar.gameObject.hideFlags = HideFlags.HideInInspector;
             newVar.ItemID = nextValidVarID;
             nextValidVarID++;
-            legacyVariables.Add(newVar);
-            VariableAdded(newVar);
-            return newVar;
+
+            IVariable toRegister = newVar;
+            bool createdLegacyVar = newVar is not Muscariable;
+            if (createdLegacyVar)
+            {
+                // We want to minimize use of the legacy variables, so we convert to Muscariable on the fly
+                // and then get rid of the legacy var.
+                Debug.Log($"AddNewVariable: Added legacy variable of type {typeof(TVarType).Name}. Converting it to its" +
+                    $" Muscariable equivalent. Returning null.");
+                toRegister = newVar.ToMuscariable();
+                AddVariable(toRegister);
+                Destroy(newVar);
+            }
+
+            AddVariable(toRegister);
+            VariableAdded(toRegister);
+            Destroy(newVar);
+
+            if (createdLegacyVar)
+                return null;
+            else
+                return newVar;
         }
 
         public virtual void AddVariable(IVariable toAdd)

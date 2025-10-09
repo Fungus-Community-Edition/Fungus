@@ -90,6 +90,8 @@ namespace SaveSystemTests
             void LoadCodecs()
             {
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
+                BuiltinVarSaveCodec builtinCodec = new BuiltinVarSaveCodec();
+                flowchartSaveCodec.RegisterVarCodec(builtinCodec);
 
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
@@ -116,7 +118,7 @@ namespace SaveSystemTests
                     if (ReqFlowchart)
                     {
                         flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-
+                        
                         SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
                         mainSave.Add(encodedFlowchartSave);
 
@@ -147,7 +149,6 @@ namespace SaveSystemTests
             AudioSystem.ResetStaticsForTest();
         }
 
-        GameObject toUndoDontDestroyOnLoad;
         protected virtual bool ReqSceneLoad => true;
         protected virtual bool ShouldIgnoreFailingLogMessagesByDefault => false;
         protected SaveWriter saveWriter;
@@ -222,8 +223,8 @@ namespace SaveSystemTests
             threeDPosVar = (IVariable<Vector3>)flowchart.GetVariable("threeDPos");
             twoDPosVar = (IVariable<Vector2>)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
-
+            flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
+            stringVar = flowchart.GetVariable("someStringVar") as IVariable<string>;
             transformVar = (IVariable<Transform>)flowchart.GetVariable("someTrans");
         }
 
