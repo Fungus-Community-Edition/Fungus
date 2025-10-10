@@ -14,6 +14,24 @@ namespace SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {
+        public override void DoTearDown()
+        {
+            base.DoTearDown();
+
+            foreach (string path in saveFilePathsForCleanup)
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+
+            saveFilePathsForCleanup.Clear();
+        }
+
+        protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
+
+        [TearDown]
         [Test]
         public virtual async Task WritesSaveToDisk_BaseDataPath()
         {
@@ -53,6 +71,10 @@ namespace SaveSystemTests
 
             bool fileWasWritten = File.Exists(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
+            if (fileWasWritten)
+            {
+                File.Delete(fullPath); // Clean up after test
+            }
         }
 
         string debugSaveFolder;
@@ -74,6 +96,7 @@ namespace SaveSystemTests
             await writeTask.ConfigureAwait(false);
 
             bool fileWasWritten = File.Exists(fullPath);
+            saveFilePathsForCleanup.Add(fullPath);
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
@@ -254,7 +277,7 @@ namespace SaveSystemTests
             Task<string> ReadAndVerifyContent()
             {
                 string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
-                
+                saveFilePathsForCleanup.Add(filePath);
                 return File.ReadAllTextAsync(filePath, utf8);
             }
 
@@ -293,6 +316,7 @@ namespace SaveSystemTests
             string saveFolder = FileUtils.GetPathToFolder(writeArgs.BaseSaveDirectory, saveWriter.RelativeSavePath);
             
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
             string stringDataToWrite = string.Empty;
 
             DecideDirectoriesAndSuch();
@@ -364,7 +388,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_NoWrites()
         {
-            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
@@ -376,13 +399,11 @@ namespace SaveSystemTests
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             // No writes, so the event should not be invoked
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked without any writes.");
-
         }
 
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullWriteArgs()
         {
-            
             // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool respondedWhenItShouldnt = false;
@@ -400,8 +421,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullSaveData()
         {
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool respondedWhenItShouldnt = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -426,8 +445,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNegativeSlotNumber()
         {
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -450,8 +467,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectInvalidBaseDirectory()
         {
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -474,8 +489,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullList()
         {
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -491,8 +504,6 @@ namespace SaveSystemTests
         [Test]
         public virtual async Task DirectoryCreation_OnWrite()
         {
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveWriteRequest writeArgsForSaveDirectoryCreation = new SaveWriteRequest
             {
                 SaveName = "TestSaveDirectoryCreation",
@@ -530,6 +541,8 @@ namespace SaveSystemTests
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
+            saveFilePathsForCleanup.Add(filePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
@@ -540,10 +553,6 @@ namespace SaveSystemTests
 
             // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
-
-            // Clean up backup for other tests
-            if (File.Exists(backupPath))
-                File.Delete(backupPath);
         }
 
         protected virtual async Task CommonFailsafeTest_KeepBackups()
@@ -574,6 +583,8 @@ namespace SaveSystemTests
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
+            saveFilePathsForCleanup.Add(filePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
@@ -584,10 +595,6 @@ namespace SaveSystemTests
 
             // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
-
-            // Clean up backup for other tests
-            if (File.Exists(backupPath))
-                File.Delete(backupPath);
         }
 
         [Test]
@@ -601,6 +608,8 @@ namespace SaveSystemTests
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
                 writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
+            saveFilePathsForCleanup.Add(filePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             // Simulate write failure by locking the file. We're not going for a hard lock
             // here
@@ -620,10 +629,6 @@ namespace SaveSystemTests
                 Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
                 Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
             }
-
-            // Clean up backup for other tests
-            if (File.Exists(backupPath))
-                File.Delete(backupPath);
         }
 
         [Test]
@@ -637,6 +642,8 @@ namespace SaveSystemTests
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
                 writeArgs.SlotNumber, saveWriter);
             string backupPath = filePath + saveWriter.BackupFileExtension;
+            saveFilePathsForCleanup.Add(filePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             // Simulate write failure by locking the file. We're not going for a hard lock
             // here
@@ -656,10 +663,6 @@ namespace SaveSystemTests
                 Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
                 Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
             }
-
-            // Clean up backup for other tests
-            if (File.Exists(backupPath))
-                File.Delete(backupPath);
         }
 
 
@@ -673,11 +676,13 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeArgs);
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
 
             // Simulate write failure by locking the file
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                saveFilePathsForCleanup.Add(expectedBackupFilePath);
                 string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
                                     $"\nException: The process cannot access the file because it is being used by another process.";
                 LogAssert.Expect(LogType.Error, expectedErrorMessage);
@@ -704,11 +709,13 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeArgs);
 
             string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
 
             // Simulate write failure by locking the file
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
+                saveFilePathsForCleanup.Add(expectedBackupFilePath);
                 string expectedErrorMessage = $"Could not move file {filePath} to backup {expectedBackupFilePath}." +
                                     $"\nException: The process cannot access the file because it is being used by another process.";
                 LogAssert.Expect(LogType.Error, expectedErrorMessage);
@@ -754,6 +761,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(firstWriteArgs);
 
             string filePath = FileUtils.GetPathToFile(firstWriteArgs.BaseSaveDirectory, firstWriteArgs.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
             string firstContent = await File.ReadAllTextAsync(filePath);
 
             // Second write: different data
@@ -794,6 +802,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeArgsLocked);
 
             string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
 
             // Lock the file by opening it with no sharing
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -837,6 +846,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeArgsLocked);
 
             string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
 
             LogAssert.ignoreFailingMessages = true;
             
@@ -885,7 +895,9 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(largeWriteArgs);
 
             string filePath = FileUtils.GetPathToFile(largeWriteArgs.BaseSaveDirectory, largeWriteArgs.SlotNumber, saveWriter);
+            
             Assert.IsTrue(File.Exists(filePath), "Large save file was not created.");
+            saveFilePathsForCleanup.Add(filePath);
 
             string fileContent = await File.ReadAllTextAsync(filePath);
 
