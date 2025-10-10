@@ -1061,11 +1061,11 @@ namespace Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable<BooleanVariable>("MyBool");
         /// boolVar.Value = false;
         /// </summary>
-        public T GetVariable<T>(string key) where T : Variable
+        public T GetVariable<T>(string key) where T : class, IVariable
         {
-            for (int i = 0; i < legacyVariables.Count; i++)
+            for (int i = 0; i < muscariables.Count; i++)
             {
-                var variable = legacyVariables[i];
+                var variable = muscariables[i];
                 if (variable != null && variable.Key == key)
                 {
                     return variable as T;
@@ -1079,13 +1079,13 @@ namespace Amanita.VScripting
         /// <summary>
         /// Returns a list of variables matching the specified type.
         /// </summary>
-        public virtual List<T> GetVariables<T>() where T: Variable
+        public virtual IList<T> GetMultiVariables<T>() where T: class, IVariable
         {
             var varsFound = new List<T>();
             
-            for (int i = 0; i < Variables.Count; i++)
+            for (int i = 0; i < muscariables.Count; i++)
             {
-                var currentVar = Variables[i];
+                var currentVar = muscariables[i];
                 if (currentVar is T)
                     varsFound.Add(currentVar as T);
             }
@@ -1094,18 +1094,16 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Register a new variable with the Flowchart at runtime. 
-        /// The variable should be added as a component on the Flowchart game object.
+        /// Register a new variable with the Flowchart at runtime.
         /// </summary>
-        public void SetVariable<T>(string key, T newVar) where T : Variable
+        public void SetVariable<T>(string key, T newVar) where T : class, IVariable
         {
-            for (int i = 0; i < legacyVariables.Count; i++)
+            for (int i = 0; i < muscariables.Count; i++)
             {
-                var currentVar = legacyVariables[i];
+                var currentVar = muscariables[i];
                 if (currentVar != null && currentVar.Key == key)
                 {
-                    T variable = currentVar as T;
-                    if (variable != null)
+                    if (currentVar is T variable)
                     {
                         variable = newVar;
                         return;
@@ -1463,27 +1461,29 @@ namespace Amanita.VScripting
             result.Value = initValue;
             result.Scope = scope;
             IntegrateMuscariable(result);
-            result.Init();
             return result;
         }
 
         protected int nextMuscariableID = 1;
 
         /// <summary>
-        /// Sets up the Muscariable to belong to this Flowchart. We assume that the
-        /// input has already been initialized.
+        /// Sets up the Muscariable to belong to this Flowchart before adding it.
         /// </summary>
-        /// <param name="toAdd"></param>
         public virtual void IntegrateMuscariable(Muscariable toAdd)
         {
-            int newId = nextMuscariableID;
-            toAdd.ItemID = newId;
+            bool hasValidId = toAdd.ItemID != Muscariable.InvalidID;
+            bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemID == toAdd.ItemID && hasValidId);
+            if (shouldAssignNewId)
+            {
+                int newId = nextMuscariableID;
+                toAdd.ItemID = newId;
+                nextMuscariableID++;
+            }
+
             toAdd.ParentFlowchart = this;
             toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
+            toAdd.Init();
             muscariables.Add(toAdd);
-
-            nextMuscariableID++;
-
             VariableAdded(toAdd);
         }
 
@@ -1663,16 +1663,25 @@ namespace Amanita.VScripting
         /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
         /// into its Muscariable equivalent and the legacy variable will be destroyed.
         /// </summary>
-        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key = default,
+        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
-            where TVarType : VariableBase<TValHeld>
+            where TVarType : class, IVariable<TValHeld>
         {
-            TVarType newVar = gameObject.AddComponent<TVarType>();
+            TVarType newVar = null;
+            bool wantMbType = typeof(MonoBehaviour).IsAssignableFrom(typeof(TVarType));
+            if (wantMbType)
+            {
+                newVar = gameObject.AddComponent(typeof(TVarType)) as TVarType;
+            }
+            else
+            {
+                newVar = VariableFactory.Create(typeof(TValHeld)) as TVarType;
+            }
+
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
             newVar.Scope = scope;
-            newVar.gameObject.hideFlags = HideFlags.HideInInspector;
             newVar.ItemID = nextValidVarID;
             nextValidVarID++;
 
@@ -1686,12 +1695,11 @@ namespace Amanita.VScripting
                     $" Muscariable equivalent. Returning null.");
                 toRegister = newVar.ToMuscariable();
                 AddVariable(toRegister);
-                Destroy(newVar);
+                Destroy(newVar as MonoBehaviour);
             }
 
             AddVariable(toRegister);
             VariableAdded(toRegister);
-            Destroy(newVar);
 
             if (createdLegacyVar)
                 return null;
@@ -1699,27 +1707,23 @@ namespace Amanita.VScripting
                 return newVar;
         }
 
+        /// <summary>
+        /// Adds an already-existing variable to the flowchart. If the variable is already registered,
+        /// nothing happens. The variable's key and ID will be made unique if necessary.
+        /// If the variable is a legacy Variable, it a Muscariable version of it will
+        /// be registered instead.
+        /// </summary>
         public virtual void AddVariable(IVariable toAdd)
         {
-            var equalityComparer = ReferenceEqualityComparer<Muscariable>.Instance;
             bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) || muscariables.ContainsReference(toAdd);
             if (alreadyRegistered)
             {
                 return;
             }
 
-            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables);
-
-            if (toAdd is Variable legacyVar)
-            {
-                legacyVariables.Add(legacyVar);
-            }
-            else if (toAdd is Muscariable muscaVar)
-            {
-                muscariables.Add(muscaVar);
-            }
-
-            VariableAdded(toAdd);
+            toAdd = toAdd.ToMuscariable();
+            Muscariable muscari = toAdd as Muscariable;
+            AddVariable(muscari);
         }
 
         protected virtual bool CheckRefEquals(IVariable firstVar, IVariable secondVar)
@@ -1772,7 +1776,7 @@ namespace Amanita.VScripting
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            Muscariable muscaVar = VariableFactory.Create(contentType, null);
+            Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
             IntegrateMuscariable(muscaVar);
             return muscaVar;
         }

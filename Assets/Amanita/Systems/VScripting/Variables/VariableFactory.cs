@@ -9,7 +9,7 @@ namespace Amanita.VScripting
         #region Muscariables
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
-            return (Muscariable<T>)Create(typeof(T), toMakeCopyOf);
+            return (Muscariable<T>)CreateByContentType(typeof(T), toMakeCopyOf);
         }
 
         public static Muscariable CreateByVarType(Type varType, IVariable toMakeCopyOf = null)
@@ -21,9 +21,9 @@ namespace Amanita.VScripting
                 return null;
             }
             Type contentType = varInfo.ContentType;
-            return Create(contentType, toMakeCopyOf);
+            return CreateByContentType(contentType, toMakeCopyOf);
         }
-        public static Muscariable Create(Type contentType, IVariable toMakeCopyOf = null)
+        public static Muscariable CreateByContentType(Type contentType, IVariable toMakeCopyOf = null)
         {
 
             Muscariable result = null;
@@ -113,7 +113,7 @@ namespace Amanita.VScripting
 
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = Create(typeof(T), null) as Muscariable<T>;
+            Muscariable<T> result = CreateByContentType(typeof(T), null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }

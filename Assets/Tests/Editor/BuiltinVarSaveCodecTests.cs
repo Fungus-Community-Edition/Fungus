@@ -171,7 +171,7 @@ namespace SaveSys
                 VariableInfoAttribute varInfo = varType.GetCustomAttribute<VariableInfoAttribute>();
                 Type contentType = varInfo.ContentType;
 
-                IVariable instance = VariableFactory.Create(contentType, null);
+                IVariable instance = VariableFactory.CreateByContentType(contentType, null);
                 Assert.IsNotNull(instance, 
                     $"Failed to create instance of {varType.Name} for CanHandle test.");
 
@@ -296,7 +296,11 @@ namespace SaveSys
             // Implement minimal members expected by test/runtime; avoid referencing unavailable types (Execution.*).
             public string Key { get; set; }
             public object Value { get; set; }
-            public VariableScope Scope => default;
+            public VariableScope Scope
+            {                 
+                get => VariableScope.Private;
+                set { }
+            }
             public Type ContentType => null;
             public IVariableSource Owner => null;
 
