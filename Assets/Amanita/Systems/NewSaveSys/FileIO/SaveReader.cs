@@ -20,9 +20,8 @@ namespace Amanita.SaveSys
 
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             PrepDefaultDecryptor();
             void PrepDefaultDecryptor()
             {
@@ -73,9 +72,9 @@ namespace Amanita.SaveSys
         {
             string saveFolderPath = FileUtils.GetPathToFolder(request.BaseSaveDirectory, RelativeSavePath);
             
-            string numFormatted = request.SlotNumber.ToString(saveNumberFormat);
-            string fileName = string.Format(fileNameFormat, savePrefix,
-                numFormatted, fileExtension);
+            string numFormatted = request.SlotNumber.ToString(SaveNumberFormat);
+            string fileName = string.Format(FileNameFormat, SavePrefix,
+                numFormatted, FileExtension);
             string filePath = saveFolderPath + fileName;
             return filePath;
         }
@@ -106,9 +105,8 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected override void OnValidate()
+        protected virtual void OnValidate()
         {
-            base.OnValidate();
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)
             {

@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f06ea061e958b2c4a9e32f4c1a613aea, type: 3}
-  m_Name: DefaultSaveReader
+  m_Script: {fileID: 11500000, guid: 67fd6e6762102394090592d7e611843d, type: 3}
+  m_Name: DefaultSaveNameSettings
   m_EditorClassIdentifier: 
-  nameSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
-  readEncrypted: 0
-  decryptor: {fileID: 11400000, guid: 3a898ba32ee0242468c4d3926788fd2f, type: 2}
+  savePrefix: saveData
+  fileExtension: save
+  relativeSavePath: /Saves/
+  saveNumberFormat: D2

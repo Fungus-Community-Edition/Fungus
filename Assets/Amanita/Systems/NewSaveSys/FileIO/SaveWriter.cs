@@ -40,9 +40,8 @@ namespace Amanita.SaveSys
         /// </summary>
         public UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
             EnsureWeHaveBackupEncryptor();
             void EnsureWeHaveBackupEncryptor()
             {
@@ -95,8 +94,8 @@ namespace Amanita.SaveSys
 
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            string fileName = string.Format(fileNameFormat, savePrefix,
-                    numFormatted, fileExtension);
+            string fileName = string.Format(FileNameFormat, SavePrefix,
+                    numFormatted, FileExtension);
             string filePath = saveFolder + fileName;
             debugSaveFolder = saveFolder;
 
@@ -264,20 +263,13 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        protected override void OnValidate()
+        protected virtual void OnValidate()
         {
-            base.OnValidate();
-
             bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
             if (wrongTypeOfSOAssigned)
             {
                 encryptor = defaultEncryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
-            }
-
-            if (string.IsNullOrEmpty(relativeSavePath))
-            {
-                relativeSavePath = "/";
             }
         }
 

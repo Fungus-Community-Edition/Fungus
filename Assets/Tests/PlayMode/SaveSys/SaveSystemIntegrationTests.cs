@@ -128,21 +128,6 @@ namespace SaveSystemTests
             Assert.AreEqual(newPath, result[SaveDirectoryType.DataPath]);
         }
 
-        [Test]
-        public void SaveName_SetAndGet_Works()
-        {
-            saveSystem.SaveName = "TestSave";
-            Assert.AreEqual("TestSave", saveSystem.SaveName);
-        }
-
-        [Test]
-        public void SaveNamePrefixSuffix_SetAndGet_Works()
-        {
-            saveSystem.SaveNamePrefix = "PRE_";
-            saveSystem.SaveNameSuffix = "_SUF";
-            Assert.AreEqual("PRE_", saveSystem.SaveNamePrefix);
-            Assert.AreEqual("_SUF", saveSystem.SaveNameSuffix);
-        }
 
         // Dummy implementations for testing registration
         public class DummyMainSaveCodec : IMainSaveCodec

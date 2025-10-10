@@ -1042,9 +1042,9 @@ namespace Amanita.VScripting
             return result;
         }
 
-        public virtual Variable GetVariableById(int id)
+        public virtual IVariable GetVariableById(int id)
         {
-            Variable result = (from varEl in legacyVariables
+            IVariable result = (from varEl in muscariables
                                where varEl.ItemID == id
                                select varEl).FirstOrDefault();
             if (result == null)
