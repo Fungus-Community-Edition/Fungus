@@ -14,7 +14,6 @@ namespace SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {
-        
         [Test]
         public virtual async Task WritesSaveToDisk_BaseDataPath()
         {

@@ -71,9 +71,6 @@ namespace SaveSystemTests
             stringVar.Value = "TestValue123";
 
             int slot = 10;
-            ISaveMetaData meta = metaFactory.CreateMeta(slot);
-
-            // Save
             await saveSystem.SaveTo(slot);
 
             // Change the variable to something else to ensure load will restore it
@@ -102,7 +99,8 @@ namespace SaveSystemTests
             var dummyApplier = new DummySaveDataApplier();
             saveSystem.RegisterSaveDataApplier(dummyApplier);
 
-            Assert.Contains(dummyApplier, (System.Collections.ICollection)saveSystem.SaveDataAppliers);
+            bool success = saveSystem.SaveDataAppliers.Contains(dummyApplier);
+            Assert.IsTrue(success);
         }
 
         [Test]

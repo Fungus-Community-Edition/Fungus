@@ -43,16 +43,17 @@ namespace SaveSystemTests
         public virtual void DoSetUp()
         {
             PlayerPrefs.DeleteAll();
+
+            if (AmanitaManager.S != null)
+            {
+                UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+            }
+
             ResetSingletonStatics();
 
             PrepAmanitaManagerAndItsSubmodules();
             void PrepAmanitaManagerAndItsSubmodules()
             {
-                if (AmanitaManager.S != null)
-                {
-                    UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
-                }
-
                 pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
                 AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
                 ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
@@ -69,8 +70,10 @@ namespace SaveSystemTests
                 SaveSystemInstaller.S = installer;
 
                 saveManager = saveSys.SaveManager;
+                nameSettings = ScriptableObject.CreateInstance<SaveNameSettings>();
                 saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
                 saveReader = ScriptableObject.CreateInstance<SaveReader>();
+                saveWriter.NameSettings = saveReader.NameSettings = nameSettings;
                 encryptor = ScriptableObject.CreateInstance<Encryptor>();
             }
 
@@ -138,8 +141,38 @@ namespace SaveSystemTests
             }
 
             LogAssert.ignoreFailingMessages = ShouldIgnoreFailingLogMessagesByDefault;
+
+            RegisterWhatToDestroyInTearDown();
+            void RegisterWhatToDestroyInTearDown()
+            {
+                toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
+
+                toDestroyInTearDown.Add(saveWriter);
+                toDestroyInTearDown.Add(saveReader);
+                toDestroyInTearDown.Add(nameSettings);
+                toDestroyInTearDown.Add(encryptor);
+
+                toDestroyInTearDown.Add(flowchartApplier);
+                toDestroyInTearDown.Add(audioApplier);
+                toDestroyInTearDown.Add(flowchartSaveCodec);
+                toDestroyInTearDown.Add(blockSaveCodec);
+
+                toDestroyInTearDown.Add(testScene);
+
+                IList<EventSystem> possiblyMadeByFlowchart;
+#if UNITY_6000_0_OR_NEWER
+                possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+#else
+                possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
+#endif
+
+                toDestroyInTearDown.AddRange(possiblyMadeByFlowchart);
+            }
+            
         }
 
+        protected SaveNameSettings nameSettings;
+        protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
         protected virtual void ResetSingletonStatics()
         {
             SaveSystem.ResetStaticsForTest();
@@ -211,7 +244,7 @@ namespace SaveSystemTests
             flowchart = testScene.GetComponentInChildren<Flowchart>(true);
             if (flowchart == null)
                 throw new Exception("Flowchart component not found in test scene prefab.");
-
+            flowchart.gameObject.SetActive(true);
         }
 
         protected virtual void PrepVars()
@@ -254,7 +287,6 @@ namespace SaveSystemTests
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
 
-
         protected virtual CompositeSaveData MainSave
         {
             get { return (CompositeSaveData) writeReq.MainState; }
@@ -281,33 +313,33 @@ namespace SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
+            SaveSystem.S.ClearSaveDataAppliers();
             ResetSingletonStatics();
 
             DestroyGameObjects();
             void DestroyGameObjects()
             {
-                UnityObject.DestroyImmediate(testScene);
-                testScene = null;
-                DestroyEventSystems();
-                void DestroyEventSystems()
+                foreach (var obj in toDestroyInTearDown)
                 {
-#if UNITY_6000_0_OR_NEWER
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
-#else
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-#endif
-                    foreach (var elem in possiblyMadeByFlowchart)
+                    if (obj != null)
                     {
-                        UnityObject.DestroyImmediate(elem.gameObject);
+                        UnityObject.DestroyImmediate(obj);
                     }
                 }
 
-                if (ammyManager != null)
-                {
-                    UnityObject.DestroyImmediate(ammyManager.gameObject);
-                    // ^This should also destroy the submodules
-                    ammyManager = null;
-                }
+                ammyManager = null;
+                flowchart = null;
+                testScene = null;
+                saveWriter = null;
+                saveReader = null;
+                flowchartApplier = null;
+                encryptor = null;
+                audioApplier = null;
+                flowchartSaveCodec = null;
+                blockSaveCodec = null;
+                saveSys = null;
+                saveManager = null;
+                toDestroyInTearDown.Clear();
 
             }
 
