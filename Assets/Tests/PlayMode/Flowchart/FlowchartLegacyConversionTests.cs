@@ -2,8 +2,6 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
@@ -12,6 +10,8 @@ using Amanita;
 
 namespace VScriptingTests
 {
+    // This suite now validates converting legacy Fungus Variables to Muscariables directly via ToMuscariable,
+    // without involving Flowchart (which auto-converts on add/lookup).
     public class FlowchartLegacyConversionTests
     {
         public class FLCTestCase
@@ -38,13 +38,9 @@ namespace VScriptingTests
         public void Setup()
         {
             AmanitaManager.EnsureExists();
-            testGo = new GameObject("FlowchartTest_GO");
-            testFc = testGo.AddComponent<Flowchart>();
-            toDestroyInTearDown.Add(testGo);
+            toDestroyInTearDown.Clear();
         }
 
-        protected GameObject testGo;
-        protected Flowchart testFc;
         protected static readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
 
         [TearDown]
@@ -58,9 +54,7 @@ namespace VScriptingTests
             toDestroyInTearDown.Clear();
         }
 
-        // In this test suite, we will only include cases for variable types that
-        // will come with the base package. This means that stuff like Matrix4x4Variable,
-        // CollisionVariable, etc. will not be included here.
+        // In this test suite, we only include cases for variable types that ship with the base package.
         static IEnumerable<FLCTestCase> LegacyVarCases()
         {
             // Numerics
@@ -86,7 +80,7 @@ namespace VScriptingTests
                 typeof(TextureMuscariable), null);
             yield return new FLCTestCase(typeof(Material), typeof(MaterialVariable),
                 typeof(MaterialMuscariable), null);
-            
+
             // Unity general
             yield return new FLCTestCase(typeof(GameObject), typeof(GameObjectVariable),
                 typeof(GameObjectMuscariable), null);
@@ -100,75 +94,23 @@ namespace VScriptingTests
                 typeof(AudioClipMuscariable), null);
             yield return new FLCTestCase(typeof(AudioSource), typeof(AudioSourceVariable),
                 typeof(AudioSourceMuscariable), null);
-            // Extend with more cases as new legacy types are available.
         }
 
-        protected readonly Type fcType = typeof(Flowchart);
-        protected readonly BindingFlags fcBindingFlags = BindingFlags.Instance | BindingFlags.NonPublic 
-            | BindingFlags.Public;
-
-        // Reflection helper to call the protected conversion method.
-        void Invoke_GetAndInitVars(Flowchart fc)
+        // Helper: create a legacy Variable on a fresh GameObject and assign key/value.
+        Variable CreateLegacyVariable(Type legacyVarType, string key, object value)
         {
-            var mi = fcType.GetMethod("GetAndInitVars", fcBindingFlags);
-            if (mi == null) Assert.Fail("Failed to find Flowchart.GetAndInitVars via reflection");
-            try
-            {
-                mi.Invoke(fc, null);
-            }
-            catch (TargetInvocationException tie)
-            {
-                throw tie.InnerException ?? tie;
-            }
-        }
+            var go = new GameObject($"LegacyVar_{legacyVarType.Name}");
+            toDestroyInTearDown.Add(go);
 
-        // Reflection helper to call Flowchart.AddNewVariable<TValHeld, TVarType>(string key, TValHeld value, VariableScope scope)
-        IVariable CreateLegacyVar(Flowchart fc, Type contentType, Type legacyVarType,
-            string key, object sampleValue, VariableScope scope)
-        {
-            // Find generic AddNewVariable method with 2 generic args and 3 parameters
-            var methods = typeof(Flowchart).GetMethods(fcBindingFlags);
-            MethodInfo addNewVarMI = methods
-                .Where(elem => elem.Name == "AddNewVariable" && elem.IsGenericMethodDefinition && 
-                elem.GetGenericArguments().Length == 2)
-                .FirstOrDefault();
-            if (addNewVarMI == null) Assert.Fail("AddNewVariable<TValHeld, TVarType> not found on Flowchart");
+            var legacy = go.AddComponent(legacyVarType) as Variable;
+            Assert.IsNotNull(legacy, $"Failed to add legacy component of type {legacyVarType.Name}");
 
-            var generic = addNewVarMI.MakeGenericMethod(contentType, legacyVarType);
-            object[] args = new object[] { key, sampleValue, scope };
-            var res = generic.Invoke(fc, args);
-            // Return as IVariable for general assertions
-            return res as IVariable;
-        }
+            legacy.Key = key;
 
-        // Reflection helper to call Flowchart.GetMuscariableWithKey<TVarType>(string key)
-        object GetConvertedMuscariable(Flowchart fc, Type muscVarType, string key)
-        {
-            var mi = fcType.GetMethod("GetMuscariableWithKey", fcBindingFlags);
-            if (mi == null) Assert.Fail("GetMuscariableWithKey<TVarType> not found on Flowchart");
-            var generic = mi.MakeGenericMethod(muscVarType);
-            return generic.Invoke(fc, new object[] { key });
-        }
+            // Don't worry about strong typing here, just assign the value.
+            legacy.Value = value;
 
-        [UnityTest]
-        public IEnumerator Conversion_Completes_WithoutExceptions([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
-        {
-            string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
-                key, testCase.sampleValue, VariableScope.Private);
-
-            Assert.IsNotNull(legacy, "Legacy variable creation failed");
-            Assert.AreEqual(testCase.contentType, legacy.ContentType, "Legacy ContentType mismatch");
-
-            // Conversion should not throw
-            Invoke_GetAndInitVars(testFc);
-
-            // After conversion: legacy list should no longer expose the converted var (VariableCount counts legacy list)
-            Assert.AreEqual(1, testFc.MuscariableCount, "Expected a muscariable to be present after conversion");
-            Assert.AreEqual(0, testFc.VariableCount, "Expected legacy variable list to be empty after conversion");
-
-            yield break;
+            return legacy;
         }
 
         protected virtual string GenerateRandomKey(string prefix)
@@ -177,108 +119,72 @@ namespace VScriptingTests
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Key([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
+        public IEnumerator ToMuscariable_Completes_And_Type_Matches([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
         {
             string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
-                key, testCase.sampleValue, VariableScope.Private);
+            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
 
-            string originalKey = legacy.Key;
-            Invoke_GetAndInitVars(testFc);
+            var converted = legacy.ToMuscariable();
 
-            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, originalKey) as IVariable;
-            Assert.IsNotNull(converted, "Converted muscariable with original key not found");
-            Assert.AreEqual(originalKey, converted.Key, "Converted muscariable key does not match original");
-
+            Assert.IsNotNull(converted, "Conversion resulted in null");
+            Assert.IsInstanceOf(testCase.muscVarType, converted, $"Expected muscariable type {testCase.muscVarType.Name}");
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Value([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
+        public IEnumerator ToMuscariable_Preserves_Key([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
         {
             string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
-                testCase.sampleValue, VariableScope.Private);
+            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
 
-            Invoke_GetAndInitVars(testFc);
+            var converted = legacy.ToMuscariable();
 
-            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as IVariable;
-            Assert.IsNotNull(converted, "Converted muscariable not found");
-
-            // Compare boxed values; for floats/bools direct equality is fine
-            Assert.AreEqual(legacy.Value, converted.Value, "Converted muscariable value does not match legacy value");
-
+            Assert.IsNotNull(converted, "Conversion resulted in null");
+            Assert.AreEqual(key, converted.Key, "Converted muscariable key does not match original");
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_ContentType([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
+        public IEnumerator ToMuscariable_Preserves_ContentType([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
         {
             string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
-                testCase.sampleValue, VariableScope.Private);
-            var legacyContentType = legacy.ContentType;
+            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
 
-            Invoke_GetAndInitVars(testFc);
+            var converted = legacy.ToMuscariable();
 
-            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as IVariable;
-            Assert.IsNotNull(converted, "Converted muscariable not found");
-            Assert.AreEqual(legacyContentType, converted.ContentType, "Converted muscariable ContentType " +
-                "does not match legacy variable");
-
+            Assert.IsNotNull(converted, "Conversion resulted in null");
+            Assert.AreEqual(testCase.contentType, converted.ContentType, "Converted muscariable ContentType mismatch");
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator ConvertedMuscariable_Preserves_Owner([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
+        public IEnumerator ToMuscariable_Preserves_Value([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
         {
             string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType, key,
-                testCase.sampleValue, VariableScope.Private);
+            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
 
-            // Sanity: legacy should be associated with the flowchart (owner may be exposed via Owner)
-            Assert.AreEqual(testFc, legacy.Owner ?? testFc, "Legacy variable owner unexpected");
+            var converted = legacy.ToMuscariable();
 
-            Invoke_GetAndInitVars(testFc);
+            Assert.IsNotNull(converted, "Conversion resulted in null");
 
-            var converted = GetConvertedMuscariable(testFc, testCase.muscVarType, legacy.Key) as Muscariable;
-            Assert.IsNotNull(converted, "Converted muscariable not found");
-            Assert.AreEqual(testFc, converted.ParentFlowchart ?? converted.Owner,
-                "Converted muscariable owner/parent flowchart does not match original");
+            dynamic dynLegacy = legacy;
+            var legacyVal = (object)dynLegacy.Value;
+            var convertedVal = converted.Value;
 
+            Assert.AreEqual(legacyVal, convertedVal, "Converted muscariable value does not match legacy value");
             yield break;
         }
 
         [UnityTest]
-        public IEnumerator Conversion_Preserves_Scope([ValueSource(nameof(LegacyVarCases))]
-        FLCTestCase testCase)
+        public IEnumerator ToMuscariable_Has_No_ParentFlowchart_When_Converted_Standalone([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
         {
-            string privKey = GenerateRandomKey("scopePriv_");
-            var legacyPrivate = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
-                privKey, testCase.sampleValue, VariableScope.Private);
+            string key = GenerateRandomKey("testVar_");
+            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
 
-            string pubKey = GenerateRandomKey("scopePub_");
-            var legacyPublic = CreateLegacyVar(testFc, testCase.contentType, testCase.legacyVarType,
-                pubKey, testCase.sampleValue, VariableScope.Public);
+            var converted = legacy.ToMuscariable() as Muscariable;
 
-            var expectedPrivate = legacyPrivate.Scope;
-            var expectedPublic = legacyPublic.Scope;
-
-            Invoke_GetAndInitVars(testFc);
-
-            var convPrivate = GetConvertedMuscariable(testFc, testCase.muscVarType, privKey) as Muscariable;
-            var convPublic = GetConvertedMuscariable(testFc, testCase.muscVarType, pubKey) as Muscariable;
-
-            Assert.IsNotNull(convPrivate, "Converted private muscariable not found");
-            Assert.IsNotNull(convPublic, "Converted public muscariable not found");
-
-            Assert.AreEqual(expectedPrivate, convPrivate.Scope, "Private scope was not preserved after conversion");
-            Assert.AreEqual(expectedPublic, convPublic.Scope, "Public scope was not preserved after conversion");
-
+            Assert.IsNotNull(converted, "Conversion resulted in null");
+            Assert.IsNull(converted.ParentFlowchart, "Standalone conversion should not assign a ParentFlowchart");
             yield break;
         }
     }

@@ -171,6 +171,7 @@ namespace SaveSystemTests
             
         }
 
+        protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
         protected SaveNameSettings nameSettings;
         protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
         protected virtual void ResetSingletonStatics()
@@ -316,6 +317,20 @@ namespace SaveSystemTests
             SaveSystem.S.ClearSaveDataAppliers();
             ResetSingletonStatics();
 
+            CleanupSaveFiles();
+            void CleanupSaveFiles()
+            {
+                foreach (string path in saveFilePathsForCleanup)
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                }
+
+                saveFilePathsForCleanup.Clear();
+            }
+
             DestroyGameObjects();
             void DestroyGameObjects()
             {
@@ -346,8 +361,6 @@ namespace SaveSystemTests
             writeReq.MainState = new CompositeSaveData { };
             
         }
-
-        
 
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()

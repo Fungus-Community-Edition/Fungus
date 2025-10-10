@@ -14,24 +14,6 @@ namespace SaveSystemTests
 {
     public class SaveWriterTests : CommonTestFunctionality
     {
-        public override void DoTearDown()
-        {
-            base.DoTearDown();
-
-            foreach (string path in saveFilePathsForCleanup)
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
-
-            saveFilePathsForCleanup.Clear();
-        }
-
-        protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
-
-        [TearDown]
         [Test]
         public virtual async Task WritesSaveToDisk_BaseDataPath()
         {

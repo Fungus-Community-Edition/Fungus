@@ -16,6 +16,7 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
             saveReaderFallback = new TestSaveReader();
+            saveReaderFallback.NameSettings = nameSettings;
         }
 
         protected TestSaveReader saveReaderFallback;
@@ -36,6 +37,8 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             await saveWriter.WriteOneToDisk(writeReq);
+            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, writeReq.SlotNumber, saveWriter);
+            saveFilePathsForCleanup.Add(filePath);
 
             var readReq = new SaveReadRequest
             {
@@ -58,8 +61,8 @@ namespace SaveSystemTests
             // Ensure fresh test directory
             string savePath = FileUtils.GetPathToFile(baseDir, slotNumber, saveWriter);
             string backupPath = savePath + saveWriter.BackupFileExtension;
-            if (File.Exists(savePath)) File.Delete(savePath);
-            if (File.Exists(backupPath)) File.Delete(backupPath);
+            saveFilePathsForCleanup.Add(savePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             // STEP 1 — Write initial data
             var originalData = new CompositeSaveData();
@@ -104,7 +107,6 @@ namespace SaveSystemTests
 
             Assert.IsFalse(File.Exists(backupPath), "Backup file was not deleted after overwrite with cleanup enabled.");
         }
-
 
         [TestCase(1, SaveDirectoryType.DataPath)]
         [TestCase(5, SaveDirectoryType.PersistentDataPath)]
