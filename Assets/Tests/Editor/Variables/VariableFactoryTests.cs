@@ -4,7 +4,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using UnityEngine.TestTools;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableFactoryTests
     {
@@ -46,7 +46,7 @@ namespace VariableOperations
             };
 
             // Act
-            var created = VariableFactory.Create(contentType, source) as IntMuscariable;
+            var created = VariableFactory.CreateByContentType(contentType, source) as IntMuscariable;
 
             // Assert
             Assert.NotNull(created);
@@ -83,7 +83,7 @@ namespace VariableOperations
             Type wrongContentType = typeof(int); // Since the int is the source while the string is the intended output
             Type rightContentType = typeof(string);
 
-            var result = VariableFactory.Create(rightContentType, source);
+            var result = VariableFactory.CreateByContentType(rightContentType, source);
 
             // Assert
             Assert.IsNull(result, "Factory should not create when source content type mismatches that of the intended result");
@@ -103,7 +103,7 @@ namespace VariableOperations
                     $"{wrongContentType.Name} when creating a Muscariable of ContentType {rightContentType.Name}. "
                     + "Returning null.";
             LogAssert.Expect(LogType.Warning, expectedLogMessage);
-            var result = VariableFactory.Create(rightContentType, source);
+            var result = VariableFactory.CreateByContentType(rightContentType, source);
 
         }
 
@@ -178,7 +178,7 @@ namespace VariableOperations
         public void Create_Returns_Registered_Muscariable_Type(Type contentType, Type expectedMuscariType)
         {
             VariableTypeDiscovery.DiscoverAndRegister();
-            var created = VariableFactory.Create(contentType, null);
+            var created = VariableFactory.CreateByContentType(contentType, null);
             Assert.IsNotNull(created, "VariableFactory.Create returned null for contentType " + contentType.Name);
             Assert.AreEqual(expectedMuscariType, created.GetType(), $"Factory did not return the expected Muscariable type for {contentType.Name}");
             Assert.AreEqual(contentType, created.ContentType, "Created Muscariable did not report correct ContentType.");

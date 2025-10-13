@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     [TestFixture]
     public class GridRendererTests : FlowchartWindowTestsCommon

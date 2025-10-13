@@ -17,6 +17,10 @@ namespace Amanita.SaveSys
         {
         }
 
+        /// <summary>
+        /// The name of the type of this SaveData instance. The idea is to make it easier
+        /// to tell exactly what type of SaveData this is when deserializing.
+        /// </summary>
         public virtual string TypeName => GetType().Name;
 
         protected static void ValidateSerializedData(SaveDataUnit item, string expectedTypeName)

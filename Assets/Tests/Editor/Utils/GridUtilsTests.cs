@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Amanita.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class GridUtilsTests
     {

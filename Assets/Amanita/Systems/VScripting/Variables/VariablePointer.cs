@@ -27,8 +27,11 @@ namespace Amanita.VScripting
             set { if (_component is IVariable iv) iv.Key = value; }
         }
 
-        public VariableScope Scope =>
-            (_component as IVariable)?.Scope ?? VariableScope.Private;
+        public VariableScope Scope
+        {
+            get => (_component as IVariable)?.Scope ?? VariableScope.Private;
+            set { if (_component is IVariable iv) iv.Scope = value; }
+        }
 
         public int ItemID
         {

@@ -32,7 +32,7 @@ namespace Amanita.VScripting
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            Muscariable var = VariableFactory.Create(contentType, null);
+            Muscariable var = VariableFactory.CreateByContentType(contentType, null);
             var.Key = key;
             AddVariable(var);
             return var;

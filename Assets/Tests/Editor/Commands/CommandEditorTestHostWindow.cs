@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     // Separate file (already referenced in project open docs) – ensure it still matches usage.
     public class CommandEditorTestHostWindow : EditorWindow

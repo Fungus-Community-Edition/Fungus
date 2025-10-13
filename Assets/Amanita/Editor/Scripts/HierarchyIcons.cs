@@ -46,11 +46,7 @@ namespace Amanita.EditorUtils
             if (EditorUtils.AmanitaEditorPreferences.hideMushroomInHierarchy)
                 return;
 
-        #if UNITY_6000
             var flowcharts = GameObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-        #else
-            var flowcharts = GameObject.FindObjectsOfType<Flowchart>();
-        #endif
 
             flowchartIDs = flowcharts.Select(x => x.gameObject.GetInstanceID()).Distinct().ToList();
             flowchartIDs.Sort();

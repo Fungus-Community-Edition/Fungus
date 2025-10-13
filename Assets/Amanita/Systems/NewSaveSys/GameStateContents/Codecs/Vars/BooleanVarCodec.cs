@@ -5,16 +5,17 @@ namespace Amanita.SaveSys
 {
     public class BooleanVarCodec : IVarCodec
     {
-        public int Priority => 0;
+        public int Order => 0;
 
         public virtual bool NeedsInput => true;
 
         public virtual bool CanHandle(object toMakeFrom) =>
-            CanHandle(toMakeFrom as Variable);
+            CanHandle(toMakeFrom as IVariable);
         public virtual bool CanHandle(IVariable variable) =>
-            variable is BooleanVariable;
+            variable is IVariable<bool>;
         public virtual bool CanHandle(string typeName) =>
-            typeName == nameof(BooleanVariable);
+            typeName == nameof(BooleanVariable) ||
+            typeName == nameof(BoolMuscariable);
         public virtual bool CanHandle(VariableSaveData saveData) =>
             CanHandle(saveData.VarTypeName);
 
@@ -33,14 +34,15 @@ namespace Amanita.SaveSys
         public virtual string EncodeToString(IVariable toEncode)
         {
             // Try direct cast first
-            BooleanVariable booleanVar = toEncode as BooleanVariable;
+            IVariable<bool> booleanVar = toEncode as IVariable<bool>;
             if (booleanVar != null)
             {
                 return booleanVar.Value.ToString();
             }
 
             // Fallback: check type name and use reflection
-            if (toEncode.GetType().Name == "BooleanVariable")
+            string varTypeName = toEncode.GetType().Name;
+            if (varTypeName == nameof(BooleanVariable) || varTypeName == nameof(BoolMuscariable))
             {
                 var valueProp = toEncode.GetType().GetProperty("Value");
                 if (valueProp != null)
@@ -61,7 +63,7 @@ namespace Amanita.SaveSys
 
         public virtual void Decode(IVariable toDecode, string data)
         {
-            BooleanVariable booleanVar = toDecode as BooleanVariable;
+            IVariable<bool> booleanVar = toDecode as IVariable<bool>;
             if (booleanVar == null)
             {
                 Debug.LogError($"Variable type {toDecode.GetType()} is not supported for decoding in {this.GetType().Name}.");

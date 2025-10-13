@@ -14,7 +14,7 @@ using UnityObject = UnityEngine.Object;
 using Amanita.EditorUtils;
 using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableRowManagerTests 
     {

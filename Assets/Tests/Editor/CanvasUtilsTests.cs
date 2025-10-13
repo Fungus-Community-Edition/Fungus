@@ -2,7 +2,7 @@
 using UnityEngine;
 using Amanita.EditorUtils;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class CanvasUtilsTests
     {
