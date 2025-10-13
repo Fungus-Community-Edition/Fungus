@@ -98,11 +98,7 @@ namespace Amanita.VScripting
             targetCamera = Camera.main;
             if (targetCamera == null)
             {
-            #if UNITY_6000
                 targetCamera = GameObject.FindFirstObjectByType<Camera>();
-            #else
-                targetCamera = GameObject.FindObjectOfType<Camera>();
-            #endif
             }
         }
 

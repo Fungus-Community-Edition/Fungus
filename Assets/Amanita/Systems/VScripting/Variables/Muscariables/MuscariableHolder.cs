@@ -56,6 +56,12 @@ namespace Amanita.VScripting
 
                 return muscariable.Scope;
             }
+            set
+            {
+                Ensure(); 
+                muscariable.Scope = value; 
+                Dirty();
+            }
         }
 
         public virtual int ItemID
@@ -97,7 +103,7 @@ namespace Amanita.VScripting
         public virtual void Init(IVariable variable)
         {
             muscariable = variable as Muscariable;
-            muscariable ??= VariableFactory.Create(variable?.ContentType, variable);
+            muscariable ??= VariableFactory.CreateByContentType(variable?.ContentType, variable);
 
             Init();
         }
@@ -127,7 +133,7 @@ namespace Amanita.VScripting
             UnityEditor.Undo.RecordObject(this, "Set Muscariable");
             // ^We want to be able to revert the change
 
-            prop.managedReferenceValue = VariableFactory.Create(src.ContentType, src);
+            prop.managedReferenceValue = VariableFactory.CreateByContentType(src.ContentType, src);
             so.ApplyModifiedProperties();
 #else
             muscariable = MuscariableFactory.Create(src.ContentType, src);

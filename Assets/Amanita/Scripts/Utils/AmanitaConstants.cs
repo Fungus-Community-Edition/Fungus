@@ -48,6 +48,10 @@ namespace Amanita
         public const string UIPrefixForDeprecated_RichText = "<color=yellow>" + UIPrefixForDeprecated + "</color>";
 
         public const string PathToAmanitaManagerPrefab = "Prefabs/AmanitaManager";
+        public const string PathToDefaultTweenAdapter = "DefaultTweenAdapter";
+        public const string PathToDefaultSaveStorageSettings = "SaveSys/DefaultSaveStorageSettings";
+        public const string PathToDefaultEncryptor = "SaveSys/DefaultEncryptor";
+        public const string PathToDefaultDecryptor = "SaveSys/DefaultDecryptor";
 
         /// <summary>
         /// This is relative to a Resources folder.

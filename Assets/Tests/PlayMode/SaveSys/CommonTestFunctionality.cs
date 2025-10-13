@@ -15,6 +15,7 @@ using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using Amanita.VScripting;
 using Amanita;
+using FullSerializer;
 
 namespace SaveSystemTests
 {
@@ -43,6 +44,12 @@ namespace SaveSystemTests
         public virtual void DoSetUp()
         {
             PlayerPrefs.DeleteAll();
+            //SaveStorageSettings saveStorageSettings = new SaveStorageSettings();
+            if (AmanitaManager.S != null)
+            {
+                UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+            }
+
             ResetSingletonStatics();
 
             PrepAmanitaManagerAndItsSubmodules();
@@ -64,8 +71,12 @@ namespace SaveSystemTests
                 SaveSystemInstaller.S = installer;
 
                 saveManager = saveSys.SaveManager;
+                storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
+                storageSettings.RelativePath = "TestSaves";
                 saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
                 saveReader = ScriptableObject.CreateInstance<SaveReader>();
+                saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
+                otherTestPathResolver.StorageSettings = storageSettings;
                 encryptor = ScriptableObject.CreateInstance<Encryptor>();
             }
 
@@ -85,7 +96,9 @@ namespace SaveSystemTests
             void LoadCodecs()
             {
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
-
+                BuiltinVarSaveCodec builtinCodec = new BuiltinVarSaveCodec();
+                flowchartSaveCodec.RegisterVarCodec(builtinCodec);
+                flowchartApplier.RegisterVarCodec(builtinCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
             }
             
@@ -111,7 +124,7 @@ namespace SaveSystemTests
                     if (ReqFlowchart)
                     {
                         flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-
+                        
                         SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
                         mainSave.Add(encodedFlowchartSave);
 
@@ -131,8 +144,34 @@ namespace SaveSystemTests
             }
 
             LogAssert.ignoreFailingMessages = ShouldIgnoreFailingLogMessagesByDefault;
+
+            RegisterWhatToDestroyInTearDown();
+            void RegisterWhatToDestroyInTearDown()
+            {
+                toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
+
+                toDestroyInTearDown.Add(saveWriter);
+                toDestroyInTearDown.Add(saveReader);
+                toDestroyInTearDown.Add(storageSettings);
+                toDestroyInTearDown.Add(encryptor);
+
+                toDestroyInTearDown.Add(flowchartApplier);
+                toDestroyInTearDown.Add(audioApplier);
+                toDestroyInTearDown.Add(flowchartSaveCodec);
+                toDestroyInTearDown.Add(blockSaveCodec);
+
+                toDestroyInTearDown.Add(testScene);
+
+                IList<EventSystem> possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+
+                toDestroyInTearDown.AddRange(possiblyMadeByFlowchart);
+            }
+            
         }
 
+        protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
+        protected SaveStorageSettings storageSettings;
+        protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
         protected virtual void ResetSingletonStatics()
         {
             SaveSystem.ResetStaticsForTest();
@@ -142,7 +181,6 @@ namespace SaveSystemTests
             AudioSystem.ResetStaticsForTest();
         }
 
-        GameObject toUndoDontDestroyOnLoad;
         protected virtual bool ReqSceneLoad => true;
         protected virtual bool ShouldIgnoreFailingLogMessagesByDefault => false;
         protected SaveWriter saveWriter;
@@ -158,7 +196,7 @@ namespace SaveSystemTests
         protected string pathToAudioArgsSO = "testClip";
         protected FlowchartApplier flowchartApplier;
         protected MyceliaudioApplier audioApplier;
-
+        protected readonly fsSerializer serializer = new fsSerializer();
         protected FlowchartSaveCodec flowchartSaveCodec;
         protected BlockSaveCodec blockSaveCodec;
         protected ISaveManager saveManager;
@@ -205,31 +243,31 @@ namespace SaveSystemTests
             flowchart = testScene.GetComponentInChildren<Flowchart>(true);
             if (flowchart == null)
                 throw new Exception("Flowchart component not found in test scene prefab.");
-
+            flowchart.gameObject.SetActive(true);
         }
 
         protected virtual void PrepVars()
         {
-            nameVar = (StringVariable)flowchart.GetVariable("name");
-            scoreVar = (IntegerVariable)flowchart.GetVariable("score");
-            isNewPlayerVar = (BooleanVariable)flowchart.GetVariable("newPlayer");
-            fastestTimeVar = (FloatVariable)flowchart.GetVariable("fastestTimeInSeconds");
-            threeDPosVar = (Vector3Variable)flowchart.GetVariable("threeDPos");
-            twoDPosVar = (Vector2Variable)flowchart.GetVariable("twoDPos");
+            nameVar = (IVariable<string>)flowchart.GetVariable("name");
+            scoreVar = (IVariable<int>)flowchart.GetVariable("score");
+            isNewPlayerVar = (IVariable<bool>)flowchart.GetVariable("newPlayer");
+            fastestTimeVar = (IVariable<float>)flowchart.GetVariable("fastestTimeInSeconds");
+            threeDPosVar = (IVariable<Vector3>)flowchart.GetVariable("threeDPos");
+            twoDPosVar = (IVariable<Vector2>)flowchart.GetVariable("twoDPos");
 
-            stringVar = flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
-
-            transformVar = (TransformVariable)flowchart.GetVariable("someTrans");
+            flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
+            stringVar = flowchart.GetVariable("someStringVar") as IVariable<string>;
+            transformVar = (IVariable<Transform>)flowchart.GetVariable("someTrans");
         }
 
-        protected StringVariable nameVar = null;
-        protected IntegerVariable scoreVar = null;
-        protected BooleanVariable isNewPlayerVar = null;
-        protected FloatVariable fastestTimeVar = null;
-        protected Vector3Variable threeDPosVar = null;
-        protected Vector2Variable twoDPosVar = null;
-        protected StringVariable stringVar = null;
-        protected TransformVariable transformVar = null;
+        protected IVariable<string> nameVar = null;
+        protected IVariable<int> scoreVar = null;
+        protected IVariable<bool> isNewPlayerVar = null;
+        protected IVariable<float> fastestTimeVar = null;
+        protected IVariable<Vector3> threeDPosVar = null;
+        protected IVariable<Vector2> twoDPosVar = null;
+        protected IVariable<string> stringVar = null;
+        protected IVariable<Transform> transformVar = null;
 
         protected string initNameVal;
         protected int initScoreVal;
@@ -247,7 +285,6 @@ namespace SaveSystemTests
             SaveMetaData = new SaveMetaData(),
             BaseSaveDirectory = SaveDirectoryType.DataPath
         };
-
 
         protected virtual CompositeSaveData MainSave
         {
@@ -268,48 +305,58 @@ namespace SaveSystemTests
             stringVar.Value = initStringVal;
         }
 
-        protected string relativePathForTesting = "TempSaves";
-        
         protected AudioSystem AudioSys { get { return AudioSystem.S; } }
 
         [TearDown]
         public virtual void DoTearDown()
         {
+            SaveSystem.S.ClearSaveDataAppliers();
             ResetSingletonStatics();
+
+            CleanupSaveFiles();
+            void CleanupSaveFiles()
+            {
+                foreach (string path in saveFilePathsForCleanup)
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                }
+
+                saveFilePathsForCleanup.Clear();
+            }
 
             DestroyGameObjects();
             void DestroyGameObjects()
             {
-                UnityObject.DestroyImmediate(testScene);
-                testScene = null;
-                DestroyEventSystems();
-                void DestroyEventSystems()
+                foreach (var obj in toDestroyInTearDown)
                 {
-#if UNITY_6000_0_OR_NEWER
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
-#else
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-#endif
-                    foreach (var elem in possiblyMadeByFlowchart)
+                    if (obj != null)
                     {
-                        UnityObject.DestroyImmediate(elem.gameObject);
+                        UnityObject.DestroyImmediate(obj);
                     }
                 }
 
-                if (ammyManager != null)
-                {
-                    UnityObject.DestroyImmediate(ammyManager.gameObject);
-                    // ^This should also destroy the submodules
-                    ammyManager = null;
-                }
+                ammyManager = null;
+                flowchart = null;
+                testScene = null;
+                saveWriter = null;
+                saveReader = null;
+                flowchartApplier = null;
+                encryptor = null;
+                audioApplier = null;
+                flowchartSaveCodec = null;
+                blockSaveCodec = null;
+                saveSys = null;
+                saveManager = null;
+                toDestroyInTearDown.Clear();
 
             }
 
             writeReq.MainState = new CompositeSaveData { };
             
         }
-
-        
 
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
@@ -346,11 +393,27 @@ namespace SaveSystemTests
 
         protected virtual bool ShouldDeleteTestSavesAtEnd => true;
 
+        protected readonly TestSavePathResolver testPathResolver = new TestSavePathResolver();
+        protected readonly DefaultSavePathResolver otherTestPathResolver = new DefaultSavePathResolver();
         protected void DeleteAllTestSaves()
         {
-            foreach (string root in saveSys.SaveDirectoryPaths.Values)
+            // We want to go for both the default and test paths
+            IList<string> folderPaths = new string[]
+            {
+                saveSys.GetSaveDirectory(SaveDirectoryType.DataPath),
+                saveSys.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
+
+                testPathResolver.GetSaveFolderPath(SaveDirectoryType.DataPath),
+                testPathResolver.GetSaveFolderPath(SaveDirectoryType.PersistentDataPath),
+            };
+
+            foreach (string root in folderPaths)
             {
                 string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
+                if (!Directory.Exists(pathToTempFolder))
+                {
+                    continue;
+                }
 
                 IList<string> pathsToTestSaves = Directory.EnumerateFiles(pathToTempFolder, "*.save",
                     SearchOption.AllDirectories).ToList();
@@ -413,20 +476,99 @@ namespace SaveSystemTests
 
         void PrepNewPathsForTesting()
         {
-            Dictionary<SaveDirectoryType, string> newPaths =
-                new Dictionary<SaveDirectoryType, string>(BaseSavePaths);
-            foreach (var keyEl in BaseSavePaths.Keys)
+            // We need the writers, readers, and system as a whole to use the same resolver
+            saveSys.SavePathResolver = testPathResolver;
+            saveWriter.PathResolver = testPathResolver;
+            saveReader.PathResolver = testPathResolver;
+        }
+
+        public class TestSavePathResolver : IConfigurableSaveSlotPathResolver<SaveDirectoryType>
+        {
+            public TestSavePathResolver(string relativePath = "TempSaves", string fileExtension = "save")
             {
-                string currentVal = BaseSavePaths[keyEl];
-                string newPath = Path.Combine(currentVal, relativePathForTesting);
-                newPaths[keyEl] = newPath;
+                RelativePath = relativePath;
+                FileExtension = fileExtension;
+            }
+            public string RelativePath { get; protected set; }
+            public string FileExtension { get; protected set; }
+
+            public string NumberFormat => "D2";
+
+            string IConfigurableSaveSlotPathResolver.NumberFormat
+            {
+                get => NumberFormat;
+                set
+                {
+                    // We don't allow changing this
+                }
+            }
+            string IConfigurableSavePathResolver.RelativePath { get => RelativePath; set => RelativePath = value; }
+            string IConfigurableSavePathResolver.FileExtension { get => FileExtension; set => FileExtension = value; }
+
+            public string GetSaveFolderPath(SaveDirectoryType input)
+            {
+                string basePath;
+                switch (input)
+                {
+                    case SaveDirectoryType.DataPath:
+                    case SaveDirectoryType.InTheBalls:
+                        basePath = Application.dataPath; break;
+                    case SaveDirectoryType.PersistentDataPath:
+                        basePath = Application.persistentDataPath; break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Input of type {input} is not supported.");
+                }
+
+                string result = Path.Combine(basePath, RelativePath);
+                return result;
+            }
+            public string GetSaveFolderPath(object input)
+            {
+                if (input is SaveDirectoryType type)
+                {
+                    return GetSaveFolderPath(type);
+                }
+                else
+                {
+                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
+                }
+            }
+            public string GetSaveFilePath(string fileName, SaveDirectoryType input)
+            {
+                string result = Path.Combine(GetSaveFolderPath(input),
+                    $"{fileName}.{FileExtension}");
+                return result;
+            }
+            public string GetSaveFilePath(string fileName, object input)
+            {
+                if (input is SaveDirectoryType type)
+                {
+                    return GetSaveFilePath(fileName, type);
+                }
+                else
+                {
+                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
+                }
             }
 
-            
-            foreach (var keyEl in newPaths.Keys)
+            public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
             {
-                string path = newPaths[keyEl];
-                saveSys.SaveDirectoryPaths[keyEl] = path;
+                string fileName = GetSaveFileName(slotNumber);
+                string result = GetSaveFilePath($"saveData_slot{slotNumber}", input);
+                return result;
+            }
+
+            public string GetSaveFileName(int slotNumber)
+            {
+                string path = GetSaveFilePath(SaveDirectoryType.PersistentDataPath, slotNumber);
+                string result = Path.GetFileNameWithoutExtension(path);
+                return result;
+            }
+
+            public string GetSaveFilePath(object input, int slotNumber)
+            {
+                string result = GetSaveFilePath((SaveDirectoryType)input, slotNumber);
+                return result;
             }
         }
 

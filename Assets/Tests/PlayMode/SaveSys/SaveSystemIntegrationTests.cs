@@ -71,9 +71,6 @@ namespace SaveSystemTests
             stringVar.Value = "TestValue123";
 
             int slot = 10;
-            ISaveMetaData meta = metaFactory.CreateMeta(slot);
-
-            // Save
             await saveSystem.SaveTo(slot);
 
             // Change the variable to something else to ensure load will restore it
@@ -102,46 +99,8 @@ namespace SaveSystemTests
             var dummyApplier = new DummySaveDataApplier();
             saveSystem.RegisterSaveDataApplier(dummyApplier);
 
-            Assert.Contains(dummyApplier, (System.Collections.ICollection)saveSystem.SaveDataAppliers);
-        }
-
-        [Test]
-        public void SaveDirectoryPaths_CanBeSetAndGet()
-        {
-            var paths = new Dictionary<SaveDirectoryType, string>
-            {
-                { SaveDirectoryType.DataPath, "/tmp/test" }
-            };
-            saveSystem.SaveDirectoryPaths = paths;
-
-            var result = saveSystem.SaveDirectoryPaths;
-            Assert.AreEqual("/tmp/test", result[SaveDirectoryType.DataPath]);
-        }
-
-        [Test]
-        public void SetSaveDirPath_UpdatesPath()
-        {
-            string newPath = "/tmp/another";
-            saveSystem.SetSaveDirPath(SaveDirectoryType.DataPath, newPath);
-
-            var result = saveSystem.SaveDirectoryPaths;
-            Assert.AreEqual(newPath, result[SaveDirectoryType.DataPath]);
-        }
-
-        [Test]
-        public void SaveName_SetAndGet_Works()
-        {
-            saveSystem.SaveName = "TestSave";
-            Assert.AreEqual("TestSave", saveSystem.SaveName);
-        }
-
-        [Test]
-        public void SaveNamePrefixSuffix_SetAndGet_Works()
-        {
-            saveSystem.SaveNamePrefix = "PRE_";
-            saveSystem.SaveNameSuffix = "_SUF";
-            Assert.AreEqual("PRE_", saveSystem.SaveNamePrefix);
-            Assert.AreEqual("_SUF", saveSystem.SaveNameSuffix);
+            bool success = saveSystem.SaveDataAppliers.Contains(dummyApplier);
+            Assert.IsTrue(success);
         }
 
         // Dummy implementations for testing registration

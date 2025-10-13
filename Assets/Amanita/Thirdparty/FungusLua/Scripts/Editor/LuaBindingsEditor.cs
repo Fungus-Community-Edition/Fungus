@@ -385,11 +385,7 @@ namespace Amanita.Lua
         [DidReloadScripts()]
         protected static void DidReloadScripts()
         {
-        #if UNITY_6000
             var luaBindingsList = GameObject.FindObjectsByType<LuaBindings>(FindObjectsSortMode.None);
-        #else
-            var luaBindingsList = GameObject.FindObjectsOfType<LuaBindings>();
-        #endif
             foreach (var luaBindings in luaBindingsList)
             {
                 SerializedObject so = new SerializedObject(luaBindings);

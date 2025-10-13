@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using Amanita.VScripting;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Amanita.DialogueSys.Commands
 {
@@ -81,8 +83,10 @@ namespace Amanita.DialogueSys.Commands
 
             var f = GetFlowchart();
 
-            if(!string.IsNullOrEmpty(conversationText.Value))
+            if (!string.IsNullOrEmpty(conversationText.Value))
+            {
                 f.DetermineSubstituteVariables(conversationText, referencedVariables);
+            }
         }
 #endif
         #endregion Editor caches

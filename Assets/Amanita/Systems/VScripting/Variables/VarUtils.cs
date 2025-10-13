@@ -47,20 +47,23 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// If the arg is already a Muscariable, it (unaltered) will be the return value. 
+        /// If the input var is a non-Muscariable, this will return a Muscariable version of it with the
+        /// key, value, etc copied over. If false (and the input var is already a Muscariable) it
+        /// will be returned directly.
         /// </summary>
-        public static Muscariable ToMuscariable(this IVariable var)
+        public static Muscariable ToMuscariable(this IVariable var, bool makeCopyIfAlreadyMuscari = false)
         {
-            if (var is Muscariable muscari)
+            Muscariable result;
+            if (makeCopyIfAlreadyMuscari || var is not Muscariable)
             {
-                return muscari;
+                result = VariableFactory.CreateByContentType(var.ContentType, var);
             }
             else
             {
-                muscari = VariableFactory.Create(var.ContentType, var);
+                result = (Muscariable)var;
             }
 
-            return muscari;
+            return result;
         }
     }
 }

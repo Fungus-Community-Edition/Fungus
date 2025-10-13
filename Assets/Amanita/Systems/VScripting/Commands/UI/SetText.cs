@@ -1,6 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Amanita.VScripting
 {
@@ -77,7 +79,6 @@ namespace Amanita.VScripting
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-
             f.DetermineSubstituteVariables(text, referencedVariables);
         }
 #endif

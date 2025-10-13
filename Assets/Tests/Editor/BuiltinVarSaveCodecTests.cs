@@ -69,13 +69,7 @@ namespace SaveSys
             // Ensure any leftover test GameObjects are cleaned up between tests.
             // (Tests that create a temporary GameObject destroy it explicitly, but this is a safety-net.)
 
-            IList<GameObject> allGameObjects;
-
-#if UNITY_6000_0_OR_NEWER
-            allGameObjects = UnityObj.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
-#else
-            allGameObjects = UnityObj.FindObjectsOfType<GameObject>();
-#endif
+            IList<GameObject> allGameObjects = UnityObj.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             IList<UnityObj> testGameObjects = allGameObjects.Where(go => go.name.StartsWith("test-tmp-"))
                 .Cast<UnityObj>()
@@ -171,7 +165,7 @@ namespace SaveSys
                 VariableInfoAttribute varInfo = varType.GetCustomAttribute<VariableInfoAttribute>();
                 Type contentType = varInfo.ContentType;
 
-                IVariable instance = VariableFactory.Create(contentType, null);
+                IVariable instance = VariableFactory.CreateByContentType(contentType, null);
                 Assert.IsNotNull(instance, 
                     $"Failed to create instance of {varType.Name} for CanHandle test.");
 
@@ -296,7 +290,11 @@ namespace SaveSys
             // Implement minimal members expected by test/runtime; avoid referencing unavailable types (Execution.*).
             public string Key { get; set; }
             public object Value { get; set; }
-            public VariableScope Scope => default;
+            public VariableScope Scope
+            {                 
+                get => VariableScope.Private;
+                set { }
+            }
             public Type ContentType => null;
             public IVariableSource Owner => null;
 

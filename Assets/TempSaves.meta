@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/TempSaves/TempSaves.meta
-guid: f85bcab889adb6b439f20de1b2e003dc
-========
-guid: 3e0739f9587c2694a807a55c772da565
->>>>>>>> newSaveSystem:Assets/TempSaves.meta
+guid: 5d1b913977ebb0b4c9436ee7e4591097
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
