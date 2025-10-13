@@ -275,11 +275,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 if (amanitaState == null)
                 {
-#if UNITY_6000
                     amanitaState = GameObject.FindFirstObjectByType<AmanitaState>();
-#else
-                    fungusState = GameObject.FindObjectOfType<AmanitaState>();
-#endif
                     if (amanitaState == null)
                     {
                         GameObject stateHolder = new GameObject("_AmanitaState");

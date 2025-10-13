@@ -12,7 +12,7 @@ using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using Amanita.EditorUtils;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Focused tests for VariableListView independent of VariableRowManager.
@@ -531,7 +531,11 @@ namespace VariableOperations
             }
 
             // IVariable.Scope (readonly)
-            public VariableScope Scope => VariableScope.Private;
+            public VariableScope Scope
+            {
+                get => VariableScope.Private;
+                set { } // no-op
+            }
 
             // IVariable.Owner
             public IVariableSource Owner => null;

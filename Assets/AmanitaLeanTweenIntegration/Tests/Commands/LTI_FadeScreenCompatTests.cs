@@ -26,7 +26,7 @@ namespace CommandCompat
                 .SetValue(command, true);
             CmdType.GetField("fadeTweener", flags)
                 .SetValue(command, adapter);
-            CmdType.GetField("doFadeTween", flags)
+            CmdType.GetField("doFade", flags)
                 .SetValue(command, adapter);
         }
 

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     // Dummy handler types for testing
     public class GoodHandler { }

@@ -22,7 +22,7 @@ namespace SaveSystemTests
 
             // Make sure slot is clean
             var readReq = new SaveReadRequest { SlotNumber = testSlot };
-            var path = FileUtils.GetPathToFile(saveDirType, testSlot, installerSaveReader);
+            var path = installerSaveReader.GetSaveFilePath(saveDirType, testSlot);
             //var path = SaveSystemInstaller.SaveRepo.GetSavePath(readReq);
             if (File.Exists(path)) File.Delete(path);
 

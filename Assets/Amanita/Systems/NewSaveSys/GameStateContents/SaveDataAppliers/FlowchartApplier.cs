@@ -6,6 +6,7 @@ using System.Threading;
 using Amanita.Utils;
 using System;
 using Amanita.VScripting;
+using UnityEngine.SceneManagement;
 
 namespace Amanita.SaveSys
 {
@@ -14,26 +15,93 @@ namespace Amanita.SaveSys
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
-        protected virtual void OnValidate()
-        {
-            if (allFlowcharts != null)
-            {
-                allFlowcharts = allFlowcharts.Where(fc => fc != null).ToList();
-            }
-        }
+        [SerializeField] protected ScriptableObject[] varCodecs = Array.Empty<ScriptableObject>();
+        protected IList<IVarCodec> validVarCodecs = new List<IVarCodec>();
 
         protected IList<Flowchart> allFlowcharts = new List<Flowchart>();
 
+        public virtual void RegisterVarCodec(IVarCodec codec)
+        {
+            if (codec == null)
+            {
+                Debug.LogWarning("Cannot register a null codec.");
+                return;
+            }
+            if (!validVarCodecs.Contains(codec))
+            {
+                validVarCodecs.Add(codec);
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            RefreshValidCodecs();
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        }
+
+        protected virtual void RefreshValidCodecs()
+        {
+            validVarCodecs.Clear();
+            foreach (var codecObj in varCodecs)
+            {
+                if (codecObj is IVarCodec codec)
+                {
+                    validVarCodecs.Add(codec);
+                }
+                else if (codecObj != null)
+                {
+                    Debug.LogWarning($"Object {codecObj.name} is not an IVarCodec.");
+                }
+            }
+        }
+
+        protected void OnActiveSceneChanged(Scene _, Scene __)
+        {
+            // When the scene changes, the flowcharts in the previous scene may be destroyed,
+            // so we clear the list to avoid holding onto invalid references.
+            allFlowcharts.Clear();
+        }
+
+        protected virtual void OnDisable()
+        {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            allFlowcharts.Clear();
+        }
+
+        protected virtual void OnValidate()
+        {
+            RemoveFakeNullFlowcharts();
+            RefreshValidCodecs();
+        }
+
+        protected virtual void RemoveFakeNullFlowcharts()
+        {
+            if (allFlowcharts != null)
+            {
+                // Editor-time prune; Unity “fake null” evaluates true here
+                for (int i = 0; i < allFlowcharts.Count; i++)
+                {
+                    if (allFlowcharts[i] == null)
+                    {
+                        allFlowcharts.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+        }
+
         public override Task Apply(FlowchartSaveData saveData)
         {
-            // Applying the states of vars and Blocks might require tampering with things
-            // that aren't thread-safe. Also, funcs like FindObjectsByType only work on the main thread.
             Flowchart flowchart = null;
 
             bool flowchartFound = false;
             string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.";
             bool onMainThread = UnityThreadUtil.IsMainThread;
-            if (onMainThread)
+            void MainOperation()
             {
                 flowchartFound = TryGetFlowchartFor(saveData, out flowchart);
                 if (!flowchartFound)
@@ -45,31 +113,64 @@ namespace Amanita.SaveSys
                     ApplyStuff();
                 }
             }
+            if (onMainThread)
+            {
+                MainOperation();
+            }
+            else
+            {
+                // Push to main thread to touch scene objects safely
+                using (var countdown = new CountdownEvent(1))
+                {
+                    bool enqueued = false;
+                    try
+                    {
+                        MainThreadDispatcher.Enqueue(() =>
+                        {
+                            MainOperation();
+                            countdown.Signal();
+                        });
+                        enqueued = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
+                    finally
+                    {
+                        if (!enqueued)
+                        {
+                            // ensure we don’t deadlock if enqueue fails
+                            countdown.Signal();
+                        }
+                    }
+                    countdown.Wait();
+                }
+            }
+
+            return Task.CompletedTask;
 
             void ApplyStuff()
             {
                 ApplyVarStates();
                 ApplyBlockStates();
             }
+
             void ApplyVarStates()
             {
                 foreach (VariableSaveData varSaveData in saveData.SavedVars)
                 {
-                    IVarCodec forThisVar = CodecRegistry.GetCodec(varSaveData);
+                    IVarCodec forThisVar = validVarCodecs.FirstOrDefault(c => c.CanHandle(varSaveData));
                     if (forThisVar == null)
                     {
-                        Debug.LogWarning($"No serializer found for variable type: {varSaveData.GetType().Name}");
+                        Debug.LogWarning($"No codec found for variable type: {varSaveData.GetType().Name}");
                         continue;
                     }
 
-                    Variable varEl = flowchart.GetVariableById(varSaveData.ItemID);
-                    if (varEl == null)
-                    {
-                        varEl = flowchart.GetVariable(varSaveData.VarName);
-                    }
+                    IVariable varEl = flowchart.GetVariableById(varSaveData.ItemID);
+                    varEl ??= flowchart.GetVariable(varSaveData.VarName); // Fallback to searching by name
 
-                    bool stillGotNothing = varEl == null;
-                    if (stillGotNothing)
+                    if (varEl == null)
                     {
                         Debug.LogWarning($"Variable {varSaveData.VarName} not found in flowchart {flowchart.name}.");
                         continue;
@@ -78,44 +179,26 @@ namespace Amanita.SaveSys
                     forThisVar.Decode(varEl, varSaveData);
                 }
             }
+
             void ApplyBlockStates()
             {
                 foreach (BlockSaveData blockSave in saveData.SavedBlocks)
                 {
                     Block blockToApplyTo = FindTheRightBlock(flowchart, blockSave);
-                    Block FindTheRightBlock(Flowchart flowchart, BlockSaveData blockSave)
-                    {
-                        // Find the current block first by its item id, then by its name
-                        Block blockToApplyTo = flowchart.FindBlockByItemId(blockSave.ItemId);
-                        if (blockToApplyTo == null)
-                        {
-                            blockToApplyTo = flowchart.FindBlock(blockSave.BlockName);
-                        }
 
-                        return blockToApplyTo;
-                    }
-
-                    bool stllGotNothing = blockToApplyTo == null;
-                    if (stllGotNothing)
+                    if (blockToApplyTo == null)
                     {
                         Debug.LogWarning($"Block {blockSave.BlockName} not found in flowchart {flowchart.name}.");
                         continue;
                     }
 
-                    // We assume that the Block was indeed executing
-                    // at this point.
                     bool blockWasExecuting = blockSave.ActiveCommandIndex != -1;
                     if (blockWasExecuting)
                     {
-                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId);
+                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId)
+                            ?? blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex);
 
                         if (commandToApplyTo == null)
-                        {
-                            commandToApplyTo = blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex);
-                        }
-
-                        bool stillNothing = commandToApplyTo == null;
-                        if (stillNothing)
                         {
                             Debug.LogWarning($"Command {blockSave.ActiveCommandId} not found in block {blockToApplyTo.BlockName}.");
                             continue;
@@ -123,101 +206,60 @@ namespace Amanita.SaveSys
 
                         flowchart.StopBlock(blockSave.BlockName);
                         flowchart.ExecuteBlock(blockToApplyTo, blockSave.ActiveCommandIndex);
-
                     }
                 }
 
-
-            }
-
-            if (!onMainThread)
-            {
-                PushTheWorkToTheMainThread();
-                void PushTheWorkToTheMainThread()
+                static Block FindTheRightBlock(Flowchart fc, BlockSaveData blockSave)
                 {
-                    using (var countdown = new CountdownEvent(1))
-                    {
-                        bool lambdaEnqueued = false;
-                        Exception threadException = null;
-                        try
-                        {
-                            Debug.Log("Right before the enqueue");
-                            MainThreadDispatcher.Enqueue(() =>
-                            {
-                                Debug.Log($"At start of pushing work to main thread");
-                                flowchartFound = TryGetFlowchartFor(saveData, out flowchart);
-                                if (!flowchartFound)
-                                {
-                                    Debug.LogWarning(flowchartNotFoundMessage);
-                                }
-                                else
-                                {
-                                    ApplyStuff();
-                                }
-                                Debug.Log($"Right before countdown.Signal when work on main thread is done");
-                                countdown.Signal();
-                            });
-                            lambdaEnqueued = true;
-                            Debug.Log("Right after the enqueue");
-                        }
-                        catch (Exception ex)
-                        {
-                            threadException = ex;
-                        }
-                        finally
-                        {
-                            if (!lambdaEnqueued)
-                            {
-                                countdown.Signal(); 
-                                // ^Calling this after a successful enqueue can result in an ObjectDisposedException
-                            }
-                        }
-                        countdown.Wait();
-                    }
-                    
+                    return fc.FindBlockByItemId(blockSave.ItemId) ?? fc.FindBlock(blockSave.BlockName);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         protected virtual bool TryGetFlowchartFor(FlowchartSaveData saveData, out Flowchart flowchart)
         {
-            bool onMainThread = UnityThreadUtil.IsMainThread;
-            if (allFlowcharts.Count == 0 || allFlowcharts.Contains(null))
+            // Prune stale “fake null” entries first
+            PruneNulls(allFlowcharts);
+
+            // If empty, (re)build the cache; include inactive flowcharts
+            if (allFlowcharts.Count == 0)
             {
+#if UNITY_2022_3_OR_NEWER
+                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None).ToList();
+#else
                 allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+#endif
             }
 
-            flowchart = FindFlowchartReferredToBy(saveData);
-            Flowchart FindFlowchartReferredToBy(FlowchartSaveData saveData)
-            {
-                Flowchart flowchart = FindFlowchartById(saveData.UniqueId);
-                if (flowchart == null)
-                {
-                    flowchart = FindFlowchartByName(saveData.FlowchartName);
-                }
-
-                return flowchart;
-            }
-
+            flowchart = FindFlowchartById(saveData.UniqueId) ?? FindFlowchartByName(saveData.FlowchartName);
             return flowchart != null;
+        }
+
+        protected virtual void PruneNulls(IList<Flowchart> list)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i] == null)
+                {
+                    list.RemoveAt(i);
+                }
+            }
         }
 
         protected virtual Flowchart FindFlowchartById(string id)
         {
-            Flowchart result = (from flowchart in allFlowcharts
-                                where flowchart.UniqueId == id
-                                select flowchart).FirstOrDefault();
-            return result;
+            return (from flowchart in allFlowcharts
+                    where flowchart != null
+                    where flowchart.UniqueId == id
+                    select flowchart).FirstOrDefault();
         }
 
         protected virtual Flowchart FindFlowchartByName(string name)
         {
-            Flowchart result = (from flowchart in allFlowcharts
-                                where flowchart.name == name
-                                select flowchart).FirstOrDefault();
-            return result;
+            return (from flowchart in allFlowcharts
+                    where flowchart != null
+                    where flowchart.name == name
+                    select flowchart).FirstOrDefault();
         }
 
         public override Task Apply(SaveData saveData)

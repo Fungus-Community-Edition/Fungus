@@ -10,7 +10,7 @@
             <engine:Button text="-" name="RemoveButton" class="removeButton" />
         </engine:VisualElement>
         <engine:VisualElement name="ValueFieldHolder" style="flex-grow: 1;">
-            <engine:TextField name="ValueField" binding-path="value" multiline="true" vertical-scroller-visibility="Auto" select-all-on-mouse-up="false" select-all-on-focus="false" class="textField" />
+            <engine:TextField name="ValueField" binding-path="value" multiline="true" vertical-scroller-visibility="Auto" select-all-on-mouse-up="false" select-all-on-focus="false" class="textField" style="white-space: pre-wrap;" />
         </engine:VisualElement>
     </engine:VisualElement>
 </UXML>

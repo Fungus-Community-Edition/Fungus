@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Amanita.DialogueSys;
 
-namespace Commands
+namespace VScriptingTests.Commands
 {
     public class FungusConversationParseTests
     {

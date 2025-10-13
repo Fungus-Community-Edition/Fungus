@@ -116,7 +116,7 @@ namespace Amanita.SaveSys
                 forPathFinding.SlotNumber = slot;
             }
 
-            string result = FileUtils.GetPathToFile(saveDir, slot, saveReader);
+            string result = saveReader.GetSaveFilePath(saveDir, slot);
             return result;
         }
 

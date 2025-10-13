@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableReferenceDrawerTests
     {

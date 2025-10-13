@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class MuscariableHookTests
     {

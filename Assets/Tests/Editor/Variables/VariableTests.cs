@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityObj = UnityEngine.Object;
 using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public abstract class VariableTests 
     {
