@@ -183,13 +183,7 @@ namespace Amanita.SaveSys
             {
                 MainThreadDispatcher.Enqueue(() =>
                 {
-                    IList<Flowchart> allFlowcharts;
-                    
-#if UNITY_6000_0_OR_NEWER
-                    allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-                    allFlowcharts = FindObjectsOfType<Flowchart>();
-#endif
+                    IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
 
                     IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
                                                             where elem.IncludeInSaves == true

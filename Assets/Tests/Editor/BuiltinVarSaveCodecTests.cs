@@ -69,13 +69,7 @@ namespace SaveSys
             // Ensure any leftover test GameObjects are cleaned up between tests.
             // (Tests that create a temporary GameObject destroy it explicitly, but this is a safety-net.)
 
-            IList<GameObject> allGameObjects;
-
-#if UNITY_6000_0_OR_NEWER
-            allGameObjects = UnityObj.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
-#else
-            allGameObjects = UnityObj.FindObjectsOfType<GameObject>();
-#endif
+            IList<GameObject> allGameObjects = UnityObj.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 
             IList<UnityObj> testGameObjects = allGameObjects.Where(go => go.name.StartsWith("test-tmp-"))
                 .Cast<UnityObj>()

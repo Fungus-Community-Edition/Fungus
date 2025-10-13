@@ -46,7 +46,7 @@ namespace SaveSystemTests
             string formattedSaveNum = writeArgs.SlotNumber.ToString(SaveNumberFormat);
             string fileName = string.Format(FileNameFormat, SavePrefix,
                 formattedSaveNum, FileExtension);
-            string fullPath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, fileName, relativePath);
+            string fullPath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
 
             Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
             yield return WaitFor(writeTask);
@@ -61,18 +61,9 @@ namespace SaveSystemTests
 
         string debugSaveFolder;
 
-        protected virtual async Task CommonSaveWriteTestAsync(SaveWriteRequest writeArgs,
-            string relativePath = "")
+        protected virtual async Task CommonSaveWriteTestAsync(SaveWriteRequest writeArgs)
         {
-            if (string.IsNullOrEmpty(relativePath))
-            {
-                relativePath = saveWriter.RelativeSavePath;
-            }
-
-            string formattedSaveNum = writeArgs.SlotNumber.ToString(SaveNumberFormat);
-            string fileName = string.Format(FileNameFormat, SavePrefix,
-                formattedSaveNum, FileExtension);
-            string fullPath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, fileName, relativePath);
+            string fullPath = saveSys.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
 
             Task<bool> writeTask = saveWriter.WriteOneToDisk(writeArgs);
             await writeTask.ConfigureAwait(false);
@@ -100,14 +91,14 @@ namespace SaveSystemTests
         public virtual async Task WritesSaveToDisk_BaseDataPath_RelativePathIncluded()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
-            await CommonSaveWriteTestAsync(writeArgs, saveWriter.RelativeSavePath);
+            await CommonSaveWriteTestAsync(writeArgs);
         }
 
         [Test]
         public virtual async Task WritesSaveToDisk_BasePersistentDataPath_RelativePathIncluded()
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            await CommonSaveWriteTestAsync(writeArgs, saveWriter.RelativeSavePath);
+            await CommonSaveWriteTestAsync(writeArgs);
         }
 
         #endregion
@@ -237,7 +228,7 @@ namespace SaveSystemTests
         public virtual async Task VerifyFileContent_NONEncrypted_AfterWrite()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             SaveWriteRequest writeArgs = new SaveWriteRequest
             {
@@ -258,7 +249,7 @@ namespace SaveSystemTests
             string jsonText = await ReadAndVerifyContent();
             Task<string> ReadAndVerifyContent()
             {
-                string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+                string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
                 saveFilePathsForCleanup.Add(filePath);
                 return File.ReadAllTextAsync(filePath, utf8);
             }
@@ -272,7 +263,7 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync();
 
-            saveWriter.WriteEncrypted = true;
+            saveWriter.ExpectEncryption = true;
 
             SaveWriteRequest writeArgs = new SaveWriteRequest
             {
@@ -294,10 +285,8 @@ namespace SaveSystemTests
 
             await CommonSaveWriteTestAsync(writeArgs);
 
-            string fileNumFormatted = writeArgs.SlotNumber.ToString(SaveNumberFormat);
-            string saveFolder = FileUtils.GetPathToFolder(writeArgs.BaseSaveDirectory, saveWriter.RelativeSavePath);
-            
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string saveFolder = saveWriter.GetSaveFolderPath(writeArgs.BaseSaveDirectory);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
             string stringDataToWrite = string.Empty;
 
@@ -312,7 +301,7 @@ namespace SaveSystemTests
             string decryptedString = string.Empty;
 
             byte[] encryptedData = await File.ReadAllBytesAsync(filePath);
-            byte[] decryptedData = encryptedData.Select(b => (byte)(b ^ key)).ToArray();
+            byte[] decryptedData = encryptedData.Select(byteElem => (byte)(byteElem ^ key)).ToArray();
             decryptedString = utf8.GetString(decryptedData);
 
             Debug.Log($"Decrypted string:\n{decryptedString}");
@@ -321,7 +310,6 @@ namespace SaveSystemTests
 
         }
 
-        
         protected static Encoding utf8 = Encoding.UTF8;
 
         [Test]
@@ -496,7 +484,7 @@ namespace SaveSystemTests
 
             SaveDirectoryType baseSaveDirectory = writeArgsForSaveDirectoryCreation.BaseSaveDirectory;
             string relativePath = saveWriter.RelativeSavePath;
-            string saveFolder = FileUtils.GetPathToFolder(baseSaveDirectory, relativePath);
+            string saveFolder = saveWriter.GetSaveFolderPath(baseSaveDirectory);
 
             // ^This is the directory we expect to be created
             // Ensure the directory does not exist before writing. We want to test directory creation.
@@ -509,6 +497,11 @@ namespace SaveSystemTests
             Assert.IsTrue(directoryWasErased, "Directory should not exist before writing.");
             await saveWriter.WriteOneToDisk(writeArgsForSaveDirectoryCreation);
             Assert.IsTrue(Directory.Exists(saveFolder), "Directory was not created after writing.");
+
+            if (Directory.Exists(saveFolder))
+            {
+                Directory.Delete(saveFolder, true);
+            }
         }
 
         // Failsafe tests
@@ -518,10 +511,10 @@ namespace SaveSystemTests
         {
             LogAssert.ignoreFailingMessages = true;
 
-            saveWriter.WriteEncrypted = true;
+            saveWriter.ExpectEncryption = true;
             await CommonFailsafeTest_EraseBackups();
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             string backupPath = filePath + saveWriter.BackupFileExtension;
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
@@ -560,10 +553,10 @@ namespace SaveSystemTests
         {
             LogAssert.ignoreFailingMessages = true;
 
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
             await CommonFailsafeTest_EraseBackups();
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             string backupPath = filePath + saveWriter.BackupFileExtension;
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
@@ -584,11 +577,10 @@ namespace SaveSystemTests
         {
             LogAssert.ignoreFailingMessages = true;
 
-            saveWriter.WriteEncrypted = true;
+            saveWriter.ExpectEncryption = true;
             await CommonFailsafeTest_KeepBackups();
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
-                writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             string backupPath = filePath + saveWriter.BackupFileExtension;
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
@@ -618,11 +610,10 @@ namespace SaveSystemTests
         {
             LogAssert.ignoreFailingMessages = true;
 
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
             await CommonFailsafeTest_KeepBackups();
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory,
-                writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             string backupPath = filePath + saveWriter.BackupFileExtension;
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
@@ -652,12 +643,12 @@ namespace SaveSystemTests
         public async Task Failsafe_LogsOnWriteFailure_Encrypted()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = true;
+            saveWriter.ExpectEncryption = true;
 
             // Write initial save
             await saveWriter.WriteOneToDisk(writeArgs);
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             // Simulate write failure by locking the file
@@ -685,12 +676,12 @@ namespace SaveSystemTests
         public async Task Failsafe_LogsOnWriteFailure_NONEncrypted()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             // Write initial save
             await saveWriter.WriteOneToDisk(writeArgs);
 
-            string filePath = FileUtils.GetPathToFile(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             // Simulate write failure by locking the file
@@ -725,7 +716,7 @@ namespace SaveSystemTests
         public async Task OverwritesFile_WhenWritingToSameSlotTwice()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             // First write: simple data
             var firstUnit = new SaveDataUnit("TestType", "{\"value\":\"first\"}");
@@ -742,7 +733,7 @@ namespace SaveSystemTests
             };
             await saveWriter.WriteOneToDisk(firstWriteArgs);
 
-            string filePath = FileUtils.GetPathToFile(firstWriteArgs.BaseSaveDirectory, firstWriteArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(firstWriteArgs.BaseSaveDirectory, firstWriteArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
             string firstContent = await File.ReadAllTextAsync(filePath);
 
@@ -771,7 +762,7 @@ namespace SaveSystemTests
         public async Task WriteOneToDisk_LogsError_WhenFileIsLocked_ReadAllowed()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             var writeArgsLocked = new SaveWriteRequest
             {
@@ -783,7 +774,7 @@ namespace SaveSystemTests
             };
             await saveWriter.WriteOneToDisk(writeArgsLocked);
 
-            string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             // Lock the file by opening it with no sharing
@@ -815,7 +806,7 @@ namespace SaveSystemTests
         public async Task WriteOneToDisk_LogsError_WhenFileIsLocked_FullLock()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             var writeArgsLocked = new SaveWriteRequest
             {
@@ -827,7 +818,7 @@ namespace SaveSystemTests
             };
             await saveWriter.WriteOneToDisk(writeArgsLocked);
 
-            string filePath = FileUtils.GetPathToFile(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             LogAssert.ignoreFailingMessages = true;
@@ -855,7 +846,7 @@ namespace SaveSystemTests
         public async Task WritesLargeSaveData_Successfully()
         {
             await CommonSetupAsync();
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
 
             // Create a large CompositeSaveData
             var largeData = new CompositeSaveData();
@@ -876,7 +867,7 @@ namespace SaveSystemTests
 
             await saveWriter.WriteOneToDisk(largeWriteArgs);
 
-            string filePath = FileUtils.GetPathToFile(largeWriteArgs.BaseSaveDirectory, largeWriteArgs.SlotNumber, saveWriter);
+            string filePath = saveWriter.GetSaveFilePath(largeWriteArgs.BaseSaveDirectory, largeWriteArgs.SlotNumber);
             
             Assert.IsTrue(File.Exists(filePath), "Large save file was not created.");
             saveFilePathsForCleanup.Add(filePath);

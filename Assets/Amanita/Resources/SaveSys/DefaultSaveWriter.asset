@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e7ad7e10984ba46b36c29f6688337a, type: 3}
   m_Name: DefaultSaveWriter
   m_EditorClassIdentifier: 
-  nameSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
-  writeEncrypted: 0
+  storageSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
   encryptor: {fileID: 11400000, guid: 32d7bc6e2270e90478f9f33a724d6eaa, type: 2}
   deleteBackupsPostOverwrite: 1

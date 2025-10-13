@@ -15,13 +15,6 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor
     {
-        [SerializeField] protected bool writeEncrypted = false;
-        public virtual bool WriteEncrypted
-        {
-            get => writeEncrypted;
-            set => writeEncrypted = value;
-        }
-
         [SerializeField] protected ScriptableObject encryptor;
 
         [SerializeField] protected bool deleteBackupsPostOverwrite = true;
@@ -40,24 +33,15 @@ namespace Amanita.SaveSys
         /// </summary>
         public UnityAction<SaveWriteResults> AmanitaSaveWritten = delegate { };
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
-            EnsureWeHaveBackupEncryptor();
-            void EnsureWeHaveBackupEncryptor()
-            {
-                if (defaultEncryptor == null)
-                {
-                    defaultEncryptor = CreateInstance<Encryptor>();
-                }
-            }
+            base.OnEnable();
 
             if (encryptor == null)
             {
-                encryptor = CreateInstance<Encryptor>();
+                encryptor = DefaultAmanitaAssets.Encryptor;
             }
         }
-
-        protected Encryptor defaultEncryptor;
 
         /// <summary>
         /// Writes all the save datas to the passed save directory, returning true if successful,
@@ -89,14 +73,10 @@ namespace Amanita.SaveSys
             // Safety.
             Validate(request);
 
-            string saveFolder = GetFolderToAccess(request.BaseSaveDirectory),
-                numFormatted = request.SlotNumber.ToString(SaveNumberFormat);
-
+            string saveFolder = GetSaveFolderPath(request.BaseSaveDirectory);
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            string fileName = string.Format(FileNameFormat, SavePrefix,
-                    numFormatted, FileExtension);
-            string filePath = saveFolder + fileName;
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             debugSaveFolder = saveFolder;
 
             debugFilePath = filePath;
@@ -146,7 +126,7 @@ namespace Amanita.SaveSys
                     }
                 }
 
-                if (!writeEncrypted)
+                if (!ExpectEncryption)
                 {
                     await WriteFullJsonTextToFile();
                     async Task WriteFullJsonTextToFile()
@@ -198,7 +178,7 @@ namespace Amanita.SaveSys
             void AnnounceResults()
             {
                 writeResults.FilePath = filePath;
-                writeResults.FileName = fileName;
+                writeResults.FileName = GetSaveFileName(request.SlotNumber);
                 writeResults.SaveData = request.MainState as CompositeSaveData;
                 writeResults.Success = true;
                 writeResults.ErrorMessage = string.Empty;
@@ -237,7 +217,8 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool validBaseDirectory = SaveSystem.S.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
+            string baseDirectory = SaveSystem.S.GetSaveDirectory(writeArgs.BaseSaveDirectory);
+            bool validBaseDirectory = !string.IsNullOrEmpty(baseDirectory);
             if (!validBaseDirectory)
             {
                 errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a valid SaveDirectoryType.\n";
@@ -263,12 +244,13 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
             if (wrongTypeOfSOAssigned)
             {
-                encryptor = defaultEncryptor;
+                encryptor = DefaultAmanitaAssets.Encryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
             }
         }

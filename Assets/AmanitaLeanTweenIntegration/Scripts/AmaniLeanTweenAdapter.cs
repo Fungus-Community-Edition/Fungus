@@ -34,12 +34,7 @@ namespace Amanita.LeanTweenIntegration
 
             // Use Unity's FindObjectsOfType (safe across versions). This is a little expensive;
             // caller should prefer passing an owner when possible.
-            IList<Renderer> renderers;
-#if UNITY_6000_0_OR_NEWER
-            renderers = UnityObj.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
-#else
-            renderers = UnityObj.FindObjectsOfType<Renderer>();
-#endif
+            IList<Renderer> renderers = UnityObj.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
             for (int i = 0; i < renderers.Count; i++)
             {
                 var elem = renderers[i];

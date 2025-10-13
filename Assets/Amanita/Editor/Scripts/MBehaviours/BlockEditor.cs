@@ -65,11 +65,7 @@ namespace Amanita.VScripting.EditorUtils
 
 			var targetBlock = target as Block;
 
-		#if UNITY_6000
 			var callers = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-		#else
-			var callers = FindObjectsOfType<MonoBehaviour>()
-		#endif
 				.Where(x => x is IBlockCaller)
 				.Select(x => x as IBlockCaller)
 				.Where(x => x.MayCallBlock(targetBlock))

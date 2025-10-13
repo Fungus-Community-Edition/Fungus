@@ -98,13 +98,7 @@ namespace SaveSystemTests
 
         protected virtual void RemoveAllFlowchartsFromTheScene()
         {
-            IList<Flowchart> toRemove = null;
-
-#if UNITY_6000_0_OR_NEWER
-            toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-            toRemove = Object.FindObjectsOfType<Flowchart>();
-#endif
+            IList<Flowchart> toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             foreach (var fc in toRemove)
             {
                 // We want to skip the FCs that are part of the AmanitaManager prefab, since that's

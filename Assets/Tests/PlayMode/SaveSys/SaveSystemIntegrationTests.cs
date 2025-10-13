@@ -103,30 +103,6 @@ namespace SaveSystemTests
             Assert.IsTrue(success);
         }
 
-        [Test]
-        public void SaveDirectoryPaths_CanBeSetAndGet()
-        {
-            var paths = new Dictionary<SaveDirectoryType, string>
-            {
-                { SaveDirectoryType.DataPath, "/tmp/test" }
-            };
-            saveSystem.SaveDirectoryPaths = paths;
-
-            var result = saveSystem.SaveDirectoryPaths;
-            Assert.AreEqual("/tmp/test", result[SaveDirectoryType.DataPath]);
-        }
-
-        [Test]
-        public void SetSaveDirPath_UpdatesPath()
-        {
-            string newPath = "/tmp/another";
-            saveSystem.SetSaveDirPath(SaveDirectoryType.DataPath, newPath);
-
-            var result = saveSystem.SaveDirectoryPaths;
-            Assert.AreEqual(newPath, result[SaveDirectoryType.DataPath]);
-        }
-
-
         // Dummy implementations for testing registration
         public class DummyMainSaveCodec : IMainSaveCodec
         {

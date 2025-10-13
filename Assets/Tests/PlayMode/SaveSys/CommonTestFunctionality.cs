@@ -15,6 +15,7 @@ using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using Amanita.VScripting;
 using Amanita;
+using FullSerializer;
 
 namespace SaveSystemTests
 {
@@ -43,7 +44,7 @@ namespace SaveSystemTests
         public virtual void DoSetUp()
         {
             PlayerPrefs.DeleteAll();
-
+            //SaveStorageSettings saveStorageSettings = new SaveStorageSettings();
             if (AmanitaManager.S != null)
             {
                 UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
@@ -70,10 +71,12 @@ namespace SaveSystemTests
                 SaveSystemInstaller.S = installer;
 
                 saveManager = saveSys.SaveManager;
-                nameSettings = ScriptableObject.CreateInstance<SaveNameSettings>();
+                storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
+                storageSettings.RelativePath = "TestSaves";
                 saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
                 saveReader = ScriptableObject.CreateInstance<SaveReader>();
-                saveWriter.NameSettings = saveReader.NameSettings = nameSettings;
+                saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
+                otherTestPathResolver.StorageSettings = storageSettings;
                 encryptor = ScriptableObject.CreateInstance<Encryptor>();
             }
 
@@ -149,7 +152,7 @@ namespace SaveSystemTests
 
                 toDestroyInTearDown.Add(saveWriter);
                 toDestroyInTearDown.Add(saveReader);
-                toDestroyInTearDown.Add(nameSettings);
+                toDestroyInTearDown.Add(storageSettings);
                 toDestroyInTearDown.Add(encryptor);
 
                 toDestroyInTearDown.Add(flowchartApplier);
@@ -159,12 +162,7 @@ namespace SaveSystemTests
 
                 toDestroyInTearDown.Add(testScene);
 
-                IList<EventSystem> possiblyMadeByFlowchart;
-#if UNITY_6000_0_OR_NEWER
-                possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
-#else
-                possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-#endif
+                IList<EventSystem> possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
 
                 toDestroyInTearDown.AddRange(possiblyMadeByFlowchart);
             }
@@ -172,7 +170,7 @@ namespace SaveSystemTests
         }
 
         protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
-        protected SaveNameSettings nameSettings;
+        protected SaveStorageSettings storageSettings;
         protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
         protected virtual void ResetSingletonStatics()
         {
@@ -198,7 +196,7 @@ namespace SaveSystemTests
         protected string pathToAudioArgsSO = "testClip";
         protected FlowchartApplier flowchartApplier;
         protected MyceliaudioApplier audioApplier;
-
+        protected readonly fsSerializer serializer = new fsSerializer();
         protected FlowchartSaveCodec flowchartSaveCodec;
         protected BlockSaveCodec blockSaveCodec;
         protected ISaveManager saveManager;
@@ -307,8 +305,6 @@ namespace SaveSystemTests
             stringVar.Value = initStringVal;
         }
 
-        protected string relativePathForTesting = "TempSaves";
-        
         protected AudioSystem AudioSys { get { return AudioSystem.S; } }
 
         [TearDown]
@@ -397,11 +393,27 @@ namespace SaveSystemTests
 
         protected virtual bool ShouldDeleteTestSavesAtEnd => true;
 
+        protected readonly TestSavePathResolver testPathResolver = new TestSavePathResolver();
+        protected readonly DefaultSavePathResolver otherTestPathResolver = new DefaultSavePathResolver();
         protected void DeleteAllTestSaves()
         {
-            foreach (string root in saveSys.SaveDirectoryPaths.Values)
+            // We want to go for both the default and test paths
+            IList<string> folderPaths = new string[]
+            {
+                saveSys.GetSaveDirectory(SaveDirectoryType.DataPath),
+                saveSys.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
+
+                testPathResolver.GetSaveFolderPath(SaveDirectoryType.DataPath),
+                testPathResolver.GetSaveFolderPath(SaveDirectoryType.PersistentDataPath),
+            };
+
+            foreach (string root in folderPaths)
             {
                 string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
+                if (!Directory.Exists(pathToTempFolder))
+                {
+                    continue;
+                }
 
                 IList<string> pathsToTestSaves = Directory.EnumerateFiles(pathToTempFolder, "*.save",
                     SearchOption.AllDirectories).ToList();
@@ -464,20 +476,99 @@ namespace SaveSystemTests
 
         void PrepNewPathsForTesting()
         {
-            Dictionary<SaveDirectoryType, string> newPaths =
-                new Dictionary<SaveDirectoryType, string>(BaseSavePaths);
-            foreach (var keyEl in BaseSavePaths.Keys)
+            // We need the writers, readers, and system as a whole to use the same resolver
+            saveSys.SavePathResolver = testPathResolver;
+            saveWriter.PathResolver = testPathResolver;
+            saveReader.PathResolver = testPathResolver;
+        }
+
+        public class TestSavePathResolver : IConfigurableSaveSlotPathResolver<SaveDirectoryType>
+        {
+            public TestSavePathResolver(string relativePath = "TempSaves", string fileExtension = "save")
             {
-                string currentVal = BaseSavePaths[keyEl];
-                string newPath = Path.Combine(currentVal, relativePathForTesting);
-                newPaths[keyEl] = newPath;
+                RelativePath = relativePath;
+                FileExtension = fileExtension;
+            }
+            public string RelativePath { get; protected set; }
+            public string FileExtension { get; protected set; }
+
+            public string NumberFormat => "D2";
+
+            string IConfigurableSaveSlotPathResolver.NumberFormat
+            {
+                get => NumberFormat;
+                set
+                {
+                    // We don't allow changing this
+                }
+            }
+            string IConfigurableSavePathResolver.RelativePath { get => RelativePath; set => RelativePath = value; }
+            string IConfigurableSavePathResolver.FileExtension { get => FileExtension; set => FileExtension = value; }
+
+            public string GetSaveFolderPath(SaveDirectoryType input)
+            {
+                string basePath;
+                switch (input)
+                {
+                    case SaveDirectoryType.DataPath:
+                    case SaveDirectoryType.InTheBalls:
+                        basePath = Application.dataPath; break;
+                    case SaveDirectoryType.PersistentDataPath:
+                        basePath = Application.persistentDataPath; break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Input of type {input} is not supported.");
+                }
+
+                string result = Path.Combine(basePath, RelativePath);
+                return result;
+            }
+            public string GetSaveFolderPath(object input)
+            {
+                if (input is SaveDirectoryType type)
+                {
+                    return GetSaveFolderPath(type);
+                }
+                else
+                {
+                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
+                }
+            }
+            public string GetSaveFilePath(string fileName, SaveDirectoryType input)
+            {
+                string result = Path.Combine(GetSaveFolderPath(input),
+                    $"{fileName}.{FileExtension}");
+                return result;
+            }
+            public string GetSaveFilePath(string fileName, object input)
+            {
+                if (input is SaveDirectoryType type)
+                {
+                    return GetSaveFilePath(fileName, type);
+                }
+                else
+                {
+                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
+                }
             }
 
-            
-            foreach (var keyEl in newPaths.Keys)
+            public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
             {
-                string path = newPaths[keyEl];
-                saveSys.SaveDirectoryPaths[keyEl] = path;
+                string fileName = GetSaveFileName(slotNumber);
+                string result = GetSaveFilePath($"saveData_slot{slotNumber}", input);
+                return result;
+            }
+
+            public string GetSaveFileName(int slotNumber)
+            {
+                string path = GetSaveFilePath(SaveDirectoryType.PersistentDataPath, slotNumber);
+                string result = Path.GetFileNameWithoutExtension(path);
+                return result;
+            }
+
+            public string GetSaveFilePath(object input, int slotNumber)
+            {
+                string result = GetSaveFilePath((SaveDirectoryType)input, slotNumber);
+                return result;
             }
         }
 

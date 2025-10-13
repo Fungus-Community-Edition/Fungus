@@ -17,7 +17,7 @@ namespace SaveSystemTests
         public virtual async Task ReadingMeta_Success_NONEncrypted()
         {
             await CommonSetupAsync().ConfigureAwait(false);
-            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
+            saveReader.ExpectEncryption = saveWriter.ExpectEncryption = false;
             await CommonSetupAsync().ConfigureAwait(false);
         }
 
@@ -25,7 +25,7 @@ namespace SaveSystemTests
         public virtual async Task ReadingMeta_Success_Encrypted()
         {
             await CommonSetupAsync().ConfigureAwait(false);
-            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
+            saveReader.ExpectEncryption = saveWriter.ExpectEncryption = true;
             await CommonSetupAsync().ConfigureAwait(false);
         }
 
@@ -62,7 +62,7 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync().ConfigureAwait(false);
 
-            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
+            saveReader.ExpectEncryption = saveWriter.ExpectEncryption = false;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
             await writeTask.ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync().ConfigureAwait(false);
 
-            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = true;
+            saveReader.ExpectEncryption = saveWriter.ExpectEncryption = true;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
             await writeTask.ConfigureAwait(false);
@@ -117,7 +117,7 @@ namespace SaveSystemTests
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
         {
-            string saveFolder = SaveSystem.S.SaveDirectoryPaths[request.BaseSaveDirectory];
+            string saveFolder = SaveSystem.S.GetSaveDirectory(request.BaseSaveDirectory);
             bool thereIsRelativePathToConsider = RelativeSavePath.Count() > 0;
             if (thereIsRelativePathToConsider)
             {
@@ -158,14 +158,14 @@ namespace SaveSystemTests
         public virtual async Task ReadingMain_Fail_ReportsBadJsonOnMalformedData()
         {
             await CommonSetupAsync().ConfigureAwait(false);
-            saveReader.ReadEncrypted = saveWriter.WriteEncrypted = false;
+            saveReader.ExpectEncryption = saveWriter.ExpectEncryption = false;
             SaveReadRequest reqForMalformedFile = new SaveReadRequest(readReq);
             reqForMalformedFile.SlotNumber = 71;
 
             string fileNumFormatted = reqForMalformedFile.SlotNumber.ToString(saveReader.SaveNumberFormat);
             string fileName = string.Format(fileNameFormat, saveReader.SavePrefix,
                 fileNumFormatted, saveReader.FileExtension);
-            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, fileName, saveReader.RelativeSavePath);
+            string filePath = saveReader.GetSaveFilePath(fileName, SaveDirectoryType.DataPath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
@@ -193,7 +193,7 @@ namespace SaveSystemTests
             string fileNumFormatted = reqForMalformedFile.SlotNumber.ToString(saveReader.SaveNumberFormat);
             string fileName = string.Format(fileNameFormat, saveReader.SavePrefix,
                 fileNumFormatted, saveReader.FileExtension);
-            string filePath = FileUtils.GetPathToFile(SaveDirectoryType.DataPath, fileName, saveReader.RelativeSavePath);
+            string filePath = saveReader.GetSaveFilePath(fileName, SaveDirectoryType.DataPath);
 
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
 
@@ -264,7 +264,7 @@ namespace SaveSystemTests
             metaBefore.SaveName = "BlastOff";
             metaBefore.TimeStamp = new DateTime(2025, 12, 31).ToUniversalTime();
 
-            saveWriter.WriteEncrypted = saveReader.ReadEncrypted = false;
+            saveWriter.ExpectEncryption = saveReader.ExpectEncryption = false;
 
             Task writeTask = saveWriter.WriteOneToDisk(writeReq);
             await writeTask.ConfigureAwait(false);
@@ -279,26 +279,6 @@ namespace SaveSystemTests
 
         }
 
-        [Test]
-        public async Task ReadingMain_Fail_WrongEncryptionFlag()
-        {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = false;
-
-            bool threw = false;
-            try
-            {
-                await saveWriter.WriteOneToDisk(writeReq);
-                await saveReader.ReadMainSaveDataFromDisk(readReq);
-            }
-            catch (IOException)
-            {
-                threw = true;
-            }
-
-            string assertMessage = "Does not throw an IOException when reading main save data with wrong encryption flag.";
-            Assert.IsTrue(threw, assertMessage);
-        }
 
         protected override int CommonSetupDelay
         {

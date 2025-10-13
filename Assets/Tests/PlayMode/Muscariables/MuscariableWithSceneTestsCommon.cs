@@ -161,12 +161,7 @@ namespace VScriptingTests.MuscariableTests
                 DestroyEventSystems();
                 void DestroyEventSystems()
                 {
-                    
-#if UNITY_6000_0_OR_NEWER
                     EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
-#else
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
-#endif
 
                     foreach (var elem in possiblyMadeByFlowchart)
                     {
