@@ -14,7 +14,7 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    return VarRef.Value;
+                    return VarRef.BoxedValue;
                 }
                 else
                 {
@@ -26,7 +26,7 @@ namespace Amanita.VScripting
                 var prevValue = Value;
                 if (VarRef != null)
                 {
-                    VarRef.Value = value;
+                    VarRef.BoxedValue = value;
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    return (TValue)VarRef.Value;
+                    return (TValue)VarRef.BoxedValue;
                 }
                 else
                 {
@@ -125,7 +125,7 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    VarRef.Value = value;
+                    VarRef.BoxedValue = value;
                 }
                 else
                 {

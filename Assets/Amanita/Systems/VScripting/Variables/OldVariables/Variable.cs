@@ -145,7 +145,28 @@ namespace Amanita.VScripting
         }
         #endregion
 
-        public virtual IVariableSource Owner { get { return GetComponent<Flowchart>(); } }
+        public abstract object BoxedValue { get; set; }
+
+        public virtual IVariableSource Owner
+        {
+            get
+            {
+                owner ??= GetComponent<Flowchart>();
+                return owner;
+            }
+            set
+            {
+                string errorMessage = $"Cannot set the owner of a legacy variable";
+                Debug.LogError(errorMessage);
+            }
+        }
+
+        protected virtual void OnValidate()
+        {
+            owner ??= GetComponent<Flowchart>();
+        }
+
+        protected IVariableSource owner;
 
     }
 
@@ -159,7 +180,7 @@ namespace Amanita.VScripting
         [SerializeField] protected T value;
 
         // Explicit IVariable implementation for object-typed access
-        object IVariable.Value
+        object IVariable.BoxedValue
         {
             get => value; // boxes T correctly (works for structs like Vector2)
             set
@@ -174,6 +195,21 @@ namespace Amanita.VScripting
             }
         }
 
+        public override object BoxedValue
+        {
+            get => value;
+            set
+            {
+                if (value is T || value == null)
+                {
+                    this.value = (T)value;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+                }
+            }
+        }
 
         // Preserve the typed Value required by IVariable<T>
         public virtual new T Value
