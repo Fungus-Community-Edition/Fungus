@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static Amanita.TextVariationHandler.Section;
 using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
@@ -106,6 +107,8 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
+                AmanitaEditorSignals.KeyFieldFocusLost += OnKeyFieldFocusLost;
+                AmanitaEditorSignals.ValueFieldChanged += OnValueFieldChanged;
                 subsActive = true;
             }
             else if (!on)
@@ -115,7 +118,54 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
+                AmanitaEditorSignals.KeyFieldFocusLost -= OnKeyFieldFocusLost;
+                AmanitaEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
                 subsActive = false;
+            }
+        }
+
+        private void OnValueFieldChanged(VariableRow row, object newVal)
+        {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
+            IVariable theVar = row.VarToRepresent;
+            // Since Muscariables in Flowcharts don't have a MuscariableHolder as a middleman
+            // to keep stuff in sync, we have to manually sync the Value here.
+            bool muscariableInFlowchart = theVar is Muscariable &&
+                variableSource is Flowchart;
+            if (muscariableInFlowchart && !Equals(theVar.Value, newVal))
+            {
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Name");
+                theVar.Value = newVal;
+            }
+        }
+
+        // Why FocusLost instead of on any change? Because then we'd be responding to every keystroke;
+        // we only want to write the key to the muscari when the user's done entering in the changed key
+        private void OnKeyFieldFocusLost(VariableRow rowInvolved, string newKey)
+        {
+            if (!WeAreManaging(rowInvolved))
+            {
+                return;
+            }
+
+            IVariable theVar = rowInvolved.VarToRepresent;
+
+            // Since Muscariables in Flowcharts don't have a MuscariableHolder as a middleman
+            // to keep stuff in sync, we have to manually sync the Key here.
+            bool muscariableInFlowchart = theVar is Muscariable &&
+                variableSource is Flowchart;
+
+            if (muscariableInFlowchart && theVar.Key != newKey)
+            {
+                // Register an Undo
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Key");
+                theVar.Key = newKey;
             }
         }
 

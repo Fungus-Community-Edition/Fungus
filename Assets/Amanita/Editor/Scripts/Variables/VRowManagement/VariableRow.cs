@@ -52,12 +52,38 @@ namespace Amanita.VScripting.EditorUtils
             {
                 VisualHandler.RemoveButtonClicked += OnRemoveButtonClicked;
                 VisualHandler.FocusLostOnControl += OnFocusLostOnControl;
+                VisualHandler.KeyFieldFocusLost += OnKeyFieldFocusLost;
+                VisualHandler.ValueFieldChanged += OnValueFieldChanged;
             }
             else
             {
                 VisualHandler.RemoveButtonClicked -= OnRemoveButtonClicked;
                 VisualHandler.FocusLostOnControl -= OnFocusLostOnControl;
+                VisualHandler.KeyFieldFocusLost -= OnKeyFieldFocusLost;
+                VisualHandler.ValueFieldChanged -= OnValueFieldChanged;
             }
+        }
+
+        private void OnValueFieldChanged(object obj)
+        {
+            AmanitaEditorSignals.ValueFieldChanged(this, obj);
+        }
+
+        public virtual string KeyDisplayed
+        {
+            get
+            {
+                if (VisualHandler == null)
+                {
+                    return string.Empty;
+                }
+                return VisualHandler.KeyDisplayed;
+            }
+        }
+
+        private void OnKeyFieldFocusLost(TextField field)
+        {
+            AmanitaEditorSignals.KeyFieldFocusLost(this, field.value);
         }
 
         protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)

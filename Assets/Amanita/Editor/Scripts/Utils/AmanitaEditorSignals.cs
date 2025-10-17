@@ -14,5 +14,8 @@ namespace Amanita.EditorUtils
         public static Action<VariableRow> VarRowRemoveButtonClicked = delegate { };
 
         public static Action<BaseObj> ControlValueChanged = delegate { };
+        public static Action<VariableRow, string> KeyFieldFocusLost = delegate { };
+        public static Action<VariableRow, VariableScope> ScopeFieldChanged = delegate { };
+        public static Action<VariableRow, object> ValueFieldChanged = delegate { };
     }
 }

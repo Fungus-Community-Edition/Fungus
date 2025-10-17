@@ -145,7 +145,26 @@ namespace Amanita.VScripting
         }
         #endregion
 
-        public virtual IVariableSource Owner { get { return GetComponent<Flowchart>(); } }
+        public virtual IVariableSource Owner
+        {
+            get
+            {
+                owner ??= GetComponent<Flowchart>();
+                return owner;
+            }
+            set
+            {
+                string errorMessage = $"Cannot set the owner of a legacy variable";
+                Debug.LogError(errorMessage);
+            }
+        }
+
+        protected virtual void OnValidate()
+        {
+            owner ??= GetComponent<Flowchart>();
+        }
+
+        protected IVariableSource owner;
 
     }
 

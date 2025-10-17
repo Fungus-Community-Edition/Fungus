@@ -296,7 +296,11 @@ namespace SaveSys
                 set { }
             }
             public Type ContentType => null;
-            public IVariableSource Owner => null;
+            public IVariableSource Owner
+            {
+                get => null;
+                set { }
+            }
 
             public int ItemID { get; set; } = 5;
 

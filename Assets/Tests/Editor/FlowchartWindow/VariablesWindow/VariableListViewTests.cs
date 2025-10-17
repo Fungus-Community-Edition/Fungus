@@ -538,7 +538,11 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IVariable.Owner
-            public IVariableSource Owner => null;
+            public IVariableSource Owner
+            {
+                get => null;
+                set { } // no-op
+            }
 
             // ContentType - for tests we can return typeof(object)
             public Type ContentType => typeof(object);

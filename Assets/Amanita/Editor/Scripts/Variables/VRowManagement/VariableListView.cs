@@ -146,50 +146,68 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
+                        Debug.Log($"Found row for variable with key '{currentVar.Key}' of type " +
+                            $"{currentVar.GetType().Name} at index={index}");
                         // **Resolve the correct binding target**
                         var targetObj = GetBindingTarget(currentVar);
 
                         // Diagnostics: log target resolution
-                        if (targetObj == null)
+                        LogTargetResolution();
+                        void LogTargetResolution()
                         {
-                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: null");
-                        }
-                        else
-                        {
-                            string path = null;
-                            try
+                            if (targetObj == null)
                             {
-                                path = _assetResolver?.GetAssetPath(targetObj);
+                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: null");
                             }
-                            catch { }
-                            Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
+                            else
+                            {
+                                string path = null;
+                                try
+                                {
+                                    path = _assetResolver?.GetAssetPath(targetObj);
+                                }
+                                catch { }
+                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
+                            }
                         }
 
-                        // **Inject the SerializedObject into the already-initialized row**
-                        if (targetObj != null)
+                        var visHandler = row.VisualHandler;
+                        InjectSOIntoRow();
+                        void InjectSOIntoRow()
                         {
+                            if (targetObj != null)
+                            {
+                                try
+                                {
+                                    var so = new SerializedObject(targetObj);
+                                    visHandler.SerializedVar = so;
+                                    Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' Assigned SerializedObject targeting instanceId={targetObj.GetInstanceID()}");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
+                                }
+                            }
+                        }
+
+                        AttachVisual();
+                        void AttachVisual()
+                        {
+                            // Attach visual
                             try
                             {
-                                var so = new SerializedObject(targetObj);
-                                row.VisualHandler.SerializedVar = so;
-                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' Assigned SerializedObject targeting instanceId={targetObj.GetInstanceID()}");
+                                rowHolder.Add(row.RootElement);
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
+                                Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
                             }
                         }
-
-                        // Attach visual
-                        try
+                        if (currentVar is Muscariable && currentVar.Owner is Flowchart)
                         {
-                            rowHolder.Add(row.RootElement);
+                            visHandler.Variable = currentVar; // Just in case
+                            visHandler.Refresh();
                         }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
-                        }
-
                         // Store the row itself (not the variable) for any per-visual cleanup
                         rowHolder.userData = row;
                     };

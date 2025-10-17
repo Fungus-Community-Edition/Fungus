@@ -23,7 +23,7 @@ namespace Amanita.VScripting
         bool Evaluate(CompareOperator compareOperator, object value);
 
         void Apply(SetOperator setOperator, object value);
-        IVariableSource Owner { get; }
+        IVariableSource Owner { get; set; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
