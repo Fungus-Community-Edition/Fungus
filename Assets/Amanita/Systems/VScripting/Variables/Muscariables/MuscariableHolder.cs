@@ -26,7 +26,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual object Value
+        public virtual object BoxedValue
         {
             get
             {
@@ -35,12 +35,12 @@ namespace Amanita.VScripting
                     return null;
                 }
 
-                return muscariable.Value;
+                return muscariable.BoxedValue;
             }
             set
             {
                 Ensure(); 
-                muscariable.Value = value; 
+                muscariable.BoxedValue = value; 
                 Dirty(); 
             } 
         }

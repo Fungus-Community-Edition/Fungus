@@ -83,15 +83,15 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             audioVar.Init();
             Muscariable baseVar = audioVar;
 
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a clip");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a clip");
         }
 
         [Test]
         public void AudioClip_EqualityOperatorsAndEvaluate()
         {
-            var firstClipVar = new AudioClipMuscariable { Key = "a", ItemID = 104, Value = clipA };
-            var secondClipVar = new AudioClipMuscariable { Key = "b", ItemID = 105, Value = clipA };
-            var thirdClipVar = new AudioClipMuscariable { Key = "c", ItemID = 106, Value = clipB };
+            var firstClipVar = new AudioClipMuscariable { Key = "a", ItemID = 104, BoxedValue = clipA };
+            var secondClipVar = new AudioClipMuscariable { Key = "b", ItemID = 105, BoxedValue = clipA };
+            var thirdClipVar = new AudioClipMuscariable { Key = "c", ItemID = 106, BoxedValue = clipB };
 
             // operator==
             Assert.IsTrue(firstClipVar == secondClipVar);
@@ -140,7 +140,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             audioVar.Init();
             Muscariable baseVar = audioVar;
 
-            Assert.Throws<ArgumentException>(() => baseVar.Value = 123);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);
         }
 
         [Test]

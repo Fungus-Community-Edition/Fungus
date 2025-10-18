@@ -92,7 +92,7 @@ namespace Amanita.VScripting
         }
 
         // Explicit IVariable.Value (object) to avoid the name clash
-        object IVariable.Value
+        object IVariable.BoxedValue
         {
             get => Value;
             set

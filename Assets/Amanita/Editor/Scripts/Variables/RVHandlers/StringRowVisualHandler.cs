@@ -1,4 +1,3 @@
-using Amanita.EditorUtils;
 using UnityEngine.UIElements;
 using UnityEngine;
 
@@ -27,29 +26,41 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         protected TextField textValueField;
-        protected override void ToggleSpecificFieldSubs(bool on)
+        protected override void ToggleValueChangeSubs(bool on)
         {
-            base.ToggleSpecificFieldSubs(on);
+            base.ToggleValueChangeSubs(on);
+            if (textValueField == null) return;
             if (on)
             {
                 textValueField.RegisterValueChangedCallback(OnTextFieldChanged);
+                textValueField.RegisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); //
             }
             else
             {
                 textValueField.UnregisterValueChangedCallback(OnTextFieldChanged);
+                textValueField.UnregisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); 
             }
         }
 
         protected virtual void OnTextFieldChanged(ChangeEvent<string> evt)
         {
             TriggerValueFieldChanged(evt.newValue);
-            AmanitaEditorSignals.ControlValueChanged(evt);
         }
 
-        protected override void BindForMuscarisInFlowcharts()
+        protected virtual void OnTextFieldAttachedToPanel(AttachToPanelEvent evt)
         {
-            base.BindForMuscarisInFlowcharts();
-            textValueField.value = _currentVariable.Value as string;
+            ApplyVarValueToValueField();
+        }
+
+        protected override void ApplyVarValueToValueField()
+        {
+            textValueField.schedule.Execute(() =>
+            {
+                if (textValueField == null) return;
+                string textToApply = (string)_currentVariable.BoxedValue;
+                textValueField.SetValueWithoutNotify(textToApply);
+                textValueField.MarkDirtyRepaint();
+            }).ExecuteLater(1); // Delay by 1 frame to avoid UITK binding issues
         }
 
     }

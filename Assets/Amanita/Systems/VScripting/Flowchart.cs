@@ -355,7 +355,7 @@ namespace Amanita.VScripting
 
         protected virtual void AssertOwnership()
         {
-            foreach (IVariable elem in Variables)
+            foreach (Muscariable elem in Variables.Where((elem) => elem is Muscariable))
             {
                 elem.Owner = this;
             }

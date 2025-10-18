@@ -530,6 +530,12 @@ namespace VScriptingTests.VariableOperations
                 set => _value = value;
             }
 
+            public object BoxedValue
+            {
+                get => _value;
+                set => _value = value;
+            }
+
             // IVariable.Scope (readonly)
             public VariableScope Scope
             {

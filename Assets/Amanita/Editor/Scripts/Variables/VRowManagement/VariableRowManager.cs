@@ -107,7 +107,8 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
-                AmanitaEditorSignals.KeyFieldFocusLost += OnKeyFieldFocusLost;
+                AmanitaEditorSignals.KeyFieldChanged += OnKeyFieldFocusLost;
+                AmanitaEditorSignals.ScopeFieldChanged += OnScopeFieldChanged;
                 AmanitaEditorSignals.ValueFieldChanged += OnValueFieldChanged;
                 subsActive = true;
             }
@@ -118,13 +119,13 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
-                AmanitaEditorSignals.KeyFieldFocusLost -= OnKeyFieldFocusLost;
+                AmanitaEditorSignals.KeyFieldChanged -= OnKeyFieldFocusLost;
                 AmanitaEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
                 subsActive = false;
             }
         }
 
-        private void OnValueFieldChanged(VariableRow row, object newVal)
+        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
         {
             if (!WeAreManaging(row))
             {
@@ -132,21 +133,33 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             IVariable theVar = row.VarToRepresent;
-            // Since Muscariables in Flowcharts don't have a MuscariableHolder as a middleman
-            // to keep stuff in sync, we have to manually sync the Value here.
-            bool muscariableInFlowchart = theVar is Muscariable &&
-                variableSource is Flowchart;
-            if (muscariableInFlowchart && !Equals(theVar.Value, newVal))
+            if (theVar.Scope != scope)
+            {
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Scope");
+                theVar.Scope = scope;
+            }
+        }
+
+        protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
+        {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
+            IVariable theVar = row.VarToRepresent;
+            if (!Equals(theVar.BoxedValue, newVal))
             {
                 string varType = theVar.GetType().Name;
                 Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Name");
-                theVar.Value = newVal;
+                theVar.BoxedValue = newVal;
             }
         }
 
         // Why FocusLost instead of on any change? Because then we'd be responding to every keystroke;
         // we only want to write the key to the muscari when the user's done entering in the changed key
-        private void OnKeyFieldFocusLost(VariableRow rowInvolved, string newKey)
+        protected virtual void OnKeyFieldFocusLost(VariableRow rowInvolved, string newKey)
         {
             if (!WeAreManaging(rowInvolved))
             {
@@ -154,13 +167,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             IVariable theVar = rowInvolved.VarToRepresent;
-
-            // Since Muscariables in Flowcharts don't have a MuscariableHolder as a middleman
-            // to keep stuff in sync, we have to manually sync the Key here.
-            bool muscariableInFlowchart = theVar is Muscariable &&
-                variableSource is Flowchart;
-
-            if (muscariableInFlowchart && theVar.Key != newKey)
+            if (theVar.Key != newKey)
             {
                 // Register an Undo
                 string varType = theVar.GetType().Name;
@@ -209,7 +216,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual bool WeAreManaging(VariableRow row) => row.VarToRepresent.Owner == variableSource;
 
-        private UnityObj GetDestroyTarget(IVariable variable)
+        protected UnityObj GetDestroyTarget(IVariable variable)
         {
             if (variable is UnityObj unityObj)
                 return unityObj; // Legacy variable
@@ -218,7 +225,7 @@ namespace Amanita.VScripting.EditorUtils
             return FindPersistentHolderFor(variable);
         }
 
-        private static MuscariableHolder FindPersistentHolderFor(IVariable variable)
+        protected static MuscariableHolder FindPersistentHolderFor(IVariable variable)
         {
             UnityObj context = variable.Owner as UnityObj;
             var path = AssetDatabase.GetAssetPath(context);

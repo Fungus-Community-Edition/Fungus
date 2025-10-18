@@ -172,23 +172,6 @@ namespace Amanita.VScripting.EditorUtils
                         }
 
                         var visHandler = row.VisualHandler;
-                        InjectSOIntoRow();
-                        void InjectSOIntoRow()
-                        {
-                            if (targetObj != null)
-                            {
-                                try
-                                {
-                                    var so = new SerializedObject(targetObj);
-                                    visHandler.SerializedVar = so;
-                                    Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' Assigned SerializedObject targeting instanceId={targetObj.GetInstanceID()}");
-                                }
-                                catch (Exception ex)
-                                {
-                                    Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' Failed to create SerializedObject: {ex.Message}");
-                                }
-                            }
-                        }
 
                         AttachVisual();
                         void AttachVisual()
@@ -698,12 +681,6 @@ namespace Amanita.VScripting.EditorUtils
 
                 var targetObj = GetBindingTarget(elem);
 
-                // **Inject the SerializedObject into the already-initialized row**
-                if (targetObj != null)
-                {
-                    var so = new SerializedObject(targetObj);
-                    row.VisualHandler.SerializedVar = so;
-                }
             }
         }
 

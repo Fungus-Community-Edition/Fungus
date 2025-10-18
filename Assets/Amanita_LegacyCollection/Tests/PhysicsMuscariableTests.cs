@@ -91,7 +91,7 @@ namespace Amanita.MuscariableTests.DataOnly
             var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemID = 405 };
             collVar.Init();
             Muscariable baseVar = collVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a collider");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a collider");
         }
 
         [Test]
@@ -141,7 +141,7 @@ namespace Amanita.MuscariableTests.DataOnly
             var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemID = 415 };
             collVar.Init();
             Muscariable baseVar = collVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = 123);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);
         }
     }
 }

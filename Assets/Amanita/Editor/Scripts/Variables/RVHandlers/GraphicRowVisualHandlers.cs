@@ -1,3 +1,4 @@
+using UnityEditor.UIElements;
 using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
@@ -9,6 +10,27 @@ namespace Amanita.VScripting.EditorUtils
     public class ColorVariableRow : RowVisualHandler<Color>
     {
         // Note: when randomly generated, the preview field is white even when the generated color
+        // isn't. This is because the color field control in UIToolkit
+        // doesn't support SetValueWithoutNotify for Color type.
+
+        protected override void RegisterVisualElements()
+        {
+            base.RegisterVisualElements();
+            colorValueField = valueField as ColorField;
+
+            if (colorValueField == null)
+            {
+                Debug.LogError($"ColorVariableRow could not find a ColorField named in the UXML template " +
+                    $"for {GetType().Name}. Check your UXML.");
+                return;
+            }
+        }
+
+        protected ColorField colorValueField;
+        protected override void ApplyVarValueToValueField()
+        {
+            colorValueField.SetValueWithoutNotify((Color)_currentVariable.BoxedValue);
+        }
     }
 
     [RowVisualHandler(menuName: "Graphics",
@@ -17,7 +39,7 @@ namespace Amanita.VScripting.EditorUtils
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/TextureVariableRow")]
     public class TextureVariableRow : RowVisualHandler<Texture>
     {
-        
+
     }
 
     [RowVisualHandler(menuName: "Graphics",

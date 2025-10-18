@@ -10,7 +10,7 @@ namespace Amanita.VScripting
         /// </summary>
         public static TVal GetValueAs<TVal>(this IVariable variable)
         {
-            object val = variable.Value;
+            object val = variable.BoxedValue;
             if (val == null)
             {
                 return default;
