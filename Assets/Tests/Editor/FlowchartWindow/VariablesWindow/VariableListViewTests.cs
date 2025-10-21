@@ -530,6 +530,12 @@ namespace VScriptingTests.VariableOperations
                 set => _value = value;
             }
 
+            public object BoxedValue
+            {
+                get => _value;
+                set => _value = value;
+            }
+
             // IVariable.Scope (readonly)
             public VariableScope Scope
             {
@@ -538,7 +544,11 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IVariable.Owner
-            public IVariableSource Owner => null;
+            public IVariableSource Owner
+            {
+                get => null;
+                set { } // no-op
+            }
 
             // ContentType - for tests we can return typeof(object)
             public Type ContentType => typeof(object);

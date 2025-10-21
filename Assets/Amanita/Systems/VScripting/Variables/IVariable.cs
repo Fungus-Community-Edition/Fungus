@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     {
         void Init();
         new string Key { get; set; }
-        object Value { get; set; }
+        object BoxedValue { get; set; }
         VariableScope Scope { get; set; }
 
         /// <summary>
@@ -23,12 +23,12 @@ namespace Amanita.VScripting
         bool Evaluate(CompareOperator compareOperator, object value);
 
         void Apply(SetOperator setOperator, object value);
-        IVariableSource Owner { get; }
+        IVariableSource Owner { get; set; }
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
     {
-        new T Value { get; set; }
+        T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
     }
 

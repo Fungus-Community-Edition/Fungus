@@ -41,7 +41,7 @@ namespace Amanita.VScripting
             key = otherVar.Key;
             scope = otherVar.Scope;
             itemID = otherVar.ItemID;
-            value = otherVar.Value;
+            BoxedValue = otherVar.BoxedValue;
         }
 
         public Muscariable(string key, int itemID, VariableScope scope)
@@ -51,34 +51,14 @@ namespace Amanita.VScripting
             this.scope = scope;
         }
 
-        public virtual Type ContentType => typeof(Type);
+        public abstract Type ContentType { get; }
         // ^So clients can see the type even through this non-generic interface
 
-        public virtual object Value
+        public abstract object BoxedValue
         {
-            get { return this.value; }
-            set
-            {
-                bool sameAsAssignedVal = !ReferenceEquals(value, null) && value.Equals(this.value); 
-                // ^For some reason, == won't work here
-                if (sameAsAssignedVal) 
-                {
-                    return;
-                }
-                if (!CanHoldAsValue(value))
-                {
-                    string errorMessage = $"Variable {Key} cannot hold {value} as a value.";
-                    throw new System.ArgumentException(errorMessage, "value");
-                }
-
-                object prevValue = this.value;
-                object filtered = FilterForValueSet(value);
-                this.value = filtered;
-                OnBaseValueSet(prevValue);
-            }
+            get;
+            set;
         }
-
-        protected object value;
 
         protected virtual object FilterForValueSet(object valueToConvert)
         {
@@ -99,11 +79,6 @@ namespace Amanita.VScripting
             }
 
             return result;
-        }
-
-        public virtual void OnReset()
-        {
-
         }
 
         public virtual void Init()
@@ -127,13 +102,15 @@ namespace Amanita.VScripting
             }
         }
 
+        public virtual void OnReset()
+        {
+            // Optional override by child classes
+        }
+
         /// <summary>
         /// Used by SetVariable. Child classes required to declare and implement operators.
         /// </summary>
-        public virtual void Apply(SetOperator setOperator, object toApply)
-        {
-            value = toApply;
-        }
+        public abstract void Apply(SetOperator setOperator, object toApply);
 
         /// <summary>
         /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
@@ -157,23 +134,13 @@ namespace Amanita.VScripting
         public virtual bool IsComparisonSupported() => false;
 
         /// <summary>
-        /// A callback for right after the base value is set. The previous value,
-        /// as it sounds, is the value the base had right before being set
-        /// to the new one.
-        /// </summary>
-        protected virtual void OnBaseValueSet(object previousValue)
-        {
-
-        }
-
-        /// <summary>
         /// When you expect the value to be a value type (as opposed to a ref type), use this rather than 
         /// directly casting to that specific value type. One quirk of C# is that when casting a
         /// object, it only works if said object is of the type you're casting to.
         /// </summary>
         public TVal GetValueAs<TVal>()
         {
-            object val = Value;
+            object val = BoxedValue;
             if (val == null)
             {
                 return default;
@@ -214,26 +181,24 @@ namespace Amanita.VScripting
             get { return _owner; }
             set { _owner = value; }
         }
-        [SerializeField] protected IVariableSource _owner;
+        protected IVariableSource _owner;
     }
 
     [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
-        [SerializeField] protected new T value;
+        [SerializeField] protected T value;
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
         public Muscariable() : base()
         {
             value = default;
-            base.value = value;
         }
 
         public Muscariable(T startVal) : this()
         {
             value = startVal;
-            base.value = startVal;
         }
 
         public static implicit operator T(Muscariable<T> genericMuscari)
@@ -243,7 +208,7 @@ namespace Amanita.VScripting
 
         public override Type ContentType { get { return typeof(T); } }
 
-        public virtual new T Value
+        public virtual T Value
         {
             get { return value; }
             set
@@ -253,11 +218,26 @@ namespace Amanita.VScripting
                     return;
                 }
 
-                // We call base.Value here so that when this instance is being
-                // cast as a non-generic Muscariable, clients can still access the right value
                 T prev = this.value;
-                base.Value = value;
                 OnGenericValueSet(prev);
+                InvokeOnValueChanged();
+            }
+        }
+
+        public override object BoxedValue
+        {
+            get { return value; }
+            set
+            {
+                if (!this.CanHoldAsValue(value))
+                {
+                    string errorMessage = $"Cannot set {ContentType.Name} variable {Key} to value of type {value.GetType().Name}.";
+                    throw new ArgumentException(errorMessage);
+                }
+                object filteredValue = this.FilterForValueSet(value);
+                object previousValue = this.value;
+                this.value = (T)filteredValue;
+                OnGenericValueSet((T)previousValue);
                 InvokeOnValueChanged();
             }
         }
@@ -348,14 +328,6 @@ namespace Amanita.VScripting
         public virtual bool ValEquals(IVariable<T> otherVar)
         {
             return otherVar != null && this.Value.Equals(otherVar.Value);
-        }
-
-        protected override void OnBaseValueSet(object previousValue)
-        {
-            // We don't care about the prev val here. We're just making sure that
-            // the generic field stays in sync with the base field when appropriate.
-            // Say, when this instance's Value property is set through a base class.
-            value = (T)base.value;
         }
 
         protected virtual void OnGenericValueSet(T previousValue)

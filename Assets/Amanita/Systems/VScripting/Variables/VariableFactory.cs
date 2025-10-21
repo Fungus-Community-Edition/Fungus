@@ -53,17 +53,17 @@ namespace Amanita.VScripting
                     result.Scope = toMakeCopyOf.Scope;
                     result.ItemID = toMakeCopyOf.ItemID;
 
-                    if (toMakeCopyOf.Value == null || toMakeCopyOf.ContentType.Equals(contentType))
+                    if (toMakeCopyOf.BoxedValue == null || toMakeCopyOf.ContentType.Equals(contentType))
                     {
                         // Convert legacy boxed numeric types (e.g. boxed double) into the target contentType
                         // so that Muscariable.CanHoldAsValue (which checks runtime type) accepts it.
-                        object srcVal = toMakeCopyOf.Value;
+                        object srcVal = toMakeCopyOf.BoxedValue;
                         if (srcVal != null)
                         {
                             srcVal = ConvertValueToType(srcVal, contentType);
                         }
 
-                        result.Value = srcVal;
+                        result.BoxedValue = srcVal;
                     }
                 }
             }

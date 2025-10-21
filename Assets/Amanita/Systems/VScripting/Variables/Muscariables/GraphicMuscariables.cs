@@ -6,7 +6,10 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "String", typeof(string))]
     public class StringMuscariable : Muscariable<string>
     {
-        public StringMuscariable() : base() { }
+        public StringMuscariable() : base()
+        {
+            Value = string.Empty;
+        }
 
         public static StringMuscariable operator +(StringMuscariable a, StringMuscariable b)
             => new StringMuscariable { Value = a.Value + b.Value };
