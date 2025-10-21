@@ -206,12 +206,12 @@ namespace SaveSystemTests
 
             // Suppose you know the structure and can get the SaveDataUnit or variable
             var composite = result.MainState as CompositeSaveData;
-            var unit = composite.Units.FirstOrDefault(u => u.DataTypeName == nameof(VariableSaveData));
+            var unit = composite.Units.FirstOrDefault(unitEl => unitEl.DataTypeName == nameof(VariableSaveData));
 
             if (unit != null)
             {
                 // If the value is stored as JSON, you may need to deserialize again
-                var variableData = JsonUtility.FromJson<VariableSaveData>(unit.Content);
+                VariableSaveData variableData = JsonUtility.FromJson<VariableSaveData>(unit.Content);
                 Assert.AreEqual(testValue, variableData.Value);
             }
             else
