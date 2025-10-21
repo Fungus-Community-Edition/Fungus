@@ -56,8 +56,8 @@ namespace Amanita.VScripting.EditorUtils
                         }
                         toFix.Init(realVar);
                         Debug.Log($"Fixed MuscariableHolder (ItemID {toFix.ItemID}) in VariableSourceAsset {asset.name}. " +
-                            $"Its key: {toFix.Key}. Its value: {toFix.Value} Real " +
-                            $"var's key: {realVar.Key}. Real var's value: {realVar.Value}");
+                            $"Its key: {toFix.Key}. Its value: {toFix.BoxedValue} Real " +
+                            $"var's key: {realVar.Key}. Real var's value: {realVar.BoxedValue}");
                     }
                 }
                 Debug.Log($"Refreshed VariableSourceAsset {asset.name}");

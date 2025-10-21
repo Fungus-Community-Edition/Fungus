@@ -98,7 +98,7 @@ namespace SaveSys
             originalVar.Key = "test";
             originalVar.ItemID = 123;
             SpecialHandlingForTransform(ref sampleValue);
-            originalVar.Value = sampleValue;
+            originalVar.BoxedValue = sampleValue;
 
             // Encode to string
             string encoded = codec.EncodeToString(originalVar);
@@ -110,7 +110,7 @@ namespace SaveSys
             codec.Decode(decodedVar, encoded);
 
             // Validate value equality with special cases for floating types and Transform
-            AssertValuesEquivalent(variableType, originalVar.Value, decodedVar.Value);
+            AssertValuesEquivalent(variableType, originalVar.BoxedValue, decodedVar.BoxedValue);
         }
 
         protected virtual void SpecialHandlingForTransform(ref object sampleValue)
@@ -129,7 +129,7 @@ namespace SaveSys
             originalVar.Key = "test";
             originalVar.ItemID = 123;
             SpecialHandlingForTransform(ref sampleValue);
-            originalVar.Value = sampleValue;
+            originalVar.BoxedValue = sampleValue;
 
             // Encode to VariableSaveData
             VariableSaveData saveData = codec.EncodeToSave(originalVar);
@@ -140,7 +140,7 @@ namespace SaveSys
             codec.Decode(decodedVar, saveData);
 
             // Validate
-            AssertValuesEquivalent(variableType, originalVar.Value, decodedVar.Value);
+            AssertValuesEquivalent(variableType, originalVar.BoxedValue, decodedVar.BoxedValue);
         }
 
         [Test]
@@ -296,7 +296,11 @@ namespace SaveSys
                 set { }
             }
             public Type ContentType => null;
-            public IVariableSource Owner => null;
+            public IVariableSource Owner
+            {
+                get => null;
+                set { }
+            }
 
             public int ItemID { get; set; } = 5;
 
@@ -304,6 +308,11 @@ namespace SaveSys
             public bool IsComparisonSupported() => false;
             public bool Evaluate(CompareOperator compareOperator, object value) => throw new NotImplementedException();
             public void Apply(SetOperator setOperator, object value) => Value = value;
+            public object BoxedValue
+            {
+                get => Value;
+                set => Value = value;
+            }
         }
 
         #endregion

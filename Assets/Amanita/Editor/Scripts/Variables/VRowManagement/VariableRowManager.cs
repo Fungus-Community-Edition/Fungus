@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static Amanita.TextVariationHandler.Section;
 using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
@@ -106,6 +107,9 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
+                AmanitaEditorSignals.KeyFieldChanged += OnKeyFieldFocusLost;
+                AmanitaEditorSignals.ScopeFieldChanged += OnScopeFieldChanged;
+                AmanitaEditorSignals.ValueFieldChanged += OnValueFieldChanged;
                 subsActive = true;
             }
             else if (!on)
@@ -115,7 +119,60 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
+                AmanitaEditorSignals.KeyFieldChanged -= OnKeyFieldFocusLost;
+                AmanitaEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
                 subsActive = false;
+            }
+        }
+
+        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
+        {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
+            IVariable theVar = row.VarToRepresent;
+            if (theVar.Scope != scope)
+            {
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Scope");
+                theVar.Scope = scope;
+            }
+        }
+
+        protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
+        {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
+            IVariable theVar = row.VarToRepresent;
+            if (!Equals(theVar.BoxedValue, newVal))
+            {
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Name");
+                theVar.BoxedValue = newVal;
+            }
+        }
+
+        // Why FocusLost instead of on any change? Because then we'd be responding to every keystroke;
+        // we only want to write the key to the muscari when the user's done entering in the changed key
+        protected virtual void OnKeyFieldFocusLost(VariableRow rowInvolved, string newKey)
+        {
+            if (!WeAreManaging(rowInvolved))
+            {
+                return;
+            }
+
+            IVariable theVar = rowInvolved.VarToRepresent;
+            if (theVar.Key != newKey)
+            {
+                // Register an Undo
+                string varType = theVar.GetType().Name;
+                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Key");
+                theVar.Key = newKey;
             }
         }
 
@@ -159,7 +216,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual bool WeAreManaging(VariableRow row) => row.VarToRepresent.Owner == variableSource;
 
-        private UnityObj GetDestroyTarget(IVariable variable)
+        protected UnityObj GetDestroyTarget(IVariable variable)
         {
             if (variable is UnityObj unityObj)
                 return unityObj; // Legacy variable
@@ -168,7 +225,7 @@ namespace Amanita.VScripting.EditorUtils
             return FindPersistentHolderFor(variable);
         }
 
-        private static MuscariableHolder FindPersistentHolderFor(IVariable variable)
+        protected static MuscariableHolder FindPersistentHolderFor(IVariable variable)
         {
             UnityObj context = variable.Owner as UnityObj;
             var path = AssetDatabase.GetAssetPath(context);

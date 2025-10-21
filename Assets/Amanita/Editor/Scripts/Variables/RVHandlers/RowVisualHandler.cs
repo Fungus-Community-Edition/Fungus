@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -72,9 +71,10 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Refresh()
         {
+            ToggleSubs(false);
             EnsureVisualsAreReady();
-            UnbindFields();
-            BindFields();
+            ApplyVarValuesToOurControls();
+            ToggleSubs(true);
         }
 
         protected virtual void EnsureVisualsAreReady()
@@ -82,17 +82,21 @@ namespace Amanita.VScripting.EditorUtils
             if (RowRoot == null && _template != null)
             {
                 RegisterVisualElements();
-
-                if (_currentVariable != null)
+                SetRootName();
+                void SetRootName()
                 {
-                    // For debug purposes
-                    string typeName = _currentVariable.ContentType.Name;
-                    RowRoot.name = $"{typeName}_Row";
+                    // For easier identification in the debug window
+                    if (_currentVariable != null)
+                    {
+                        string typeName = _currentVariable.ContentType.Name;
+                        RowRoot.name = $"{typeName}_Row";
+                    }
+                    else
+                    {
+                        RowRoot.name = "EmptyRow";
+                    }
                 }
-                else
-                {
-                    RowRoot.name = "EmptyRow";
-                }
+                
             }
         }
 
@@ -107,144 +111,100 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             RowRoot = _template.CloneTree();
+
             _keyField = RowRoot.Q<TextField>("KeyInput");
+            _keyField.isDelayed = true; // So that changes only register on enter or focus loss
+            _keyField.multiline = false;
+
             _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
-            _scopeField = RowRoot.Q<EnumField>("Scope");
-            _removeButton = RowRoot.Q<Button>("RemoveButton");
             valueField = (IBindable)RowRoot.Q("ValueField");
 
-            RegisterElementsForFocusLoss();
+            _scopeField = RowRoot.Q<EnumField>("Scope");
+            _removeButton = RowRoot.Q<Button>("RemoveButton");
         }
 
         protected TextField _keyField;
         protected VisualElement _valueFieldHolder;
+        protected IBindable valueField;
         protected EnumField _scopeField;
         protected Button _removeButton;
-        protected IBindable valueField;
-
-        protected virtual void RegisterElementsForFocusLoss()
+        
+        protected virtual void ApplyVarValuesToOurControls()
         {
-            toRespondToFocusLoss.Add(_keyField);
-            toRespondToFocusLoss.Add(_scopeField);
-            if (valueField != null)
+            if (_currentVariable == null)
             {
-                toRespondToFocusLoss.Add((BindableElement)valueField);
-            }
-        }
-
-        // This is to help make sure that changes to variables stick, what with how finicky
-        // Unity's serialization can be
-        protected IList<VisualElement> toRespondToFocusLoss = new List<VisualElement>();
-
-        protected virtual void UnbindFields()
-        {
-            Debug.Log($"[RowVisualHandler] UnbindFields called for varKey='{_currentVariable?.Key}' handler={GetType().FullName}");
-            RowRoot?.Unbind();
-            ToggleSubs(false);
-        }
-
-        protected virtual void BindFields()
-        {
-            Debug.Log($"[RowVisualHandler] BindFields called for varKey='{_currentVariable?.Key}' handler={GetType().FullName} serializedTarget='{_serializedVar?.targetObject?.name ?? "null"}' targetType='{_serializedVar?.targetObject?.GetType().FullName ?? "null"}'");
-            if (SerializedVar == null || RowRoot == null)
-            {
-                Debug.Log($"[RowVisualHandler] BindFields aborted: SerializedVar or RowRoot null. SerializedVar target='{_serializedVar?.targetObject?.name ?? "null"}' RowRoot is null={RowRoot==null}");
+                Debug.LogWarning($"[RowVisualHandler] BindFields called but _currentVariable is null " +
+                    $"for handler={GetType().FullName}");
                 return;
             }
 
-            DecideBindingPaths();
+            // Rather than rely on UITK's auto-binding, we are going to manually
+            // set field values for Muscaris in Flowcharts, since this way, not
+            // only will we no longer need MuscariableHolders, but we can also avoid
+            // some of the serialization pitfalls UITK binding has.
+            _keyField.SetValueWithoutNotify(_currentVariable.Key);
+            _scopeField.SetValueWithoutNotify(_currentVariable.Scope);
+            ApplyVarValueToValueField();
 
-            // Diagnostics: report binding paths
-            try
+            MarkForRepainting();
+            void MarkForRepainting()
             {
-                string k = _keyField?.bindingPath ?? "(null)";
-                string s = _scopeField?.bindingPath ?? "(null)";
-                string v = valueField != null ? (valueField as VisualElement)?.name + "->" + (valueField as IBindable)?.bindingPath : "(null)";
-                Debug.Log($"[RowVisualHandler] Binding paths: Key='{k}' Scope='{s}' Value='{(valueField != null ? (valueField as IBindable)?.bindingPath ?? "(unknown)" : "(null)")}'");
-            }
-            catch { }
-
-            // Ensure the SerializedObject is up-to-date before binding.
-            try
-            {
-                _serializedVar.Update();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[RowVisualHandler] SerializedObject.Update() failed: {ex.Message}");
-            }
-
-            // Sanity-check that the properties we plan to bind exist on the SerializedObject.
-            try
-            {
-                string keyPath = _keyField?.bindingPath;
-                string scopePath = _scopeField?.bindingPath;
-                string valuePath = valueField != null ? (valueField as IBindable)?.bindingPath : null;
-
-                SerializedProperty pKey = null, pScope = null, pValue = null;
-                if (!string.IsNullOrEmpty(keyPath)) pKey = _serializedVar.FindProperty(keyPath);
-                if (!string.IsNullOrEmpty(scopePath)) pScope = _serializedVar.FindProperty(scopePath);
-                if (!string.IsNullOrEmpty(valuePath)) pValue = _serializedVar.FindProperty(valuePath);
-
-                Debug.Log($"[RowVisualHandler] Property lookup: keyProp={(pKey != null ? "FOUND" : "MISSING")} scopeProp={(pScope != null ? "FOUND" : "MISSING")} valueProp={(pValue != null ? "FOUND" : "MISSING")}");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[RowVisualHandler] Property lookup failed: {ex.Message}");
-            }
-
-            // Perform binding
-            RowRoot?.Bind(SerializedVar);
-
-            // Force a repaint/update so bound controls reflect the just-updated SerializedObject.
-            try
-            {
+                _keyField.MarkDirtyRepaint();
+                _scopeField.MarkDirtyRepaint();
                 RowRoot?.MarkDirtyRepaint();
             }
-            catch { /* MarkDirtyRepaint is a best-effort call */ }
 
-            ToggleSubs(false);
-            ToggleSubs(true);
         }
 
-        protected virtual void DecideBindingPaths()
+        /// <summary>
+        /// This base implementation only works with ObjectFields. If the value is not a
+        /// UnityObject, override this method in your derived class.
+        /// </summary>
+        protected virtual void ApplyVarValueToValueField()
         {
-            ApplyDefaultBindingPaths();
-
-            if (_serializedVar != null && _serializedVar.targetObject is MuscariableHolder)
+            if (valueField is EditorObjectField objField)
             {
-                // We want to bind to the muscariable it is holding
-                ApplyMuscariableBindingPathOverrides();
+                objField.SetValueWithoutNotify(_currentVariable.BoxedValue as UnityObj);
+                objField.MarkDirtyRepaint();
             }
         }
-
-        protected virtual void ApplyDefaultBindingPaths()
-        {
-            _keyField.bindingPath = "key";
-            _scopeField.bindingPath = "scope";
-            if (valueField != null)
-            {
-                valueField.bindingPath = "value";
-            }
-        }
-
-        protected virtual void ApplyMuscariableBindingPathOverrides()
-        {
-            _keyField.bindingPath = $"{muscariableMemberName}.{_keyField.bindingPath}";
-            _scopeField.bindingPath = $"{muscariableMemberName}.{_scopeField.bindingPath}";
-            if (valueField != null)
-            {
-                valueField.bindingPath = $"{muscariableMemberName}.{valueField.bindingPath}";
-            }
-        }
-        protected static readonly string muscariableMemberName = "muscariable";
-
 
         protected virtual void ToggleSubs(bool on)
         {
             ToggleButtonClickSubs(on);
-            ToggleFocusLossSubs(on);
             ToggleValueChangeSubs(on);
+        }
+
+        protected virtual void ToggleValueChangeSubs(bool on)
+        {
+            if (on)
+            {
+                _keyField.RegisterValueChangedCallback(OnKeyFieldChanged);
+                _scopeField.RegisterValueChangedCallback(OnScopeValueChanged);
+            }
+            else
+            {
+                _keyField.UnregisterValueChangedCallback(OnKeyFieldChanged);
+                _scopeField.UnregisterValueChangedCallback(OnScopeValueChanged);
+            }
+        }
+
+        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
+        {
+            KeyFieldChanged(_keyField);
+        }
+        public event Action<TextField> KeyFieldChanged = delegate { };
+
+        protected virtual void TriggerValueFieldChanged(object newValue)
+        {
+            ValueFieldChanged(newValue);
+        }
+        public event Action<object> ValueFieldChanged = delegate { };
+
+        protected virtual void OnScopeValueChanged(ChangeEvent<Enum> evt)
+        {
+            VariableScope newVal = (VariableScope)evt.newValue;
+            ScopeFieldChanged(newVal);
         }
 
         protected virtual void ToggleButtonClickSubs(bool on)
@@ -270,40 +230,6 @@ namespace Amanita.VScripting.EditorUtils
         }
         public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
 
-        protected virtual void ToggleFocusLossSubs(bool on)
-        {
-            foreach (var elem in toRespondToFocusLoss)
-            {
-                if (elem == null)
-                {
-                    continue;
-                }
-
-                if (on)
-                {
-                    elem.RegisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
-                }
-                else
-                {
-                    elem.UnregisterCallback<FocusOutEvent>(OnAnyControlFocusLost);
-                }
-            }
-        }
-
-        protected virtual void OnAnyControlFocusLost(FocusOutEvent evt)
-        {
-            FocusLostOnControl(evt);
-            AmanitaEditorSignals.VarRowControlLostFocus(evt);
-        }
-
-        public event Action<FocusOutEvent> FocusLostOnControl = delegate { };
-
-        protected virtual void ToggleValueChangeSubs(bool on)
-        {
-            ToggleValueChange(_keyField, OnKeyFieldChanged, on);
-            ToggleValueChange(_scopeField, OnEnumFieldChanged, on);
-        }
-
         protected virtual void ToggleValueChange<T>(INotifyValueChanged<T> field,
             EventCallback<ChangeEvent<T>> callback,
             bool on)
@@ -323,44 +249,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
-        {
-            AnyControlValueChanged();
-            AmanitaEditorSignals.ControlValueChanged(evt);
-        }
-
-        protected virtual void OnEnumFieldChanged(ChangeEvent<Enum> evt)
-        {
-            AnyControlValueChanged();
-            AmanitaEditorSignals.ControlValueChanged(evt);
-        }
-
-        public event Action AnyControlValueChanged = delegate { };
-
-        public virtual SerializedObject SerializedVar
-        {
-            get { return _serializedVar; }
-            set
-            {
-                if (_serializedVar == value) return;
-
-                // Diagnostics: log changes to SerializedVar target
-                try
-                {
-                    var oldTarget = _serializedVar?.targetObject;
-                    var newTarget = value?.targetObject;
-                    Debug.Log($"[RowVisualHandler.SerializedVar] Changing for varKey='{_currentVariable?.Key}' oldTarget='{oldTarget?.name ?? "null"}' oldType='{oldTarget?.GetType().FullName ?? "null"}' newTarget='{newTarget?.name ?? "null"}' newType='{newTarget?.GetType().FullName ?? "null"}'");
-                }
-                catch { }//
-
-                UnbindFields();
-                _serializedVar = value;
-                BindFields();
-            }
-        }
-
-        protected SerializedObject _serializedVar;
-
         public virtual IVariable Variable
         {
             get => _currentVariable;
@@ -369,6 +257,7 @@ namespace Amanita.VScripting.EditorUtils
                 if (_currentVariable == value) return;
                 _prevVariable = _currentVariable;
                 _currentVariable = value;
+                Refresh();
             }
         }
 
@@ -382,10 +271,8 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Reset()
         {
+            ToggleSubs(false);
             Hide();
-            UnbindFields();
-            _serializedVar?.Dispose();
-            toRespondToFocusLoss.Clear();
             NullOutVars();
         }
 
@@ -398,26 +285,32 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void NullOutVars()
         {
             _prevVariable = _currentVariable = null;
-            _serializedVar = null;
             RowRoot = null;
         }
 
         public virtual VisualTreeAsset Template => _template;
         public abstract Type VarContentType { get; }
 
+        public event Action<VariableScope> ScopeFieldChanged = delegate { };
+
     }
 
-    public interface IRowVisualHandler : IDisposable
+    public interface IRowVisualHandler : IDisposable, IVarRowEventSignaler
     {
         void Init(IVariable variable);
         IVariable Variable { get; set; }
         VisualElement RowRoot { get; }
         VisualTreeAsset Template { get; }
         Type VarContentType { get; }
-        SerializedObject SerializedVar { get; set; }
         void Refresh();
+    }
+
+    public interface IVarRowEventSignaler
+    {
         event Action<IRowVisualHandler> RemoveButtonClicked;
-        event Action<FocusOutEvent> FocusLostOnControl;
+        event Action<TextField> KeyFieldChanged;
+        event Action<VariableScope> ScopeFieldChanged;
+        event Action<object> ValueFieldChanged;
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
@@ -435,7 +328,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             base.RegisterVisualElements();
 
-            // For those classes that simply need to hook up a single type to a single ObjectField
+            // For those classes that simply need to hook up a UnityObj type to a single ObjectField
             if (valueField != null && valueField is EditorObjectField objField)
             {
                 objField.objectType = typeof(TVarContentType);

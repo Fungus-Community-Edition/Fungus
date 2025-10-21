@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 using System.Reflection;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
+using System;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -77,173 +78,17 @@ namespace VScriptingTests.VariableOperations
             if (_host != null) UnityObj.DestroyImmediate(_host);
         }
 
-        [Test]
-        public void ForceMaterializeAllRowsForTests_UsesResolver_FindHolder_And_AssignsSerializedObject()
-        {
-            // Arrange: create a VariableSourceAsset and a TestMuscariable + holder.
-            var vsa = ScriptableObject.CreateInstance<VariableSourceAsset>();
-            // Muscariables are plain C# objects (not ScriptableObjects) — construct directly
-            var musc = new TestMuscariable();
-            musc.Key = "tm";
-            // Keep references for cleanup (only UnityEngine.Object instances)
-            _toDestroy.Add(vsa);
-
-            // Create a MuscariableHolder and initialize it to point at our musc instance.
-            var holder = ScriptableObject.CreateInstance<MuscariableHolder>();
-            _toDestroy.Add(holder);
-            TryInitHolder(holder, musc);
-
-            // Configure fake resolver to return our VariableSourceAsset and the holder at a fake path.
-            var fakePath = "Assets/Fake/path.asset";
-            _fakeResolver.ResourcesAssets = new List<UnityObj> { vsa };
-            _fakeResolver.AssetPathForObject[vsa] = fakePath;
-            _fakeResolver.AssetsAtPath[fakePath] = new List<UnityObj> { holder };
-
-            // Set the VariableSource context (so FindPersistentHolderFor will query resolver)
-            var listViewArgs = new VariableListViewInitArgs
-            {
-                List = new ListView(),
-                CountLabel = new UITKLabel(),
-                RowFactory = _factory,
-                VariableSource = vsa,
-                AssetResolver = _fakeResolver
-            };
-
-            // Recreate view with VariableSource set (ensures _variableSourceContext is assigned)
-            _view.Dispose();
-            _view = new TestVariableListView(listViewArgs, ResolveHolder);
-
-            // Add the musc variable to the view and materialize
-            _view.AddVariable(musc);
-            // Precondition: row should not be materialized yet
-            Assert.IsNull(_view.RowAtIndex(0), "Row should not be materialized before ForceMaterializeAllRowsForTests.");
-
-            // Act
-            _view.ForceMaterializeAllRowsForTests();
-
-            // Assert: row materialized and handler has a SerializedObject assigned (from the holder)
-            var row = _view.RowAtIndex(0);
-            Assert.NotNull(row, "Expected a materialized VariableRow for the musc variable.");
-            Assert.NotNull(row.VisualHandler, "Row should have a visual handler.");
-            Assert.NotNull(row.VisualHandler.SerializedVar, "Visual handler should have a SerializedObject assigned.");
-
-            // Additionally verify the SerializedObject targets our holder instance
-            Assert.AreSame(holder, row.VisualHandler.SerializedVar.targetObject,
-                "SerializedObject target should be the MuscariableHolder returned by the resolver.");
-        }
-
-        // Robust reflection helper: prefer an Init/SetFrom overload that accepts the variable,
-        // avoid AmbiguousMatchException by enumerating overloads and selecting the best fit.
-        static void TryInitHolder(MuscariableHolder holder, object inner)
-        {
-            var t = holder.GetType();
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-            // Try various Init overloads: prefer single-parameter overload compatible with 'inner'
-            var initCandidates = t.GetMethods(flags).Where(m => m.Name == "Init").ToArray();
-            MethodInfo chosen = null;
-
-            if (initCandidates.Length > 0)
-            {
-                // Prefer single-parameter overload assignable from inner's type (or IVariable/object)
-                foreach (var m in initCandidates)
-                {
-                    var ps = m.GetParameters();
-                    if (ps.Length == 1)
-                    {
-                        var pType = ps[0].ParameterType;
-                        if (inner != null)
-                        {
-                            var innerType = inner.GetType();
-                            if (pType.IsAssignableFrom(innerType) ||
-                                pType == typeof(object) ||
-                                pType == typeof(IVariable))
-                            {
-                                chosen = m;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            // inner is null — accept any single-parameter Init
-                            chosen = m;
-                            break;
-                        }
-                    }
-                }
-
-                // Fallback to parameterless Init if we didn't find a single-param match
-                if (chosen == null)
-                    chosen = initCandidates.FirstOrDefault(m => m.GetParameters().Length == 0);
-
-                if (chosen != null)
-                {
-                    var ps = chosen.GetParameters();
-                    if (ps.Length == 0)
-                        chosen.Invoke(holder, null);
-                    else
-                        chosen.Invoke(holder, new object[] { inner });
-                    return;
-                }
-            }
-
-            // Try SetFrom(...) overloads the same way
-            var setFromCandidates = t.GetMethods(flags).Where(m => m.Name == "SetFrom").ToArray();
-            if (setFromCandidates.Length > 0)
-            {
-                foreach (var m in setFromCandidates)
-                {
-                    var ps = m.GetParameters();
-                    if (ps.Length == 1)
-                    {
-                        var pType = ps[0].ParameterType;
-                        if (inner != null)
-                        {
-                            var innerType = inner.GetType();
-                            if (pType.IsAssignableFrom(innerType) ||
-                                pType == typeof(object) ||
-                                pType == typeof(IVariable))
-                            {
-                                chosen = m;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            chosen = m;
-                            break;
-                        }
-                    }
-                }
-
-                if (chosen == null)
-                    chosen = setFromCandidates.FirstOrDefault(m => m.GetParameters().Length == 1);
-
-                if (chosen != null)
-                {
-                    chosen.Invoke(holder, new object[] { inner as IVariable });
-                    return;
-                }
-            }
-
-            // Fallback: try property/field named Inner (existing behavior)
-            var pi = t.GetProperty("Inner", flags);
-            if (pi != null && pi.CanWrite)
-            {
-                pi.SetValue(holder, inner);
-                return;
-            }
-
-            var fi = t.GetField("inner", flags) ?? t.GetField("_inner", flags);
-            if (fi != null)
-            {
-                fi.SetValue(holder, inner);
-            }
-        }
-
         // Minimal concrete Muscariable used only for testing.
         public class TestMuscariable : Muscariable
         {
+            public override Type ContentType => typeof(object);
+            public override object BoxedValue
+            {
+                get => val;
+                set => val = value;
+            }
+
+            object val;
             public TestMuscariable() : base("tm", 1, VariableScope.Private) { }
 
             public TestMuscariable(string key, int itemID, VariableScope scope) : base(key, itemID, scope) { }
@@ -251,10 +96,15 @@ namespace VScriptingTests.VariableOperations
             // Minimal evaluation implementation — sufficient for tests that don't exercise comparisons deeply.
             public override bool Evaluate(CompareOperator compareOperator, object toCompareTo)
             {
-                var val = Value;
+                var val = BoxedValue;
                 if (val == null && toCompareTo == null) return true;
                 if (val == null || toCompareTo == null) return false;
                 return val.Equals(toCompareTo);
+            }
+
+            public override void Apply(SetOperator setOperator, object toApply)
+            {
+                // No Op
             }
         }
 
