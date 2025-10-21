@@ -1,5 +1,4 @@
-﻿using Amanita.EditorUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -14,13 +13,11 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Init(IVariable toDisplay)
         {
             _isDisposed = false;
-            _prevVariable = _currentVariable;
             _currentVariable = toDisplay;
             _template = GetOrResolveTemplate(GetType());
         }
 
         protected bool _isDisposed;
-        protected IVariable _prevVariable;
         protected IVariable _currentVariable;
         protected VisualTreeAsset _template;
 
@@ -74,6 +71,13 @@ namespace Amanita.VScripting.EditorUtils
             ToggleSubs(false);
             EnsureVisualsAreReady();
             ApplyVarValuesToOurControls();
+            MarkForRepainting();
+            void MarkForRepainting()
+            {
+                _keyField.MarkDirtyRepaint();
+                _scopeField.MarkDirtyRepaint();
+                RowRoot?.MarkDirtyRepaint();
+            }
             ToggleSubs(true);
         }
 
@@ -139,21 +143,12 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Rather than rely on UITK's auto-binding, we are going to manually
-            // set field values for Muscaris in Flowcharts, since this way, not
-            // only will we no longer need MuscariableHolders, but we can also avoid
+            // set field values for all variables (be they in FCs or VarSourceAssets).
+            // This way, not only will we no longer need MuscariableHolders, but we can also avoid
             // some of the serialization pitfalls UITK binding has.
             _keyField.SetValueWithoutNotify(_currentVariable.Key);
             _scopeField.SetValueWithoutNotify(_currentVariable.Scope);
-            ApplyVarValueToValueField();
-
-            MarkForRepainting();
-            void MarkForRepainting()
-            {
-                _keyField.MarkDirtyRepaint();
-                _scopeField.MarkDirtyRepaint();
-                RowRoot?.MarkDirtyRepaint();
-            }
-
+            ApplyVarValueToValueField(); 
         }
 
         /// <summary>
@@ -162,6 +157,8 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         protected virtual void ApplyVarValueToValueField()
         {
+            // This can vary based on the type of value this is representing, hence
+            // the need to allow overrides.
             if (valueField is EditorObjectField objField)
             {
                 objField.SetValueWithoutNotify(_currentVariable.BoxedValue as UnityObj);
@@ -173,38 +170,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             ToggleButtonClickSubs(on);
             ToggleValueChangeSubs(on);
-        }
-
-        protected virtual void ToggleValueChangeSubs(bool on)
-        {
-            if (on)
-            {
-                _keyField.RegisterValueChangedCallback(OnKeyFieldChanged);
-                _scopeField.RegisterValueChangedCallback(OnScopeValueChanged);
-            }
-            else
-            {
-                _keyField.UnregisterValueChangedCallback(OnKeyFieldChanged);
-                _scopeField.UnregisterValueChangedCallback(OnScopeValueChanged);
-            }
-        }
-
-        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
-        {
-            KeyFieldChanged(_keyField);
-        }
-        public event Action<TextField> KeyFieldChanged = delegate { };
-
-        protected virtual void TriggerValueFieldChanged(object newValue)
-        {
-            ValueFieldChanged(newValue);
-        }
-        public event Action<object> ValueFieldChanged = delegate { };
-
-        protected virtual void OnScopeValueChanged(ChangeEvent<Enum> evt)
-        {
-            VariableScope newVal = (VariableScope)evt.newValue;
-            ScopeFieldChanged(newVal);
         }
 
         protected virtual void ToggleButtonClickSubs(bool on)
@@ -230,24 +195,39 @@ namespace Amanita.VScripting.EditorUtils
         }
         public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
 
-        protected virtual void ToggleValueChange<T>(INotifyValueChanged<T> field,
-            EventCallback<ChangeEvent<T>> callback,
-            bool on)
+        protected virtual void ToggleValueChangeSubs(bool on)
         {
-            if (field == null)
-            {
-                return;
-            }
-
             if (on)
             {
-                field.RegisterValueChangedCallback(callback);
+                _keyField.RegisterValueChangedCallback(OnKeyFieldChanged);
+                _scopeField.RegisterValueChangedCallback(OnScopeValueChanged);
             }
             else
             {
-                field.UnregisterValueChangedCallback(callback);
+                _keyField.UnregisterValueChangedCallback(OnKeyFieldChanged);
+                _scopeField.UnregisterValueChangedCallback(OnScopeValueChanged);
             }
         }
+
+        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
+        {
+            KeyFieldChanged(_keyField);
+        }
+        public event Action<TextField> KeyFieldChanged = delegate { };
+
+        protected virtual void OnScopeValueChanged(ChangeEvent<Enum> evt)
+        {
+            VariableScope newVal = (VariableScope)evt.newValue;
+            ScopeFieldChanged(newVal);
+        }
+        public event Action<VariableScope> ScopeFieldChanged = delegate { };
+
+        protected virtual void TriggerValueFieldChanged(object newValue)
+        {
+            ValueFieldChanged(newValue);
+        }
+        public event Action<object> ValueFieldChanged = delegate { };
+        // ^The value may or may not be a UnityObj, hence using the original base object type here
 
         public virtual IVariable Variable
         {
@@ -255,7 +235,6 @@ namespace Amanita.VScripting.EditorUtils
             set
             {
                 if (_currentVariable == value) return;
-                _prevVariable = _currentVariable;
                 _currentVariable = value;
                 Refresh();
             }
@@ -284,14 +263,12 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void NullOutVars()
         {
-            _prevVariable = _currentVariable = null;
+            _currentVariable = null;
             RowRoot = null;
         }
 
         public virtual VisualTreeAsset Template => _template;
         public abstract Type VarContentType { get; }
-
-        public event Action<VariableScope> ScopeFieldChanged = delegate { };
 
     }
 

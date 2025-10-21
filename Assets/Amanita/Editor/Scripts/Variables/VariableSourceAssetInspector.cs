@@ -104,7 +104,6 @@ namespace Amanita.VScripting.EditorUtils
                 source.VariableRemoved += OnVariableRemoved;
                 source.VariablesReordered += UpdateSourceAssetFile;
                 source.Refreshed += UpdateSourceAssetFile;
-                AmanitaEditorSignals.ControlValueChanged += OnControlValueChanged;
             }
             else
             {
@@ -113,15 +112,7 @@ namespace Amanita.VScripting.EditorUtils
                 source.VariableRemoved -= OnVariableRemoved;
                 source.VariablesReordered -= UpdateSourceAssetFile;
                 source.Refreshed -= UpdateSourceAssetFile;
-                AmanitaEditorSignals.ControlValueChanged -= OnControlValueChanged;
             }
-        }
-
-        protected virtual void OnControlValueChanged(object obj)
-        {
-            // Go through the MuscariableHolders and refresh those
-            VariableSourceAsset source = target as VariableSourceAsset;
-            source.RefreshHolders();
         }
 
         protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)

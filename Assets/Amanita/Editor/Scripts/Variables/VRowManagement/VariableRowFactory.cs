@@ -27,11 +27,11 @@ namespace Amanita.VScripting.EditorUtils
         protected VariableRowPool _rowPool;
         protected RowVisualHandlerPool _handlerPool;
 
-        public VariableRow Create(IVariable variable)
+        public VariableRow Create(IVariable toRepresent)
         {
             VariableRow row = _rowPool.GetOrCreate();
-            IRowVisualHandler handler = _handlerPool.GetHandlerFor(variable.ContentType, variable);
-            row.Init(variable, handler, null);
+            IRowVisualHandler handler = _handlerPool.GetHandlerFor(toRepresent.ContentType, toRepresent);
+            row.Init(toRepresent, handler);
             return row;
         }
 
@@ -40,7 +40,9 @@ namespace Amanita.VScripting.EditorUtils
             if (row == null) return;
 
             if (row.VisualHandler != null)
+            {
                 _handlerPool.Release(row.VisualHandler);
+            }
 
             _rowPool.Release(row);
         }
