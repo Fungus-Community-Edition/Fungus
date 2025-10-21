@@ -63,7 +63,7 @@ namespace Amanita.VScripting
         [SerializeField] protected List<Variable> legacyVariables = new List<Variable>();
 
         [HideInInspector]
-        [SerializeField] protected List<Muscariable> muscariables = new List<Muscariable>();
+        [SerializeReference] protected List<Muscariable> muscariables = new List<Muscariable>();
 
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
@@ -338,6 +338,7 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
+            AssertOwnership();
             if (!cachedFlowcharts.Contains(this))
             {
                 cachedFlowcharts.Add(this);
@@ -350,6 +351,14 @@ namespace Amanita.VScripting
             UpdateVersion();
 
             StringSubstituter.RegisterHandler(this);   
+        }
+
+        protected virtual void AssertOwnership()
+        {
+            foreach (Muscariable elem in Variables.Where((elem) => elem is Muscariable))
+            {
+                elem.Owner = this;
+            }
         }
 
         protected virtual void OnDisable()
@@ -1610,7 +1619,7 @@ namespace Amanita.VScripting
                 UnityEditor.EditorUtility.SetDirty(this);
             }
 #endif
-
+            AssertOwnership();
             CheckItemIds();
 
             EnsureBlocksHaveAValidSize();

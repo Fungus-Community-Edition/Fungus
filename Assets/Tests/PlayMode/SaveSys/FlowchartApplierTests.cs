@@ -205,7 +205,7 @@ namespace SaveSystemTests
                 IList<object> result = new List<object>();
                 foreach (var elem in flowchart.Variables)
                 {
-                    result.Add(elem.Value);
+                    result.Add(elem.BoxedValue);
                 }
                 return result;
             }

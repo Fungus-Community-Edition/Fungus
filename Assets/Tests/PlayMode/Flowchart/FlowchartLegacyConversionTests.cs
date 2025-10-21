@@ -169,7 +169,7 @@ namespace VScriptingTests
 
             dynamic dynLegacy = legacy;
             var legacyVal = (object)dynLegacy.Value;
-            var convertedVal = converted.Value;
+            var convertedVal = converted.BoxedValue;
 
             Assert.AreEqual(legacyVal, convertedVal, "Converted muscariable value does not match legacy value");
             yield break;

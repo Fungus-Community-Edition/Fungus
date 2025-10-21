@@ -48,7 +48,7 @@ namespace Amanita.VScripting
                 string result;
                 if (VarRef != null)
                 {
-                    result = (string)VarRef.Value;
+                    result = (string)VarRef.BoxedValue;
                 }
                 else
                 {
@@ -61,9 +61,9 @@ namespace Amanita.VScripting
                     result = "";
                     if (VarRef != null)
                     {
-                        VarRef.Value = result;
+                        VarRef.BoxedValue = result;
                     }
-                    base.Value = valOfType = result;
+                    valOfType = result;
                 }
 
                 return result;
@@ -72,7 +72,7 @@ namespace Amanita.VScripting
             {
                 if (VarRef != null)
                 {
-                    VarRef.Value = value;
+                    VarRef.BoxedValue = value;
                 }
                 else
                 {

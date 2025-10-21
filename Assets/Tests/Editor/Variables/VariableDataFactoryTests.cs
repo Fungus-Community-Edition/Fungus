@@ -97,7 +97,7 @@ namespace VScriptingTests.VariableOperations
 
                 if (value.ContentType.Equals(this.ContentType))
                 {
-                    _intRef.Value = (int)value.Value;
+                    _intRef.BoxedValue = (int)value.BoxedValue;
                 }
                 else
                 {

@@ -26,7 +26,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual object Value
+        public virtual object BoxedValue
         {
             get
             {
@@ -35,12 +35,12 @@ namespace Amanita.VScripting
                     return null;
                 }
 
-                return muscariable.Value;
+                return muscariable.BoxedValue;
             }
             set
             {
                 Ensure(); 
-                muscariable.Value = value; 
+                muscariable.BoxedValue = value; 
                 Dirty(); 
             } 
         }
@@ -98,7 +98,23 @@ namespace Amanita.VScripting
 
         public Muscariable Inner => muscariable; // For Inspectors and such
 
-        public IVariableSource Owner => ((IVariable)muscariable).Owner;
+        public IVariableSource Owner
+        {
+            get
+            {
+                if (muscariable == null)
+                {
+                    return null;
+                }
+                return muscariable.Owner;
+            }
+            set
+            {
+                Ensure(); 
+                muscariable.Owner = value; 
+                Dirty();
+            }
+        }
 
         public virtual void Init(IVariable variable)
         {

@@ -123,7 +123,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var colorVar = new ColorMuscariable { Key = "col", ItemID = 206 };
             colorVar.Init();
             Muscariable baseVar = colorVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a color");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a color");
         }
 
         #endregion
@@ -138,8 +138,8 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             Sprite captured = null;
             v.OnValueChanged += s => captured = s;
 
-            v.Value = firstSprite;
-            Assert.AreEqual(firstSprite, v.Value);
+            v.BoxedValue = firstSprite;
+            Assert.AreEqual(firstSprite, v.BoxedValue);
             Assert.AreEqual(firstSprite, captured);
         }
 
@@ -182,7 +182,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var spriteVar = new SpriteMuscariable { Key = "spr", ItemID = 215 };
             spriteVar.Init();
             Muscariable baseVar = spriteVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = firstTex);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = firstTex);
         }
 
         #endregion
@@ -240,7 +240,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var texVar = new TextureMuscariable { Key = "tex", ItemID = 225 };
             texVar.Init();
             Muscariable baseVar = texVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = firstSprite);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = firstSprite);
         }
 
         #endregion
@@ -320,7 +320,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var matVar = new MaterialMuscariable { Key = "mat", ItemID = 237 };
             matVar.Init();
             Muscariable baseVar = matVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a material");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a material");
         }
 
         #endregion
@@ -390,7 +390,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         {
             Muscariable animVar = new AnimatorMuscariable { Key = "anim", ItemID = 246 };
             animVar.Init();
-            Assert.Throws<ArgumentException>(() => animVar.Value = 42);
+            Assert.Throws<ArgumentException>(() => animVar.BoxedValue = 42);
         }
 
 

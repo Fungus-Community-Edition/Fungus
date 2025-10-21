@@ -108,7 +108,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             VectorTwoMuscariable vecVar = new VectorTwoMuscariable { Key = "v2", ItemID = 23 };
             vecVar.Init();
             Muscariable baseVar = vecVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = 123);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);
         }
 
         [Test]
@@ -186,7 +186,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             VectorThreeMuscariable vecVar = new VectorThreeMuscariable { Key = "v3", ItemID = 32 };
             Muscariable baseVar = vecVar;
             vecVar.Init();
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a vector");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a vector");
         }
     }
 }
