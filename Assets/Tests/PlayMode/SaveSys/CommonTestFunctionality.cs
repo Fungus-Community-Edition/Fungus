@@ -393,7 +393,8 @@ namespace SaveSystemTests
 
         protected virtual bool ShouldDeleteTestSavesAtEnd => true;
 
-        protected readonly TestSavePathResolver testPathResolver = new TestSavePathResolver();
+        protected readonly DefaultSavePathResolver testPathResolver = new DefaultSavePathResolver("TestSaves");
+        // ^This resolver uses a relative path for testing as opposed to one users are likely to use.
         protected readonly DefaultSavePathResolver otherTestPathResolver = new DefaultSavePathResolver();
         protected void DeleteAllTestSaves()
         {
@@ -480,96 +481,6 @@ namespace SaveSystemTests
             saveSys.SavePathResolver = testPathResolver;
             saveWriter.PathResolver = testPathResolver;
             saveReader.PathResolver = testPathResolver;
-        }
-
-        public class TestSavePathResolver : IConfigurableSaveSlotPathResolver<SaveDirectoryType>
-        {
-            public TestSavePathResolver(string relativePath = "TempSaves", string fileExtension = "save")
-            {
-                RelativePath = relativePath;
-                FileExtension = fileExtension;
-            }
-            public string RelativePath { get; protected set; }
-            public string FileExtension { get; protected set; }
-
-            public string NumberFormat => "D2";
-
-            string IConfigurableSaveSlotPathResolver.NumberFormat
-            {
-                get => NumberFormat;
-                set
-                {
-                    // We don't allow changing this
-                }
-            }
-            string IConfigurableSavePathResolver.RelativePath { get => RelativePath; set => RelativePath = value; }
-            string IConfigurableSavePathResolver.FileExtension { get => FileExtension; set => FileExtension = value; }
-
-            public string GetSaveFolderPath(SaveDirectoryType input)
-            {
-                string basePath;
-                switch (input)
-                {
-                    case SaveDirectoryType.DataPath:
-                    case SaveDirectoryType.InTheBalls:
-                        basePath = Application.dataPath; break;
-                    case SaveDirectoryType.PersistentDataPath:
-                        basePath = Application.persistentDataPath; break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Input of type {input} is not supported.");
-                }
-
-                string result = Path.Combine(basePath, RelativePath);
-                return result;
-            }
-            public string GetSaveFolderPath(object input)
-            {
-                if (input is SaveDirectoryType type)
-                {
-                    return GetSaveFolderPath(type);
-                }
-                else
-                {
-                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
-                }
-            }
-            public string GetSaveFilePath(string fileName, SaveDirectoryType input)
-            {
-                string result = Path.Combine(GetSaveFolderPath(input),
-                    $"{fileName}.{FileExtension}");
-                return result;
-            }
-            public string GetSaveFilePath(string fileName, object input)
-            {
-                if (input is SaveDirectoryType type)
-                {
-                    return GetSaveFilePath(fileName, type);
-                }
-                else
-                {
-                    throw new ArgumentException($"Input must be of type {typeof(SaveDirectoryType)}");
-                }
-            }
-
-            public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
-            {
-                string fileName = GetSaveFileName(slotNumber);
-                string result = GetSaveFilePath($"saveData_slot{slotNumber}", input);
-                return result;
-            }
-
-            public string GetSaveFileName(int slotNumber)
-            {
-                string path = GetSaveFilePath(SaveDirectoryType.PersistentDataPath, slotNumber);
-                string result = Path.GetFileNameWithoutExtension(path);
-                return result;
-            }
-
-            public string GetSaveFilePath(object input, int slotNumber)
-            {
-                string result = GetSaveFilePath((SaveDirectoryType)input, slotNumber);
-                return result;
-            }
         }
 
         protected IDictionary<SaveDirectoryType, string> BaseSavePaths { get; set; } =
