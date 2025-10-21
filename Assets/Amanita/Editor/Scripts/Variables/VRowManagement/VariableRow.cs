@@ -1,7 +1,5 @@
 using Amanita.EditorUtils;
 using System;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
@@ -15,25 +13,27 @@ namespace Amanita.VScripting.EditorUtils
         /// Also meant to be used for reuse after disposing. It's fine for the 
         /// IRowVisualHandler passed to be in a disposed state.
         /// </summary>
-        public virtual void Init(IVariable toRepresent, IRowVisualHandler visHandler,
-            UnityObj targetObject)
+        public virtual void Init(IVariable toRepresent, IRowVisualHandler visHandler)
         {
             _isDisposed = false;
-            ToggleSubs(false);
+            ToggleSubs(false); 
+            // ^In case we're reusing. Best unsub from the prev vis handler we were working with, so...
 
-            _prevVariable = _currentVariable;
             _currentVariable = toRepresent;
 
-            VisualHandler = visHandler;
-            VisualHandler.Init(toRepresent);
-            VisualHandler.Variable = _currentVariable;
-            VisualHandler.Refresh();
+            PrepVisualHandler();
+            void PrepVisualHandler()
+            {
+                VisualHandler = visHandler;
+                VisualHandler.Init(toRepresent);
+                VisualHandler.Variable = _currentVariable;
+                VisualHandler.Refresh();
+            }
 
             ToggleSubs(true);
         }
 
         protected bool _isDisposed;
-        protected IVariable _prevVariable;
         protected IVariable _currentVariable;
 
         protected virtual void ToggleSubs(bool on)
@@ -61,6 +61,16 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
+        {
+            AmanitaEditorSignals.VarRowRemoveButtonClicked(this);
+        }
+
+        protected virtual void OnKeyFieldChanged(TextField field)
+        {
+            AmanitaEditorSignals.KeyFieldChanged(this, field.value);
+        }
+
         protected virtual void OnScopeFieldChanged(VariableScope scope)
         {
             AmanitaEditorSignals.ScopeFieldChanged(this, scope);
@@ -70,19 +80,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             AmanitaEditorSignals.ValueFieldChanged(this, obj);
         }
-
-        protected virtual void OnKeyFieldChanged(TextField field)
-        {
-            AmanitaEditorSignals.KeyFieldChanged(this, field.value);
-        }
-
-        protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
-        {
-            AmanitaEditorSignals.VarRowRemoveButtonClicked(this);
-        }
-
-
-        public event Action<VariableRow> FocusLostOnControl = delegate { }; 
 
         public void Dispose()
         {
@@ -143,7 +140,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             _currentVariable = VisualHandler.Variable = null;
         }
-
 
     }
 
