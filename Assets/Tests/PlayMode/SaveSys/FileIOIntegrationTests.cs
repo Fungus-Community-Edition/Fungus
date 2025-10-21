@@ -16,6 +16,7 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
             saveReaderFallback = new TestSaveReader();
+            saveReaderFallback.StorageSettings = storageSettings;
         }
 
         protected TestSaveReader saveReaderFallback;
@@ -36,6 +37,8 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             await saveWriter.WriteOneToDisk(writeReq);
+            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReq.SlotNumber);
+            saveFilePathsForCleanup.Add(filePath);
 
             var readReq = new SaveReadRequest
             {
@@ -56,10 +59,10 @@ namespace SaveSystemTests
             var meta = new SaveMetaData();
 
             // Ensure fresh test directory
-            string savePath = FileUtils.GetPathToFile(baseDir, slotNumber, saveWriter);
+            string savePath = saveWriter.GetSaveFilePath(baseDir, slotNumber);
             string backupPath = savePath + saveWriter.BackupFileExtension;
-            if (File.Exists(savePath)) File.Delete(savePath);
-            if (File.Exists(backupPath)) File.Delete(backupPath);
+            saveFilePathsForCleanup.Add(savePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
             // STEP 1 — Write initial data
             var originalData = new CompositeSaveData();
@@ -105,7 +108,6 @@ namespace SaveSystemTests
             Assert.IsFalse(File.Exists(backupPath), "Backup file was not deleted after overwrite with cleanup enabled.");
         }
 
-
         [TestCase(1, SaveDirectoryType.DataPath)]
         [TestCase(5, SaveDirectoryType.PersistentDataPath)]
         [TestCase(99, SaveDirectoryType.DataPath)]
@@ -137,8 +139,8 @@ namespace SaveSystemTests
         [Test]
         public async Task EncryptedData_RoundTrip()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
             data.Add(new SaveDataUnit("Foo", "{\"x\":123}"));
@@ -166,8 +168,8 @@ namespace SaveSystemTests
         [Test]
         public async Task EncryptedMetaData_RoundTrip()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var meta = new SaveMetaData();
             meta.SaveName = "EncryptedMetaTest";
@@ -198,8 +200,8 @@ namespace SaveSystemTests
         [Test]
         public async Task EncryptedFile_Corruption_Throws()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReaderFallback.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReaderFallback.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
             data.Add(new SaveDataUnit("Foo", "{\"x\":999}"));
@@ -236,8 +238,8 @@ namespace SaveSystemTests
         [Test, TestCaseSource(nameof(UnicodeTestCases))]
         public async Task EncryptedUnicodeData_RoundTrip(string unicodeString)
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
             data.Add(new SaveDataUnit("Unicode", unicodeString));
@@ -276,12 +278,11 @@ namespace SaveSystemTests
             yield return "Zażółć gęślą jaźń"; // Polish diacritics
         }
 
-
         [Test]
         public async Task EncryptedFlag_Mismatch_Throws()
         {
             // Write unencrypted
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
             var data = new CompositeSaveData();
             data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
 
@@ -297,7 +298,7 @@ namespace SaveSystemTests
 
             // Try to read as encrypted
             TestSaveReader saveReader = saveReaderFallback;
-            saveReader.ReadEncrypted = true;
+            saveReader.ExpectEncryption = true;
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 6,

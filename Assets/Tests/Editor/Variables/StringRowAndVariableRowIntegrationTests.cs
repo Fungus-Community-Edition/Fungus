@@ -13,7 +13,7 @@ using UnityObj = UnityEngine.Object;
 using System.Linq;
 using Amanita;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Integration tests exercising StringRowVisualHandler together with VariableSourceAsset,
@@ -186,110 +186,6 @@ namespace VariableOperations
                 _resolver = null;
                 _source = null;
                 manager = null;
-            }
-        }
-
-        [Test]
-        public void EnterOnValueField_SavesValueTo_VariableSourceAsset_StringMuscariable()
-        {
-            var row = _listView.RowAtIndex(0);
-            var handler = row.VisualHandler as StringRowVisualHandler;
-
-            // Locate the ValueField in the handler's RowRoot
-            var valueField = handler.RowRoot.Q<TextField>("ValueField");
-            var keyField = handler.RowRoot.Q<TextField>("KeyInput");
-
-            // Observer-style commit: subscribe to the same editor-global signal production code uses.
-            System.Action<object> responseToControlValueChanged = null;
-            responseToControlValueChanged = (_) =>
-            {
-                // IMPORTANT: programmatic assignment to UI fields doesn't always run the
-                // delayed-binding pathways the editor UI uses (especially for isDelayed TextField).
-                // In production the inspector wiring observes UI signals and then applies the
-                // serialized properties. To faithfully test that observer flow we copy the UI
-                // values into the holder's SerializedObject explicitly, then apply.
-                var so = handler.SerializedVar;
-                if (so == null) return;
-
-                var valProp = so.FindProperty("muscariable.value");
-                if (valProp != null)
-                    valProp.stringValue = valueField?.value;
-                so.ApplyModifiedPropertiesWithoutUndo();
-            };
-
-            AmanitaEditorSignals.ControlValueChanged += responseToControlValueChanged;
-            try
-            {
-                // Simulate user typing a new value and pressing Enter by setting the field's value,
-                // then publishing the control-change signal that the editor wiring would raise.
-                string newVal = "goodbye";
-                valueField.value = newVal;
-                // Publish the control-change event -> the observer will copy values into the serialized object and apply.
-                AmanitaEditorSignals.ControlValueChanged(null);
-
-                // Assert the VariableSourceAsset's muscariable list contains the updated value
-                var found = _source.GetVariable("greeting") as StringMuscariable;
-                Assert.IsNotNull(found, "Muscariable with key 'greeting' should still exist.");
-                Assert.AreEqual(newVal, found.Value, "Muscariable value should have been updated from the UI commit.");
-            }
-            finally
-            {
-                AmanitaEditorSignals.ControlValueChanged -= responseToControlValueChanged;
-            }
-
-        }
-
-        [Test]
-        public void EnterOnKeyField_RenamesVariable_In_VariableSourceAsset_and_keeps_value()
-        {
-            _listView.ForceMaterializeAllRowsForTests();
-            var row = _listView.RowAtIndex(0);
-            var handler = row.VisualHandler as StringRowVisualHandler;
-            var keyField = handler.RowRoot.Q<TextField>("KeyInput");
-            var valueField = handler.RowRoot.Q<TextField>("ValueField");
-            var original = _source.GetVariable("greeting") as StringMuscariable;
-
-            // Observer-style commit callback — copy UI values into the serialized object then apply.
-            void ApplyChangesToVar(object _)
-            {
-                var serializedObj = handler.SerializedVar;
-                if (serializedObj == null) return;
-
-                var keyProp = serializedObj.FindProperty("muscariable.key");
-                if (keyProp != null)
-                    keyProp.stringValue = keyField?.value;
-
-                var valProp = serializedObj.FindProperty("muscariable.value");
-                if (valProp != null)
-                    valProp.stringValue = valueField?.value;
-
-                serializedObj.ApplyModifiedPropertiesWithoutUndo();
-            }
-
-            AmanitaEditorSignals.ControlValueChanged += ApplyChangesToVar;
-            try
-            {
-                // Change key and value via UI fields
-                string newKey = "salutation";
-                string newVal = "hiya";
-
-                keyField.value = newKey;
-                valueField.value = newVal;
-
-                // Publish the control-change signal -> registered observer applies serialized changes
-                AmanitaEditorSignals.ControlValueChanged(new object());
-
-                // After committing, the VariableSourceAsset list should reflect the renamed key
-                var byNewKey = _source.GetVariable(newKey) as StringMuscariable;
-                Assert.IsNotNull(byNewKey, "VariableSourceAsset should expose the muscariable under the new key.");
-                Assert.AreEqual(newVal, byNewKey.Value, "Value should remain synced after renaming key.");
-
-                var byOldKey = _source.GetVariable("greeting");
-                Assert.IsNull(byOldKey, "Old key should no longer resolve after rename.");
-            }
-            finally
-            {
-                AmanitaEditorSignals.ControlValueChanged -= ApplyChangesToVar;
             }
         }
 

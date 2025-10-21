@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.TestTools;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataFactoryTests
     {
@@ -97,7 +97,7 @@ namespace VariableOperations
 
                 if (value.ContentType.Equals(this.ContentType))
                 {
-                    _intRef.Value = (int)value.Value;
+                    _intRef.BoxedValue = (int)value.BoxedValue;
                 }
                 else
                 {

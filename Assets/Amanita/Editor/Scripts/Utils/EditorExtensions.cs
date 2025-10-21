@@ -83,11 +83,7 @@ namespace Amanita.EditorUtils
         /// <returns></returns>
         public static List<T> FindObjectsOfInterface<T>()
         {
-        #if UNITY_6000
             return Object.FindObjectsByType<Object>(FindObjectsSortMode.None).OfType<T>().ToList();
-        #else
-            return Object.FindObjectsOfType<Object>().OfType<T>().ToList();
-        #endif
         }
     }
 }

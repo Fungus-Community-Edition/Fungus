@@ -26,7 +26,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual object Value
+        public virtual object BoxedValue
         {
             get
             {
@@ -35,12 +35,12 @@ namespace Amanita.VScripting
                     return null;
                 }
 
-                return muscariable.Value;
+                return muscariable.BoxedValue;
             }
             set
             {
                 Ensure(); 
-                muscariable.Value = value; 
+                muscariable.BoxedValue = value; 
                 Dirty(); 
             } 
         }
@@ -55,6 +55,12 @@ namespace Amanita.VScripting
                 }
 
                 return muscariable.Scope;
+            }
+            set
+            {
+                Ensure(); 
+                muscariable.Scope = value; 
+                Dirty();
             }
         }
 
@@ -92,12 +98,28 @@ namespace Amanita.VScripting
 
         public Muscariable Inner => muscariable; // For Inspectors and such
 
-        public IVariableSource Owner => ((IVariable)muscariable).Owner;
+        public IVariableSource Owner
+        {
+            get
+            {
+                if (muscariable == null)
+                {
+                    return null;
+                }
+                return muscariable.Owner;
+            }
+            set
+            {
+                Ensure(); 
+                muscariable.Owner = value; 
+                Dirty();
+            }
+        }
 
         public virtual void Init(IVariable variable)
         {
             muscariable = variable as Muscariable;
-            muscariable ??= VariableFactory.Create(variable?.ContentType, variable);
+            muscariable ??= VariableFactory.CreateByContentType(variable?.ContentType, variable);
 
             Init();
         }
@@ -127,7 +149,7 @@ namespace Amanita.VScripting
             UnityEditor.Undo.RecordObject(this, "Set Muscariable");
             // ^We want to be able to revert the change
 
-            prop.managedReferenceValue = VariableFactory.Create(src.ContentType, src);
+            prop.managedReferenceValue = VariableFactory.CreateByContentType(src.ContentType, src);
             so.ApplyModifiedProperties();
 #else
             muscariable = MuscariableFactory.Create(src.ContentType, src);

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 using Amanita.VScripting;
+using System.Linq;
 
 namespace Amanita.DialogueSys.Commands
 {
@@ -139,7 +140,6 @@ namespace Amanita.DialogueSys.Commands
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-
             f.DetermineSubstituteVariables(text, referencedVariables);
         }
 #endif

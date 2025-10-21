@@ -98,13 +98,7 @@ namespace SaveSystemTests
 
         protected virtual void RemoveAllFlowchartsFromTheScene()
         {
-            IList<Flowchart> toRemove = null;
-
-#if UNITY_6000_0_OR_NEWER
-            toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-            toRemove = Object.FindObjectsOfType<Flowchart>();
-#endif
+            IList<Flowchart> toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             foreach (var fc in toRemove)
             {
                 // We want to skip the FCs that are part of the AmanitaManager prefab, since that's
@@ -205,17 +199,24 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync();
 
+            var origFirstVarVals = GetValsOfFirstVars();
+            IList<object> GetValsOfFirstVars()
+            {
+                IList<object> result = new List<object>();
+                foreach (var elem in flowchart.Variables)
+                {
+                    result.Add(elem.BoxedValue);
+                }
+                return result;
+            }
+
             // Create a second flowchart in the scene
             var secondFlowchartGO = new GameObject("SecondFlowchart");
             var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
-            //secondFlowchartGO.hideFlags = HideFlags.HideAndDontSave;
 
             // Add a variable to the second flowchart
-            var secondVar = secondFlowchartGO.AddComponent<StringVariable>();
             string initSecondVarVal = "initial";
-            secondVar.Key = "secondVar";
-            secondVar.Value = initSecondVarVal;
-            secondFlowchart.AddVariable(secondVar);
+            var secondVar = secondFlowchart.AddNewMuscariable<string, StringMuscariable>("secondVar", initSecondVarVal);
 
             FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
 
@@ -226,8 +227,11 @@ namespace SaveSystemTests
             await flowchartApplier.ApplyRange(new[] { flowchartSaveData, secondSaveData });
 
             // Assert both flowcharts' variables were restored
-            Assert.AreEqual(flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value, nameVar.Value,
-                "First flowchart variable was not restored.");
+            var firstSavedVars = flowchartSaveData.SavedVars;
+
+            var varsAfterRestoration = GetValsOfFirstVars();
+            bool firstFcVarsRestored = varsAfterRestoration.SequenceEqual(origFirstVarVals);
+            Assert.IsTrue(firstFcVarsRestored, "First flowchart variables were not restored.");
             Assert.AreEqual(initSecondVarVal, secondVar.Value, "Second flowchart variable was not restored.");
 
             // Cleanup

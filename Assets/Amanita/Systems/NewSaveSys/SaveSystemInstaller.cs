@@ -97,7 +97,12 @@ namespace Amanita.SaveSys
                 saveSystem.SaveManager = SaveManager;
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
-                saveSystem.SaveDirectoryPaths = this.saveDirectoryPaths;
+                SaveStorageSettings defaultSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                DefaultSavePathResolver pathResolver = new DefaultSavePathResolver();
+                pathResolver.RelativePath = defaultSettings.RelativePath;
+                pathResolver.FileExtension = defaultSettings.FileExtension;
+
+                saveSystem.SavePathResolver = pathResolver;
                 saveSystem.RegisterSaveDataAppliersMulti(validAppliers);
 
             }

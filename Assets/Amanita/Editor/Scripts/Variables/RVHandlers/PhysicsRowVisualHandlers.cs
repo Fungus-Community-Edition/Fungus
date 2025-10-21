@@ -2,26 +2,34 @@ using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    [RowVisualHandler("Physics", typeof(Collider2D), "ColliderTwoD",
-        "UIToolkitTemplates/VarRows/Physics/ColliderTwoDVariableRow")]
+    [RowVisualHandler(menuName: "Physics",
+        contentType: typeof(Collider2D),
+        typeDisplayName: "ColliderTwoD",
+        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/ColliderTwoDVariableRow")]
     public class ColliderTwoDRowVisualHandler : RowVisualHandler<Collider2D>
     {
     }
 
-    [RowVisualHandler("Physics", typeof(Collider), "ColliderThreeD",
-        "UIToolkitTemplates/VarRows/Physics/ColliderThreeDVariableRow")]
+    [RowVisualHandler(menuName: "Physics",
+        contentType: typeof(Collider), 
+        typeDisplayName: "ColliderThreeD",
+        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/ColliderThreeDVariableRow")]
     public class ColliderThreeDRowVisualHandler : RowVisualHandler<Collider>
     {
     }
 
-    [RowVisualHandler("Physics", typeof(Rigidbody2D), "RigidbodyTwoD",
-        "UIToolkitTemplates/VarRows/Physics/RigidbodyTwoDVariableRow")]
+    [RowVisualHandler(menuName: "Physics",
+        contentType: typeof(Rigidbody2D),
+        typeDisplayName: "RigidbodyTwoD",
+        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyTwoDVariableRow")]
     public class RigidbodyTwoDRowVisualHandler : RowVisualHandler<Rigidbody2D>
     {
     }
 
-    [RowVisualHandler("Physics", typeof(Rigidbody), "RigidbodyThreeD",
-        "UIToolkitTemplates/VarRows/Physics/RigidbodyThreeDVariableRow")]
+    [RowVisualHandler(menuName: "Physics",
+        contentType: typeof(Rigidbody),
+        typeDisplayName: "RigidbodyThreeD",
+        pathToTemplate: "UIToolkitTemplates/VarRows/Physics/RigidbodyThreeDVariableRow")]
     public class RigidbodyThreeDRowVisualHandler : RowVisualHandler<Rigidbody>
     {
     }

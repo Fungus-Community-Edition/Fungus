@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 
-namespace FCWindowOperations
+namespace VScriptingTests.FCWindowOperations
 {
     public class CommandEditorTests
     {

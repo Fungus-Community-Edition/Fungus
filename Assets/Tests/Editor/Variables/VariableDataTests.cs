@@ -3,7 +3,7 @@ using Amanita.VScripting;
 using System;
 using UnityEngine;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataTests : VariableTests
     {
@@ -88,8 +88,8 @@ namespace VariableOperations
             Assert.AreEqual(initialLiteral, data.Value);
 
             // create a Muscariable of the appropriate content type and assign as VarRef
-            var musc = VariableFactory.Create(data.ContentType, null);
-            musc.Value = varValue;
+            var musc = VariableFactory.CreateByContentType(data.ContentType, null);
+            musc.BoxedValue = varValue;
             data.VarRef = musc;
 
             Assert.AreEqual(varValue, data.Value);
@@ -134,9 +134,9 @@ namespace VariableOperations
             Assert.IsNotNull(data);
 
             // create a muscariable with a different content type
-            var mismatchMusc = VariableFactory.Create(mismatchContentType, null);
+            var mismatchMusc = VariableFactory.CreateByContentType(mismatchContentType, null);
             // set a default value (not important)
-            mismatchMusc.Value = mismatchContentType.IsValueType ? Activator.CreateInstance(mismatchContentType) : null;
+            mismatchMusc.BoxedValue = mismatchContentType.IsValueType ? Activator.CreateInstance(mismatchContentType) : null;
 
             Assert.Throws<InvalidCastException>(() => data.VarRef = mismatchMusc);
         }

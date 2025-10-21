@@ -116,7 +116,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var goVar = new GameObjectMuscariable { Key = "go", ItemID = 308 };
             goVar.Init();
             Muscariable baseVar = goVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = 123);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var transVar = new TransformMuscariable { Key = "tf", ItemID = 313 };
             transVar.Init();
             Muscariable baseVar = transVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = "not a transform");
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a transform");
         }
 
         [Test]
@@ -214,7 +214,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemID = 319 };
             unityObjVar.Init();
             Muscariable baseVar = unityObjVar;
-            Assert.Throws<ArgumentException>(() => baseVar.Value = 42);
+            Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 42);
         }
     }
 }

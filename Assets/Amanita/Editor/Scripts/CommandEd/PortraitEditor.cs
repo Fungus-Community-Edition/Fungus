@@ -98,11 +98,7 @@ namespace Amanita.DialogueSys.EditorUtils
                 {
                     if (t._Stage == null)        // If no default specified, try to get any portrait stage in the scene
                     {
-                    #if UNITY_6000
                         s = GameObject.FindFirstObjectByType<Stage>();
-                    #else
-                        s = GameObject.FindObjectOfType<Stage>();
-                    #endif
                     }
                 }
                 if (s == null)

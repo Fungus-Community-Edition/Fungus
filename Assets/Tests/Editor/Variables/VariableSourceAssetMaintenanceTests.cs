@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     /// <summary>
     /// Unit tests for VariableSourceAssetMaintenance. These tests replace the real
@@ -317,6 +317,7 @@ namespace VariableOperations
         // Minimal concrete Muscariable used only for testing.
         public class TestMuscariable : Muscariable
         {
+            public override object BoxedValue { get; set; }
             public TestMuscariable(string key, int itemID, VariableScope scope) : base(key, itemID, scope)
             {
                 // Ensure ContentType is non-null so VariableFactory.Create and related logic won't NRE
@@ -327,10 +328,15 @@ namespace VariableOperations
             // Minimal evaluation implementation — sufficient for these tests.
             public override bool Evaluate(CompareOperator compareOperator, object toCompareTo)
             {
-                var val = Value;
+                var val = BoxedValue;
                 if (val == null && toCompareTo == null) return true;
                 if (val == null || toCompareTo == null) return false;
                 return val.Equals(toCompareTo);
+            }
+
+            public override void Apply(SetOperator setOperator, object toApply)
+            {
+                // Not needed for these tests
             }
         }
 

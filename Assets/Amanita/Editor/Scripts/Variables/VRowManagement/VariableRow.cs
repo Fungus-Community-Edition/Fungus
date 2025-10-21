@@ -24,14 +24,9 @@ namespace Amanita.VScripting.EditorUtils
             _prevVariable = _currentVariable;
             _currentVariable = toRepresent;
 
-            _serializedVar?.Dispose();
-            _serializedVar = targetObject != null ? new SerializedObject(targetObject) : null;
-            _serializedVar?.Update();
-
             VisualHandler = visHandler;
             VisualHandler.Init(toRepresent);
             VisualHandler.Variable = _currentVariable;
-            VisualHandler.SerializedVar = _serializedVar;
             VisualHandler.Refresh();
 
             ToggleSubs(true);
@@ -51,13 +46,34 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 VisualHandler.RemoveButtonClicked += OnRemoveButtonClicked;
-                VisualHandler.FocusLostOnControl += OnFocusLostOnControl;
+
+                VisualHandler.KeyFieldChanged += OnKeyFieldChanged;
+                VisualHandler.ScopeFieldChanged += OnScopeFieldChanged;
+                VisualHandler.ValueFieldChanged += OnValueFieldChanged;
             }
             else
             {
                 VisualHandler.RemoveButtonClicked -= OnRemoveButtonClicked;
-                VisualHandler.FocusLostOnControl -= OnFocusLostOnControl;
+                
+                VisualHandler.KeyFieldChanged -= OnKeyFieldChanged;
+                VisualHandler.ScopeFieldChanged -= OnScopeFieldChanged;
+                VisualHandler.ValueFieldChanged -= OnValueFieldChanged;
             }
+        }
+
+        protected virtual void OnScopeFieldChanged(VariableScope scope)
+        {
+            AmanitaEditorSignals.ScopeFieldChanged(this, scope);
+        }
+
+        protected virtual void OnValueFieldChanged(object obj)
+        {
+            AmanitaEditorSignals.ValueFieldChanged(this, obj);
+        }
+
+        protected virtual void OnKeyFieldChanged(TextField field)
+        {
+            AmanitaEditorSignals.KeyFieldChanged(this, field.value);
         }
 
         protected virtual void OnRemoveButtonClicked(IRowVisualHandler handler)
@@ -65,16 +81,6 @@ namespace Amanita.VScripting.EditorUtils
             AmanitaEditorSignals.VarRowRemoveButtonClicked(this);
         }
 
-        protected virtual void OnFocusLostOnControl(FocusOutEvent evt)
-        {
-            if (_serializedVar != null)
-            {
-                _serializedVar.ApplyModifiedPropertiesWithoutUndo();
-                Debug.Log("Applied changes on focus loss");
-
-            }
-            FocusLostOnControl(this);
-        }
 
         public event Action<VariableRow> FocusLostOnControl = delegate { }; 
 
@@ -88,46 +94,12 @@ namespace Amanita.VScripting.EditorUtils
             ToggleSubs(false);
             Clear();
             RootElement?.RemoveFromHierarchy();
-            _serializedVar?.Dispose();
-            _serializedVar = null;
             _currentVariable = null;
             _isDisposed = true;
 
             VisualHandler?.Dispose();
             VisualHandler = null;
         }
-
-        protected virtual void UpdateSerializedVar()
-        {
-            if ((_prevVariable == _currentVariable) && _serializedVar != null)
-                return;
-
-            _serializedVar?.Dispose();
-
-            if (_currentVariable != null)
-            {
-                // Guard against destroyed UnityEngine.Object
-                if (_currentVariable is UnityObj unityObj)
-                {
-                    if (unityObj == null) // Unity's overloaded null check
-                    {
-                        _serializedVar = null;
-                        return;
-                    }
-
-                    _serializedVar = new SerializedObject(unityObj);
-                }
-
-                _serializedVar?.Update();
-            }
-            else
-            {
-                _serializedVar = null;
-            }
-        }
-
-        public SerializedObject SerializedVar => _serializedVar;
-        protected SerializedObject _serializedVar;
 
         public IRowVisualHandler VisualHandler { get; protected set; }
 
@@ -147,8 +119,6 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     VisualHandler.Variable = value;
                 }
-
-                UpdateSerializedVar();
             }
         }
 

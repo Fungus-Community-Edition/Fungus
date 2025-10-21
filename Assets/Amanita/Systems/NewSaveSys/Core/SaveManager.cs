@@ -39,7 +39,7 @@ namespace Amanita.SaveSys
         {
             get
             {
-                string baseDir = SaveSystem.S.SaveDirectoryPaths[SaveDirType];
+                string baseDir = SaveSystem.S.GetSaveDirectory(SaveDirType);
                 string result = Path.Combine(baseDir, SaveRelativePath);
                 return result;
             }

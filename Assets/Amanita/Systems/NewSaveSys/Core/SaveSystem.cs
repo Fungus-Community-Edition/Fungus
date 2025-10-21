@@ -6,7 +6,7 @@ using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 { 
-    public class SaveSystem : MonoBehaviour
+    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>
     {
         protected virtual void Awake()
         {
@@ -187,6 +187,11 @@ namespace Amanita.SaveSys
 
         public virtual SaveDirectoryType SaveDirectoryType { get; set; }
 
+        /// <summary>
+        /// Decides what paths to use for saving and loading.
+        /// </summary>
+        public virtual ISaveSlotPathResolver<SaveDirectoryType> SavePathResolver { get; set; } = new DefaultSavePathResolver();
+
         public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
         {
             SaveManager.RegisterMultiMainCodecs(codecs);
@@ -263,172 +268,20 @@ namespace Amanita.SaveSys
             saveManager.DeleteSave(slotNum);    
         }
 
-        /// <summary>
-        /// CoreLock applies. Getter returns a copy.
-        /// </summary>
-        public virtual IDictionary<SaveDirectoryType, string> SaveDirectoryPaths
+        public virtual string GetSaveDirectory(SaveDirectoryType dirType)
         {
-            get
-            {
-                return new Dictionary<SaveDirectoryType, string>(saveDirectoryPaths);
-                // ^We don't want to allow directly changing the contents
-            }
-            set
-            {
-                if (CoreLockMode)
-                {
-                    string warningMessage = "Cannot set save directory paths on module lock.";
-                    Debug.Log(warningMessage);
-                    return;
-                }
-
-                saveDirectoryPaths = value;
-            }
+            string result = SavePathResolver.GetSaveFolderPath(dirType);
+            return result;
         }
-
-        protected IDictionary<SaveDirectoryType, string> saveDirectoryPaths;
-
-        /// <summary>
-        /// CoreLock applies.
-        /// </summary>
-        public virtual void SetSaveDirPath(SaveDirectoryType saveDirectoryType, string path)
-        {
-            if (CoreLockMode)
-            {
-                string warningMessage = "Cannot set save directory paths during CoreLockMode.";
-                Debug.Log(warningMessage);
-                return;
-            }
-
-            if (saveDirectoryPaths.ContainsKey(saveDirectoryType))
-            {
-                saveDirectoryPaths[saveDirectoryType] = path;
-            }
-            else
-            {
-                saveDirectoryPaths.Add(saveDirectoryType, path);
-            }
-        }
-
-        public virtual Flowchart GlobalFlowchart
-        {
-            set
-            {
-                if (value == null)
-                {
-                    string warningMessage = "Cannot set SaveSystem global Flowchart to null.";
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                if (CoreLockMode)
-                {
-                    string warningMessage = "Cannot set SaveSystem global Flowchart during CoreLock mode.";
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                globalFc = value;
-                CacheSaveNameVars();
-            }
-        }
-
-        protected Flowchart globalFc;
-
-        protected virtual void CacheSaveNameVars()
-        {
-            // So we can return the right values without having to query the Flowchart
-            // with each request
-            saveNameVar = globalFc.GetVariable<StringVariable>(SaveNameKey);
-            saveNamePrefixVar = globalFc.GetVariable<StringVariable>(SaveNamePrefixKey);
-            saveNameSuffixVar = globalFc.GetVariable<StringVariable>(SaveNameSuffixKey);
-        }
-
-        protected StringVariable saveNameVar, saveNamePrefixVar, saveNameSuffixVar;
-        protected static string SaveNameKey { get => AmanitaConstants.SaveNameVarName; }
-        protected static string SaveNamePrefixKey { get => AmanitaConstants.SaveNamePrefixVarName; }
-        protected static string SaveNameSuffixKey { get => AmanitaConstants.SaveNameSuffixVarName; }
-
-        public virtual string SaveName
-        {
-            get
-            {
-                if (saveNameVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveName));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
-
-                return saveNameVar.Value;
-            }
-            set
-            {
-                if (saveNameVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveName));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                saveNameVar.Value = value;
-            }
-        }
-
+        
         protected static string InaccessibleVarFormat => "Cannot get value of {0}. It's not properly registered yet.";
         protected static string UnmutableVarFormat => "Cannot alter value of {0}. It's not properly registered yet.";
 
-        public virtual string SaveNamePrefix
-        {
-            get
-            {
-                if (saveNamePrefixVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNamePrefix));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
+        public string FileExtension => SavePathResolver.FileExtension;
 
-                return saveNamePrefixVar.Value;
-            }
-            set
-            {
-                if (saveNamePrefixVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNamePrefix));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
+        public string RelativePath => SavePathResolver.RelativePath;
 
-                saveNamePrefixVar.Value = value;
-            }
-        }
-
-        public virtual string SaveNameSuffix
-        {
-            get
-            {
-                if (saveNameSuffixVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNameSuffix));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
-
-                return saveNameSuffixVar.Value;
-            }
-            set
-            {
-                if (saveNameSuffixVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNameSuffix));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                saveNameSuffixVar.Value = value;
-            }
-        }
+        public string NumberFormat => SavePathResolver.NumberFormat;
 
         public static void ResetStaticsForTest()
         {
@@ -443,6 +296,40 @@ namespace Amanita.SaveSys
             }
         }
 
+        public string GetSaveFilePath(string fileName, object input)
+        {
+            return SavePathResolver.GetSaveFilePath(fileName, input);
+        }
+
+        public string GetSaveFolderPath(object input)
+        {
+            return SavePathResolver.GetSaveFolderPath(input);
+        }
+
+        public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
+        {
+            return SavePathResolver.GetSaveFilePath(input, slotNumber);
+        }
+
+        public string GetSaveFolderPath(SaveDirectoryType input)
+        {
+            return SavePathResolver.GetSaveFolderPath(input);
+        }
+
+        public string GetSaveFilePath(string fileName, SaveDirectoryType input)
+        {
+            return SavePathResolver.GetSaveFilePath(fileName, input);
+        }
+
+        public string GetSaveFileName(int slotNumber)
+        {
+            return SavePathResolver.GetSaveFileName(slotNumber);
+        }
+
+        public string GetSaveFilePath(object input, int slotNumber)
+        {
+            return SavePathResolver.GetSaveFilePath(input, slotNumber);
+        }
     }
 
     public enum SaveDirectoryType

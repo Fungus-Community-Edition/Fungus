@@ -27,8 +27,11 @@ namespace Amanita.VScripting
             set { if (_component is IVariable iv) iv.Key = value; }
         }
 
-        public VariableScope Scope =>
-            (_component as IVariable)?.Scope ?? VariableScope.Private;
+        public VariableScope Scope
+        {
+            get => (_component as IVariable)?.Scope ?? VariableScope.Private;
+            set { if (_component is IVariable iv) iv.Scope = value; }
+        }
 
         public int ItemID
         {
@@ -89,7 +92,7 @@ namespace Amanita.VScripting
         }
 
         // Explicit IVariable.Value (object) to avoid the name clash
-        object IVariable.Value
+        object IVariable.BoxedValue
         {
             get => Value;
             set
@@ -108,7 +111,10 @@ namespace Amanita.VScripting
         // Convenience
         public UnityObj Component { get => _component; set => _component = value; }
 
-        public virtual IVariableSource Owner =>
-            (_component as IVariable)?.Owner;
+        public virtual IVariableSource Owner
+        {
+            get => (_component as IVariable)?.Owner;
+            set { if (_component is IVariable iv) iv.Owner = value; }
+        }
     }
 }

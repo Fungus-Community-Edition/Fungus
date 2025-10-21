@@ -9,13 +9,6 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor
     {
-        [SerializeField] protected bool readEncrypted = false;
-        public virtual bool ReadEncrypted
-        {
-            get => readEncrypted;
-            set => readEncrypted = value;
-        }
-
         [SerializeField] protected ScriptableObject decryptor;
 
         protected FileEncoding actualEncoding = FileEncoding.UTF8;
@@ -54,9 +47,9 @@ namespace Amanita.SaveSys
         protected virtual async Task PrepDecryptionRequest(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             Validate(filePath);
-            bool writtenAsPlainText = !readEncrypted;
+            bool writtenAsPlainText = !ExpectEncryption;
             byte[] rawBytes = await ReadAllBytesAsync(filePath, cancelToken);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
@@ -69,16 +62,6 @@ namespace Amanita.SaveSys
         }
 
         protected BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
-        protected virtual string GetFullFilePath(SaveReadRequest request)
-        {
-            string saveFolderPath = FileUtils.GetPathToFolder(request.BaseSaveDirectory, RelativeSavePath);
-            
-            string numFormatted = request.SlotNumber.ToString(saveNumberFormat);
-            string fileName = string.Format(fileNameFormat, savePrefix,
-                numFormatted, fileExtension);
-            string filePath = saveFolderPath + fileName;
-            return filePath;
-        }
 
         protected virtual void Validate(string filePath)
         {
@@ -94,7 +77,7 @@ namespace Amanita.SaveSys
             CancellationToken cancelToken = default)
         {
             await PrepDecryptionRequest(request, cancelToken);
-            string filePath = GetFullFilePath(request);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(decryptionRequest);
             
             return result;
@@ -102,7 +85,7 @@ namespace Amanita.SaveSys
 
         public virtual string GetSavePath(SaveReadRequest request)
         {
-            string result = GetFullFilePath(request);
+            string result = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             return result;
         }
 

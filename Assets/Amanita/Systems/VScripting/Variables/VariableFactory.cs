@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,11 +9,23 @@ namespace Amanita.VScripting
         #region Muscariables
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
-            return (Muscariable<T>)Create(typeof(T), toMakeCopyOf);
+            return (Muscariable<T>)CreateByContentType(typeof(T), toMakeCopyOf);
         }
 
-        public static Muscariable Create(Type contentType, IVariable toMakeCopyOf = null)
+        public static Muscariable CreateByVarType(Type varType, IVariable toMakeCopyOf = null)
         {
+            VariableInfoAttribute varInfo = varType.GetCustomAttribute<VariableInfoAttribute>();
+            if (varInfo == null)
+            {
+                Debug.LogWarning($"Type {varType.Name} is not a valid Muscariable type. Returning null.");
+                return null;
+            }
+            Type contentType = varInfo.ContentType;
+            return CreateByContentType(contentType, toMakeCopyOf);
+        }
+        public static Muscariable CreateByContentType(Type contentType, IVariable toMakeCopyOf = null)
+        {
+
             Muscariable result = null;
             Type muscariType = VariableTypeRegistry.MuscariTypeFor(contentType);
 
@@ -40,17 +53,17 @@ namespace Amanita.VScripting
                     result.Scope = toMakeCopyOf.Scope;
                     result.ItemID = toMakeCopyOf.ItemID;
 
-                    if (toMakeCopyOf.Value == null || toMakeCopyOf.ContentType.Equals(contentType))
+                    if (toMakeCopyOf.BoxedValue == null || toMakeCopyOf.ContentType.Equals(contentType))
                     {
                         // Convert legacy boxed numeric types (e.g. boxed double) into the target contentType
                         // so that Muscariable.CanHoldAsValue (which checks runtime type) accepts it.
-                        object srcVal = toMakeCopyOf.Value;
+                        object srcVal = toMakeCopyOf.BoxedValue;
                         if (srcVal != null)
                         {
                             srcVal = ConvertValueToType(srcVal, contentType);
                         }
 
-                        result.Value = srcVal;
+                        result.BoxedValue = srcVal;
                     }
                 }
             }
@@ -100,7 +113,7 @@ namespace Amanita.VScripting
 
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = Create(typeof(T), null) as Muscariable<T>;
+            Muscariable<T> result = CreateByContentType(typeof(T), null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }

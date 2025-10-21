@@ -1,6 +1,7 @@
-using UnityEngine;
-using System;
 using Amanita.VScripting;
+using System.Linq;
+using System;
+using UnityEngine;
 
 namespace Amanita.SaveSys
 {
@@ -11,27 +12,33 @@ namespace Amanita.SaveSys
     public class VectorVarCodec : IVarCodec
     {
         public virtual bool CanHandle(IVariable variable) =>
-            variable is Vector2Variable || variable is Vector3Variable;
+            variable is IVariable<Vector2> || variable is IVariable<Vector3>;
 
         public virtual bool CanHandle(string typeName) =>
-            typeName == nameof(Vector2Variable) || typeName == nameof(Vector3Variable);
+            supportedVarTypes.Any(type => type.Name == typeName);
 
+        protected static Type[] supportedVarTypes = new Type[]
+        {
+            typeof(Vector2Variable),
+            typeof(Vector3Variable),
+            typeof(VectorTwoMuscariable),
+            typeof(VectorThreeMuscariable),
+        };
         public virtual bool CanHandle(VariableSaveData saveData)
-        {            
-            return saveData.VarTypeName == nameof(Vector2Variable) ||
-                saveData.VarTypeName == nameof(Vector3Variable);
+        {
+            return supportedVarTypes.Any(type => type.Name == saveData.VarTypeName);
         }
 
         public virtual string EncodeToString(IVariable variable) => variable switch
             {
-            Vector2Variable vector2Var => $"{vector2Var.Value.x},{vector2Var.Value.y}",
-            Vector3Variable vector3Var => $"{vector3Var.Value.x},{vector3Var.Value.y},{vector3Var.Value.z}",
+            IVariable<Vector2> vector2Var => $"{vector2Var.Value.x},{vector2Var.Value.y}",
+            IVariable<Vector3> vector3Var => $"{vector3Var.Value.x},{vector3Var.Value.y},{vector3Var.Value.z}",
             _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encodng in {this.GetType().Name}")
         };
 
         public virtual void Decode(IVariable variable, string data)
         {
-            if (variable is Vector2Variable vecTwoVar)
+            if (variable is IVariable<Vector2> vecTwoVar)
             {
                 string[] parts = data.Split(',');
                 float xVal = 0, yVal = 0;
@@ -44,7 +51,7 @@ namespace Amanita.SaveSys
 
                 vecTwoVar.Value = new Vector2(xVal, yVal);
             }
-            else if (variable is Vector3Variable vecThreeVar)
+            else if (variable is IVariable<Vector3> vecThreeVar)
             {
                 string[] parts = data.Split(',');
                 float xVal = 0, yVal = 0, zVal = 0;
@@ -66,8 +73,8 @@ namespace Amanita.SaveSys
     
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
         {
-            bool validVarType = saveData.VarTypeName == nameof(Vector2Variable) ||
-                saveData.VarTypeName == nameof(Vector3Variable);
+            bool validVarType = variable is IVariable<Vector2> ||
+                variable is IVariable<Vector3>;
             if (!validVarType)
             {
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");

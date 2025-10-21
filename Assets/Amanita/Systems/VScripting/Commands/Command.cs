@@ -50,10 +50,10 @@ namespace Amanita.VScripting
         #region Editor caches
 #if UNITY_EDITOR
         //
-        protected List<Variable> referencedVariables = new List<Variable>();
+        protected IList<IVariable> referencedVariables = new List<IVariable>();
 
         //used by var list adapter to highlight variables 
-        public bool IsVariableReferenced(Variable variable)
+        public bool IsVariableReferenced(IVariable variable)
         {
             return referencedVariables.Contains(variable) || HasReference(variable);
         }

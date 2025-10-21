@@ -11,6 +11,10 @@ namespace Amanita.SaveSys
         [SerializeField] protected string key = string.Empty;
         [SerializeField] protected string value = string.Empty;
 
+        /// <summary>
+        /// The type name of the variable this SaveData is for. NOT to be confused
+        /// with TypeName, which is the type name of this SaveData instance.
+        /// </summary>
         public virtual string VarTypeName
         {
             get => varTypeName;

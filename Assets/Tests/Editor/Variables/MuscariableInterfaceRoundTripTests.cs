@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting;
 
-namespace VariableOperations
+namespace VScriptingTests.VariableOperations
 {
     public class MuscariableInterfaceRoundTripTests
     {
@@ -14,17 +14,17 @@ namespace VariableOperations
 
             // Set via interface
             IVariable ivar = musc;
-            ivar.Value = expected;
+            ivar.BoxedValue = expected;
 
             // Read via strongly-typed property
-            Assert.AreEqual(expected, musc.Value, "Strongly-typed Value should match after setting via IVariable");
+            Assert.AreEqual(expected, musc.BoxedValue, "Strongly-typed Value should match after setting via IVariable");
 
             // Set via strongly-typed property
             var newVal = new Vector2(1, 2);
-            musc.Value = newVal;
+            musc.BoxedValue = newVal;
 
             // Read via interface
-            Assert.AreEqual(newVal, (Vector2)ivar.Value, "IVariable.Value should match after setting via strongly-typed property");
+            Assert.AreEqual(newVal, (Vector2)ivar.BoxedValue, "IVariable.BoxedValue should match after setting via strongly-typed property");
         }
 
         [Test]
@@ -35,17 +35,17 @@ namespace VariableOperations
 
             // Set via interface
             IVariable ivar = musc;
-            ivar.Value = expected;
+            ivar.BoxedValue = expected;
 
             // Read via strongly-typed property
-            Assert.AreEqual(expected, musc.Value);
+            Assert.AreEqual(expected, musc.BoxedValue);
 
             // Set via strongly-typed property
             var newVal = "World";
-            musc.Value = newVal;
+            musc.BoxedValue = newVal;
 
             // Read via interface
-            Assert.AreEqual(newVal, ivar.Value);
+            Assert.AreEqual(newVal, ivar.BoxedValue);
         }
 
         [Test]
@@ -55,15 +55,15 @@ namespace VariableOperations
             IVariable ivar = musc;
 
             // Clear via interface
-            ivar.Value = default(Vector2);
-            Assert.AreEqual(default(Vector2), musc.Value, "Strongly-typed Value should be default after clearing via IVariable");
+            ivar.BoxedValue = default(Vector2);
+            Assert.AreEqual(default(Vector2), musc.BoxedValue, "Strongly-typed Value should be default after clearing via IVariable");
 
             // Set again
-            musc.Value = new Vector2(9, 9);
+            musc.BoxedValue = new Vector2(9, 9);
 
             // Clear via strongly-typed property
-            musc.Value = default;
-            Assert.AreEqual(default(Vector2), (Vector2)ivar.Value, "IVariable.Value should be default after clearing via strongly-typed property");
+            musc.BoxedValue = default;
+            Assert.AreEqual(default(Vector2), (Vector2)ivar.BoxedValue, "IVariable.BoxedValue should be default after clearing via strongly-typed property");
         }
 
         [Test]
@@ -73,15 +73,15 @@ namespace VariableOperations
             IVariable ivar = musc;
 
             // Clear via interface
-            ivar.Value = null;
-            Assert.IsNull(musc.Value, "Strongly-typed Value should be null after clearing via IVariable");
+            ivar.BoxedValue = null;
+            Assert.IsNull(musc.BoxedValue, "Strongly-typed Value should be null after clearing via IVariable");
 
             // Set again
-            musc.Value = "StillHere";
+            musc.BoxedValue = "StillHere";
 
             // Clear via strongly-typed property
-            musc.Value = null;
-            Assert.IsNull(ivar.Value, "IVariable.Value should be null after clearing via strongly-typed property");
+            musc.BoxedValue = null;
+            Assert.IsNull(ivar.BoxedValue, "IVariable.BoxedValue should be null after clearing via strongly-typed property");
         }
     }
 }

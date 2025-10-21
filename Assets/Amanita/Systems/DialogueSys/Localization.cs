@@ -127,11 +127,7 @@ namespace Amanita.LocalizationSys
 
             // Add localizable commands in same order as command list to make it
             // easier to localise / edit standard text.
-        #if UNITY_6000
             var flowcharts = GameObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-        #else
-            var flowcharts = GameObject.FindObjectsOfType<Flowchart>();
-        #endif
             for (int i = 0; i < flowcharts.Length; i++)
             {
                 var flowchart = flowcharts[i];
