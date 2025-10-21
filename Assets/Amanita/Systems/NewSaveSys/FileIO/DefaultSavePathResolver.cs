@@ -110,23 +110,28 @@ namespace Amanita.SaveSys
 
         public string GetSaveFolderPath(SaveDirectoryType pathEnum)
         {
-            string result;
-            switch (pathEnum)
+            string basePath = GetBasePath();
+            string GetBasePath()
             {
-                case SaveDirectoryType.PersistentDataPath:
-                    result = Application.persistentDataPath; break;
-                case SaveDirectoryType.DataPath:
-                case SaveDirectoryType.InTheBalls: // Heh, nice.
-                    result = Application.dataPath; break;
-                default:
-                    Debug.LogWarning("Unrecognized SaveDirectoryType. Defaulting to empty path.");
-                    result = string.Empty; break;
+                switch (pathEnum)
+                {
+                    case SaveDirectoryType.PersistentDataPath:
+                        return Application.persistentDataPath;
+                    case SaveDirectoryType.DataPath:
+                    case SaveDirectoryType.InTheBalls: // Heh, nice.
+                        return Application.dataPath;
+                    default:
+                        Debug.LogWarning("Unrecognized SaveDirectoryType. Defaulting to empty path.");
+                        return string.Empty;
+                }
             }
-            if (!string.IsNullOrEmpty(result))
+
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(basePath))
             {
                 // We don't want to add a relative path if it's empty or null.
                 // We want the clients to know that the input caused an error.
-                result = Path.Join(result, RelativePath);
+                result = Path.Join(basePath, RelativePath);
             }
             return result;
         }
@@ -143,13 +148,48 @@ namespace Amanita.SaveSys
         {
             // Can't simply take the path and then have Path.IO strip things;
             // we need to decide the name with the slot number in mind.
-            string fileNumFormatted = slotNumber.ToString(StorageSettings.SlotNumberFormat);
-            string result = string.Format(StorageSettings.FileNameFormat,
-                StorageSettings.Prefix,
-                fileNumFormatted,
-                FileExtension);
+            string fileNumFormatted = slotNumber.ToString(SlotNumberFormat);
+            string result = string.Format(FileNameFormat, Prefix,
+                fileNumFormatted, FileExtension);
 
             return result;
+        }
+
+        protected virtual string SlotNumberFormat
+        {
+            get
+            {
+                if (StorageSettings == null)
+                {
+                    return "D2";
+                }
+
+                return StorageSettings.SlotNumberFormat;
+            }
+        }
+
+        protected virtual string FileNameFormat
+        {
+            get
+            {                 
+                if (StorageSettings == null)
+                {
+                    return "{0}_{1}.{2}";
+                }
+                return StorageSettings.FileNameFormat;
+            }
+        }
+
+        protected virtual string Prefix
+        {
+            get
+            {
+                if (StorageSettings == null)
+                {
+                    return "saveData";
+                }
+                return StorageSettings.Prefix;
+            }
         }
 
         public string GetSaveFilePath(object input, int slotNumber)

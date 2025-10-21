@@ -218,8 +218,7 @@ namespace Amanita.VScripting
                     return;
                 }
 
-                T prev = this.value;
-                OnGenericValueSet(prev);
+                this.value = (T)this.FilterForValueSet(value);
                 InvokeOnValueChanged();
             }
         }
@@ -237,7 +236,6 @@ namespace Amanita.VScripting
                 object filteredValue = this.FilterForValueSet(value);
                 object previousValue = this.value;
                 this.value = (T)filteredValue;
-                OnGenericValueSet((T)previousValue);
                 InvokeOnValueChanged();
             }
         }
@@ -330,10 +328,6 @@ namespace Amanita.VScripting
             return otherVar != null && this.Value.Equals(otherVar.Value);
         }
 
-        protected virtual void OnGenericValueSet(T previousValue)
-        {
-
-        }
 
     }
 
