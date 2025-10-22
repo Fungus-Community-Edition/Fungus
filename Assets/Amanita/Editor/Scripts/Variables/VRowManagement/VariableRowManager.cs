@@ -208,8 +208,7 @@ namespace Amanita.VScripting.EditorUtils
             IVariable theVar = rowInvolved.VarToRepresent;
             if (theVar.Key != newKey)
             {
-                RecordObjectFor(theVar);
-                theVar.Key = newKey;
+                RecordAndApplyChange(theVar, "Key", (varToChange) => varToChange.Key = newKey);
             }
         }
 
@@ -218,11 +217,27 @@ namespace Amanita.VScripting.EditorUtils
         // For example, when the Flowchart window is active and one Inspector is working
         // with a VariableSourceAsset that also has its own VariableRowManager.
 
-        protected virtual void RecordObjectFor(IVariable toRecordFor)
+        protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
         {
-            // To make sure that changes to the variables stick, we need to do this first.
-            string varType = toRecordFor.GetType().Name;
-            Undo.RecordObject(variableSource as UnityObj, $"Changed {varType}");
+            // We use this to make sure that things happen in the right order. Record first, apply change
+            // to var, then save any assets if needed.
+            string varType = variable.GetType().Name;
+
+            UnityObj toRecord = variable as UnityObj;
+            if (toRecord == null)
+                toRecord = variableSource as UnityObj;
+
+            Undo.RecordObject(toRecord, $"Change to {varType} {description}");
+
+            applyChange(variable);
+
+            if (variableSource is ScriptableObject so)
+            {
+                // ^The reason we don't do this check for Flowcharts is because apparently, 
+                // Unity's serialization system automatically handles marking them dirty.
+                // Not so for ScriptableObjects, though.
+                so.MarkDirtyAndSave();
+            }
         }
 
         protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
@@ -235,8 +250,7 @@ namespace Amanita.VScripting.EditorUtils
             IVariable theVar = row.VarToRepresent;
             if (theVar.Scope != scope)
             {
-                RecordObjectFor(theVar);
-                theVar.Scope = scope;
+                RecordAndApplyChange(theVar, "Scope", (varToChange) => varToChange.Scope = scope);
             }
         }
 
@@ -250,8 +264,7 @@ namespace Amanita.VScripting.EditorUtils
             IVariable theVar = row.VarToRepresent;
             if (!Equals(theVar.BoxedValue, newVal))
             {
-                RecordObjectFor(theVar);
-                theVar.BoxedValue = newVal;
+                RecordAndApplyChange(theVar, "Value", (varToChange) => varToChange.BoxedValue = newVal);
             }
         }
 

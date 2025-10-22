@@ -1,81 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8649842634208960070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: someAudio
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744320
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744320
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: someAudio
-        itemID: 35
-        value: {fileID: 8300000, guid: c18ae2c530c264a6880266d5e0a71337, type: 3}
---- !u!114 &-5531436058782884368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Bleach
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744321
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744321
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: Bleach
-        itemID: 41
-        value: Throwing away victory for the sake of manners is a rookie mistake.
-          Captains don't have the time to waste on that kind of thing. Don't waste
-          your time trying to play the good guy. No matter what debts you may owe,
-          from the instant you find yourself on the battleground, both sides are
-          evil.
---- !u!114 &-1930287489488375301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: Naruto
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744322
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744322
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 1
-        key: Naruto
-        itemID: 1
-        value: Believe it!
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,135 +13,61 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   variables:
-  - rid: 4382208464457039955
-  - rid: 846271150850048107
-  - rid: 846271150850048109
-  - rid: 846271081115025503
-  - rid: 846271081115025505
-  - rid: 846271081115025507
-  _nextVarID: 42
+  - rid: 846271511759683584
+  - rid: 846271512383848516
+  - rid: 846271512383848517
+  - rid: 846271512383848518
+  - rid: 846271512383848519
+  - rid: 846271512383848521
+  _nextVarID: 11
   references:
     version: 2
     RefIds:
-    - rid: 846271081115025503
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 846271511759683584
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: someInt
-        itemID: 33
-        value: 123
-    - rid: 846271081115025505
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: someAudio
-        itemID: 35
-        value: {fileID: 8300000, guid: c18ae2c530c264a6880266d5e0a71337, type: 3}
-    - rid: 846271081115025507
-      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: someFloat
-        itemID: 37
-        value: 1.23
-    - rid: 846271150850048107
+        key: Naruto
+        itemID: 1
+        value: Believe it!
+    - rid: 846271512383848516
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: One Piece
-        itemID: 39
+        itemID: 3
         value: 'I will become the
 
           Pirate King!'
-    - rid: 846271150850048109
+    - rid: 846271512383848517
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: Bleach
-        itemID: 41
-        value: Throwing away victory for the sake of manners is a rookie mistake.
+        itemID: 5
+        value: Throwing away victory for the sake of manners is a cookie mistake.
           Captains don't have the time to waste on that kind of thing. Don't waste
           your time trying to play the good guy. No matter what debts you may owe,
           from the instant you find yourself on the battleground, both sides are
           evil.
-    - rid: 4382208464457039955
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 1
-        key: Naruto
-        itemID: 1
-        value: Believe it!
---- !u!114 &2811847826421824449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: One Piece
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744323
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744323
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: One Piece
-        itemID: 39
-        value: 'I will become the
-
-          Pirate King!'
---- !u!114 &4471989307993070508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: someInt
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744324
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744324
+    - rid: 846271512383848518
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: someInt
-        itemID: 33
-        value: 123
---- !u!114 &4891428031043400364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196bfc1613c9004481f44caf098ef9b, type: 3}
-  m_Name: someFloat
-  m_EditorClassIdentifier: 
-  muscariable:
-    rid: 846271419522744325
-  references:
-    version: 2
-    RefIds:
-    - rid: 846271419522744325
+        key: meaningOfLife
+        itemID: 7
+        value: 24
+    - rid: 846271512383848519
+      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: cuteBgm
+        itemID: 9
+        value: {fileID: 0}
+    - rid: 846271512383848521
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
         key: someFloat
-        itemID: 37
-        value: 1.23
+        itemID: 10
+        value: 1.2345
