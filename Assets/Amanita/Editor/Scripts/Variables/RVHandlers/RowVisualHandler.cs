@@ -70,7 +70,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             ToggleSubs(false);
             EnsureVisualsAreReady();
-            ApplyVarValuesToOurControls();
+            ApplyVarFieldsToOurControls();
             MarkForRepainting();
             void MarkForRepainting()
             {
@@ -133,9 +133,9 @@ namespace Amanita.VScripting.EditorUtils
         protected EnumField _scopeField;
         protected Button _removeButton;
         
-        protected virtual void ApplyVarValuesToOurControls()
+        protected virtual void ApplyVarFieldsToOurControls()
         {
-            if (_currentVariable == null)
+            if (_currentVariable == null)//
             {
                 Debug.LogWarning($"[RowVisualHandler] BindFields called but _currentVariable is null " +
                     $"for handler={GetType().FullName}");

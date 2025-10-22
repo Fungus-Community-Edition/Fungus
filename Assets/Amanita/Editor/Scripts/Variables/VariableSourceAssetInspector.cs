@@ -11,6 +11,8 @@ namespace Amanita.VScripting.EditorUtils
     {
         protected virtual void OnEnable()
         {
+            var target = (VariableSourceAsset)this.target;
+            target.Refresh(); // Ensure variable ownership is properly asserted
             PrepGUI();
             ToggleSubs(false);
             ToggleSubs(true);
