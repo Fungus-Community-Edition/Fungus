@@ -306,10 +306,36 @@ namespace Amanita.VScripting.EditorUtils
             base.RegisterVisualElements();
 
             // For those classes that simply need to hook up a UnityObj type to a single ObjectField
-            if (valueField != null && valueField is EditorObjectField objField)
+            unityObjField = valueField as EditorObjectField;
+            if (unityObjField != null)
             {
-                objField.objectType = typeof(TVarContentType);
+                unityObjField.objectType = typeof(TVarContentType);
             }
+        }
+
+        // For those derived classes that have their values as UnityObjects
+        protected EditorObjectField unityObjField;
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (unityObjField == null)
+            {
+                return;
+            }
+            if (on)
+            {
+                unityObjField.RegisterValueChangedCallback(OnObjectFieldChanged);
+            }
+            else
+            {
+                unityObjField.UnregisterValueChangedCallback(OnObjectFieldChanged);
+            }
+        }
+
+        protected virtual void OnObjectFieldChanged(ChangeEvent<UnityObj> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
         }
 
     }

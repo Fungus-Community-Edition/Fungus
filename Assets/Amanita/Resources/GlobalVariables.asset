@@ -63,7 +63,7 @@ MonoBehaviour:
         scope: 0
         key: cuteBgm
         itemID: 9
-        value: {fileID: 0}
+        value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
     - rid: 846271512383848521
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
