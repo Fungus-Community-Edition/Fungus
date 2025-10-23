@@ -248,7 +248,7 @@ namespace Amanita.VScripting.EditorUtils
                 .OfType<MuscariableHolder>()
                 .ToList();
 
-            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'. holders.Count={holders.Count}");
+            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemId} at assetPath='{path}'. holders.Count={holders.Count}");
 
             LogDiscoveredHoldersForDiagnostings();
             void LogDiscoveredHoldersForDiagnostings()
@@ -267,17 +267,17 @@ namespace Amanita.VScripting.EditorUtils
                         }
                     }
                     catch { /* ignore */ }
-                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemID} innerKey='{innerKey}' innerHash={innerHash}");
+                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemId} innerKey='{innerKey}' innerHash={innerHash}");
                 }
             }
 
             // 1) Prefer matching by stable ItemID (survives domain reloads)
             if (variable != null)
             {
-                var byId = holders.FirstOrDefault(elem => elem.ItemID == variable.ItemID);
+                var byId = holders.FirstOrDefault(elem => elem.ItemId == variable.ItemId);
                 if (byId != null)
                 {
-                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemID}");
+                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemId}");
                     return byId;
                 }
             }
@@ -304,7 +304,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'");
+            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemId} at assetPath='{path}'");
             return null;
         }
 
@@ -353,9 +353,9 @@ namespace Amanita.VScripting.EditorUtils
             try
             {
                 // Prefer stable ItemID when available (non-zero)
-                if (a.ItemID != 0 || b.ItemID != 0)
+                if (a.ItemId != 0 || b.ItemId != 0)
                 {
-                    if (a.ItemID == b.ItemID) return true;
+                    if (a.ItemId == b.ItemId) return true;
                 }
             }
             catch { /* ignore */ }

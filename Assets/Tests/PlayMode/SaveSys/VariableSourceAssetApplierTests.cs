@@ -1,0 +1,314 @@
+using System.Collections;
+using System.IO;
+using System.Linq;
+using Amanita.SaveSys;
+using Amanita.VScripting;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using UnityObj = UnityEngine.Object;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace SaveSystemTests
+{
+    public class VariableSourceAssetApplierTests : CommonTestFunctionality
+    {
+        // Simple test VarCodec that handles GenericMuscariable (object) for strings and ints
+        // We avoid mocks of variables/sources by using real VariableSourceAsset and Muscariable,
+        // but provide this tiny codec so encode/decode can occur in tests.
+        private class GenericVarCodec : ScriptableObject, IVarCodec
+        {
+            public bool CanHandle(IVariable variable)
+                => variable is GenericMuscariable;
+
+            public bool CanHandle(string typeName)
+                => typeName == nameof(GenericMuscariable) || typeName == typeof(GenericMuscariable).FullName;
+
+            public bool CanHandle(VariableSaveData variable)
+                => variable != null && (variable.VarTypeName == nameof(GenericMuscariable) || variable.VarTypeName == typeof(GenericMuscariable).FullName);
+
+            public string EncodeToString(IVariable variable)
+            {
+                return variable?.BoxedValue != null ? variable.BoxedValue.ToString() : string.Empty;
+            }
+
+            public void Decode(IVariable variable, string data)
+            {
+                // Best-effort roundtrip: try int, else string
+                if (int.TryParse(data, out var i))
+                {
+                    variable.BoxedValue = i;
+                }
+                else
+                {
+                    variable.BoxedValue = data;
+                }
+            }
+
+            public void Decode(IVariable variable, VariableSaveData data)
+            {
+                if (data == null) return;
+                Decode(variable, data.Value);
+            }
+
+            public T DecodeTo<T>(string data)
+            {
+                object result = default(T);
+
+                // try to coerce to T from string
+                if (typeof(T) == typeof(int))
+                {
+                    if (int.TryParse(data, out var i))
+                        result = i;
+                }
+                else if (typeof(T) == typeof(string))
+                {
+                    result = data;
+                }
+
+                return (T)result;
+            }
+
+            public VariableSaveData EncodeToSave(IVariable variable)
+            {
+                return new VariableSaveData
+                {
+                    VarTypeName = nameof(GenericMuscariable),
+                    ItemId = variable.ItemId,
+                    Key = variable.Key,
+                    Value = EncodeToString(variable)
+                };
+            }
+        }
+
+        private const string ResourcesFolder = "Assets/Resources";
+        private const string TestResourcesSubFolder = "Assets/Resources/VarSrcApplierTests";
+        private const string AssetNameA = "TestVarSrcA.asset";
+        private const string AssetNameB = "TestVarSrcB.asset";
+
+        
+        private GenericVarCodec genericVarCodec;
+        private VariableSourceAssetSaveCodec _saveCodec;
+        private VariableSourceAssetApplier _applier;
+
+        [UnitySetUp]
+        public IEnumerator SetUp()
+        {
+#if UNITY_EDITOR
+            // Ensure Resources path
+            if (!AssetDatabase.IsValidFolder(ResourcesFolder))
+            {
+                AssetDatabase.CreateFolder("Assets", "Resources");
+            }
+            if (!AssetDatabase.IsValidFolder(TestResourcesSubFolder))
+            {
+                AssetDatabase.CreateFolder(ResourcesFolder, "VarSrcApplierTests");
+            }
+
+            // Create VariableSourceAssets as real assets in Resources so the applier can find them
+            firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
+            secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+
+            // Create variables on A
+            var firstStringMuscari = firstVsa.AddNewVariableOfContentType<string>("playerName", "Amanita");
+            var firstIntMuscari = firstVsa.AddNewVariableOfContentType<int>("playerLevel", 3);
+            Assert.NotNull(firstStringMuscari);
+            Assert.NotNull(firstIntMuscari);
+            // Ensure stable IDs and owner
+            firstVsa.Refresh();
+
+            // Create variables on B
+            var secondStringMuscari = secondVsa.AddNewVariableOfContentType<string>("chapter", "Intro");
+            var secondIntMuscari = secondVsa.AddNewVariableOfContentType<int>("coins", 25);
+            Assert.NotNull(secondStringMuscari);
+            Assert.NotNull(secondIntMuscari);
+            secondVsa.Refresh();
+
+            // Save assets to disk
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            // Create codec and hook it up to both encoder and applier
+            genericVarCodec = ScriptableObject.CreateInstance<GenericVarCodec>();
+
+            _saveCodec = ScriptableObject.CreateInstance<VariableSourceAssetSaveCodec>();
+            _saveCodec.RegisterVarCodec(genericVarCodec);
+            var builtInVarSaveCodec = ScriptableObject.CreateInstance<BuiltinVarSaveCodec>();
+            _saveCodec.RegisterVarCodec(builtInVarSaveCodec);
+
+            _applier = ScriptableObject.CreateInstance<VariableSourceAssetApplier>();
+            _applier.RegisterVarCodec(genericVarCodec);
+            _applier.RegisterVarCodec(builtInVarSaveCodec);
+            _applier.Init();
+
+            // Wait a frame for Resources changes to settle
+            yield return null;
+
+            toDestroyInTearDown.Add(genericVarCodec);
+            toDestroyInTearDown.Add(_saveCodec);
+            toDestroyInTearDown.Add(_applier);
+#else
+            yield break;
+#endif
+        }
+
+        private VariableSourceAsset firstVsa;
+        private VariableSourceAsset secondVsa;
+        [UnityTearDown]
+        public IEnumerator TearDown()
+        {
+#if UNITY_EDITOR
+            // Clean Resources assets we created
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+
+            foreach (var obj in toDestroyInTearDown)
+            {
+                if (obj != null)
+                {
+                    UnityObj.DestroyImmediate(obj);
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+#endif
+            yield return null;
+        }
+
+        // 1) Recording states of a VariableSourceAsset on disk
+        //    - Includes each Muscariable and assetIds
+        [UnityTest]
+        public IEnumerator Encode_VariableSourceAsset_RecordsAssetIdAndEachVariable()
+        {
+            // Act
+            var firstUnit = _saveCodec.EncodeToUnit(firstVsa);
+            var secondUnit = _saveCodec.EncodeToUnit(secondVsa);
+
+            // Assert content decodes back
+            var firstDecodeResult = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(firstUnit);
+            var secondDecodeResult = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(secondUnit);
+
+            Assert.NotNull(firstDecodeResult);
+            Assert.NotNull(secondDecodeResult);
+
+            // AssetIds should match the source assets
+            Assert.AreEqual(firstVsa.AssetId, firstDecodeResult.AssetId, "First Asset AssetId mismatch");
+            Assert.AreEqual(secondVsa.AssetId, secondDecodeResult.AssetId, "Second Asset AssetId mismatch");
+
+            // Each muscariable should be present with itemId and key recorded
+            // Asset A
+            var firstVars = firstVsa.Variables.ToList();
+            Assert.GreaterOrEqual(firstDecodeResult.SavedVars.Count, firstVars.Count);
+            foreach (var elem in firstVars.Cast<IVariable>())
+            {
+                var found = firstDecodeResult.SavedVars.FirstOrDefault(sv => sv.ItemId == elem.ItemId || sv.Key == elem.Key);
+                Assert.NotNull(found, $"Missing saved var for first asset: {elem.Key} (ID {elem.ItemId})");
+            }
+
+            // Asset B
+            var secondVars = secondVsa.Variables.ToList();
+            Assert.GreaterOrEqual(secondDecodeResult.SavedVars.Count, secondVars.Count);
+            foreach (var elem in secondVars.Cast<IVariable>())
+            {
+                var found = secondDecodeResult.SavedVars.FirstOrDefault(sv => sv.ItemId == elem.ItemId || sv.Key == elem.Key);
+                Assert.NotNull(found, $"Missing saved var for second asset: {elem.Key} (ID {elem.ItemId})");
+            }
+
+            yield return null;
+        }
+
+        // 2) Applying VariableSourceAssetSaveDatas to the right assets
+        //    - Includes Muscariables getting the right values
+        [UnityTest]
+        public IEnumerator Apply_SaveData_UpdatesRightAssetAndValues()
+        {
+            // Arrange: change values, encode as "save"
+            SetVarValue(firstVsa, "playerName", "Shiitake");
+            SetVarValue(firstVsa, "playerLevel", 99);
+
+            SetVarValue(secondVsa, "chapter", "Finale");
+            SetVarValue(secondVsa, "coins", 777);
+
+            SaveDataUnit firstVsaSaveUnit = _saveCodec.EncodeToUnit(firstVsa);
+            SaveDataUnit secondVsaSaveUnit = _saveCodec.EncodeToUnit(secondVsa);
+
+            // Reset variables to different values to verify application will change them
+            SetVarValue(firstVsa, "playerName", "ResetName");
+            SetVarValue(firstVsa, "playerLevel", 1);
+
+            SetVarValue(secondVsa, "chapter", "ResetChapter");
+            SetVarValue(secondVsa, "coins", 0);
+
+            // Act: decode and apply to assets (applier finds by AssetId via Resources)
+            var firstVsaSaveData = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(firstVsaSaveUnit);
+            var secondVsaSaveData = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(secondVsaSaveUnit);
+
+            // Apply A then B
+            yield return _applier.Apply(firstVsaSaveData).AsIEnumerator();
+            yield return _applier.Apply(secondVsaSaveData).AsIEnumerator();
+
+            // Assert values restored to saved ones
+            string firstStringVarValue = GetVarValue<string>(firstVsa, "playerName");
+            Assert.AreEqual("Shiitake", firstStringVarValue);
+
+            int firstIntVarValue = GetVarValue<int>(firstVsa, "playerLevel");
+            Assert.AreEqual(99, firstIntVarValue);
+
+            string secondStringVarValue = GetVarValue<string>(secondVsa, "chapter");
+            Assert.AreEqual("Finale", secondStringVarValue);
+
+            int secondIntVarValue = GetVarValue<int>(secondVsa, "coins");
+            Assert.AreEqual(777, secondIntVarValue);
+
+            yield return null;
+        }
+
+        // Helper to get typed muscariable value through BoxedValue
+        private static T GetVarValue<T>(VariableSourceAsset asset, string key)
+        {
+            var varToCheck = ((IMuscariableSource)asset).GetVariable(key);
+            Assert.NotNull(varToCheck, $"Var '{key}' not found on asset '{asset.name}'");
+            return varToCheck is Muscariable<T> typed ? typed.Value : (T)varToCheck.BoxedValue;
+        }
+
+        private static void SetVarValue<T>(VariableSourceAsset asset, string key, T value)
+        {
+            var varToSetValOf = ((IMuscariableSource)asset).GetVariable(key);
+            Assert.NotNull(varToSetValOf, $"Var '{key}' not found on asset '{asset.name}'");
+            varToSetValOf.BoxedValue = value;
+        }
+
+#if UNITY_EDITOR
+        private static VariableSourceAsset CreateVarSourceAsset(string assetPath)
+        {
+            var instance = ScriptableObject.CreateInstance<VariableSourceAsset>();
+            AssetDatabase.CreateAsset(instance, assetPath);
+            // Force OnValidate to create an AssetId if needed
+            EditorUtility.SetDirty(instance);
+            AssetDatabase.SaveAssets();
+            return instance;
+        }
+
+        private static void TryDeleteAsset(string assetPath)
+        {
+            if (File.Exists(assetPath))
+            {
+                AssetDatabase.DeleteAsset(assetPath);
+            }
+        }
+#endif
+    }
+
+    internal static class TaskExtensions
+    {
+        public static IEnumerator AsIEnumerator(this System.Threading.Tasks.Task task)
+        {
+            while (!task.IsCompleted) yield return null;
+            if (task.IsFaulted) throw task.Exception;
+        }
+    }
+}

@@ -64,7 +64,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual int ItemID
+        public virtual int ItemId
         {
             get
             {
@@ -73,12 +73,12 @@ namespace Amanita.VScripting
                     return Muscariable.InvalidID;
                 }
 
-                return muscariable.ItemID;
+                return muscariable.ItemId;
             }
             set
             { 
                 Ensure(); 
-                muscariable.ItemID = value; 
+                muscariable.ItemId = value; 
                 Dirty(); 
             } 
         }

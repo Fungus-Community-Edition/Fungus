@@ -94,7 +94,7 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                ItemID = variable.ItemID,
+                ItemId = variable.ItemId,
                 Key = variable.Key,
                 Value = data,
             };

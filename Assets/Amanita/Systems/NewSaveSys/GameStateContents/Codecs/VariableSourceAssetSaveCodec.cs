@@ -1,0 +1,163 @@
+using Amanita.VScripting;
+using FullSerializer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Overlays;
+using UnityEngine;
+
+namespace Amanita.SaveSys
+{
+    public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
+        IMainSaveCodec
+    {
+        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
+
+        public virtual void RegisterVarCodec(IVarCodec codec)
+        {
+            if (codec == null)
+            {
+                Debug.LogError("Cannot register a null codec.");
+                return;
+            }
+            if (validCodecs.Contains(codec))
+            {
+                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
+                return;
+            }
+            validCodecs.Add(codec);
+        }
+
+        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
+
+        protected virtual void OnEnable()
+        {
+            RefreshValidCodecs();
+        }
+
+        protected virtual void RefreshValidCodecs()
+        {
+            validCodecs.Clear();
+            for (int i = 0; i < varCodecs.Length; i++)
+            {
+                ScriptableObject toCheck = varCodecs[i];
+                if (toCheck is not IVarCodec && toCheck != null)
+                {
+                    string name = toCheck.name;
+                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
+                        $"Please fix this.");
+                }
+                else if (toCheck is IVarCodec codecFound)
+                {
+                    validCodecs.Add(codecFound);
+                }
+            }
+        }
+
+        public override bool CanHandle(string typeName)
+        {
+            return typeName == typeof(VariableSourceAssetSaveData).Name;
+        }
+
+        public override SaveData DecodeFrom(SaveDataUnit unit)
+        {
+            if (unit == null)
+            {
+                Debug.LogError("Cannot decode from a null SaveDataUnit.");
+                return null;
+            }
+
+            VariableSourceAssetSaveData result = Serializer.FromJson<VariableSourceAssetSaveData>(unit.Content);
+            if (result == null)
+            {
+                Debug.LogError($"Failed to decode {nameof(VariableSourceAssetSaveData)} to FlowchartSaveData.");
+                return null;
+            }
+
+            return result;
+        }
+
+        public override VariableSourceAssetSaveData EncodeToSave(VariableSourceAsset toCreateFrom)
+        {
+            if (!toCreateFrom.IncludeInSaves)
+            {
+                Debug.LogWarning($"Flowchart {toCreateFrom.name} is set to not be included in saves. Thus, it shall not be encoded.");
+                return null;
+            }
+
+            IList<VariableSaveData> savedVars = SaveVars(toCreateFrom);
+            VariableSourceAssetSaveData result = new VariableSourceAssetSaveData();
+            result.AssetId = toCreateFrom.AssetId;
+            result.SavedVars = savedVars;
+            return result;
+        }
+
+        protected virtual IList<VariableSaveData> SaveVars(VariableSourceAsset toCreateFrom)
+        {
+            IList<VariableSaveData> result = new List<VariableSaveData>();
+
+            var variables = toCreateFrom.Variables;
+            int count = variables.Count;
+            if (count == 0 || !toCreateFrom.IncludeInSaves)
+            {
+                // Do nothing and just return an empty list later in this func
+            }
+            else
+            {
+                foreach (IVariable varEl in variables)
+                {
+                    IVarCodec forThisVar = FindCodecFor(varEl);
+                    if (forThisVar == null)
+                    {
+                        Debug.LogWarning($"No codec found for variable type: {varEl.GetType().Name}");
+                        continue;
+                    }
+
+                    VariableSaveData varSave = forThisVar.EncodeToSave(varEl);
+                    if (varSave == null)
+                    {
+                        Debug.LogError($"Failed to encode variable: {varEl.Key}");
+                        continue;
+                    }
+
+                    result.Add(varSave);
+                }
+            }
+
+            return result;
+        }
+
+        protected virtual IVarCodec FindCodecFor(IVariable variable)
+        {
+            IVarCodec result = validCodecs.Where((elem) => elem.CanHandle(variable)).FirstOrDefault();
+            return result;
+        }
+
+        public override SaveDataUnit EncodeToUnit()
+        {
+            return EncodeToUnit(ToMakeFrom);
+        }
+
+        public override SaveDataUnit EncodeToUnit(VariableSourceAsset from)
+        {
+            VariableSourceAssetSaveData saveData = EncodeToSave(from);
+            SaveDataUnit result = saveData.Serialized();
+            return result;
+        }
+
+        public IList<SaveDataUnit> FindAndEncodeAll(Action<IList<SaveDataUnit>> onComplete = null)
+        {
+            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            IList<SaveDataUnit> result = new List<SaveDataUnit>();
+
+            for (int i = 0; i < toEncode.Count; i++)
+            {
+                VariableSourceAsset asset = toEncode[i];
+                SaveDataUnit encoded = EncodeToUnit(asset);
+                result.Add(encoded);
+            }
+
+            return result;
+        }
+    }
+}

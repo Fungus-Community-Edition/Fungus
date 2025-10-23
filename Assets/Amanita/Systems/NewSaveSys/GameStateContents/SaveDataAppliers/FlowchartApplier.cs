@@ -167,7 +167,7 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    IVariable varEl = flowchart.GetVariableById(varSaveData.ItemID);
+                    IVariable varEl = flowchart.GetVariableById(varSaveData.ItemId);
                     varEl ??= flowchart.GetVariable(varSaveData.VarName); // Fallback to searching by name
 
                     if (varEl == null)

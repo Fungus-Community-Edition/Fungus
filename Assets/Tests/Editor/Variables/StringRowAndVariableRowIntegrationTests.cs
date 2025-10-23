@@ -360,9 +360,9 @@ namespace VScriptingTests.VariableOperations
 
             Assert.IsNotNull(a);
             Assert.IsNotNull(b);
-            Assert.AreNotEqual(a.ItemID, b.ItemID);
-            Assert.Greater(a.ItemID, 0);
-            Assert.Greater(b.ItemID, 0);
+            Assert.AreNotEqual(a.ItemId, b.ItemId);
+            Assert.Greater(a.ItemId, 0);
+            Assert.Greater(b.ItemId, 0);
         }
 
     }

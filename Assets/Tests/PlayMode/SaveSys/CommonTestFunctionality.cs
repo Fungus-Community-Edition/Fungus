@@ -96,7 +96,7 @@ namespace SaveSystemTests
             void LoadCodecs()
             {
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
-                BuiltinVarSaveCodec builtinCodec = new BuiltinVarSaveCodec();
+                BuiltinVarSaveCodec builtinCodec = ScriptableObject.CreateInstance<BuiltinVarSaveCodec>();
                 flowchartSaveCodec.RegisterVarCodec(builtinCodec);
                 flowchartApplier.RegisterVarCodec(builtinCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test

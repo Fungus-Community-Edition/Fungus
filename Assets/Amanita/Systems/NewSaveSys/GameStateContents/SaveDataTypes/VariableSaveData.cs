@@ -21,7 +21,7 @@ namespace Amanita.SaveSys
             set => varTypeName = value;
         }
 
-        public int ItemID
+        public int ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -46,6 +46,13 @@ namespace Amanita.SaveSys
         {
             get => Key;
             set => Key = value;
+        }
+
+        public VariableSaveData()
+        {
+            this.itemID = -1;
+            this.key = string.Empty;
+            this.value = string.Empty;
         }
 
         public VariableSaveData(int itemID = -1, string key = "", string value = "")

@@ -41,7 +41,7 @@ namespace VScriptingTests.VariableOperations
             {
                 Key = "TestKey",
                 Scope = VariableScope.Global,
-                ItemID = 42,
+                ItemId = 42,
                 Value = 99
             };
 
@@ -52,7 +52,7 @@ namespace VScriptingTests.VariableOperations
             Assert.NotNull(created);
             Assert.AreEqual("TestKey", created.Key);
             Assert.AreEqual(VariableScope.Global, created.Scope);
-            Assert.AreEqual(42, created.ItemID);
+            Assert.AreEqual(42, created.ItemId);
             Assert.AreEqual(99, created.Value);
         }
 
