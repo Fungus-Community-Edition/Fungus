@@ -9,6 +9,8 @@ namespace Amanita.SaveSys
     /// <summary>
     /// This is meant to apply to VariableSourceAssets on disk.
     /// </summary>
+    [CreateAssetMenu(fileName = "VariableSourceAssetApplier",
+        menuName = "Amanita/SaveSystem/SaveDataAppliers/VariableSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
         [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
@@ -58,6 +60,7 @@ namespace Amanita.SaveSys
         {
             base.Init();
             variableSourceAssets = Resources.LoadAll<VariableSourceAsset>("");
+            // ^Best to grab all these in init so we don't have to do it repeatedly later.
         }
 
         protected IList<VariableSourceAsset> variableSourceAssets;

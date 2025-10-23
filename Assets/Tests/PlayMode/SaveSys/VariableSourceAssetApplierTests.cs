@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Amanita.SaveSys;
@@ -89,7 +90,7 @@ namespace SaveSystemTests
         private const string AssetNameA = "TestVarSrcA.asset";
         private const string AssetNameB = "TestVarSrcB.asset";
 
-        
+
         private GenericVarCodec genericVarCodec;
         private VariableSourceAssetSaveCodec _saveCodec;
         private VariableSourceAssetApplier _applier;
@@ -301,14 +302,172 @@ namespace SaveSystemTests
             }
         }
 #endif
+
+        [UnityTest]
+        public IEnumerator EncodeToSave_Respects_IncludeInSaves_False()
+        {
+#if UNITY_EDITOR
+            // Flip flag off via SerializedObject
+            var so = new SerializedObject(firstVsa);
+            so.FindProperty("includeInSaves").boolValue = false;
+            so.ApplyModifiedProperties();
+            AssetDatabase.SaveAssets();
+
+            // Act
+            var saveData = _saveCodec.EncodeToSave(firstVsa);
+
+            // Assert
+            Assert.IsNull(saveData, "EncodeToSave should return null when IncludeInSaves is false.");
+
+            // Restore for other tests
+            so.Update();
+            so.FindProperty("includeInSaves").boolValue = true;
+            so.ApplyModifiedProperties();
+            AssetDatabase.SaveAssets();
+#endif
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator Apply_WithMismatchedItemId_FallsBackToVarName()
+        {
+            // Arrange: set known values and encode
+            SetVarValue(firstVsa, "playerName", "FallbackName");
+            SetVarValue(firstVsa, "playerLevel", 42);
+
+            var unit = _saveCodec.EncodeToUnit(firstVsa);
+            var data = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(unit);
+
+            // Corrupt all ItemIds so lookup by ID fails
+            foreach (var sv in data.SavedVars)
+            {
+                sv.ItemId += 999999; // ensure no match
+            }
+
+            // Change current values so we can detect the apply
+            SetVarValue(firstVsa, "playerName", "BeforeApplyName");
+            SetVarValue(firstVsa, "playerLevel", -1);
+
+            // Act
+            yield return _applier.Apply(data).AsIEnumerator();
+
+            // Assert: values still applied via name fallback
+            Assert.AreEqual("FallbackName", GetVarValue<string>(firstVsa, "playerName"));
+            Assert.AreEqual(42, GetVarValue<int>(firstVsa, "playerLevel"));
+        }
+
+        [UnityTest]
+        public IEnumerator Apply_UnknownAssetId_WarnsAndDoesNothing()
+        {
+            // Capture pre-values
+            var originalName = GetVarValue<string>(firstVsa, "playerName");
+            var originalLevel = GetVarValue<int>(firstVsa, "playerLevel");
+
+            // Create save data with unknown AssetId
+            var bogus = new VariableSourceAssetSaveData
+            {
+                AssetId = "this-id-does-not-exist"
+            };
+
+            // Expect a warning
+            LogAssert.Expect(LogType.Warning,
+                $"No VariableSourceAsset with AssetId {bogus.AssetId} was found to apply save data to.");
+
+            // Act
+            yield return _applier.Apply(bogus).AsIEnumerator();
+
+            // Assert unchanged
+            Assert.AreEqual(originalName, GetVarValue<string>(firstVsa, "playerName"));
+            Assert.AreEqual(originalLevel, GetVarValue<int>(firstVsa, "playerLevel"));
+        }
+
+        [UnityTest]
+        public IEnumerator Apply_VariableWithoutCodec_SkipsAndWarns()
+        {
+            // Arrange: encode current values
+            SetVarValue(firstVsa, "playerName", "CodecSkipName");
+            var unit = _saveCodec.EncodeToUnit(firstVsa);
+            var data = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(unit);
+
+            // Tamper VarTypeName so no codec matches
+            foreach (var sv in data.SavedVars)
+            {
+                sv.VarTypeName = "UnknownTypeToForceNoCodec";
+            }
+
+            // Change live value to detect if it gets changed (it shouldn't)
+            SetVarValue(firstVsa, "playerName", "Unchanged");
+
+            // Expect one warning per variable in the save data
+            for (int i = 0; i < data.SavedVars.Count; i++)
+            {
+                LogAssert.Expect(LogType.Warning, "No codec found for variable type: VariableSaveData");
+            }
+
+            // Act
+            yield return _applier.Apply(data).AsIEnumerator();
+
+            // Assert: value is not changed
+            Assert.AreEqual("Unchanged", GetVarValue<string>(firstVsa, "playerName"));
+        }
+
+        [UnityTest]
+        public IEnumerator ApplyRange_AppliesMultipleSaveDatas()
+        {
+            // Arrange values and encode both
+            SetVarValue(firstVsa, "playerName", "RangeName");
+            SetVarValue(secondVsa, "chapter", "RangeChapter");
+
+            var dataA = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(_saveCodec.EncodeToUnit(firstVsa));
+            var dataB = (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(_saveCodec.EncodeToUnit(secondVsa));
+
+            // Change current to detect apply
+            SetVarValue(firstVsa, "playerName", "BeforeRange");
+            SetVarValue(secondVsa, "chapter", "BeforeRange");
+
+            // Act
+            var list = new List<SaveData> { dataA, dataB };
+            yield return _applier.ApplyRange(list).AsIEnumerator();
+
+            // Assert
+            Assert.AreEqual("RangeName", GetVarValue<string>(firstVsa, "playerName"));
+            Assert.AreEqual("RangeChapter", GetVarValue<string>(secondVsa, "chapter"));
+        }
+
+        [UnityTest]
+        public IEnumerator SaveCodec_FindAndEncodeAll_FindsBothAssets()
+        {
+            // Act
+            var units = _saveCodec.FindAndEncodeAll();
+
+            // Assert: decode and ensure both assetIds are present
+            var ids = units
+                .Select(u => (VariableSourceAssetSaveData)_saveCodec.DecodeFrom(u))
+                .Where(d => d != null)
+                .Select(d => d.AssetId)
+                .ToList();
+
+            Assert.Contains(firstVsa.AssetId, ids);
+            Assert.Contains(secondVsa.AssetId, ids);
+
+            yield return null;
+        }
     }
 
     internal static class TaskExtensions
     {
         public static IEnumerator AsIEnumerator(this System.Threading.Tasks.Task task)
         {
-            while (!task.IsCompleted) yield return null;
-            if (task.IsFaulted) throw task.Exception;
+            while (!task.IsCompleted)
+            {
+                if (task.IsFaulted)
+                { 
+                    throw task.Exception;
+                }
+                yield return null;
+            }
+
+            yield return null; // One final yield to ensure completion
         }
     }
 }
