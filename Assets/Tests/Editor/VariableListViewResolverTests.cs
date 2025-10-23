@@ -179,13 +179,6 @@ namespace VScriptingTests.VariableOperations
                 _resolverFunc = resolverFunc;
             }
 
-            // The production code made GetBindingTarget virtual — use the delegate to resolve holders.
-            protected override UnityObj GetBindingTarget(IVariable variable)
-            {
-                var fromDelegate = _resolverFunc?.Invoke(variable);
-                if (fromDelegate != null) return fromDelegate;
-                return base.GetBindingTarget(variable);
-            }
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static Amanita.TextVariationHandler.Section;
 using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
@@ -73,8 +72,8 @@ namespace Amanita.VScripting.EditorUtils
                 _addButton = initArgs.AddButton;
             }
 
-            PrepFcEventListeners();
-            void PrepFcEventListeners()
+            PrepEventListeners();
+            void PrepEventListeners()
             {
                 ToggleSubs(false);
                 variableSource = initArgs.VariableSource;
@@ -107,7 +106,11 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
-                AmanitaEditorSignals.KeyFieldChanged += OnKeyFieldFocusLost;
+
+                // By responding to the changes in the UI this way, we can ensure that
+                // undo operations work as expected. Because again: we are not going to
+                // rely on UITK's built-in binding system for this.
+                AmanitaEditorSignals.KeyFieldChanged += OnKeyFieldChanged;
                 AmanitaEditorSignals.ScopeFieldChanged += OnScopeFieldChanged;
                 AmanitaEditorSignals.ValueFieldChanged += OnValueFieldChanged;
                 subsActive = true;
@@ -119,61 +122,45 @@ namespace Amanita.VScripting.EditorUtils
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 AmanitaEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
-                AmanitaEditorSignals.KeyFieldChanged -= OnKeyFieldFocusLost;
+
+                AmanitaEditorSignals.KeyFieldChanged -= OnKeyFieldChanged;
+                AmanitaEditorSignals.ScopeFieldChanged -= OnScopeFieldChanged;
                 AmanitaEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
                 subsActive = false;
             }
         }
 
-        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
+        protected virtual void OnVariableAdded(IVariable added)
         {
-            if (!WeAreManaging(row))
-            {
-                return;
-            }
-
-            IVariable theVar = row.VarToRepresent;
-            if (theVar.Scope != scope)
-            {
-                string varType = theVar.GetType().Name;
-                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Scope");
-                theVar.Scope = scope;
-            }
+            if (_isDisposed || added == null) return;
+            _listView?.AddVariable(added);
         }
 
-        protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
+        protected virtual void OnVariableRemoved(IVariable removed)
         {
-            if (!WeAreManaging(row))
-            {
-                return;
-            }
-
-            IVariable theVar = row.VarToRepresent;
-            if (!Equals(theVar.BoxedValue, newVal))
-            {
-                string varType = theVar.GetType().Name;
-                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Name");
-                theVar.BoxedValue = newVal;
-            }
+            if (_isDisposed || removed == null) return;
+            _listView?.RemoveVariable(removed);
         }
 
-        // Why FocusLost instead of on any change? Because then we'd be responding to every keystroke;
-        // we only want to write the key to the muscari when the user's done entering in the changed key
-        protected virtual void OnKeyFieldFocusLost(VariableRow rowInvolved, string newKey)
+        protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
         {
-            if (!WeAreManaging(rowInvolved))
+            variableSource.ReorderVariables(newlyOrderedVars);
+        }
+
+        protected virtual void OnAddButtonClicked()
+        {
+            Rect rect = _addButton.worldBound;
+            // In the future, due to how Flowchart implements IVariableSource, we might
+            // want just a single DoAddVariable method that takes IVariableSource.
+            if (Flowchart != null)
             {
-                return;
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
+            }
+            else if (variableSource is IReorderableMuscariableSource muscaSource)
+            {
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
             }
 
-            IVariable theVar = rowInvolved.VarToRepresent;
-            if (theVar.Key != newKey)
-            {
-                // Register an Undo
-                string varType = theVar.GetType().Name;
-                Undo.RecordObject(variableSource as UnityObj, $"Changed {varType} Key");
-                theVar.Key = newKey;
-            }
         }
 
         protected bool subsActive = false;
@@ -200,78 +187,85 @@ namespace Amanita.VScripting.EditorUtils
             var owner = varInvolved.Owner;
             owner.RemoveVariable(varInvolved);
 
-            UnityObj destroyTarget = GetDestroyTarget(varInvolved);
-            if (destroyTarget != null)
+            UnityObj legacyVar = varInvolved as UnityObj;
+            if (legacyVar != null)
             {
-                Debug.Log($"Destroying variable asset: {destroyTarget.name} ({destroyTarget.GetType().Name})");
-                Undo.DestroyObjectImmediate(destroyTarget);
-            }
-            else
-            {
-                Debug.LogWarning($"Could not find a persistent asset to destroy for variable '{varInvolved.Key}'. " +
-                    $"Type of the var itself: {varInvolved.GetType()}.");
+                Debug.Log($"Removing legacy variable asset: {varInvolved.Key}");
+                UnityObj.DestroyImmediate(legacyVar);
             }
 
+        }
+
+        // We assume that the key field is set to be delayed, and thus we won't be responding
+        // to every keystroke
+        protected virtual void OnKeyFieldChanged(VariableRow rowInvolved, string newKey)
+        {
+            if (!WeAreManaging(rowInvolved))
+            {
+                return;
+            }
+
+            IVariable theVar = rowInvolved.VarToRepresent;
+            if (theVar.Key != newKey)
+            {
+                RecordAndApplyChange(theVar, "Key", (varToChange) => varToChange.Key = newKey);
+            }
         }
 
         protected virtual bool WeAreManaging(VariableRow row) => row.VarToRepresent.Owner == variableSource;
+        // ^We need this because it's possible for multiple VariableRowManagers to be active at once.
+        // For example, when the Flowchart window is active and one Inspector is working
+        // with a VariableSourceAsset that also has its own VariableRowManager.
 
-        protected UnityObj GetDestroyTarget(IVariable variable)
+        protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
         {
-            if (variable is UnityObj unityObj)
-                return unityObj; // Legacy variable
+            // We use this to make sure that things happen in the right order. Record first, apply change
+            // to var, then save any assets if needed.
+            string varType = variable.GetType().Name;
 
-            // Muscariable path — find its holder in the variable source
-            return FindPersistentHolderFor(variable);
-        }
+            UnityObj toRecord = variable as UnityObj;
+            if (toRecord == null)
+                toRecord = variableSource as UnityObj;
 
-        protected static MuscariableHolder FindPersistentHolderFor(IVariable variable)
-        {
-            UnityObj context = variable.Owner as UnityObj;
-            var path = AssetDatabase.GetAssetPath(context);
+            Undo.RecordObject(toRecord, $"Change to {varType} {description}");
 
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            applyChange(variable);
 
-            foreach (var asset in subAssets)
+            if (variableSource is ScriptableObject so)
             {
-                if (asset is MuscariableHolder holder)
-                {
-                    if (holder.Inner == variable)
-                        return holder;
-                }
+                // ^The reason we don't do this check for Flowcharts is because apparently, 
+                // Unity's serialization system automatically handles marking them dirty.
+                // Not so for ScriptableObjects, though.
+                so.MarkDirtyAndSave();
             }
-            return null;
         }
 
-        protected virtual void OnVariableAdded(IVariable added)
+        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
         {
-            if (_isDisposed || added == null) return;
-            _listView?.AddVariable(added);
-        }
-
-        protected virtual void OnVariableRemoved(IVariable removed)
-        {
-            if (_isDisposed || removed == null) return;
-            _listView?.RemoveVariable(removed);
-        }
-
-        protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
-        {
-            variableSource.ReorderVariables(newlyOrderedVars);
-        }
-
-        protected virtual void OnAddButtonClicked()
-        {
-            Rect rect = _addButton.worldBound;
-            if (Flowchart != null)
+            if (!WeAreManaging(row))
             {
-                VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
+                return;
             }
-            else if (variableSource is IReorderableMuscariableSource muscaSource)
+
+            IVariable theVar = row.VarToRepresent;
+            if (theVar.Scope != scope)
             {
-                VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
+                RecordAndApplyChange(theVar, "Scope", (varToChange) => varToChange.Scope = scope);
             }
-            
+        }
+
+        protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
+        {
+            if (!WeAreManaging(row))
+            {
+                return;
+            }
+
+            IVariable theVar = row.VarToRepresent;
+            if (!Equals(theVar.BoxedValue, newVal))
+            {
+                RecordAndApplyChange(theVar, "Value", (varToChange) => varToChange.BoxedValue = newVal);
+            }
         }
 
         #endregion
@@ -289,12 +283,6 @@ namespace Amanita.VScripting.EditorUtils
         }
         #endregion
 
-        public virtual void ReleaseRowsFromList()
-        {
-            // With virtualization, clearing variables triggers unbind & release logic
-            _listView?.Clear();
-        }
-
         #region Dispose
         public virtual void Dispose()
         {
@@ -309,6 +297,12 @@ namespace Amanita.VScripting.EditorUtils
             variableSource = null;
             Root = null;
             _isDisposed = true;
+        }
+
+        public virtual void ReleaseRowsFromList()
+        {
+            // With virtualization, clearing variables triggers unbind & release logic
+            _listView?.Clear();
         }
 
         #endregion

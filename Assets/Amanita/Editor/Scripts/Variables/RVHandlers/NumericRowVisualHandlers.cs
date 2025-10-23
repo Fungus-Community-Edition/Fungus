@@ -38,7 +38,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnValueFieldChanged(ChangeEvent<T> evt)
         {
-            AmanitaEditorSignals.ControlValueChanged(evt);
+            TriggerValueFieldChanged(evt.newValue);
         }
 
         protected override void ApplyVarValueToValueField()
