@@ -11,10 +11,5 @@ namespace VScriptingTests.VariableOperations
         public int GenericSetCount;
 
 
-        protected override void OnGenericValueSet(int prev)
-        {
-            GenericSetCount++;
-            LastGenericPrev = prev;
-        }
     }
 }
