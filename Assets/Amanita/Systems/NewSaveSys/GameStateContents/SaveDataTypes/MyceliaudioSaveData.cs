@@ -1,6 +1,7 @@
 using Amanita.Myceliaudio;
 using System.Linq;
 using UnityEngine;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -64,7 +65,7 @@ namespace Amanita.SaveSys
 
         public override SaveDataUnit Serialized()
         {
-            string json = JsonUtility.ToJson(this, true);
+            string json = Serializer.ToJson(this, true);
             SaveDataUnit serializedSaveData = new SaveDataUnit(TypeName, json);
             return serializedSaveData;
         }

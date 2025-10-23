@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Amanita.VScripting;
 using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -17,6 +18,7 @@ namespace Amanita.SaveSys
         {
             return variable is IVariable<Transform>;
         }
+
         public virtual bool CanHandle(string typeName)
         {
             return typeName == nameof(TransformVariable) ||
@@ -33,7 +35,7 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                ItemID = variable.ItemID,
+                ItemId = variable.ItemId,
                 Key = variable.Key,
                 Value = EncodeToString(variable)
             };
@@ -42,9 +44,8 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(IVariable toEncode)
         {
-            IVariable<Transform> transformVar = toEncode as IVariable<Transform>;
             Transform varValue = null;
-            if (transformVar != null)
+            if (toEncode is IVariable<Transform> transformVar)
             {
                 varValue = transformVar.Value;
             }
@@ -76,10 +77,14 @@ namespace Amanita.SaveSys
             }
 
             TransformState stateToEncode = TransformState.From(varValue);
-            // It's fine if the state is default. We can assume that at the time of saving, the
-            // variable wasn't referring to any transform.
 
-            string json = JsonUtility.ToJson(stateToEncode);
+            // Use the shared serializer, not the converter's injected one (which is null outside FS pipeline).
+            string json;
+            var fs = AmanitaManager.DefaultSerializer;
+            lock (fs)
+            {
+                json = fs.ToJson(stateToEncode, true);
+            }
             return json;
         }
 
@@ -91,7 +96,12 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            TransformState state = JsonUtility.FromJson<TransformState>(data);
+            TransformState state;
+            var fs = AmanitaManager.DefaultSerializer;
+            lock (fs)
+            {
+                state = fs.FromJson<TransformState>(data);
+            }
             state.OnDeserialize();
 
             Transform toApplyTo = FindTheRightTransformBasedOn(state);
@@ -103,7 +113,6 @@ namespace Amanita.SaveSys
             }
             else
             {
-                // We need to set the transform's position, rotation and scale to the values we just found.
                 toApplyTo.SetPositionAndRotation(state.Position, state.Rotation);
                 toApplyTo.localScale = state.LocalScale;
             }
@@ -112,15 +121,8 @@ namespace Amanita.SaveSys
 
         protected virtual Transform FindTheRightTransformBasedOn(TransformState state)
         {
-            // We need to find the transform based on the uniqueID.
-            // This is a bit tricky, because we need to search through all the transforms in the scene.
-            // We can use a dictionary to speed up the search.
             Transform whatWeFound = null;
             IList<SaveIdentifier> allIdentifiers = GameObject.FindObjectsByType<SaveIdentifier>(FindObjectsSortMode.None).ToList();
-            // ^ Considering how having a SaveIdentifier implies having a Transform
-            // (while having a Transform does NOT imply having a SaveIdentifier),
-            // searching for former _specifically_ should be less of a performance hit
-            // than searching for all the latter
 
             Transform withTheRightIdentifier = (from elem in allIdentifiers
                                                 where elem.UniqueID == state.uniqueID
@@ -131,18 +133,9 @@ namespace Amanita.SaveSys
             }
             else
             {
-                // Ow! Right in the clock cycles!
-                UseNameAsFallback();
-                void UseNameAsFallback()
-                {
-                    IList<Transform> allTransforms;
-#if UNITY_6000_0_OR_NEWER
-                    allTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None).ToList();
-#else
-                    allTransforms = GameObject.FindObjectsOfType<Transform>().ToList();
-#endif
-                    whatWeFound = (allTransforms.Where(elem => elem.name == state.name)).FirstOrDefault();
-                }
+                IList<Transform> allTransforms;
+                allTransforms = GameObject.FindObjectsByType<Transform>(FindObjectsSortMode.None).ToList();
+                whatWeFound = (allTransforms.Where(elem => elem.name == state.name)).FirstOrDefault();
             }
 
             return whatWeFound;
@@ -169,7 +162,12 @@ namespace Amanita.SaveSys
         {
             if (typeof(T) == typeof(Transform))
             {
-                TransformState state = JsonUtility.FromJson<TransformState>(data);
+                TransformState state;
+                var fs = Amanita.AmanitaManager.DefaultSerializer;
+                lock (fs)
+                {
+                    state = fs.FromJson<TransformState>(data);
+                }
                 state.OnDeserialize();
                 return (T)(object)FindTheRightTransformBasedOn(state);
             }
@@ -180,6 +178,7 @@ namespace Amanita.SaveSys
             }
         }
 
+        // Below: these run inside the FS pipeline; using SerializeMember/DeserializeMember is correct.
         protected override fsResult DoSerialize(Transform model, Dictionary<string, fsData> serialized)
         {
             TransformState tFormState = TransformState.From(model);
@@ -189,7 +188,6 @@ namespace Amanita.SaveSys
 
         protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Transform model)
         {
-            // Get the TransformState
             DeserializeMember(data, null, nameof(TransformState), out TransformState tFormState);
             if (!string.IsNullOrEmpty(tFormState.uniqueID))
             {
@@ -201,195 +199,5 @@ namespace Amanita.SaveSys
         }
     }
 
-    [System.Serializable]
-    public struct TransformState : IEquatable<TransformState>
-    {
-        public Vector3 Position
-        {
-            get { return position; }
-            set { position = value; }
-        }
-
-        public Quaternion Rotation
-        {
-            get { return rotation; }
-            set { rotation = value; }
-        }
-
-        public Vector3 LocalScale
-        {
-            get { return localScale; }
-            set { localScale = value; }
-        }
-
-        public string name;
-        public string uniqueID;
-
-        // We can't expect the Vecs and rotation to be serialized properly,
-        // so we need to store them as floats.
-        public float XPos
-        {
-            get { return position.x; }
-            set { position.x = value; position.x = value; }
-        }
-
-        [SerializeField] private Vector3State position;
-        [SerializeField] private Vector3State localScale;
-        [SerializeField] private QuaternionState rotation;
-
-        //public TransformState()
-        //{
-        //    position = Vector3State.From(Vector3.zero);
-        //    rotation = QuaternionState.From(Quaternion.identity);
-        //    localScale = Vector3State.From(Vector3.one);
-        //    name = string.Empty;
-        //    uniqueID = string.Empty;
-        //}
-
-        public static TransformState From(Transform trans)
-        {
-            TransformState result = default;
-            result.uniqueID = string.Empty;
-            if (trans != null)
-            {
-                // Using the properties here so the backing fields get set properly.
-                result.Position = trans.position;
-                result.Rotation = trans.rotation;
-                result.LocalScale = trans.localScale;
-
-                if (!trans.TryGetComponent<SaveIdentifier>(out var identifier))
-                {
-                    Debug.LogWarning($"The right Transform might not be loaded since {trans.name} does not have a SaveIdentifier attached to it. We'll have to try loading it based on the name we just found.");
-                }
-                else
-                {
-                    result.uniqueID = identifier.UniqueID;
-                }
-
-                result.name = trans.name;
-            }
-
-            return result;
-        }
-
-        public readonly bool Equals(TransformState otherState)
-        {
-            bool samePos = position.Equals(otherState.position);
-            bool sameRotation = rotation.Equals(otherState.rotation);
-            bool sameScale = localScale.Equals(otherState.localScale);
-            bool sameName = name == otherState.name;
-            bool sameID = uniqueID == otherState.uniqueID;
-            bool result = samePos &&
-                   sameRotation &&
-                   sameScale &&
-                   sameName &&
-                   sameID;
-            // ^Did it this way for easier debugging
-
-            return result;
-        }
-
-        public void OnDeserialize()
-        {
-        }
-
-        public override string ToString()
-        {
-            return $"TransformState(Name: {name}, UniqueID: {uniqueID},\n" +
-                $"Pos: {Position},\nRot: {Rotation.eulerAngles},\nScale: {LocalScale})";
-        }
-
-    }
-
-    [System.Serializable]
-    public struct Vector3State : IEquatable<Vector3State>, IEquatable<Vector3>
-    {
-        public float x, y, z;
-
-        public static Vector3State From(Vector3 vec)
-        {
-            return new Vector3State { x = vec.x, y = vec.y, z = vec.z };
-        }
-
-        public readonly Vector3 ToVector3()
-        {
-            return new Vector3(x, y, z);
-        }
-
-        public static implicit operator Vector3(Vector3State other)
-        {
-            return other.ToVector3();
-        }
-
-        public static implicit operator Vector3State(Vector3 vec)
-        {
-            return From(vec);
-        }
-
-        public static implicit operator Vector2(Vector3State other)
-        {
-            return new Vector2(other.x, other.y);
-        }
-
-        public readonly bool Equals(Vector3State other)
-        {
-            return x == other.x && 
-                y == other.y && 
-                z == other.z;
-        }
-
-        public readonly bool Equals(Vector3 other)
-        {
-            return x == other.x && 
-                y == other.y && 
-                z == other.z;
-        }
-    }
-
-    [System.Serializable]
-    public struct QuaternionState : IEquatable<QuaternionState>, IEquatable<Quaternion>
-    {
-        public float x, y, z, w;
-
-        public static QuaternionState From(Quaternion quat)
-        {
-            return new QuaternionState { x = quat.x, y = quat.y, z = quat.z, w = quat.w };
-        }
-
-        public readonly Quaternion ToQuaternion()
-        {
-            return new Quaternion(x, y, z, w);
-        }
-
-        public static implicit operator Quaternion(QuaternionState other)
-        {
-            return other.ToQuaternion();
-        }
-
-        public static implicit operator QuaternionState(Quaternion quat)
-        {
-            return From(quat);
-        }
-
-        public readonly bool Equals(QuaternionState other)
-        {
-            return x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
-        }
-
-        public readonly bool Equals(Quaternion other)
-        {
-            return x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
-        }
-
-        public override string ToString()
-        {
-            return $"Quaternion({x}, {y}, {z}, {w})";
-        }
-    }
+    
 }

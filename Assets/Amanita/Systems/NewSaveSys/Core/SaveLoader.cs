@@ -21,26 +21,18 @@ namespace Amanita.SaveSys
                 throw new ArgumentNullException(errorMessage);
             }
 
-            this.mainCodecs = codecList;
+            // Codecs no longer used for load; retained for constructor compatibility.
         }
 
         public virtual void AddRange(IList<IMainSaveCodec> codecs)
         {
-            for (int i = 0; i < codecs.Count; i++)
-            {
-                Add(codecs[i]);
-            }
+            // No-op in Option 2 (codecs not used during load)
         }
 
         public virtual void Add(IMainSaveCodec codec)
         {
-            if (!mainCodecs.Contains(codec))
-            {
-                mainCodecs.Add(codec);
-            }
+            // No-op in Option 2 (codecs not used during load)
         }
-
-        protected IList<IMainSaveCodec> mainCodecs;
 
         public virtual async Task LoadMain(CompositeSaveData mainData,
             Scene sceneToLoad,
@@ -66,45 +58,28 @@ namespace Amanita.SaveSys
                     await Task.CompletedTask;
                 }
             }
-            
-            IList<SaveData> decodedUnits = GetDecodedUnits();
-            IList<SaveData> GetDecodedUnits()
-            {
-                IList<SaveData> result = new List<SaveData>();
-                foreach (SaveDataUnit unitEl in mainData.Units)
-                {
-                    string typeName = unitEl.DataTypeName;
-                    IMainSaveCodec codecForThisUnit = mainCodecs.FirstOrDefault(codec => codec.CanHandle(typeName));
 
-                    if (codecForThisUnit != null)
-                    {
-                        SaveData decodedSave = codecForThisUnit.DecodeFrom(unitEl);
-                        result.Add(decodedSave);
-                    }
-                }
-                return result;
-            }
+            // Option 2: Items are already concrete SaveData; no codec routing/decoding.
+            IList<SaveData> itemsToApply = mainData.Items?.ToList() ?? new List<SaveData>();
 
-            await ApplyUnitsToScene(decodedUnits);
-            async Task ApplyUnitsToScene(IList<SaveData> unitsToApply)
+            await ApplyItemsToScene(itemsToApply);
+            async Task ApplyItemsToScene(IList<SaveData> items)
             {
                 var appliers = SaveSystem.S.SaveDataAppliers;
 
                 foreach (ISaveDataApplier applierEl in appliers)
                 {
-                    IList<SaveData> unitsItCanWorkWith = (from elem in decodedUnits
-                                                          where applierEl.CanApply(elem)
-                                                          select elem).ToList();
-                    if (unitsItCanWorkWith.Count == 0)
+                    IList<SaveData> compatible = (from elem in items
+                                                  where applierEl.CanApply(elem)
+                                                  select elem).ToList();
+                    if (compatible.Count == 0)
                     {
                         continue;
                     }
 
-                    await applierEl.ApplyRange(unitsItCanWorkWith);
+                    await applierEl.ApplyRange(compatible);
                 }
-
             }
-
         }
 
         protected static Scene DoNotLoad { get { return SaveSysConstants.DoNotLoad; } }

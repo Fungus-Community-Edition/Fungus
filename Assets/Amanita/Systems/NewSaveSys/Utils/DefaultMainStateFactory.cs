@@ -74,26 +74,51 @@ namespace Amanita.SaveSys
 
         public virtual async Task<CompositeSaveData> CreateMainState()
         {
-            IList<SaveDataUnit> unitsNeeded = await GetUnitsForGameState();
-            async Task<IList<SaveDataUnit>> GetUnitsForGameState()
+            IList<SaveData> itemsNeeded = await GetItemsForGameState();
+            async Task<IList<SaveData>> GetItemsForGameState()
             {
-                IList<SaveDataUnit> units = new List<SaveDataUnit>();
+                IList<SaveData> items = new List<SaveData>();
 
                 for (int i = 0; i < mainCodecs.Count; i++)
                 {
                     IMainSaveCodec currentCodec = mainCodecs[i];
-                    
-                    await Task.Run(() => currentCodec.FindAndEncodeAll(OnComplete));
-                    void OnComplete(IList<SaveDataUnit> results)
+
+                    // Prefer producer path if implemented
+                    if (currentCodec is IMainSaveDataProducer producer)
                     {
-                        units.AddRange(results);
+                        await Task.Run(() => producer.FindAndCreateAll(RegisterResults));
+
+                        void RegisterResults(IList<SaveData> results)
+                        {
+                            for (int j = 0; j < results.Count; j++)
+                            {
+                                var resultEl = results[j];
+                                if (resultEl != null)
+                                {
+                                    items.Add(resultEl);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Compatibility fallback (will be unused once all codecs implement producer)
+                        await Task.Run(() => currentCodec.FindAndEncodeAll(units =>
+                        {
+                            for (int j = 0; j < units.Count; j++)
+                            {
+                                var unit = units[j];
+                                var data = currentCodec.DecodeFrom(unit);
+                                if (data != null) items.Add(data);
+                            }
+                        }));
                     }
                 }
 
-                return units;
+                return items;
             }
 
-            CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
+            CompositeSaveData mainState = new CompositeSaveData(itemsNeeded);
             return mainState;
         }
 

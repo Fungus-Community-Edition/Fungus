@@ -106,6 +106,11 @@ namespace VScriptingTests.VariableOperations
             {
                 // No Op
             }
+
+            public override Muscariable Clone()
+            {
+                return null;
+            }
         }
 
         // Minimal fake resolver used to inject controlled asset data into VariableListView
@@ -160,7 +165,7 @@ namespace VScriptingTests.VariableOperations
                     if (obj is MuscariableHolder mh)
                     {
                         // Match by ItemID (holder.Init/setfrom should set ItemID to musc.ItemID)
-                        if (mh.ItemID == variable.ItemID)
+                        if (mh.ItemId == variable.ItemId)
                             return mh;
                     }
                 }

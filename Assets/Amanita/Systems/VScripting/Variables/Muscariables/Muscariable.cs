@@ -28,7 +28,7 @@ namespace Amanita.VScripting
             set => key = value;
         }
 
-        public virtual int ItemID
+        public virtual int ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -40,7 +40,7 @@ namespace Amanita.VScripting
         {
             key = otherVar.Key;
             scope = otherVar.Scope;
-            itemID = otherVar.ItemID;
+            itemID = otherVar.ItemId;
             BoxedValue = otherVar.BoxedValue;
         }
 
@@ -182,6 +182,8 @@ namespace Amanita.VScripting
             set { _owner = value; }
         }
         protected IVariableSource _owner;
+
+        public abstract Muscariable Clone();
     }
 
     [Serializable]
@@ -328,6 +330,12 @@ namespace Amanita.VScripting
             return otherVar != null && this.Value.Equals(otherVar.Value);
         }
 
+        public override Muscariable Clone()
+        {
+            Muscariable result = VariableFactory.CreateByContentType(typeof(T), this);
+            return result;
+        }
+
 
     }
 
@@ -356,7 +364,5 @@ namespace Amanita.VScripting
         }
 
     }
-
-    
 
 }

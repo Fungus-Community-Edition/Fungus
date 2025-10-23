@@ -292,17 +292,17 @@ namespace VScriptingTests.VariableOperations
             // Arrange: create three distinct component variables that intentionally override equality
             var a = _host.AddComponent<ValueEqualsVariable>();
             a.Key = "same-key";
-            a.ItemID = 1;
+            a.ItemId = 1;
             _createdVars.Add(a);
 
             var b = _host.AddComponent<ValueEqualsVariable>();
             b.Key = "same-key";
-            b.ItemID = 2;
+            b.ItemId = 2;
             _createdVars.Add(b);
 
             var c = _host.AddComponent<ValueEqualsVariable>();
             c.Key = "same-key";
-            c.ItemID = 3;
+            c.ItemId = 3;
             _createdVars.Add(c);
 
             // Sanity: distinct references but value-equality says they are equal
@@ -517,7 +517,7 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IHasItemID
-            public int ItemID
+            public int ItemId
             {
                 get => _itemId;
                 set => _itemId = value;

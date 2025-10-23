@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Amanita.VScripting;
+using System;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -28,7 +31,7 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                ItemID = variable.ItemID,
+                ItemId = variable.ItemId,
                 Key = variable.Key,
                 Value = EncodeToString(variable)
             };
@@ -37,40 +40,35 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(IVariable toEncode)
         {
-            IVariable<Color> colorVar = toEncode as IVariable<Color>;
-            if (colorVar == null)
+            if (toEncode is not IVariable<Color> colorVar)
             {
                 Debug.LogError($"Variable type {toEncode.GetType()} is not supported for encoding in ColorEncoder.");
                 return string.Empty;
             }
 
-            Color color = colorVar.Value;
-            string encodedColor = $"{color.r},{color.g},{color.b},{color.a}";
-            return encodedColor;
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                ColorState colorState = ColorState.From(colorVar.Value);
+                string json = serializer.ToJson(colorState);
+                return json;
+            }
         }
 
         public virtual void Decode(IVariable toDecode, string data)
         {
-            IVariable<Color> colorVar = toDecode as IVariable<Color>;
-            if (colorVar == null)
+            if (toDecode is not IVariable<Color> colorVar)
             {
                 Debug.LogError($"Variable type {toDecode.GetType()} is not supported for decoding in ColorEncoder.");
                 return;
             }
 
-            string[] colorComponents = data.Split(',');
-            float r = 0, g = 0, b = 0, a = 0;
-
-            bool isFormatValid = float.TryParse(colorComponents[0], out r) &&
-                float.TryParse(colorComponents[1], out g) &&
-                float.TryParse(colorComponents[2], out b) &&
-                float.TryParse(colorComponents[3], out a);
-            if (!isFormatValid)
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
             {
-                Debug.LogError($"Invalid color data format: {data}");
-                return;
+                ColorState colorState = serializer.FromJson<ColorState>(data);
+                colorVar.Value = colorState.ToColor();
             }
-            colorVar.Value = new Color(r, g, b, a);
         }
 
         public virtual void Decode(IVariable variable, VariableSaveData saveData)
@@ -92,38 +90,6 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual SaveDataUnit EncodeToUnit()
-        {
-            VariableSaveData saveData = EncodeToSave(ToMakeFrom as Variable);
-            if (saveData == null)
-            {
-                Debug.LogError($"Failed to encode {ToMakeFrom} as VariableSaveData in {this.GetType().Name}.");
-                return null;
-            }
-
-            SaveDataUnit unit = saveData.Serialized();
-            return unit;
-        }
-
-        public IList<SaveDataUnit> EncodeMultiSaves(IList<object> multipleToMakeFrom)
-        {
-            IList<SaveDataUnit> result = new List<SaveDataUnit>();
-            foreach (Variable varElem in multipleToMakeFrom)
-            {
-                if (CanHandle(varElem))
-                {
-                    SaveDataUnit unit = EncodeToSave(varElem).Serialized();
-                    result.Add(unit);
-                }
-                else
-                {
-                    Debug.LogWarning($"Variable type {varElem.GetType()} is not supported for encoding in {this.GetType().Name}.");
-                }
-            }
-
-            return result;
-        }
-
         public virtual T DecodeTo<T>(string data)
         {
             if (typeof(T) != typeof(Color))
@@ -132,19 +98,73 @@ namespace Amanita.SaveSys
                 throw new System.InvalidCastException(errorMessage);
             }
 
-            string[] colorComponents = data.Split(',');
-            if (colorComponents.Length != 4)
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
             {
-                string errorMessage = $"Invalid color data format: {data}. Expected format: 'r,g,b,a' where r, g, b, a are floats.";
-                throw new System.FormatException(errorMessage);
+                ColorState colorState = serializer.FromJson<ColorState>(data);
+                return (T)(object)colorState.ToColor();
             }
-            float r = float.Parse(colorComponents[0]);
-            float g = float.Parse(colorComponents[1]);
-            float b = float.Parse(colorComponents[2]);
-            float a = float.Parse(colorComponents[3]);
-            T result = (T)(object)new Color(r, g, b, a);
-            return result;
         }
 
+    }
+
+    [Serializable]
+    public struct ColorState : IEquatable<ColorState>, IEquatable<Color>, IEquatable<Color32>
+    {
+        public float r;
+        public float g;
+        public float b;
+        public float a;
+
+        public static implicit operator Color(ColorState other)
+        {
+            return other.ToColor();
+        }
+
+        public static implicit operator ColorState(Color col)
+        {
+            return From(col);
+        }
+
+        public static implicit operator Color32(ColorState other)
+        {
+            return other.ToColor();
+        }
+
+        public static ColorState From(Color color)
+        {
+            return new ColorState(color);
+        }
+
+        public ColorState(Color color)
+        {
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a;
+        }
+
+        public readonly Color ToColor()
+        {
+            return new Color(r, g, b, a);
+        }
+
+        public readonly bool Equals(ColorState other)
+        {
+            return r == other.r && g == other.g && b == other.b && a == other.a;
+        }
+
+        public readonly bool Equals(Color other)
+        {
+            return r == other.r && g == other.g && b == other.b && a == other.a;
+        }
+
+        public readonly bool Equals(Color32 other)
+        {
+            return Mathf.Approximately(r, other.r / 255f) &&
+                   Mathf.Approximately(g, other.g / 255f) &&
+                   Mathf.Approximately(b, other.b / 255f) &&
+                   Mathf.Approximately(a, other.a / 255f);
+        }
     }
 }

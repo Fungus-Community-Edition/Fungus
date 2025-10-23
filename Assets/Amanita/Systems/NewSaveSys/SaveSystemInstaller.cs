@@ -83,12 +83,7 @@ namespace Amanita.SaveSys
             InjectDependencies();
             void InjectDependencies()
             {
-#if UNITY_6000_0_OR_NEWER
-                
                 saveSystem = UnityObject.FindFirstObjectByType<SaveSystem>();
-#else
-                saveSystem = UnityObject.FindObjectOfType<SaveSystem>();
-#endif
                 // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
                 // it through that. 
 

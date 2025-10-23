@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
+using Amanita.FSExt;
+using FullSerializer;
+using Amanita;
 
 namespace SaveSystemTests
 {
@@ -19,7 +22,6 @@ namespace SaveSystemTests
         {
             writeArgs.BaseSaveDirectory = SaveDirectoryType.DataPath;
             saveWriter.RelativeSavePath = "";
-            // ^Since it might get set to null by other tests, we need to reset it
 
             await CommonSaveWriteTestAsync(writeArgs);
         }
@@ -55,7 +57,7 @@ namespace SaveSystemTests
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
             if (fileWasWritten)
             {
-                File.Delete(fullPath); // Clean up after test
+                File.Delete(fullPath);
             }
         }
 
@@ -73,7 +75,6 @@ namespace SaveSystemTests
             Assert.IsTrue(fileWasWritten, "Save file was not created.");
         }
 
-
         protected string SaveNumberFormat { get { return saveWriter.SaveNumberFormat; } }
 
         #region Successful writes
@@ -82,8 +83,6 @@ namespace SaveSystemTests
         {
             saveWriter.RelativeSavePath = "";
             writeArgs.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            
-            // ^Since it might get set to null by other tests, we need to reset it
             await CommonSaveWriteTestAsync(writeArgs);
         }
 
@@ -113,17 +112,14 @@ namespace SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainState = null, // Intentionally null to test rejection.
+                MainState = null,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
-                "Expected ArgumentNullException when trying to write null save data.");
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData));
 
             writeArgsWithNullSaveData.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
-                "Expected ArgumentNullException when trying to write null save data.");
-
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData));
         }
 
         [Test]
@@ -133,15 +129,13 @@ namespace SaveSystemTests
             SaveWriteRequest writeArgsWithBadSlotNumber = new SaveWriteRequest
             {
                 SaveName = "TestSave",
-                SlotNumber = -1, // Intentionally negative to test rejection.
+                SlotNumber = -1,
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
-                "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber));
             writeArgsWithBadSlotNumber.BaseSaveDirectory = SaveDirectoryType.PersistentDataPath;
-            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
-                "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber));
         }
 
         [Test]
@@ -153,13 +147,10 @@ namespace SaveSystemTests
                 SaveName = "TestSave",
                 SlotNumber = 0,
                 MainState = new CompositeSaveData(),
-                BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
+                BaseSaveDirectory = (SaveDirectoryType)999
             };
-            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
-                "Expected ArgumentException when trying to write with invalid base directory.");
+            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory));
         }
-
-        // BaseSaveDirectoryType is an enum, so we can't really test it with a null value.
 
         #endregion
 
@@ -196,10 +187,9 @@ namespace SaveSystemTests
         [Test]
         public virtual async Task WriteAllToDisk_PartialSuccess()
         {
-            // Let's say the first one fails for some reason
             IList<SaveWriteRequest> withOneNull = new List<SaveWriteRequest>(multipleThingsToWrite)
             {
-                [1] = null // Intentionally null to simulate failure
+                [1] = null
             };
             bool threwIt = false;
             try
@@ -207,7 +197,7 @@ namespace SaveSystemTests
                 Task writeTask = saveWriter.WriteAllToDisk(withOneNull);
                 await writeTask.ConfigureAwait(false);
             }
-            catch 
+            catch
             {
                 threwIt = true;
             }
@@ -220,8 +210,7 @@ namespace SaveSystemTests
         [Test]
         public virtual void WriteAllToDisk_RejectNullList()
         {
-            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
-                "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null));
         }
 
         [Test]
@@ -239,8 +228,8 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
+            string expectedMetaDataJson = serializer.ToJson(writeArgs.SaveMetaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
                 $"{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
@@ -254,7 +243,6 @@ namespace SaveSystemTests
                 return File.ReadAllTextAsync(filePath, utf8);
             }
 
-            // Verify the content
             Assert.AreEqual(expectedJsonText, jsonText, "File content does not match the expected JSON text.");
         }
 
@@ -274,40 +262,26 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(writeArgs.MainState, true);
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            string expectedMetaDataJson = serializer.ToJson(writeArgs.SaveMetaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
                 $"{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             byte[] expectedEncryptedData = utf8.GetBytes(expectedJsonText)
-                .Select(b => (byte)(b ^ key)).ToArray(); // Simple XOR encryption for testing
+                .Select(b => (byte)(b ^ key)).ToArray();
 
             await CommonSaveWriteTestAsync(writeArgs);
 
-            string saveFolder = saveWriter.GetSaveFolderPath(writeArgs.BaseSaveDirectory);
             string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
-            string stringDataToWrite = string.Empty;
-
-            DecideDirectoriesAndSuch();
-            void DecideDirectoriesAndSuch()
-            {
-                Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
-
-                SaveData saveData = (SaveData)writeArgs.MainState;
-                stringDataToWrite = JsonUtility.ToJson(saveData, true);
-            }
-            string decryptedString = string.Empty;
 
             byte[] encryptedData = await File.ReadAllBytesAsync(filePath);
             byte[] decryptedData = encryptedData.Select(byteElem => (byte)(byteElem ^ key)).ToArray();
-            decryptedString = utf8.GetString(decryptedData);
+            string decryptedString = utf8.GetString(decryptedData);
 
-            Debug.Log($"Decrypted string:\n{decryptedString}");
-            // Verify the content
             Assert.AreEqual(expectedJsonText, decryptedString, "Decrypted content does not match the expected JSON text.");
-
         }
 
         protected static Encoding utf8 = Encoding.UTF8;
@@ -329,7 +303,6 @@ namespace SaveSystemTests
             await writeTask.ConfigureAwait(false);
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsTrue(responded, "AmanitaSaveWritten event was not invoked after writing save data.");
-
         }
 
         [Test]
@@ -341,7 +314,6 @@ namespace SaveSystemTests
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
             {
-                Debug.Log("SaveWriterTest: Responding to AmanitaSaveWritten event for multiple writes.");
                 responded = true;
                 Assert.IsNotNull(writeResults.SaveData, "Save data should not be null.");
                 Assert.IsNotNull(writeResults.FilePath, "File path should not be null.");
@@ -352,13 +324,11 @@ namespace SaveSystemTests
             await writeTask.ConfigureAwait(false);
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsTrue(responded, "AmanitaSaveWritten event was not invoked after writing multiple saves.");
-
         }
 
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_NoWrites()
         {
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool responded = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -367,14 +337,12 @@ namespace SaveSystemTests
             }
 
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
-            // No writes, so the event should not be invoked
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked without any writes.");
         }
 
         [Test]
         public virtual void EventInvocation_AmanitaSaveWritten_RejectNullWriteArgs()
         {
-            // ^Since it might get set to null by other tests, we need to reset it
             SaveSysSignals.AmanitaSaveWritten += OnAmanitaSaveWritten;
             bool respondedWhenItShouldnt = false;
             void OnAmanitaSaveWritten(SaveWriteResults writeResults)
@@ -382,8 +350,7 @@ namespace SaveSystemTests
                 respondedWhenItShouldnt = true;
             }
 
-            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteOneToDisk(null),
-                "Expected NullReferenceException when trying to write null SaveWriteArgs.");
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteOneToDisk(null));
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(respondedWhenItShouldnt, "AmanitaSaveWritten event was invoked with null write args.");
         }
@@ -402,12 +369,11 @@ namespace SaveSystemTests
             {
                 SaveName = "TestSave",
                 SlotNumber = 0,
-                MainState = null, // Intentionally null to test rejection.
+                MainState = null,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData),
-                "Expected ArgumentNullException when trying to write null save data.");
+            Assert.ThrowsAsync<System.ArgumentNullException>(() => saveWriter.WriteOneToDisk(writeArgsWithNullSaveData));
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(respondedWhenItShouldnt, "AmanitaSaveWritten event was invoked with null save data.");
         }
@@ -424,12 +390,11 @@ namespace SaveSystemTests
             SaveWriteRequest writeArgsWithBadSlotNumber = new SaveWriteRequest
             {
                 SaveName = "TestSave",
-                SlotNumber = -1, // Intentionally negative to test rejection.
+                SlotNumber = -1,
                 MainState = new CompositeSaveData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber),
-                "Expected ArgumentOutOfRangeException when trying to write with negative slot number.");
+            Assert.ThrowsAsync<System.ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadSlotNumber));
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with negative slot number.");
         }
@@ -448,10 +413,9 @@ namespace SaveSystemTests
                 SaveName = "TestSave",
                 SlotNumber = 0,
                 MainState = new CompositeSaveData(),
-                BaseSaveDirectory = (SaveDirectoryType)999 // Intentionally invalid to test rejection.
+                BaseSaveDirectory = (SaveDirectoryType)999
             };
-            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory),
-                "Expected ArgumentException when trying to write with invalid base directory.");
+            Assert.ThrowsAsync<System.ArgumentException>(() => saveWriter.WriteOneToDisk(writeArgsWithBadBaseDirectory));
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with invalid base directory.");
         }
@@ -465,8 +429,7 @@ namespace SaveSystemTests
             {
                 responded = true;
             }
-            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null),
-                "Expected NullReferenceException when trying to write a null list of SaveWriteArgs.");
+            Assert.ThrowsAsync<System.NullReferenceException>(() => saveWriter.WriteAllToDisk(null));
             SaveSysSignals.AmanitaSaveWritten -= OnAmanitaSaveWritten;
             Assert.IsFalse(responded, "AmanitaSaveWritten event was invoked with null list of SaveWriteArgs.");
         }
@@ -483,11 +446,8 @@ namespace SaveSystemTests
             };
 
             SaveDirectoryType baseSaveDirectory = writeArgsForSaveDirectoryCreation.BaseSaveDirectory;
-            string relativePath = saveWriter.RelativeSavePath;
             string saveFolder = saveWriter.GetSaveFolderPath(baseSaveDirectory);
 
-            // ^This is the directory we expect to be created
-            // Ensure the directory does not exist before writing. We want to test directory creation.
             if (Directory.Exists(saveFolder))
             {
                 Directory.Delete(saveFolder, true);
@@ -522,21 +482,17 @@ namespace SaveSystemTests
             Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
 
-            // Overwrite: simulate by writing again
             saveWriter.DeleteBackupsPostOverwrite = false;
             await saveWriter.WriteOneToDisk(writeArgs);
 
-            // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
         }
 
         protected virtual async Task CommonFailsafeTest_KeepBackups()
         {
             await CommonSetupAsync();
-            
             saveWriter.DeleteBackupsPostOverwrite = false;
-            // ^So we can test the backup creation
-            await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
+            await saveWriter.WriteOneToDisk(writeArgs);
         }
 
         protected virtual async Task CommonFailsafeTest_EraseBackups()
@@ -544,8 +500,7 @@ namespace SaveSystemTests
             await CommonSetupAsync();
 
             saveWriter.DeleteBackupsPostOverwrite = true;
-            // ^So we can test the backup creation
-            await saveWriter.WriteOneToDisk(writeArgs); // Initial write to create the save file
+            await saveWriter.WriteOneToDisk(writeArgs);
         }
 
         [Test]
@@ -564,11 +519,9 @@ namespace SaveSystemTests
             Assert.IsTrue(File.Exists(filePath), "Initial save file should exist.");
             Assert.IsFalse(File.Exists(backupPath), "Backup file should not exist before overwrite.");
 
-            // Overwrite: simulate by writing again
             saveWriter.DeleteBackupsPostOverwrite = false;
             await saveWriter.WriteOneToDisk(writeArgs);
 
-            // Backup exist after successful write since we set the writer to NOT delete backups on overwrite
             Assert.IsTrue(File.Exists(backupPath), "Backup file should exist when writer is set to NOT delete them");
         }
 
@@ -585,8 +538,6 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
 
-            // Simulate write failure by locking the file. We're not going for a hard lock
-            // here
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 bool writeFailed = false;
@@ -599,7 +550,6 @@ namespace SaveSystemTests
                     writeFailed = true;
                 }
 
-                // Backup should exist after failed write
                 Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
                 Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
             }
@@ -618,8 +568,6 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(filePath);
             saveFilePathsForCleanup.Add(backupPath);
 
-            // Simulate write failure by locking the file. We're not going for a hard lock
-            // here
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 bool writeFailed = false;
@@ -632,12 +580,10 @@ namespace SaveSystemTests
                     writeFailed = true;
                 }
 
-                // Backup should exist after failed write
                 Assert.IsTrue(writeFailed, "Write should fail when file is locked.");
                 Assert.IsTrue(File.Exists(backupPath), "Backup file should be retained after failed write.");
             }
         }
-
 
         [Test]
         public async Task Failsafe_LogsOnWriteFailure_Encrypted()
@@ -645,13 +591,11 @@ namespace SaveSystemTests
             await CommonSetupAsync();
             saveWriter.ExpectEncryption = true;
 
-            // Write initial save
             await saveWriter.WriteOneToDisk(writeArgs);
 
             string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
-            // Simulate write failure by locking the file
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
@@ -671,20 +615,17 @@ namespace SaveSystemTests
             }
         }
 
-
         [Test]
         public async Task Failsafe_LogsOnWriteFailure_NONEncrypted()
         {
             await CommonSetupAsync();
             saveWriter.ExpectEncryption = false;
 
-            // Write initial save
             await saveWriter.WriteOneToDisk(writeArgs);
 
             string filePath = saveWriter.GetSaveFilePath(writeArgs.BaseSaveDirectory, writeArgs.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
-            // Simulate write failure by locking the file
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 string expectedBackupFilePath = filePath + saveWriter.BackupFileExtension;
@@ -708,7 +649,7 @@ namespace SaveSystemTests
         {
             get
             {
-                return 250; // Milliseconds
+                return 250;
             }
         }
 
@@ -718,10 +659,9 @@ namespace SaveSystemTests
             await CommonSetupAsync();
             saveWriter.ExpectEncryption = false;
 
-            // First write: simple data
-            var firstUnit = new SaveDataUnit("TestType", "{\"value\":\"first\"}");
+            // First write: simple data (remove SaveDataUnit; use test SaveData)
             var firstData = new CompositeSaveData();
-            firstData.Add(firstUnit);
+            firstData.Add(new RawStringSaveData("{\"value\":\"first\"}"));
 
             var firstWriteArgs = new SaveWriteRequest
             {
@@ -737,10 +677,8 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(filePath);
             string firstContent = await File.ReadAllTextAsync(filePath);
 
-            // Second write: different data
-            var secondUnit = new SaveDataUnit("TestType", "{\"value\":\"second\"}");
             var secondData = new CompositeSaveData();
-            secondData.Add(secondUnit);
+            secondData.Add(new RawStringSaveData("{\"value\":\"second\"}"));
 
             var secondWriteArgs = new SaveWriteRequest
             {
@@ -777,7 +715,6 @@ namespace SaveSystemTests
             string filePath = saveWriter.GetSaveFilePath(writeArgsLocked.BaseSaveDirectory, writeArgsLocked.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
-            // Lock the file by opening it with no sharing
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 string expectedError = $"Could not move file {filePath} to backup {filePath + saveWriter.BackupFileExtension}.";
@@ -792,8 +729,6 @@ namespace SaveSystemTests
                 catch (IOException ioe)
                 {
                     threwRightError = ioe.Message.Contains(expectedError);
-                    // ^The whole message should contain more than what's in expectedError (namely, 
-                    // the lower-level exception's message), hence the Contains call here
                     writeFailed = true;
                 }
 
@@ -822,10 +757,9 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(filePath);
 
             LogAssert.ignoreFailingMessages = true;
-            
+
             using (var fileLock = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
-                string expectedError = $"Could not move file {filePath} to backup {filePath + saveWriter.BackupFileExtension}.";
                 LogAssert.Expect(LogType.Error, new Regex("Could not move file .* to backup .*"));
                 bool writeFailed = false;
 
@@ -848,12 +782,10 @@ namespace SaveSystemTests
             await CommonSetupAsync();
             saveWriter.ExpectEncryption = false;
 
-            // Create a large CompositeSaveData
             var largeData = new CompositeSaveData();
             for (int i = 0; i < 10000; i++)
             {
-                var unit = new SaveDataUnit("TestType", $"{{\"index\":{i}}}");
-                largeData.Add(unit);
+                largeData.Add(new IndexSaveData(i));
             }
 
             var largeWriteArgs = new SaveWriteRequest
@@ -868,17 +800,15 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(largeWriteArgs);
 
             string filePath = saveWriter.GetSaveFilePath(largeWriteArgs.BaseSaveDirectory, largeWriteArgs.SlotNumber);
-            
+
             Assert.IsTrue(File.Exists(filePath), "Large save file was not created.");
             saveFilePathsForCleanup.Add(filePath);
 
             string fileContent = await File.ReadAllTextAsync(filePath);
 
             string unescaped = Regex.Unescape(fileContent);
-            Assert.IsTrue(unescaped.Contains("\"index\":9999"), "Large save file does not contain expected data.");
-
+            Assert.IsTrue(unescaped.Contains("\"index\": 9999"), "Large save file does not contain expected data.");
         }
-
     }
 
 }

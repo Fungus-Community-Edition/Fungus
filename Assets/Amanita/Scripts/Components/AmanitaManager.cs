@@ -3,6 +3,7 @@ using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Tweening;
 using Amanita.VScripting;
+using FullSerializer;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace Amanita
         [SerializeField] private List<VariableSourceAsset> globalVariables;
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
+        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
         {
             get

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Amanita.SaveSys;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -157,8 +158,11 @@ namespace SaveSystemTests
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
 
-            string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
-            string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
+            Vector2State vecTwoState = Vector2State.From(expectedTwoDPos);
+            Vector3State vecThreeState = Vector3State.From(expectedThreeDPos);
+
+            string expectedEncodedTwoDPosStr = serializer.ToJson(vecTwoState);
+            string expectedEncodedThreeDPosStr = serializer.ToJson(vecThreeState);
 
             string encodedTwoDPosStr = vectorCodec.EncodeToString(twoDPosVar);
             string encodedThreeDPosStr = vectorCodec.EncodeToString(threeDPosVar);
@@ -176,8 +180,11 @@ namespace SaveSystemTests
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             Vector3 expectedThreeDPos = threeDPosVar.Value;
 
-            string expectedEncodedTwoDPosStr = $"{expectedTwoDPos.x},{expectedTwoDPos.y}";
-            string expectedEncodedThreeDPosStr = $"{expectedThreeDPos.x},{expectedThreeDPos.y},{expectedThreeDPos.z}";
+            Vector2State vecTwoState = Vector2State.From(expectedTwoDPos);
+            Vector3State vecThreeState = Vector3State.From(expectedThreeDPos);
+
+            string expectedEncodedTwoDPosStr = serializer.ToJson(vecTwoState);
+            string expectedEncodedThreeDPosStr = serializer.ToJson(vecThreeState);
 
             VariableSaveData encodedTwoDPosData = vectorCodec.EncodeToSave(twoDPosVar);
             VariableSaveData encodedThreeDPosData = vectorCodec.EncodeToSave(threeDPosVar);
@@ -240,8 +247,8 @@ namespace SaveSystemTests
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
-
-            string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
+            ColorState colState = new ColorState(expectedColor);
+            string expectedEncodedColorStr = serializer.ToJson(colState);
             string encodedColorStr = colorCodec.EncodeToString(colorVar);
             bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorStr);
             Assert.IsTrue(encodedColorSuccess);
@@ -253,7 +260,8 @@ namespace SaveSystemTests
             Color expectedColor = new Color(0.5f, 0.5f, 0.5f, 1f);
             ColorVariable colorVar = flowchart.gameObject.AddComponent<ColorVariable>();
             colorVar.Value = expectedColor;
-            string expectedEncodedColorStr = $"{expectedColor.r},{expectedColor.g},{expectedColor.b},{expectedColor.a}";
+            ColorState colState = new ColorState(expectedColor);
+            string expectedEncodedColorStr = serializer.ToJson(colState);
             VariableSaveData encodedColorVarData = colorCodec.EncodeToSave(colorVar);
             bool encodedColorSuccess = expectedEncodedColorStr.Equals(encodedColorVarData.Value);
             Assert.IsTrue(encodedColorSuccess);
@@ -335,7 +343,7 @@ namespace SaveSystemTests
         {
             Transform expectedTrans = transformVar.Value;
             TransformState expectedState = TransformState.From(expectedTrans);
-            string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
+            string expectedEncodedTransStr = serializer.ToJson(expectedState, true);
             string encodedTransStr = transformCodec.EncodeToString(transformVar);
             bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransStr);
             Assert.IsTrue(encodedTransSuccess);
@@ -346,7 +354,7 @@ namespace SaveSystemTests
         {
             Transform expectedTrans = transformVar.Value;
             TransformState expectedState = TransformState.From(expectedTrans);
-            string expectedEncodedTransStr = JsonUtility.ToJson(expectedState);
+            string expectedEncodedTransStr = serializer.ToJson(expectedState, true);
             VariableSaveData encodedTransVarData = transformCodec.EncodeToSave(transformVar);
             bool encodedTransSuccess = expectedEncodedTransStr.Equals(encodedTransVarData.Value);
             Assert.IsTrue(encodedTransSuccess);
@@ -368,6 +376,8 @@ namespace SaveSystemTests
             Vector3 expectedScale = expectedTrans.localScale;
 
             string encodedTransStr = transformCodec.EncodeToString(transformVar);
+
+            // Apply some offset to make sure decoding works
             transformVar.Value.position += Vector3.right * 123;
             transformVar.Value.rotation *= Quaternion.Euler(0, 90, 0);
             transformVar.Value.localScale += Vector3.one * 0.5f;
@@ -380,7 +390,11 @@ namespace SaveSystemTests
 
             bool encodedTransSuccess = expectedTrans == decodedTrans;
             bool encodedPosSuccess = expectedPos.Equals(decodedTrans.position);
-            bool encodedRotSuccess = expectedRot.Equals(decodedTrans.rotation);
+
+            // Use angular tolerance (and handle sign ambiguity)
+            const float rotAngleEpsilon = 1e-4f;
+            bool encodedRotSuccess = Quaternion.Angle(expectedRot, decodedTrans.rotation) <= rotAngleEpsilon;
+
             bool encodedScaleSuccess = expectedScale.Equals(decodedTrans.localScale);
             bool encodedNameSuccess = expectedName.Equals(decodedTrans.name);
             bool encodedUniqueIDSuccess = true;
@@ -396,7 +410,6 @@ namespace SaveSystemTests
 
             bool success = encodedTransSuccess && encodedPosSuccess && encodedRotSuccess && encodedScaleSuccess && encodedNameSuccess && encodedUniqueIDSuccess;
             Assert.IsTrue(success);
-
         }
 
         [Test]
@@ -428,7 +441,11 @@ namespace SaveSystemTests
 
             bool encodedTransSuccess = expectedTrans == decodedTrans;
             bool encodedPosSuccess = expectedPos.Equals(decodedTrans.position);
-            bool encodedRotSuccess = expectedRot.Equals(decodedTrans.rotation);
+
+            // Use angular tolerance (and handle sign ambiguity)
+            const float rotAngleEpsilon = 1e-4f;
+            bool encodedRotSuccess = Quaternion.Angle(expectedRot, decodedTrans.rotation) <= rotAngleEpsilon;
+
             bool encodedScaleSuccess = expectedScale.Equals(decodedTrans.localScale);
             bool encodedNameSuccess = expectedName.Equals(decodedTrans.name);
             bool encodedUniqueIDSuccess = true;
