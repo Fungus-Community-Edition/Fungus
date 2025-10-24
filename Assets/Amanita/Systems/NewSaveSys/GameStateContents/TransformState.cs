@@ -69,12 +69,12 @@ namespace Amanita.SaveSys
         {
             bool samePos = position.Equals(otherState.position);
             bool sameRotation = rotation.Equals(otherState.rotation);
-            bool sameScale = localScale.Equals(otherState.localScale);
+            bool sameLocalScale = localScale.Equals(otherState.localScale);
             bool sameName = name == otherState.name;
             bool sameID = uniqueID == otherState.uniqueID;
             bool result = samePos &&
                    sameRotation &&
-                   sameScale &&
+                   sameLocalScale &&
                    sameName &&
                    sameID;
             // ^Did it this way for easier debugging

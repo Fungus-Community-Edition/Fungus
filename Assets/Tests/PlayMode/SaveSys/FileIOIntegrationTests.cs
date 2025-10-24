@@ -65,7 +65,6 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(savePath);
             saveFilePathsForCleanup.Add(backupPath);
 
-            // STEP 1 — Write initial data
             var originalData = new CompositeSaveData();
             originalData.Add(new RawIntSaveData(1));
 
@@ -100,7 +99,7 @@ namespace SaveSystemTests
             // Verify that the backup contains the original content (Value = 1)
             var backupContent = await File.ReadAllTextAsync(backupPath);
             string unescaped = Regex.Unescape(backupContent);
-            Assert.IsTrue(unescaped.Contains("\"Value\":1"), "Backup file did not preserve original content.");
+            Assert.IsTrue(unescaped.Contains("\"Value\": 1"), "Backup file did not preserve original content.");
 
             // STEP 3 — Write again with deletion enabled
             saveWriter.DeleteBackupsPostOverwrite = true;

@@ -30,23 +30,25 @@ namespace Amanita.SaveSys
 
         public readonly bool Equals(QuaternionState other)
         {
-            return x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
+            bool sameX = x.Equals(other.x);
+            bool sameY = y.Equals(other.y);
+            bool sameZ = z.Equals(other.z);
+            bool sameW = w.Equals(other.w);
+            return sameX && sameY && sameZ && sameW;
         }
 
         public readonly bool Equals(Quaternion other)
         {
-            return x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
+            bool sameX = x.Equals(other.x);
+            bool sameY = y.Equals(other.y);
+            bool sameZ = z.Equals(other.z);
+            bool sameW = w.Equals(other.w);
+            return sameX && sameY && sameZ && sameW;
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
-            return $"Quaternion({x}, {y}, {z}, {w})";
+            return $"Quaternion({x:R}, {y:R}, {z:R}, {w:R})";
         }
     }
 

@@ -10,6 +10,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Encoding = System.Text.Encoding;
 using Amanita.FSExt;
+using FullSerializer;
+using Amanita;
 
 namespace SaveSystemTests
 {
@@ -226,7 +228,7 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
+            string expectedMetaDataJson = serializer.ToJson(writeArgs.SaveMetaData, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
@@ -260,7 +262,8 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string expectedMetaDataJson = JsonUtility.ToJson(writeArgs.SaveMetaData, true);
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            string expectedMetaDataJson = serializer.ToJson(writeArgs.SaveMetaData, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(writeArgs.MainState, true);
 
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}" +
@@ -804,7 +807,7 @@ namespace SaveSystemTests
             string fileContent = await File.ReadAllTextAsync(filePath);
 
             string unescaped = Regex.Unescape(fileContent);
-            Assert.IsTrue(unescaped.Contains("\"index\":9999"), "Large save file does not contain expected data.");
+            Assert.IsTrue(unescaped.Contains("\"index\": 9999"), "Large save file does not contain expected data.");
         }
     }
 
