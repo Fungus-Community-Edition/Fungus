@@ -6,6 +6,8 @@ using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 using Amanita.FSExt;
+using FullSerializer;
+using Amanita;
 
 namespace SaveSystemTests
 {
@@ -17,8 +19,8 @@ namespace SaveSystemTests
         {
             try
             {
-                string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-                string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
+                string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
+                string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
 
                 string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
 
@@ -101,8 +103,8 @@ namespace SaveSystemTests
             string largeString = new string('A', 10_000_000); // 10 MB of 'A'
             MainSave.Add(new RawStringSaveData(largeString));
 
-            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
-            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -129,8 +131,8 @@ namespace SaveSystemTests
         {
             // Arrange: add Unicode characters to a string variable
             stringVar.Value = "こんにちは世界🌏 Привет мир 𝄞";
-            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
-            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -176,14 +178,22 @@ namespace SaveSystemTests
             string delimiter = SaveDiskAccessor.ReadWriteDelimiter;
             string marker = SaveDiskAccessor.CompletionMarker;
             stringVar.Value = $"Value with delimiter: {delimiter} and marker: {marker}";
-
-            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
-            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{delimiter}{expectedMainSaveDataJson}{marker}";
-            byte key = 0xAA;
-            IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
-                .Select(b => (byte)(b ^ key))
-                .ToArray();
+            
+            IList<byte> expectedBytes;
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                string expectedMetaDataJson = serializer.ToJson(metaData as ISaveMetaData, true);
+                string expectedMainSaveDataJson = serializer.ToJson(MainSave as ISaveData, true);
+                // ^Need to cast here so that the serialized json here and in the encryptor match.
+                // Turns out that when fsSerializer serializes an interface type, it includes type metadata,
+                // and not when passed a concrete type.
+                string expectedJsonText = $"{expectedMetaDataJson}{delimiter}{expectedMainSaveDataJson}{marker}";
+                byte key = 0xAA;
+                expectedBytes = utf8.GetBytes(expectedJsonText)
+                    .Select(b => (byte)(b ^ key))
+                    .ToArray();
+            }
 
             var encryptionRequest = new BaseEncryptionRequest
             {
@@ -205,8 +215,13 @@ namespace SaveSystemTests
         {
             // Arrange: set string variable to empty
             stringVar.Value = "";
-            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
-            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
+            
+            string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
+            // ^Remember: whether or not the serializer includes the $type depends on whether it's
+            // passed the exact concrete type to serialize. Parent classes are treated the same
+            // as interfaces when it comes to deciding whether or not to include $type.
+
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -232,8 +247,8 @@ namespace SaveSystemTests
         {
             // Arrange: set string variable to whitespace
             stringVar.Value = "   \t\n";
-            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
-            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)

@@ -60,28 +60,33 @@ namespace Amanita.SaveSys
                 }
             }
 
-            SaveDataSet dataSet = inputRequest.SaveDataSet;
-            string completionMarker = inputRequest.CompletionMarker;
-            string fullJson = GetFullTextToEncrypt();
-            string GetFullTextToEncrypt()
-            {
-                string metaJson = Serializer.ToJson(dataSet.Meta, true);
-                string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
-                string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
-                return fullJson;
-            }
-            
-            byte[] endResult = EncryptToBytes(fullJson);
-            byte[] EncryptToBytes(string textToEncrypt)
-            {
-                byte key = 0xAA;
-                byte[] result = Encoding.GetBytes(fullJson)
-                    .Select(b => (byte)(b ^ key))
-                    .ToArray();
-                return result;
-            }
+                SaveDataSet dataSet = inputRequest.SaveDataSet;
+                string completionMarker = inputRequest.CompletionMarker;
+                string fullJson = GetFullTextToEncrypt();
+                string GetFullTextToEncrypt()
+                {
+                    lock (Serializer)
+                    {
+                        string metaJson = Serializer.ToJson(dataSet.Meta, true);
+                        string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
 
-            return endResult;
+                        string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
+                        return fullJson;
+                    }
+                }
+
+                byte[] endResult = EncryptToBytes(fullJson);
+                byte[] EncryptToBytes(string textToEncrypt)
+                {
+                    byte key = 0xAA;
+                    byte[] result = Encoding.GetBytes(fullJson)
+                        .Select(b => (byte)(b ^ key))
+                        .ToArray();
+                    return result;
+                }
+
+                return endResult;
+            
         }
 
         protected static string Delimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";

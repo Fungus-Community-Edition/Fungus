@@ -83,7 +83,7 @@ namespace Amanita.SaveSys
             var fs = AmanitaManager.DefaultSerializer;
             lock (fs)
             {
-                json = fs.ToJson(stateToEncode);
+                json = fs.ToJson(stateToEncode, true);
             }
             return json;
         }
