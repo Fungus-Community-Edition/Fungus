@@ -1,3 +1,4 @@
+using FullSerializer;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public abstract SaveDataUnit EncodeToUnit();
 
-        
+        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
         protected virtual void OnValidate()
         {

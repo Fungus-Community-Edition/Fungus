@@ -51,8 +51,8 @@ namespace SaveSystemTests
             // Assert: loadedMain should be a CompositeSaveData and contain FlowchartSaveData
             Assert.IsInstanceOf<CompositeSaveData>(loadedMain, "Loaded main state is not CompositeSaveData.");
             var loadedComposite = loadedMain as CompositeSaveData;
-            var flowchartUnit = loadedComposite.Units.FirstOrDefault(u => u.DataTypeName == nameof(FlowchartSaveData));
-            Assert.IsNotNull(flowchartUnit, "Loaded main state does not contain FlowchartSaveData unit.");
+            var flowchartSave = loadedComposite.Items.OfType<FlowchartSaveData>().FirstOrDefault();
+            Assert.IsNotNull(flowchartSave, "Loaded main state does not contain FlowchartSaveData.");
             bool loadedExpectedMainState = mainState.Equals(loadedMain);
             Assert.IsTrue(loadedExpectedMainState, "Main state was not loaded correctly");
         }
@@ -68,7 +68,8 @@ namespace SaveSystemTests
 
             // Set a known variable value
             // stringVar was already fetched in CommonTestFunctionality, so let's use that
-            stringVar.Value = "TestValue123";
+            string origVal = "TestValue123";
+            stringVar.Value = origVal;
 
             int slot = 10;
             await saveSystem.SaveTo(slot);
@@ -80,7 +81,7 @@ namespace SaveSystemTests
             CompositeSaveData loadedMain = await saveSystem.LoadMain(slot, loadScene: false);
 
             // Assert: variable value should be restored
-            Assert.AreEqual("TestValue123", stringVar.Value, "Flowchart variable was not restored after load.");
+            Assert.AreEqual(origVal, stringVar.Value, "Flowchart variable was not restored after load.");
         }
 
         [Test]
@@ -112,27 +113,24 @@ namespace SaveSystemTests
 
             public bool NeedsInput { get; set; } = false;
 
+            // Legacy members retained for interface compatibility; not used by these tests
             public SaveDataUnit EncodeToUnit()
             {
-                // Return a dummy SaveDataUnit for testing
                 return new SaveDataUnit("DummyType", "{\"dummy\":true}");
             }
 
             public SaveData DecodeFrom(SaveDataUnit unit)
             {
-                // Return null or a dummy SaveData as needed for your tests
                 return null;
             }
 
             public bool CanHandle(object toMakeFrom)
             {
-                // Dummy logic: can handle anything
                 return true;
             }
 
             public bool CanHandle(string typeName)
             {
-                // Dummy logic: can handle any type name
                 return true;
             }
 

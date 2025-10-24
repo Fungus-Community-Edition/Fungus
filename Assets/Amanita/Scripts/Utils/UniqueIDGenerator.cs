@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace Amanita
 {
-    public static class UniqueIDGenerator
+    public static class UniqueIdGenerator
     {
-        public static int GetUniqueIDFor(IHasItemID toGetFor, IList<IHasItemID> othersToConsider, int highestIDSoFar)
+        public static int GetUniqueIdFor(IHasItemID toGetFor, IList<IHasItemID> othersToConsider, int highestIDSoFar)
         {
-            int result = highestIDSoFar + 1;
+            int result = highestIDSoFar;
             if (othersToConsider.Count > 0)
             {
-                IHasItemID hasHighestAmongOthers = othersToConsider.OrderBy((elem) => elem.ItemID).LastOrDefault();
-                int highestAmongOthers = Mathf.Max(hasHighestAmongOthers.ItemID, highestIDSoFar, toGetFor.ItemID);
-                result = highestAmongOthers + 1;
+                IHasItemID hasHighestAmongOthers = othersToConsider.OrderBy((elem) => elem.ItemId).LastOrDefault();
+                int highestAmongOthers = Mathf.Max(hasHighestAmongOthers.ItemId, highestIDSoFar, toGetFor.ItemId);
+                result = highestAmongOthers;
             }
             return result;
         }

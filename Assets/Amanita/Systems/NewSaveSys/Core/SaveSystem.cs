@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Amanita.VScripting;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 { 
@@ -53,6 +54,8 @@ namespace Amanita.SaveSys
         protected static SaveSystem _s;
 
         protected int coreLockDelay = 1000; // In milliseconds
+
+        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like

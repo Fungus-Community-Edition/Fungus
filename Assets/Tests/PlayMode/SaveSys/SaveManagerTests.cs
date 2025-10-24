@@ -10,7 +10,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
 
-
 namespace SaveSystemTests
 {
 
@@ -185,17 +184,9 @@ namespace SaveSystemTests
             // again, which is not what we want.
             Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
 
-            // Fungus always has one Flowchart it initializes: one for global variables. Thus, when fetching
-            // a flowchart save from mainState, we might not get the one we're looking for.
-            // Hence the need to search all the FC saves and find the one we want.
-            IList<SaveDataUnit> fcUnits = mainState.GetMulti<FlowchartSaveData>();
-            Assert.IsNotEmpty(fcUnits, $"No Flowchart save data found in main state for slot {slot}.");
-            IList<SaveData> baseDecodedDatas = flowchartSaveCodec.DecodeMultiFrom(fcUnits);
-            IList<FlowchartSaveData> flowchartSaves = baseDecodedDatas
-                .Where(d => d is FlowchartSaveData)
-                .Cast<FlowchartSaveData>()
-                .ToList();
-            Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data decoded from main state for slot {slot}.");
+            // Directly get the FlowchartSaveData items from the composite (no SaveDataUnit or codec decode)
+            IList<FlowchartSaveData> flowchartSaves = mainState.GetMulti<FlowchartSaveData>();
+            Assert.IsNotEmpty(flowchartSaves, $"No Flowchart save data found in main state for slot {slot}.");
 
             FlowchartSaveData hasStateWeWantToCheck = flowchartSaves.FirstOrDefault(fc => fc.FlowchartName == flowchart.name);
             Assert.IsNotNull(hasStateWeWantToCheck, $"Flowchart save data for {flowchart.name} not found in main state for slot {slot}.");
@@ -325,11 +316,7 @@ namespace SaveSystemTests
 
                 // Now to fetch the save data and check that it matches the expected values
                 CompositeSaveData mainState = manager.GetMainFrom(slot);
-                IList<SaveDataUnit> allFcUnits = mainState.GetMulti<FlowchartSaveData>();
-                IList<FlowchartSaveData> allFcSaves = flowchartSaveCodec.DecodeMultiFrom(allFcUnits)
-                    .Where((res) => res is FlowchartSaveData)
-                    .Cast<FlowchartSaveData>()
-                    .ToList();
+                IList<FlowchartSaveData> allFcSaves = mainState.GetMulti<FlowchartSaveData>();
 
                 FlowchartSaveData flowchartSave = allFcSaves.Where((data) => data.FlowchartName == flowchart.name)
                     .FirstOrDefault();

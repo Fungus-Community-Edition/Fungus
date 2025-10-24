@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -21,7 +22,7 @@ namespace Amanita.SaveSys
 
         public override SaveData DecodeFrom(SaveDataUnit unit)
         {
-            BlockSaveData result = JsonUtility.FromJson<BlockSaveData>(unit.Content);
+            BlockSaveData result = Serializer.FromJson<BlockSaveData>(unit.Content);
             return result;
         }
 

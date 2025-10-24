@@ -16,7 +16,7 @@ namespace Amanita.SaveSys
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
         public virtual IVersionProvider VersionProvider { get; protected set; }
-        
+
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
                         IMainStateFactory mainStateFactory)
@@ -44,34 +44,23 @@ namespace Amanita.SaveSys
                 return result;
             }
         }
-        
+
+        // Transitional API: codecs no longer needed when saving/loading main data
+        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
         public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
         {
+            // Intentionally no-op to keep backward compatibility with calling sites
             if (codecs == null || codecs.Count == 0)
             {
-                Debug.LogWarning("No main codecs provided to register.");
                 return;
             }
-
-            for (int i = 0; i < codecs.Count; i++)
-            {
-                IMainSaveCodec currentEncoder = codecs[i];
-                if (currentEncoder == null)
-                {
-                    Debug.LogWarning($"Main codec at index {i} is null. Skipping registration.");
-                    continue;
-                }
-                RegisterMainCodec(currentEncoder);
-            }
         }
 
+        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            mainCodecs.Add(codec);
-            Loader.Add(codec);
+            // Intentionally no-op to keep backward compatibility with calling sites
         }
-
-        protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
 
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
@@ -101,7 +90,7 @@ namespace Amanita.SaveSys
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
         protected static string registerAndWriteOp = "register or write";
-        
+
         protected virtual bool Validate(int slotNum, string operation)
         {
             bool result;
@@ -155,7 +144,7 @@ namespace Amanita.SaveSys
                     {
                         sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
-                    
+
                     bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
                     if (!shouldLoadScene)
                     {
@@ -227,7 +216,7 @@ namespace Amanita.SaveSys
                 Debug.LogWarning(errorMessage);
                 return;
             }
-            
+
             if (!SlotExists(slotNum))
             {
                 string warningMessage = $"Cannot delete save in slot {slotNum} because it does not exist.";
@@ -269,12 +258,10 @@ namespace Amanita.SaveSys
         }
 
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
-        // ^Better to cache this than create a new request every time client code
-        // wants to know the path of a save.
-    
+
         public virtual CompositeSaveData GetMainFrom(int slot)
         {
-            CompositeSaveData mainData = (CompositeSaveData) Registry.GetMainSave(slot);
+            CompositeSaveData mainData = (CompositeSaveData)Registry.GetMainSave(slot);
             return mainData;
         }
 
@@ -282,7 +269,7 @@ namespace Amanita.SaveSys
         {
             Registry.Clear();
         }
-    
+
         public virtual void SetSaveNameFor(int slot, string newSaveName)
         {
             Registry.SetSaveNameFor(slot, newSaveName);

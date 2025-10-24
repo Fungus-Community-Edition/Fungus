@@ -96,7 +96,7 @@ namespace SaveSys
         {
             originalVar = VariableFactory.CreateByVarType(variableType, null);
             originalVar.Key = "test";
-            originalVar.ItemID = 123;
+            originalVar.ItemId = 123;
             SpecialHandlingForTransform(ref sampleValue);
             originalVar.BoxedValue = sampleValue;
 
@@ -127,7 +127,7 @@ namespace SaveSys
         {
             originalVar = VariableFactory.CreateByVarType(variableType, null);
             originalVar.Key = "test";
-            originalVar.ItemID = 123;
+            originalVar.ItemId = 123;
             SpecialHandlingForTransform(ref sampleValue);
             originalVar.BoxedValue = sampleValue;
 
@@ -302,7 +302,7 @@ namespace SaveSys
                 set { }
             }
 
-            public int ItemID { get; set; } = 5;
+            public int ItemId { get; set; } = 5;
 
             public void Init() { }
             public bool IsComparisonSupported() => false;

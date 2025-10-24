@@ -10,7 +10,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void IntMuscariable_ArithmeticAndComparison()
         {
-            var intVar = new IntMuscariable { Key = "num", ItemID = 4 };
+            var intVar = new IntMuscariable { Key = "num", ItemId = 4 };
             intVar.Init();
             intVar.Value = SampleInt; // 10
 
@@ -37,22 +37,22 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void FloatAndDoubleMuscariable_EqualityOperators()
         {
-            var fVar = new FloatMuscariable { Key = "float", ItemID = 5 };
+            var fVar = new FloatMuscariable { Key = "float", ItemId = 5 };
             fVar.Init();
             fVar.Value = SampleF; // 2.5f
 
-            var fVarCopy = new FloatMuscariable { Key = "float2", ItemID = 6 };
+            var fVarCopy = new FloatMuscariable { Key = "float2", ItemId = 6 };
             fVarCopy.Init();
             fVarCopy.Value = SampleF;
 
             Assert.IsTrue(fVar == fVarCopy);
             Assert.IsFalse(fVar != fVarCopy);
 
-            var dVar = new DoubleMuscariable { Key = "dbl", ItemID = 7 };
+            var dVar = new DoubleMuscariable { Key = "dbl", ItemId = 7 };
             dVar.Init();
             dVar.Value = SampleD; // 3.5
 
-            var dOther = new DoubleMuscariable { Key = "dbl2", ItemID = 8 };
+            var dOther = new DoubleMuscariable { Key = "dbl2", ItemId = 8 };
             dOther.Init();
             dOther.Value = 2.5;
 
@@ -63,15 +63,15 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void BoolMuscariable_EqualityOnly()
         {
-            var bVar = new BoolMuscariable { Key = "flag", ItemID = 9 };
+            var bVar = new BoolMuscariable { Key = "flag", ItemId = 9 };
             bVar.Init();
             bVar.Value = true;
 
-            var bVar2 = new BoolMuscariable { Key = "flag2", ItemID = 10 };
+            var bVar2 = new BoolMuscariable { Key = "flag2", ItemId = 10 };
             bVar2.Init();
             bVar2.Value = false;
 
-            Assert.IsTrue(bVar == new BoolMuscariable { Key = "x", ItemID = 11, Value = true });
+            Assert.IsTrue(bVar == new BoolMuscariable { Key = "x", ItemId = 11, Value = true });
             Assert.IsFalse(bVar == bVar2);
         }
 
@@ -87,7 +87,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void Init_WithValidKeyAndID_DoesNotThrow()
         {
-            var v = new DoubleMuscariable { Key = "ok", ItemID = 99 };
+            var v = new DoubleMuscariable { Key = "ok", ItemId = 99 };
             Assert.DoesNotThrow(() => v.Init());
         }
 

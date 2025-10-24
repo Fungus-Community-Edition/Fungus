@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -49,6 +50,8 @@ namespace Amanita.SaveSys
                 return;
             }
         }
+
+        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
     }
 

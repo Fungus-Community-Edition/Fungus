@@ -33,10 +33,10 @@ namespace Amanita.VScripting
             set { if (_component is IVariable iv) iv.Scope = value; }
         }
 
-        public int ItemID
+        public int ItemId
         {
-            get => (_component as IVariable)?.ItemID ?? 0;
-            set { if (_component is IVariable iv) iv.ItemID = value; }
+            get => (_component as IVariable)?.ItemId ?? 0;
+            set { if (_component is IVariable iv) iv.ItemId = value; }
         }
 
         public Type ContentType =>

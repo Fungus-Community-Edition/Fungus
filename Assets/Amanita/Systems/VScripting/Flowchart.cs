@@ -35,10 +35,10 @@ namespace Amanita.VScripting
             Debug.Log($"Flowchart InitOnLoad method executed");
         }
 #endif
-        public virtual IVariable GetVar(int itemID)
+        public virtual IVariable GetVariable(int itemID)
         {
             IVariable result = (from elem in Variables
-                                where elem.ItemID == itemID
+                                where elem.ItemId == itemID
                                 select elem).FirstOrDefault();
             return result;
         }
@@ -439,12 +439,12 @@ namespace Amanita.VScripting
             UpdateNextValidVarID();
             void UpdateNextValidVarID()
             {
-                var varWithHighestID = Variables.OrderByDescending(x => x.ItemID).FirstOrDefault();
+                var varWithHighestID = Variables.OrderByDescending(x => x.ItemId).FirstOrDefault();
                 if (varWithHighestID == null)
                 {
                     return;
                 }
-                int highestIDFound = varWithHighestID.ItemID;
+                int highestIDFound = varWithHighestID.ItemId;
                 if (nextValidVarID < highestIDFound)
                 {
                     nextValidVarID = highestIDFound + 1;
@@ -458,13 +458,13 @@ namespace Amanita.VScripting
             void EnsureVarsHaveValidIDs()
             {
                 var varsInNeedOfIDs = (from elem in Variables
-                                       where elem.ItemID <= 0
+                                       where elem.ItemId <= 0
                                        where elem.Scope != VariableScope.Global
                                        select elem).ToList();
 
                 foreach (var elem in varsInNeedOfIDs)
                 {
-                    elem.ItemID = nextValidVarID;
+                    elem.ItemId = nextValidVarID;
                     nextValidVarID++;
                 }
             }
@@ -1033,7 +1033,7 @@ namespace Amanita.VScripting
             return GetVariable(name);
         }
 
-        public virtual IVariable GetVariable(int index)
+        public virtual IVariable GetVariableByIndex(int index)
         {
             IVariable result = null;
             if (legacyVariables.Count > index && index >= 0)
@@ -1046,7 +1046,7 @@ namespace Amanita.VScripting
         public virtual IVariable GetVariableById(int id)
         {
             IVariable result = (from varEl in muscariables
-                               where varEl.ItemID == id
+                               where varEl.ItemId == id
                                select varEl).FirstOrDefault();
             if (result == null)
             {
@@ -1472,12 +1472,12 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void IntegrateMuscariable(Muscariable toAdd)
         {
-            bool hasValidId = toAdd.ItemID != Muscariable.InvalidID;
-            bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemID == toAdd.ItemID && hasValidId);
+            bool hasValidId = toAdd.ItemId != Muscariable.InvalidID;
+            bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemId == toAdd.ItemId && hasValidId);
             if (shouldAssignNewId)
             {
                 int newId = nextMuscariableID;
-                toAdd.ItemID = newId;
+                toAdd.ItemId = newId;
                 nextMuscariableID++;
             }
 
@@ -1683,7 +1683,7 @@ namespace Amanita.VScripting
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
             newVar.Scope = scope;
-            newVar.ItemID = nextValidVarID;
+            newVar.ItemId = nextValidVarID;
             nextValidVarID++;
 
             IVariable toRegister = newVar;
@@ -1800,7 +1800,7 @@ namespace Amanita.VScripting
 
         Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
         {
-            return muscariables.Where((elem) => elem.ItemID == itemId).FirstOrDefault();
+            return muscariables.Where((elem) => elem.ItemId == itemId).FirstOrDefault();
         }
     }
 }

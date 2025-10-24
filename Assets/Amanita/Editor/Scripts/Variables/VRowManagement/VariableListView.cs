@@ -25,14 +25,6 @@ namespace Amanita.VScripting.EditorUtils
             _rowFactory = initArgs.RowFactory;
             _variableSourceContext = initArgs.VariableSource as UnityObj;
 
-            // Resolver: prefer explicit injection, fallback to the global maintenance resolver.
-            _assetResolver = initArgs.AssetResolver ?? VariableSourceAssetMaintenance.AssetResolver;
-
-            // Rebind active rows after domain/assembly reloads so SerializedObjects (holders/assets)
-            // are refreshed and UI fields don't appear empty.
-            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
-            VariableSourceAssetMaintenance.AssetsRefreshed += OnVariableSourceAssetsRefreshed;
-
             if (_variableSourceContext == null)
             {
                 Debug.LogWarning($"VariableListView was not given a valid variable source context" +
@@ -43,7 +35,9 @@ namespace Amanita.VScripting.EditorUtils
                 SetVariables(initArgs.VariableSource.Variables);
             }
             if (_listDisplay != null)
+            {
                 InitListViewStructure();
+            }
         }
 
         protected ListView _listDisplay;
@@ -53,9 +47,6 @@ namespace Amanita.VScripting.EditorUtils
         protected Flowchart _flowchart;
         protected int _flowchartInstanceID;
         protected UnityObj _variableSourceContext;
-
-        // New: resolver used for asset lookups so editor code can be tested/mocked.
-        protected IEditorAssetResolver _assetResolver;
 
         public virtual void SetFlowchart(Flowchart flowchart)
         {
@@ -148,28 +139,6 @@ namespace Amanita.VScripting.EditorUtils
 
                         Debug.Log($"Found row for variable with key '{currentVar.Key}' of type " +
                             $"{currentVar.GetType().Name} at index={index}");
-                        // **Resolve the correct binding target**
-                        var targetObj = GetBindingTarget(currentVar);
-
-                        // Diagnostics: log target resolution
-                        LogTargetResolution();
-                        void LogTargetResolution()
-                        {
-                            if (targetObj == null)
-                            {
-                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: null");
-                            }
-                            else
-                            {
-                                string path = null;
-                                try
-                                {
-                                    path = _assetResolver?.GetAssetPath(targetObj);
-                                }
-                                catch { }
-                                Debug.Log($"[VListView.bindItem] index={index} key='{currentVar.Key}' -> targetObj: type={targetObj.GetType().FullName} name='{targetObj.name}' instanceId={targetObj.GetInstanceID()} path='{path}'");
-                            }
-                        }
 
                         var visHandler = row.VisualHandler;
 
@@ -255,85 +224,6 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly List<IVariable> varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
 
-        protected virtual UnityObj GetBindingTarget(IVariable variable)
-        {
-            if (variable is UnityObj unityObj)
-                return unityObj; // Legacy variable
-
-            return FindPersistentHolderFor(variable, _variableSourceContext);
-        }
-
-        protected virtual MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
-        {
-            if (context == null || _assetResolver == null) return null;
-
-            var path = _assetResolver.GetAssetPath(context);
-
-            // Use resolver to enumerate holders (testable / mockable)
-            IList<MuscariableHolder> holders = _assetResolver.LoadAllAssetsAtPath<MuscariableHolder>(path)
-                .OfType<MuscariableHolder>()
-                .ToList();
-
-            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'. holders.Count={holders.Count}");
-
-            LogDiscoveredHoldersForDiagnostings();
-            void LogDiscoveredHoldersForDiagnostings()
-            {
-                for (int i = 0; i < holders.Count; i++)
-                {
-                    var holderElem = holders[i];
-                    int innerHash = 0;
-                    string innerKey = "(null)";
-                    try
-                    {
-                        if (holderElem.Inner != null)
-                        {
-                            innerHash = RuntimeHelpers.GetHashCode(holderElem.Inner);
-                            innerKey = holderElem.Inner.Key;
-                        }
-                    }
-                    catch { /* ignore */ }
-                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemID} innerKey='{innerKey}' innerHash={innerHash}");
-                }
-            }
-
-            // 1) Prefer matching by stable ItemID (survives domain reloads)
-            if (variable != null)
-            {
-                var byId = holders.FirstOrDefault(elem => elem.ItemID == variable.ItemID);
-                if (byId != null)
-                {
-                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemID}");
-                    return byId;
-                }
-            }
-
-            // 2) Fallback: try matching by the Inner reference (existing behavior)
-            foreach (var elem in holders)
-            {
-                try
-                {
-                    if (elem.Inner == variable)
-                    {
-                        Debug.Log($"[FindPersistentHolderFor] Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
-                        return elem;
-                    }
-                }
-                catch
-                {
-                    var inner = elem.Inner;
-                    if (inner == variable)
-                    {
-                        Debug.Log($"[FindPersistentHolderFor] (fallback) Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
-                        return elem;
-                    }
-                }
-            }
-
-            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemID} at assetPath='{path}'");
-            return null;
-        }
-
         protected virtual bool OnCanStartDrag(CanStartDragArgs args)
         {
             if (Application.isPlaying) return false;
@@ -342,8 +232,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnItemReordered(int from, int to)
         {
-            if (from == to) return;
-            if (varsToDisplay.Count == 0) return;
+            if (from == to || varsToDisplay.Count == 0) return;
             OrderChanged?.Invoke(varsToDisplay);
         }
 
@@ -407,6 +296,7 @@ namespace Amanita.VScripting.EditorUtils
                 Debug.LogWarning(logMessage);
                 return;
             }
+
             if (toAdd == null || varsToDisplay.ContainsReference(toAdd))
             {
                 string logMessage = $"Tried to add a null variable to VariableListView.";
@@ -480,8 +370,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
 
-            VariableSourceAssetMaintenance.AssetsRefreshed -= OnVariableSourceAssetsRefreshed;
-
             ReleaseAllActiveRows();
             varsToDisplay.Clear();
 
@@ -531,8 +419,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (_flowchart != null) return true;
 
-            bool found;
-            SearchByGlobalObjectId(out found);
+            SearchByGlobalObjectId(out bool found);
             void SearchByGlobalObjectId(out bool found)
             {
                 found = false;
@@ -664,7 +551,6 @@ namespace Amanita.VScripting.EditorUtils
             bool tooManyChildrenOrActiveRows = container.childCount >= varsToDisplay.Count || _activeRows.Count >= varsToDisplay.Count;
             if (tooManyChildrenOrActiveRows)
             {
-                //Debug.Log($"Skipping materialization: container.childCount={container.childCount}, varsToDisplay.Count={varsToDisplay.Count}, _activeRows.Count={_activeRows.Count}");
                 return;
             }
 
@@ -679,22 +565,11 @@ namespace Amanita.VScripting.EditorUtils
                 if (row.RootElement.parent == null)
                     container.Add(row.RootElement);
 
-                var targetObj = GetBindingTarget(elem);
-
             }
         }
 
         VisualElement _testMaterializedContainer;
         #endregion
-
-        protected virtual void OnVariableSourceAssetsRefreshed()
-        {
-            EditorApplication.delayCall += ResponseAfterDelay;
-            void ResponseAfterDelay()
-            {
-                _listDisplay.Rebuild();
-            }
-        }
 
     }
 

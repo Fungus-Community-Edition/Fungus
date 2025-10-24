@@ -37,7 +37,7 @@ namespace Amanita.VScripting
         // Non-global variables each belong to a particular Flowchart. Thus, rather
         // than a unique string ID, it's best for them to get an int that their
         // Flowcharts assign them.
-        public int ItemID
+        public int ItemId
         {
             get => itemID;
             set => itemID = value;

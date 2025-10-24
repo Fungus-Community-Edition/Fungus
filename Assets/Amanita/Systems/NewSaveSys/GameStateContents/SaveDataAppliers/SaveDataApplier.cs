@@ -27,6 +27,14 @@ namespace Amanita.SaveSys
         [Tooltip("Lower order = executing sooner")]
         [SerializeField] protected int order = 0;
 
+        /// <summary>
+        /// For when there are things you want this applier to do during startup.
+        /// </summary>
+        public virtual void Init()
+        {
+
+        }
+
         public virtual int Order => order;
 
         public virtual bool CanApply(SaveData saveData)

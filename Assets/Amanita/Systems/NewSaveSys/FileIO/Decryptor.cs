@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using Amanita.IO;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -195,7 +197,11 @@ namespace Amanita.SaveSys
             // calls stuff that is not thread-safe.
             if (UnityThreadUtil.IsMainThread)
             {
-                result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+                // FullSerializer is not thread-safe; lock the shared serializer instance.
+                lock (AmanitaManager.DefaultSerializer)
+                {
+                    result = Serializer.FromJson<SaveMetaData>(jsonForMetadata);
+                }
             }
             else
             {
@@ -204,11 +210,13 @@ namespace Amanita.SaveSys
                     Exception threadException = null;
                     MainThreadDispatcher.Enqueue(() =>
                     {
-                        // We want to make sure that any exceptions get thrown back to this thread,
-                        // so we catch them here.
                         try
                         {
-                            result = JsonUtility.FromJson<SaveMetaData>(jsonForMetadata);
+                            // Still lock here to avoid overlapping with other main-thread FS work.
+                            lock (AmanitaManager.DefaultSerializer)
+                            {
+                                result = Serializer.FromJson<SaveMetaData>(jsonForMetadata);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -281,12 +289,21 @@ namespace Amanita.SaveSys
             string jsonForMeta = splitIntoJsons[0];
             string jsonForMainState = splitIntoJsons[1];
 
-            ISaveMetaData meta = JsonUtility.FromJson<SaveMetaData>(jsonForMeta);
-            ISaveData mainState = JsonUtility.FromJson<CompositeSaveData>(jsonForMainState);
+            ISaveMetaData meta;
+            ISaveData mainState;
+
+            // FullSerializer calls must be serialized to avoid concurrent mutations of internal caches.
+            lock (AmanitaManager.DefaultSerializer)
+            {
+                meta = Serializer.FromJson<SaveMetaData>(jsonForMeta);
+                mainState = Serializer.FromJson<CompositeSaveData>(jsonForMainState);
+            }
 
             ISaveDataSet result = new SaveDataSet(meta, mainState);
             return result;
         }
+
+        protected fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
     }
 

@@ -12,7 +12,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         {
             var strVar = new StringMuscariable();
             strVar.Key = "greeting";
-            strVar.ItemID = 1;
+            strVar.ItemId = 1;
             strVar.Init();
 
             string captured = null;
@@ -28,7 +28,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         {
             var strVar = new StringMuscariable();
             strVar.Key = "maybeNull";
-            strVar.ItemID = 2;
+            strVar.ItemId = 2;
             strVar.Init();
 
             Assert.DoesNotThrow(() => strVar.Value = null);
@@ -40,7 +40,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         {
             Muscariable baseVar = new StringMuscariable();
             baseVar.Key = "typeTest";
-            baseVar.ItemID = 3;
+            baseVar.ItemId = 3;
             baseVar.Init();
 
             var ex = Assert.Throws<ArgumentException>(
