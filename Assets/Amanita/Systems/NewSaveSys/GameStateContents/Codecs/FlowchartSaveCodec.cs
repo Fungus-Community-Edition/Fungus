@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
     [CreateAssetMenu(fileName = "FlowchartCodec",
         menuName = "Amanita/SaveSys/Codecs/FlowchartSaveCodec")]
-    public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec
+    public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec, IMainSaveDataProducer
     {
         [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
 
@@ -212,7 +213,7 @@ namespace Amanita.SaveSys
                 Debug.LogError("Cannot decode from a null SaveDataUnit.");
                 return null;
             }
-            FlowchartSaveData saveData = JsonUtility.FromJson<FlowchartSaveData>(unit.Content);
+            FlowchartSaveData saveData = Serializer.FromJson<FlowchartSaveData>(unit.Content);
             if (saveData == null)
             {
                 Debug.LogError($"Failed to decode {unit.DataTypeName} to FlowchartSaveData.");
@@ -231,10 +232,39 @@ namespace Amanita.SaveSys
         protected override void OnValidate()
         {
             base.OnValidate();
-
             RefreshValidCodecs();
         }
 
-    }
+        public IList<SaveData> FindAndCreateAll(System.Action<IList<SaveData>> onComplete = null)
+        {
+            IList<SaveData> results = new List<SaveData>();
+            using (var countdown = new CountdownEvent(1))
+            {
+                MainThreadDispatcher.Enqueue(() =>
+                {
+                    IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
 
+                    IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
+                                                         where elem.IncludeInSaves == true
+                                                         select elem).ToList();
+
+                    for (int i = 0; i < flowchartsToSave.Count; i++)
+                    {
+                        Flowchart toSave = flowchartsToSave[i];
+                        var data = EncodeToSave(toSave);
+                        if (data != null)
+                        {
+                            results.Add(data);
+                        }
+                    }
+
+                    countdown.Signal();
+                });
+                countdown.Wait();
+            }
+
+            onComplete?.Invoke(results);
+            return results;
+        }
+    }
 }

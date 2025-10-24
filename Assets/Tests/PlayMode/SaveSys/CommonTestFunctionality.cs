@@ -1,6 +1,10 @@
+using Amanita;
+using Amanita.FSExt;
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Utils;
+using Amanita.VScripting;
+using FullSerializer;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -10,12 +14,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
-using UnityEngine.EventSystems;
-using Amanita.VScripting;
-using Amanita;
-using FullSerializer;
 
 namespace SaveSystemTests
 {
@@ -27,24 +28,18 @@ namespace SaveSystemTests
         public virtual void DoOneTimeSetUp()
         {
             waitToYield = new WaitForSeconds(waitTime);
+            testScenePrefab = Resources.Load<GameObject>(PathToTestScene);
+            if (testScenePrefab == null)
+                throw new Exception($"Could not load prefab at {PathToTestScene} from Resources.");
         }
 
         protected SaveSystem saveSys;
-
-        protected IEnumerator WaitFor(Task writeTask)
-        {
-            var taskAwaitable = writeTask.ConfigureAwait(false);
-            // ^We need it set up this way because otherwise, depending on 
-            // the task, Unity might hang indefinitely.
-            yield return taskAwaitable;
-            
-        }
+        protected fsSerializer serializerForTest = new fsSerializer();
 
         [SetUp]
         public virtual void DoSetUp()
         {
             PlayerPrefs.DeleteAll();
-            //SaveStorageSettings saveStorageSettings = new SaveStorageSettings();
             if (AmanitaManager.S != null)
             {
                 UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
@@ -99,7 +94,7 @@ namespace SaveSystemTests
                 BuiltinVarSaveCodec builtinCodec = ScriptableObject.CreateInstance<BuiltinVarSaveCodec>();
                 flowchartSaveCodec.RegisterVarCodec(builtinCodec);
                 flowchartApplier.RegisterVarCodec(builtinCodec);
-                blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>(); // We want to ensure we have a fresh instance for each test
+                blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>();
             }
             
             writeReq = new SaveWriteRequest
@@ -124,20 +119,16 @@ namespace SaveSystemTests
                     if (ReqFlowchart)
                     {
                         flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-                        
-                        SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                        mainSave.Add(encodedFlowchartSave);
+                        mainSave.Add(flowchartSaveData);
 
                         IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
                         foreach (var blockSave in blockSaves)
                         {
-                            SaveDataUnit saveDataUnit = blockSave.Serialized();
-                            mainSave.Add(saveDataUnit);
+                            mainSave.Add(blockSave);
                         }
                     }
 
                     saveDataSet = new SaveDataSet(metaData, mainSave);
-
                 }
 
                 saveWriter.DeleteBackupsPostOverwrite = true;
@@ -164,9 +155,11 @@ namespace SaveSystemTests
 
                 IList<EventSystem> possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
 
-                toDestroyInTearDown.AddRange(possiblyMadeByFlowchart);
+                foreach (var eventSys in possiblyMadeByFlowchart)
+                {
+                    toDestroyInTearDown.Add(eventSys.gameObject);
+                }
             }
-            
         }
 
         protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
@@ -203,16 +196,8 @@ namespace SaveSystemTests
 
         protected virtual void PrepScene()
         {
-            CreateScene();
-            void CreateScene()
-            {
-                testScenePrefab = Resources.Load<GameObject>(PathToTestScene);
-                if (testScenePrefab == null)
-                    throw new Exception($"Could not load prefab at {PathToTestScene} from Resources.");
-
-                testScene = UnityObject.Instantiate(testScenePrefab);
-            }
-
+            testScene = UnityObject.Instantiate(testScenePrefab);
+            
             if (ReqFlowchart)
             {
                 PrepFlowchart();
@@ -229,7 +214,6 @@ namespace SaveSystemTests
                     initStringVal = stringVar.Value;
                 }
             }
-
         }
 
         protected string pathToAmanitaManagerPrefab = "Prefabs/AmanitaManager";
@@ -351,11 +335,9 @@ namespace SaveSystemTests
                 saveSys = null;
                 saveManager = null;
                 toDestroyInTearDown.Clear();
-
             }
 
             writeReq.MainState = new CompositeSaveData { };
-            
         }
 
         [OneTimeTearDown]
@@ -386,19 +368,15 @@ namespace SaveSystemTests
                     AmanitaManager.S.gameObject.SetActive(false);
                     UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
                 }
-
-                
             }
         }
 
         protected virtual bool ShouldDeleteTestSavesAtEnd => true;
 
         protected readonly DefaultSavePathResolver testPathResolver = new DefaultSavePathResolver("TestSaves");
-        // ^This resolver uses a relative path for testing as opposed to one users are likely to use.
         protected readonly DefaultSavePathResolver otherTestPathResolver = new DefaultSavePathResolver();
         protected void DeleteAllTestSaves()
         {
-            // We want to go for both the default and test paths
             IList<string> folderPaths = new string[]
             {
                 saveSys.GetSaveDirectory(SaveDirectoryType.DataPath),
@@ -410,7 +388,7 @@ namespace SaveSystemTests
 
             foreach (string root in folderPaths)
             {
-                string pathToTempFolder = root; // We assume we already have the paths set based on the relative path for testing
+                string pathToTempFolder = root;
                 if (!Directory.Exists(pathToTempFolder))
                 {
                     continue;
@@ -431,15 +409,12 @@ namespace SaveSystemTests
                         File.Delete(filePath);
                     }
                 }
-
             }
         }
 
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
-            // The SaveSystem singleton should be set up by this point, meaning that
-            // SaveDirectoryPaths should be initialized.
             PrepNewPathsForTesting();
             PrepAndRegisterSaveData();
         }
@@ -460,28 +435,17 @@ namespace SaveSystemTests
                 }
 
                 flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-                // ^We are expecting the flowchart encoder to use the block encoder as a sub
-
-                SaveDataUnit encodedFlowchartSave = flowchartSaveData.Serialized();
-                mainSave.Add(encodedFlowchartSave);
+                mainSave.Add(flowchartSaveData);
 
                 IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
                 foreach (var blockSave in blockSaves)
                 {
-                    SaveDataUnit saveDataUnit = blockSave.Serialized();
-                    mainSave.Add(saveDataUnit);
+                    mainSave.Add(blockSave);
                 }
             }
-            
         }
 
-        void PrepNewPathsForTesting()
-        {
-            // We need the writers, readers, and system as a whole to use the same resolver
-            saveSys.SavePathResolver = testPathResolver;
-            saveWriter.PathResolver = testPathResolver;
-            saveReader.PathResolver = testPathResolver;
-        }
+        
 
         protected IDictionary<SaveDirectoryType, string> BaseSavePaths { get; set; } =
             new Dictionary<SaveDirectoryType, string>
@@ -513,7 +477,13 @@ namespace SaveSystemTests
                     countdown.Wait();
                 }
             }
-            
+        }
+
+        void PrepNewPathsForTesting()
+        {
+            saveSys.SavePathResolver = testPathResolver;
+            saveWriter.PathResolver = testPathResolver;
+            saveReader.PathResolver = testPathResolver;
         }
 
         protected virtual int CommonSetupDelay
@@ -527,5 +497,12 @@ namespace SaveSystemTests
         protected string SavePrefix { get { return saveWriter.SavePrefix; } }
         protected string FileExtension { get { return saveWriter.FileExtension; } }
 
+        protected IEnumerator WaitFor(Task writeTask)
+        {
+            var taskAwaitable = writeTask.ConfigureAwait(false);
+            yield return taskAwaitable;
+        }
+
     }
+
 }

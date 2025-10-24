@@ -1,15 +1,14 @@
 using Amanita.VScripting;
-using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Overlays;
 using UnityEngine;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
-        IMainSaveCodec
+        IMainSaveCodec, IMainSaveDataProducer
     {
         [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
 
@@ -157,6 +156,27 @@ namespace Amanita.SaveSys
                 result.Add(encoded);
             }
 
+            return result;
+        }
+
+        public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
+        {
+            // TODO: Implement an init method for save codecs so that we only need to load
+            // certain things once upon startup, rather than every time we encode.
+            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            IList<SaveData> result = new List<SaveData>();
+
+            for (int i = 0; i < toEncode.Count; i++)
+            {
+                VariableSourceAsset asset = toEncode[i];
+                var data = EncodeToSave(asset);
+                if (data != null)
+                {
+                    result.Add(data);
+                }
+            }
+
+            onComplete?.Invoke(result);
             return result;
         }
     }

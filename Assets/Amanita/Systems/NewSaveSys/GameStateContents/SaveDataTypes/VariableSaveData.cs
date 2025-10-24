@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -67,7 +68,7 @@ namespace Amanita.SaveSys
             SaveDataUnit serializedSaveData = new()
             {
                 DataTypeName = TypeName,
-                Content = JsonUtility.ToJson(this, true)
+                Content = Serializer.ToJson(this, true)
             };
             return serializedSaveData;
         }
@@ -82,7 +83,7 @@ namespace Amanita.SaveSys
         public static VariableSaveData DeserializeFrom(SaveDataUnit item)
         {
             ValidateSerializedData(item, nameof(VariableSaveData));
-            VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Content);
+            VariableSaveData data = Serializer.FromJson<VariableSaveData>(item.Content);
             return data;
         }
     }

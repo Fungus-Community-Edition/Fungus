@@ -1,6 +1,8 @@
 using System.Linq;
 using UnityEngine;
 using System.Text;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -63,8 +65,8 @@ namespace Amanita.SaveSys
             string fullJson = GetFullTextToEncrypt();
             string GetFullTextToEncrypt()
             {
-                string metaJson = JsonUtility.ToJson(dataSet.Meta, true);
-                string mainStateJson = JsonUtility.ToJson(dataSet.MainState, true);
+                string metaJson = Serializer.ToJson(dataSet.Meta, true);
+                string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
                 string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
                 return fullJson;
             }
@@ -85,6 +87,7 @@ namespace Amanita.SaveSys
         protected static string Delimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
 
         protected virtual Encoding Encoding => Encoding.UTF8;
+        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
     }
     

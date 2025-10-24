@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
+using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -17,7 +18,7 @@ namespace SaveSystemTests
             try
             {
                 string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-                string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+                string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
 
                 string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
 
@@ -98,9 +99,10 @@ namespace SaveSystemTests
         {
             // Arrange: create a large string for main save data
             string largeString = new string('A', 10_000_000); // 10 MB of 'A'
-            MainSave.Add(new SaveDataUnit("TestType", largeString));
-            string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+            MainSave.Add(new RawStringSaveData(largeString));
+
+            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -127,8 +129,8 @@ namespace SaveSystemTests
         {
             // Arrange: add Unicode characters to a string variable
             stringVar.Value = "こんにちは世界🌏 Привет мир 𝄞";
-            string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -175,8 +177,8 @@ namespace SaveSystemTests
             string marker = SaveDiskAccessor.CompletionMarker;
             stringVar.Value = $"Value with delimiter: {delimiter} and marker: {marker}";
 
-            string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
             string expectedJsonText = $"{expectedMetaDataJson}{delimiter}{expectedMainSaveDataJson}{marker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -203,8 +205,8 @@ namespace SaveSystemTests
         {
             // Arrange: set string variable to empty
             stringVar.Value = "";
-            string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -230,8 +232,8 @@ namespace SaveSystemTests
         {
             // Arrange: set string variable to whitespace
             stringVar.Value = "   \t\n";
-            string expectedMetaDataJson = JsonUtility.ToJson(metaData, true);
-            string expectedMainSaveDataJson = JsonUtility.ToJson(MainSave, true);
+            string expectedMetaDataJson = serializerForTest.ToJson(metaData, true);
+            string expectedMainSaveDataJson = serializerForTest.ToJson(MainSave, true);
             string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -265,10 +267,10 @@ namespace SaveSystemTests
             // Get output for the current state
             object output1 = encryptor.GetOutput(encryptionRequest);
 
-            // Mutate the main save data: add a new SaveDataUnit
-            MainSave.Add(new SaveDataUnit("TestType", "Some new data"));
+            // Mutate the main save data: add a new SaveData item
+            MainSave.Add(new RawStringSaveData("Some new data"));
 
-            // (Optional) Mutate metaData as well, e.g. metaData.SaveVersion = Guid.NewGuid().ToString();
+            // (Optional) Mutate metaData as well
             metaData.SaveVersion = Guid.NewGuid().ToString();
 
             // Re-create the SaveDataSet to ensure it picks up the changed MainSave
