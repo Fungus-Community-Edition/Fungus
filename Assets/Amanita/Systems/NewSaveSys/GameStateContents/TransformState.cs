@@ -68,7 +68,13 @@ namespace Amanita.SaveSys
         public readonly bool Equals(TransformState otherState)
         {
             bool samePos = position.Equals(otherState.position);
-            bool sameRotation = rotation.Equals(otherState.rotation);
+
+            const float rotAngleEpsilon = 1e-4f;
+            bool sameRotation = Quaternion.Angle(rotation, otherState.rotation) <= rotAngleEpsilon;
+            // ^Since the built-in Quaternion.Equals is a bit finicky due to floating point precision issues
+            // and how quaternions can represent the same rotation with different values
+            // See: https://stackoverflow.com/questions/4655615/why-does-quaternion-equals-not-work-as-expected
+
             bool sameLocalScale = localScale.Equals(otherState.localScale);
             bool sameName = name == otherState.name;
             bool sameID = uniqueID == otherState.uniqueID;

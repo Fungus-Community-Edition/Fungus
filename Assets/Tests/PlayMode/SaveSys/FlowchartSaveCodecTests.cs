@@ -145,7 +145,7 @@ namespace SaveSystemTests
             // For some reason, the rotation was screwed up...
             Assert.IsTrue(savedCorrectly, $"Did not properly save the transform var. " +
                 $"What was saved:\n{decodedTfState}\n\n" + 
-                $"What was expected:\n{expectedTFormState.ToString()}");
+                $"What was expected:\n{expectedTFormState}");
 
         }
 
