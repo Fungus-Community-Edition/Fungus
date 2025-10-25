@@ -11,6 +11,7 @@ namespace Amanita.SaveSys
     /// Make sure that this class is NOT used outside the main thread. Unity doesn't
     /// like it when you try to mess with Vector or Transform properties from a different thread.
     /// </summary>
+    [VarCodec(true, typeof(TransformVariable), typeof(TransformMuscariable))]
     public class TransformVarCodec : fsDirectConverter<Transform>, IVarCodec, 
         IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {

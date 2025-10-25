@@ -13,49 +13,6 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSystem/SaveDataAppliers/VariableSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
-        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
-
-        public virtual void RegisterVarCodec(IVarCodec codec)
-        {
-            if (codec == null)
-            {
-                Debug.LogError("Cannot register a null codec.");
-                return;
-            }
-            if (validCodecs.Contains(codec))
-            {
-                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
-                return;
-            }
-            validCodecs.Add(codec);
-        }
-
-        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
-
-        protected virtual void OnEnable()
-        {
-            RefreshValidCodecs();
-        }
-
-        protected virtual void RefreshValidCodecs()
-        {
-            validCodecs.Clear();
-            for (int i = 0; i < varCodecs.Length; i++)
-            {
-                ScriptableObject toCheck = varCodecs[i];
-                if (toCheck is not IVarCodec && toCheck != null)
-                {
-                    string name = toCheck.name;
-                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
-                        $"Please fix this.");
-                }
-                else if (toCheck is IVarCodec codecFound)
-                {
-                    validCodecs.Add(codecFound);
-                }
-            }
-        }
-
         public override void Init()
         {
             base.Init();
@@ -76,7 +33,7 @@ namespace Amanita.SaveSys
 
             foreach (VariableSaveData varSaveData in saveData.SavedVars)
             {
-                IVarCodec forThisVar = validCodecs.FirstOrDefault(elem => elem.CanHandle(varSaveData));
+                IVarCodec forThisVar = VarCodecRegistry.GetCodec(varSaveData);
                 if (forThisVar == null)
                 {
                     Debug.LogWarning($"No codec found for variable type: {varSaveData.GetType().Name}");

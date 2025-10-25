@@ -69,8 +69,6 @@ namespace SaveSystemTests
             _saveCodec.RegisterVarCodec(builtInVarSaveCodec);
 
             _applier = ScriptableObject.CreateInstance<VariableSourceAssetApplier>();
-            _applier.RegisterVarCodec(genericVarCodec);
-            _applier.RegisterVarCodec(builtInVarSaveCodec);
             _applier.Init();
 
             // Wait a frame for Resources changes to settle

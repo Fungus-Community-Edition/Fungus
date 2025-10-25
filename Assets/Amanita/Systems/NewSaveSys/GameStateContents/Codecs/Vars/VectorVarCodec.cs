@@ -11,6 +11,8 @@ namespace Amanita.SaveSys
     /// This class is responsible for encoding and decoding Vector2 and Vector3 data types.
     /// </summary>
     [Serializable]
+    [VarCodec(true, typeof(Vector2Variable), typeof(Vector3Variable), 
+        typeof(VectorTwoMuscariable), typeof(VectorThreeMuscariable))]
     public class VectorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable) =>

@@ -6,6 +6,7 @@ using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
+    [VarCodec(true, typeof(ColorVariable), typeof(ColorMuscariable))]
     public class ColorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual System.Object ToMakeFrom { get; set; } = null;

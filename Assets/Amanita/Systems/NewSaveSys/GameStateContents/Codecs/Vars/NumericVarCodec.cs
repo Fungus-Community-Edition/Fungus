@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace Amanita.SaveSys
 {
+    [VarCodec(true, typeof(IntegerVariable), typeof(FloatVariable), typeof(IntMuscariable), typeof(FloatMuscariable))]
     public class NumericVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable) =>

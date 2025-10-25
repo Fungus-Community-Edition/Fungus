@@ -31,7 +31,7 @@ namespace Amanita.SaveSys
 
             if (foundVar != null)
             {
-                IVarCodec codec = CodecRegistry.GetCodec(foundVar.VarTypeName);
+                IVarCodec codec = VarCodecRegistry.GetCodec(foundVar.VarTypeName);
                 if (codec != null)
                 {
                     result = codec.DecodeTo<T>(foundVar.Value);

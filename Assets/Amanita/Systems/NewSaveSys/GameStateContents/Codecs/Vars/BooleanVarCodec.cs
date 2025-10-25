@@ -3,6 +3,7 @@ using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
+    [VarCodec(true, typeof(BooleanVariable), typeof(BoolMuscariable))]
     public class BooleanVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public int Order => 0;
