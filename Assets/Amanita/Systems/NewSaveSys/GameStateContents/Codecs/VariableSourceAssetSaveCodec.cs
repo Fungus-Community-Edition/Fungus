@@ -4,76 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Amanita.FSExt;
+using FullSerializer;
+using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
+    [CreateAssetMenu(fileName = "VariableSourceAssetSaveCodec",
+        menuName = "Amanita/SaveSys/Codecs/VSASaveCodec")]
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {
-        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
-
-        public virtual void RegisterVarCodec(IVarCodec codec)
+        public virtual void PreInstallInit()
         {
-            if (codec == null)
-            {
-                Debug.LogError("Cannot register a null codec.");
-                return;
-            }
-            if (validCodecs.Contains(codec))
-            {
-                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
-                return;
-            }
-            validCodecs.Add(codec);
+            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
         }
 
-        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
-
-        protected virtual void OnEnable()
-        {
-            RefreshValidCodecs();
-        }
-
-        protected virtual void RefreshValidCodecs()
-        {
-            validCodecs.Clear();
-            for (int i = 0; i < varCodecs.Length; i++)
-            {
-                ScriptableObject toCheck = varCodecs[i];
-                if (toCheck is not IVarCodec && toCheck != null)
-                {
-                    string name = toCheck.name;
-                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
-                        $"Please fix this.");
-                }
-                else if (toCheck is IVarCodec codecFound)
-                {
-                    validCodecs.Add(codecFound);
-                }
-            }
-        }
+        protected IList<VariableSourceAsset> _cachedVsas;
 
         public override bool CanHandle(string typeName)
         {
             return typeName == typeof(VariableSourceAssetSaveData).Name;
-        }
-
-        public override SaveData DecodeFrom(SaveDataUnit unit)
-        {
-            if (unit == null)
-            {
-                Debug.LogError("Cannot decode from a null SaveDataUnit.");
-                return null;
-            }
-
-            VariableSourceAssetSaveData result = Serializer.FromJson<VariableSourceAssetSaveData>(unit.Content);
-            if (result == null)
-            {
-                Debug.LogError($"Failed to decode {nameof(VariableSourceAssetSaveData)} to FlowchartSaveData.");
-                return null;
-            }
-
-            return result;
         }
 
         public override VariableSourceAssetSaveData EncodeToSave(VariableSourceAsset toCreateFrom)
@@ -105,7 +55,7 @@ namespace Amanita.SaveSys
             {
                 foreach (IVariable varEl in variables)
                 {
-                    IVarCodec forThisVar = FindCodecFor(varEl);
+                    IVarCodec forThisVar = VarCodecRegistry.GetCodec(varEl);
                     if (forThisVar == null)
                     {
                         Debug.LogWarning($"No codec found for variable type: {varEl.GetType().Name}");
@@ -126,44 +76,15 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected virtual IVarCodec FindCodecFor(IVariable variable)
-        {
-            IVarCodec result = validCodecs.Where((elem) => elem.CanHandle(variable)).FirstOrDefault();
-            return result;
-        }
-
-        public override SaveDataUnit EncodeToUnit()
-        {
-            return EncodeToUnit(ToMakeFrom);
-        }
-
-        public override SaveDataUnit EncodeToUnit(VariableSourceAsset from)
-        {
-            VariableSourceAssetSaveData saveData = EncodeToSave(from);
-            SaveDataUnit result = saveData.Serialized();
-            return result;
-        }
-
-        public IList<SaveDataUnit> FindAndEncodeAll(Action<IList<SaveDataUnit>> onComplete = null)
-        {
-            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
-            IList<SaveDataUnit> result = new List<SaveDataUnit>();
-
-            for (int i = 0; i < toEncode.Count; i++)
-            {
-                VariableSourceAsset asset = toEncode[i];
-                SaveDataUnit encoded = EncodeToUnit(asset);
-                result.Add(encoded);
-            }
-
-            return result;
-        }
-
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {
             // TODO: Implement an init method for save codecs so that we only need to load
             // certain things once upon startup, rather than every time we encode.
-            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            IList<VariableSourceAsset> toEncode = null;
+            UnityThreadUtil.RunOnMainThread(() =>
+            {
+                toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            });
             IList<SaveData> result = new List<SaveData>();
 
             for (int i = 0; i < toEncode.Count; i++)
@@ -178,6 +99,16 @@ namespace Amanita.SaveSys
 
             onComplete?.Invoke(result);
             return result;
+        }
+
+        public override VariableSourceAssetSaveData Decode(string rawText)
+        {
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                VariableSourceAssetSaveData result = serializer.FromJson<VariableSourceAssetSaveData>(rawText);
+                return result;
+            }
         }
     }
 }

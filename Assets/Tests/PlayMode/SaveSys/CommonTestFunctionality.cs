@@ -1,5 +1,4 @@
 using Amanita;
-using Amanita.FSExt;
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Utils;
@@ -91,9 +90,6 @@ namespace SaveSystemTests
             void LoadCodecs()
             {
                 flowchartSaveCodec = ScriptableObject.CreateInstance<FlowchartSaveCodec>();
-                BuiltinVarSaveCodec builtinCodec = ScriptableObject.CreateInstance<BuiltinVarSaveCodec>();
-                flowchartSaveCodec.RegisterVarCodec(builtinCodec);
-                flowchartApplier.RegisterVarCodec(builtinCodec);
                 blockSaveCodec = ScriptableObject.CreateInstance<BlockSaveCodec>();
             }
             

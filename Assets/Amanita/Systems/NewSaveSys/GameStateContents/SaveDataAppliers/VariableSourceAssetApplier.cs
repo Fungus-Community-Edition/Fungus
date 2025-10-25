@@ -10,55 +10,12 @@ namespace Amanita.SaveSys
     /// This is meant to apply to VariableSourceAssets on disk.
     /// </summary>
     [CreateAssetMenu(fileName = "VariableSourceAssetApplier",
-        menuName = "Amanita/SaveSystem/SaveDataAppliers/VariableSourceAssetApplier")]
+        menuName = "Amanita/SaveSys/Appliers/VariableSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
-        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
-
-        public virtual void RegisterVarCodec(IVarCodec codec)
+        public override void PreInstallInit()
         {
-            if (codec == null)
-            {
-                Debug.LogError("Cannot register a null codec.");
-                return;
-            }
-            if (validCodecs.Contains(codec))
-            {
-                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
-                return;
-            }
-            validCodecs.Add(codec);
-        }
-
-        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
-
-        protected virtual void OnEnable()
-        {
-            RefreshValidCodecs();
-        }
-
-        protected virtual void RefreshValidCodecs()
-        {
-            validCodecs.Clear();
-            for (int i = 0; i < varCodecs.Length; i++)
-            {
-                ScriptableObject toCheck = varCodecs[i];
-                if (toCheck is not IVarCodec && toCheck != null)
-                {
-                    string name = toCheck.name;
-                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
-                        $"Please fix this.");
-                }
-                else if (toCheck is IVarCodec codecFound)
-                {
-                    validCodecs.Add(codecFound);
-                }
-            }
-        }
-
-        public override void Init()
-        {
-            base.Init();
+            base.PreInstallInit();
             variableSourceAssets = Resources.LoadAll<VariableSourceAsset>("");
             // ^Best to grab all these in init so we don't have to do it repeatedly later.
         }
@@ -76,7 +33,7 @@ namespace Amanita.SaveSys
 
             foreach (VariableSaveData varSaveData in saveData.SavedVars)
             {
-                IVarCodec forThisVar = validCodecs.FirstOrDefault(elem => elem.CanHandle(varSaveData));
+                IVarCodec forThisVar = VarCodecRegistry.GetCodec(varSaveData);
                 if (forThisVar == null)
                 {
                     Debug.LogWarning($"No codec found for variable type: {varSaveData.GetType().Name}");
@@ -92,7 +49,7 @@ namespace Amanita.SaveSys
                     continue;
                 }
 
-                forThisVar.Decode(varEl, varSaveData);
+                forThisVar.ApplyState(varEl, varSaveData);
             }
 
             return Task.CompletedTask;

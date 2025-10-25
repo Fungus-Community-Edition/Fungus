@@ -1,5 +1,4 @@
 using UnityEngine;
-using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -38,20 +37,6 @@ namespace Amanita.SaveSys
         public BlockSaveData()
         {
 
-        }
-
-        public override SaveDataUnit Serialized()
-        {
-            var dataAsJson = Serializer.ToJson(this, true);
-            SaveDataUnit data = new(TypeName, dataAsJson);
-            return data;
-        }
-
-        public static BlockSaveData DeserializeFrom(SaveDataUnit item)
-        {
-            ValidateSerializedData(item, nameof(BlockSaveData));
-            BlockSaveData data = Serializer.FromJson<BlockSaveData>(item.Content);
-            return data;
         }
 
         public static readonly BlockSaveData Null = new()

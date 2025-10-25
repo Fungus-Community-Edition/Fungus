@@ -128,6 +128,18 @@ namespace Amanita.VScripting
             return gotIt;
         }
 
+        public static Type MuscariTypeByName(string typeName)
+        {
+            foreach (var muscariType in _muscariableTypes)
+            {
+                if (muscariType.Name == typeName)
+                {
+                    return muscariType;
+                }
+            }
+            return null;
+        }
+
         public static void Clear()
         {
             _typeMap.Clear();

@@ -107,22 +107,16 @@ namespace SaveSystemTests
         // Dummy implementations for testing registration
         public class DummyMainSaveCodec : IMainSaveCodec
         {
+            public virtual void PreInstallInit()
+            {
+                // Do nothing
+            }
             public int Order { get; set; } = 0;
 
             public object ToMakeFrom { get; set; }
 
             public bool NeedsInput { get; set; } = false;
 
-            // Legacy members retained for interface compatibility; not used by these tests
-            public SaveDataUnit EncodeToUnit()
-            {
-                return new SaveDataUnit("DummyType", "{\"dummy\":true}");
-            }
-
-            public SaveData DecodeFrom(SaveDataUnit unit)
-            {
-                return null;
-            }
 
             public bool CanHandle(object toMakeFrom)
             {
@@ -134,9 +128,16 @@ namespace SaveSystemTests
                 return true;
             }
 
-            public IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null)
+            public IList<SaveData> FindAndEncodeAll(System.Action<IList<SaveData>> onComplete = null)
             {
-                var result = new List<SaveDataUnit> { EncodeToUnit() };
+                var result = new List<SaveData> { };
+                onComplete?.Invoke(result);
+                return result;
+            }
+
+            public IList<SaveData> FindAndCreateAll(System.Action<IList<SaveData>> onComplete = null)
+            {
+                var result = new List<SaveData> { };
                 onComplete?.Invoke(result);
                 return result;
             }
@@ -144,9 +145,12 @@ namespace SaveSystemTests
 
         protected class DummySaveDataApplier : ISaveDataApplier
         {
+            public void PreInstallInit()
+            {
+                // Do nothing
+            }
             public int Order => 0;
             public bool CanApply(SaveData saveData) => false;
-            public bool CanApply(SaveDataUnit unit) => false;
             public Task ApplyRange(IList<SaveData> datas) => Task.CompletedTask;
             public Task Apply(SaveData saveData) => Task.CompletedTask;
         }

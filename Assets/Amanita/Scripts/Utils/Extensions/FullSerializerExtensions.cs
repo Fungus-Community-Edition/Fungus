@@ -1,7 +1,5 @@
 using FullSerializer;
-using System;
 using UnityEngine;
-using BaseObject = System.Object;
 
 namespace Amanita.FSExt
 {
