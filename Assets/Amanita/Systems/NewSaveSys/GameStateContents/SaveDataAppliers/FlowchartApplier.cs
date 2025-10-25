@@ -176,7 +176,7 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    forThisVar.Decode(varEl, varSaveData);
+                    forThisVar.ApplyState(varEl, varSaveData);
                 }
             }
 

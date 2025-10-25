@@ -15,7 +15,6 @@ namespace Amanita.SaveSys
         /// Checks if this applier can apply the given SaveData.
         /// </summary>
         bool CanApply(SaveData saveData);
-        bool CanApply(SaveDataUnit unit);
 
         Task ApplyRange(IList<SaveData> datas);
         Task Apply(SaveData saveData);
@@ -41,8 +40,6 @@ namespace Amanita.SaveSys
         {
             return false;
         }
-
-        public abstract bool CanApply(SaveDataUnit unit);
 
         public virtual async Task ApplyRange(IList<SaveData> datas)
         {
@@ -72,11 +69,6 @@ namespace Amanita.SaveSys
             return saveData is TSaveData;
         }
 
-        public override bool CanApply(SaveDataUnit unit)
-        {
-            string typeName = typeof(TSaveData).Name;
-            return unit.DataTypeName == typeName;
-        }
         
     }
 

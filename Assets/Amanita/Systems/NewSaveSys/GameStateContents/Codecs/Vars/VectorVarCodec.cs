@@ -11,7 +11,7 @@ namespace Amanita.SaveSys
     /// This class is responsible for encoding and decoding Vector2 and Vector3 data types.
     /// </summary>
     [Serializable]
-    public class VectorVarCodec : IVarCodec
+    public class VectorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable) =>
             variable is IVariable<Vector2> || variable is IVariable<Vector3>;
@@ -55,7 +55,23 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(IVariable variable, string data)
+        public virtual void ApplyState(IVariable variable, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(variable, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(variable, saveData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable variable, string data)
         {
             fsSerializer serializer = AmanitaManager.DefaultSerializer;
             lock (serializer)
@@ -78,7 +94,7 @@ namespace Amanita.SaveSys
             }
         }
     
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = variable is IVariable<Vector2> ||
                 variable is IVariable<Vector3>;
@@ -87,7 +103,7 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
                 return;
             }
-            Decode(variable, saveData.Value);
+            ApplyState(variable, saveData.Value);
         }
 
         public virtual VariableSaveData EncodeToSave(IVariable variable)

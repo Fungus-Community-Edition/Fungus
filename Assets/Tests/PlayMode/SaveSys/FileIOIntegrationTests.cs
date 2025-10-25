@@ -321,12 +321,6 @@ namespace SaveSystemTests
         public RawIntSaveData() { }
         public RawIntSaveData(int value) { Value = value; }
 
-        public override SaveDataUnit Serialized()
-        {
-            var serializer = SaveSystem.DefaultSerializer;
-            string json = serializer.ToJson(this, prettyPrint: true);
-            return new SaveDataUnit(GetType().Name, json);
-        }
     }
 
     

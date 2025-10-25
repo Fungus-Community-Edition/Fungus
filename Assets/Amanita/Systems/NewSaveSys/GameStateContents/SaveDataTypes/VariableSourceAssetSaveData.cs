@@ -26,15 +26,6 @@ namespace Amanita.SaveSys
             }
         }
 
-        public override SaveDataUnit Serialized()
-        {
-            fsSerializer serializer = SaveSystem.DefaultSerializer;
-            string json = serializer.ToJson(this, true);
-            string typeName = GetType().Name;
-            SaveDataUnit newItem = new(typeName, json);
-            return newItem;
-        }
-
         public virtual T GetVarValue<T>(string varName)
         {
             T result = default;

@@ -7,7 +7,7 @@ using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
-    public class ColorVarCodec : IVarCodec
+    public class ColorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual System.Object ToMakeFrom { get; set; } = null;
         public virtual int Priority => 0;
@@ -55,7 +55,23 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(IVariable toDecode, string data)
+        public virtual void ApplyState(IVariable toDecode, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(toDecode, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(toDecode, saveData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in ColorEncoder.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable toDecode, string data)
         {
             if (toDecode is not IVariable<Color> colorVar)
             {
@@ -71,7 +87,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             if (saveData.VarTypeName != nameof(ColorVariable) &&
                 saveData.VarTypeName != nameof(ColorMuscariable))
@@ -82,7 +98,7 @@ namespace Amanita.SaveSys
 
             if (variable is IVariable<Color> colorVar)
             {
-                Decode(colorVar, saveData.Value);
+                ApplyState(colorVar, saveData.Value);
             }
             else
             {

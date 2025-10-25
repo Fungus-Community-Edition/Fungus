@@ -10,11 +10,6 @@ public class RawStringSaveData : SaveData
     public RawStringSaveData() { }
     public RawStringSaveData(string value) { Value = value; }
 
-    public override SaveDataUnit Serialized()
-    {
-        var json = SaveSystem.DefaultSerializer.ToJson(this, true);
-        return new SaveDataUnit(GetType().Name, json);
-    }
 }
 
 [System.Serializable]
@@ -25,9 +20,4 @@ public class IndexSaveData : SaveData
     public IndexSaveData() { }
     public IndexSaveData(int value) { index = value; }
 
-    public override SaveDataUnit Serialized()
-    {
-        var json = SaveSystem.DefaultSerializer.ToJson(this, true);
-        return new SaveDataUnit(GetType().Name, json);
-    }
 }

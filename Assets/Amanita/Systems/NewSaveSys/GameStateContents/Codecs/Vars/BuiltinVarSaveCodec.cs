@@ -79,7 +79,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public void Decode(IVariable toApplyStateTo, string stateAsStr)
+        public void ApplyState(IVariable toApplyStateTo, string stateAsStr)
         {
             if (!CanHandle(toApplyStateTo))
             {
@@ -91,10 +91,10 @@ namespace Amanita.SaveSys
             }
 
             IVarCodec codec = subCodecs[toApplyStateTo.GetType()];
-            codec.Decode(toApplyStateTo, stateAsStr);
+            codec.ApplyState(toApplyStateTo, stateAsStr);
         }
 
-        public void Decode(IVariable variable, VariableSaveData data)
+        public void ApplyState(IVariable variable, VariableSaveData data)
         {
             if (!CanHandle(variable))
             {
@@ -103,7 +103,7 @@ namespace Amanita.SaveSys
             }
 
             IVarCodec codec = subCodecs[variable.GetType()];
-            codec.Decode(variable, data);
+            codec.ApplyState(variable, data);
         }
 
         public T DecodeTo<T>(string data)

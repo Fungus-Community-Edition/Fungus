@@ -62,12 +62,5 @@ namespace Amanita.SaveSys
             }
 
         }
-
-        public override SaveDataUnit Serialized()
-        {
-            string json = Serializer.ToJson(this, true);
-            SaveDataUnit serializedSaveData = new SaveDataUnit(TypeName, json);
-            return serializedSaveData;
-        }
     }
 }

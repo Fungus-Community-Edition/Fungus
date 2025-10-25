@@ -107,7 +107,7 @@ namespace SaveSys
 
             // Decode onto a fresh variable instance
             decodedVar = VariableFactory.CreateByVarType(variableType, null);
-            codec.Decode(decodedVar, encoded);
+            codec.ApplyState(decodedVar, encoded);
 
             // Validate value equality with special cases for floating types and Transform
             AssertValuesEquivalent(variableType, originalVar.BoxedValue, decodedVar.BoxedValue);
@@ -137,7 +137,7 @@ namespace SaveSys
 
             // Create new var and decode from VariableSaveData
             decodedVar = VariableFactory.CreateByVarType(variableType, null);
-            codec.Decode(decodedVar, saveData);
+            codec.ApplyState(decodedVar, saveData);
 
             // Validate
             AssertValuesEquivalent(variableType, originalVar.BoxedValue, decodedVar.BoxedValue);
@@ -224,13 +224,13 @@ namespace SaveSys
 
             // For Decode variants: we expect an exception when supplying a null target variable.
             LogAssert.Expect(LogType.Warning, logMessageForNull);
-            codec.Decode(null, "dummy");
+            codec.ApplyState(null, "dummy");
             // Passing null VariableSaveData to Decode should also throw (or be handled). We accept an exception here.
             var dummyVar = ScriptableObject.CreateInstance<DummyVariable>();
 
             string logMessageForNoCodecFound = $"No codec found for variable type {dummyVar.GetType()}. Cannot handle.";
             LogAssert.Expect(LogType.Warning, logMessageForNoCodecFound);
-            codec.Decode(dummyVar, (VariableSaveData)null);
+            codec.ApplyState(dummyVar, (VariableSaveData)null);
         }
 
         #region Helpers

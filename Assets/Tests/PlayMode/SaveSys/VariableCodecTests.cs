@@ -78,8 +78,8 @@ namespace SaveSystemTests
             scoreVar.Value += 123;
             fastestTimeVar.Value += 3429785;
 
-            numericCodec.Decode(scoreVar, encodedScoreStr);
-            numericCodec.Decode(fastestTimeVar, encodedFastestTimeStr);
+            numericCodec.ApplyState(scoreVar, encodedScoreStr);
+            numericCodec.ApplyState(fastestTimeVar, encodedFastestTimeStr);
 
             bool scoreEncodeSuccess = expectedScore.Equals(scoreVar.Value);
             bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
@@ -101,8 +101,8 @@ namespace SaveSystemTests
             scoreVar.Value += 123;
             fastestTimeVar.Value += 3429785;
 
-            numericCodec.Decode(scoreVar, encodedScoreVarData);
-            numericCodec.Decode(fastestTimeVar, encodedFastestTimeData);
+            numericCodec.ApplyState(scoreVar, encodedScoreVarData);
+            numericCodec.ApplyState(fastestTimeVar, encodedFastestTimeData);
 
             bool scoreEncodeSuccess = expectedScore.Equals(scoreVar.Value);
             bool fastestTimeEncodeSuccess = expectedFastestTime.Equals(fastestTimeVar.Value);
@@ -126,7 +126,7 @@ namespace SaveSystemTests
             bool expectedNewPlayer = isNewPlayerVar.Value;
             string encodedNewPlayerStr = booleanCodec.EncodeToString(isNewPlayerVar);
             isNewPlayerVar.Value = !isNewPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanCodec.Decode(isNewPlayerVar, encodedNewPlayerStr);
+            booleanCodec.ApplyState(isNewPlayerVar, encodedNewPlayerStr);
             bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(isNewPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
@@ -147,7 +147,7 @@ namespace SaveSystemTests
             bool expectedNewPlayer = isNewPlayerVar.Value;
             VariableSaveData encodedNewPlayerData = booleanCodec.EncodeToSave(isNewPlayerVar);
             isNewPlayerVar.Value = !isNewPlayerVar.Value; // Change the value to make sure we decode correctly
-            booleanCodec.Decode(isNewPlayerVar, encodedNewPlayerData);
+            booleanCodec.ApplyState(isNewPlayerVar, encodedNewPlayerData);
             bool encodedNewPlayerSuccess = expectedNewPlayer.Equals(isNewPlayerVar.Value);
             Assert.IsTrue(encodedNewPlayerSuccess);
         }
@@ -211,8 +211,8 @@ namespace SaveSystemTests
             twoDPosVar.Value += Vector2.right * 123;
             threeDPosVar.Value += Vector3.right * 3429785;
 
-            vectorCodec.Decode(twoDPosVar, encodedTwoDPosStr);
-            vectorCodec.Decode(threeDPosVar, encodedThreeDPosStr);
+            vectorCodec.ApplyState(twoDPosVar, encodedTwoDPosStr);
+            vectorCodec.ApplyState(threeDPosVar, encodedThreeDPosStr);
 
             bool encodedTwoDPosSuccess = expectedTwoDPos.Equals(twoDPosVar.Value);
             bool encodedThreeDPosSuccess = expectedThreeDPos.Equals(threeDPosVar.Value);
@@ -232,8 +232,8 @@ namespace SaveSystemTests
             twoDPosVar.Value += Vector2.right * 123;
             threeDPosVar.Value += Vector3.right * 3429785;
 
-            vectorCodec.Decode(twoDPosVar, twoDPosData);
-            vectorCodec.Decode(threeDPosVar, threeDPosData);
+            vectorCodec.ApplyState(twoDPosVar, twoDPosData);
+            vectorCodec.ApplyState(threeDPosVar, threeDPosData);
 
             bool encodedTwoDPosSuccess = expectedTwoDPos.Equals(twoDPosVar.Value);
             bool encodedThreeDPosSuccess = expectedThreeDPos.Equals(threeDPosVar.Value);
@@ -276,7 +276,7 @@ namespace SaveSystemTests
 
             string encodedColorStr = colorCodec.EncodeToString(colorVar);
             colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
-            colorCodec.Decode(colorVar, encodedColorStr);
+            colorCodec.ApplyState(colorVar, encodedColorStr);
             bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
@@ -289,7 +289,7 @@ namespace SaveSystemTests
             colorVar.Value = expectedColor;
             VariableSaveData encodedColorVarData = colorCodec.EncodeToSave(colorVar);
             colorVar.Value += new Color(0.1f, 0.1f, 0.1f, 0.1f);
-            colorCodec.Decode(colorVar, encodedColorVarData);
+            colorCodec.ApplyState(colorVar, encodedColorVarData);
             bool encodedColorSuccess = expectedColor.Equals(colorVar.Value);
             Assert.IsTrue(encodedColorSuccess);
         }
@@ -321,7 +321,7 @@ namespace SaveSystemTests
             stringVar.Value = expectedString;
             string encodedString = stringCodec.EncodeToString(stringVar);
             stringVar.Value += " Good bye, cruel world!";
-            stringCodec.Decode(stringVar, encodedString);
+            stringCodec.ApplyState(stringVar, encodedString);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
@@ -333,7 +333,7 @@ namespace SaveSystemTests
             stringVar.Value = expectedString;
             VariableSaveData encodedStringVarData = stringCodec.EncodeToSave(stringVar);
             stringVar.Value += " Good bye, cruel world!";
-            stringCodec.Decode(stringVar, encodedStringVarData);
+            stringCodec.ApplyState(stringVar, encodedStringVarData);
             bool encodedStringSuccess = expectedString.Equals(stringVar.Value);
             Assert.IsTrue(encodedStringSuccess);
         }
@@ -383,7 +383,7 @@ namespace SaveSystemTests
             transformVar.Value.localScale += Vector3.one * 0.5f;
             transformVar.Value = null;
 
-            transformCodec.Decode(transformVar, encodedTransStr);
+            transformCodec.ApplyState(transformVar, encodedTransStr);
             // Part of the decoding process is applying the position, rotation and such
             // to the transform. Thus, we won't need to apply it here.
             Transform decodedTrans = transformVar.Value;
@@ -434,7 +434,7 @@ namespace SaveSystemTests
             transformVar.Value.localScale += Vector3.one * 0.5f;
             transformVar.Value = null;
 
-            transformCodec.Decode(transformVar, encodedTransVarData);
+            transformCodec.ApplyState(transformVar, encodedTransVarData);
             // Part of the decoding process is applying the position, rotation and such
             // to the transform. Thus, we won't need to apply it here.
             Transform decodedTrans = transformVar.Value;

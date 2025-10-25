@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Amanita.FSExt;
+using FullSerializer.Internal;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -11,6 +13,13 @@ namespace Amanita.SaveSys
         IMainSaveCodec, IMainSaveDataProducer
     {
         [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
+
+        public virtual void Init()
+        {
+            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
+        }
+
+        protected IList<VariableSourceAsset> _cachedVsas;
 
         public virtual void RegisterVarCodec(IVarCodec codec)
         {
@@ -56,24 +65,6 @@ namespace Amanita.SaveSys
         public override bool CanHandle(string typeName)
         {
             return typeName == typeof(VariableSourceAssetSaveData).Name;
-        }
-
-        public override SaveData DecodeFrom(SaveDataUnit unit)
-        {
-            if (unit == null)
-            {
-                Debug.LogError("Cannot decode from a null SaveDataUnit.");
-                return null;
-            }
-
-            VariableSourceAssetSaveData result = Serializer.FromJson<VariableSourceAssetSaveData>(unit.Content);
-            if (result == null)
-            {
-                Debug.LogError($"Failed to decode {nameof(VariableSourceAssetSaveData)} to FlowchartSaveData.");
-                return null;
-            }
-
-            return result;
         }
 
         public override VariableSourceAssetSaveData EncodeToSave(VariableSourceAsset toCreateFrom)
@@ -132,33 +123,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public override SaveDataUnit EncodeToUnit()
-        {
-            return EncodeToUnit(ToMakeFrom);
-        }
-
-        public override SaveDataUnit EncodeToUnit(VariableSourceAsset from)
-        {
-            VariableSourceAssetSaveData saveData = EncodeToSave(from);
-            SaveDataUnit result = saveData.Serialized();
-            return result;
-        }
-
-        public IList<SaveDataUnit> FindAndEncodeAll(Action<IList<SaveDataUnit>> onComplete = null)
-        {
-            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
-            IList<SaveDataUnit> result = new List<SaveDataUnit>();
-
-            for (int i = 0; i < toEncode.Count; i++)
-            {
-                VariableSourceAsset asset = toEncode[i];
-                SaveDataUnit encoded = EncodeToUnit(asset);
-                result.Add(encoded);
-            }
-
-            return result;
-        }
-
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {
             // TODO: Implement an init method for save codecs so that we only need to load
@@ -178,6 +142,16 @@ namespace Amanita.SaveSys
 
             onComplete?.Invoke(result);
             return result;
+        }
+
+        public override VariableSourceAssetSaveData Decode(string rawText)
+        {
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                VariableSourceAssetSaveData result = serializer.FromJson<VariableSourceAssetSaveData>(rawText);
+                return result;
+            }
         }
     }
 }

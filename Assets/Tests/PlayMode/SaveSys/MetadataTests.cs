@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -24,27 +25,10 @@ namespace SaveSystemTests
             metaData.SaveVersion = expectedSaveVer;
             metaData.TimeStamp = DateTime.UtcNow;
 
-            serializedMetaData = metaData.Serialized();
-            deserializedMetaData = SaveMetaData.DeserializeFrom(serializedMetaData);
         }
 
-        protected SaveDataUnit serializedMetaData;
         protected SaveMetaData deserializedMetaData;
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
-
-        [Test]
-        public virtual void Metadata_TypeNameSerializedProperly()
-        {
-            Assert.AreEqual(serializedMetaData.DataTypeName, expectedTypeName);
-        }
-
-        [Test]
-        public virtual void Metadata_MainFieldsSerializedProperly()
-        {
-            Debug.Log($"Checking if the main metadata fields were serialized properly.");
-            bool success = metaData.Equals(deserializedMetaData);
-            Assert.IsTrue(success);
-        }
 
 
         [Test]
@@ -59,7 +43,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void Metadata_AssignsCorrectTimeStampWhenNonePassed()
         {
-
             DateTime correctTimeStamp = DateTime.UtcNow;
             SaveMetaData testMeta = new SaveMetaData("");
 
@@ -69,7 +52,6 @@ namespace SaveSystemTests
         [Test]
         public virtual void Metadata_AcceptsLegitTimeStampPassed()
         {
-
             DateTime correctTimeStamp = DateTime.UtcNow;
             SaveMetaData testMeta = new SaveMetaData("", correctTimeStamp);
 
@@ -95,13 +77,11 @@ namespace SaveSystemTests
         public virtual void MetadataConsistency_SerializeThenDeserialize_NONEncrypted()
         {
             SaveMetaData metaBefore = new SaveMetaData("egu8hohgb", DateTime.UtcNow);
-            string asJson = JsonUtility.ToJson(metaBefore);
-            SaveMetaData metaAfter = JsonUtility.FromJson<SaveMetaData>(asJson);
+            string asJson = serializer.ToJson(metaBefore);
+            SaveMetaData metaAfter = serializer.FromJson<SaveMetaData>(asJson);
 
             Assert.AreEqual(metaBefore, metaAfter, "The serialization and deserialization are not complimentary.");
         }
-
-
 
         [Test]
         public virtual void Metadata_HandlesOverlyLongIDs()
@@ -128,7 +108,7 @@ namespace SaveSystemTests
 
             for (int i = 0; i < howManyLoops; i++)
             {
-                crazyLongVersion += System.Guid.NewGuid().ToString();
+                crazyLongVersion += Guid.NewGuid().ToString();
             }
 
             string expectedVer = crazyLongVersion[..SaveMetaData.IDAndVersionLengthCap];
@@ -143,7 +123,7 @@ namespace SaveSystemTests
         public virtual void Metadata_RejectsNullOrEmptySaveVersions()
         {
             SaveMetaData testMeta = new SaveMetaData(null, DateTime.UtcNow);
-            Assert.Throws<System.ArgumentException>(() => testMeta.SaveVersion = null, "Did not throw an argument exception");
+            Assert.Throws<ArgumentException>(() => testMeta.SaveVersion = null, "Did not throw an argument exception");
         }
 
         [Test] public virtual void Metadata_RejectsNegativeSlotNumbers()

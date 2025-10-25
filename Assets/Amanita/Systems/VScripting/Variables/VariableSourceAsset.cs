@@ -1,4 +1,6 @@
+using Amanita.SaveSys;
 using Collections;
+using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +17,25 @@ namespace Amanita.VScripting
         [SerializeField, HideInInspector] protected string assetID = string.Empty;
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
 
-        public bool IncludeInSaves => includeInSaves;
-        public string AssetId => assetID;
+        public bool IncludeInSaves
+        {
+            get => includeInSaves;
+            set => includeInSaves = value;
+        }
+
+        public string AssetId
+        {
+            get => assetID;
+            set
+            {
+                if (!string.IsNullOrEmpty(assetID))
+                {
+                    Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
+                }
+
+                assetID = value;
+            }
+        }
         public IReadOnlyList<IVariable> Variables => variables.ToList();
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => variables.ToList();
@@ -357,5 +376,51 @@ namespace Amanita.VScripting
     public interface IVarConvertible<TTargetType> where TTargetType : IVariable
     {
         TTargetType ToVar();
+    }
+
+    public class VSAConverter : fsDirectConverter<VariableSourceAsset>
+    {
+        protected override fsResult DoSerialize(VariableSourceAsset model, Dictionary<string, fsData> serialized)
+        {
+            VariableSourceAssetSaveData saveData = new VariableSourceAssetSaveData();
+            saveData.AssetId = model.AssetId;
+            saveData.SavedVars = (IList<VariableSaveData>)model.Variables;
+            SerializeMember(serialized, null, "saveData", saveData);
+            return fsResult.Success;
+        }
+
+        protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref VariableSourceAsset model)
+        {
+            // We assume that the data contains a VariableSourceAssetSaveData under "saveData".
+            fsData saveDataData;
+            if (data.TryGetValue("saveData", out saveDataData))
+            {
+                fsResult result;
+                VariableSourceAssetSaveData saveData = null;
+                result = DeserializeMember(data, null, "saveData", out saveData);
+                if (result.Failed)
+                {
+                    return result;
+                }
+                // Now, we can reconstruct the VariableSourceAsset from the save data.
+                model = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                model.AssetId = saveData.AssetId;
+                model.IncludeInSaves = true;
+                model.Refresh();
+                
+                foreach (var varSave in saveData.SavedVars)
+                {
+                    Muscariable var = VariableFactory.CreateByVarTypeName(varSave.VarTypeName, null);
+                    model.AddVariable(var);
+                }
+                return fsResult.Success;
+            }
+            else
+            {
+                return fsResult.Fail("No 'saveData' found in data for VariableSourceAsset deserialization.");
+            }
+        }
+
+
     }
 }

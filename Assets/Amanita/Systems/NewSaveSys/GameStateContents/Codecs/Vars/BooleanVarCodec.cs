@@ -3,7 +3,7 @@ using Amanita.VScripting;
 
 namespace Amanita.SaveSys
 {
-    public class BooleanVarCodec : IVarCodec
+    public class BooleanVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public int Order => 0;
 
@@ -56,12 +56,24 @@ namespace Amanita.SaveSys
             return string.Empty;
         }
 
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
-            Decode(variable, saveData.Value);
+            ApplyState(variable, saveData.Value);
         }
 
-        public virtual void Decode(IVariable toDecode, string data)
+        public virtual void ApplyState(IVariable toDecode, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(toDecode, strData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable toDecode, string data)
         {
             IVariable<bool> booleanVar = toDecode as IVariable<bool>;
             if (booleanVar == null)

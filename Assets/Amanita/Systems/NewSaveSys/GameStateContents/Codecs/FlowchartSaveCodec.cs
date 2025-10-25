@@ -5,6 +5,7 @@ using System.Threading;
 using UnityEngine;
 using Amanita.VScripting;
 using Amanita.FSExt;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -165,65 +166,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public override SaveDataUnit EncodeToUnit()
-        {
-            return EncodeToUnit(ToMakeFrom);
-        }
-
-        public override SaveDataUnit EncodeToUnit(Flowchart from)
-        {
-            FlowchartSaveData saveData = EncodeToSave(from);
-            SaveDataUnit result = saveData.Serialized();
-            return result;
-        }
-
-        public virtual IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null)
-        {
-            IList<SaveDataUnit> results = new List<SaveDataUnit>();
-            using (var countdown = new CountdownEvent(1))
-            {
-                MainThreadDispatcher.Enqueue(() =>
-                {
-                    IList<Flowchart> allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-
-                    IList<Flowchart> flowchartsToSave = (from elem in allFlowcharts
-                                                            where elem.IncludeInSaves == true
-                                                            select elem).ToList();
-
-                    for (int i = 0; i < flowchartsToSave.Count; i++)
-                    {
-                        Flowchart toSave = flowchartsToSave[i];
-                        SaveDataUnit newUnit = EncodeToUnit(toSave);
-                        results.Add(newUnit);
-                    }
-
-                    countdown.Signal(); // Signal that we're done
-                });
-                countdown.Wait(); // Wait for the main thread to finish
-            }
-                
-            onComplete?.Invoke(results);
-            return results;
-        }
-    
-        public override SaveData DecodeFrom(SaveDataUnit unit)
-        {
-            if (unit == null)
-            {
-                Debug.LogError("Cannot decode from a null SaveDataUnit.");
-                return null;
-            }
-            FlowchartSaveData saveData = Serializer.FromJson<FlowchartSaveData>(unit.Content);
-            if (saveData == null)
-            {
-                Debug.LogError($"Failed to decode {unit.DataTypeName} to FlowchartSaveData.");
-                return null;
-            }
-
-            saveData.OnDeserialize();
-            return saveData;
-        }
-
         public override bool CanHandle(string typeName)
         {
             return typeName == nameof(Flowchart) || typeName == nameof(FlowchartSaveData);
@@ -265,6 +207,16 @@ namespace Amanita.SaveSys
 
             onComplete?.Invoke(results);
             return results;
+        }
+
+        public override FlowchartSaveData Decode(string rawText)
+        {
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                FlowchartSaveData result = serializer.FromJson<FlowchartSaveData>(rawText);
+                return result;
+            }
         }
     }
 }
