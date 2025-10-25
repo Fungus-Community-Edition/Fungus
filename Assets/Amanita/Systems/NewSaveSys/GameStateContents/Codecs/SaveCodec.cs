@@ -1,5 +1,4 @@
 using FullSerializer;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys

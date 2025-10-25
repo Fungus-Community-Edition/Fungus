@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using FullSerializer;
 using Amanita.FSExt;
 
 namespace Amanita.SaveSys

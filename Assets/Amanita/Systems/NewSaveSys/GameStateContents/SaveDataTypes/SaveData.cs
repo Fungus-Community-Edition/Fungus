@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 using FullSerializer;
 
 namespace Amanita.SaveSys

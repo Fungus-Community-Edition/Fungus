@@ -1,4 +1,3 @@
-using Amanita.FSExt;
 using Amanita.SaveSys;
 using Amanita.VScripting;
 using NUnit.Framework;

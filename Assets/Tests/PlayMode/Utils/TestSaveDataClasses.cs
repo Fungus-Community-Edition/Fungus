@@ -1,6 +1,5 @@
 using Amanita.SaveSys;
 using UnityEngine;
-using Amanita.FSExt;
 
 [System.Serializable]
 public class RawStringSaveData : SaveData

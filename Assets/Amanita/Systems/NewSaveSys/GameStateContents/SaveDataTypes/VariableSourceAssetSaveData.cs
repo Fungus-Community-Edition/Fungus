@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using FullSerializer;
-using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {

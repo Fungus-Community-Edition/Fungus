@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {

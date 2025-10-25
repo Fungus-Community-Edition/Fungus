@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using Amanita.FSExt;
 
 namespace SaveSystemTests
 {

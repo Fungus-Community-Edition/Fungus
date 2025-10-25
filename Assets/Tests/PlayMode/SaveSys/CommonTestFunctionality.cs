@@ -1,5 +1,4 @@
 using Amanita;
-using Amanita.FSExt;
 using Amanita.Myceliaudio;
 using Amanita.SaveSys;
 using Amanita.Utils;

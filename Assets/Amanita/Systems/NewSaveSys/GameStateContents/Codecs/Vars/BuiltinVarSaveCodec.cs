@@ -2,7 +2,6 @@ using Amanita.VScripting;
 using System.Linq;
 using UnityEngine;
 using Type = System.Type;
-using UnityObj = UnityEngine.Object;
 using System.Collections.Generic;
 
 namespace Amanita.SaveSys
