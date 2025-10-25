@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 namespace Amanita.SaveSys
 {
     [CreateAssetMenu(fileName = "FlowchartApplier",
-        menuName = "Amanita/SaveSys/FlowchartApplier",
+        menuName = "Amanita/SaveSys/Appliers/FlowchartApplier",
         order = 0)]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {

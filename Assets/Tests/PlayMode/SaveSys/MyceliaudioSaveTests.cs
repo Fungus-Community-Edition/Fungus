@@ -27,7 +27,8 @@ namespace SaveSystemTests
             yield return CommonSetup();
             
             AudioSys.Play(playAudioArgsSO);
-            MyceliaudioSaveData saveData = new MyceliaudioSaveData();
+            MyceliaudioSaveCodec myceliaudioSaveCodec = ScriptableObject.CreateInstance<MyceliaudioSaveCodec>();
+            MyceliaudioSaveData saveData = myceliaudioSaveCodec.EncodeToSave(AudioSystem.S);
             yield return wait;
 
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
@@ -36,7 +37,9 @@ namespace SaveSystemTests
             yield return WaitFor(applyTask);
             AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             bool playingCorrectClip = clipPlaying == playAudioArgsSO.MainClip;
-            Assert.IsTrue(playingCorrectClip, "The clip playing is not the one we expected it to be.");
+            Assert.IsTrue(playingCorrectClip, $"The clip playing is not the one we expected it to be. We expected " +
+                $"{playAudioArgsSO.MainClip.name} but got {clipPlaying.name}" +
+                $" but instead got {clipPlaying.name}");
 
         }
     }

@@ -8,58 +8,17 @@ using FullSerializer;
 
 namespace Amanita.SaveSys
 {
+    [CreateAssetMenu(fileName = "VariableSourceAssetSaveCodec",
+        menuName = "Amanita/SaveSys/Codecs/VSASaveCodec")]
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {
-        [SerializeField] protected ScriptableObject[] varCodecs = new ScriptableObject[0];
-
         public virtual void Init()
         {
             _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
         }
 
         protected IList<VariableSourceAsset> _cachedVsas;
-
-        public virtual void RegisterVarCodec(IVarCodec codec)
-        {
-            if (codec == null)
-            {
-                Debug.LogError("Cannot register a null codec.");
-                return;
-            }
-            if (validCodecs.Contains(codec))
-            {
-                Debug.LogWarning($"Codec {codec.GetType().Name} is already registered.");
-                return;
-            }
-            validCodecs.Add(codec);
-        }
-
-        protected IList<IVarCodec> validCodecs = new List<IVarCodec>();
-
-        protected virtual void OnEnable()
-        {
-            RefreshValidCodecs();
-        }
-
-        protected virtual void RefreshValidCodecs()
-        {
-            validCodecs.Clear();
-            for (int i = 0; i < varCodecs.Length; i++)
-            {
-                ScriptableObject toCheck = varCodecs[i];
-                if (toCheck is not IVarCodec && toCheck != null)
-                {
-                    string name = toCheck.name;
-                    Debug.LogError($"Element at index {i} ({name}) in varCodecs is not an IVarCodec. " +
-                        $"Please fix this.");
-                }
-                else if (toCheck is IVarCodec codecFound)
-                {
-                    validCodecs.Add(codecFound);
-                }
-            }
-        }
 
         public override bool CanHandle(string typeName)
         {
@@ -95,7 +54,7 @@ namespace Amanita.SaveSys
             {
                 foreach (IVariable varEl in variables)
                 {
-                    IVarCodec forThisVar = FindCodecFor(varEl);
+                    IVarCodec forThisVar = VarCodecRegistry.GetCodec(varEl);
                     if (forThisVar == null)
                     {
                         Debug.LogWarning($"No codec found for variable type: {varEl.GetType().Name}");
@@ -113,12 +72,6 @@ namespace Amanita.SaveSys
                 }
             }
 
-            return result;
-        }
-
-        protected virtual IVarCodec FindCodecFor(IVariable variable)
-        {
-            IVarCodec result = validCodecs.Where((elem) => elem.CanHandle(variable)).FirstOrDefault();
             return result;
         }
 

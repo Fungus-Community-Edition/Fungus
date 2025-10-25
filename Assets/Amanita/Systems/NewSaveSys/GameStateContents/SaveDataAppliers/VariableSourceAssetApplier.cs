@@ -10,7 +10,7 @@ namespace Amanita.SaveSys
     /// This is meant to apply to VariableSourceAssets on disk.
     /// </summary>
     [CreateAssetMenu(fileName = "VariableSourceAssetApplier",
-        menuName = "Amanita/SaveSystem/SaveDataAppliers/VariableSourceAssetApplier")]
+        menuName = "Amanita/SaveSys/Appliers/VariableSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
         public override void Init()

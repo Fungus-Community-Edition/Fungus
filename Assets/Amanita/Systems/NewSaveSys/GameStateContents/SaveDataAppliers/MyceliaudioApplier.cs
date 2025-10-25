@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "NewMyceliaudioApplier", menuName = "Amanita/SaveSys/MyceliaudioApplier")]
+    [CreateAssetMenu(fileName = "NewMyceliaudioApplier", menuName = "Amanita/SaveSys/Appliers/MyceliaudioApplier")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
         public override Task Apply(MyceliaudioSaveData saveData)

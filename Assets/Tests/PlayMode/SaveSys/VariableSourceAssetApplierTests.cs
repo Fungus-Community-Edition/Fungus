@@ -64,9 +64,6 @@ namespace SaveSystemTests
             genericVarCodec = ScriptableObject.CreateInstance<GenericVarCodec>();
 
             _saveCodec = ScriptableObject.CreateInstance<VariableSourceAssetSaveCodec>();
-            _saveCodec.RegisterVarCodec(genericVarCodec);
-            var builtInVarSaveCodec = ScriptableObject.CreateInstance<BuiltinVarSaveCodec>();
-            _saveCodec.RegisterVarCodec(builtInVarSaveCodec);
 
             _applier = ScriptableObject.CreateInstance<VariableSourceAssetApplier>();
             _applier.Init();
