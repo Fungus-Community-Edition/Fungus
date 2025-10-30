@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Lorekeeper;
 
 namespace Amanita.SaveSys
 {
@@ -12,8 +13,8 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSys/Codecs/MyceliaudioSaveCodec")]
     public class MyceliaudioSaveCodec : SaveCodec<AudioSystem, MyceliaudioSaveData>, IMainSaveCodec
     {
-        //[SerializeField] protected int[] bgmChannels = new int[] { 0, 1, 2, 3 };
         // TODO: Support multiple BGM channels
+        //[SerializeField] protected int[] bgmChannels = new int[] { 0, 1, 2, 3 };
 
         public override bool CanHandle(string typeName)
         {
@@ -37,8 +38,9 @@ namespace Amanita.SaveSys
 
             // For now, we only support saving BGMusic Track 0
             bool currentlyPlaying = audioSys.GetIsPlaying(TrackGroup.BGMusic, 0);
-            AudioClip mainBGM = audioSys.GetBaseMainClip(TrackGroup.BGMusic, 0);
+            AudioClip mainBgm = audioSys.GetBaseMainClip(TrackGroup.BGMusic, 0);
             PlayAudioArgs playAudioArgs = PlayAudioArgs.Null;
+            int assetIndex = -1;
 
             if (currentlyPlaying)
             {
@@ -47,7 +49,7 @@ namespace Amanita.SaveSys
                 {
                     playAudioArgs = new PlayAudioArgs()
                     {
-                        MainClip = mainBGM,
+                        MainClip = mainBgm,
                         TrackGroup = TrackGroup.BGMusic,
                         Track = 0,
                         Loop = audioSys.IsLoopingMain(TrackGroup.BGMusic, 0),
@@ -57,14 +59,47 @@ namespace Amanita.SaveSys
                     };
 
                     // TODO: Account for when the main and intro clips were split off an asset
-                    AudioClip[] allAudioClips = Resources.FindObjectsOfTypeAll<AudioClip>();
-                    AudioClip clipPlaying = audioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
-                    bool clipIsProjectAsset = allAudioClips.Contains(clipPlaying);
+                    IList<AudioClip> allAudioClips = ShadowDB.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
 
+                    assetIndex = allAudioClips.IndexOf(mainBgm);
+                    bool clipIsProjectAsset = assetIndex >= 0;
+                    // ^Since for all we know, the clip playing could've been split from
+                    // one of the assets on disk, in which case we can't save that reference.
                     if (clipIsProjectAsset)
                     {
-                        playAudioArgs.MainClip = clipPlaying;
+                        playAudioArgs.MainClip = mainBgm;
                     }
+                    else
+                    {
+                        // In this case, the clip was likely split off from an asset. Let's find the original.
+                        AudioClip originalClip = FindOriginalAsset();
+                        AudioClip FindOriginalAsset()
+                        {
+                            AudioClip clip = null;
+                            string baseName = mainBgm.name;
+                            string suffixToRemove = AudioClipSplitter.LoopClipNameSuffix;
+                            // ^Since we only care about the loop part of the clip, and thus we'll
+                            // remove that suffix to find the original asset name.
+                            string realAssetName = baseName.Substring(0, baseName.Length - suffixToRemove.Length);
+                            clip = allAudioClips.FirstOrDefault(
+                                ac => ac.name == realAssetName);
+                            return clip;
+                        }
+                        
+                        if (originalClip != null)
+                        {
+                            assetIndex = allAudioClips.IndexOf(originalClip);
+                            playAudioArgs.MainClip = originalClip;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Could not find the original asset for the clip playing: {mainBgm.name}. " +
+                                $"It may have been dynamically generated and cannot be saved.");
+                            assetIndex = -1;
+                        }
+
+                    }
+                
                 }
 
             }
@@ -74,9 +109,12 @@ namespace Amanita.SaveSys
                 PlayAudioArgs = playAudioArgs,
                 VolumeSettings = volumeSettings
             };
+            saveData.AddBgmIndex(0, assetIndex);
 
             return saveData;
         }
+
+        protected ShadowDatabase ShadowDB => AmanitaManager.ShadowDB;
 
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {

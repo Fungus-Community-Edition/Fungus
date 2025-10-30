@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Lorekeeper/Editor/Resources/Stylesheets/LorekeeperSettingsWindowStyle.uss?fileID=7433441132597879392&amp;guid=cf1cdeeec0e95d64399942a7129430d4&amp;type=3#LorekeeperSettingsWindowStyle" />
+    <ui:VisualElement name="SectionPlate">
+        <ui:Label text="Excluded Paths" name="ExclusionsLabel" style="width: 100%; -unity-text-align: upper-center;" />
+    </ui:VisualElement>
+    <ui:Label tabindex="-1" text="Relative to Assets Folder" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    <ui:ListView name="RelativeToAssetsPathListView" header-title="Relative to Asset Folder" reorderable="true" reorder-mode="Animated" show-border="true" show-add-remove-footer="true" />
+    <ui:VisualElement name="BottomButtons">
+        <ui:Button text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveButton" />
+    </ui:VisualElement>
+</ui:UXML>
