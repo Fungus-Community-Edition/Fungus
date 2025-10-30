@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using FullSerializer;
+using System.Linq;
 
 namespace Amanita.SaveSys
 { 
@@ -332,6 +333,92 @@ namespace Amanita.SaveSys
         {
             return SavePathResolver.GetSaveFilePath(input, slotNumber);
         }
+    
+        public virtual void RegisterProgressMarker(string id, int order = 0)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Cannot register a null or empty ProgressMarker ID.");
+                return;
+            }
+
+            if (progressMarkers.Any(marker => marker.Id == id))
+            {
+                Debug.LogWarning($"ProgressMarker with ID '{id}' is already registered.");
+                return;
+            }
+
+            progressMarkers.Add(new ProgressMarker(id, order, true));
+            
+        }
+
+        protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
+
+        public virtual void UnregisterProgressMarker(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Cannot unregister a null or empty ProgressMarker ID.");
+                return;
+            }
+
+            ProgressMarker marker = progressMarkers.FirstOrDefault(marker => marker.Id == id);
+            progressMarkers.Remove(marker);
+        }
+
+        public virtual IList<ProgressMarker> ProgressMarkers
+        {
+            get { return new List<ProgressMarker>(progressMarkers); }
+        }
+
+        public virtual ProgressMarker GetProgressMarkerByID(string id)
+        {
+            for (int i = 0; i < progressMarkers.Count; i++)
+            {
+                ProgressMarker marker = progressMarkers[i];
+                if (marker.Id == id)
+                {
+                    return marker;
+                }
+            }
+            return null;
+        }
+
+        public virtual void ClearProgressMarkers()
+        {
+            progressMarkers.Clear();
+        }
+
+        public virtual void SetProgressMarkerActive(string id, bool isActive)
+        {
+            ProgressMarker marker = GetProgressMarkerByID(id);
+            if (marker == null)
+            {
+                Debug.LogWarning($"No ProgressMarker with ID '{id}' found to set active state. Creating new one.");
+                RegisterProgressMarker(id);
+                return;
+            }
+            marker.IsActive = isActive;
+        }
+
+        public virtual void SetProgressMarkerOrder(string id, int order)
+        {
+            ProgressMarker marker = GetProgressMarkerByID(id);
+            if (marker == null)
+            {
+                Debug.LogWarning($"No ProgressMarker with ID '{id}' found to set order. Creating new one.");
+                RegisterProgressMarker(id, order);
+                return;
+            }
+
+            marker.Order = order;
+        }
+
+        public virtual bool IsProgressMarkerRegistered(string id)
+        {
+            return progressMarkers.Any(marker => marker.Id == id);
+        }
+
     }
 
     public enum SaveDirectoryType

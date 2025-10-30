@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Amanita.SaveSys.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
@@ -182,7 +184,58 @@ namespace Amanita.SaveSys
             await Loader.LoadMain(mainData, sceneToLoad);
 
             await ExecuteHandlers(AfterSceneLoadAsync);
+
+            ExecuteSaveLoadedHandlers();
+            static void ExecuteSaveLoadedHandlers()
+            {
+                SaveSystem saveSys = SaveSystem.S;
+                var registeredMarkers = saveSys.ProgressMarkers;
+                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj.FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None).ToList();
+                // We only want to count the handlers that are either:
+                // - set to respond to any save load
+                // - set to respond to at least one marker that is registered in the SaveSystem
+                saveLoadedHandlers = saveLoadedHandlers
+                    .Where(handler => handler.RespondToAny || 
+                    handler.MarkerIDs.Any(markerElem => saveSys.IsProgressMarkerRegistered(markerElem)))
+                    .ToList();
+
+                // Sort them by the lowest order var of the IDs the handlers go by
+                saveLoadedHandlers.Sort(SortSaveLoadedHandlers);
+
+                for (int i = 0; i < saveLoadedHandlers.Count; i++)
+                {
+                    saveLoadedHandlers[i].ExecuteBlock();
+                }
+            }
+
             return mainData;
+        }
+
+        protected static int SortSaveLoadedHandlers(SaveLoadedEvent first, SaveLoadedEvent second)
+        {
+            int lowestOfA = int.MaxValue, lowestOfB = int.MaxValue;
+
+            for (int i = 0; i < first.MarkerIDs.Count; i++)
+            {
+                string currentId = first.MarkerIDs[i];
+                ProgressMarker marker = SaveSystem.S.GetProgressMarkerByID(currentId);
+                if (marker != null && marker.Order < lowestOfA)
+                {
+                    lowestOfA = marker.Order;
+                }
+            }
+
+            for (int i = 0; i < second.MarkerIDs.Count; i++)
+            {
+                string currentId = second.MarkerIDs[i];
+                ProgressMarker marker = SaveSystem.S.GetProgressMarkerByID(currentId);
+                if (marker != null && marker.Order < lowestOfB)
+                {
+                    lowestOfB = marker.Order;
+                }
+            }
+
+            return lowestOfA.CompareTo(lowestOfB);
         }
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
