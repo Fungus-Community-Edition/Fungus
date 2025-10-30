@@ -193,6 +193,124 @@ namespace SaveSystemTests
             Assert.AreEqual(10, loadedMarkers[2].Order);
         }
 
+        // ---------- ProgressMarkerCommand Tests ----------
+
+        [Test]
+        public async Task ProgressMarkerCommand_Register_RegistersMarker_WithOrder()
+        {
+            await CommonSetupAsync();
+
+            var flow = new GameObject("PMC_Flow_Register").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_Register");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.Register, "P_REG", 7);
+
+            cmd.Execute();
+
+            Assert.IsTrue(saveSystem.IsProgressMarkerRegistered("P_REG"), "Marker was not registered.");
+            var marker = saveSystem.GetProgressMarkerByID("P_REG");
+            Assert.NotNull(marker);
+            Assert.AreEqual(7, marker.Order, "Marker order not set during registration.");
+            
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        [Test]
+        public async Task ProgressMarkerCommand_Unregister_RemovesMarker()
+        {
+            await CommonSetupAsync();
+
+            saveSystem.RegisterProgressMarker("P_UNREG", 3);
+
+            var flow = new GameObject("PMC_Flow_Unregister").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_Unregister");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.Unregister, "P_UNREG", 0);
+
+            cmd.Execute();
+
+            Assert.IsFalse(saveSystem.IsProgressMarkerRegistered("P_UNREG"), "Marker was not unregistered.");
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        [Test]
+        public async Task ProgressMarkerCommand_SetOrder_CreatesMarker_WhenMissing()
+        {
+            await CommonSetupAsync();
+
+            var flow = new GameObject("PMC_Flow_SetOrderCreate").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_SetOrderCreate");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.SetOrder, "P_CREATE", 9);
+
+            cmd.Execute();
+
+            Assert.IsTrue(saveSystem.IsProgressMarkerRegistered("P_CREATE"), "Marker should have been created by SetOrder.");
+            var marker = saveSystem.GetProgressMarkerByID("P_CREATE");
+            Assert.NotNull(marker);
+            Assert.AreEqual(9, marker.Order, "Marker order not set correctly on creation via SetOrder.");
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        [Test]
+        public async Task ProgressMarkerCommand_SetOrder_UpdatesExistingMarker()
+        {
+            await CommonSetupAsync();
+
+            saveSystem.RegisterProgressMarker("P_UPDATE", 1);
+
+            var flow = new GameObject("PMC_Flow_SetOrderUpdate").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_SetOrderUpdate");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.SetOrder, "P_UPDATE", 14);
+
+            cmd.Execute();
+
+            var marker = saveSystem.GetProgressMarkerByID("P_UPDATE");
+            Assert.NotNull(marker);
+            Assert.AreEqual(14, marker.Order, "Existing marker order was not updated.");
+
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        [Test]
+        public async Task ProgressMarkerCommand_NullAction_DoesNothing()
+        {
+            await CommonSetupAsync();
+
+            var flow = new GameObject("PMC_Flow_Null").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_Null");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.Null, "IGNORED", 123);
+
+            cmd.Execute();
+
+            // No markers should have been created or modified
+            Assert.AreEqual(0, saveSystem.ProgressMarkers.Count, "Null action should not affect progress markers.");
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        [Test]
+        public async Task ProgressMarkerCommand_GetSummary_ReturnsExpected()
+        {
+            await CommonSetupAsync();
+
+            var flow = new GameObject("PMC_Flow_Summary").AddComponent<Flowchart>();
+            var block = CreatePlainBlock(flow, "PMC_Summary");
+
+            var cmd = AddProgressMarkerCommand(flow, block,
+                ProgressMarkerCommand.PMCAction.Register, "P_SUM", 42);
+
+            string summary = cmd.GetSummary();
+            Assert.AreEqual("Register | ID: P_SUM | Order: 42", summary);
+            toDestroyInTearDown.Add(flow.gameObject);
+        }
+
         // ---------- Helpers ----------
 
         private static async Task WaitForLogCountOrTimeout(int expectedCount, int timeoutMs)
@@ -244,6 +362,43 @@ namespace SaveSystemTests
             cmd.ItemId = flow.NextItemId();
             cmd.OnCommandAdded(block);
             block.CommandList.Add(cmd);
+        }
+
+        private static Block CreatePlainBlock(Flowchart flow, string blockName)
+        {
+            var block = flow.CreateBlock(Vector2.zero);
+            block.BlockName = blockName;
+            return block;
+        }
+
+        private static ProgressMarkerCommand AddProgressMarkerCommand(
+            Flowchart flow,
+            Block block,
+            ProgressMarkerCommand.PMCAction action,
+            string id,
+            int order)
+        {
+            var command = flow.gameObject.AddComponent<ProgressMarkerCommand>();
+            command.ParentBlock = block;
+            command.ItemId = flow.NextItemId();
+            command.OnCommandAdded(block);
+            block.CommandList.Add(command);
+
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+            var type = typeof(ProgressMarkerCommand);
+
+            // Set action
+            var actionField = type.GetField("action", flags);
+            actionField.SetValue(command, action);
+
+            // Replace data objects directly to avoid ambiguous reflection on Value
+            var markerIdField = type.GetField("markerID", flags);
+            markerIdField.SetValue(command, new StringData(id));
+
+            var markerOrderField = type.GetField("markerOrder", flags);
+            markerOrderField.SetValue(command, new IntegerData(order));
+
+            return command;
         }
 
         // Dummy implementations for testing registration

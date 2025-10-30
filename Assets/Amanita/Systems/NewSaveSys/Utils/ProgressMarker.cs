@@ -8,13 +8,11 @@ namespace Amanita.SaveSys
     {
         [SerializeField] protected string id = string.Empty;
         [SerializeField] protected int order = 0;
-        [NonSerialized] protected bool isActive = true;
 
-        public ProgressMarker(string id, int order, bool isActive = true)
+        public ProgressMarker(string id, int order)
         {
             this.id = id;
             this.order = order;
-            this.isActive = isActive;
         }
 
         public virtual string Id
@@ -33,10 +31,5 @@ namespace Amanita.SaveSys
             set { order = value; }
         }
 
-        public virtual bool IsActive
-        {
-            get { return isActive; }
-            set { isActive = value; }
-        }
     }
 }

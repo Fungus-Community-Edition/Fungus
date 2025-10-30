@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using System.Threading;
 using Amanita.SaveSys.VScripting;
 using UnityObj = UnityEngine.Object;
+using Collections;
 
 namespace Amanita.SaveSys
 {
@@ -186,56 +187,57 @@ namespace Amanita.SaveSys
             await ExecuteHandlers(AfterSceneLoadAsync);
 
             ExecuteSaveLoadedHandlers();
-            static void ExecuteSaveLoadedHandlers()
+            void ExecuteSaveLoadedHandlers()
             {
                 SaveSystem saveSys = SaveSystem.S;
-                var registeredMarkers = saveSys.ProgressMarkers;
-                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj.FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None).ToList();
+                var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
+
                 // We only want to count the handlers that are either:
                 // - set to respond to any save load
                 // - set to respond to at least one marker that is registered in the SaveSystem
-                saveLoadedHandlers = saveLoadedHandlers
-                    .Where(handler => handler.RespondToAny || 
-                    handler.MarkerIDs.Any(markerElem => saveSys.IsProgressMarkerRegistered(markerElem)))
-                    .ToList();
+                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
+                .FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
+                .Where(handler => handler.IsAbleToRespond)
+                .ToList();
 
-                // Sort them by the lowest order var of the IDs the handlers go by
-                saveLoadedHandlers.Sort(SortSaveLoadedHandlers);
+                Sort(saveLoadedHandlers);
 
                 for (int i = 0; i < saveLoadedHandlers.Count; i++)
                 {
-                    saveLoadedHandlers[i].ExecuteBlock();
+                    var handler = saveLoadedHandlers[i];
+                    handler.ExecuteBlock();
                 }
             }
 
             return mainData;
         }
 
-        protected static int SortSaveLoadedHandlers(SaveLoadedEvent first, SaveLoadedEvent second)
+        protected virtual void Sort(List<SaveLoadedEvent> toSort)
         {
-            int lowestOfA = int.MaxValue, lowestOfB = int.MaxValue;
+            SaveSystem saveSys = SaveSystem.S;
 
-            for (int i = 0; i < first.MarkerIDs.Count; i++)
+            // To save clock cycles, precompute orders
+            var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
+            foreach (var handler in toSort)
             {
-                string currentId = first.MarkerIDs[i];
-                ProgressMarker marker = SaveSystem.S.GetProgressMarkerByID(currentId);
-                if (marker != null && marker.Order < lowestOfA)
-                {
-                    lowestOfA = marker.Order;
-                }
+                handlerOrders[handler] = handler.LowestOrder();
             }
 
-            for (int i = 0; i < second.MarkerIDs.Count; i++)
+            toSort.Sort((first, second) =>
             {
-                string currentId = second.MarkerIDs[i];
-                ProgressMarker marker = SaveSystem.S.GetProgressMarkerByID(currentId);
-                if (marker != null && marker.Order < lowestOfB)
-                {
-                    lowestOfB = marker.Order;
-                }
-            }
+                int firstOrder = handlerOrders[first];
+                int secondOrder = handlerOrders[second];
 
-            return lowestOfA.CompareTo(lowestOfB);
+                bool shouldUseFallback = firstOrder == secondOrder;
+                if (shouldUseFallback)
+                {
+                    int firstId = first.GetInstanceID();
+                    int secondId = second.GetInstanceID();
+                    return firstId.CompareTo(secondId);
+                }
+
+                return firstOrder.CompareTo(secondOrder);
+            });
         }
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
