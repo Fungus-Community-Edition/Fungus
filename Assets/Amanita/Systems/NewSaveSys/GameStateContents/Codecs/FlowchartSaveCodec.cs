@@ -13,6 +13,11 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSys/Codecs/FlowchartSaveCodec")]
     public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec, IMainSaveDataProducer
     {
+        public virtual void PreInstallInit()
+        {
+            // Nothing to init for now
+        }
+
         public new Flowchart ToMakeFrom
         {
             get { return base.ToMakeFrom; }
@@ -42,6 +47,7 @@ namespace Amanita.SaveSys
             IList<VariableSaveData> varSaves = null;
             IList<BlockSaveData> blockSaves = null;
             FlowchartSaveData saveData = null;
+            UnityThreadUtil.RunOnMainThread(EncodingProcess);
             void EncodingProcess()
             {
                 varSaves = SaveVars(toCreateFrom);
@@ -55,31 +61,6 @@ namespace Amanita.SaveSys
                     SavedVars = varSaves,
                     SavedBlocks = blockSaves,
                 };
-            }
-            if (UnityThreadUtil.IsMainThread)
-            {
-                EncodingProcess();
-            }
-            else
-            {
-                using (var countdown = new CountdownEvent(1))
-                {
-                    MainThreadDispatcher.Enqueue(() =>
-                    {
-                        if (toCreateFrom == null)
-                        {
-                            Debug.LogError("Cannot encode a null Flowchart.");
-                        }
-                        else
-                        {
-                            Debug.Log("Right before encoding process.");
-                            EncodingProcess();
-                        }
-
-                        countdown.Signal(); // Signal that we're done
-                    });
-                    countdown.Wait(); // Wait for the main thread to finish
-                }
             }
 
             return saveData;

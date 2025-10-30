@@ -107,6 +107,10 @@ namespace SaveSystemTests
         // Dummy implementations for testing registration
         public class DummyMainSaveCodec : IMainSaveCodec
         {
+            public virtual void PreInstallInit()
+            {
+                // Do nothing
+            }
             public int Order { get; set; } = 0;
 
             public object ToMakeFrom { get; set; }
@@ -141,6 +145,10 @@ namespace SaveSystemTests
 
         protected class DummySaveDataApplier : ISaveDataApplier
         {
+            public void PreInstallInit()
+            {
+                // Do nothing
+            }
             public int Order => 0;
             public bool CanApply(SaveData saveData) => false;
             public Task ApplyRange(IList<SaveData> datas) => Task.CompletedTask;

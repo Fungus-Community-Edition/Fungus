@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Lorekeeper;
+using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
@@ -15,6 +16,14 @@ namespace Amanita.SaveSys
     {
         // TODO: Support multiple BGM channels
         //[SerializeField] protected int[] bgmChannels = new int[] { 0, 1, 2, 3 };
+
+        public virtual void PreInstallInit()
+        {
+            allAudioClips = ShadowDB.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
+            // ^So we don't have to fetch them every time we want to encode.
+        }
+
+        protected IList<AudioClip> allAudioClips;
 
         public override bool CanHandle(string typeName)
         {
@@ -57,9 +66,6 @@ namespace Amanita.SaveSys
                         LoopEndPoint = audioSys.GetLoopEndPoint(TrackGroup.BGMusic, 0),
                         OneShot = false
                     };
-
-                    // TODO: Account for when the main and intro clips were split off an asset
-                    IList<AudioClip> allAudioClips = ShadowDB.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
 
                     assetIndex = allAudioClips.IndexOf(mainBgm);
                     bool clipIsProjectAsset = assetIndex >= 0;
@@ -118,8 +124,13 @@ namespace Amanita.SaveSys
 
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {
-            IList<SaveData> result = new SaveData[] { EncodeToSave(AudioSystem.S) };
-            onComplete?.Invoke(result);
+            IList<SaveData> result = null;
+            UnityThreadUtil.RunOnMainThread(() =>
+            {
+                IList<SaveData> result = new SaveData[] { EncodeToSave(AudioSystem.S) };
+                onComplete?.Invoke(result);
+            });
+            
             return result;
         }
     }

@@ -13,9 +13,9 @@ namespace Amanita.SaveSys
         menuName = "Amanita/SaveSys/Appliers/VariableSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
-        public override void Init()
+        public override void PreInstallInit()
         {
-            base.Init();
+            base.PreInstallInit();
             variableSourceAssets = Resources.LoadAll<VariableSourceAsset>("");
             // ^Best to grab all these in init so we don't have to do it repeatedly later.
         }

@@ -7,6 +7,11 @@ namespace Amanita.SaveSys
     public interface ISaveDataApplier
     {
         /// <summary>
+        /// Gets called during SaveSystem initialization for any setup this applier needs to do.
+        /// </summary>
+        void PreInstallInit();
+
+        /// <summary>
         /// Decides when this applier should be executed relative to other appliers.
         /// Lower order means it will execute sooner.
         /// </summary>
@@ -29,7 +34,7 @@ namespace Amanita.SaveSys
         /// <summary>
         /// For when there are things you want this applier to do during startup.
         /// </summary>
-        public virtual void Init()
+        public virtual void PreInstallInit()
         {
 
         }

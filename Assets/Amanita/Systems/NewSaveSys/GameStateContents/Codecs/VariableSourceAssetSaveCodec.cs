@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Amanita.FSExt;
 using FullSerializer;
+using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
@@ -13,7 +14,7 @@ namespace Amanita.SaveSys
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {
-        public virtual void Init()
+        public virtual void PreInstallInit()
         {
             _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
         }
@@ -79,7 +80,11 @@ namespace Amanita.SaveSys
         {
             // TODO: Implement an init method for save codecs so that we only need to load
             // certain things once upon startup, rather than every time we encode.
-            IList<VariableSourceAsset> toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            IList<VariableSourceAsset> toEncode = null;
+            UnityThreadUtil.RunOnMainThread(() =>
+            {
+                toEncode = Resources.LoadAll<VariableSourceAsset>("");
+            });
             IList<SaveData> result = new List<SaveData>();
 
             for (int i = 0; i < toEncode.Count; i++)

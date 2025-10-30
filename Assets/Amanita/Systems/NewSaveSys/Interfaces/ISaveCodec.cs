@@ -30,6 +30,11 @@ namespace Amanita.SaveSys
     public interface IMainSaveCodec : ISaveCodec
     {
         /// <summary>
+        /// For any setup this codec needs to do during SaveSystem initialization.
+        /// </summary>
+        void PreInstallInit();
+
+        /// <summary>
         /// The onComplete should contain the produced SaveData instances.
         /// </summary>
         IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null);

@@ -27,6 +27,8 @@ namespace SaveSystemTests
             base.DoSetUp();
             audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
             mycelSaveCodec = ScriptableObject.CreateInstance<MyceliaudioSaveCodec>();
+            audioApplier.PreInstallInit();
+            mycelSaveCodec.PreInstallInit();
             toDestroyInTearDown.Add(audioApplier);
             toDestroyInTearDown.Add(mycelSaveCodec);
         }

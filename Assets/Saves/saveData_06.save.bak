@@ -1,0 +1,19 @@
+﻿{
+    "name": "",
+    "saveID": "9c9fffb0-343f-4449-a6e6-b7a9a1b47fc8",
+    "slotNumber": 1,
+    "saveVersion": "null",
+    "utcTimeStamp": "2025-10-30T02:52:48.4931685Z",
+    "sceneName": "",
+    "sceneBuildIndex": -1,
+    "timeSpanString": "00:00:00",
+    "$type": "Amanita.SaveSys.SaveMetaData"
+}
+
+<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>
+
+{
+    "items": [],
+    "$type": "Amanita.SaveSys.CompositeSaveData"
+}
+<!-- Amanita Save Sys: Save Completed! -->

@@ -66,7 +66,7 @@ namespace SaveSystemTests
             _saveCodec = ScriptableObject.CreateInstance<VariableSourceAssetSaveCodec>();
 
             _applier = ScriptableObject.CreateInstance<VariableSourceAssetApplier>();
-            _applier.Init();
+            _applier.PreInstallInit();
 
             // Wait a frame for Resources changes to settle
             yield return null;

@@ -44,11 +44,15 @@ namespace Amanita.SaveSys
                     AudioClip result = null;
                     const int theOneBgmTrackWeCareAbout = 0;
                     int assetIndex = saveData.GetBgmIndex(theOneBgmTrackWeCareAbout);
-                    bool invalidIndex = assetIndex < 0 || assetIndex >= allAudioClips.Count;
-                    bool weHaveANameToFallBackOn = !string.IsNullOrEmpty(saveData.PlayAudioArgs.MainClipName);
-                    if (invalidIndex && weHaveANameToFallBackOn)
+                    bool validIndex = assetIndex >= 0 && assetIndex < allAudioClips.Count;
+                    string mainClipName = saveData.PlayAudioArgs.MainClipName;
+                    bool canUseNameAsFallback = mainClipName.Length > 0;
+                    if (validIndex)
                     {
-                        string mainClipName = saveData.PlayAudioArgs.MainClipName;
+                        result = allAudioClips[assetIndex];
+                    }
+                    else if (canUseNameAsFallback)
+                    {
                         result = (from elem in allAudioClips
                                   where elem.name.Equals(mainClipName, System.StringComparison.OrdinalIgnoreCase)
                                   select elem).FirstOrDefault();
@@ -58,10 +62,7 @@ namespace Amanita.SaveSys
                                 $"Cannot play BGM upon application.");
                         }
                     }
-                    else
-                    {
-                        result = allAudioClips[assetIndex];
-                    }
+
                     return result;
                 }
                 
