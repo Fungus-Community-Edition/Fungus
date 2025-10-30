@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {
@@ -8,49 +9,15 @@ namespace Amanita.VScripting
     public abstract class VariableData : IVariableData
     { 
         public abstract Type ContentType { get; }
-        public virtual object Value
+        public abstract object BoxedValue
         {
-            get
-            {
-                if (VarRef != null)
-                {
-                    return VarRef.BoxedValue;
-                }
-                else
-                {
-                    return valObj;
-                }
-            }
-            set
-            {
-                var prevValue = Value;
-                if (VarRef != null)
-                {
-                    VarRef.BoxedValue = value;
-                }
-                else
-                {
-                    valObj = value;
-                }
-
-                OnBaseValueSet(prevValue);
-            }
+            get;
+            set;
         }
 
-        [SerializeReference, SerializeField] protected object valObj;
         public abstract IVariable VarRef { get; set; }
 
-        protected virtual void OnBaseValueSet(object prevValue)
-        {
-
-        }
-
         public abstract string GetDescription();
-
-        public virtual void SetContentsTo(IVariableData otherVarData)
-        {
-            this.valObj = (otherVarData as VariableData).valObj;
-        }
 
         public virtual IVariableData GetCopy()
         {
@@ -61,15 +28,35 @@ namespace Amanita.VScripting
             return theCopy;
         }
 
-        
         public virtual void Refresh() { }
+
+        public virtual void SetContentsTo(IVariableData otherVarData)
+        {
+            this.VarRef = otherVarData.VarRef;
+        }
+
+        protected virtual bool CanHoldAsValue(object obj)
+        {
+            bool result;
+
+            if (ReferenceEquals(obj, null))
+            {
+                result = ContentType.IsClass;
+            }
+            else
+            {
+                result = ContentType.IsAssignableFrom(obj.GetType());
+            }
+
+            return result;
+        }
     }
 
     public interface IVariableData
     {
         Type ContentType { get; }
 
-        object Value { get; set; }
+        object BoxedValue { get; set; }
 
         /// <summary>
         /// Returns a human-readable description for UI/debug.
@@ -85,8 +72,10 @@ namespace Amanita.VScripting
 
     public abstract class VariableData<TValue> : VariableData
     {
-        [SerializeField, SerializeReference]
-        protected IVariable varRef;
+        [SerializeReference]
+        protected IVariable varRef; // Should be a muscariable IVariable<TValue>//
+
+        protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
 
         public static implicit operator TValue(VariableData<TValue> someData)
         {
@@ -96,54 +85,106 @@ namespace Amanita.VScripting
 
         public VariableData()
         {
-            valOfType = default;
+            value = default;
             VarRef = null;
         }
 
         public VariableData(TValue startVal = default)
         {
-            valOfType = startVal;
+            value = startVal;
             VarRef = null;
         }
 
         public override Type ContentType => typeof(TValue);
-
-        public virtual new TValue Value
+        
+        public virtual TValue Value
         {
             get
             {
-                if (VarRef != null)
+                if (LegacyVarRef != null)
+                {
+                    return (TValue)LegacyVarRef.BoxedValue;
+                }
+                else if (VarRef != null)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
                 else
                 {
-                    return valOfType;
+                    return value;
                 }
             }
             set
             {
-                if (VarRef != null)
+                if (LegacyVarRef != null)
+                {
+                    LegacyVarRef.BoxedValue = value;
+                }
+                else if (VarRef != null)
                 {
                     VarRef.BoxedValue = value;
                 }
                 else
                 {
-                    base.Value = value;
-                    valOfType = value;
+                    this.value = value;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected TValue valOfType = default;
+        public override object BoxedValue
+        {
+            get
+            {
+                if (LegacyVarRef != null)
+                {
+                    return LegacyVarRef.BoxedValue;
+                }
+                else if (VarRef != null)
+                {
+                    return VarRef.BoxedValue;
+                }
+                else
+                {
+                    return value;
+                }
+            }
+            set
+            {
+                object whatToAssign = null;
+                try
+                {
+                    whatToAssign = (TValue)value;
+                }
+                catch
+                {
+                    Debug.LogWarning($"VariableData of value type {typeof(TValue).Name} could not box value " +
+                        $"of type {value.GetType().Name} to type {typeof(TValue).Name}");
+                }
+
+                if (LegacyVarRef != null)
+                {
+                    LegacyVarRef.BoxedValue = whatToAssign;
+                }
+                else if (VarRef != null)
+                {
+                    VarRef.BoxedValue = whatToAssign;
+                }
+                else
+                {
+                    this.value = (TValue)whatToAssign;
+                }
+            }
+        }
+
+        [SerializeReference, SerializeField] protected TValue value = default;
 
         public override string GetDescription()
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (VarRef == null && valOfType != null)
+            if (VarRef == null && value != null)
             {
-                result = valOfType.ToString();
+                result = value.ToString();
             }
             else if (VarRef != null)
             {
@@ -165,25 +206,34 @@ namespace Amanita.VScripting
 
         public virtual void SetContentsTo(VariableData<TValue> otherVarData)
         {
-            this.valObj = this.valOfType = otherVarData.valOfType;
             this.VarRef = otherVarData.VarRef;
-        }
-
-        protected override void OnBaseValueSet(object prevValue)
-        {
-            valOfType = (TValue)valObj;
+            this.value = otherVarData.value;
         }
 
         public override IVariable VarRef
         {
-            get { return varRef; }
+            get
+            {
+                if (LegacyVarRef != null)
+                {
+                    return LegacyVarRef;
+                }
+                return varRef;
+            }
             set
             {
                 if (value == null) { varRef = null; return; }
 
                 if (this.ContentType.IsAssignableFrom(value.ContentType)) // We want to allow polymorphism
                 {
-                    varRef = (IVariable<TValue>)value;
+                    if (value is UnityObj)
+                    {
+                        LegacyVarRef = (Variable)value;
+                    }
+                    else
+                    {
+                        varRef = (IVariable<TValue>)value;
+                    }
                 }
                 else
                 {

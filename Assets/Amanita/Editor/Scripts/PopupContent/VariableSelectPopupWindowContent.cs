@@ -322,7 +322,6 @@ namespace Amanita.VScripting.EditorUtils
 
                     // Determine unique key
                     newVariable.Key = UniqueKeyGenerator.GetUniqueKeyFor(suggestedName, (IList<IVariable>)flowchart.Variables);
-
                     // If the suggested name exists, insert after that variable; otherwise append.
                     if (!string.IsNullOrEmpty(suggestedName))
                     {

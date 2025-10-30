@@ -4,6 +4,9 @@ using System.Globalization;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using Collections;
+using System.Linq;
 
 namespace Amanita.SaveSys
 {
@@ -11,6 +14,7 @@ namespace Amanita.SaveSys
     /// For things that you'd want to show in the Save Slot UI or things that you'd otherwise
     /// not really consider part of the save's main state.
     /// </summary>
+    [System.Serializable]
     public class SaveMetaData : SaveData, ISaveMetaData, IEquatable<SaveMetaData>
     {
         [SerializeField] protected string name = string.Empty;
@@ -23,6 +27,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected string sceneName = string.Empty;
         [SerializeField] protected int sceneBuildIndex = -1;
         [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
+        [SerializeField] protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
 
         public string SaveName
         {
@@ -107,6 +112,21 @@ namespace Amanita.SaveSys
             }
         }
         protected TimeSpan playtime = TimeSpan.Zero;
+
+        /// <summary>
+        /// Markers indicating progress points reached in the game.
+        /// Getter returns a copy of the list to prevent external modification.
+        /// Setter keeps the same list, only setting the contents to that of the passed one.
+        /// </summary>
+        public IList<ProgressMarker> ProgressMarkers
+        {
+            get { return progressMarkers.ToArray(); }
+            set
+            {
+                progressMarkers.Clear();
+                progressMarkers.AddRange(value);
+            }
+        }
 
         protected virtual void UpdateTimeStampStructure()
         {

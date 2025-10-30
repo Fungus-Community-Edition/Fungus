@@ -41,7 +41,7 @@ namespace Amanita
                     {
                         continue;
                     }
-                    result.AddRange(src.Variables.Where(v => v != null));
+                    result.AddRange(src.Variables.Where(elem => elem != null));
                 }
                 return result;
             }
@@ -298,7 +298,6 @@ namespace Amanita
 #endif
             }
         }
-
 
         private void Awake()
         {

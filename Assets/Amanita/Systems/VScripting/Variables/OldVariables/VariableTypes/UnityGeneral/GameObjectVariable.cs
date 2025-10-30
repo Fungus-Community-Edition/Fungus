@@ -12,23 +12,4 @@ namespace Amanita.VScripting
     {
     }
 
-    /// <summary>
-    /// Container for a GameObject variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(GameObject), typeof(GameObjectVariable))]
-    public class GameObjectData : VariableData<GameObject>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(GameObjectVariable))]
-        public IVariable<GameObject> gameObjectRef;
-
-        public GameObjectData() : base(default) { }
-        public GameObjectData(GameObject startVal = null) : base(startVal) { }
-
-        public override void Refresh()
-        {
-            varRef ??= gameObjectRef;
-        }
-    }
 }

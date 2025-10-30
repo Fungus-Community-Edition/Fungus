@@ -6,6 +6,8 @@
         "/StreamingAssets",
         "/Plugins",
         "/Tests",
-        "/Amanita"
+        "/Amanita/Docs",
+        "/Amanita/Editor",
+        "/Amanita/ThirdParty"
     ]
 }
