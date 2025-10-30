@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,7 +52,16 @@ namespace Amanita.SaveSys
 
             // We assume these are valid due to what we have OnValidate do
             IList<IMainSaveCodec> validMainCodecs = mainCodecs.Cast<IMainSaveCodec>().ToList();
+            foreach (var codec in validMainCodecs)
+            {
+                codec.PreInstallInit();
+            }
+
             IList<ISaveDataApplier> validAppliers = mainAppliers.Cast<ISaveDataApplier>().ToList();
+            foreach (var applier in validAppliers)
+            {
+                applier.PreInstallInit();
+            }
 
             PrepDependencies();
             void PrepDependencies()
@@ -76,7 +84,6 @@ namespace Amanita.SaveSys
                     { SaveDirectoryType.DataPath, Application.dataPath },
                     { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
                 };
-
 
             }
 

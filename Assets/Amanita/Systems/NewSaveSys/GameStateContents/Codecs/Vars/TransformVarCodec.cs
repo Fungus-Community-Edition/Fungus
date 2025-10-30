@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using Amanita.VScripting;
@@ -12,7 +11,9 @@ namespace Amanita.SaveSys
     /// Make sure that this class is NOT used outside the main thread. Unity doesn't
     /// like it when you try to mess with Vector or Transform properties from a different thread.
     /// </summary>
-    public class TransformVarCodec : fsDirectConverter<Transform>, IVarCodec
+    [VarCodec(true, typeof(TransformVariable), typeof(TransformMuscariable))]
+    public class TransformVarCodec : fsDirectConverter<Transform>, IVarCodec, 
+        IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable)
         {
@@ -88,7 +89,23 @@ namespace Amanita.SaveSys
             return json;
         }
 
-        public virtual void Decode(IVariable variable, string data)
+        public virtual void ApplyState(IVariable variable, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(variable, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(variable, saveData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable variable, string data)
         {
             if (variable is not IVariable<Transform> transformVar)
             {
@@ -141,7 +158,7 @@ namespace Amanita.SaveSys
             return whatWeFound;
         }
 
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             IVariable<Transform> transformVar = variable as IVariable<Transform>;
             if (transformVar == null)
@@ -155,7 +172,7 @@ namespace Amanita.SaveSys
                 Debug.LogError($"TransformVarEncoder: Cannot decode variable of type {variable.GetType()} with data of type {saveData.VarTypeName}");
                 return;
             }
-            Decode(variable, saveData.Value);
+            ApplyState(variable, saveData.Value);
         }
 
         public virtual T DecodeTo<T>(string data)

@@ -46,7 +46,8 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             var ex = Assert.Throws<ArgumentException>(
                 () => baseVar.BoxedValue = 12345
             );
-            StringAssert.Contains("cannot hold", ex.Message);
+
+            StringAssert.Contains("Cannot set", ex.Message);
         }
 
     }

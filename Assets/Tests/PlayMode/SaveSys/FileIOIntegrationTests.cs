@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -321,12 +320,6 @@ namespace SaveSystemTests
         public RawIntSaveData() { }
         public RawIntSaveData(int value) { Value = value; }
 
-        public override SaveDataUnit Serialized()
-        {
-            var serializer = SaveSystem.DefaultSerializer;
-            string json = serializer.ToJson(this, prettyPrint: true);
-            return new SaveDataUnit(GetType().Name, json);
-        }
     }
 
     

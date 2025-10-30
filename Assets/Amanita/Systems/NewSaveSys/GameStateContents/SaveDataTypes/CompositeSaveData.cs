@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using FullSerializer;
 using Amanita.FSExt;
 
 namespace Amanita.SaveSys
@@ -93,14 +92,6 @@ namespace Amanita.SaveSys
                     return false;
             }
             return true;
-        }
-
-        public override SaveDataUnit Serialized()
-        {
-            fsSerializer serializer = SaveSystem.DefaultSerializer;
-            string jsonText = serializer.ToJson(this, prettyPrint: true);
-            SaveDataUnit unit = new SaveDataUnit(TypeName, jsonText);
-            return unit;
         }
 
         public virtual T GetSingle<T>() where T : SaveData

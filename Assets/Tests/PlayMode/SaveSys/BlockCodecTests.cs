@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -35,8 +36,8 @@ namespace SaveSystemTests
         [Test]
         public virtual void CorrectBlockName_DEcoded()
         {
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedStr = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedStr);
             Assert.AreEqual(block.BlockName, deserializedBlock.BlockName, "Serialized Block name mismatch.");
         }
 
@@ -45,8 +46,8 @@ namespace SaveSystemTests
         {
             await Task.Delay(100);
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedStr = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedStr);
             Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
         }
 
@@ -65,8 +66,8 @@ namespace SaveSystemTests
             await Task.Delay(500);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedData = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
         }
 
@@ -85,8 +86,8 @@ namespace SaveSystemTests
             await Task.Delay(100);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedData = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
         }
 
@@ -95,9 +96,9 @@ namespace SaveSystemTests
         {
             await Task.Delay(100);
             BlockSaveData beforeSerializing = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = beforeSerializing.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
-            
+            string serializedData = serializer.ToJson(beforeSerializing);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
+
             Assert.IsNotNull(deserializedBlock, "Deserialized Block is null.");
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -150,13 +149,6 @@ namespace Amanita.SaveSys
             UpdateTimeStampStructure();
         }
 
-        public override SaveDataUnit Serialized()
-        {
-            string json = Serializer.ToJson(this, true);
-            SaveDataUnit result = new(TypeName, json);
-            return result;
-        }
-
         public SaveMetaData()
         {
             this.saveID = Guid.NewGuid().ToString();
@@ -208,14 +200,6 @@ namespace Amanita.SaveSys
         }
 
         public static int IDAndVersionLengthCap { get; } = 300;
-
-        public static SaveMetaData DeserializeFrom(SaveDataUnit item)
-        {
-            SaveMetaData result = new SaveMetaData();
-            Serializer.TryFromJsonOverwrite(item.Content, result);
-            result.OnDeserialize();
-            return result;
-        }
 
         public override void OnDeserialize()
         {

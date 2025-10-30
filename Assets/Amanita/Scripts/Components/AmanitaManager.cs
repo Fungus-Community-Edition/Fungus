@@ -4,8 +4,10 @@ using Amanita.SaveSys;
 using Amanita.Tweening;
 using Amanita.VScripting;
 using FullSerializer;
+using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -16,6 +18,14 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
+        [InitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void MaintainStatics()
+        {
+            Debug.Log("AmanitaManager: MaintainStatics called");
+            ShadowDB = Resources.Load<ShadowDatabase>("ShadowDatabase");
+        }
+
         [SerializeField] private List<VariableSourceAsset> globalVariables;
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
@@ -77,6 +87,27 @@ namespace Amanita
 
         volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to the multi-thread.
         private static readonly object _ensureLock = new object();
+
+        public static ShadowDatabase ShadowDB
+        {
+            get
+            {
+                if (shadowDb == null)
+                {
+                    shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase");
+                    if (shadowDb == null)
+                    {
+                        Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
+                    }
+                }
+                return shadowDb;
+            }
+            private set
+            {
+                shadowDb = value;
+            }
+        }
+        private static ShadowDatabase shadowDb;
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).

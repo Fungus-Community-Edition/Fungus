@@ -1,4 +1,3 @@
-using Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -83,36 +82,20 @@ namespace Amanita.SaveSys
                 {
                     IMainSaveCodec currentCodec = mainCodecs[i];
 
-                    // Prefer producer path if implemented
-                    if (currentCodec is IMainSaveDataProducer producer)
-                    {
-                        await Task.Run(() => producer.FindAndCreateAll(RegisterResults));
+                    await Task.Run(() => currentCodec.FindAndCreateAll(RegisterResults));
 
-                        void RegisterResults(IList<SaveData> results)
+                    void RegisterResults(IList<SaveData> results)
+                    {
+                        for (int j = 0; j < results.Count; j++)
                         {
-                            for (int j = 0; j < results.Count; j++)
+                            var resultEl = results[j];
+                            if (resultEl != null)
                             {
-                                var resultEl = results[j];
-                                if (resultEl != null)
-                                {
-                                    items.Add(resultEl);
-                                }
+                                items.Add(resultEl);
                             }
                         }
                     }
-                    else
-                    {
-                        // Compatibility fallback (will be unused once all codecs implement producer)
-                        await Task.Run(() => currentCodec.FindAndEncodeAll(units =>
-                        {
-                            for (int j = 0; j < units.Count; j++)
-                            {
-                                var unit = units[j];
-                                var data = currentCodec.DecodeFrom(unit);
-                                if (data != null) items.Add(data);
-                            }
-                        }));
-                    }
+                    
                 }
 
                 return items;

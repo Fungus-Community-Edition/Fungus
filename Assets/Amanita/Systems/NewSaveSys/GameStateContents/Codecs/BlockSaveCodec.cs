@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Linq;
 using Amanita.VScripting;
 using Amanita.FSExt;
+using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -20,10 +21,14 @@ namespace Amanita.SaveSys
             return typeName == nameof(Flowchart);
         }
 
-        public override SaveData DecodeFrom(SaveDataUnit unit)
+        public override BlockSaveData Decode(string rawText)
         {
-            BlockSaveData result = Serializer.FromJson<BlockSaveData>(unit.Content);
-            return result;
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                BlockSaveData result = serializer.FromJson<BlockSaveData>(rawText);
+                return result;
+            }
         }
 
         public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
@@ -69,17 +74,6 @@ namespace Amanita.SaveSys
             return blockSave;
         }
 
-        public override SaveDataUnit EncodeToUnit(Block from)
-        {
-            BlockSaveData blockSaveData = EncodeToSave(from);
-            SaveDataUnit result = blockSaveData.Serialized();
-            return result;
-        }
-
-        public override SaveDataUnit EncodeToUnit()
-        {
-            return EncodeToUnit(ToMakeFrom);
-        }
 
     }
 }
