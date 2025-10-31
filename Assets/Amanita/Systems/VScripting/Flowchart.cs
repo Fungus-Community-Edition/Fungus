@@ -288,6 +288,11 @@ namespace Amanita.VScripting
             {
                 RemoveVariableAtIndex(0);
             }
+
+            while (muscariables.Count > 0)
+            {
+                RemoveMuscariableAtIndex(0);
+            }
         }
 
         protected virtual void GetAndInitVars()
@@ -652,7 +657,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual int VariableCount { get { return legacyVariables.Count; } }
+        public virtual int VariableCount { get { return muscariables.Count; } }
 
         /// <summary>
         /// Description text displayed in the Flowchart editor window
@@ -1678,7 +1683,15 @@ namespace Amanita.VScripting
                     $" Muscariable equivalent. Returning null.");
                 toRegister = newVar.ToMuscariable();
                 AddVariable(toRegister);
-                Destroy(newVar as MonoBehaviour);
+
+                if (Application.IsPlaying(this))
+                {
+                    Destroy(newVar as MonoBehaviour);
+                }
+                else
+                {
+                    DestroyImmediate(newVar as MonoBehaviour);
+                }
             }
 
             AddVariable(toRegister);
