@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Amanita",
         "AmanitaEditor",
-        "AmanitaEditorTests"
+        "AmanitaEditorTests",
+        "Lorekeeper"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
