@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using Amanita.VScripting.Commands;
-using System.Linq;
 
 namespace Amanita.VScripting.EditorUtils
 {

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {
@@ -71,8 +72,10 @@ namespace Amanita.VScripting
 
     public abstract class VariableData<TValue> : VariableData
     {
-        [SerializeField, SerializeReference]
-        protected IVariable varRef;
+        [SerializeReference]
+        protected IVariable varRef; // Should be a muscariable IVariable<TValue>//
+
+        protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
 
         public static implicit operator TValue(VariableData<TValue> someData)
         {
@@ -98,7 +101,11 @@ namespace Amanita.VScripting
         {
             get
             {
-                if (VarRef != null)
+                if (LegacyVarRef != null)
+                {
+                    return (TValue)LegacyVarRef.BoxedValue;
+                }
+                else if (VarRef != null)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
@@ -109,7 +116,11 @@ namespace Amanita.VScripting
             }
             set
             {
-                if (VarRef != null)
+                if (LegacyVarRef != null)
+                {
+                    LegacyVarRef.BoxedValue = value;
+                }
+                else if (VarRef != null)
                 {
                     VarRef.BoxedValue = value;
                 }
@@ -145,7 +156,7 @@ namespace Amanita.VScripting
 
             if (VarRef == null && value != null)
             {
-                result = value.ToString();
+                result = value.ToString();//
             }
             else if (VarRef != null)
             {
@@ -174,14 +185,28 @@ namespace Amanita.VScripting
 
         public override IVariable VarRef
         {
-            get { return varRef; }
+            get
+            {
+                if (LegacyVarRef != null)
+                {
+                    return LegacyVarRef;
+                }
+                return varRef;
+            }
             set
             {
                 if (value == null) { varRef = null; return; }
 
                 if (this.ContentType.IsAssignableFrom(value.ContentType)) // We want to allow polymorphism
                 {
-                    varRef = (IVariable<TValue>)value;
+                    if (value is UnityObj)
+                    {
+                        LegacyVarRef = (Variable)value;
+                    }
+                    else
+                    {
+                        varRef = (IVariable<TValue>)value;
+                    }
                 }
                 else
                 {

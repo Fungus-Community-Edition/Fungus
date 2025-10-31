@@ -10,16 +10,17 @@ namespace Amanita.VScripting
     [VariableData(typeof(GameObject), typeof(IVariable<GameObject>))]
     public class GameObjectData : VariableData<GameObject>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(GameObjectVariable))]
         public GameObjectVariable gameObjectRef;
 
         public GameObjectData() : base(default) { }
         public GameObjectData(GameObject startVal = null) : base(startVal) { }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= gameObjectRef;
+            get => gameObjectRef;
+            set => gameObjectRef = value as GameObjectVariable;
         }
     }
 
@@ -30,41 +31,48 @@ namespace Amanita.VScripting
     [VariableData(typeof(Transform), typeof(IVariable<Transform>))]
     public class TransformData : VariableData<Transform>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(TransformVariable))]
         public TransformVariable transformRef;
 
+        protected override Variable LegacyVarRef
+        {
+            get => transformRef;
+            set => transformRef = value as TransformVariable;
+        }
+
         public TransformData() : base(default) { }
         public TransformData(Transform startVal = null) : base(startVal) { }
-
-        public override void Refresh()
-        {
-            varRef ??= transformRef;
-        }
 
         public override IVariable VarRef
         {
             get
             {
-                // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
-                return varRef ?? transformRef;
+                // Prefer legacy field for compatibility
+                return transformRef != null ? transformRef : base.VarRef;
             }
             set
             {
-                if (value == null) { varRef = null; transformRef = null; return; }
+                if (value == null) { transformRef = null; base.VarRef = null; return; }
 
-                // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
                 if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
-                    // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
-                    varRef = value;
-
-                    transformRef = value as TransformVariable;
+                    if (value is UnityObj)
+                    {
+                        // Unity Object must be kept in legacy object field
+                        transformRef = value as TransformVariable;
+                        base.VarRef = null;
+                    }
+                    else
+                    {
+                        // Pure managed IVariable<T>
+                        base.VarRef = value;
+                        transformRef = null;
+                    }
                 }
                 else
                 {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
+                    throw new System.InvalidCastException($"This can only accept a variable type that holds content of type {ContentType.Name}.");
                 }
             }
         }
@@ -77,47 +85,45 @@ namespace Amanita.VScripting
     [VariableData(typeof(UnityObj), typeof(IVariable<UnityObj>))]
     public class ObjectData : VariableData<UnityObj>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(ObjectVariable))]
         public ObjectVariable objectRef;
 
+        protected override Variable LegacyVarRef
+        {
+            get => objectRef;
+            set => objectRef = value as ObjectVariable;
+        }
+
         public ObjectData() : base(default) { }
         public ObjectData(UnityObj startVal = null) : base(startVal) { }
-
-        // Ensure runtime/backing-field synchronization when serialized fields are manipulated
-        public override void Refresh()
-        {
-            // Try to populate the derived field from the serialized protected varRef if possible.
-            // Note: varRef may be a VariablePointer<T> (for legacy vars of more specific Unity types).
-            // We won't force a cast from VariablePointer<T> to IVariable<UnityObj> here — keep objectRef only
-            // when it's truly an ObjectVariable. Always ensure the base protected varRef is populated if objectRef exists.
-            objectRef ??= varRef as ObjectVariable;
-            varRef ??= objectRef;
-        }
 
         public override IVariable VarRef
         {
             get
             {
-                // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
-                return varRef ?? objectRef;
+                return objectRef != null ? objectRef : base.VarRef;
             }
             set
             {
-                if (value == null) { varRef = null; objectRef = null; return; }
+                if (value == null) { objectRef = null; base.VarRef = null; return; }
 
-                // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
                 if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
-                    // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
-                    varRef = value;
-                    // If it's directly an ObjectVariable, populate objectRef for older code paths that use it.
-                    objectRef = value as ObjectVariable;
+                    if (value is UnityObj)
+                    {
+                        objectRef = value as ObjectVariable;
+                        base.VarRef = null;
+                    }
+                    else
+                    {
+                        base.VarRef = value;
+                        objectRef = null;
+                    }
                 }
                 else
                 {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new System.InvalidCastException(errorMessage);
+                    throw new System.InvalidCastException($"This can only accept a variable type that holds content of type {ContentType.Name}.");
                 }
             }
         }

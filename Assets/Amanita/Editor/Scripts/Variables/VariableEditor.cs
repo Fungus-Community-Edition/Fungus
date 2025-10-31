@@ -35,7 +35,7 @@ namespace Amanita.VScripting.EditorUtils
 
         /// <summary>
         /// Handles drawing the dropdown that lets you select variables in a Command's UI.
-        /// Works for both ObjectReference-backed (legacy Variable/MuscariableHolder) and ManagedReference-backed (IVariable) properties.
+        /// Works for both ObjectReference-backed (legacy Variable) and ManagedReference-backed (IVariable) properties.
         /// </summary>
         public static void VariableField(SerializedProperty property, 
                                          GUIContent label, 
@@ -109,13 +109,13 @@ namespace Amanita.VScripting.EditorUtils
 
                         // Selection match logic:
                         // - If property is ObjectReference: match against legacy Variable or any UnityObject implementing IVariable.
-                        // - If ManagedReference: match reference-equality against the current managed reference value.
+                        // - If ManagedReference: semantically match managed or legacy via pointer unwrapping.
                         var elemAsUnityObj = elem as UnityObject;
                         if (!isManagedRef && selectedLegacy != null && elemAsUnityObj == selectedLegacy)
                         {
                             selectedIndex = index;
                         }
-                        else if (isManagedRef && selectedIVar != null && ReferenceEquals(elem, selectedIVar))
+                        else if (isManagedRef && selectedIVar != null && VarsSemanticallyEqual(selectedIVar, elem))
                         {
                             selectedIndex = index;
                         }
@@ -147,6 +147,8 @@ namespace Amanita.VScripting.EditorUtils
                             }
 
                             string publicVarKey = $"{fcElem.name}/{varElem.Key}";
+                            // ^To make it clear which vars belong to which Flowcharts
+
                             variableKeys.Add(publicVarKey);
                             variableObjects.Add(varElem);
                             index++;
@@ -156,7 +158,7 @@ namespace Amanita.VScripting.EditorUtils
                             {
                                 selectedIndex = index;
                             }
-                            else if (isManagedRef && selectedIVar != null && ReferenceEquals(varElem, selectedIVar))
+                            else if (isManagedRef && selectedIVar != null && VarsSemanticallyEqual(selectedIVar, varElem))
                             {
                                 selectedIndex = index;
                             }
@@ -178,13 +180,106 @@ namespace Amanita.VScripting.EditorUtils
             IVariable chosen = variableObjects[selectedIndex];
             if (isManagedRef)
             {
-                property.managedReferenceValue = chosen;
+                if (chosen == null)
+                {
+                    property.managedReferenceValue = null;
+                }
+                else
+                {
+                    // If the destination is AnyVariableAndDataPair.variable and the choice is legacy,
+                    // route to the sibling legacyVariable field instead of writing a UnityObj into a SerializeReference.
+                    var chosenAsUnityObj = chosen as UnityObject;
+                    if (chosenAsUnityObj != null)
+                    {
+                        // Try to detect the AnyVariableAndDataPair.variable path and set its legacyVariable sibling.
+                        string legacyPath = ComputeSiblingLegacyPath(property.propertyPath);
+                        if (!string.IsNullOrEmpty(legacyPath))
+                        {
+                            var legacyProp = property.serializedObject.FindProperty(legacyPath);
+                            if (legacyProp != null && legacyProp.propertyType == SerializedPropertyType.ObjectReference)
+                            {
+                                legacyProp.objectReferenceValue = chosenAsUnityObj as Variable;
+                                property.managedReferenceValue = null; // keep only one authoritative source
+                                // Apply so subsequent GUI draws are in sync
+                                legacyProp.serializedObject.ApplyModifiedProperties();
+                                property.serializedObject.ApplyModifiedProperties();
+                            }
+                            else
+                            {
+                                // Fallback: if not our pair, assign as before to managed ref (for other systems)
+                                property.managedReferenceValue = chosen;
+                            }
+                        }
+                        else
+                        {
+                            // Not an AnyVariableAndDataPair.variable – leave behavior unchanged
+                            property.managedReferenceValue = chosen;
+                        }
+                    }
+                    else
+                    {
+                        // Pure managed IVariable is safe to assign directly
+                        property.managedReferenceValue = chosen;
+                    }
+                }
             }
             else
             {
                 // For ObjectReference fields, only UnityEngine.Object-backed variables can be assigned
                 property.objectReferenceValue = chosen as UnityObject;
             }
+        }
+
+        private static string ComputeSiblingLegacyPath(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+
+            // Expect last segment 'variable' => replace with 'legacyVariable'
+            // Works for nested paths like "pairs.Array.data[0].variable"
+            int idx = path.LastIndexOf(".variable", StringComparison.Ordinal);
+            if (idx >= 0)
+            {
+                return path.Substring(0, idx) + ".legacyVariable";
+            }
+            // Root field named 'variable'
+            if (path == "variable")
+                return "legacyVariable";
+
+            return null;
+        }
+
+        private static bool VarsSemanticallyEqual(IVariable first, IVariable second)
+        {
+            if (first == null || second == null) return false;
+
+            // Unwrap pointers if needed
+            IVariable Unwrap(IVariable v)
+            {
+                if (v is IVariablePointer p && p.Component is IVariable inner) return inner;
+                return v;
+            }
+            first = Unwrap(first);
+            second = Unwrap(second);
+
+            try
+            {
+                if ((first.ItemId != 0 || second.ItemId != 0) && first.ItemId == second.ItemId) return true;
+            }
+            catch { /* ignore */ }
+
+            try
+            {
+                bool bothHaveValidOwners = first.Owner != null && second.Owner != null;
+                bool bothHaveSameValidOwner = bothHaveValidOwners && ReferenceEquals(first.Owner, second.Owner);
+                bool bothHaveSameValidKey = !string.IsNullOrEmpty(first.Key) && first.Key == second.Key;
+                if (bothHaveSameValidOwner && bothHaveSameValidKey)
+                {
+                    return true;
+                }
+            }
+            catch { /* ignore */ }
+
+            return ReferenceEquals(first, second);
         }
     }
 
@@ -240,12 +335,7 @@ namespace Amanita.VScripting.EditorUtils
                                          FlowchartWindow.GetFlowchart(),
                                          variableProperty.defaultText,
                                          ShouldBeAnOptionInTheDropdown,
-                                         VariableSelectionPopup);
-
-            int VariableSelectionPopup(string label,  int selectedIndex, string[] optionsToDisplay)
-            {
-                return EditorGUI.Popup(position, label, selectedIndex, optionsToDisplay);
-            }
+                                         (lbl, idx, options) => EditorGUI.Popup(position, lbl, idx, options));
 
             // Commit changes defensively
             property.serializedObject?.ApplyModifiedProperties();

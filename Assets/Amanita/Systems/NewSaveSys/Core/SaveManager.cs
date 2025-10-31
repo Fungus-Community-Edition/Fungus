@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 using System.Threading;
 using Amanita.SaveSys.VScripting;
 using UnityObj = UnityEngine.Object;
-using Collections;
 
 namespace Amanita.SaveSys
 {

@@ -9,19 +9,19 @@ namespace Amanita.VScripting
     [VariableData(typeof(int), typeof(IVariable<int>))]
     public class IntegerData : VariableData<int>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(IntegerVariable))]
         public IntegerVariable integerRef;
+        protected override Variable LegacyVarRef
+        {
+            get => integerRef;
+            set => integerRef = value as IntegerVariable;
+        }
 
         public IntegerData() : base(default) { }
 
         public IntegerData(int startVal) : base(startVal)
         {
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= integerRef;
         }
 
     }
@@ -33,18 +33,18 @@ namespace Amanita.VScripting
     [System.Serializable]
     public class FloatData : VariableData<float>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(FloatVariable))]
         public FloatVariable floatRef;
+        protected override Variable LegacyVarRef
+        {
+            get => floatRef;
+            set => floatRef = value as FloatVariable;
+        }
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
         {
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= floatRef;
         }
 
     }
@@ -56,9 +56,15 @@ namespace Amanita.VScripting
     [VariableData(typeof(bool), typeof(IVariable<bool>))]
     public class BooleanData : VariableData<bool>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(BooleanVariable))]
         public BooleanVariable booleanRef;
+
+        protected override Variable LegacyVarRef
+        {
+            get => booleanRef;
+            set => booleanRef = value as BooleanVariable;
+        }
 
         [SerializeField]
         public bool booleanVal;
@@ -71,9 +77,49 @@ namespace Amanita.VScripting
             return booleanData.Value;
         }
 
-        public override void Refresh()
+    }
+
+
+    /// <summary>
+    /// Container for a Vector2 variable reference or constant value.
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Vector2), typeof(Vector2Variable))]
+    public class Vector2Data : VariableData<Vector2>
+    {
+        [SerializeField, SerializeReference]
+        [VariableProperty("<Value>", typeof(Vector2Variable))]
+        public Vector2Variable vector2Ref;
+
+        public Vector2Data() : base(default) { }
+        public Vector2Data(Vector2 startVal = default) : base(startVal) { }
+
+        protected override Variable LegacyVarRef
         {
-            varRef ??= booleanRef;
+            get => vector2Ref;
+            set => vector2Ref = value as Vector2Variable;
+        }
+    }
+
+
+    /// <summary>
+    /// Container for a Vector3 variable reference or constant value.
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Vector3), typeof(Vector3Variable))]
+    public class Vector3Data : VariableData<Vector3>
+    {
+        [SerializeField, SerializeReference]
+        [VariableProperty("<Value>", typeof(Vector3Variable))]
+        public Vector3Variable vector3Ref;
+
+        public Vector3Data() : base(default) { }
+        public Vector3Data(Vector3 startVal = default) : base(startVal) { }
+
+        protected override Variable LegacyVarRef
+        {
+            get => vector3Ref;
+            set => vector3Ref = value as Vector3Variable;
         }
     }
 }

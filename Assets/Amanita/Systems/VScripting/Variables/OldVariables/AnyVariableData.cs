@@ -19,7 +19,8 @@ namespace Amanita.VScripting
     public partial class AnyVariableData : VariableData, ISerializationCallbackReceiver
     {
         [SerializeReference] // Allows polymorphic serialization of IVariableData
-        protected IVariableData data;
+        protected IVariableData data; 
+        // ^Represents the actual data being held, which can change dynamically
 
         public override baseObj BoxedValue
         {

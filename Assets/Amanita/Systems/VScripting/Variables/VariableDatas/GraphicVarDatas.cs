@@ -11,7 +11,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(string), typeof(IVariable<string>))]
     public class StringData : VariableData<string>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(StringVariable))]
         public StringVariable stringRef;
 
@@ -26,9 +26,10 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= stringRef;
+            get => stringRef;
+            set => stringRef = value as StringVariable;
         }
 
         public override string Value
@@ -96,7 +97,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(Color), typeof(IVariable<Color>))]
     public class ColorData : VariableData<Color>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(ColorVariable))]
         public ColorVariable colorRef;
 
@@ -108,9 +109,10 @@ namespace Amanita.VScripting
             return colorData.Value;
         }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= colorRef;
+            get => colorRef;
+            set => colorRef = value as ColorVariable;
         }
 
     }
@@ -122,7 +124,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(Sprite), typeof(IVariable<Sprite>))]
     public class SpriteData : VariableData<Sprite>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(SpriteVariable))]
         public SpriteVariable spriteRef;
 
@@ -134,9 +136,10 @@ namespace Amanita.VScripting
             return spriteData.Value;
         }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= spriteRef;
+            get => spriteRef;
+            set => spriteRef = value as SpriteVariable;
         }
 
     }
@@ -148,7 +151,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(Texture), typeof(IVariable<Texture>))]
     public class TextureData : VariableData<Texture>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(TextureVariable))]
         public TextureVariable textureRef;
 
@@ -158,9 +161,10 @@ namespace Amanita.VScripting
         {
         }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= textureRef;
+            get => textureRef;
+            set => textureRef = value as TextureVariable;
         }
 
     }
@@ -172,7 +176,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(Material), typeof(IVariable<Material>))]
     public class MaterialData : VariableData<Material>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(MaterialVariable))]
         public MaterialVariable materialRef;
 
@@ -184,9 +188,10 @@ namespace Amanita.VScripting
             return materialData.Value;
         }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= materialRef;
+            get => materialRef;
+            set => materialRef = value as MaterialVariable;
         }
     }
 
@@ -194,7 +199,7 @@ namespace Amanita.VScripting
     [VariableData(typeof(Animator), typeof(IVariable<Animator>))]
     public class AnimatorData : VariableData<Animator>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(AnimatorVariable))]
         public AnimatorVariable animatorRef;
 
@@ -206,9 +211,10 @@ namespace Amanita.VScripting
         public AnimatorData() : base(default) { }
         public AnimatorData(Animator startVal = default) : base(startVal) { }
 
-        public override void Refresh()
+        protected override Variable LegacyVarRef
         {
-            varRef ??= animatorRef;
+            get => animatorRef;
+            set => animatorRef = value as AnimatorVariable;
         }
     }
 

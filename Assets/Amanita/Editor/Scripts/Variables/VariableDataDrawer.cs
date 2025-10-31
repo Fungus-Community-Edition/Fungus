@@ -2,7 +2,6 @@ using Amanita.EditorUtils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
@@ -55,7 +54,9 @@ namespace Amanita.VScripting.EditorUtils
             // We only want to draw the literal value when the varRef is null
             bool shouldDrawLiteral = !VarRefPropHasAnythingAssigned(referenceProp);
             if (shouldDrawLiteral)
+            {
                 EditorGUI.PropertyField(valueRect, valueProp, GUIContent.none);
+            }
 
             DrawReferenceField();
             void DrawReferenceField()
@@ -76,7 +77,8 @@ namespace Amanita.VScripting.EditorUtils
                     var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
                     if (dataAttr == null)
                     {
-                        Debug.LogWarning($"VariableDataAttribute for {varData.GetType().Name} not found. May be sign of underlying problem.");
+                        Debug.LogWarning($"VariableDataAttribute for {varData.GetType().Name} not found. " +
+                            $"May be sign of underlying problem.");
                         return;
                     }
 
@@ -101,7 +103,7 @@ namespace Amanita.VScripting.EditorUtils
                             AddOption(elem.Key, elem);
 
                             int idx = _validVarsOrdered.Count - 1;
-                            if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
+                            if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
                             {
                                 selectedIndex = idx;
                                 Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
@@ -119,17 +121,19 @@ namespace Amanita.VScripting.EditorUtils
                         {
                             var otherChart = otherFlowchartsInScene[i];
                             IList<IVariable> validVarsInOtherChart = otherChart.Variables
-                                .Where(elem => elem.ContentType.Equals(contentType) && elem.Scope == VariableScope.Public)
+                                .Where(elem => elem.ContentType.Equals(contentType) 
+                                && elem.Scope == VariableScope.Public)
                                 .ToList();
 
                             for (int j = 0; j < validVarsInOtherChart.Count; j++)
                             {
                                 var elem = validVarsInOtherChart[j];
                                 string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
+                                // ^So we know which vars belong to which Flowcharts
                                 AddOption(namespacedKey, elem);
 
                                 int idx = _validVarsOrdered.Count - 1;
-                                if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
+                                if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
                                 {
                                     selectedIndex = idx;
                                     Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
@@ -141,22 +145,29 @@ namespace Amanita.VScripting.EditorUtils
                     RegisterGlobalVars();
                     void RegisterGlobalVars()
                     {
-                        IList<IVariable> globalVars = AmanitaManager.S.GlobalVariables;
-                        IList<IVariable> validGlobalVars = globalVars
-                            .Where(elem => elem.ContentType.Equals(contentType))
-                            .ToList();
-
-                        for (int i = 0; i < validGlobalVars.Count; i++)
+                        var ammieManager = AmanitaManager.S;
+                        var varSources = ammieManager.GlobalVariableSources;
+                        // ^So we can specify which vars come from which sources
+                        for (int i = 0; i < varSources.Count; i++)
                         {
-                            var elem = validGlobalVars[i];
-                            string namespacedKey = $"Global/{elem.Key}";
-                            AddOption(namespacedKey, elem);
-
-                            int idx = _validVarsOrdered.Count - 1;
-                            if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
+                            var source = varSources[i];
+                            IList<IVariable> validVarsInSource = source.Variables
+                                .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
+                                .ToList();
+                            for (int j = 0; j < validVarsInSource.Count; j++)
                             {
-                                selectedIndex = idx;
-                                Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                                var elem = validVarsInSource[j];
+                                string namespacedKey = $"~{source.name}~/{elem.Key}";
+                                // ^Rather than make a group under Globals, we just enclose the source's name in tildes
+                                // to indicate it's globalness. In the docs, we might want to recommend that users
+                                // avoid tildes in their Flowchart names to prevent confusion.
+                                AddOption(namespacedKey, elem);
+                                int idx = _validVarsOrdered.Count - 1;
+                                if (selectedVariable != null && ReferenceEquals(selectedVariable,  elem))
+                                {
+                                    selectedIndex = idx;
+                                    Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                                }
                             }
                         }
                     }
@@ -165,8 +176,9 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         if (_labelsSeen.Contains(label))
                         {
-                            Debug.LogWarning($"Variable key collision when trying to add variable {label} to the dropdown for {varDataProp.propertyPath}. " +
-                                             $"There is already a variable with that key in the dropdown. Skipping this one.");
+                            Debug.LogWarning($"Variable key collision when trying to add variable {label} to the " +
+                                $"dropdown for {varDataProp.propertyPath}. There is already a variable with that " +
+                                $"key in the dropdown. Skipping this one.");
                             return;
                         }
 
@@ -176,7 +188,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 bool noVarsFound = _validVarsOrdered.Count == 0;
-                if (noVarsFound)
+                if (!shouldDrawLiteral && noVarsFound)
                 {
                     return;
                 }
@@ -187,7 +199,7 @@ namespace Amanita.VScripting.EditorUtils
                 int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
                 IVariable chosenBefore = _validVarsOrdered[prevSelectedIndex].Value;
 
-                if (!shouldDrawLiteral && chosenBefore != null)
+                if (chosenBefore != null)
                 {
                     popupRect = wholeFieldRect;
                 }
@@ -202,7 +214,8 @@ namespace Amanita.VScripting.EditorUtils
                 IVariable chosenNow = _validVarsOrdered[selectedIndex].Value;
                 referenceProp.AssignVarRef(chosenNow, varData.ContentType);
             }
-
+            
+            
             EditorGUI.indentLevel = prevIndent;
 
             EditorGUI.EndProperty();
@@ -210,86 +223,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected UnityObj _variableSourceContext;
 
-        protected virtual UnityObj GetBindingTarget(IVariable variable)
-        {
-            if (variable is UnityObj unityObj)
-                return unityObj; // Legacy variable
-
-            return FindPersistentHolderFor(variable, _variableSourceContext);
-        }
-
-        protected virtual MuscariableHolder FindPersistentHolderFor(IVariable variable, UnityObj context)
-        {
-            if (context == null || _assetResolver == null) return null;
-
-            var path = _assetResolver.GetAssetPath(context);
-
-            // Use resolver to enumerate holders (testable / mockable)
-            IList<MuscariableHolder> holders = _assetResolver.LoadAllAssetsAtPath<MuscariableHolder>(path)
-                .OfType<MuscariableHolder>()
-                .ToList();
-
-            Debug.Log($"[FindPersistentHolderFor] Searching holders for var key='{variable?.Key}' itemID={variable?.ItemId} at assetPath='{path}'. holders.Count={holders.Count}");
-
-            LogDiscoveredHoldersForDiagnostings();
-            void LogDiscoveredHoldersForDiagnostings()
-            {
-                for (int i = 0; i < holders.Count; i++)
-                {
-                    var holderElem = holders[i];
-                    int innerHash = 0;
-                    string innerKey = "(null)";
-                    try
-                    {
-                        if (holderElem.Inner != null)
-                        {
-                            innerHash = RuntimeHelpers.GetHashCode(holderElem.Inner);
-                            innerKey = holderElem.Inner.Key;
-                        }
-                    }
-                    catch { /* ignore */ }
-                    Debug.Log($"[FindPersistentHolderFor] holder[{i}] name='{holderElem.name}' instanceId={holderElem.GetInstanceID()} itemID={holderElem.ItemId} innerKey='{innerKey}' innerHash={innerHash}");
-                }
-            }
-
-            // 1) Prefer matching by stable ItemID (survives domain reloads)
-            if (variable != null)
-            {
-                var byId = holders.FirstOrDefault(elem => elem.ItemId == variable.ItemId);
-                if (byId != null)
-                {
-                    Debug.Log($"[FindPersistentHolderFor] Matched by ItemID: holder name='{byId.name}' instanceId={byId.GetInstanceID()} -> var key='{variable.Key}' itemID={variable.ItemId}");
-                    return byId;
-                }
-            }
-
-            // 2) Fallback: try matching by the Inner reference (existing behavior)
-            foreach (var elem in holders)
-            {
-                try
-                {
-                    if (elem.Inner == variable)
-                    {
-                        Debug.Log($"[FindPersistentHolderFor] Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
-                        return elem;
-                    }
-                }
-                catch
-                {
-                    var inner = elem.Inner;
-                    if (inner == variable)
-                    {
-                        Debug.Log($"[FindPersistentHolderFor] (fallback) Matched by Inner reference: holder name='{elem.name}' instanceId={elem.GetInstanceID()} -> var key='{variable?.Key}'");
-                        return elem;
-                    }
-                }
-            }
-
-            Debug.Log($"[FindPersistentHolderFor] No holder found for var key='{variable?.Key}' itemID={variable?.ItemId} at assetPath='{path}'");
-            return null;
-        }
-
-        // Restored: used by OnGUI above
         protected virtual bool VarRefPropHasAnythingAssigned(SerializedProperty varRefProp)
         {
             bool result = false;
@@ -323,49 +256,6 @@ namespace Amanita.VScripting.EditorUtils
                 return EditorGUI.GetPropertyHeight(referenceProp, true);
             }
             return EditorGUIUtility.singleLineHeight;
-        }
-
-        // Helper: compare two IVariable instances semantically so we can detect the currently-selected
-        // variable regardless of whether the stored reference is a VariablePointer wrapper or a raw Muscariable.
-        private static bool VariablesSemanticallyEqual(IVariable first, IVariable second)
-        {
-            if (first == null || second == null) return false;
-            if (first?.Owner != second?.Owner) return false;
-
-            try
-            {
-                // Prefer stable ItemID when available (non-zero)
-                if (first.ItemId != 0 || second.ItemId != 0)
-                {
-                    if (first.ItemId == second.ItemId) return true;
-                }
-            }
-            catch { /* ignore */ }
-
-            try
-            {
-                // Only consider Key equality when the owner/source is the same to avoid cross-source collisions.
-                if (first.Owner != null && second.Owner != null &&
-                    ReferenceEquals(first.Owner, second.Owner) &&
-                    !string.IsNullOrEmpty(first.Key) && first.Key == second.Key)
-                {
-                    return true;
-                }
-            }
-            catch { /* ignore */ }
-
-            // If a is a pointer type, compare against its underlying component if possible
-            if (first is IVariablePointer ptr)
-            {
-                var compVar = ptr.Component as IVariable;
-                if (compVar != null)
-                {
-                    if (VariablesSemanticallyEqual(compVar, second)) return true;
-                }
-            }
-
-            // Reference equality fallback
-            return object.ReferenceEquals(first, second);
         }
 
         // Keep ordered options separate from de-dup tracking

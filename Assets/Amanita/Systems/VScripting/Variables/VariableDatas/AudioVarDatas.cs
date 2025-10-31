@@ -9,7 +9,7 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioClip), typeof(IVariable<AudioClip>))]
 	public class AudioClipData : VariableData<AudioClip>
 	{
-		[SerializeField, SerializeReference]
+		[SerializeField]
 		[VariableProperty("<Value>", typeof(AudioClipVariable))]
 		public AudioClipVariable audioClipRef;
 
@@ -22,9 +22,10 @@ namespace Amanita.VScripting
 
 		public AudioClipData(AudioClip startVal) : base(startVal) { }
 
-		public override void Refresh()
+		protected override Variable LegacyVarRef
 		{
-			varRef ??= audioClipRef;
+			get => audioClipRef;
+			set => audioClipRef = value as AudioClipVariable;
 		}
 	}
 
@@ -35,7 +36,7 @@ namespace Amanita.VScripting
 	[VariableData(typeof(AudioSource), typeof(IVariable<AudioSource>))]
 	public class AudioSourceData : VariableData<AudioSource>
 	{
-		[SerializeField, SerializeReference]
+		[SerializeField]
 		[VariableProperty("<Value>", typeof(AudioSourceVariable))]
 		public AudioSourceVariable audioSourceRef;
 
@@ -47,9 +48,10 @@ namespace Amanita.VScripting
 		public AudioSourceData() : base(default) { }
 		public AudioSourceData(AudioSource startVal = null) : base(startVal) { }
 
-		public override void Refresh()
+		protected override Variable LegacyVarRef
 		{
-			varRef ??= audioSourceRef;
+			get => audioSourceRef;
+			set => audioSourceRef = value as AudioSourceVariable;
 		}
 
 	}

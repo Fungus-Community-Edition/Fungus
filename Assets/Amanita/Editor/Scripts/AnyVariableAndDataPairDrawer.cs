@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -33,15 +31,28 @@ namespace Amanita.VScripting.EditorUtils
             {
                 // Read IVariable correctly based on property type
                 IVariable currentLeftHandSideVar = ReadIVariable(leftHandSideVarProp);
-                SerializedProperty anyVarDataProp = holdsVarAndDataPair.FindPropertyRelative("data");
-                AnyVariableData anyVarData = anyVarDataProp?.managedReferenceValue as AnyVariableData;
 
+                // Safely read AnyVariableData whether Unity reports ManagedReference or Generic.
+                SerializedProperty anyVarDataProp = holdsVarAndDataPair.FindPropertyRelative("data");
+                AnyVariableData anyVarData = null;
+                if (anyVarDataProp != null)
+                {
+                    if (anyVarDataProp.propertyType == SerializedPropertyType.ManagedReference)
+                    {
+                        anyVarData = anyVarDataProp.managedReferenceValue as AnyVariableData;
+                    }
+                    else if (anyVarDataProp.propertyType == SerializedPropertyType.Generic)
+                    {
+                        anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
+                    }
+                }
+                //
                 if (anyVarData != null && currentLeftHandSideVar != null)
                 {
-                    anyVarData.SetFor(currentLeftHandSideVar.GetType(), currentLeftHandSideVar.ContentType);
+                    var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
+                    anyVarData.SetFor(effectiveVarType, currentLeftHandSideVar.ContentType);
                 }
-                // ^No need to only execute this when lhs var changes, since SetFor already
-                // checks internally
+
                 HandleLhsVarChanges();
                 void HandleLhsVarChanges()
                 {
@@ -49,10 +60,6 @@ namespace Amanita.VScripting.EditorUtils
                     bool validAnyVarData = anyVarData != null;
                     if (lhsVarChanged && validAnyVarData && currentLeftHandSideVar != null)
                     {
-                        // When currentLeftHandSideVar is null, we don't want to change the var type
-                        // of the inner data field. Later in this func, we'll just make sure
-                        // not to render it
-                        Debug.Log($"Updating the var type of the rhs");
                         _prevLeftHandSideVar = currentLeftHandSideVar;
                     }
                 }
@@ -63,12 +70,8 @@ namespace Amanita.VScripting.EditorUtils
                 void DrawInnerDataField()
                 {
                     SerializedProperty innerDataProp = holdsVarAndDataPair.FindPropertyRelative("data.data");
-                    // ^Expected to hold a VariableData subclass as its boxed and object ref values
-
                     if (currentLeftHandSideVar != null && innerDataProp != null)
                     {
-                        // Avoid Unity trying to instantiate a generic drawer (VariableDataDrawer`1[T])
-                        // by drawing the managed reference's children directly.
                         if (innerDataProp.propertyType == SerializedPropertyType.ManagedReference &&
                             !string.IsNullOrEmpty(innerDataProp.managedReferenceFullTypename))
                         {
@@ -76,10 +79,8 @@ namespace Amanita.VScripting.EditorUtils
                         }
                         else
                         {
-                            // Fallback: let Unity draw if it is not a managed reference
                             EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"), includeChildren: true);
                         }
-
                     }
                     else
                     {
@@ -100,7 +101,18 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return prop.managedReferenceValue as IVariable;
             }
+            if (prop.propertyType == SerializedPropertyType.Generic)
+            {
+                return prop.boxedValue as IVariable;
+            }
             return prop.objectReferenceValue as IVariable;
+        }
+
+        private static Type GetEffectiveVarType(IVariable var)
+        {
+            if (var is IVariablePointer ptr && ptr.Component is IVariable inner)
+                return inner.GetType();
+            return var?.GetType();
         }
 
         protected IVariable _prevLeftHandSideVar;
@@ -109,6 +121,5 @@ namespace Amanita.VScripting.EditorUtils
         {
             return VariableTypeRegistry.TryGetTypeActionsFor(varPropType, out typeActionsRes);
         }
-
     }
 }
