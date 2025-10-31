@@ -1,9 +1,11 @@
 #define MYCELIAUDIO
 #define AMANITA_MYCELIAUDIO
+using FullSerializer;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using Amanita.FSExt;
 
 namespace Amanita.Myceliaudio
 {
@@ -37,13 +39,13 @@ namespace Amanita.Myceliaudio
                 if (!File.Exists(filePath))
                 {
                     systemSettings = new MyceliaudioSettings();
-                    string whatToWrite = JsonUtility.ToJson(systemSettings);
+                    string whatToWrite = Serializer.ToJson(systemSettings);
                     File.WriteAllText(filePath, whatToWrite);
                 }
                 else
                 {
                     string jsonString = File.ReadAllText(filePath);
-                    systemSettings = JsonUtility.FromJson<MyceliaudioSettings>(jsonString);
+                    systemSettings = Serializer.FromJson<MyceliaudioSettings>(jsonString);
                 }
 #else
             systemSettings = new MyceliaudioSettings();
@@ -86,6 +88,8 @@ namespace Amanita.Myceliaudio
                 }
             }
         }
+
+        protected fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
         protected static AudioSystem _s;
         private static MyceliaudioSettings systemSettings;

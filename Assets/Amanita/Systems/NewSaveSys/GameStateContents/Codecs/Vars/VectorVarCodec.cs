@@ -2,14 +2,18 @@ using Amanita.VScripting;
 using System.Linq;
 using System;
 using UnityEngine;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
     /// <summary>
     /// This class is responsible for encoding and decoding Vector2 and Vector3 data types.
     /// </summary>
-    [System.Serializable]
-    public class VectorVarCodec : IVarCodec
+    [Serializable]
+    [VarCodec(true, typeof(Vector2Variable), typeof(Vector3Variable), 
+        typeof(VectorTwoMuscariable), typeof(VectorThreeMuscariable))]
+    public class VectorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable) =>
             variable is IVariable<Vector2> || variable is IVariable<Vector3>;
@@ -24,54 +28,75 @@ namespace Amanita.SaveSys
             typeof(VectorTwoMuscariable),
             typeof(VectorThreeMuscariable),
         };
+
         public virtual bool CanHandle(VariableSaveData saveData)
         {
             return supportedVarTypes.Any(type => type.Name == saveData.VarTypeName);
         }
 
-        public virtual string EncodeToString(IVariable variable) => variable switch
-            {
-            IVariable<Vector2> vector2Var => $"{vector2Var.Value.x},{vector2Var.Value.y}",
-            IVariable<Vector3> vector3Var => $"{vector3Var.Value.x},{vector3Var.Value.y},{vector3Var.Value.z}",
-            _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encodng in {this.GetType().Name}")
-        };
-
-        public virtual void Decode(IVariable variable, string data)
+        public virtual string EncodeToString(IVariable variable)
         {
-            if (variable is IVariable<Vector2> vecTwoVar)
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
             {
-                string[] parts = data.Split(',');
-                float xVal = 0, yVal = 0;
-
-                bool validVecTwoFormat = parts.Length == 2 &&
-                    float.TryParse(parts[0], out xVal) &&
-                    float.TryParse(parts[1], out yVal);
-                if (!validVecTwoFormat)
-                    throw new FormatException($"Invalid Vector2 format: {data}");
-
-                vecTwoVar.Value = new Vector2(xVal, yVal);
+                if (variable is IVariable<Vector2> vecTwoVar)
+                {
+                    Vector2State vecState = Vector2State.From(vecTwoVar.Value);
+                    return serializer.ToJson(vecState);
+                }
+                else if (variable is IVariable<Vector3> vecThreeVar)
+                {
+                    Vector3State vecState = Vector3State.From(vecThreeVar.Value);
+                    return serializer.ToJson(vecState);
+                }
+                else
+                {
+                    Debug.LogError($"Variable type {variable.GetType()} is not supported for encoding in {this.GetType().Name}.");
+                    return string.Empty;
+                }
             }
-            else if (variable is IVariable<Vector3> vecThreeVar)
+        }
+
+        public virtual void ApplyState(IVariable variable, object data)
+        {
+            if (data is string strData)
             {
-                string[] parts = data.Split(',');
-                float xVal = 0, yVal = 0, zVal = 0;
-
-                bool validVecThreeFormat = parts.Length == 3 &&
-                    float.TryParse(parts[0], out xVal) &&
-                    float.TryParse(parts[1], out yVal) &&
-                    float.TryParse(parts[2], out zVal);
-                if (!validVecThreeFormat)
-                    throw new FormatException($"Invalid Vector3 format: {data}");
-
-                vecThreeVar.Value = new Vector3(xVal, yVal, zVal);
+                ApplyState(variable, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(variable, saveData);
             }
             else
             {
-                Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable variable, string data)
+        {
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                // We assume that data is a Vector2State or Vector3State serialized as JSON.
+                if (variable is IVariable<Vector2> vecTwoVar)
+                {
+                    Vector2State vecState = serializer.FromJson<Vector2State>(data);
+                    vecTwoVar.Value = vecState.ToVector2();
+                }
+                else if (variable is IVariable<Vector3> vecThreeVar)
+                {
+                    Vector3State vecState = serializer.FromJson<Vector3State>(data);
+                    vecThreeVar.Value = vecState.ToVector3();
+                }
+                else
+                {
+                    Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding in {this.GetType().Name}.");
+                }
             }
         }
     
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = variable is IVariable<Vector2> ||
                 variable is IVariable<Vector3>;
@@ -80,8 +105,9 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for decoding in {this.GetType().Name}.");
                 return;
             }
-            Decode(variable, saveData.Value);
+            ApplyState(variable, saveData.Value);
         }
+
         public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
             string data = EncodeToString(variable);
@@ -94,7 +120,7 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                ItemID = variable.ItemID,
+                ItemId = variable.ItemId,
                 Key = variable.Key,
                 Value = data,
             };
@@ -104,49 +130,21 @@ namespace Amanita.SaveSys
 
         public virtual T DecodeTo<T>(string data)
         {
+            // Again, we assume that the data is a Vector2State or Vector3State serialized as JSON.
             T result = default;
-            string[] parts;
-            float x = 0, y = 0, z = 0;
-            bool isVecTwo = typeof(T) == typeof(Vector2);
-            bool isVecThree = typeof(T) == typeof(Vector3);
-            bool validTypeArg = isVecThree || isVecTwo;
-
-            if (!validTypeArg)
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
             {
-                string errorMessage = $"Cannot decode to type {typeof(T).Name}. Only Vector2 and Vector3 are supported.";
-                throw new InvalidCastException(errorMessage);
-            }
-
-            parts = data.Split(',');
-
-            if (typeof(T) == typeof(Vector2))
-            {
-                if (parts.Length != 2)
+                if (typeof(T) == typeof(Vector2))
                 {
-                    string errorMessage = $"Invalid Vector2 format: {data}. Expected format: 'x,y' where x and y are floats.";
-                    throw new FormatException(errorMessage);
+                    Vector2State vecState = serializer.FromJson<Vector2State>(data);
+                    result = (T)(object)vecState.ToVector2();
                 }
-            }
-            else if (typeof(T) == typeof(Vector3))
-            {
-                if (parts.Length != 3)
+                else if (typeof(T) == typeof(Vector3))
                 {
-                    string errorMessage = $"Invalid Vector3 format: {data}. Expected format: 'x,y,z' where x, y, and z are floats.";
-                    throw new FormatException(errorMessage);
+                    Vector3State vecState = serializer.FromJson<Vector3State>(data);
+                    result = (T)(object)vecState.ToVector3();
                 }
-            }
-
-            x = float.Parse(parts[0]);
-            y = float.Parse(parts[1]);
-
-            if (isVecThree)
-            {
-                z = float.Parse(parts[2]);
-                result = (T)(object)new Vector3(x, y, z);
-            }
-            else if (isVecTwo)
-            {
-                result = (T)(object)new Vector2(x, y);
             }
 
             return result;

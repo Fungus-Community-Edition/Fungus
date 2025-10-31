@@ -6,6 +6,8 @@ using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
 using Amanita.IO;
 using System.Threading;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
@@ -137,10 +139,10 @@ namespace Amanita.SaveSys
                         void DecideTextToWrite()
                         {
                             ISaveMetaData meta = request.SaveMetaData;
-                            metaTextToWrite = JsonUtility.ToJson(meta, true);
+                            metaTextToWrite = Serializer.ToJson(meta, true);
 
                             ISaveData saveData = request.MainState;
-                            mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
+                            mainStateTextToWrite = Serializer.ToJson(saveData, true);
                         }
 
                         string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}" +
@@ -191,6 +193,7 @@ namespace Amanita.SaveSys
             return true;
         }
 
+        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
         protected BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
         protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 

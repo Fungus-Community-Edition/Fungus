@@ -1,0 +1,13 @@
+{
+    "blacklist": [
+        "/Lorekeeper",
+        "/Editor",
+        "/Gizmos",
+        "/StreamingAssets",
+        "/Plugins",
+        "/Tests",
+        "/Amanita/Docs",
+        "/Amanita/Editor",
+        "/Amanita/ThirdParty"
+    ]
+}

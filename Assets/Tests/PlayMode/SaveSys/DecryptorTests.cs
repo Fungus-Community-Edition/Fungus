@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
+using Amanita.FSExt;
 
 namespace SaveSystemTests
 {
@@ -31,8 +32,8 @@ namespace SaveSystemTests
         public void DecryptsMetaDataCorrectly()
         {
             // Arrange
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -54,8 +55,8 @@ namespace SaveSystemTests
         public void DecryptsMainStateCorrectly()
         {
             // Arrange
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -77,8 +78,8 @@ namespace SaveSystemTests
         public void DecryptsWholeSetCorrectly()
         {
             // Arrange
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -118,7 +119,7 @@ namespace SaveSystemTests
         {
             // Arrange: missing completion marker
             string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -135,10 +136,11 @@ namespace SaveSystemTests
         [Test, TestCaseSource(nameof(UnicodeTestCases))]
         public void DecryptsUnicodeDataCorrectly(string testVal)
         {
-            SaveDataUnit testUnit = new SaveDataUnit("testType", testVal);
-            MainSave.Add(testUnit);
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            // Add a simple concrete SaveData carrying the unicode string
+            MainSave.Add(new RawStringSaveData(testVal));
+
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -152,25 +154,22 @@ namespace SaveSystemTests
             Assert.That(result.MainState is CompositeSaveData, "Main state is not encoded as CompositeSaveData");
 
             var decryptedMain = result.MainState as CompositeSaveData;
-            var decryptedUnits = decryptedMain.Units;
-
-            bool hasTheValue = decryptedUnits.Any(elem => elem.Equals(testUnit));
+            bool hasTheValue = decryptedMain.Items.OfType<RawStringSaveData>().Any(elem => elem.Value == testVal);
             Assert.IsTrue(hasTheValue, $"Unicode data '{testVal}' not present after decryption.");
         }
 
-
         public static IEnumerable<string> UnicodeTestCases()
         {
-            yield return "こんにちは世界🌏 Привет мир 𝄞"; // Japanese, Russian, emoji, music symbol
-            yield return "你好，世界"; // Chinese
-            yield return "안녕하세요 세계"; // Korean
-            yield return "مرحبا بالعالم"; // Arabic
-            yield return "שלום עולם"; // Hebrew
-            yield return "😀😃😄😁😆😅😂🤣"; // Emoji sequence
-            yield return "Café naïve façade coöperate"; // Accented Latin characters
-            yield return "𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝕋𝕖𝕤𝕥"; // Mathematical/Fraktur/Double-struck
-            yield return "हैलो वर्ल्ड"; // Hindi
-            yield return "Zażółć gęślą jaźń"; // Polish diacritics
+            yield return "こんにちは世界🌏 Привет мир 𝄞";
+            yield return "你好，世界";
+            yield return "안녕하세요 세계";
+            yield return "مرحبا بالعالم";
+            yield return "שלום עולם";
+            yield return "😀😃😄😁😆😅😂🤣";
+            yield return "Café naïve façade coöperate";
+            yield return "𝔘𝔫𝔦𝔠𝔬𝔡𝔢 𝕋𝕖𝕤𝕥";
+            yield return "हैलो वर्ल्ड";
+            yield return "Zażółć gęślą jaźń";
         }
 
         [Test]
@@ -184,11 +183,12 @@ namespace SaveSystemTests
             stringVar.Value = testValue;
             StringVarCodec stringVarCodec = new StringVarCodec();
             VariableSaveData variableSaveData = stringVarCodec.EncodeToSave(stringVar);
-            SaveDataUnit newUnit = variableSaveData.Serialized();
-            MainSave.Add(newUnit);
 
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            // Add the VariableSaveData directly to the composite (no SaveDataUnit)
+            MainSave.Add(variableSaveData);
+
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{delimiter}{mainJson}{marker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -204,29 +204,20 @@ namespace SaveSystemTests
             // Assert
             Assert.IsNotNull(result, "Decrypted whole set is null.");
 
-            // Suppose you know the structure and can get the SaveDataUnit or variable
             var composite = result.MainState as CompositeSaveData;
-            var unit = composite.Units.FirstOrDefault(unitEl => unitEl.DataTypeName == nameof(VariableSaveData));
+            Assert.IsNotNull(composite, "Main state is not CompositeSaveData after decryption.");
 
-            if (unit != null)
-            {
-                // If the value is stored as JSON, you may need to deserialize again
-                VariableSaveData variableData = JsonUtility.FromJson<VariableSaveData>(unit.Content);
-                Assert.AreEqual(testValue, variableData.Value);
-            }
-            else
-            {
-                Assert.Fail("VariableSaveData unit with delimiter and marker not found in main state.");
-            }
-
+            var varData = composite.Items.OfType<VariableSaveData>().FirstOrDefault();
+            Assert.IsNotNull(varData, "VariableSaveData not found in main state.");
+            Assert.AreEqual(testValue, varData.Value);
         }
 
         [Test]
         public void DecryptsConsistentlyForSameInput()
         {
             // Arrange
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -237,20 +228,23 @@ namespace SaveSystemTests
             };
 
             // Act
-            var result1 = decryptor.DecryptWholeSet(req);
-            var result2 = decryptor.DecryptWholeSet(req);
+            var firstResult = decryptor.DecryptWholeSet(req);
+            var secondResult = decryptor.DecryptWholeSet(req);
 
             // Assert
-            Assert.AreEqual(JsonUtility.ToJson(result1.Meta), JsonUtility.ToJson(result2.Meta), "Meta data mismatch between decryptions.");
-            Assert.AreEqual(JsonUtility.ToJson(result1.MainState), JsonUtility.ToJson(result2.MainState), "Main state mismatch between decryptions.");
+            Assert.AreEqual(serializerForTest.ToJson(firstResult.Meta), serializerForTest.ToJson(secondResult.Meta), "Meta data mismatch between decryptions.");
+
+            string r1Main = serializerForTest.ToJson(firstResult.MainState, true);
+            string r2Main = serializerForTest.ToJson(secondResult.MainState, true);
+            Assert.AreEqual(r1Main, r2Main, "Main state mismatch between decryptions.");
         }
 
         [Test]
         public void DecryptorIsThreadSafeForParallelCalls()
         {
             // Arrange
-            string metaJson = JsonUtility.ToJson(metaData, true);
-            string mainJson = JsonUtility.ToJson(MainSave, true);
+            string metaJson = serializerForTest.ToJson(metaData, true);
+            string mainJson = serializerForTest.ToJson(MainSave, true);
             string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
@@ -281,9 +275,16 @@ namespace SaveSystemTests
             Assert.IsNull(threadException, "Decryptor threw an exception during parallel calls.");
             for (int i = 1; i < threadCount; i++)
             {
-                Assert.AreEqual(JsonUtility.ToJson(results[0].Meta), JsonUtility.ToJson(results[i].Meta), $"Meta data mismatch between threads {0} and {i}.");
-                Assert.AreEqual(JsonUtility.ToJson(results[0].MainState), JsonUtility.ToJson(results[i].MainState), $"Main state mismatch between threads {0} and {i}.");
+                Assert.AreEqual(serializerForTest.ToJson(results[0].Meta), 
+                    serializerForTest.ToJson(results[i].Meta), 
+                    $"Meta data mismatch between threads {0} and {i}.");
+
+                string r0Main = serializerForTest.ToJson(results[0].MainState, true);
+                string riMain = serializerForTest.ToJson(results[i].MainState, true);
+                Assert.AreEqual(r0Main, riMain, $"Main state mismatch between threads {0} and {i}.");
             }
         }
     }
+
+    
 }

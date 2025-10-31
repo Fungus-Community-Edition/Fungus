@@ -102,5 +102,16 @@ namespace Collections
 
             return false;
         }
+
+        public static bool AnyOverlapWith<T>(this IList<T> list, IList<T> otherList)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (otherList.Contains(list[i]))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

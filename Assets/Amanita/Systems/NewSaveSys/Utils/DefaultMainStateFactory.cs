@@ -1,4 +1,3 @@
-using Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -74,26 +73,35 @@ namespace Amanita.SaveSys
 
         public virtual async Task<CompositeSaveData> CreateMainState()
         {
-            IList<SaveDataUnit> unitsNeeded = await GetUnitsForGameState();
-            async Task<IList<SaveDataUnit>> GetUnitsForGameState()
+            IList<SaveData> itemsNeeded = await GetItemsForGameState();
+            async Task<IList<SaveData>> GetItemsForGameState()
             {
-                IList<SaveDataUnit> units = new List<SaveDataUnit>();
+                IList<SaveData> items = new List<SaveData>();
 
                 for (int i = 0; i < mainCodecs.Count; i++)
                 {
                     IMainSaveCodec currentCodec = mainCodecs[i];
-                    
-                    await Task.Run(() => currentCodec.FindAndEncodeAll(OnComplete));
-                    void OnComplete(IList<SaveDataUnit> results)
+
+                    await Task.Run(() => currentCodec.FindAndCreateAll(RegisterResults));
+
+                    void RegisterResults(IList<SaveData> results)
                     {
-                        units.AddRange(results);
+                        for (int j = 0; j < results.Count; j++)
+                        {
+                            var resultEl = results[j];
+                            if (resultEl != null)
+                            {
+                                items.Add(resultEl);
+                            }
+                        }
                     }
+                    
                 }
 
-                return units;
+                return items;
             }
 
-            CompositeSaveData mainState = new CompositeSaveData(unitsNeeded);
+            CompositeSaveData mainState = new CompositeSaveData(itemsNeeded);
             return mainState;
         }
 

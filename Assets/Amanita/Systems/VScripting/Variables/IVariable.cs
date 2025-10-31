@@ -16,6 +16,8 @@ namespace Amanita.VScripting
         /// </summary>
         Type ContentType { get; }
         bool IsComparisonSupported();
+        bool IsArithmeticSupported(SetOperator setOperator);
+        bool IsRelationalSupported { get; }
 
         /// <summary>
         /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
@@ -24,6 +26,8 @@ namespace Amanita.VScripting
 
         void Apply(SetOperator setOperator, object value);
         IVariableSource Owner { get; set; }
+
+        
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>

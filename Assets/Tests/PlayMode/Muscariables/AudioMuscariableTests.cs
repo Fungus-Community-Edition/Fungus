@@ -48,14 +48,14 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             StringAssert.Contains("needs a valid ID", ex.Message);
 
             audioVar.Key = "clip";
-            audioVar.ItemID = 100;
+            audioVar.ItemId = 100;
             Assert.DoesNotThrow(() => audioVar.Init());
         }
 
         [Test]
         public void AudioClip_ValueAssignmentAndEvent()
         {
-            var clipVar = new AudioClipMuscariable { Key = "clip", ItemID = 101 };
+            var clipVar = new AudioClipMuscariable { Key = "clip", ItemId = 101 };
             clipVar.Init();
 
             AudioClip captured = null;
@@ -69,7 +69,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioClip_NullAssignmentAllowed()
         {
-            var clipVar = new AudioClipMuscariable { Key = "clip", ItemID = 102 };
+            var clipVar = new AudioClipMuscariable { Key = "clip", ItemId = 102 };
             clipVar.Init();
 
             Assert.DoesNotThrow(() => clipVar.Value = null);
@@ -79,7 +79,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioClip_WrongTypeAssignment_Throws()
         {
-            var audioVar = new AudioClipMuscariable { Key = "clip", ItemID = 103 };
+            var audioVar = new AudioClipMuscariable { Key = "clip", ItemId = 103 };
             audioVar.Init();
             Muscariable baseVar = audioVar;
 
@@ -89,9 +89,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioClip_EqualityOperatorsAndEvaluate()
         {
-            var firstClipVar = new AudioClipMuscariable { Key = "a", ItemID = 104, BoxedValue = clipA };
-            var secondClipVar = new AudioClipMuscariable { Key = "b", ItemID = 105, BoxedValue = clipA };
-            var thirdClipVar = new AudioClipMuscariable { Key = "c", ItemID = 106, BoxedValue = clipB };
+            var firstClipVar = new AudioClipMuscariable { Key = "a", ItemId = 104, BoxedValue = clipA };
+            var secondClipVar = new AudioClipMuscariable { Key = "b", ItemId = 105, BoxedValue = clipA };
+            var thirdClipVar = new AudioClipMuscariable { Key = "c", ItemId = 106, BoxedValue = clipB };
 
             // operator==
             Assert.IsTrue(firstClipVar == secondClipVar);
@@ -112,7 +112,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioSource_ValueAssignmentAndEvent()
         {
-            var v = new AudioSourceMuscariable { Key = "src", ItemID = 107 };
+            var v = new AudioSourceMuscariable { Key = "src", ItemId = 107 };
             v.Init();
 
             AudioSource captured = null;
@@ -126,7 +126,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioSource_NullAssignmentAllowed()
         {
-            var v = new AudioSourceMuscariable { Key = "src", ItemID = 108 };
+            var v = new AudioSourceMuscariable { Key = "src", ItemId = 108 };
             v.Init();
 
             Assert.DoesNotThrow(() => v.Value = null);
@@ -136,7 +136,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioSource_WrongTypeAssignment_Throws()
         {
-            var audioVar = new AudioSourceMuscariable { Key = "src", ItemID = 109 };
+            var audioVar = new AudioSourceMuscariable { Key = "src", ItemId = 109 };
             audioVar.Init();
             Muscariable baseVar = audioVar;
 
@@ -146,9 +146,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioSource_EqualityAndEvaluate()
         {
-            var a = new AudioSourceMuscariable { Key = "a", ItemID = 110, Value = sourceA };
-            var b = new AudioSourceMuscariable { Key = "b", ItemID = 111, Value = sourceA };
-            var c = new AudioSourceMuscariable { Key = "c", ItemID = 112, Value = sourceB };
+            var a = new AudioSourceMuscariable { Key = "a", ItemId = 110, Value = sourceA };
+            var b = new AudioSourceMuscariable { Key = "b", ItemId = 111, Value = sourceA };
+            var c = new AudioSourceMuscariable { Key = "c", ItemId = 112, Value = sourceB };
 
             Assert.IsTrue(a == b);
             Assert.IsFalse(a != b);

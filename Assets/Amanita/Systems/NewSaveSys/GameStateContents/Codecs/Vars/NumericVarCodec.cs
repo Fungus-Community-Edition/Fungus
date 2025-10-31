@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace Amanita.SaveSys
 {
-    public class NumericVarCodec : IVarCodec
+    [VarCodec(true, typeof(IntegerVariable), typeof(FloatVariable), typeof(IntMuscariable), typeof(FloatMuscariable))]
+    public class NumericVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
         public virtual bool CanHandle(IVariable variable) =>
             supportedVarTypes.Contains(variable.GetType());
@@ -41,14 +42,30 @@ namespace Amanita.SaveSys
             VariableSaveData result = new()
             {
                 VarTypeName = variable.GetType().Name,
-                ItemID = variable.ItemID,
+                ItemId = variable.ItemId,
                 Key = variable.Key,
                 Value = EncodeToString(variable)
             };
             return result;
         }
 
-        public virtual void Decode(IVariable variable, string data)
+        public virtual void ApplyState(IVariable variable, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(variable, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(variable, saveData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in NumericVarEncoder.");
+            }
+        }
+
+        public virtual void ApplyState(IVariable variable, string data)
         {
             if (variable is IVariable<int> intVar)
                 intVar.Value = int.Parse(data);
@@ -60,7 +77,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual void Decode(IVariable variable, VariableSaveData saveData)
+        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = variable is IVariable<int> ||
                 variable is IVariable<float>;
@@ -71,7 +88,7 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            Decode(variable, saveData.Value);
+            ApplyState(variable, saveData.Value);
         }
 
         public virtual T DecodeTo<T>(string data)

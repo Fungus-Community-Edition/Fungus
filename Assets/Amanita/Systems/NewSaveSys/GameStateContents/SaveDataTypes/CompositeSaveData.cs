@@ -2,129 +2,139 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Amanita.FSExt;
 
 namespace Amanita.SaveSys
 {
     /// <summary>
-    /// For save data made up of other instances of save data (which are to be stored
-    /// in SaveDataUnit form). One of these should be the main data written to disk.
+    /// For save data made up of other instances of save data.
+    /// One of these should be the main data written to disk.
     /// </summary>
     public class CompositeSaveData : SaveData, IEquatable<CompositeSaveData>
     {
-        [SerializeField] protected List<SaveDataUnit> units = new List<SaveDataUnit>();
+        [SerializeField] protected List<SaveData> items = new List<SaveData>();
 
         public CompositeSaveData() { }
 
-        public CompositeSaveData(IList<SaveDataUnit> startingUnits)
+        public CompositeSaveData(IList<SaveData> startingItems)
         {
-            units.AddRange(startingUnits);
+            if (startingItems != null && startingItems.Count > 0)
+            {
+                items.AddRange(startingItems);
+            }
         }
 
-        public virtual IReadOnlyList<SaveDataUnit> Units => units;
+        public virtual IReadOnlyList<SaveData> Items => items;
 
-        public virtual void Add(SaveDataUnit unit)
+        public virtual void Add(SaveData item)
         {
-            if (unit == null)
+            if (item == null)
             {
-                Debug.LogError($"Cannot add a null SaveDataUnit to {TypeName}.");
+                Debug.LogError($"Cannot add a null SaveData to {TypeName}.");
                 return;
             }
-            units.Add(unit);
+            items.Add(item);
         }
 
-        public virtual void AddRange(IList<SaveDataUnit> toAdd)
+        public virtual void AddRange(IList<SaveData> toAdd)
         {
-            units.AddRange(toAdd);
-        }
-
-        public virtual void Remove(SaveDataUnit unit)
-        {
-            if (unit == null)
+            if (toAdd == null) return;
+            for (int i = 0; i < toAdd.Count; i++)
             {
-                Debug.LogError($"Cannot remove a null SaveDataUnit from {TypeName}.");
+                var elem = toAdd[i];
+                if (elem != null)
+                {
+                    items.Add(elem);
+                }
+            }
+        }
+
+        public virtual void Remove(SaveData item)
+        {
+            if (item == null)
+            {
+                Debug.LogError($"Cannot remove a null SaveData from {TypeName}.");
                 return;
             }
-            units.Remove(unit);
+            items.Remove(item);
         }
 
-        public virtual void RemoveRange(IList<SaveDataUnit> toRemove)
+        public virtual void RemoveRange(IList<SaveData> toRemove)
         {
+            if (toRemove == null) return;
             for (int i = 0; i < toRemove.Count; i++)
             {
-                SaveDataUnit currentUnitToRemove = toRemove[i];
-                Remove(currentUnitToRemove);
+                var current = toRemove[i];
+                Remove(current);
             }
         }
 
         public virtual void Clear()
         {
-            units.Clear();
+            items.Clear();
         }
 
         public virtual bool Equals(CompositeSaveData other)
         {
-            bool result = this.Units.SequenceEqual(other.Units);
-            return result;
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (items.Count != other.items.Count) return false;
+
+            var serializer = SaveSystem.DefaultSerializer;
+            for (int i = 0; i < items.Count; i++)
+            {
+                var ourItem = items[i];
+                var theirItem = other.items[i];
+                if (ourItem?.GetType() != theirItem?.GetType()) return false;
+                string oursAsJson = serializer.ToJson(ourItem, prettyPrint: false);
+                string theirsAsJson = serializer.ToJson(theirItem, prettyPrint: false);
+                if (!string.Equals(oursAsJson, theirsAsJson, StringComparison.Ordinal))
+                    return false;
+            }
+            return true;
         }
 
-        public override SaveDataUnit Serialized()
+        public virtual T GetSingle<T>() where T : SaveData
         {
-            string jsonText = JsonUtility.ToJson(this);
-            SaveDataUnit unit = new SaveDataUnit(TypeName, jsonText);
-            return unit;
+            return items.OfType<T>().FirstOrDefault();
         }
 
-        public virtual SaveDataUnit GetSingle<T>() where T : ISaveData
-        {
-            string typeName = typeof(T).Name.ToLower();
-            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName.ToLower() == typeName);
-            return result;
-        }
-
-        public virtual SaveDataUnit GetSingle(string typeName)
+        public virtual SaveData GetSingle(string typeName)
         {
             if (string.IsNullOrEmpty(typeName))
             {
-                Debug.LogError("Cannot get a unit with a null or empty type name.");
+                Debug.LogError("Cannot get a SaveData with a null or empty type name.");
                 return null;
             }
-            SaveDataUnit result = units.FirstOrDefault(unit => unit.DataTypeName.ToLower() == typeName.ToLower());
-            return result;
+            typeName = typeName.ToLower();
+            return items.FirstOrDefault(elem => elem != null && elem.GetType().Name.ToLower() == typeName);
         }
 
-        /// <summary>
-        /// Returns a list of all SaveDataUnits of the specified type that this has.
-        /// </summary>
-        public virtual IList<SaveDataUnit> GetMulti<T>() where T: ISaveData
+        public virtual IList<T> GetMulti<T>() where T : SaveData
         {
-            string typeName = typeof(T).Name.ToLower();
-            IList<SaveDataUnit> result;
-            result = units.Where(unit => unit.DataTypeName.ToLower() == typeName).ToList();
-            return result;
+            return items.OfType<T>().ToList();
         }
 
-        public virtual IList<SaveDataUnit> GetMulti(string typeName)
+        public virtual IList<SaveData> GetMulti(string typeName)
         {
             if (string.IsNullOrEmpty(typeName))
             {
-                Debug.LogError("Cannot get multiple units with a null or empty type name.");
-                return new List<SaveDataUnit>();
+                Debug.LogError("Cannot get multiple SaveData with a null or empty type name.");
+                return new List<SaveData>();
             }
-            IList<SaveDataUnit> result;
-            result = units.Where(unit => unit.DataTypeName.ToLower() == typeName.ToLower()).ToList();
-            return result;
+            typeName = typeName.ToLower();
+            return items.Where(elem => elem != null && elem.GetType().Name.ToLower() == typeName).ToList();
         }
 
         public static CompositeSaveData CreateFrom(CompositeSaveData other)
         {
-            CompositeSaveData result = new CompositeSaveData(other.units);
-            return result;
+            if (other == null) return null;
+            return new CompositeSaveData(other.items);
         }
-
     }
 
     public interface ICompositeSaveData : ISaveData
     {
-        IList<SaveDataUnit> Units { get; }
+        IList<SaveData> Items { get; }
     }
 }

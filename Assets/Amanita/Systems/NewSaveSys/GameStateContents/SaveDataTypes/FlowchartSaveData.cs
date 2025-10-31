@@ -8,15 +8,15 @@ namespace Amanita.SaveSys
     {
         // When finding which flowchart this should be applied to, we search
         // by ID first. If not found, then we search by name.
-        [SerializeField] protected string uniqueID = string.Empty;
+        [SerializeField] protected string uniqueId = string.Empty;
         [SerializeField] protected string flowchartName = string.Empty;
         [SerializeField] protected List<VariableSaveData> savedVars = new();
         [SerializeField] protected List<BlockSaveData> savedBlocks = new();
 
         public virtual string UniqueId
         {
-            get => uniqueID;
-            set => uniqueID = value;
+            get => uniqueId;
+            set => uniqueId = value;
         }
 
         public virtual string FlowchartName
@@ -50,14 +50,6 @@ namespace Amanita.SaveSys
             // Default constructor for serialization
         }
 
-        public override SaveDataUnit Serialized()
-        {
-            string json = JsonUtility.ToJson(this, true);
-            string typeName = GetType().Name;
-            SaveDataUnit newItem = new(typeName, json);
-            return newItem;
-        }
-
         public virtual T GetVarValue<T>(string varName)
         {
             T result = default;
@@ -65,7 +57,7 @@ namespace Amanita.SaveSys
             
             if (foundVar != null)
             {
-                IVarCodec codec = CodecRegistry.GetCodec(foundVar.VarTypeName);
+                IVarCodec codec = VarCodecRegistry.GetCodec(foundVar.VarTypeName);
                 if (codec != null)
                 {
                     result = codec.DecodeTo<T>(foundVar.Value);

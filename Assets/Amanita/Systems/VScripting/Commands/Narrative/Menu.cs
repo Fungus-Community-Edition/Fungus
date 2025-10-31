@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 using Amanita.VScripting;
-using System.Linq;
 
 namespace Amanita.DialogueSys.Commands
 {

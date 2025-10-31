@@ -21,7 +21,7 @@ namespace Amanita.SaveSys
             set => varTypeName = value;
         }
 
-        public int ItemID
+        public int ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -48,21 +48,18 @@ namespace Amanita.SaveSys
             set => Key = value;
         }
 
+        public VariableSaveData()
+        {
+            this.itemID = -1;
+            this.key = string.Empty;
+            this.value = string.Empty;
+        }
+
         public VariableSaveData(int itemID = -1, string key = "", string value = "")
         {
             this.itemID = itemID;
             this.key = key;
             this.value = value;
-        }
-
-        public override SaveDataUnit Serialized()
-        {
-            SaveDataUnit serializedSaveData = new()
-            {
-                DataTypeName = TypeName,
-                Content = JsonUtility.ToJson(this, true)
-            };
-            return serializedSaveData;
         }
 
         public static readonly VariableSaveData Null = new()
@@ -71,12 +68,5 @@ namespace Amanita.SaveSys
             key = "null",
             value = "null"
         };
-
-        public static VariableSaveData DeserializeFrom(SaveDataUnit item)
-        {
-            ValidateSerializedData(item, nameof(VariableSaveData));
-            VariableSaveData data = JsonUtility.FromJson<VariableSaveData>(item.Content);
-            return data;
-        }
     }
 }

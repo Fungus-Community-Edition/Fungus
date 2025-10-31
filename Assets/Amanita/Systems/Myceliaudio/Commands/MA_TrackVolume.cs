@@ -111,7 +111,7 @@ namespace Amanita.Myceliaudio.VScripting
                 if (trackSelection == TrackSelection.Indiv)
                 {
                     string trackString = string.Empty;
-                    IntegerVariable trackVar = track.integerRef;
+                    IVariable<int> trackVar = track.integerRef;
                     if (trackVar != null)
                     {
                         trackString = trackVar.Key;
@@ -139,7 +139,7 @@ namespace Amanita.Myceliaudio.VScripting
             string trackString = string.Empty;
             if (trackSelection == TrackSelection.Indiv)
             {
-                IntegerVariable trackVar = track.integerRef;
+                IVariable<int> trackVar = track.integerRef;
                 if (trackVar != null)
                 {
                     trackString = trackVar.Key;

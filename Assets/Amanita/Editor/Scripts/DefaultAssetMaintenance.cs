@@ -1,5 +1,3 @@
-using Amanita.VScripting;
-using System;
 using UnityEditor;
 using UnityEngine;
 using Amanita.SaveSys;

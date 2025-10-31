@@ -226,19 +226,22 @@ namespace VScriptingTests.VariableOperations
             // With no visual binding, nothing was ever created; pools remain 0.
             Assert.AreEqual(0, PooledRowCount, "Rows should not be pooled (none created).");
             Assert.AreEqual(0, PooledHandlerCount, "Handlers should not be pooled (none created).");
-            Assert.AreEqual(0, _firstFc.VariableCount);
+            Assert.AreEqual(0, _firstFc.VariableCount, 
+                "Flowchart still has at least one var after they were supposed to have all been cleared.");
 
             // Re-add distinct-type variables (reuse original instances)
-            foreach (var v in originalVars)
-                _firstFc.AddVariable(v);
+            foreach (var toAdd in originalVars)
+            {
+                _firstFc.AddVariable(toAdd);
+            }
 
             // Still no UI binding => pools remain 0
             Assert.AreEqual(0, PooledRowCount);
             Assert.AreEqual(0, PooledHandlerCount);
-            Assert.AreEqual(originalCount, _firstFc.VariableCount);
+            Assert.AreEqual(originalCount, _firstFc.VariableCount, 
+                $"Flowchart does not get back its original var count after things were added back in.");
         }
 
-        // 2. Dispose_ClearsAllAndUnsubscribes (ADAPTED)
         [Test]
         public void Dispose_ClearsAllAndUnsubscribes()
         {
