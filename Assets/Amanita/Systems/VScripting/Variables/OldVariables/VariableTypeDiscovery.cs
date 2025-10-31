@@ -66,7 +66,7 @@ namespace Amanita.VScripting
 
         private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
         {
-            bool result = varInvolved.Evaluate(compareOp, varData.Value);
+            bool result = varInvolved.Evaluate(compareOp, varData.BoxedValue);
             return result;
         }
 
@@ -77,7 +77,7 @@ namespace Amanita.VScripting
 
         private static void VarSetFunc(IVariable iVar, IVariableData varData, SetOperator setOp)
         {
-            iVar.Apply(setOp, varData.Value);
+            iVar.Apply(setOp, varData.BoxedValue);
         }
 
         private static void RefreshVariableDataTypeRegistry()

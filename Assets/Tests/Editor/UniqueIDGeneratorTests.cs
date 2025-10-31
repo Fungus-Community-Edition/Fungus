@@ -11,11 +11,11 @@ namespace General
         [Test]
         public void NoOthers_Returns_HighestSoFarPlusOne()
         {
-            var target = new IntMuscariable { ItemID = 100 };
+            var target = new IntMuscariable { ItemId = 100 };
             IList<IHasItemID> others = new List<IHasItemID>();
             int highestSoFar = 5;
 
-            int result = UniqueIDGenerator.GetUniqueIDFor(target, others, highestSoFar);
+            int result = UniqueIdGenerator.GetUniqueIdFor(target, others, highestSoFar);
 
             Assert.AreEqual(highestSoFar + 1, result);
         }
@@ -23,16 +23,16 @@ namespace General
         [Test]
         public void OthersContainHigher_Returns_HighestAmongOthersPlusOne()
         {
-            var target = new IntMuscariable { ItemID = 3 };
+            var target = new IntMuscariable { ItemId = 3 };
             IList<IHasItemID> others = new List<IHasItemID>
             {
-                new IntMuscariable { ItemID = 7 },
-                new FloatMuscariable { ItemID = 10 },
-                new DoubleMuscariable { ItemID = 2 }
+                new IntMuscariable { ItemId = 7 },
+                new FloatMuscariable { ItemId = 10 },
+                new DoubleMuscariable { ItemId = 2 }
             };
             int highestSoFar = 5;
 
-            int result = UniqueIDGenerator.GetUniqueIDFor(target, others, highestSoFar);
+            int result = UniqueIdGenerator.GetUniqueIdFor(target, others, highestSoFar);
 
             // highest among others is 10 -> expect 11
             Assert.AreEqual(11, result);
@@ -41,15 +41,15 @@ namespace General
         [Test]
         public void TargetHasHighest_Returns_TargetItemIDPlusOne()
         {
-            var target = new IntMuscariable { ItemID = 20 };
+            var target = new IntMuscariable { ItemId = 20 };
             IList<IHasItemID> others = new List<IHasItemID>
             {
-                new IntMuscariable { ItemID = 7 },
-                new FloatMuscariable { ItemID = 10 }
+                new IntMuscariable { ItemId = 7 },
+                new FloatMuscariable { ItemId = 10 }
             };
             int highestSoFar = 5;
 
-            int result = UniqueIDGenerator.GetUniqueIDFor(target, others, highestSoFar);
+            int result = UniqueIdGenerator.GetUniqueIdFor(target, others, highestSoFar);
 
             Assert.AreEqual(21, result);
         }
@@ -57,15 +57,15 @@ namespace General
         [Test]
         public void HighestSoFarDominates_WhenLargest_Returns_HighestSoFarPlusOne()
         {
-            var target = new IntMuscariable { ItemID = 7 };
+            var target = new IntMuscariable { ItemId = 7 };
             IList<IHasItemID> others = new List<IHasItemID>
             {
-                new IntMuscariable { ItemID = 4 },
-                new FloatMuscariable { ItemID = 9 }
+                new IntMuscariable { ItemId = 4 },
+                new FloatMuscariable { ItemId = 9 }
             };
             int highestSoFar = 30;
 
-            int result = UniqueIDGenerator.GetUniqueIDFor(target, others, highestSoFar);
+            int result = UniqueIdGenerator.GetUniqueIdFor(target, others, highestSoFar);
 
             Assert.AreEqual(31, result);
         }

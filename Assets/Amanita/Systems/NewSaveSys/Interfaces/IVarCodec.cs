@@ -12,12 +12,12 @@ namespace Amanita.SaveSys
         /// <summary>
         /// Decodes the specified data and applies the result to the given variable.
         /// </summary>
-        void Decode(IVariable variable, string data);
+        void ApplyState(IVariable variable, string data);
 
         /// <summary>
         /// Decodes the specified VariableSaveData and applies the result to the given IVariable.`
         /// </summary>
-        void Decode(IVariable variable, VariableSaveData data);
+        void ApplyState(IVariable variable, VariableSaveData data);
 
         /// <summary>
         /// Decodes the specified data and returns the result as an object of type T. Will
@@ -28,5 +28,15 @@ namespace Amanita.SaveSys
         VariableSaveData EncodeToSave(IVariable varable);
     }
 
+    public interface IVarStateApplier
+    {
+        bool CanHandle(IVariable variable);
+        void ApplyState(IVariable variable, object data);
+    }
+
+    public interface IVarStateApplier<T> : IVarStateApplier
+    {
+        void ApplyState(IVariable variable, T data);
+    }
 
 }

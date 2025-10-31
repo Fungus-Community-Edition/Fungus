@@ -72,11 +72,6 @@ namespace VScriptingTests.VariableOperations
             VariableDataFactory.CreateForVar(null);
         }
 
-        [VariableData(typeof(float), typeof(StringMuscariable))]
-        public class FakeStringVariableData : VariableData<string>
-        {
-        }
-
     }
 
     [VariableData(typeof(int), typeof(IntMuscariable))]

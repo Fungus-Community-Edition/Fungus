@@ -5,10 +5,10 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.TestTools;
-using static UnityEngine.Analytics.IAnalytic;
+using Amanita.FSExt;
+using Amanita;
 
 namespace SaveSystemTests
 {
@@ -113,12 +113,13 @@ namespace SaveSystemTests
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             relevantSave = varSaves.Where((elem) => elem.Key == twoDPosVar.Key).First();
             // Remember: the format we're going with is "X,Y"
-            parts = relevantSave.Value.Split(',');
-            xVal = 0; yVal = 0;
-            float.TryParse(parts[0], out xVal);
-            float.TryParse(parts[1], out yVal);
-            Vector2 decodedTwo = new Vector2(xVal, yVal);
-            savedCorrectly = decodedTwo == expectedTwoDPos;
+            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            lock (serializer)
+            {
+                Vector2State vec2State = serializer.FromJson<Vector2State>(relevantSave.Value);
+                Vector2 decodedTwo = vec2State.ToVector2();
+                savedCorrectly = decodedTwo == expectedTwoDPos;
+            }
             Assert.IsTrue(savedCorrectly, $"Did not properly save the twoDPos var. What was saved: {relevantSave.Value}");
             #endregion
 
@@ -144,11 +145,9 @@ namespace SaveSystemTests
             // For some reason, the rotation was screwed up...
             Assert.IsTrue(savedCorrectly, $"Did not properly save the transform var. " +
                 $"What was saved:\n{decodedTfState}\n\n" + 
-                $"What was expected:\n{expectedTFormState.ToString()}");
+                $"What was expected:\n{expectedTFormState}");
 
         }
-
-        protected fsSerializer serializer = new fsSerializer();
 
         [UnityTest]
         public virtual IEnumerator SavesRightNumberOfBlocks()

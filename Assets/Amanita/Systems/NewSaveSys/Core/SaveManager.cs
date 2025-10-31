@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Amanita.SaveSys.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
@@ -16,7 +18,7 @@ namespace Amanita.SaveSys
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
         public virtual IVersionProvider VersionProvider { get; protected set; }
-        
+
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
                         IMainStateFactory mainStateFactory)
@@ -44,34 +46,23 @@ namespace Amanita.SaveSys
                 return result;
             }
         }
-        
+
+        // Transitional API: codecs no longer needed when saving/loading main data
+        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
         public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
         {
+            // Intentionally no-op to keep backward compatibility with calling sites
             if (codecs == null || codecs.Count == 0)
             {
-                Debug.LogWarning("No main codecs provided to register.");
                 return;
             }
-
-            for (int i = 0; i < codecs.Count; i++)
-            {
-                IMainSaveCodec currentEncoder = codecs[i];
-                if (currentEncoder == null)
-                {
-                    Debug.LogWarning($"Main codec at index {i} is null. Skipping registration.");
-                    continue;
-                }
-                RegisterMainCodec(currentEncoder);
-            }
         }
 
+        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
         public virtual void RegisterMainCodec(IMainSaveCodec codec)
         {
-            mainCodecs.Add(codec);
-            Loader.Add(codec);
+            // Intentionally no-op to keep backward compatibility with calling sites
         }
-
-        protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
 
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
@@ -101,7 +92,7 @@ namespace Amanita.SaveSys
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
         protected static string registerAndWriteOp = "register or write";
-        
+
         protected virtual bool Validate(int slotNum, string operation)
         {
             bool result;
@@ -155,7 +146,7 @@ namespace Amanita.SaveSys
                     {
                         sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
-                    
+
                     bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
                     if (!shouldLoadScene)
                     {
@@ -193,7 +184,59 @@ namespace Amanita.SaveSys
             await Loader.LoadMain(mainData, sceneToLoad);
 
             await ExecuteHandlers(AfterSceneLoadAsync);
+
+            ExecuteSaveLoadedHandlers();
+            void ExecuteSaveLoadedHandlers()
+            {
+                SaveSystem saveSys = SaveSystem.S;
+                var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
+
+                // We only want to count the handlers that are either:
+                // - set to respond to any save load
+                // - set to respond to at least one marker that is registered in the SaveSystem
+                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
+                .FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
+                .Where(handler => handler.IsAbleToRespond)
+                .ToList();
+
+                Sort(saveLoadedHandlers);
+
+                for (int i = 0; i < saveLoadedHandlers.Count; i++)
+                {
+                    var handler = saveLoadedHandlers[i];
+                    handler.ExecuteBlock();
+                }
+            }
+
             return mainData;
+        }
+
+        protected virtual void Sort(List<SaveLoadedEvent> toSort)
+        {
+            SaveSystem saveSys = SaveSystem.S;
+
+            // To save clock cycles, precompute orders
+            var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
+            foreach (var handler in toSort)
+            {
+                handlerOrders[handler] = handler.LowestOrder();
+            }
+
+            toSort.Sort((first, second) =>
+            {
+                int firstOrder = handlerOrders[first];
+                int secondOrder = handlerOrders[second];
+
+                bool shouldUseFallback = firstOrder == secondOrder;
+                if (shouldUseFallback)
+                {
+                    int firstId = first.GetInstanceID();
+                    int secondId = second.GetInstanceID();
+                    return firstId.CompareTo(secondId);
+                }
+
+                return firstOrder.CompareTo(secondOrder);
+            });
         }
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
@@ -227,7 +270,7 @@ namespace Amanita.SaveSys
                 Debug.LogWarning(errorMessage);
                 return;
             }
-            
+
             if (!SlotExists(slotNum))
             {
                 string warningMessage = $"Cannot delete save in slot {slotNum} because it does not exist.";
@@ -269,12 +312,10 @@ namespace Amanita.SaveSys
         }
 
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
-        // ^Better to cache this than create a new request every time client code
-        // wants to know the path of a save.
-    
+
         public virtual CompositeSaveData GetMainFrom(int slot)
         {
-            CompositeSaveData mainData = (CompositeSaveData) Registry.GetMainSave(slot);
+            CompositeSaveData mainData = (CompositeSaveData)Registry.GetMainSave(slot);
             return mainData;
         }
 
@@ -282,7 +323,7 @@ namespace Amanita.SaveSys
         {
             Registry.Clear();
         }
-    
+
         public virtual void SetSaveNameFor(int slot, string newSaveName)
         {
             Registry.SetSaveNameFor(slot, newSaveName);

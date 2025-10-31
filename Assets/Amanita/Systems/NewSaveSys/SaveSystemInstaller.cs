@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,7 +52,16 @@ namespace Amanita.SaveSys
 
             // We assume these are valid due to what we have OnValidate do
             IList<IMainSaveCodec> validMainCodecs = mainCodecs.Cast<IMainSaveCodec>().ToList();
+            foreach (var codec in validMainCodecs)
+            {
+                codec.PreInstallInit();
+            }
+
             IList<ISaveDataApplier> validAppliers = mainAppliers.Cast<ISaveDataApplier>().ToList();
+            foreach (var applier in validAppliers)
+            {
+                applier.PreInstallInit();
+            }
 
             PrepDependencies();
             void PrepDependencies()
@@ -77,18 +85,12 @@ namespace Amanita.SaveSys
                     { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
                 };
 
-
             }
 
             InjectDependencies();
             void InjectDependencies()
             {
-#if UNITY_6000_0_OR_NEWER
-                
                 saveSystem = UnityObject.FindFirstObjectByType<SaveSystem>();
-#else
-                saveSystem = UnityObject.FindObjectOfType<SaveSystem>();
-#endif
                 // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
                 // it through that. 
 

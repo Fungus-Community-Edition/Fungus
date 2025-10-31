@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Amanita.SaveSys
@@ -14,8 +15,6 @@ namespace Amanita.SaveSys
         /// </summary>
         System.Object ToMakeFrom { get; set; }
         bool NeedsInput { get; }
-        SaveDataUnit EncodeToUnit();
-        SaveData DecodeFrom(SaveDataUnit unit);
 
         // To help client code see if this codec can handle the type of object the client
         // wants to pass to it.
@@ -31,10 +30,14 @@ namespace Amanita.SaveSys
     public interface IMainSaveCodec : ISaveCodec
     {
         /// <summary>
-        /// The onComplete should get the results passed to it.
+        /// For any setup this codec needs to do during SaveSystem initialization.
         /// </summary>
-        IList<SaveDataUnit> FindAndEncodeAll(System.Action<IList<SaveDataUnit>> onComplete = null);
+        void PreInstallInit();
 
+        /// <summary>
+        /// The onComplete should contain the produced SaveData instances.
+        /// </summary>
+        IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null);
     }
 
     public interface ISaveCodec<TInput>: ISaveCodec
@@ -46,12 +49,13 @@ namespace Amanita.SaveSys
     /// <summary>
     /// Creates SaveData out of an object passed to it.
     /// </summary>
-    public interface ISaveCodec<TInput, TOutput> : ISaveCodec<TInput>
-        where TInput : class
-        where TOutput : SaveData
+    public interface ISaveCodec<TNonEncoded, TSaveData> : ISaveCodec<TNonEncoded>
+        where TNonEncoded : class
+        where TSaveData : SaveData
     {
-        TOutput EncodeToSave(TInput from);
-        new TOutput DecodeFrom(SaveDataUnit unit);
+        TSaveData EncodeToSave(TNonEncoded from);
+
+        TSaveData Decode(string rawText);
     }
 
     public interface IMultiSaveCodec<TOutput> : ISaveCodec<TOutput>

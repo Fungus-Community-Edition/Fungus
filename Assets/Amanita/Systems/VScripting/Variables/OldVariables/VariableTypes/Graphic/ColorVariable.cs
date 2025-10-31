@@ -38,29 +38,5 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for a Color variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(Color), typeof(ColorVariable))]
-    public class ColorData : VariableData<Color>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(ColorVariable))]
-        public IVariable<Color> colorRef;
-
-        public ColorData() : base(default) { }
-        public ColorData(Color startVal = default) : base(startVal) { }
-
-        public static implicit operator Color(ColorData colorData)
-        {
-            return colorData.Value;
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= colorRef;
-        }
-
-    }
+    
 }

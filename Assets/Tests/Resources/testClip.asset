@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _details:
     _introClip: {fileID: 0}
-    _mainClip: {fileID: 8300000, guid: 2187989a7e9ee9149857f9913087c676, type: 3}
+    _mainClip: {fileID: 8300000, guid: eb2cfabb9985f2f489e93a8e2b7db129, type: 3}
     _trackGroup: 2
     _track: 0
     _loop: 1

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
+  includeInSaves: 1
+  assetID: b3ed1b56-fc1a-4537-a725-ffa201263dc9
   variables:
   - rid: 846271511759683584
   - rid: 846271512383848516
@@ -68,6 +70,6 @@ MonoBehaviour:
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
-        key: someFloat
+        key: pi
         itemID: 10
-        value: 1.2345
+        value: 3.14159

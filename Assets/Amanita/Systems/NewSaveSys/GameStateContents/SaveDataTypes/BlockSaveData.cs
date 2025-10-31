@@ -39,20 +39,6 @@ namespace Amanita.SaveSys
 
         }
 
-        public override SaveDataUnit Serialized()
-        {
-            var dataAsJson = JsonUtility.ToJson(this, true);
-            SaveDataUnit data = new(TypeName, dataAsJson);
-            return data;
-        }
-
-        public static BlockSaveData DeserializeFrom(SaveDataUnit item)
-        {
-            ValidateSerializedData(item, nameof(BlockSaveData));
-            BlockSaveData data = JsonUtility.FromJson<BlockSaveData>(item.Content);
-            return data;
-        }
-
         public static readonly BlockSaveData Null = new()
         {
             ItemId = -1,

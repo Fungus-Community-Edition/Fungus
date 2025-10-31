@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using Amanita.VScripting;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Amanita.DialogueSys.Commands
 {

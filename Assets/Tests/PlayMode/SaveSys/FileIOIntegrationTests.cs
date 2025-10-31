@@ -26,7 +26,7 @@ namespace SaveSystemTests
         public async Task SmallData_RoundTrip()
         {
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
             var writeReq = new SaveWriteRequest
             {
@@ -64,9 +64,8 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(savePath);
             saveFilePathsForCleanup.Add(backupPath);
 
-            // STEP 1 — Write initial data
             var originalData = new CompositeSaveData();
-            originalData.Add(new SaveDataUnit("State", "{\"value\":1}"));
+            originalData.Add(new RawIntSaveData(1));
 
             var firstWrite = new SaveWriteRequest
             {
@@ -81,7 +80,7 @@ namespace SaveSystemTests
 
             // STEP 2 — Overwrite with new data
             var newData = new CompositeSaveData();
-            newData.Add(new SaveDataUnit("State", "{\"value\":999}"));
+            newData.Add(new RawIntSaveData(999));
 
             var secondWrite = new SaveWriteRequest
             {
@@ -96,10 +95,10 @@ namespace SaveSystemTests
             Assert.IsTrue(File.Exists(savePath), "Overwritten file was not created.");
             Assert.IsTrue(File.Exists(backupPath), "Backup file was not created during overwrite.");
 
-            // Optional: Verify that the backup contains the original content
+            // Verify that the backup contains the original content (Value = 1)
             var backupContent = await File.ReadAllTextAsync(backupPath);
             string unescaped = Regex.Unescape(backupContent);
-            Assert.IsTrue(unescaped.Contains("\"value\":1"), "Backup file did not preserve original content.");
+            Assert.IsTrue(unescaped.Contains("\"Value\": 1"), "Backup file did not preserve original content.");
 
             // STEP 3 — Write again with deletion enabled
             saveWriter.DeleteBackupsPostOverwrite = true;
@@ -114,7 +113,7 @@ namespace SaveSystemTests
         public async Task SmallData_RoundTrip_VariedSlots(int slotNumber, SaveDirectoryType dirType)
         {
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
             var writeReq = new SaveWriteRequest
             {
@@ -143,7 +142,7 @@ namespace SaveSystemTests
             saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":123}"));
+            data.Add(new RawIntSaveData(123));
 
             var writeReq = new SaveWriteRequest
             {
@@ -175,7 +174,7 @@ namespace SaveSystemTests
             meta.SaveName = "EncryptedMetaTest";
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Bar", "{\"y\":456}"));
+            data.Add(new RawStringSaveData("hello meta"));
 
             var writeReq = new SaveWriteRequest
             {
@@ -204,7 +203,7 @@ namespace SaveSystemTests
             saveReaderFallback.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":999}"));
+            data.Add(new RawIntSaveData(999));
 
             var writeReq = new SaveWriteRequest
             {
@@ -242,7 +241,7 @@ namespace SaveSystemTests
             saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Unicode", unicodeString));
+            data.Add(new RawStringSaveData(unicodeString));
 
             var writeReq = new SaveWriteRequest
             {
@@ -261,7 +260,8 @@ namespace SaveSystemTests
             };
             var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
 
-            Assert.IsTrue(result.Units.Any(u => u.Content == unicodeString), $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
+            Assert.IsTrue(result.Items.OfType<RawStringSaveData>().Any(u => u.Value == unicodeString),
+                $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
         }
 
         public static IEnumerable<string> UnicodeTestCases()
@@ -284,7 +284,7 @@ namespace SaveSystemTests
             // Write unencrypted
             saveWriter.ExpectEncryption = false;
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
             var writeReq = new SaveWriteRequest
             {
@@ -309,7 +309,18 @@ namespace SaveSystemTests
             Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false),
                 assertErrorMessage);
         }
+    }
+
+    // Simple test SaveData types for round-trips
+    [System.Serializable]
+    public class RawIntSaveData : SaveData
+    {
+        [SerializeField] public int Value;
+
+        public RawIntSaveData() { }
+        public RawIntSaveData(int value) { Value = value; }
 
     }
 
+    
 }

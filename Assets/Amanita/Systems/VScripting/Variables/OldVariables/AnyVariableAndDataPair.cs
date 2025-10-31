@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,26 +7,42 @@ namespace Amanita.VScripting
     /// <summary>
     /// Pairing of an AnyVariableData and an variable reference. Internal lookup for
     /// making the right kind of variable with the correct data in the AnyVariableData.
-    /// This is the primary mechanism for hiding the ugly need to match variable to
-    /// correct data type so we can perform comparisons and operations.
-    ///
-    /// New types created need to be added to the list below and also to AllVariableTypes and
-    /// AnyVariableData
-    /// 
-    /// Note to ensure use of RefreshVariableCacheHelper in commands, see SetVariable for
-    /// example.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
         public virtual IVariable Variable
         {
-            get { return variable; }
-            set { variable = value as Variable; }
+            get
+            {
+                if (legacyVariable != null)
+                {
+                    return legacyVariable;
+                }
+
+                return variable;
+            }
+            set
+            {
+                bool valIsLegacyVar = value is Variable legacyVar;
+                if (valIsLegacyVar)
+                {
+                    legacyVariable = value as Variable;
+                    variable = null; // ensure only one is authoritative
+                }
+                else
+                {
+                    variable = value;
+                    legacyVariable = null;
+                }
+            }
         }
 
         [VariableProperty()]
-        [SerializeField] protected Variable variable;
+        [SerializeReference] protected IVariable variable; // The lhs variable in Set Variable (managed)
+
+        [VariableProperty()]
+        [SerializeField] protected Variable legacyVariable; // The lhs variable in Set Variable (legacy MonoBehaviour)
 
         public AnyVariableData Data
         {
@@ -35,7 +50,10 @@ namespace Amanita.VScripting
             set { data = value; }
         }
 
-        [SerializeField, SerializeReference] protected AnyVariableData data = new AnyVariableData(); // Used as the right hand side in Set Variable
+        [SerializeField] protected AnyVariableData data = new AnyVariableData();
+
+        // Helper: decide which one is authoritative
+        protected IVariable EffectiveVariable => legacyVariable != null ? legacyVariable : variable;
 
         public virtual void OnBeforeSerialize()
         {
@@ -44,31 +62,37 @@ namespace Amanita.VScripting
         public virtual void OnAfterDeserialize()
         {
             data.OnAfterDeserialize();
-            if (variable != null && data.VarRef == null)
+
+            var eff = EffectiveVariable;
+            if (eff != null && data.VarRef == null)
             {
-                data.SetFor(variable.GetType(), variable.ContentType);
+                data.SetFor(VarType, eff.ContentType);
             }
         }
 
         public bool HasReference(Variable variable)
         {
-            return variable == this.variable || data.HasReference(variable);
+            // Only legacy comparison makes sense for this signature
+            return ReferenceEquals(variable, this.legacyVariable) || data.HasReference(variable);
         }
 
 #if UNITY_EDITOR
         public void RefreshVariableCacheHelper(Flowchart flowchart, ref IList<IVariable> referencedVariables)
         {
-            if (variable is IVariable<string> asStringVar && 
-                asStringVar != null && 
-                !string.IsNullOrEmpty(asStringVar.Value))
-                flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
+            var eff = EffectiveVariable;
 
-            string text = data.Value as string;
+            if (eff is IVariable<string> asStringVar &&
+                asStringVar != null &&
+                !string.IsNullOrEmpty(asStringVar.Value))
+            {
+                flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
+            }
+
+            string text = data.BoxedValue as string;
             if (!string.IsNullOrEmpty(text))
             {
                 flowchart.DetermineSubstituteVariables(text, referencedVariables);
             }
-                
         }
 #endif
 
@@ -87,26 +111,27 @@ namespace Amanita.VScripting
             return VariableTypeRegistry.TryGetTypeActionsFor(varType, out result);
         }
 
+        // Important: consider legacy first, then managed, and unwrap pointers as needed
         protected virtual Type VarType
         {
             get
             {
-                if (variable != null)
-                {
-                    return variable.GetType();
-                }
+                var eff = EffectiveVariable;
+                if (eff == null)
+                    return null;
 
-                return null;
+                return eff.GetType();
             }
         }
 
         public bool Compare(CompareOperator compareOperator, ref bool compareResult)
         {
+            var eff = EffectiveVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out var typeActions);
 
             if (foundActions)
             {
-                typeActions.CompareFunc(variable, data, compareOperator);
+                compareResult = typeActions.CompareFunc(eff, data, compareOperator);
             }
 
             return foundActions;
@@ -114,12 +139,12 @@ namespace Amanita.VScripting
 
         public void SetOp(SetOperator setOperator)
         {
+            var eff = EffectiveVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out VariableTypeActions typeActions);
             if (foundActions)
             {
-                typeActions.SetFunc(variable, data, setOperator);
+                typeActions.SetFunc(eff, data, setOperator);
             }
         }
-
     }
 }

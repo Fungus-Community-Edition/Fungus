@@ -1,7 +1,10 @@
+using Amanita.SaveSys;
 using Collections;
+using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
 
@@ -10,13 +13,32 @@ namespace Amanita.VScripting
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource
     {
+        [SerializeField] protected bool includeInSaves = true;
+        [SerializeField, HideInInspector] protected string assetID = string.Empty;
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
 
+        public bool IncludeInSaves
+        {
+            get => includeInSaves;
+            set => includeInSaves = value;
+        }
+
+        public string AssetId
+        {
+            get => assetID;
+            set
+            {
+                if (!string.IsNullOrEmpty(assetID))
+                {
+                    Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
+                }
+
+                assetID = value;
+            }
+        }
         public IReadOnlyList<IVariable> Variables => variables.ToList();
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => variables.ToList();
-
-        protected IList<MuscariableHolder> holders = new List<MuscariableHolder>();
 
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
@@ -71,7 +93,7 @@ namespace Amanita.VScripting
         {
             var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
-            var.ItemID = UniqueIDGenerator.GetUniqueIDFor(var, toPass, _nextVarID);
+            var.ItemId = UniqueIdGenerator.GetUniqueIdFor(var, toPass, _nextVarID);
             var.Owner = this;
         }
 
@@ -80,7 +102,16 @@ namespace Amanita.VScripting
 
         public Muscariable GetVariable(string name)
         {
-            return variables.Find(elem => elem.Key == name);
+            for (int i = 0; i < variables.Count; i++)
+            {
+                Muscariable var = variables[i];
+                if (var.Key == name)
+                {
+                    return var;
+                }
+            }
+
+            return null;
         }
 
         public virtual IList<Muscariable> GetVarsByContentType<TContent>()
@@ -158,6 +189,11 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
+            if (string.IsNullOrEmpty(assetID))
+            {
+                assetID = Guid.NewGuid().ToString();
+            }
+
             variables.RemoveAll(elem => elem == null);
 
             AssertOwnership();
@@ -174,9 +210,9 @@ namespace Amanita.VScripting
 
         public event Action Refreshed = delegate { };
 
-        public virtual IVariable GetVar(int itemID)
+        public virtual IVariable GetVariable(int itemID)
         {
-            IVariable result = variables.Where((elem) => elem.ItemID == itemID).FirstOrDefault();
+            IVariable result = variables.Where((elem) => elem.ItemId == itemID).FirstOrDefault();
             return result;
         }
 
@@ -185,7 +221,7 @@ namespace Amanita.VScripting
             if (!variables.ContainsReference(toAdd))
             {
                 MakeUniqueForThisSource(toAdd);
-                _nextVarID = toAdd.ItemID + 1;
+                _nextVarID = toAdd.ItemId + 1;
 #if UNITY_EDITOR
                 AnyRightBeforeVarAdded(toAdd);
 #endif
@@ -203,12 +239,103 @@ namespace Amanita.VScripting
 
         Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < variables.Count; i++)
+            {
+                Muscariable var = variables[i];
+                if (var.ItemId == itemId)
+                {
+                    return var;
+                }
+            }
+
+            return null;
         }
 
         public virtual bool ContainsVar(IVariable var)
         {
             return variables.ContainsReference(var);
+        }
+
+        protected virtual void OnEnable()
+        {
+            EditorOnEnable();
+        }
+
+        protected virtual void EditorOnEnable()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            // We want to make sure that the variables' states are returned to their 
+            // pre-enter-play-mode values when we exit play mode. Thus,
+            // we need to set up backups when entering play mode.
+            if (change == PlayModeStateChange.EnteredPlayMode)
+            {
+                ReadyBackups();
+                void ReadyBackups()
+                {                     
+                    backupMuscariables.Clear();
+                    foreach (var var in variables)
+                    {
+                        Muscariable backupVar = var.Clone();
+                        backupMuscariables.Add(backupVar);
+                    }
+                }
+                
+            }
+            else if (change == PlayModeStateChange.ExitingPlayMode)
+            {
+                RestoreFromBackups();
+                void RestoreFromBackups()
+                {
+                    // Rather than recreating the vars as "restored" ones, we apply the values
+                    // of the backups to the ones we got.
+                    for (int i = 0; i < backupMuscariables.Count; i++)
+                    {
+                        Muscariable backupVar = backupMuscariables[i];
+                        Muscariable varToRestoreTo = variables.Where((elem) => elem.ItemId == backupVar.ItemId)
+                            .FirstOrDefault();
+                        if (varToRestoreTo != null)
+                        {
+                            varToRestoreTo.BoxedValue = backupVar.BoxedValue;
+                        }
+                        else
+                        {
+                            Debug.LogError($"Could not find variable with ID {backupVar.ItemId} to restore its value to.");
+                        }
+                    }
+                }
+            }
+        }
+
+        protected List<Muscariable> backupMuscariables = new List<Muscariable>();
+#endif
+
+        protected virtual void OnDisable()
+        {
+            EditorOnDisable();
+        }
+
+        protected virtual void EditorOnDisable()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+        }
+#endif
+        protected virtual void OnValidate()
+        {
+            if (string.IsNullOrEmpty(assetID))
+            {
+                assetID = Guid.NewGuid().ToString();
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
+            }
         }
     }
 
@@ -219,7 +346,7 @@ namespace Amanita.VScripting
         IReadOnlyList<IVariable> Variables { get; }
         IVariable AddVariable(IVariable toAdd);
         void RemoveVariable(IVariable toRemove);
-        IVariable GetVar(int itemId);
+        IVariable GetVariable(int itemId);
     }
 
     public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable
@@ -227,7 +354,7 @@ namespace Amanita.VScripting
         new IReadOnlyList<TVar> Variables { get; }
         TVar AddVariable(TVar toAdd);
         void RemoveVariable(TVar toRemove);
-        new TVar GetVar(int itemId);
+        TVar GetVar(int itemId);
     }
 
     public interface IMuscariableSource : IVariableSource<Muscariable>
@@ -249,5 +376,51 @@ namespace Amanita.VScripting
     public interface IVarConvertible<TTargetType> where TTargetType : IVariable
     {
         TTargetType ToVar();
+    }
+
+    public class VSAConverter : fsDirectConverter<VariableSourceAsset>
+    {
+        protected override fsResult DoSerialize(VariableSourceAsset model, Dictionary<string, fsData> serialized)
+        {
+            VariableSourceAssetSaveData saveData = new VariableSourceAssetSaveData();
+            saveData.AssetId = model.AssetId;
+            saveData.SavedVars = (IList<VariableSaveData>)model.Variables;
+            SerializeMember(serialized, null, "saveData", saveData);
+            return fsResult.Success;
+        }
+
+        protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref VariableSourceAsset model)
+        {
+            // We assume that the data contains a VariableSourceAssetSaveData under "saveData".
+            fsData saveDataData;
+            if (data.TryGetValue("saveData", out saveDataData))
+            {
+                fsResult result;
+                VariableSourceAssetSaveData saveData = null;
+                result = DeserializeMember(data, null, "saveData", out saveData);
+                if (result.Failed)
+                {
+                    return result;
+                }
+                // Now, we can reconstruct the VariableSourceAsset from the save data.
+                model = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                model.AssetId = saveData.AssetId;
+                model.IncludeInSaves = true;
+                model.Refresh();
+                
+                foreach (var varSave in saveData.SavedVars)
+                {
+                    Muscariable var = VariableFactory.CreateByVarTypeName(varSave.VarTypeName, null);
+                    model.AddVariable(var);
+                }
+                return fsResult.Success;
+            }
+            else
+            {
+                return fsResult.Fail("No 'saveData' found in data for VariableSourceAsset deserialization.");
+            }
+        }
+
+
     }
 }

@@ -29,6 +29,9 @@ namespace Amanita.Myceliaudio
 
         protected IDictionary<AudioClip, AudioClip> _firstPlayClips = new Dictionary<AudioClip, AudioClip>();
 
+        public static string IntroClipNameSuffix { get; protected set; } = "_Intro";
+        public static string LoopClipNameSuffix { get; protected set; } = "_Loop";
+
         public virtual AudioClip GetIntroClip(AudioClip originalClip, double loopStartPoint)
         {
             AudioClip result;

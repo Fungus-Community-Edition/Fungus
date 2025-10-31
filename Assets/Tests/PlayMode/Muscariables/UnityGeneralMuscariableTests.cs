@@ -40,14 +40,14 @@ namespace VScriptingTests.MuscariableTests.DataOnly
             StringAssert.Contains("needs a valid ID", ex.Message);
 
             goVar.Key = "go";
-            goVar.ItemID = 301;
+            goVar.ItemId = 301;
             Assert.DoesNotThrow(() => goVar.Init());
         }
 
         [Test]
         public void GameObjectMuscariable_ValueAssignmentAndEvent()
         {
-            var goVar = new GameObjectMuscariable { Key = "go", ItemID = 302 };
+            var goVar = new GameObjectMuscariable { Key = "go", ItemId = 302 };
             goVar.Init();
 
             GameObject captured = null;
@@ -61,7 +61,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void GameObjectMuscariable_GONameGetterAndSetter()
         {
-            var goVar = new GameObjectMuscariable { Key = "go", ItemID = 303, Value = firstGameObject };
+            var goVar = new GameObjectMuscariable { Key = "go", ItemId = 303, Value = firstGameObject };
             goVar.Init();
 
             // Getter
@@ -76,7 +76,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void GameObjectMuscariable_IsDestroyedAndNameError()
         {
-            var goVar = new GameObjectMuscariable { Key = "go", ItemID = 304, Value = firstGameObject };
+            var goVar = new GameObjectMuscariable { Key = "go", ItemId = 304, Value = firstGameObject };
             goVar.Init();
 
             // Destroy the underlying GameObject
@@ -93,9 +93,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void GameObjectMuscariable_EqualityAndEvaluate()
         {
-            var firstGoVar = new GameObjectMuscariable { Key = "a", ItemID = 305, Value = firstGameObject };
-            var secondGoVar = new GameObjectMuscariable { Key = "b", ItemID = 306, Value = firstGameObject };
-            var thirdGoVar = new GameObjectMuscariable { Key = "c", ItemID = 307, Value = secondGameObject };
+            var firstGoVar = new GameObjectMuscariable { Key = "a", ItemId = 305, Value = firstGameObject };
+            var secondGoVar = new GameObjectMuscariable { Key = "b", ItemId = 306, Value = firstGameObject };
+            var thirdGoVar = new GameObjectMuscariable { Key = "c", ItemId = 307, Value = secondGameObject };
 
             Assert.IsTrue(firstGoVar == secondGoVar);
             Assert.IsFalse(firstGoVar != secondGoVar);
@@ -113,7 +113,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void GameObjectMuscariable_WrongTypeAssignment_Throws()
         {
-            var goVar = new GameObjectMuscariable { Key = "go", ItemID = 308 };
+            var goVar = new GameObjectMuscariable { Key = "go", ItemId = 308 };
             goVar.Init();
             Muscariable baseVar = goVar;
             Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);
@@ -122,7 +122,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void TransformMuscariable_ValueAssignmentAndEvent()
         {
-            var transVar = new TransformMuscariable { Key = "tf", ItemID = 309 };
+            var transVar = new TransformMuscariable { Key = "tf", ItemId = 309 };
             transVar.Init();
 
             Transform captured = null;
@@ -136,9 +136,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void TransformMuscariable_EqualityAndEvaluate()
         {
-            var firstTransVar = new TransformMuscariable { Key = "a", ItemID = 310, Value = firstTransform };
-            var secondTransVar = new TransformMuscariable { Key = "b", ItemID = 311, Value = firstTransform };
-            var thirdTransVar = new TransformMuscariable { Key = "c", ItemID = 312, Value = secondTransform };
+            var firstTransVar = new TransformMuscariable { Key = "a", ItemId = 310, Value = firstTransform };
+            var secondTransVar = new TransformMuscariable { Key = "b", ItemId = 311, Value = firstTransform };
+            var thirdTransVar = new TransformMuscariable { Key = "c", ItemId = 312, Value = secondTransform };
 
             Assert.IsTrue(firstTransVar == secondTransVar);
             Assert.IsFalse(firstTransVar != secondTransVar);
@@ -155,7 +155,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void TransformMuscariable_WrongTypeAssignment_Throws()
         {
-            var transVar = new TransformMuscariable { Key = "tf", ItemID = 313 };
+            var transVar = new TransformMuscariable { Key = "tf", ItemId = 313 };
             transVar.Init();
             Muscariable baseVar = transVar;
             Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a transform");
@@ -164,7 +164,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void UnityObjectMuscariable_ValueAssignmentAndEvent()
         {
-            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemID = 314 };
+            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemId = 314 };
             unityObjVar.Init();
 
             UnityEngine.Object captured = null;
@@ -178,7 +178,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void UnityObjectMuscariable_NullAndDestroyedBehavior()
         {
-            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemID = 315 };
+            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemId = 315 };
             unityObjVar.Init();
 
             unityObjVar.Value = null;
@@ -192,9 +192,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void UnityObjectMuscariable_EqualityAndEvaluate()
         {
-            var firstUnityObjVar = new UnityObjectMuscariable { Key = "a", ItemID = 316, Value = firstGameObject };
-            var secondUnityObjVar = new UnityObjectMuscariable { Key = "b", ItemID = 317, Value = firstGameObject };
-            var thirdUnityObjVar = new UnityObjectMuscariable { Key = "c", ItemID = 318, Value = secondGameObject };
+            var firstUnityObjVar = new UnityObjectMuscariable { Key = "a", ItemId = 316, Value = firstGameObject };
+            var secondUnityObjVar = new UnityObjectMuscariable { Key = "b", ItemId = 317, Value = firstGameObject };
+            var thirdUnityObjVar = new UnityObjectMuscariable { Key = "c", ItemId = 318, Value = secondGameObject };
 
             Assert.IsTrue(firstUnityObjVar == secondUnityObjVar);
             Assert.IsFalse(firstUnityObjVar != secondUnityObjVar);
@@ -211,7 +211,7 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void UnityObjectMuscariable_WrongTypeAssignment_Throws()
         {
-            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemID = 319 };
+            var unityObjVar = new UnityObjectMuscariable { Key = "uo", ItemId = 319 };
             unityObjVar.Init();
             Muscariable baseVar = unityObjVar;
             Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 42);
