@@ -18,7 +18,7 @@ namespace Amanita.VScripting.EditorUtils
             varTarget.hideFlags = HideFlags.HideInInspector;
         }
 
-        public static VariableInfoAttribute GetVariableInfo(System.Type variableType)
+        public static VariableInfoAttribute GetVariableInfo(Type variableType)
         {
             object[] attributes = variableType.GetCustomAttributes(typeof(VariableInfoAttribute), false);
             foreach (object obj in attributes)
@@ -35,6 +35,7 @@ namespace Amanita.VScripting.EditorUtils
 
         /// <summary>
         /// Handles drawing the dropdown that lets you select variables in a Command's UI.
+        /// Works for both ObjectReference-backed (legacy Variable/MuscariableHolder) and ManagedReference-backed (IVariable) properties.
         /// </summary>
         public static void VariableField(SerializedProperty property, 
                                          GUIContent label, 
@@ -49,30 +50,44 @@ namespace Amanita.VScripting.EditorUtils
                 shouldBeOptionInDropdown = (varInQuestion) => true;
             }
 
-            Variable selectedVariable = property.objectReferenceValue as Variable;
+            // Property may be an ObjectReference (MonoBehaviour/ScriptableObject) or a ManagedReference (IVariable)
+            bool isManagedRef = property.propertyType == SerializedPropertyType.ManagedReference;
+
+            Variable selectedLegacy = null;
+            IVariable selectedIVar = null;
+
+            if (!isManagedRef)
+            {
+                selectedLegacy = property.objectReferenceValue as Variable;
+            }
+            else
+            {
+                selectedIVar = property.managedReferenceValue as IVariable;
+            }
 
             AvoidGlitchInvolvingFlowchartSwitches();
             void AvoidGlitchInvolvingFlowchartSwitches()
             {
-                // When there are multiple Flowcharts in a scene with variables, switching
-                // between the Flowcharts can cause the wrong variable property
-                // to be inspected for a single frame. This has the effect of causing private
-                // variable references to be set to null when inspected. When this condition 
-                // occurs we just skip displaying the property for this frame.
-                if (selectedVariable != null &&
-                    selectedVariable.gameObject != flowchartBelongingToCommand.gameObject &&
-                    selectedVariable.Scope == VariableScope.Private)
+                // Only applies to legacy Variables (MonoBehaviours) which can belong to another Flowchart
+                if (!isManagedRef && selectedLegacy != null &&
+                    flowchartBelongingToCommand != null &&
+                    selectedLegacy.gameObject != flowchartBelongingToCommand.gameObject &&
+                    selectedLegacy.Scope == VariableScope.Private)
                 {
                     property.objectReferenceValue = null;
+                    selectedLegacy = null;
                     return;
                 }
             }
 
-            IReadOnlyList<IVariable> varsToCheck = flowchartBelongingToCommand.Variables;
+            IReadOnlyList<IVariable> varsToCheck = flowchartBelongingToCommand != null
+                                                   ? flowchartBelongingToCommand.Variables
+                                                   : Array.Empty<IVariable>();
             int index = 0;
             int selectedIndex = 0;
             IList<string> variableKeys = new List<string>() { defaultText };
             IList<IVariable> variableObjects = new List<IVariable>() { null };
+
             RegisterVarsToShowInDropdown();
             void RegisterVarsToShowInDropdown()
             {
@@ -92,11 +107,15 @@ namespace Amanita.VScripting.EditorUtils
                         variableObjects.Add(elem);
                         index++;
 
-                        // Given the nature of Unity's serialization system, we'll assume that 
-                        // all IVariables here are in UnityObject's family tree. We'll probably
-                        // want to use an editor-only holder of sorts for Muscariables when
-                        // we get around to integrating those.
-                        if ((UnityObject)elem == selectedVariable)
+                        // Selection match logic:
+                        // - If property is ObjectReference: match against legacy Variable or any UnityObject implementing IVariable.
+                        // - If ManagedReference: match reference-equality against the current managed reference value.
+                        var elemAsUnityObj = elem as UnityObject;
+                        if (!isManagedRef && selectedLegacy != null && elemAsUnityObj == selectedLegacy)
+                        {
+                            selectedIndex = index;
+                        }
+                        else if (isManagedRef && selectedIVar != null && ReferenceEquals(elem, selectedIVar))
                         {
                             selectedIndex = index;
                         }
@@ -128,14 +147,16 @@ namespace Amanita.VScripting.EditorUtils
                             }
 
                             string publicVarKey = $"{fcElem.name}/{varElem.Key}";
-                            // ^To make it easy to see that the var belongs to another
-                            // flowchart
                             variableKeys.Add(publicVarKey);
                             variableObjects.Add(varElem);
-
                             index++;
 
-                            if ((UnityObject)varElem == selectedVariable)
+                            var elemAsUnityObj = varElem as UnityObject;
+                            if (!isManagedRef && selectedLegacy != null && elemAsUnityObj == selectedLegacy)
+                            {
+                                selectedIndex = index;
+                            }
+                            else if (isManagedRef && selectedIVar != null && ReferenceEquals(varElem, selectedIVar))
                             {
                                 selectedIndex = index;
                             }
@@ -153,13 +174,16 @@ namespace Amanita.VScripting.EditorUtils
                 selectedIndex = drawer(label.text, selectedIndex, variableKeys.ToArray());
             }
 
-            if (selectedIndex == 0)
+            // Apply selection to the property
+            IVariable chosen = variableObjects[selectedIndex];
+            if (isManagedRef)
             {
-                property.objectReferenceValue = (UnityObject)variableObjects[selectedIndex];
+                property.managedReferenceValue = chosen;
             }
             else
             {
-                property.objectReferenceValue = (UnityObject)variableObjects[selectedIndex];
+                // For ObjectReference fields, only UnityEngine.Object-backed variables can be assigned
+                property.objectReferenceValue = chosen as UnityObject;
             }
         }
     }
@@ -189,23 +213,26 @@ namespace Amanita.VScripting.EditorUtils
                     var typeToCheck = varToCheck.GetType();
 
                     IReadOnlyList<Type> typeListToCheck;
-                    bool shouldCheckForAllTypes = variableProperty.VariableTypes.Length == 0;
-                    // ^Though for flexibility's sake, we made it so that having no types in the 
-                    // prop's list means we should list any var of any type in the registry
+                    IList<Type> varTypes = variableProperty.VariableTypes;
+                    bool shouldCheckForAllTypes = varTypes.Count == 0;
                     if (shouldCheckForAllTypes)
                     {
-                        typeListToCheck = VariableTypeRegistry.AllLegacyTypes;
+                        // Include both legacy and muscariable types
+                        var all = new List<Type>();
+                        all.AddRange(VariableTypeRegistry.AllLegacyTypes);
+                        all.AddRange(VariableTypeRegistry.AllMuscariableTypes);
+                        typeListToCheck = all;
                     }
                     else
                     {
                         typeListToCheck = variableProperty.VariableTypes;
                     }
 
-                    whetherItDoesOrNot = typeListToCheck.Any((typeInList) => typeInList.Equals(typeToCheck));
+                    whetherItDoesOrNot = typeListToCheck.Any((typeInList) => typeInList.IsAssignableFrom(typeToCheck));
+                    // ^For polymorphism, we check assignability
                 }
 
                 return whetherItDoesOrNot;
-                
             }
 
             VariableEditor.VariableField(property, 
@@ -215,11 +242,13 @@ namespace Amanita.VScripting.EditorUtils
                                          ShouldBeAnOptionInTheDropdown,
                                          VariableSelectionPopup);
 
-            // Returns the index of the option selected
             int VariableSelectionPopup(string label,  int selectedIndex, string[] optionsToDisplay)
             {
                 return EditorGUI.Popup(position, label, selectedIndex, optionsToDisplay);
             }
+
+            // Commit changes defensively
+            property.serializedObject?.ApplyModifiedProperties();
 
             EditorGUI.EndProperty();
         }

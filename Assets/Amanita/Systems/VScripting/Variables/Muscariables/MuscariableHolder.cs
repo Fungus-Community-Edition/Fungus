@@ -116,6 +116,8 @@ namespace Amanita.VScripting
             }
         }
 
+        public bool IsRelationalSupported => ((IVariable)muscariable).IsRelationalSupported;
+
         public virtual void Init(IVariable variable)
         {
             muscariable = variable as Muscariable;
@@ -187,6 +189,11 @@ namespace Amanita.VScripting
         public virtual void Refresh()
         {
             UpdateName();
+        }
+
+        public bool IsArithmeticSupported(SetOperator setOperator)
+        {
+            return ((IVariable)muscariable).IsArithmeticSupported(setOperator);
         }
     }
 }

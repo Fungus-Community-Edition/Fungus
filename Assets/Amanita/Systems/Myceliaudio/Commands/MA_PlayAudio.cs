@@ -263,7 +263,7 @@ namespace Amanita.Myceliaudio.VScripting
             else
             {
                 IntegerData intData = mainPlayConfig.TrackData;
-                IntegerVariable intRef = intData.integerRef;
+                IVariable<int> intRef = intData.integerRef;
                 bool assignedVar = intRef != null;
 
                 if (assignedVar)

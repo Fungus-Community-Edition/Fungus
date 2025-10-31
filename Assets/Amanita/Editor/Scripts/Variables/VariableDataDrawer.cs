@@ -24,14 +24,15 @@ namespace Amanita.VScripting.EditorUtils
 
             // Find the two key sub-properties
             SerializedProperty valueProp, referenceProp;
+            string valuePropName = "value";
             try
             {
-                valueProp = varDataProp.FindPropertyRelative("valOfType");
+                valueProp = varDataProp.FindPropertyRelative(valuePropName);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Exception trying to find 'valOfType' property relative to {varDataProp.propertyPath}. " +
-                    $"Its display name: {varDataProp.displayName}. Make sure the VariableData class still has a field named 'valOfType'. Exception: {e}");
+                Debug.LogError($"Exception trying to find 'value' property relative to {varDataProp.propertyPath}. " +
+                    $"Its display name: {varDataProp.displayName}. Make sure the VariableData class still has a field named '{valuePropName}'. Exception: {e}");
                 throw;
             }
             referenceProp = varDataProp.FindPropertyRelative("varRef");
@@ -94,7 +95,7 @@ namespace Amanita.VScripting.EditorUtils
                     void RegisterLocalVars()
                     {
                         IList<IVariable> validLocalVars = localFlowchart.Variables
-                            .Where(elem => elem.ContentType.Equals(contentType))
+                            .Where(elem => contentType.IsAssignableFrom(elem.ContentType)) // Polymorphism allowed
                             .ToList();
                         for (int i = 0; i < validLocalVars.Count; i++)
                         {

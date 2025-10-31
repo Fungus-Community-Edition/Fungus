@@ -16,7 +16,7 @@ namespace VScriptingTests.VariableOperations
         [TestCaseSource(nameof(VariableDatas))]
         public virtual void StartsWithDefaultValue(VariableData variableData)
         {
-            Assert.AreEqual(default, variableData.Value);
+            Assert.AreEqual(default, variableData.BoxedValue);
         }
 
         public static VariableData[] VariableDatas = new VariableData[]
@@ -84,20 +84,20 @@ namespace VScriptingTests.VariableOperations
             Assert.IsNotNull(data, $"Could not create instance of {dataType.Name}");
 
             // start with literal
-            data.Value = initialLiteral;
-            Assert.AreEqual(initialLiteral, data.Value);
+            data.BoxedValue = initialLiteral;
+            Assert.AreEqual(initialLiteral, data.BoxedValue);
 
             // create a Muscariable of the appropriate content type and assign as VarRef
             var musc = VariableFactory.CreateByContentType(data.ContentType, null);
             musc.BoxedValue = varValue;
             data.VarRef = musc;
 
-            Assert.AreEqual(varValue, data.Value);
+            Assert.AreEqual(varValue, data.BoxedValue);
 
             // switch back to literal
             data.VarRef = null;
-            data.Value = backLiteral;
-            Assert.AreEqual(backLiteral, data.Value);
+            data.BoxedValue = backLiteral;
+            Assert.AreEqual(backLiteral, data.BoxedValue);
         }
 
         [TestCaseSource(nameof(VarDataCases))]
@@ -105,26 +105,26 @@ namespace VScriptingTests.VariableOperations
         {
             var original = Activator.CreateInstance(dataType) as VariableData;
             Assert.IsNotNull(original);
-            original.Value = initialLiteral;
+            original.BoxedValue = initialLiteral;
 
             var copyObj = original.GetCopy();
             Assert.IsNotNull(copyObj);
             var copy = copyObj as VariableData;
             Assert.IsNotNull(copy);
 
-            Assert.AreEqual(original.Value, copy.Value);
+            Assert.AreEqual(original.BoxedValue, copy.BoxedValue);
 
             // Ensure changing copy does not change original
             object newVal = varValue ?? backLiteral ?? initialLiteral;
-            copy.Value = newVal;
-            Assert.AreEqual(initialLiteral, original.Value);
-            Assert.AreEqual(newVal, copy.Value);
+            copy.BoxedValue = newVal;
+            Assert.AreEqual(initialLiteral, original.BoxedValue);
+            Assert.AreEqual(newVal, copy.BoxedValue);
 
             // Test SetContentsTo
             var target = Activator.CreateInstance(dataType) as VariableData;
             Assert.IsNotNull(target);
             target.SetContentsTo(original);
-            Assert.AreEqual(original.Value, target.Value);
+            Assert.AreEqual(original.BoxedValue, target.BoxedValue);
         }
 
         [TestCaseSource(nameof(VarDataCases))]

@@ -22,11 +22,11 @@ namespace Amanita.VScripting
         public virtual IVariable Variable
         {
             get { return variable; }
-            set { variable = value as Variable; }
+            set { variable = value; }
         }
 
         [VariableProperty()]
-        [SerializeField] protected Variable variable;
+        [SerializeReference] protected IVariable variable;
 
         public AnyVariableData Data
         {
@@ -51,7 +51,7 @@ namespace Amanita.VScripting
 
         public bool HasReference(Variable variable)
         {
-            return variable == this.variable || data.HasReference(variable);
+            return ReferenceEquals(variable, this.variable) || data.HasReference(variable);
         }
 
 #if UNITY_EDITOR
@@ -62,7 +62,7 @@ namespace Amanita.VScripting
                 !string.IsNullOrEmpty(asStringVar.Value))
                 flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
 
-            string text = data.Value as string;
+            string text = data.BoxedValue as string;
             if (!string.IsNullOrEmpty(text))
             {
                 flowchart.DetermineSubstituteVariables(text, referencedVariables);

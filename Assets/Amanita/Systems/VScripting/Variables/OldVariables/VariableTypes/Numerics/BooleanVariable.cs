@@ -29,31 +29,4 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for a Boolean variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(bool), typeof(BooleanVariable))]
-    public class BooleanData : VariableData<bool>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(BooleanVariable))]
-        public IVariable<bool> booleanRef;
-
-        [SerializeField]
-        public bool booleanVal;
-
-        public BooleanData() : base(default) { }
-        public BooleanData(bool startVal = default) : base(startVal) { }
-
-        public static implicit operator bool(BooleanData booleanData)
-        {
-            return booleanData.Value;
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= booleanRef;
-        }
-    }
 }

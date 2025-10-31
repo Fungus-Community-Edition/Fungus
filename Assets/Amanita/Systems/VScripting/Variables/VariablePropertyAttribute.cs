@@ -1,5 +1,6 @@
-using System.Linq;
 using UnityEngine;
+using Type = System.Type;
+using System.Collections.Generic;
 
 namespace Amanita.VScripting
 {
@@ -11,24 +12,25 @@ namespace Amanita.VScripting
     {
         public VariablePropertyAttribute()
         {
-            this.VariableTypes = VariableTypeRegistry.AllLegacyTypes.ToArray();
+            this.VariableTypes.AddRange(VariableTypeRegistry.AllLegacyTypes);
+            this.VariableTypes.AddRange(VariableTypeRegistry.AllMuscariableTypes);
         }
 
-        public VariablePropertyAttribute(params System.Type[] variableTypes)
+        public VariablePropertyAttribute(params Type[] variableTypes)
         {
-            this.VariableTypes = variableTypes;
+            this.VariableTypes.AddRange(variableTypes);
         }
 
-        public VariablePropertyAttribute(string defaultText, params System.Type[] variableTypes)
+        public VariablePropertyAttribute(string defaultText, params Type[] variableTypes)
         {
             this.defaultText = defaultText;
-            this.VariableTypes = variableTypes;
+            this.VariableTypes.AddRange(variableTypes);
         }
 
         public string defaultText = "<None>";
         public string compatibleVariableName = string.Empty;
 
-        public System.Type[] VariableTypes { get; set; }
+        public List<Type> VariableTypes { get; set; } = new List<Type>();
     }
 
 }

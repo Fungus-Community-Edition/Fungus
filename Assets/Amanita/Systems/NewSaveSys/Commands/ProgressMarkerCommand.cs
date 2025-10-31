@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Amanita.SaveSys.VScripting
 {
-    [CommandInfo("Save System/Progress Marker", 
+    [CommandInfo("Save Sys", 
         "Progress Marker", 
         "Marks a point in the game's progress for save/load purposes.")]
     public class ProgressMarkerCommand : Command

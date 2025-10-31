@@ -82,26 +82,4 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for an float variable reference or constant value.
-    /// </summary>
-    [VariableData(typeof(float), typeof(FloatVariable))]
-    [System.Serializable]
-    public class FloatData : VariableData<float>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(FloatVariable))]
-        public IVariable<float> floatRef;
-        public FloatData() : base(default) { }
-
-        public FloatData(float startVal) : base(startVal)
-        {
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= floatRef;
-        }
-
-    }
 }

@@ -41,12 +41,12 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Safe cast
-            var v = variableProp.objectReferenceValue as Variable;
+            var legacyVar = variableProp.objectReferenceValue as Variable;
 
             // Auto-detect owning flowchart once
-            if (variableProp.objectReferenceValue != null && lastFlowchart == null && v != null)
+            if (variableProp.objectReferenceValue != null && lastFlowchart == null && legacyVar != null)
             {
-                lastFlowchart = v.GetComponent<Flowchart>();
+                lastFlowchart = legacyVar.GetComponent<Flowchart>();
             }
 
             // Flowchart selector
@@ -57,7 +57,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 var popupRect = startPos;
                 popupRect.y = position.y;
-                var prefixLabel = new GUIContent(v != null ? v.GetType().Name : "No Var Selected");
+                var prefixLabel = new GUIContent(legacyVar != null ? legacyVar.GetType().Name : "No Var Selected");
                 EditorGUI.indentLevel++;
                 VariableEditor.VariableField(
                     variableProp,

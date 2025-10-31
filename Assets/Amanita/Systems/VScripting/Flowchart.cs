@@ -1482,6 +1482,7 @@ namespace Amanita.VScripting
             }
 
             toAdd.ParentFlowchart = this;
+            toAdd.Owner = this;
             toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
             toAdd.Init();
             muscariables.Add(toAdd);
