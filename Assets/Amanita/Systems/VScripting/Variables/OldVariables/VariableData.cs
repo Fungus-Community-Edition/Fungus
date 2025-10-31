@@ -152,6 +152,7 @@ namespace Amanita.VScripting
                 result = VarRef.Key;
             }
 
+            result = $"'{result}'";
             return result;
         }
 

@@ -57,10 +57,6 @@ namespace Amanita.VScripting.EditorUtils
             if (shouldDrawLiteral)
                 EditorGUI.PropertyField(valueRect, valueProp, GUIContent.none);
 
-            // Draw the variable reference (branch on propertyType)
-            // Going to need to define some new logic here, since the old stuff was predicated
-            // on the var refs having VariableInfo attributes, which they no longer do.
-
             DrawReferenceField();
             void DrawReferenceField()
             {
@@ -71,11 +67,7 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                int index = 0, selectedIndex = 0;
-                // ^So we can track which var in the dropdown is currently selected
-                // NOTE: previously this cast assumed the managed reference would be a VariablePointer.
-                // Muscariable instances are pure CLR objects (not UnityObj-backed pointers) so
-                // we must inspect the boxed value as the general IVariable instead of only IVariablePointer.
+                int selectedIndex = 0;
                 IVariable selectedVariable = referenceProp.boxedValue as IVariable;
 
                 RegisterValidVars();
@@ -87,9 +79,14 @@ namespace Amanita.VScripting.EditorUtils
                         Debug.LogWarning($"VariableDataAttribute for {varData.GetType().Name} not found. May be sign of underlying problem.");
                         return;
                     }
+
                     var contentType = dataAttr.ContentType;
-                    validVarLookup.Clear();
-                    validVarLookup.Add("<Value>", null); // Option to switch back to literal value
+
+                    _validVarsOrdered.Clear();
+                    _labelsSeen.Clear();
+
+                    // Always include the <Value> option first so the user can select it to enter a literal
+                    AddOption("<Value>", null);
 
                     RegisterLocalVars();
                     void RegisterLocalVars()
@@ -97,26 +94,16 @@ namespace Amanita.VScripting.EditorUtils
                         IList<IVariable> validLocalVars = localFlowchart.Variables
                             .Where(elem => contentType.IsAssignableFrom(elem.ContentType)) // Polymorphism allowed
                             .ToList();
+
                         for (int i = 0; i < validLocalVars.Count; i++)
                         {
                             var elem = validLocalVars[i];
-                            if (!validVarLookup.ContainsKey(elem.Key))
-                            {
-                                validVarLookup.Add(elem.Key, elem);
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"Variable key collision when trying to add variable {elem.Key} to the dropdown for {varDataProp.propertyPath}. " +
-                                    $"There is already a variable with that key in the dropdown. Skipping this one.");
-                            }
+                            AddOption(elem.Key, elem);
 
-                            index++;
-
-                            // Compare semantically (ItemID, Key, or reference). This handles both VariablePointer wrappers
-                            // and direct Muscariable instances.
-                            if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem)) 
+                            int idx = _validVarsOrdered.Count - 1;
+                            if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
                             {
-                                selectedIndex = index;
+                                selectedIndex = idx;
                                 Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
                             }
                         }
@@ -127,31 +114,24 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         IList<Flowchart> otherFlowchartsInScene = Flowchart.CachedFlowcharts.Where
                             ((elem) => elem != localFlowchart).ToList();
+
                         for (int i = 0; i < otherFlowchartsInScene.Count; i++)
                         {
                             var otherChart = otherFlowchartsInScene[i];
                             IList<IVariable> validVarsInOtherChart = otherChart.Variables
                                 .Where(elem => elem.ContentType.Equals(contentType) && elem.Scope == VariableScope.Public)
                                 .ToList();
+
                             for (int j = 0; j < validVarsInOtherChart.Count; j++)
                             {
                                 var elem = validVarsInOtherChart[j];
                                 string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
-                                if (!validVarLookup.ContainsKey(namespacedKey))
-                                {
-                                    validVarLookup.Add(namespacedKey, elem);
-                                }
-                                else
-                                {
-                                    Debug.LogWarning($"Variable key collision when trying to add variable {namespacedKey} to the dropdown for {varDataProp.propertyPath}. " +
-                                        $"There is already a variable with that key in the dropdown. Skipping this one.");
-                                }
+                                AddOption(namespacedKey, elem);
 
-                                index++;
-
+                                int idx = _validVarsOrdered.Count - 1;
                                 if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
                                 {
-                                    selectedIndex = index;
+                                    selectedIndex = idx;
                                     Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
                                 }
                             }
@@ -170,56 +150,57 @@ namespace Amanita.VScripting.EditorUtils
                         {
                             var elem = validGlobalVars[i];
                             string namespacedKey = $"Global/{elem.Key}";
-                            if (!validVarLookup.ContainsKey(namespacedKey))
-                            {
-                                validVarLookup.Add(namespacedKey, elem);
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"Variable key collision when trying to add variable " +
-                                    $"{namespacedKey} to the dropdown for {varDataProp.propertyPath}. " +
-                                    $"There is already a variable with that key in the dropdown. " +
-                                    $"Skipping this one.");
-                            }
+                            AddOption(namespacedKey, elem);
 
-                            index++;
-
+                            int idx = _validVarsOrdered.Count - 1;
                             if (selectedVariable != null && VariablesSemanticallyEqual(selectedVariable, elem))
                             {
-                                selectedIndex = index;
-                                Debug.Log($"Found selected variable {elem.Key} at index " +
-                                    $"{selectedIndex} in dropdown for {varDataProp.propertyPath}");
+                                selectedIndex = idx;
+                                Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
                             }
                         }
                     }
+
+                    void AddOption(string label, IVariable variable)
+                    {
+                        if (_labelsSeen.Contains(label))
+                        {
+                            Debug.LogWarning($"Variable key collision when trying to add variable {label} to the dropdown for {varDataProp.propertyPath}. " +
+                                             $"There is already a variable with that key in the dropdown. Skipping this one.");
+                            return;
+                        }
+
+                        _labelsSeen.Add(label);
+                        _validVarsOrdered.Add(new KeyValuePair<string, IVariable>(label, variable));
+                    }
                 }
 
-                bool noVarsFound = validVarLookup.Count == 0;
+                bool noVarsFound = _validVarsOrdered.Count == 0;
                 if (noVarsFound)
                 {
                     return;
                 }
-                IList<string> options = validVarLookup.Keys.ToList();
-                int prevSelectedIndex = Mathf.Min(options.Count, selectedIndex);
-                
-                IVariable chosenBefore = validVarLookup[options[prevSelectedIndex]];
+
+                string[] options = _validVarsOrdered.Select(kvp => kvp.Key).ToArray();
+
+                // Clamp to valid range to avoid out-of-range when nothing was matched
+                int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
+                IVariable chosenBefore = _validVarsOrdered[prevSelectedIndex].Value;
 
                 if (!shouldDrawLiteral && chosenBefore != null)
                 {
                     popupRect = wholeFieldRect;
                 }
 
-                selectedIndex = EditorGUI.Popup(popupRect, selectedIndex, options.ToArray());
-                
+                selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
+
                 if (selectedIndex != prevSelectedIndex)
                 {
                     Debug.Log($"Selected something else");
                 }
 
-                IVariable chosenNow = validVarLookup[options[selectedIndex]];
-
+                IVariable chosenNow = _validVarsOrdered[selectedIndex].Value;
                 referenceProp.AssignVarRef(chosenNow, varData.ContentType);
-
             }
 
             EditorGUI.indentLevel = prevIndent;
@@ -227,7 +208,6 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUI.EndProperty();
         }
 
-        protected IDictionary<string, IVariable> validVarLookup = new Dictionary<string, IVariable>();
         protected UnityObj _variableSourceContext;
 
         protected virtual UnityObj GetBindingTarget(IVariable variable)
@@ -309,7 +289,7 @@ namespace Amanita.VScripting.EditorUtils
             return null;
         }
 
-
+        // Restored: used by OnGUI above
         protected virtual bool VarRefPropHasAnythingAssigned(SerializedProperty varRefProp)
         {
             bool result = false;
@@ -347,42 +327,51 @@ namespace Amanita.VScripting.EditorUtils
 
         // Helper: compare two IVariable instances semantically so we can detect the currently-selected
         // variable regardless of whether the stored reference is a VariablePointer wrapper or a raw Muscariable.
-        private static bool VariablesSemanticallyEqual(IVariable a, IVariable b)
+        private static bool VariablesSemanticallyEqual(IVariable first, IVariable second)
         {
-            if (a == null || b == null) return false;
+            if (first == null || second == null) return false;
+            if (first?.Owner != second?.Owner) return false;
 
             try
             {
                 // Prefer stable ItemID when available (non-zero)
-                if (a.ItemId != 0 || b.ItemId != 0)
+                if (first.ItemId != 0 || second.ItemId != 0)
                 {
-                    if (a.ItemId == b.ItemId) return true;
+                    if (first.ItemId == second.ItemId) return true;
                 }
             }
             catch { /* ignore */ }
 
             try
             {
-                if (!string.IsNullOrEmpty(a.Key) && a.Key == b.Key) return true;
+                // Only consider Key equality when the owner/source is the same to avoid cross-source collisions.
+                if (first.Owner != null && second.Owner != null &&
+                    ReferenceEquals(first.Owner, second.Owner) &&
+                    !string.IsNullOrEmpty(first.Key) && first.Key == second.Key)
+                {
+                    return true;
+                }
             }
             catch { /* ignore */ }
 
             // If a is a pointer type, compare against its underlying component if possible
-            if (a is IVariablePointer ptr)
+            if (first is IVariablePointer ptr)
             {
                 var compVar = ptr.Component as IVariable;
                 if (compVar != null)
                 {
-                    if (VariablesSemanticallyEqual(compVar, b)) return true;
+                    if (VariablesSemanticallyEqual(compVar, second)) return true;
                 }
             }
 
             // Reference equality fallback
-            return object.ReferenceEquals(a, b);
+            return object.ReferenceEquals(first, second);
         }
+
+        // Keep ordered options separate from de-dup tracking
+        protected readonly List<KeyValuePair<string, IVariable>> _validVarsOrdered = new List<KeyValuePair<string, IVariable>>();
+        protected readonly HashSet<string> _labelsSeen = new HashSet<string>();
     }
-
-
 
     [CustomPropertyDrawer(typeof(BooleanData))]
     public class BooleanDataDrawer : VariableDataDrawer<BooleanVariable>

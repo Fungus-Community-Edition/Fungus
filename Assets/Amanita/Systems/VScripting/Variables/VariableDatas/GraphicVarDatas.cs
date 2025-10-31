@@ -48,12 +48,7 @@ namespace Amanita.VScripting
                 // To make sure we never return a null value
                 if (result == null)
                 {
-                    result = "";
-                    if (VarRef != null)
-                    {
-                        VarRef.BoxedValue = result;
-                    }
-                    value = result;
+                    result = value = string.Empty;
                 }
 
                 return result;
