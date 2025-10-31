@@ -133,17 +133,45 @@ namespace Amanita.VScripting
 
         public override object BoxedValue
         {
-            get => value;
+            get
+            {
+                if (LegacyVarRef != null)
+                {
+                    return LegacyVarRef.BoxedValue;
+                }
+                else if (VarRef != null)
+                {
+                    return VarRef.BoxedValue;
+                }
+                else
+                {
+                    return value;
+                }
+            }
             set
             {
+                object whatToAssign = null;
                 try
                 {
-                    this.value = (TValue)value;
+                    whatToAssign = (TValue)value;
                 }
                 catch
                 {
                     Debug.LogWarning($"VariableData of value type {typeof(TValue).Name} could not box value " +
                         $"of type {value.GetType().Name} to type {typeof(TValue).Name}");
+                }
+
+                if (LegacyVarRef != null)
+                {
+                    LegacyVarRef.BoxedValue = whatToAssign;
+                }
+                else if (VarRef != null)
+                {
+                    VarRef.BoxedValue = whatToAssign;
+                }
+                else
+                {
+                    this.value = (TValue)whatToAssign;
                 }
             }
         }
@@ -156,14 +184,13 @@ namespace Amanita.VScripting
 
             if (VarRef == null && value != null)
             {
-                result = value.ToString();//
+                result = value.ToString();
             }
             else if (VarRef != null)
             {
                 result = VarRef.Key;
             }
 
-            result = $"'{result}'";
             return result;
         }
 

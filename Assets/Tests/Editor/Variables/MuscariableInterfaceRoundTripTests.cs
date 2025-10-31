@@ -49,7 +49,7 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
-        public void ValueType_CanBeCleared_Via_EitherPath()
+        public void ValueType_CanBeCleared_ViaEitherPath()
         {
             var musc = new VectorTwoMuscariable { Value = new Vector2(5, 5) };
             IVariable ivar = musc;
@@ -62,12 +62,12 @@ namespace VScriptingTests.VariableOperations
             musc.BoxedValue = new Vector2(9, 9);
 
             // Clear via strongly-typed property
-            musc.BoxedValue = default;
+            musc.Value = default;
             Assert.AreEqual(default(Vector2), (Vector2)ivar.BoxedValue, "IVariable.BoxedValue should be default after clearing via strongly-typed property");
         }
 
         [Test]
-        public void ReferenceType_CanBeCleared_Via_EitherPath()
+        public void ReferenceType_CanBeCleared_ViaEitherPath()
         {
             var musc = new StringMuscariable { Value = "NotNull" };
             IVariable ivar = musc;

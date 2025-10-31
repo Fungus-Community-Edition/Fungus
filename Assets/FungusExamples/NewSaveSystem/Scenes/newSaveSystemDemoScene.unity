@@ -2714,7 +2714,7 @@ MonoBehaviour:
   action: 1
   markerID:
     varRef:
-      rid: 846271718592348366
+      rid: 846271718592348374
     value: DefaultMarker
     stringRef: {fileID: 0}
   markerOrder:
@@ -2727,7 +2727,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 846271718592348366
+    - rid: 846271718592348374
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
       data:
         scope: 0
@@ -2881,10 +2881,11 @@ MonoBehaviour:
   indentLevel: 0
   anyVar:
     variable:
-      rid: 846271718592348368
+      rid: 846271718592348381
+    legacyVariable: {fileID: 0}
     data:
       data:
-        rid: 846271718592348369
+        rid: 846271718592348379
   setOperator: 0
   variable: {fileID: 0}
   references:
@@ -2892,20 +2893,20 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 846271718592348368
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: firstMarkerID
-        itemID: 3
-        value: first
-    - rid: 846271718592348369
+    - rid: 846271718592348379
       type: {class: StringData, ns: Amanita.VScripting, asm: Amanita}
       data:
         varRef:
           rid: -2
         value: 
         stringRef: {fileID: 0}
+    - rid: 846271718592348381
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: firstMarkerID
+        itemID: 3
+        value: first
 --- !u!114 &1620115408
 MonoBehaviour:
   m_ObjectHideFlags: 0

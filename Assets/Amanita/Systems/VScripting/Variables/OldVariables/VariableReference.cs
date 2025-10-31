@@ -1,37 +1,44 @@
 ﻿namespace Amanita.VScripting
 {
     /// <summary>
-    /// A simple struct wrapping a reference to a Fungus Variable. Allows for VariableReferenceDrawer. 
-    /// This is the a way to directly reference a fungus variable in external c# scripts, it will 
-    /// give you an inspector field that gives a drop down of all the variables on the targeted
-    /// flowchart, in a similar way to what you would expect from selecting a variable on a command.
-    /// 
-    /// Also recommend implementing IVariableReference on any custom classes that use this so your
-    /// references can show up in searches for usage.
+    /// A simple struct wrapping a reference to a Fungus Variable or Muscariable.
     /// </summary>
     [System.Serializable]
     public struct VariableReference
     {
-        public Variable variable;
+        // New: managed-reference to modern variables
+        [UnityEngine.SerializeReference] public IVariable variable;
+
+        // Legacy fallback to keep old behavior/assets working where needed
+        public Variable legacyVariable;
 
         public T Get<T>()
         {
-            T retval = default(T);
+            // Prefer modern variable
+            if (variable is IVariable<T> typed)
+                return typed.Value;
 
-            var asType = variable as VariableBase<T>;
+            // Fallback to legacy
+            if (legacyVariable is VariableBase<T> legacyTyped)
+                return legacyTyped.Value;
 
-            if (asType != null)
-                return asType.Value;
-
-            return retval;
+            return default;
         }
 
         public void Set<T>(T val)
         {
-            var asType = variable as VariableBase<T>;
+            // Prefer modern variable
+            if (variable is IVariable<T> typed)
+            {
+                typed.Value = val;
+                return;
+            }
 
-            if (asType != null)
-                asType.Value = val;
+            // Fallback to legacy
+            if (legacyVariable is VariableBase<T> legacyTyped)
+            {
+                legacyTyped.Value = val;
+            }
         }
     }
 }
