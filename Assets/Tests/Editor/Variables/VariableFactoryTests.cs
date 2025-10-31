@@ -22,7 +22,6 @@ namespace VScriptingTests.VariableOperations
                 VariableTypeRegistry.RegisterVariableType(typeof(HookedIntMuscariable), new VariableTypeActions());
                 VariableTypeRegistry.RegisterVariableType(typeof(FakeIntLegacyVar), new VariableTypeActions());
             }
-            
         }
 
         [TearDown]
@@ -54,21 +53,6 @@ namespace VScriptingTests.VariableOperations
             Assert.AreEqual(VariableScope.Global, created.Scope);
             Assert.AreEqual(42, created.ItemId);
             Assert.AreEqual(99, created.Value);
-        }
-
-        [Test]
-        public void AddLegacyVarTo_AddsComponent_AndRegisters()
-        {
-            // Arrange
-            var go = new GameObject("FlowchartHolder");
-            var flowchart = go.AddComponent<Flowchart>();
-            
-            // Act
-            var added = VariableFactory.AddLegacyVarTo(flowchart, typeof(int));
-
-            // Assert
-            Assert.NotNull(added);
-            Assert.IsTrue(flowchart.HasVariable(added));
         }
 
         [Test]

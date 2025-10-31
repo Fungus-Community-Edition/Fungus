@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Amanita.SaveSys.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
@@ -182,7 +184,59 @@ namespace Amanita.SaveSys
             await Loader.LoadMain(mainData, sceneToLoad);
 
             await ExecuteHandlers(AfterSceneLoadAsync);
+
+            ExecuteSaveLoadedHandlers();
+            void ExecuteSaveLoadedHandlers()
+            {
+                SaveSystem saveSys = SaveSystem.S;
+                var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
+
+                // We only want to count the handlers that are either:
+                // - set to respond to any save load
+                // - set to respond to at least one marker that is registered in the SaveSystem
+                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
+                .FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
+                .Where(handler => handler.IsAbleToRespond)
+                .ToList();
+
+                Sort(saveLoadedHandlers);
+
+                for (int i = 0; i < saveLoadedHandlers.Count; i++)
+                {
+                    var handler = saveLoadedHandlers[i];
+                    handler.ExecuteBlock();
+                }
+            }
+
             return mainData;
+        }
+
+        protected virtual void Sort(List<SaveLoadedEvent> toSort)
+        {
+            SaveSystem saveSys = SaveSystem.S;
+
+            // To save clock cycles, precompute orders
+            var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
+            foreach (var handler in toSort)
+            {
+                handlerOrders[handler] = handler.LowestOrder();
+            }
+
+            toSort.Sort((first, second) =>
+            {
+                int firstOrder = handlerOrders[first];
+                int secondOrder = handlerOrders[second];
+
+                bool shouldUseFallback = firstOrder == secondOrder;
+                if (shouldUseFallback)
+                {
+                    int firstId = first.GetInstanceID();
+                    int secondId = second.GetInstanceID();
+                    return firstId.CompareTo(secondId);
+                }
+
+                return firstOrder.CompareTo(secondOrder);
+            });
         }
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };

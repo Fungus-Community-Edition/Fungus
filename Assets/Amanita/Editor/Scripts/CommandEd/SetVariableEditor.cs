@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using Amanita.VScripting.Commands;
-using System.Linq;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -36,61 +35,71 @@ namespace Amanita.VScripting.EditorUtils
             // Select Variable
             EditorGUILayout.PropertyField(anyVarProp, true);
 
-            //fetching every draw to ensure we don't have stale data based on types that have changed by user selection,
-            //  without us noticing.
+            // Read selected variable safely (ManagedReference or ObjectReference)
+            var variableProp = anyVarProp.FindPropertyRelative("variable");
+            IVariable selectedVariable = ReadIVariable(variableProp);
 
-            Variable selectedVariable = anyVarProp.FindPropertyRelative("variable").objectReferenceValue as Variable;
-            IList<GUIContent> operatorsList = new List<GUIContent>();
-            PopulateOperatorsList();
-            void PopulateOperatorsList()
+            // Build operators list + parallel enum list for correct mapping
+            var operatorsList = new List<GUIContent>();
+            var operatorValues = new List<SetOperator>();
+
+            if (selectedVariable != null)
             {
-                if (selectedVariable != null)
+                TryAdd(SetOperator.Assign);
+                TryAdd(SetOperator.Negate);
+                TryAdd(SetOperator.Add);
+                TryAdd(SetOperator.Subtract);
+                TryAdd(SetOperator.Multiply);
+                TryAdd(SetOperator.Divide);
+            }
+            else
+            {
+                operatorsList.Add(VariableConditionEditor.None);
+            }
+
+            void TryAdd(SetOperator op)
+            {
+                if (selectedVariable.IsArithmeticSupported(op))
                 {
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Assign))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Assign)));
-
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Negate))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Negate)));
-
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Add))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Add)));
-
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Subtract))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Subtract)));
-
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Multiply))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Multiply)));
-
-                    if (selectedVariable.IsArithmeticSupported(SetOperator.Divide))
-                        operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(SetOperator.Divide)));
-                }
-                else
-                {
-                    operatorsList.Add(VariableConditionEditor.None);
+                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
+                    operatorValues.Add(op);
                 }
             }
 
-            SetOperator prevOperator = setVarCommand.SetOperator;
-            int selectedIndex = (int)setVarCommand.SetOperator;
-            bool varSupportsOperator = selectedVariable != null && selectedVariable.IsArithmeticSupported(prevOperator);
-            if (!varSupportsOperator) // <- This can occur when changing between variable types
+            // Determine current selection index
+            int selectedIndex;
+            if (selectedVariable != null && operatorValues.Count > 0)
+            {
+                var currentOp = setVarCommand.SetOperator;
+                int idx = operatorValues.IndexOf(currentOp);
+                selectedIndex = idx >= 0 ? idx : 0;
+            }
+            else
             {
                 selectedIndex = 0;
             }
 
-            GetAndShowCurrentOperator();
-            void GetAndShowCurrentOperator()
-            {
-                GUIContent operatorContent = new GUIContent("Operation", "Arithmetic operator to use");
-                selectedIndex = EditorGUILayout.Popup(operatorContent, selectedIndex, operatorsList.ToArray());
-            }
+            // Show popup
+            GUIContent operatorContent = new GUIContent("Operation", "Arithmetic operator to use");
+            selectedIndex = EditorGUILayout.Popup(operatorContent, selectedIndex, operatorsList.ToArray());
 
-            if (selectedVariable != null)
+            // Apply selection back to enum
+            if (selectedVariable != null && operatorValues.Count > 0 && selectedIndex >= 0 && selectedIndex < operatorValues.Count)
             {
-                setOperatorProp.enumValueIndex = selectedIndex;
+                setOperatorProp.enumValueIndex = (int)operatorValues[selectedIndex];
             }
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private static IVariable ReadIVariable(SerializedProperty prop)
+        {
+            if (prop == null) return null;
+            if (prop.propertyType == SerializedPropertyType.ManagedReference)
+            {
+                return prop.managedReferenceValue as IVariable;
+            }
+            return prop.objectReferenceValue as IVariable;
         }
     }
 }

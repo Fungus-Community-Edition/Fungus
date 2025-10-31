@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using baseObj = System.Object;
 
 namespace Amanita.VScripting
 {
@@ -14,27 +15,28 @@ namespace Amanita.VScripting
     /// Note; when using this in a command ensure that RefreshVariableCache is also handled for
     /// string var substitution.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public partial class AnyVariableData : VariableData, ISerializationCallbackReceiver
     {
         [SerializeReference] // Allows polymorphic serialization of IVariableData
-        protected IVariableData data;
+        protected IVariableData data; 
+        // ^Represents the actual data being held, which can change dynamically
 
-        public override System.Object Value
+        public override baseObj BoxedValue
         {
             get
             {
                 string valStr = "none";
                 if (data != null)
                 {
-                    valStr = data.Value != null ? data.Value.ToString() : "null";
+                    valStr = data.BoxedValue != null ? data.BoxedValue.ToString() : "null";
                 }
                 //Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {valStr}");
                 if (ReferenceEquals(data, null))
                 {
                     return null;
                 }
-                return data.Value;
+                return data.BoxedValue;
             }
             set
             {
@@ -45,14 +47,14 @@ namespace Amanita.VScripting
 
                 if (ReferenceEquals(value, null))
                 {
-                    data.Value = null;
+                    data.BoxedValue = null;
                     return;
                 }
 
                 Type valueType = value.GetType();
                 if (data.ContentType.Equals(valueType))
                 {
-                    data.Value = value;
+                    data.BoxedValue = value;
                 }
                 else
                 {
@@ -86,7 +88,7 @@ namespace Amanita.VScripting
             if (varType == null)
             {
                 logMessage = "Cannot set AnyVariableData for a null var type.";
-                Debug.LogError(logMessage);
+                Debug.LogWarning(logMessage);
                 return;
             }
 
@@ -96,7 +98,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            IVariableData toSet = VariableDataTypeRegistry.CreateForVar(varType);
+            IVariableData toSet = VariableDataTypeRegistry.CreateForVar(varType); //
             
             if (toSet == null)
             {

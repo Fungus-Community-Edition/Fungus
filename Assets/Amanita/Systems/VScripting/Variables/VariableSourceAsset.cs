@@ -354,7 +354,7 @@ namespace Amanita.VScripting
         new IReadOnlyList<TVar> Variables { get; }
         TVar AddVariable(TVar toAdd);
         void RemoveVariable(TVar toRemove);
-        new TVar GetVar(int itemId);
+        TVar GetVar(int itemId);
     }
 
     public interface IMuscariableSource : IVariableSource<Muscariable>

@@ -1,10 +1,7 @@
-using UnityEngine;
 using Amanita.VScripting;
+using UnityEngine;
 
-namespace VScriptingTests.VariableOperations
+public class VariableRefHolder : ScriptableObject
 {
-    public class VariableRefHolder : ScriptableObject
-    {
-        public Variable varField;
-    }
+    [SerializeReference] public IVariable varField;
 }

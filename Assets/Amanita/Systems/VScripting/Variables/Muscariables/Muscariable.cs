@@ -120,7 +120,11 @@ namespace Amanita.VScripting
         /// <summary>
         /// Does the underlying type provide support for +-*/
         /// </summary>
-        public virtual bool IsArithmeticSupported { get; } = false;
+        public virtual bool IsArithmeticSupported(SetOperator setOperator)
+        {
+            bool result = setOperator == SetOperator.Assign;
+            return result;
+        }
 
         /// <summary>
         /// Does the underlying type provide support for < <= > >=
@@ -236,7 +240,6 @@ namespace Amanita.VScripting
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                object previousValue = this.value;
                 this.value = (T)filteredValue;
                 InvokeOnValueChanged();
             }

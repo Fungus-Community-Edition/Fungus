@@ -41,23 +41,4 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for a Vector2 variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(Vector2), typeof(Vector2Variable))]
-    public class Vector2Data : VariableData<Vector2>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(Vector2Variable))]
-        public IVariable<Vector2> vector2Ref;
-
-        public Vector2Data() : base(default) { }
-        public Vector2Data(Vector2 startVal = default) : base(startVal) { }
-
-        public override void Refresh()
-        {
-            varRef ??= vector2Ref;
-        }
-    }
 }

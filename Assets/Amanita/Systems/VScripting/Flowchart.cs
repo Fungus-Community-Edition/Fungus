@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -287,6 +288,11 @@ namespace Amanita.VScripting
             {
                 RemoveVariableAtIndex(0);
             }
+
+            while (muscariables.Count > 0)
+            {
+                RemoveMuscariableAtIndex(0);
+            }
         }
 
         protected virtual void GetAndInitVars()
@@ -554,7 +560,7 @@ namespace Amanita.VScripting
         /// </summary>
         public static void BroadcastFungusMessage(string messageName)
         {
-            var eventHandlers = UnityEngine.Object.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
+            var eventHandlers = UnityObj.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
@@ -651,7 +657,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public virtual int VariableCount { get { return legacyVariables.Count; } }
+        public virtual int VariableCount { get { return muscariables.Count; } }
 
         /// <summary>
         /// Description text displayed in the Flowchart editor window
@@ -1036,9 +1042,9 @@ namespace Amanita.VScripting
         public virtual IVariable GetVariableByIndex(int index)
         {
             IVariable result = null;
-            if (legacyVariables.Count > index && index >= 0)
+            if (muscariables.Count > index && index >= 0)
             {
-                result = legacyVariables[index];
+                result = muscariables[index];
             }
             return result;
         }
@@ -1095,35 +1101,14 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Register a new variable with the Flowchart at runtime.
-        /// </summary>
-        public void SetVariable<T>(string key, T newVar) where T : class, IVariable
-        {
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var currentVar = muscariables[i];
-                if (currentVar != null && currentVar.Key == key)
-                {
-                    if (currentVar is T variable)
-                    {
-                        variable = newVar;
-                        return;
-                    }
-                }
-            }
-
-            Debug.LogWarning("Variable " + key + " not found.");
-        }
-
-        /// <summary>
         /// Checks if a given variable exists in the flowchart.
         /// </summary>
         public virtual bool HasVariable(string key)
         {
-            for (int i = 0; i < legacyVariables.Count; i++)
+            for (int i = 0; i < muscariables.Count; i++)
             {
-                var v = legacyVariables[i];
-                if (v != null && v.Key == key)
+                var elem = muscariables[i];
+                if (elem != null && elem.Key == key)
                 {
                     return true;
                 }
@@ -1145,10 +1130,10 @@ namespace Amanita.VScripting
 
             for (int i = 0; i < legacyVariables.Count; i++)
             {
-                var v = legacyVariables[i];
-                if (v != null)
+                var elem = legacyVariables[i];
+                if (elem != null)
                 {
-                    vList[i] = v.Key;
+                    vList[i] = elem.Key;
                 }
             }
             return vList;
@@ -1160,12 +1145,12 @@ namespace Amanita.VScripting
         public virtual IList<IVariable> GetPublicVariables()
         {
             IList<IVariable> publicVariables = new List<IVariable>();
-            for (int i = 0; i < legacyVariables.Count; i++)
+            for (int i = 0; i < muscariables.Count; i++)
             {
-                var v = legacyVariables[i];
-                if (v != null && v.Scope == VariableScope.Public)
+                var elem = muscariables[i];
+                if (elem != null && elem.Scope == VariableScope.Public)
                 {
-                    publicVariables.Add(v);
+                    publicVariables.Add(elem);
                 }
             }
 
@@ -1461,6 +1446,7 @@ namespace Amanita.VScripting
             TVarType result = new TVarType();
             result.Value = initValue;
             result.Scope = scope;
+            result.Key = key;
             IntegrateMuscariable(result);
             return result;
         }
@@ -1482,6 +1468,7 @@ namespace Amanita.VScripting
             }
 
             toAdd.ParentFlowchart = this;
+            toAdd.Owner = this;
             toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
             toAdd.Init();
             muscariables.Add(toAdd);
@@ -1696,7 +1683,15 @@ namespace Amanita.VScripting
                     $" Muscariable equivalent. Returning null.");
                 toRegister = newVar.ToMuscariable();
                 AddVariable(toRegister);
-                Destroy(newVar as MonoBehaviour);
+
+                if (Application.IsPlaying(this))
+                {
+                    Destroy(newVar as MonoBehaviour);
+                }
+                else
+                {
+                    DestroyImmediate(newVar as MonoBehaviour);
+                }
             }
 
             AddVariable(toRegister);

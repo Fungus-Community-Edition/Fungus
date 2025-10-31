@@ -553,6 +553,8 @@ namespace VScriptingTests.VariableOperations
             // ContentType - for tests we can return typeof(object)
             public Type ContentType => typeof(object);
 
+            public bool IsRelationalSupported => false;
+
             // Init is a no-op for test helper
             public void Init() { }
 
@@ -576,6 +578,11 @@ namespace VScriptingTests.VariableOperations
             public override int GetHashCode()
             {
                 return (Key != null) ? Key.GetHashCode() : 0;
+            }
+
+            public bool IsArithmeticSupported(SetOperator setOperator)
+            {
+                return false;
             }
         }
     }

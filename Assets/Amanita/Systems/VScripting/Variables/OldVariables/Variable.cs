@@ -161,6 +161,8 @@ namespace Amanita.VScripting
             }
         }
 
+        public virtual bool IsRelationalSupported => false;
+
         protected virtual void OnValidate()
         {
             owner ??= GetComponent<Flowchart>();

@@ -12,27 +12,4 @@ namespace Amanita.VScripting
     {
     }
 
-    /// <summary>
-    /// Container for a Texture variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(Texture), typeof(TextureVariable))]
-    public class TextureData : VariableData<Texture>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(TextureVariable))]
-        public IVariable<Texture> textureRef;
-        
-        public TextureData() : base(default) { }
-
-        public TextureData(Texture startVal) : base(startVal)
-        {
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= textureRef;
-        }
-
-    }
 }
