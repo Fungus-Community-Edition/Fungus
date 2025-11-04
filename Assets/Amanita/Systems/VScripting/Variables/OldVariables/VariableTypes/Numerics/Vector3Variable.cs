@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector3 variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Vector3", typeof(Vector3))]
+    [VariableInfo("Numeric", "Vector3", typeof(Vector3), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class Vector3Variable : VariableBase<Vector3>

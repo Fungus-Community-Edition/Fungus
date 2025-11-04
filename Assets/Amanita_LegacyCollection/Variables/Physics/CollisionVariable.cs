@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Collision variable type.
     /// </summary>
-    [VariableInfo("Physics", "Collision", typeof(Collision), IsPreviewedOnly = true)]
+    [VariableInfo("Physics/ThreeD", "Collision", typeof(Collision), IsPreviewedOnly = true)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class CollisionVariable : VariableBase<UnityEngine.Collision>

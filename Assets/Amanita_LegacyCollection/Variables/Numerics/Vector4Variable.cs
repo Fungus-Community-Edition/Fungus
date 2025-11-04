@@ -5,10 +5,10 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector4 variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Vector4", typeof(Vector4))]
+    [VariableInfo("Numeric/Structured", "Vector4", typeof(Vector4))]
     [AddComponentMenu("")]
     [System.Serializable]
-    public class Vector4Variable : VariableBase<UnityEngine.Vector4>
+    public class Vector4Variable : VariableBase<Vector4>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)
         {

@@ -251,7 +251,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2))]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
@@ -392,7 +392,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3))]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {

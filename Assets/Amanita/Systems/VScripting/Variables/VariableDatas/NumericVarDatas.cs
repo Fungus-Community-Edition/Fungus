@@ -84,7 +84,7 @@ namespace Amanita.VScripting
     /// Container for a Vector2 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    [VariableData(typeof(Vector2), typeof(Vector2Variable))]
+    [VariableData(typeof(Vector2), typeof(IVariable<Vector2>))]
     public class Vector2Data : VariableData<Vector2>
     {
         [SerializeField, SerializeReference]
@@ -106,7 +106,7 @@ namespace Amanita.VScripting
     /// Container for a Vector3 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    [VariableData(typeof(Vector3), typeof(Vector3Variable))]
+    [VariableData(typeof(Vector3), typeof(IVariable<Vector3>))]
     public class Vector3Data : VariableData<Vector3>
     {
         [SerializeField, SerializeReference]

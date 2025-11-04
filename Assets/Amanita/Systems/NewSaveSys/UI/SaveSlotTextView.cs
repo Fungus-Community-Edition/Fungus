@@ -10,7 +10,7 @@ namespace Amanita.SaveSys.UI
     /// <remarks>
     /// This class is intended to be extended for specific text-based save slot views.
     /// </remarks>
-    public abstract class SaveSlotTextView : SaveSlotUIView
+    public abstract class SaveSlotTextView : SaveSlotView
     {
         [SerializeField] protected TextMeshProUGUI textDisplay;
         [SerializeField] protected string prefix = string.Empty;
