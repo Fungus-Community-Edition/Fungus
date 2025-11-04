@@ -6,7 +6,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// Character variable type.
 	/// </summary>
-	[VariableInfo("Narrative", "Character", typeof(Character))]
+	[VariableInfo("Narrative", "Character", typeof(Character), false)]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class CharacterVariable : VariableBase<Amanita.Character>
