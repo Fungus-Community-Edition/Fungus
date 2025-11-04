@@ -2465,7 +2465,18 @@ GameObject:
   - component: {fileID: 1620115406}
   - component: {fileID: 1620115413}
   - component: {fileID: 1620115412}
-  - component: {fileID: 1620115410}
+  - component: {fileID: 1620115414}
+  - component: {fileID: 1620115417}
+  - component: {fileID: 1620115416}
+  - component: {fileID: 1620115415}
+  - component: {fileID: 1620115418}
+  - component: {fileID: 1620115419}
+  - component: {fileID: 1620115425}
+  - component: {fileID: 1620115424}
+  - component: {fileID: 1620115423}
+  - component: {fileID: 1620115422}
+  - component: {fileID: 1620115421}
+  - component: {fileID: 1620115420}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -2546,9 +2557,20 @@ MonoBehaviour:
   - {fileID: 1620115401}
   - {fileID: 1620115409}
   - {fileID: 1620115413}
-  - {fileID: 1620115406}
+  - {fileID: 1620115414}
   - {fileID: 1620115408}
+  - {fileID: 1620115417}
+  - {fileID: 1620115406}
   - {fileID: 1620115412}
+  - {fileID: 1620115416}
+  - {fileID: 1620115425}
+  - {fileID: 1620115419}
+  - {fileID: 1620115415}
+  - {fileID: 1620115424}
+  - {fileID: 1620115423}
+  - {fileID: 1620115422}
+  - {fileID: 1620115421}
+  - {fileID: 1620115420}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -2567,7 +2589,8 @@ MonoBehaviour:
   uiModel:
     _selectedBlocks:
     - {fileID: 1620115403}
-    _selectedCommands: []
+    _selectedCommands:
+    - {fileID: 1620115420}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -2586,6 +2609,7 @@ MonoBehaviour:
   - rid: 846271704159223897
   - rid: 846271704159223899
   - rid: 7903257792018382921
+  - rid: 7903257792018382959
   description: 
   stepPause: 0
   colorCommands: 1
@@ -2600,7 +2624,7 @@ MonoBehaviour:
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  nextValidVarID: 5
+  nextValidVarID: 6
   uniqueId: 33333a90-7270-45a6-8084-c1f607254ac3
   references:
     version: 2
@@ -2624,8 +2648,15 @@ MonoBehaviour:
       data:
         scope: 0
         key: vecTwoVar
-        itemID: -1
+        itemID: 5
         value: {x: 0, y: 0}
+    - rid: 7903257792018382959
+      type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: vecThreeVar
+        itemID: -1
+        value: {x: 0, y: 0, z: 0}
 --- !u!4 &1620115405
 Transform:
   m_ObjectHideFlags: 0
@@ -2657,11 +2688,11 @@ MonoBehaviour:
   indentLevel: 0
   anyVar:
     variable:
-      rid: 7903257792018382919
+      rid: 7903257792018382960
     legacyVariable: {fileID: 0}
     data:
       data:
-        rid: 7903257792018382920
+        rid: 7903257792018382955
   setOperator: 0
   variable: {fileID: 0}
   references:
@@ -2669,20 +2700,20 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 7903257792018382919
-      type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita}
-      data:
-        scope: 0
-        key: someColor
-        itemID: 4
-        value: {r: 0, g: 0, b: 0, a: 0}
-    - rid: 7903257792018382920
-      type: {class: ColorData, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903257792018382955
+      type: {class: Vector2Data, ns: Amanita.VScripting, asm: Amanita}
       data:
         varRef:
           rid: -2
-        value: {r: 0.38327694, g: 0.78023535, b: 0.8207547, a: 0}
-        colorRef: {fileID: 0}
+        value: {x: 19, y: 97}
+        vector2Ref: {fileID: 0}
+    - rid: 7903257792018382960
+      type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: vecTwoVar
+        itemID: 5
+        value: {x: 0, y: 0}
 --- !u!114 &1620115408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2739,22 +2770,6 @@ MonoBehaviour:
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog: {fileID: 0}
---- !u!114 &1620115410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebe929c2f37ad4b19ad9d33a77c5064a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var
-  itemID: -1
-  value: {x: 0, y: 0}
 --- !u!114 &1620115412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2769,8 +2784,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 6
   indentLevel: 0
-  storyText: As for the menu controls... You can click the Open Save Menu button
-    to... well, guess.
+  storyText: Using Flowcharts, you can customize how the UI executes save-creating,
+    save-loading, and save-deleting.
   description: 
   character: {fileID: 1495643923}
   portrait: {fileID: 0}
@@ -2799,6 +2814,356 @@ MonoBehaviour:
   indentLevel: 0
   storyText: Or when one isn't. In that case, no say dialogs will be brought up upon
     load, since none in this test were executing at the time you made the save.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 7
+  indentLevel: 0
+  anyVar:
+    variable:
+      rid: 7903257792018382952
+    legacyVariable: {fileID: 0}
+    data:
+      data:
+        rid: 7903257792018382953
+  setOperator: 0
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 7903257792018382952
+      type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: someColor
+        itemID: 4
+        value: {r: 0, g: 0, b: 0, a: 0}
+    - rid: 7903257792018382953
+      type: {class: ColorData, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        varRef:
+          rid: -2
+        value: {r: 0.38327694, g: 0.78023535, b: 0.8207547, a: 0}
+        colorRef: {fileID: 0}
+--- !u!114 &1620115415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 10
+  indentLevel: 0
+  storyText: You can also exit the Save Menu by clicking the Back button.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 9
+  indentLevel: 0
+  storyText: In this example, you select a slot, then press the appropriate button.
+    It does to the selected slot what you'd expect.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 8
+  indentLevel: 0
+  storyText: As for the menu controls... You can click the Open Save Menu button
+    to... well, guess.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scope: 0
+  key: Var
+  itemID: -1
+  value: {x: 0, y: 0, z: 0}
+--- !u!114 &1620115419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 11
+  indentLevel: 0
+  anyVar:
+    variable:
+      rid: 7903257792018382964
+    legacyVariable: {fileID: 0}
+    data:
+      data:
+        rid: 7903257792018382965
+  setOperator: 0
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 7903257792018382964
+      type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        scope: 0
+        key: vecThreeVar
+        itemID: -1
+        value: {x: 0, y: 0, z: 0}
+    - rid: 7903257792018382965
+      type: {class: Vector3Data, ns: Amanita.VScripting, asm: Amanita}
+      data:
+        varRef:
+          rid: -2
+        value: {x: 76.54, y: 32.1, z: -19.87}
+        vector3Ref: {fileID: 0}
+--- !u!114 &1620115420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 17
+  indentLevel: 0
+  storyText: Alright, that should be enough textboxes. Mess around as you like from
+    here on.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 16
+  indentLevel: 0
+  storyText: Also, I look nothing like the Sherlock from Dai Gyakuten Saiban!
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 15
+  indentLevel: 0
+  storyText: Or use an asset someone else made. Doesn't hurt to save yourself some
+    work!
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 14
+  indentLevel: 0
+  storyText: 'If you want a save menu with the slots having screenshots (a la Ren''Py),
+    you may need to do a little extra scripting. '
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 13
+  indentLevel: 0
+  storyText: If you know how to handle the built-in Unity UI system, you can easily
+    change the Save Menu to fit your needs, graphically.
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &1620115425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 12
+  indentLevel: 0
+  storyText: It applies the appropriate action to the selected slot, if there is
+    any. Look at the blocks in the UIActionHandler flowchart to see how it's done.
   description: 
   character: {fileID: 1495643923}
   portrait: {fileID: 0}
