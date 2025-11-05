@@ -64,7 +64,7 @@ namespace Amanita.VScripting.EditorUtils
             // Using registry instead of reflection scan for performance / determinism.
             legacyTypes = VariableTypeRegistry.AllLegacyTypes.Where(ShouldBeShownInMenu).ToList();
             muscariTypes = VariableTypeRegistry.AllMuscariableTypes.Where(ShouldBeShownInMenu).ToList();
-
+            allTypes = legacyTypes.Concat(muscariTypes).ToList();
             bool ShouldBeShownInMenu(Type varType)
             {
                 bool result = false;
@@ -78,7 +78,7 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         // Cached list of concrete variable component types (legacy Variable system)
-        protected static IReadOnlyList<Type> legacyTypes, muscariTypes;
+        protected static IReadOnlyList<Type> legacyTypes, muscariTypes, allTypes;
 
         #endregion
 
@@ -216,7 +216,7 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         protected static void ShowLegacyMenu(Flowchart flowchart)
         {
-            GenericMenu menu = PrepMenu(legacyTypes);
+            GenericMenu menu = PrepMenu(allTypes);
             menu.ShowAsContext();
         }
 
@@ -230,6 +230,7 @@ namespace Amanita.VScripting.EditorUtils
                 var info = VariableEditor.GetVariableInfo(type);
                 return info == null || !string.IsNullOrEmpty(info.Category);
             }
+
             IList<Type> uncategorized = varTypes.Where((elem) => !TypeHasCategory(elem)).ToList();
 
             // We want to list the uncategorized types first

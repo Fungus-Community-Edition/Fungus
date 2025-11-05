@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Collider variable type.
     /// </summary>
-    [VariableInfo("Physics", "Collider", typeof(Collider))]
+    [VariableInfo("Physics/ThreeD", "Collider", typeof(Collider))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ColliderVariable : VariableBase<UnityEngine.Collider>

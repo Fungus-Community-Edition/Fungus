@@ -5,9 +5,9 @@ namespace Amanita.SaveSys.UI
     /// <summary>
     /// For displaying save slot metadata such as the time stamp, slot number, etc.
     /// </summary>
-    public abstract class SaveSlotUIView : MonoBehaviour, ISaveSlotUIView
+    public abstract class SaveSlotView : MonoBehaviour, ISaveSlotView
     {
-        [TextArea(3, 10)]
+        [TextArea(3, 6)]
         [SerializeField] protected string notes = string.Empty;
 
         public virtual ISaveMetaData Meta
