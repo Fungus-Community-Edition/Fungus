@@ -14,8 +14,6 @@ namespace Amanita.SaveSys
         IList<int> GetOccupiedSlots();
         bool SlotExists(int slot);
 
-        void RegisterMainCodec(IMainSaveCodec codec);
-        void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs);
 
         // Dependencies
         ISaveRepository SaveRepo { get; set; }

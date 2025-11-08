@@ -123,15 +123,18 @@ namespace Amanita.SaveSys
         
     }
 
+    /// <summary>
+    /// For handling the interactions with persistent storage for loading and saving game data.
+    /// </summary>
     public interface ISaveRepository
     {
         /// <summary>
-        /// Reads save data from file based on theinput, returning said data.
+        /// Loads save data from file based on the input, returning said data.
         /// </summary>
         Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default);
 
         /// <summary>
-        /// Reads only the metadata for a given slot number from file.
+        /// Loads only the metadata for a given slot number from file.
         /// </summary>
         Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default);    
         Task SaveAsync(SaveDataSet saveSet, CancellationToken token = default);

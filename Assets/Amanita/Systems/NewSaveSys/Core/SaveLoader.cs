@@ -9,9 +9,9 @@ using UnityEngine.SceneManagement;
 namespace Amanita.SaveSys
 {
     /// <summary>
-    /// Handles restoring game state.
+    /// Top-level module for restoring game state.
     /// </summary>
-    public class SaveLoader : ISaveLoader
+    public class SaveLoader : IMainSaveLoader
     {
         public SaveLoader(IList<IMainSaveCodec> codecList)
         {
@@ -22,16 +22,6 @@ namespace Amanita.SaveSys
             }
 
             // Codecs no longer used for load; retained for constructor compatibility.
-        }
-
-        public virtual void AddRange(IList<IMainSaveCodec> codecs)
-        {
-            // No-op in Option 2 (codecs not used during load)
-        }
-
-        public virtual void Add(IMainSaveCodec codec)
-        {
-            // No-op in Option 2 (codecs not used during load)
         }
 
         public virtual async Task LoadMain(CompositeSaveData mainData,
@@ -86,7 +76,7 @@ namespace Amanita.SaveSys
         protected static Scene DoNotLoad { get { return SaveSysConstants.DoNotLoad; } }
     }
 
-    public interface ISaveLoader
+    public interface IMainSaveLoader
     {
         Task LoadMain(CompositeSaveData mainData,
             Scene sceneToLoad,

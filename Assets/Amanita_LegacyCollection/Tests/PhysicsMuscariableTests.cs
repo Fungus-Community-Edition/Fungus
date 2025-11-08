@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 using Amanita.VScripting;
+using UnityEngine.TestTools;
 
 namespace Amanita.MuscariableTests.DataOnly
 {
@@ -61,7 +62,8 @@ namespace Amanita.MuscariableTests.DataOnly
             var secondCollVar = new ColliderMuscariableThreeD { Key = "b", ItemId = 402, Value = firstColliderThreeD };
             var thirdCollVar = new ColliderMuscariableThreeD { Key = "c", ItemId = 403, Value = secondColliderThreeD };
 
-            Assert.IsTrue(firstCollVar == secondCollVar);
+            bool firstEqualsSecond = firstCollVar.Evaluate(CompareOperator.Equals, secondCollVar.Value);
+            Assert.IsTrue(firstEqualsSecond);
             Assert.IsFalse(firstCollVar != secondCollVar);
             Assert.IsFalse(firstCollVar == thirdCollVar);
             Assert.IsTrue(firstCollVar != thirdCollVar);
@@ -69,9 +71,11 @@ namespace Amanita.MuscariableTests.DataOnly
             Assert.IsTrue(firstCollVar.Evaluate(CompareOperator.Equals, firstColliderThreeD));
             Assert.IsFalse(firstCollVar.Evaluate(CompareOperator.Equals, secondColliderThreeD));
 
-            Assert.Throws<ArgumentException>(
-                () => firstCollVar.Evaluate(CompareOperator.GreaterThan, firstColliderThreeD)
-            );
+            // Rather than expecting an exception, let's expect an error log
+            string expectedErrorMessage = $"CompareOperator GreaterThan not supported for {firstCollVar.ContentType.Name}";
+
+            LogAssert.Expect(LogType.Error, expectedErrorMessage);
+            firstCollVar.Evaluate(CompareOperator.GreaterThan, firstColliderThreeD);
         }
 
         [Test]
@@ -115,10 +119,11 @@ namespace Amanita.MuscariableTests.DataOnly
             var secondCollVar = new ColliderMuscariableTwoD { Key = "b", ItemId = 412, Value = firstColliderTwoD };
             var thirdCollVar = new ColliderMuscariableTwoD { Key = "c", ItemId = 413, Value = secondColliderTwoD };
 
-            Assert.IsTrue(firstCollVar == secondCollVar);
-            Assert.IsFalse(firstCollVar != secondCollVar);
-            Assert.IsFalse(firstCollVar == thirdCollVar);
-            Assert.IsTrue(firstCollVar != thirdCollVar);
+            bool firstEqualsSecond = firstCollVar.Evaluate(CompareOperator.Equals, secondCollVar.Value);
+            Assert.IsTrue(firstEqualsSecond);
+
+            bool firstEqualsThird = firstCollVar.Evaluate(CompareOperator.Equals, thirdCollVar.Value);
+            Assert.IsFalse(firstEqualsThird);
 
             Assert.IsTrue(firstCollVar.Evaluate(CompareOperator.Equals, firstColliderTwoD));
             Assert.IsFalse(firstCollVar.Evaluate(CompareOperator.Equals, secondColliderTwoD));

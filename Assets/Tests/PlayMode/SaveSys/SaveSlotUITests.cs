@@ -18,14 +18,14 @@ namespace SaveSystemTests
         protected override void PrepScene()
         {
             base.PrepScene();
-            viewController = GameObject.FindFirstObjectByType<SaveSlotViewComposer>();
-            Assert.IsNotNull(viewController, "SaveSlotUIViewController not found in the scene.");
+            viewComposer = GameObject.FindFirstObjectByType<SaveSlotViewComposer>();
+            Assert.IsNotNull(viewComposer, "SaveSlotUIViewComposer not found in the scene.");
 
             // There's no guarantee that the view controller will have its views parented
             // to its game object, hence the GetView func
-            playtimeView = viewController.GetView<SaveSlotPlaytimeView>();
-            dateView = viewController.GetView<SaveSlotDateView>();
-            numberView = viewController.GetView<SaveSlotNumberView>();
+            playtimeView = viewComposer.GetView<SaveSlotPlaytimeView>();
+            dateView = viewComposer.GetView<SaveSlotDateView>();
+            numberView = viewComposer.GetView<SaveSlotNumberView>();
             Assert.IsNotNull(playtimeView);
             Assert.IsNotNull(dateView);
             Assert.IsNotNull(numberView);
@@ -38,15 +38,14 @@ namespace SaveSystemTests
                 SlotNumber = 1 // For the sake of Roman Numeral support, we won't go with 0
             };
 
-            viewController.Meta = metaData;
+            viewComposer.Meta = metaData;
 
             playtimeFormatVals = Enum.GetValues(typeof(PlaytimeFormatEnum));
             slotNumFormatVals = Enum.GetValues(typeof(SlotNumFormat));
 
-            toDestroyInTearDown.Add(viewController.gameObject);
         }
 
-        protected SaveSlotViewComposer viewController;
+        protected SaveSlotViewComposer viewComposer;
         protected SaveSlotPlaytimeView playtimeView;
         protected SaveSlotDateView dateView;
         protected SaveSlotNumberView numberView;
@@ -57,9 +56,9 @@ namespace SaveSystemTests
         public override void DoOneTimeTearDown()
         {
             base.DoOneTimeTearDown();
-            if (viewController != null)
+            if (viewComposer != null)
             {
-                UnityObj.Destroy(viewController.gameObject);
+                UnityObj.Destroy(viewComposer.gameObject);
             }
         }
 
@@ -158,7 +157,7 @@ namespace SaveSystemTests
             };
 
             // Act
-            viewController.Meta = testMeta;
+            viewComposer.Meta = testMeta;
 
             // Assert
             Assert.AreEqual(testMeta, playtimeView.Meta, "PlaytimeView did not receive meta");
@@ -170,7 +169,7 @@ namespace SaveSystemTests
         public void GetView_ReturnsCorrectViewType()
         {
             // Act
-            var retrieved = viewController.GetView<SaveSlotPlaytimeView>();
+            var retrieved = viewComposer.GetView<SaveSlotPlaytimeView>();
 
             // Assert
             Assert.IsNotNull(retrieved, "GetView should return a valid PlaytimeView");
@@ -181,7 +180,7 @@ namespace SaveSystemTests
         public void GetView_ReturnsNull_WhenTypeNotPresent()
         {
             // Act
-            var nonExistent = viewController.GetView<FakeSlotView>();
+            var nonExistent = viewComposer.GetView<FakeSlotView>();
 
             // Assert
             Assert.IsNull(nonExistent, "GetView should return null when view type is not present");
@@ -192,8 +191,8 @@ namespace SaveSystemTests
         [Test]
         public void PassMetaToViews_SkipsNullViews_LogsError()
         {
-            GameObject viewControllerGo = viewController.gameObject;
-            UnityObj.Destroy(viewController);
+            GameObject viewControllerGo = viewComposer.gameObject;
+            UnityObj.Destroy(viewComposer);
             TestComposer testComposer = viewControllerGo.AddComponent<TestComposer>();
             
             var currentViews = new List<ISaveSlotView>
@@ -238,13 +237,13 @@ namespace SaveSystemTests
                 null // simulate all views missing
             };
 
-            viewsField.SetValue(viewController, currentViews);
+            viewsField.SetValue(viewComposer, currentViews);
 
             string expectedErrorMsg = "View at index 0 is null. This may indicate a misconfigured prefab.";
             LogAssert.Expect(LogType.Error, expectedErrorMsg);
 
             // Act
-            var retrieved = viewController.GetView<SaveSlotPlaytimeView>();
+            var retrieved = viewComposer.GetView<SaveSlotPlaytimeView>();
 
             // Assert
             Assert.IsNull(retrieved, "GetView should return null when the stored view is null.");
@@ -263,7 +262,7 @@ namespace SaveSystemTests
                 TimeStamp = DateTime.MaxValue
             };
 
-            viewController.Meta = extremeMeta;
+            viewComposer.Meta = extremeMeta;
 
             Assert.AreEqual(extremeMeta, playtimeView.Meta);
             Assert.AreEqual(extremeMeta, numberView.Meta);
@@ -276,19 +275,19 @@ namespace SaveSystemTests
             ReplaceWithTestComposer();
             void ReplaceWithTestComposer()
             {
-                GameObject viewControllerGo = viewController.gameObject;
-                UnityObj.Destroy(viewController);
-                viewController = viewControllerGo.AddComponent<TestComposer>();
+                GameObject viewControllerGo = viewComposer.gameObject;
+                UnityObj.Destroy(viewComposer);
+                viewComposer = viewControllerGo.AddComponent<TestComposer>();
             }
 
             var viewsField = typeof(SaveSlotViewComposer)
                 .GetField("views", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            viewsField.SetValue(viewController, new List<ISaveSlotView>());
+            viewsField.SetValue(viewComposer, new List<ISaveSlotView>());
 
             LogAssert.Expect(LogType.Warning, "No views found. Ensure that SaveSlotViewComposer is properly initialized.");
 
-            var retrieved = viewController.GetView<SaveSlotPlaytimeView>();
+            var retrieved = viewComposer.GetView<SaveSlotPlaytimeView>();
             Assert.IsNull(retrieved);
         }
 

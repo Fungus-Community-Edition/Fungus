@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
-using UnityObject = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
 namespace SaveSystemTests
 {
@@ -41,7 +41,7 @@ namespace SaveSystemTests
             PlayerPrefs.DeleteAll();
             if (AmanitaManager.S != null)
             {
-                UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+                UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
             }
 
             ResetSingletonStatics();
@@ -51,7 +51,7 @@ namespace SaveSystemTests
             {
                 pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
                 AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
-                ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
+                ammyManager = UnityObj.Instantiate(amanitaManagerPrefab);
                 AmanitaManager.S = ammyManager;
                 ammyManager.Init();
 
@@ -149,7 +149,7 @@ namespace SaveSystemTests
 
                 toDestroyInTearDown.Add(testScene);
 
-                IList<EventSystem> possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+                IList<EventSystem> possiblyMadeByFlowchart = UnityObj.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
 
                 foreach (var eventSys in possiblyMadeByFlowchart)
                 {
@@ -160,7 +160,7 @@ namespace SaveSystemTests
 
         protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
         protected SaveStorageSettings storageSettings;
-        protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
+        protected readonly List<UnityObj> toDestroyInTearDown = new List<UnityObj>();
         protected virtual void ResetSingletonStatics()
         {
             SaveSystem.ResetStaticsForTest();
@@ -192,7 +192,7 @@ namespace SaveSystemTests
 
         protected virtual void PrepScene()
         {
-            testScene = UnityObject.Instantiate(testScenePrefab);
+            testScene = UnityObj.Instantiate(testScenePrefab);
             
             if (ReqFlowchart)
             {
@@ -314,7 +314,7 @@ namespace SaveSystemTests
                 {
                     if (obj != null)
                     {
-                        UnityObject.DestroyImmediate(obj);
+                        UnityObj.DestroyImmediate(obj);
                     }
                 }
 
@@ -356,13 +356,13 @@ namespace SaveSystemTests
             {
                 if (testScene != null)
                 {
-                    UnityObject.DestroyImmediate(testScene);
+                    UnityObj.DestroyImmediate(testScene);
                 }
 
                 if (AmanitaManager.S != null)
                 {
                     AmanitaManager.S.gameObject.SetActive(false);
-                    UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+                    UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
                 }
             }
         }

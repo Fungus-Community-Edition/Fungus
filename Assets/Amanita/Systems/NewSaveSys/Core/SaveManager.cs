@@ -47,23 +47,6 @@ namespace Amanita.SaveSys
             }
         }
 
-        // Transitional API: codecs no longer needed when saving/loading main data
-        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
-        {
-            // Intentionally no-op to keep backward compatibility with calling sites
-            if (codecs == null || codecs.Count == 0)
-            {
-                return;
-            }
-        }
-
-        [Obsolete("Codecs are no longer used for main saves. This method is a no-op.")]
-        public virtual void RegisterMainCodec(IMainSaveCodec codec)
-        {
-            // Intentionally no-op to keep backward compatibility with calling sites
-        }
-
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
             await SaveTo(slotNum, "", token);

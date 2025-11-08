@@ -91,16 +91,6 @@ namespace SaveSystemTests
         }
 
         [Test]
-        public void RegisterMainCodec_DelegatesToManager()
-        {
-            var dummyCodec = new DummyMainSaveCodec();
-            saveSystem.RegisterMainCodec(dummyCodec);
-
-            // There is no direct way to check registration, but this ensures no exceptions and coverage of the delegation.
-            Assert.Pass("RegisterMainCodec did not throw and delegated as expected.");
-        }
-
-        [Test]
         public void RegisterSaveDataApplier_AddsToList()
         {
             var dummyApplier = new DummySaveDataApplier();
