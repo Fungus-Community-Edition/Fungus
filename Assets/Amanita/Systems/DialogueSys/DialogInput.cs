@@ -171,7 +171,7 @@ namespace Amanita.DialogueSys
         /// </summary>
         public virtual void SetNextLineFlag()
         {
-            if(writer.IsWaitingForInput || writer.IsWriting)
+            if (writer.IsWaitingForInput || writer.IsWriting)
             {
                 nextLineInputFlag = true;
             }

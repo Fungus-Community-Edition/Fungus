@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Amanita.SaveSys.UI
 {
@@ -15,13 +14,13 @@ namespace Amanita.SaveSys.UI
             if (canvasGroup == null)
             {
                 canvasGroup = GetComponent<CanvasGroup>();
-                if (canvasGroup == null)
+                bool stillNothing = canvasGroup == null;
+                if (stillNothing)
                 {
                     canvasGroup = gameObject.AddComponent<CanvasGroup>();
                 }
             }
         }
-
 
         public virtual void Open()
         {
