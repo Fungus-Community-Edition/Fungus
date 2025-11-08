@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Rigidbody variable type.
     /// </summary>
-    [VariableInfo("Physics", "Rigidbody", typeof(Rigidbody))]
+    [VariableInfo("Physics/ThreeD", "Rigidbody", typeof(Rigidbody))]
     [AddComponentMenu("")]
     [System.Serializable]
     public class RigidbodyVariable : VariableBase<UnityEngine.Rigidbody>

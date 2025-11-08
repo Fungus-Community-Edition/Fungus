@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Integer variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Integer", typeof(int))]
+    [VariableInfo("Numeric", "Integer", typeof(int), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class IntegerVariable : VariableBase<int>

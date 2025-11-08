@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Float variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Float", typeof(float))]
+    [VariableInfo("Numeric", "Float", typeof(float), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class FloatVariable : VariableBase<float>

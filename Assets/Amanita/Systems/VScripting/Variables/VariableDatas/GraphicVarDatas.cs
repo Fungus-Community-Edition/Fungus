@@ -67,6 +67,18 @@ namespace Amanita.VScripting
                 }
             }
         }
+
+        public override string GetDescription()
+        {
+            if (stringRef != null)
+            {
+                return $"{stringRef.Key}";
+            }
+            else
+            {
+                return $"\"{Value}\"";
+            }
+        }
     }
 
     /// <summary>

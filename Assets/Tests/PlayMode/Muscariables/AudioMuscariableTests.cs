@@ -1,4 +1,6 @@
+using Amanita;
 using Amanita.VScripting;
+using Lorekeeper;
 using NUnit.Framework;
 using System;
 using UnityEngine;
@@ -10,11 +12,14 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [SetUp]
         public void Setup()
         {
-            string pathToBgm = "Audio/BGM/01 Main Theme",
-                pathToSfx = "Audio/BGM/UI Select";
-            // Create two distinct AudioClip instances
-            clipA = Resources.Load<AudioClip>(pathToBgm);
-            clipB = Resources.Load<AudioClip>(pathToSfx);
+            GetClipsFromLorekeeper();
+            void GetClipsFromLorekeeper()
+            {
+                ShadowDatabase database = AmanitaManager.ShadowDB;
+                var audioClips = database.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
+                clipA = audioClips[0];
+                clipB = audioClips[1];
+            }
 
             Assert.IsNotNull(clipA, "Clip A is null");
             Assert.IsNotNull(clipB, "Clip B is null");
@@ -89,9 +94,9 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         [Test]
         public void AudioClip_EqualityOperatorsAndEvaluate()
         {
-            var firstClipVar = new AudioClipMuscariable { Key = "a", ItemId = 104, BoxedValue = clipA };
-            var secondClipVar = new AudioClipMuscariable { Key = "b", ItemId = 105, BoxedValue = clipA };
-            var thirdClipVar = new AudioClipMuscariable { Key = "c", ItemId = 106, BoxedValue = clipB };
+            var firstClipVar = new AudioClipMuscariable     { Key = "a", ItemId = 104, BoxedValue = clipA };
+            var secondClipVar = new AudioClipMuscariable    { Key = "b", ItemId = 105, BoxedValue = clipA };
+            var thirdClipVar = new AudioClipMuscariable     { Key = "c", ItemId = 106, BoxedValue = clipB };
 
             // operator==
             Assert.IsTrue(firstClipVar == secondClipVar);
