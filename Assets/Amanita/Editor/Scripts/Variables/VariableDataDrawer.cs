@@ -44,7 +44,7 @@ namespace Amanita.VScripting.EditorUtils
             int spaceForPopup = popupWidth + popupGap;
             valueRect.width = Mathf.Max(0, wholeFieldRect.width - spaceForPopup);
             // ^We want to make sure that the rect for the value field leaves enough space for the popup
-            Rect popupRect = wholeFieldRect; 
+            Rect popupRect = wholeFieldRect;
             popupRect.x += valueRect.width + popupGap;
             popupRect.width = popupWidth;
 
@@ -74,21 +74,19 @@ namespace Amanita.VScripting.EditorUtils
                 RegisterValidVars();
                 void RegisterValidVars()
                 {
-                    var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
-                    if (dataAttr == null)
-                    {
-                        Debug.LogWarning($"VariableDataAttribute for {varData.GetType().Name} not found. " +
-                            $"May be sign of underlying problem.");
-                        return;
-                    }
-
-                    var contentType = dataAttr.ContentType;
-
+                    // Always reset state and include the <Value> option first
                     _validVarsOrdered.Clear();
                     _labelsSeen.Clear();
-
-                    // Always include the <Value> option first so the user can select it to enter a literal
                     AddOption("<Value>", null);
+
+                    // Prefer attribute, but fall back to runtime data's ContentType
+                    var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
+                    System.Type contentType = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
+                    if (contentType == null)
+                    {
+                        Debug.LogWarning($"Unable to resolve ContentType for {varData.GetType().Name}. Showing only literal <Value> option.");
+                        return;
+                    }
 
                     RegisterLocalVars();
                     void RegisterLocalVars()
@@ -121,7 +119,7 @@ namespace Amanita.VScripting.EditorUtils
                         {
                             var otherChart = otherFlowchartsInScene[i];
                             IList<IVariable> validVarsInOtherChart = otherChart.Variables
-                                .Where(elem => elem.ContentType.Equals(contentType) 
+                                .Where(elem => elem.ContentType.Equals(contentType)
                                 && elem.Scope == VariableScope.Public)
                                 .ToList();
 
@@ -163,7 +161,7 @@ namespace Amanita.VScripting.EditorUtils
                                 // avoid tildes in their Flowchart names to prevent confusion.
                                 AddOption(namespacedKey, elem);
                                 int idx = _validVarsOrdered.Count - 1;
-                                if (selectedVariable != null && ReferenceEquals(selectedVariable,  elem))
+                                if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
                                 {
                                     selectedIndex = idx;
                                     Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
@@ -197,6 +195,11 @@ namespace Amanita.VScripting.EditorUtils
 
                 // Clamp to valid range to avoid out-of-range when nothing was matched
                 int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
+                if (prevSelectedIndex < 0)
+                {
+                    prevSelectedIndex = 0;
+                }
+
                 IVariable chosenBefore = _validVarsOrdered[prevSelectedIndex].Value;
 
                 if (chosenBefore != null)
@@ -214,8 +217,8 @@ namespace Amanita.VScripting.EditorUtils
                 IVariable chosenNow = _validVarsOrdered[selectedIndex].Value;
                 referenceProp.AssignVarRef(chosenNow, varData.ContentType);
             }
-            
-            
+
+
             EditorGUI.indentLevel = prevIndent;
 
             EditorGUI.EndProperty();
@@ -246,7 +249,7 @@ namespace Amanita.VScripting.EditorUtils
 
             return result;
         }
-        
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var referenceProp = property.FindPropertyRelative("varRef");
@@ -262,6 +265,7 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly List<KeyValuePair<string, IVariable>> _validVarsOrdered = new List<KeyValuePair<string, IVariable>>();
         protected readonly HashSet<string> _labelsSeen = new HashSet<string>();
     }
+
 
     [CustomPropertyDrawer(typeof(BooleanData))]
     public class BooleanDataDrawer : VariableDataDrawer<BooleanVariable>

@@ -14,7 +14,7 @@ namespace Amanita.SaveSys
     /// For things that you'd want to show in the Save Slot UI or things that you'd otherwise
     /// not really consider part of the save's main state.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class SaveMetaData : SaveData, ISaveMetaData, IEquatable<SaveMetaData>
     {
         [SerializeField] protected string name = string.Empty;
@@ -207,8 +207,8 @@ namespace Amanita.SaveSys
                 this.SaveID = saveID;
             }
 
-                this.timeStamp = timeStamp;
-
+            this.timeStamp = timeStamp;
+            
             if (this.timeStamp == default)
             {
                 this.timeStamp = DateTime.UtcNow;
@@ -217,6 +217,25 @@ namespace Amanita.SaveSys
             this.saveVersion = saveVersion;
             MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
+        }
+
+        public SaveMetaData(SaveMetaData other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other), "Cannot copy from a null SaveMetaData.");
+            }
+            this.name = other.name;
+            this.saveID = other.saveID;
+            this.slotNumber = other.slotNumber;
+            this.saveVersion = other.saveVersion;
+            this.utcTimeStamp = other.utcTimeStamp;
+            this.sceneName = other.sceneName;
+            this.sceneBuildIndex = other.sceneBuildIndex;
+            this.timeSpanString = other.timeSpanString;
+            this.playtime = other.playtime;
+            this.progressMarkers = new List<ProgressMarker>(other.progressMarkers);
+            UpdateTimeStampStructure();
         }
 
         public static int IDAndVersionLengthCap { get; } = 300;
@@ -276,14 +295,33 @@ namespace Amanita.SaveSys
         public virtual bool Equals(SaveMetaData other)
         {
             if (other == null) return false;
+
             return saveID == other.saveID &&
                 saveVersion == other.saveVersion &&
-                utcTimeStamp == other.utcTimeStamp;
+                utcTimeStamp == other.utcTimeStamp &&
+                SaveName == other.SaveName &&
+                SceneName == other.SceneName &&
+                sceneBuildIndex == other.sceneBuildIndex &&
+                slotNumber == other.slotNumber &&
+                playtime.Equals(other.playtime);
         }
 
         public static SaveMetaData CreateFrom(ISaveMetaData other)
         {
-            SaveMetaData result = new SaveMetaData(other.SaveID, other.TimeStamp);
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other), "Cannot create SaveMetaData from null ISaveMetaData.");
+            }
+
+            SaveMetaData result = new SaveMetaData();
+            result.name = other.SaveName;
+            result.saveID = other.SaveID;
+            result.slotNumber = other.SlotNumber;
+            result.saveVersion = other.SaveVersion;
+            result.sceneName = other.SceneName;
+            result.sceneBuildIndex = other.SceneBuildIndex;
+            result.playtime = other.Playtime;
+            result.UpdateTimeStampString();
             return result;
         }
     }

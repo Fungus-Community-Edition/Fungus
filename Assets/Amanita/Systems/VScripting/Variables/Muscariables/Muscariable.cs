@@ -7,7 +7,7 @@ namespace Amanita.VScripting
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    public abstract class Muscariable : IVariable
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
@@ -35,6 +35,29 @@ namespace Amanita.VScripting
         }
 
         public Muscariable() : base() { }
+
+        // We want to check for semantic equality mainly
+        public static bool operator == (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return true; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return sameValue;
+        }
+
+        public static bool operator != (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return false; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return !sameValue;
+        }
+
+        /// <summary>
+        /// Determines whether the specified Muscariable is (semantically) equal to the current Muscariable.
+        /// </summary>
+        public virtual bool Equals(Muscariable other)
+        {
+            return other != null && this.BoxedValue.Equals(other.BoxedValue);
+        }
 
         public Muscariable (IVariable otherVar)
         {

@@ -93,7 +93,8 @@ namespace Amanita.VScripting
         {
             var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
-            var.ItemId = UniqueIdGenerator.GetUniqueIdFor(var, toPass, _nextVarID);
+            var.ItemId = _nextVarID;
+            _nextVarID++;
             var.Owner = this;
         }
 

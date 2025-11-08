@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
-using UnityObject = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
 namespace SaveSystemTests
 {
@@ -38,10 +38,11 @@ namespace SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            SaveSysSignals.BaseSaveSysInstallationComplete += OnBaseSaveSysInstallationComplete;
             PlayerPrefs.DeleteAll();
             if (AmanitaManager.S != null)
             {
-                UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+                UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
             }
 
             ResetSingletonStatics();
@@ -51,7 +52,7 @@ namespace SaveSystemTests
             {
                 pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
                 AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
-                ammyManager = UnityObject.Instantiate(amanitaManagerPrefab);
+                ammyManager = UnityObj.Instantiate(amanitaManagerPrefab);
                 AmanitaManager.S = ammyManager;
                 ammyManager.Init();
 
@@ -149,7 +150,7 @@ namespace SaveSystemTests
 
                 toDestroyInTearDown.Add(testScene);
 
-                IList<EventSystem> possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
+                IList<EventSystem> possiblyMadeByFlowchart = UnityObj.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
 
                 foreach (var eventSys in possiblyMadeByFlowchart)
                 {
@@ -160,7 +161,7 @@ namespace SaveSystemTests
 
         protected readonly IList<string> saveFilePathsForCleanup = new List<string>();
         protected SaveStorageSettings storageSettings;
-        protected readonly List<UnityObject> toDestroyInTearDown = new List<UnityObject>();
+        protected readonly List<UnityObj> toDestroyInTearDown = new List<UnityObj>();
         protected virtual void ResetSingletonStatics()
         {
             SaveSystem.ResetStaticsForTest();
@@ -192,7 +193,7 @@ namespace SaveSystemTests
 
         protected virtual void PrepScene()
         {
-            testScene = UnityObject.Instantiate(testScenePrefab);
+            testScene = UnityObj.Instantiate(testScenePrefab);
             
             if (ReqFlowchart)
             {
@@ -290,9 +291,11 @@ namespace SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
+            SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
             SaveSystem.S.ClearSaveDataAppliers();
             ResetSingletonStatics();
 
+            DeleteAllTestSaves();
             CleanupSaveFiles();
             void CleanupSaveFiles()
             {
@@ -314,7 +317,7 @@ namespace SaveSystemTests
                 {
                     if (obj != null)
                     {
-                        UnityObject.DestroyImmediate(obj);
+                        UnityObj.DestroyImmediate(obj);
                     }
                 }
 
@@ -356,13 +359,13 @@ namespace SaveSystemTests
             {
                 if (testScene != null)
                 {
-                    UnityObject.DestroyImmediate(testScene);
+                    UnityObj.DestroyImmediate(testScene);
                 }
 
                 if (AmanitaManager.S != null)
                 {
                     AmanitaManager.S.gameObject.SetActive(false);
-                    UnityObject.DestroyImmediate(AmanitaManager.S.gameObject);
+                    UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
                 }
             }
         }
@@ -394,9 +397,15 @@ namespace SaveSystemTests
                     SearchOption.AllDirectories).ToList();
                 IList<string> pathsToTheMetaFiles = Directory.EnumerateFiles(pathToTempFolder,
                     "*.save.meta", SearchOption.AllDirectories).ToList();
+                IList<string> pathsToBakFiles = Directory.EnumerateFiles(pathToTempFolder,
+                    "*.save.bak", SearchOption.AllDirectories).ToList();
+                IList<string> pathsToBakMetaFiles = Directory.EnumerateFiles(pathToTempFolder,
+                    "*.save.bak.meta", SearchOption.AllDirectories).ToList();
 
                 List<string> pathsForWhatToDelete = new List<string>(pathsToTestSaves);
                 pathsForWhatToDelete.AddRange(pathsToTheMetaFiles);
+                pathsForWhatToDelete.AddRange(pathsToBakFiles);
+                pathsForWhatToDelete.AddRange(pathsToBakMetaFiles);
 
                 foreach (string filePath in pathsForWhatToDelete)
                 {
@@ -417,6 +426,7 @@ namespace SaveSystemTests
 
         protected virtual void PrepAndRegisterSaveData()
         {
+            // But without getting it written to disk. Working purely in memory here.
             CompositeSaveData mainSave = (CompositeSaveData)writeReq.MainState;
 
             if (ReqFlowchart)
@@ -441,22 +451,12 @@ namespace SaveSystemTests
             }
         }
 
-        
-
-        protected IDictionary<SaveDirectoryType, string> BaseSavePaths { get; set; } =
-            new Dictionary<SaveDirectoryType, string>
-            {
-                { SaveDirectoryType.DataPath, Application.dataPath },
-                { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-            };
-
         protected virtual async Task CommonSetupAsync()
         {
             await Task.Delay(CommonSetupDelay).ConfigureAwait(false);
 
             if (UnityThreadUtil.IsMainThread)
             {
-                PrepNewPathsForTesting();
                 PrepAndRegisterSaveData();
             }
             else
@@ -465,7 +465,6 @@ namespace SaveSystemTests
                 {
                     MainThreadDispatcher.Enqueue(() =>
                     {
-                        PrepNewPathsForTesting();
                         PrepAndRegisterSaveData();
                         countdown.Signal();
                     });
@@ -475,18 +474,25 @@ namespace SaveSystemTests
             }
         }
 
-        void PrepNewPathsForTesting()
+        protected virtual void OnBaseSaveSysInstallationComplete()
         {
+            PrepNewPathsForTesting();
+            
+        }
+
+        protected virtual void PrepNewPathsForTesting()
+        {
+            testPathResolver.RelativePath = "TestSaves";
+            // ^Need to make sure, since it prioritizes the internal storage settings
+            saveSys = SaveSystem.S;
             saveSys.SavePathResolver = testPathResolver;
-            saveWriter.PathResolver = testPathResolver;
-            saveReader.PathResolver = testPathResolver;
         }
 
         protected virtual int CommonSetupDelay
         {
             get
             {
-                return 250; // Milliseconds
+                return 200; // Milliseconds
             }
         }
 

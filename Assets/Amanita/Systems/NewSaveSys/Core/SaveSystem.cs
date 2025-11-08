@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using FullSerializer;
 using System.Linq;
+using System.IO;
 
 namespace Amanita.SaveSys
 { 
@@ -23,7 +24,7 @@ namespace Amanita.SaveSys
 
         protected bool initted;
 
-        public virtual async void Init()
+        public virtual void Init()
         {
             if (S != null && S != this)
             {
@@ -32,13 +33,22 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            S = this;
+            if (initted)
+            {
+                Debug.LogWarning("SaveSystem already initialized. Init call ignored.");
+                return;
+            }
 
+            S = this;
             initted = true;
 
-            await Task.Delay(coreLockDelay);
+            Invoke(nameof(ActivateCoreLockAndInitSaveManager), coreLockDelay);
+        }
+
+        protected virtual void ActivateCoreLockAndInitSaveManager()
+        {
             CoreLockMode = true;
-            
+            saveManager.Init();
         }
 
         // We expect an instance of this to be attached to the AmanitaManager singleton
@@ -52,9 +62,7 @@ namespace Amanita.SaveSys
         }
         protected static SaveSystem _s;
 
-        protected int coreLockDelay = 1000; // In milliseconds
-
-        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
+        protected float coreLockDelay = 1; // In seconds
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like
@@ -62,11 +70,17 @@ namespace Amanita.SaveSys
         /// </summary>
         protected virtual bool CoreLockMode { get; set; }
 
+        #region Submodules
         // For third-party customizability, we want to give the option to inject the 
         // individual SaveManager dependencies (instead of needing to prep a whole
         // SaveManager themselves, then passing it to this class). Client code might
         // only want to swap out one module of the implementation, after all
 
+        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
+
+        /// <summary>
+        /// Handler for saving and loading data to and from persistent storage.
+        /// </summary>
         public virtual ISaveRepository SaveRepo
         {
             get
@@ -187,22 +201,17 @@ namespace Amanita.SaveSys
             }
         }
         protected ISaveManager saveManager;
+        #endregion
 
-        public virtual SaveDirectoryType SaveDirectoryType { get; set; }
+        #region Submodule-Registration
 
         /// <summary>
         /// Decides what paths to use for saving and loading.
         /// </summary>
-        public virtual ISaveSlotPathResolver<SaveDirectoryType> SavePathResolver { get; set; } = new DefaultSavePathResolver();
-
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
+        public virtual IConfigurableSaveSlotPathResolver SavePathResolver
         {
-            SaveManager.RegisterMultiMainCodecs(codecs);
-        }
-
-        public virtual void RegisterMainCodec(IMainSaveCodec codec)
-        {
-            SaveManager.RegisterMainCodec(codec);
+            get => SaveRepo.PathResolver;
+            set => SaveRepo.PathResolver = value;
         }
 
         public virtual void RegisterSaveDataAppliersMulti(IList<ISaveDataApplier> toRegister)
@@ -249,7 +258,9 @@ namespace Amanita.SaveSys
         {
             saveDataAppliers.Clear();
         }
+        #endregion
 
+        #region Save/Load/Delete Operations
         public virtual Task SaveTo(int slotNum)
         {
             return saveManager.SaveTo(slotNum);
@@ -270,21 +281,7 @@ namespace Amanita.SaveSys
         {
             saveManager.DeleteSave(slotNum);    
         }
-
-        public virtual string GetSaveDirectory(SaveDirectoryType dirType)
-        {
-            string result = SavePathResolver.GetSaveFolderPath(dirType);
-            return result;
-        }
-        
-        protected static string InaccessibleVarFormat => "Cannot get value of {0}. It's not properly registered yet.";
-        protected static string UnmutableVarFormat => "Cannot alter value of {0}. It's not properly registered yet.";
-
-        public string FileExtension => SavePathResolver.FileExtension;
-
-        public string RelativePath => SavePathResolver.RelativePath;
-
-        public string NumberFormat => SavePathResolver.NumberFormat;
+        #endregion
 
         public static void ResetStaticsForTest()
         {
@@ -298,6 +295,26 @@ namespace Amanita.SaveSys
                 S = null;
             }
         }
+
+        #region Resolving Details about Paths
+
+        public virtual SaveDirectoryType SaveDirectoryType { get; set; }
+
+        public virtual string GetSaveDirectory(SaveDirectoryType dirType)
+        {
+            string result = SavePathResolver.GetSaveFolderPath(dirType);
+            if (!Directory.Exists(result))
+            {
+                Directory.CreateDirectory(result);
+            }
+            return result;
+        }
+
+        public string FileExtension => SavePathResolver.FileExtension;
+
+        public string RelativePath => SavePathResolver.RelativePath;
+
+        public string NumberFormat => SavePathResolver.NumberFormat;
 
         public string GetSaveFilePath(string fileName, object input)
         {
@@ -333,7 +350,9 @@ namespace Amanita.SaveSys
         {
             return SavePathResolver.GetSaveFilePath(input, slotNumber);
         }
-    
+        #endregion
+
+        #region ProgressMarker-Management
         public virtual void RegisterProgressMarker(string id, int order = 0)
         {
             markerManager.RegisterProgressMarker(id, order);
@@ -369,7 +388,6 @@ namespace Amanita.SaveSys
             markerManager.SetProgressMarkerOrder(id, order);
         }
 
-
         public virtual bool IsProgressMarkerRegistered(string id)
         {
             return markerManager.IsProgressMarkerRegistered(id);
@@ -387,6 +405,7 @@ namespace Amanita.SaveSys
                 RegisterProgressMarker(id, order);
             }
         }
+        #endregion
 
     }
 

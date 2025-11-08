@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
@@ -12,12 +13,33 @@ namespace Amanita.SaveSys
     /// </summary>
     public class FileSaveRepository : ISaveRepository
     {
-        public FileSaveRepository(SaveReader saveReader, SaveWriter saveWriter, SaveDirectoryType saveDir)
+        public IConfigurableSaveSlotPathResolver PathResolver
+        {
+            get => pathResolver;
+            set
+            {
+                pathResolver = saveReader.PathResolver = saveWriter.PathResolver = value;
+                // ^Need to keep things in sync so they're working with the right sets
+                // of directories and paths.
+            }
+        }
+        protected IConfigurableSaveSlotPathResolver pathResolver;
+        public FileSaveRepository(SaveReader saveReader, SaveWriter saveWriter,
+            SaveDirectoryType saveDir, IConfigurableSaveSlotPathResolver resolver = null)
         {
             Validate(saveReader, saveWriter);
             this.saveReader = saveReader;
             this.saveWriter = saveWriter;
             this.saveDir = saveDir;
+            this.pathResolver = resolver;
+
+            KeepResolversInSync();
+            void KeepResolversInSync()
+            {
+                pathResolver ??= saveReader.PathResolver;
+                pathResolver ??= saveWriter.PathResolver;
+                saveReader.PathResolver = saveWriter.PathResolver = pathResolver;
+            }
 
             PrepRequestCache();
             void PrepRequestCache()
@@ -120,18 +142,29 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
+        public virtual async Task<IList<ISaveMetaData>> LoadAllMetasOnDisk()
+        {
+            IList<ISaveMetaData> metasOnDisk = await saveReader.ReadAllMetaDatasFromFolder(saveDir);
+            return metasOnDisk;
+        }
+
     }
 
+    /// <summary>
+    /// For handling the interactions with persistent storage for loading and saving game data.
+    /// </summary>
     public interface ISaveRepository
     {
+        IConfigurableSaveSlotPathResolver PathResolver { get; set; }
+        Task<IList<ISaveMetaData>> LoadAllMetasOnDisk();
+
         /// <summary>
-        /// Reads save data from file based on theinput, returning said data.
+        /// Loads save data from file based on the input, returning said data.
         /// </summary>
         Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default);
 
         /// <summary>
-        /// Reads only the metadata for a given slot number from file.
+        /// Loads only the metadata for a given slot number from file.
         /// </summary>
         Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default);    
         Task SaveAsync(SaveDataSet saveSet, CancellationToken token = default);
