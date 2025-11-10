@@ -1,4 +1,4 @@
-using Amanita.SaveSys;
+﻿using Amanita.SaveSys;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +30,14 @@ namespace SaveSystemTests
             // Ensure clean state for Progress Markers between tests
             saveSystem.ClearProgressMarkers();
             RecordOrderCommand.ClearLog();
+            
+        }
+
+        protected virtual void ApplyResolvers()
+        {
+            saveSystem.SavePathResolver = testPathResolver;
+            saveReader.PathResolver = testPathResolver;
+            saveWriter.PathResolver = testPathResolver;
         }
 
         [Test]
@@ -88,16 +96,6 @@ namespace SaveSystemTests
 
             // Assert: variable value should be restored
             Assert.AreEqual(origVal, stringVar.Value, "Flowchart variable was not restored after load.");
-        }
-
-        [Test]
-        public void RegisterMainCodec_DelegatesToManager()
-        {
-            var dummyCodec = new DummyMainSaveCodec();
-            saveSystem.RegisterMainCodec(dummyCodec);
-
-            // There is no direct way to check registration, but this ensures no exceptions and coverage of the delegation.
-            Assert.Pass("RegisterMainCodec did not throw and delegated as expected.");
         }
 
         [Test]
@@ -309,6 +307,180 @@ namespace SaveSystemTests
             string summary = cmd.GetSummary();
             Assert.AreEqual("Register | ID: P_SUM | Order: 42", summary);
             toDestroyInTearDown.Add(flow.gameObject);
+        }
+
+        // ---------- NEW TESTS: SaveManager Init Meta Handling ----------
+
+        [Test]
+        public async Task SaveManager_Init_LoadsMetas_RegistersInRegistry_And_FiresEvent()
+        {
+            await CommonSetupAsync();
+
+            DeleteAllTestSaves();
+
+            // Use concrete SaveManager to access overload with saveName
+            var concreteManager = (SaveManager)saveManager;
+            var registry = concreteManager.Registry;
+            int firstSlot = 40;
+            int secondSlot = 41;
+
+            string firstSlotName = "FirstSlotMetaName";
+            string secondSlotName = "SecondSlotMetaName";
+
+            await concreteManager.SaveTo(firstSlot, firstSlotName);
+            await concreteManager.SaveTo(secondSlot, secondSlotName);
+
+            RegisterThoseForCleanup();
+            void RegisterThoseForCleanup()
+            {
+                string pathToFirstSlot = concreteManager.SaveRepo.GetPathTo(firstSlot);
+                string pathToSecondSlot = concreteManager.SaveRepo.GetPathTo(secondSlot);
+                saveFilePathsForCleanup.Add(pathToFirstSlot);
+                saveFilePathsForCleanup.Add(pathToSecondSlot);
+            }
+
+            // Capture original metas (deep copies) for later comparison
+            var firstSlotOrigMeta = SaveMetaData.CreateFrom(registry.GetSaveMeta(firstSlot));
+            var secondSlotOrigMeta = SaveMetaData.CreateFrom(registry.GetSaveMeta(secondSlot));
+
+            // Clear in‑memory registry to simulate fresh startup
+            concreteManager.Registry.Clear();
+            Assert.AreEqual(0, concreteManager.Registry.GetAllSaveMetas().Count, "Registry should be empty before Init.");
+
+            IList<ISaveMetaData> metasFromEvent = null;
+            bool eventFired = false;
+
+            void Handler(IList<ISaveMetaData> metas)
+            {
+                eventFired = true;
+                metasFromEvent = metas;
+            }
+
+            SaveSysSignals.SaveMetasReadOnInit += Handler;
+            try
+            {
+                await concreteManager.Init(); // Re-run init logic
+            }
+            finally
+            {
+                SaveSysSignals.SaveMetasReadOnInit -= Handler;
+            }
+
+            // Verify event fired
+            Assert.IsTrue(eventFired, "SaveMetasReadOnInit event was not fired during Init.");
+            Assert.IsNotNull(metasFromEvent, "Event metas list was null.");
+            Assert.AreEqual(2, metasFromEvent.Count, "Unexpected number of metas returned by event.");
+
+            // Verify metas registered in registry
+            var registeredMetas = concreteManager.Registry.GetAllSaveMetas();
+            Assert.AreEqual(2, registeredMetas.Count, "Registry did not contain expected number of metas after Init.");
+
+            // Slot presence
+            Assert.IsTrue(registeredMetas.Any(m => m.SlotNumber == firstSlot), "SlotA meta not registered.");
+            Assert.IsTrue(registeredMetas.Any(m => m.SlotNumber == secondSlot), "SlotB meta not registered.");
+
+            // Decryption / integrity: Compare key fields to originals
+            var loadedA = concreteManager.Registry.GetSaveMeta(firstSlot) as SaveMetaData;
+            var loadedB = concreteManager.Registry.GetSaveMeta(secondSlot) as SaveMetaData;
+            Assert.NotNull(loadedA);
+            Assert.NotNull(loadedB);
+
+            Assert.AreEqual(firstSlotOrigMeta.SaveName, loadedA.SaveName, "Meta A SaveName mismatch after Init (possible decryption failure).");
+            Assert.AreEqual(secondSlotOrigMeta.SaveName, loadedB.SaveName, "Meta B SaveName mismatch after Init (possible decryption failure).");
+            Assert.AreEqual(firstSlotOrigMeta.SlotNumber, loadedA.SlotNumber, "Meta A SlotNumber mismatch.");
+            Assert.AreEqual(secondSlotOrigMeta.SlotNumber, loadedB.SlotNumber, "Meta B SlotNumber mismatch.");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(loadedA.SaveVersion), "Meta A SaveVersion not set.");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(loadedB.SaveVersion), "Meta B SaveVersion not set.");
+        }
+
+        [Test]
+        public async Task SaveManager_Init_RegistersOnlyUniqueMetas()
+        {
+            await CommonSetupAsync();
+            DeleteAllTestSaves();
+            var concreteManager = (SaveManager)saveManager;
+
+            int slot = 42;
+            await concreteManager.SaveTo(slot, "UniqueMeta");
+
+            // Make a second save overwrite (simulate updated meta)
+            await concreteManager.SaveTo(slot, "UniqueMeta_Updated");
+
+            string pathToSlot = concreteManager.SaveRepo.GetPathTo(slot);
+            saveFilePathsForCleanup.Add(pathToSlot);
+
+            var registry = concreteManager.Registry;
+            var originalMetaCopy = SaveMetaData.CreateFrom(registry.GetSaveMeta(slot));
+            registry.Clear();
+
+            int eventInvocationCount = 0;
+            SaveSysSignals.SaveMetasReadOnInit += MetasHandler;
+            void MetasHandler(IList<ISaveMetaData> metas)
+            {
+                eventInvocationCount++;
+            }
+
+            try
+            {
+                await concreteManager.Init();
+            }
+            finally
+            {
+                SaveSysSignals.SaveMetasReadOnInit -= MetasHandler;
+            }
+
+            Assert.AreEqual(1, eventInvocationCount, "SaveMetasReadOnInit should fire exactly once.");
+            var metas = concreteManager.Registry.GetAllSaveMetas();
+            Assert.AreEqual(1, metas.Count, "Registry should contain exactly one meta for the slot.");
+            var loaded = metas[0] as SaveMetaData;
+            Assert.NotNull(loaded);
+            Assert.AreEqual(slot, loaded.SlotNumber, "Loaded meta slot mismatch.");
+            Assert.AreEqual(originalMetaCopy.SaveName, loaded.SaveName, "Loaded meta SaveName mismatch.");
+        }
+
+        [Test]
+        public async Task SaveManager_Init_Event_Passes_Same_Meta_Instances_As_Registry()
+        {
+            await CommonSetupAsync();
+            var concreteManager = (SaveManager)saveManager;
+
+            int firstSlot = 43;
+            int secondSlot = 44;
+            await concreteManager.SaveTo(firstSlot, "InstanceCheckA");
+            await concreteManager.SaveTo(secondSlot, "InstanceCheckB");
+
+            RegisterThoseForCleanup();
+            void RegisterThoseForCleanup()
+            {
+                string pathToFirstSlot = concreteManager.SaveRepo.GetPathTo(firstSlot);
+                string pathToSecondSlot = concreteManager.SaveRepo.GetPathTo(secondSlot);
+                saveFilePathsForCleanup.Add(pathToFirstSlot);
+                saveFilePathsForCleanup.Add(pathToSecondSlot);
+            }
+
+            concreteManager.Registry.Clear();
+
+            IList<ISaveMetaData> metasFromEvent = null;
+            SaveSysSignals.SaveMetasReadOnInit += Handler;
+            void Handler(IList<ISaveMetaData> metas) => metasFromEvent = metas;
+            try
+            {
+                await concreteManager.Init();
+            }
+            finally
+            {
+                SaveSysSignals.SaveMetasReadOnInit -= Handler;
+            }
+
+            Assert.IsNotNull(metasFromEvent, "Event provided null metas list.");
+            var registryMetas = concreteManager.Registry.GetAllSaveMetas();
+
+            // Ensure same count and referential equality (not just value equality)
+            Assert.AreEqual(registryMetas.Count, metasFromEvent.Count, "Event meta count differs from registry.");
+            foreach (var meta in registryMetas)
+            {
+                Assert.IsTrue(metasFromEvent.Contains(meta), "Event did not pass the same meta instance held in registry.");
+            }
         }
 
         // ---------- Helpers ----------

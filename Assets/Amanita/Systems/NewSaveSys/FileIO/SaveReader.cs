@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,6 +99,34 @@ namespace Amanita.SaveSys
                 decryptor = defaultDecryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IDecryptor. Reverting to default.");
             }
+        }
+    
+        public virtual async Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+            CancellationToken cancelToken = default)
+        {
+            IList<ISaveMetaData> result = new List<ISaveMetaData>();
+            string folderPath = GetSaveFolderPath(dirType);
+            if (!Directory.Exists(folderPath))
+            {
+                string logMessage = $"Cannot read any meta datas from folder at path {folderPath}, because that " +
+                    $"folder does not exist.";
+                Debug.LogWarning(logMessage);
+            }
+            else
+            {
+                string[] saveFilesFound = Directory.GetFiles(folderPath, $"*.{storageSettings.FileExtension}");
+                foreach (var file in saveFilesFound)
+                {
+                    cancelToken.ThrowIfCancellationRequested();
+                    byte[] rawBytes = await ReadAllBytesAsync(file, cancelToken);
+                    decryptionRequest.RawBytes = rawBytes;
+                    decryptionRequest.WrittenAsPlainText = !ExpectEncryption;
+                    decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+                    var meta = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
+                    result.Add(meta);
+                }
+            }
+            return result;
         }
     }
 

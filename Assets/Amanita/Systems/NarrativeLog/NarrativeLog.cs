@@ -57,9 +57,16 @@ namespace Amanita.DialogueSys
 
         public virtual void Init()
         {
+            if (IsFullyInitted)
+            {
+                return;
+            }
             history = new NarrativeData();
             DoNarrativeCleared();
+            IsFullyInitted = true;
         }
+
+        public virtual bool IsFullyInitted { get; protected set; } = false;
 
         protected virtual void OnEnable()
         {

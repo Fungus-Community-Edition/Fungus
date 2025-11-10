@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Type = System.Type;
 
 namespace Amanita.SaveSys.UI
@@ -10,6 +11,7 @@ namespace Amanita.SaveSys.UI
     public class SaveSlotViewComposer : MonoBehaviour
     {
         [SerializeField] protected GameObject holdsViews;
+        [SerializeField] protected Button button;
 
         public virtual ISaveMetaData Meta
         {
@@ -47,6 +49,10 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void Awake()
         {
+            if (button == null)
+            {
+                button = gameObject.GetOrAddComponent<Button>();
+            }
             EnsureViews();
         }
 
@@ -113,6 +119,33 @@ namespace Amanita.SaveSys.UI
         }
 
         protected static Type saveSlotViewInterfaceType = typeof(ISaveSlotView);
+
+        protected virtual void OnEnable()
+        {
+            ToggleSubs(true);
+        }
+
+        protected virtual void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                button.onClick.AddListener(OnButtonClicked);
+            }
+            else
+            {
+                button.onClick.RemoveListener(OnButtonClicked);
+            }
+        }
+
+        private void OnButtonClicked()
+        {
+            SaveSysSignals.SaveSlotSelected?.Invoke(Meta.SlotNumber);
+        }
+
+        protected virtual void OnDisable()
+        {
+            ToggleSubs(false);
+        }
 
         protected virtual void OnValidate()
         {             

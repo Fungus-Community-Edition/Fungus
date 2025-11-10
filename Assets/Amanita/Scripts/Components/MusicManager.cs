@@ -38,10 +38,7 @@ namespace Amanita
             audioSourceDefaultVoice = audioSources[3];
             audioSourceWriterSoundEffect = audioSources[4];
 
-            audioSourceMusic.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.MusicGroup;
-            audioSourceSoundEffect.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.SFXGroup;
             audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
-            audioSourceDefaultVoice.outputAudioMixerGroup = AmanitaManager.S.MainAudioMixer.VoiceGroup;
             audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
 
             fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
