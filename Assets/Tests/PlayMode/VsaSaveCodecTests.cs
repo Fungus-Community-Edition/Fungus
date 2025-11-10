@@ -17,9 +17,8 @@ namespace SaveSystemTests
     {
         private const string ResourcesFolder = "Assets/Resources";
         private const string TestResourcesSubFolder = "Assets/Resources/VarSrcApplierTests";
-        private const string AssetNameA = "TestVarSrcA.asset";
-        private const string AssetNameB = "TestVarSrcB.asset";
-
+        private const string FirstAssetName = "TestVarSrcA.asset";
+        private const string SecondAssetName = "TestVarSrcB.asset";
 
         private GenericVarCodec genericVarCodec;
         private VariableSourceAssetSaveCodec _saveCodec;
@@ -40,8 +39,10 @@ namespace SaveSystemTests
             }
 
             // Create VariableSourceAssets as real assets in Resources so the applier can find them
-            firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
-            secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+            firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
+            secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
+            RegisterTestOnlyVsa(firstVsa);
+            RegisterTestOnlyVsa(secondVsa);
 
             // Create variables on A
             var firstStringMuscari = firstVsa.AddNewVariableOfContentType<string>("playerName", "Amanita");
@@ -88,8 +89,8 @@ namespace SaveSystemTests
         {
 #if UNITY_EDITOR
             // Clean Resources assets we created
-            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
-            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
 
             foreach (var obj in toDestroyInTearDown)
             {
@@ -113,8 +114,8 @@ namespace SaveSystemTests
             var firstSaveData = _saveCodec.EncodeToSave(firstVsa);
             var secondSaveData = _saveCodec.EncodeToSave(secondVsa);
 
-            bool recordsAssetID = firstSaveData.AssetId == firstVsa.AssetId &&
-                secondSaveData.AssetId == secondVsa.AssetId;
+            bool recordsAssetID = firstSaveData.UniqueId == firstVsa.UniqueId &&
+                secondSaveData.UniqueId == secondVsa.UniqueId;
             Assert.IsTrue(recordsAssetID,
                 "Encoded VariableSourceAssetSaveData should record the AssetId of the VariableSourceAsset it was created from.");
 
@@ -148,8 +149,8 @@ namespace SaveSystemTests
             var firstSavedVars = firstSaveData.SavedVars;
             var secondSavedVars = secondSaveData.SavedVars;
 
-            IList<int> firstEncodedItemIds = firstSavedVars.Select(vs => vs.ItemId).ToList();
-            IList<int> secondEncodedItemIds = secondSavedVars.Select(vs => vs.ItemId).ToList();
+            IList<byte> firstEncodedItemIds = firstSavedVars.Select(vs => vs.ItemId).ToList();
+            IList<byte> secondEncodedItemIds = secondSavedVars.Select(vs => vs.ItemId).ToList();
 
             var firstVarItemIds = firstVsa.Variables.Select(v => v.ItemId).ToList();
             var secondVarItemIds = secondVsa.Variables.Select(v => v.ItemId).ToList();

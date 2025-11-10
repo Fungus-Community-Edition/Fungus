@@ -31,20 +31,18 @@ namespace Amanita.VScripting.EventHandlers
         [HideInInspector]
         [SerializeField] protected Draggable2D draggableObject;
 
-        protected EventDispatcher eventDispatcher;
-
-        protected virtual void OnEnable()
+        protected override void ToggleSubs(bool on)
         {
-            eventDispatcher = AmanitaManager.S.EventDispatcher;
+            base.ToggleSubs(on);
 
-            eventDispatcher.AddListener<DragStartedEvent>(OnDragStartedEvent);
-        }
-
-        protected virtual void OnDisable()
-        {
-            eventDispatcher.RemoveListener<DragStartedEvent>(OnDragStartedEvent);
-
-            eventDispatcher = null;
+            if (on)
+            {
+                EventDispatcher.AddListener<DragStartedEvent>(OnDragStartedEvent);
+            }
+            else
+            {
+                EventDispatcher.RemoveListener<DragStartedEvent>(OnDragStartedEvent);
+            }
         }
 
         private void OnDragStartedEvent(DragStartedEvent evt)

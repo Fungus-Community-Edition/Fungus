@@ -22,205 +22,210 @@ namespace Amanita.VScripting.EditorUtils
             varDataProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
             // Find the two key sub-properties
-            SerializedProperty valueProp, referenceProp;
-            string valuePropName = "value";
-            try
-            {
-                valueProp = varDataProp.FindPropertyRelative(valuePropName);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Exception trying to find 'value' property relative to {varDataProp.propertyPath}. " +
-                    $"Its display name: {varDataProp.displayName}. Make sure the VariableData class still has a field named '{valuePropName}'. Exception: {e}");
-                throw;
-            }
-            referenceProp = varDataProp.FindPropertyRelative("varRef");
+            SerializedProperty literalValueProp, referenceVarProp;
+            string litValuePropName = "value", refPropName = "varRef";
+            literalValueProp = varDataProp.FindPropertyRelative(litValuePropName);
+            referenceVarProp = varDataProp.FindPropertyRelative(refPropName);
 
             // Layout: label, then value/reference side-by-side
-            int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
-            const int popupGap = 5;
-            Rect wholeFieldRect = EditorGUI.PrefixLabel(position, label);
-            Rect valueRect = wholeFieldRect;
-            int spaceForPopup = popupWidth + popupGap;
-            valueRect.width = Mathf.Max(0, wholeFieldRect.width - spaceForPopup);
-            // ^We want to make sure that the rect for the value field leaves enough space for the popup
-            Rect popupRect = wholeFieldRect;
-            popupRect.x += valueRect.width + popupGap;
-            popupRect.width = popupWidth;
+            Rect valueRect, popupRect, wholeFieldRect;
+            int prevIndent;
+            HandleLayout();
+            void HandleLayout()
+            {
+                int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
+                const int popupGap = 5; // <- Between the value/ref field and the little button for the popup
+                wholeFieldRect = EditorGUI.PrefixLabel(position, label);
+                valueRect = wholeFieldRect;
+                int spaceForPopup = popupWidth + popupGap;
+                valueRect.width = Mathf.Max(0, wholeFieldRect.width - spaceForPopup);
+                // ^We want to make sure that the rect for the value field leaves enough space for the popup
+                popupRect = wholeFieldRect;
+                popupRect.x += valueRect.width + popupGap;
+                popupRect.width = popupWidth;
 
-            int prevIndent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
+                prevIndent = EditorGUI.indentLevel;
+                EditorGUI.indentLevel = 0;
+            }
 
             // We only want to draw the literal value when the varRef is null
-            bool shouldDrawLiteral = !VarRefPropHasAnythingAssigned(referenceProp);
+            bool shouldDrawLiteral = !VarRefPropHasAnythingAssigned(referenceVarProp);
             if (shouldDrawLiteral)
             {
-                EditorGUI.PropertyField(valueRect, valueProp, GUIContent.none);
+                EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
+            }
+
+            Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
+            if (localFlowchart == null)
+            {
+                Debug.LogWarning($"No flowchart is open in the Flowchart window. Cannot draw variable reference field for {varDataProp.propertyPath}.");
+                return;
+            }
+
+            var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
+            System.Type contentType = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
+            if (contentType == null)
+            {
+                Debug.LogWarning($"Unable to resolve ContentType for {varData.GetType().Name}. Showing only literal <Value> option.");
+                return;
+            }
+
+            int selectedIndex = 0;
+            IVariable selectedVariable = referenceVarProp.boxedValue as IVariable;
+
+            // Regardless of whether we are drawing the literal value or not, we need to populate the list of valid vars
+            // so we know what to show in the popup.
+            RegisterValidVars(); // Valid to be assigned to the VariableData we are drawing for, to be specific
+            void RegisterValidVars()
+            {
+                _validVarsOrdered.Clear();
+                _labelsSeen.Clear();
+                AddOption("<Value>", null); // To let the user go with a literal val instead of a var
+
+                RegisterLocalVars();
+                void RegisterLocalVars()
+                {
+                    IList<IVariable> validLocalVars = localFlowchart.Variables
+                        .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
+                        .ToList();
+
+                    for (int i = 0; i < validLocalVars.Count; i++)
+                    {
+                        var elem = validLocalVars[i];
+                        AddOption(elem.Key, elem);
+                    }
+                }
+
+                RegisterPublicVarsFromOtherFlowcharts();
+                void RegisterPublicVarsFromOtherFlowcharts()
+                {
+                    IList<Flowchart> otherFlowchartsInScene = Flowchart.CachedFlowcharts.Where
+                        ((elem) => elem != localFlowchart).ToList();
+
+                    for (int i = 0; i < otherFlowchartsInScene.Count; i++)
+                    {
+                        var otherChart = otherFlowchartsInScene[i];
+                        IList<IVariable> validVarsInOtherChart = otherChart.Variables
+                            .Where(elem => elem.ContentType.IsAssignableFrom(contentType)
+                            && elem.Scope == VariableScope.Public)
+                            .ToList();
+
+                        for (int j = 0; j < validVarsInOtherChart.Count; j++)
+                        {
+                            var elem = validVarsInOtherChart[j];
+                            string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
+                            // ^So we can tell which vars belong to which Flowcharts
+                            AddOption(namespacedKey, elem);
+                        }
+                    }
+                }
+
+                RegisterGlobalVars();
+                void RegisterGlobalVars()
+                {
+                    var ammieManager = AmanitaManager.S;
+                    if (ammieManager == null)
+                    {
+                        return;
+                    }
+
+                    var varSources = ammieManager.GlobalVariableSources;
+                    for (int i = 0; i < varSources.Count; i++)
+                    {
+                        var source = varSources[i];
+                        IList<IVariable> validVarsInSource = source.Variables
+                            .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
+                            .ToList();
+                        for (int j = 0; j < validVarsInSource.Count; j++)
+                        {
+                            var elem = validVarsInSource[j];
+                            string namespacedKey = $"~{source.name}~/{elem.Key}";
+                            // ^This makes it easy for the user to organize their global vars by source asset instead
+                            // of having to sift through one long list. And of course, the tilde (~) indicates global scope.
+                            AddOption(namespacedKey, elem);
+                        }
+                    }
+                }
+
+                void AddOption(string label, IVariable variable)
+                {
+                    if (_validVarsOrdered.ContainsKey(label))
+                    {
+                        Debug.LogWarning($"Variable key collision when trying to add variable {label} to the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
+                        return;
+                    }
+
+                    _validVarsOrdered.Add(label, variable);
+                }
+            }
+
+            bool noVarsFound = _validVarsOrdered.Count == 0;
+            if (!shouldDrawLiteral && noVarsFound)
+            {
+                return;
+            }
+
+            // Find the index of the currently selected variable (if any)
+            FindSelectedVariableIndex();
+            void FindSelectedVariableIndex()
+            {
+                if (selectedVariable != null)
+                {
+                    int foundIndex = 0;
+                    foreach (var kvp in _validVarsOrdered)
+                    {
+                        if (kvp.Value == null)
+                        {
+                            foundIndex++;
+                            continue;
+                        }
+
+                        // It's possible that the VariableData is referencing a variable that's a copy of the one
+                        // on the Flowchart (e.g. if the Flowchart was duplicated). Thus, we compare by certain fields.
+                        var orderedVar = kvp.Value;
+                        bool sameKey = selectedVariable.Key == orderedVar.Key;
+                        bool sameContentType = selectedVariable.ContentType.Equals(orderedVar.ContentType);
+                        bool sameOwner = ReferenceEquals(selectedVariable.Owner, orderedVar.Owner) ||
+                            selectedVariable.Owner == null; // It's possible that the copy's owner was nulled, and thus...
+                        bool isSameVar = orderedVar != null && sameKey && sameContentType && sameOwner;
+                        if (isSameVar)
+                        {
+                            selectedIndex = foundIndex;
+                            selectedVariable = kvp.Value; // To keep the exact instance from the Flowchart.
+                            break;
+                        }
+                        foundIndex++;
+                    }
+                }
             }
 
             DrawReferenceField();
             void DrawReferenceField()
             {
-                Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
-                if (localFlowchart == null)
-                {
-                    Debug.LogWarning($"No flowchart is open in the Flowchart window. Cannot draw variable reference field for {varDataProp.propertyPath}.");
-                    return;
-                }
-
-                int selectedIndex = 0;
-                IVariable selectedVariable = referenceProp.boxedValue as IVariable;
-
-                RegisterValidVars();
-                void RegisterValidVars()
-                {
-                    // Always reset state and include the <Value> option first
-                    _validVarsOrdered.Clear();
-                    _labelsSeen.Clear();
-                    AddOption("<Value>", null);
-
-                    // Prefer attribute, but fall back to runtime data's ContentType
-                    var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
-                    System.Type contentType = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
-                    if (contentType == null)
-                    {
-                        Debug.LogWarning($"Unable to resolve ContentType for {varData.GetType().Name}. Showing only literal <Value> option.");
-                        return;
-                    }
-
-                    RegisterLocalVars();
-                    void RegisterLocalVars()
-                    {
-                        IList<IVariable> validLocalVars = localFlowchart.Variables
-                            .Where(elem => contentType.IsAssignableFrom(elem.ContentType)) // Polymorphism allowed
-                            .ToList();
-
-                        for (int i = 0; i < validLocalVars.Count; i++)
-                        {
-                            var elem = validLocalVars[i];
-                            AddOption(elem.Key, elem);
-
-                            int idx = _validVarsOrdered.Count - 1;
-                            if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
-                            {
-                                selectedIndex = idx;
-                                Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
-                            }
-                        }
-                    }
-
-                    RegisterVarsFromOtherFlowcharts();
-                    void RegisterVarsFromOtherFlowcharts()
-                    {
-                        IList<Flowchart> otherFlowchartsInScene = Flowchart.CachedFlowcharts.Where
-                            ((elem) => elem != localFlowchart).ToList();
-
-                        for (int i = 0; i < otherFlowchartsInScene.Count; i++)
-                        {
-                            var otherChart = otherFlowchartsInScene[i];
-                            IList<IVariable> validVarsInOtherChart = otherChart.Variables
-                                .Where(elem => elem.ContentType.Equals(contentType)
-                                && elem.Scope == VariableScope.Public)
-                                .ToList();
-
-                            for (int j = 0; j < validVarsInOtherChart.Count; j++)
-                            {
-                                var elem = validVarsInOtherChart[j];
-                                string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
-                                // ^So we know which vars belong to which Flowcharts
-                                AddOption(namespacedKey, elem);
-
-                                int idx = _validVarsOrdered.Count - 1;
-                                if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
-                                {
-                                    selectedIndex = idx;
-                                    Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
-                                }
-                            }
-                        }
-                    }
-
-                    RegisterGlobalVars();
-                    void RegisterGlobalVars()
-                    {
-                        var ammieManager = AmanitaManager.S;
-                        var varSources = ammieManager.GlobalVariableSources;
-                        // ^So we can specify which vars come from which sources
-                        for (int i = 0; i < varSources.Count; i++)
-                        {
-                            var source = varSources[i];
-                            IList<IVariable> validVarsInSource = source.Variables
-                                .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
-                                .ToList();
-                            for (int j = 0; j < validVarsInSource.Count; j++)
-                            {
-                                var elem = validVarsInSource[j];
-                                string namespacedKey = $"~{source.name}~/{elem.Key}";
-                                // ^Rather than make a group under Globals, we just enclose the source's name in tildes
-                                // to indicate it's globalness. In the docs, we might want to recommend that users
-                                // avoid tildes in their Flowchart names to prevent confusion.
-                                AddOption(namespacedKey, elem);
-                                int idx = _validVarsOrdered.Count - 1;
-                                if (selectedVariable != null && ReferenceEquals(selectedVariable, elem))
-                                {
-                                    selectedIndex = idx;
-                                    Debug.Log($"Found selected variable {elem.Key} at index {selectedIndex} in dropdown for {varDataProp.propertyPath}");
-                                }
-                            }
-                        }
-                    }
-
-                    void AddOption(string label, IVariable variable)
-                    {
-                        if (_labelsSeen.Contains(label))
-                        {
-                            Debug.LogWarning($"Variable key collision when trying to add variable {label} to the " +
-                                $"dropdown for {varDataProp.propertyPath}. There is already a variable with that " +
-                                $"key in the dropdown. Skipping this one.");
-                            return;
-                        }
-
-                        _labelsSeen.Add(label);
-                        _validVarsOrdered.Add(new KeyValuePair<string, IVariable>(label, variable));
-                    }
-                }
-
-                bool noVarsFound = _validVarsOrdered.Count == 0;
-                if (!shouldDrawLiteral && noVarsFound)
-                {
-                    return;
-                }
-
                 string[] options = _validVarsOrdered.Select(kvp => kvp.Key).ToArray();
 
-                // Clamp to valid range to avoid out-of-range when nothing was matched
                 int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
                 if (prevSelectedIndex < 0)
                 {
                     prevSelectedIndex = 0;
                 }
 
-                IVariable chosenBefore = _validVarsOrdered[prevSelectedIndex].Value;
-
-                if (chosenBefore != null)
+                if (referenceVarProp.boxedValue is IVariable existing && existing != null)
                 {
+                    // Keep popup full-width if a reference is already chosen
                     popupRect = wholeFieldRect;
                 }
 
                 selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
 
-                if (selectedIndex != prevSelectedIndex)
-                {
-                    Debug.Log($"Selected something else");
-                }
+                var varsOrderedArray = _validVarsOrdered.Values.ToArray();
+                IVariable chosenNow = varsOrderedArray[selectedIndex];
 
-                IVariable chosenNow = _validVarsOrdered[selectedIndex].Value;
-                referenceProp.AssignVarRef(chosenNow, varData.ContentType);
+                // IMPORTANT: call the overload that triggers VariableData.VarRef setter
+                referenceVarProp.AssignVarRef(varData, chosenNow, varData.ContentType);
             }
 
-
             EditorGUI.indentLevel = prevIndent;
-
             EditorGUI.EndProperty();
         }
 
@@ -233,12 +238,10 @@ namespace Amanita.VScripting.EditorUtils
             switch (varRefProp.propertyType)
             {
                 case SerializedPropertyType.ObjectReference:
-                    // UnityEngine.Object or ScriptableObject-backed variable
                     result = varRefProp.objectReferenceValue != null;
                     break;
                 case SerializedPropertyType.Generic:
                 case SerializedPropertyType.ManagedReference:
-                    // [SerializeReference] polymorphic variable
                     result = varRefProp.managedReferenceValue != null;
                     break;
 
@@ -255,17 +258,14 @@ namespace Amanita.VScripting.EditorUtils
             var referenceProp = property.FindPropertyRelative("varRef");
             if (referenceProp != null && referenceProp.propertyType == SerializedPropertyType.ManagedReference)
             {
-                // Let Unity calculate height for polymorphic managed refs
                 return EditorGUI.GetPropertyHeight(referenceProp, true);
             }
             return EditorGUIUtility.singleLineHeight;
         }
 
-        // Keep ordered options separate from de-dup tracking
-        protected readonly List<KeyValuePair<string, IVariable>> _validVarsOrdered = new List<KeyValuePair<string, IVariable>>();
+        protected readonly Dictionary<string, IVariable> _validVarsOrdered = new Dictionary<string, IVariable>();
         protected readonly HashSet<string> _labelsSeen = new HashSet<string>();
     }
-
 
     [CustomPropertyDrawer(typeof(BooleanData))]
     public class BooleanDataDrawer : VariableDataDrawer<BooleanVariable>

@@ -294,7 +294,7 @@ namespace SaveSystemTests
             SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
             SaveSystem.S.ClearSaveDataAppliers();
             ResetSingletonStatics();
-
+            UnregisterTestOnlyUids();
             DeleteAllTestSaves();
             CleanupSaveFiles();
             void CleanupSaveFiles()
@@ -337,8 +337,39 @@ namespace SaveSystemTests
             }
 
             writeReq.MainState = new CompositeSaveData { };
+            testOnlyFlowcharts.Clear();
+            testOnlyVarSourceAssets.Clear();
         }
 
+        protected virtual void RegisterTestOnlyVsa(VariableSourceAsset testVsa)
+        {
+            testOnlyVarSourceAssets.Add(testVsa);
+            testVsa.UniqueId = $"FakeTestVsaID_{testOnlyVarSourceAssets.Count}";
+        }
+
+        protected virtual void UnregisterTestOnlyUids()
+        {
+            var fcUidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
+            foreach (var fc in testOnlyFlowcharts)
+            {
+                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            }
+
+            // In case we missed any others
+            foreach (var fc in UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None))
+            {
+                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            }
+
+            var vsaUidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
+            foreach (var vsa in testOnlyVarSourceAssets)
+            {
+                vsaUidRegistry.RemoveGuid(vsa.UniqueId);
+            }
+        }
+
+        protected readonly IList<Flowchart> testOnlyFlowcharts = new List<Flowchart>();
+        protected readonly IList<VariableSourceAsset> testOnlyVarSourceAssets = new List<VariableSourceAsset>();
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
@@ -420,8 +451,16 @@ namespace SaveSystemTests
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
+
             PrepNewPathsForTesting();
             PrepAndRegisterSaveData();
+        }
+
+        protected virtual void RegisterTestFlowchart(Flowchart testFc)
+        {
+            testOnlyFlowcharts.Add(testFc);
+            // No need to give it a fake unique ID here, since Flowcharts get themselves such when they see
+            // that they're in a test context.
         }
 
         protected virtual void PrepAndRegisterSaveData()
@@ -434,11 +473,14 @@ namespace SaveSystemTests
                 if (flowchart == null)
                 {
                     flowchart = testScene.GetComponentInChildren<Flowchart>();
+                    
                     if (flowchart == null)
                     {
                         throw new Exception("No Flowchart found in the scene.");
                     }
                 }
+
+                RegisterTestFlowchart(flowchart);
 
                 flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
                 mainSave.Add(flowchartSaveData);

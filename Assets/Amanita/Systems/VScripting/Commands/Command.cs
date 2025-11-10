@@ -40,7 +40,7 @@ namespace Amanita.VScripting
     {
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
-        [SerializeField] protected int itemId = -1; // Invalid flowchart item id
+        [SerializeField] protected ushort itemId = 0;
 
         [HideInInspector]
         [SerializeField] protected int indentLevel;
@@ -82,7 +82,7 @@ namespace Amanita.VScripting
         /// Unique identifier for this command.
         /// Unique for this Flowchart.
         /// </summary>
-        public virtual int ItemId { get { return itemId; } set { itemId = value; } }
+        public virtual ushort ItemId { get { return itemId; } set { itemId = value; } }
 
         /// <summary>
         /// Error message to display in the command inspector.
@@ -98,7 +98,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// Index of the command in the parent block's command list.
         /// </summary>
-        public virtual int CommandIndex { get; set; }
+        public virtual byte CommandIndex { get; set; }
 
         /// <summary>
         /// Set to true by the parent block while the command is executing.

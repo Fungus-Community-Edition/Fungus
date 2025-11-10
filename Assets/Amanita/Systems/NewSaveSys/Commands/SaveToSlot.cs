@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
+using System.Threading.Tasks;
 
 namespace Amanita.SaveSys.VScripting
 {
@@ -9,11 +10,22 @@ namespace Amanita.SaveSys.VScripting
     public class SaveToSlot : Command
     {
         [SerializeField] protected IntegerData slotIndex = new IntegerData(0);
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
 
-        public override void Execute()
+        public override async void Execute()
         {
-            SaveSystem.S.SaveTo(slotIndex.Value);
+            Task saveTask = SaveSystem.S.SaveTo(slotIndex.Value);
+            if (waitUntilFinished.Value)
+            {
+                await saveTask;
+            }
             Continue();
+        }
+
+        public override string GetSummary()
+        {
+            string result = $"Save to Slot {slotIndex.Value}";
+            return result;
         }
     }
 }

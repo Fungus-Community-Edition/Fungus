@@ -139,7 +139,22 @@ namespace Amanita.SaveSys.UI
 
         private void OnButtonClicked()
         {
-            SaveSysSignals.SaveSlotSelected?.Invoke(Meta.SlotNumber);
+            SaveSysSignals.SaveSlotSelected?.Invoke(SlotNumber);
+        }
+
+        public virtual int SlotNumber
+        {
+            get
+            {
+                if (Meta != null)
+                {
+                    return Meta.SlotNumber;
+                }
+                else
+                {
+                    return transform.GetSiblingIndex() + 1; // We don't want 0 to be a valid slot number.
+                }
+            }
         }
 
         protected virtual void OnDisable()

@@ -2,7 +2,7 @@ using System;
 
 namespace Amanita.VScripting
 {
-    public interface IVariable : IHasKey, IHasItemID
+    public interface IVariable : IHasKey, IHasItemID, IHasOwnerIDIndex
     {
         void Init();
         new string Key { get; set; }
@@ -34,6 +34,14 @@ namespace Amanita.VScripting
     {
         T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
+    }
+
+    public interface IHasOwnerIDIndex
+    {
+        /// <summary>
+        /// Used to find the owner of this variable.
+        /// </summary>
+        int OwnerIdIndex { get; }
     }
 
 }
