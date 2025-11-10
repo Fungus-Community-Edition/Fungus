@@ -180,7 +180,7 @@ namespace Amanita.VScripting
             if (Application.IsPlaying(this))
             {
                 AmanitaManager.EnsureExists();
-                StartCoroutine(HandleGameStartedBlock());
+                StartCoroutine(HandleGameStartedBlocks());
             }
         }
 
@@ -215,7 +215,7 @@ namespace Amanita.VScripting
             eventSystemPresent = true;
         }
 
-        protected virtual IEnumerator HandleGameStartedBlock()
+        protected virtual IEnumerator HandleGameStartedBlocks()
         {
             IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
 
@@ -224,7 +224,7 @@ namespace Amanita.VScripting
                 yield break;
             }
 
-            while (AmanitaManager.S == null || !AmanitaManager.S.IsInitted)
+            while (AmanitaManager.S == null || !AmanitaManager.S.IsFullyInitted)
             {
                 yield return null;
             }

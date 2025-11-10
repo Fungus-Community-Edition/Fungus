@@ -1,8 +1,8 @@
+using Amanita.VScripting;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
-using Amanita.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
@@ -26,26 +26,39 @@ namespace Amanita.SaveSys
         // chance that things can get screwy
         public virtual void Init()
         {
-            bool installerAlreadyThere = S != null && S != this;
-            if (initted || installerAlreadyThere)
+            if (IsFullyInitted)
+            {
+                return;
+            }
+
+            bool otherInstallerAlreadyThere = S != null && S != this;
+            if (otherInstallerAlreadyThere)
             {
                 return; // We expect the AmanitaManager to handle destroying this if needed
             }
 
             S = this;
 
-            SaveWriter = saveWriter;
-            SaveReader = saveReader;
-            if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
+            if (!Application.IsPlaying(this))
             {
-                whereSavesAreStored = SaveDirectoryType.DataPath;
+                // We don't want to install the save system in edit mode.
+                return;
             }
 
-            if (Application.platform == RuntimePlatform.Android ||
-                Application.platform == RuntimePlatform.IPhonePlayer ||
-                Application.platform == RuntimePlatform.WebGLPlayer)
+            CorrectSaveDirTypeAsNeeded();
+            void CorrectSaveDirTypeAsNeeded()
             {
-                whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
+                if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
+                {
+                    whereSavesAreStored = SaveDirectoryType.DataPath;
+                }
+
+                if (Application.platform == RuntimePlatform.Android ||
+                    Application.platform == RuntimePlatform.IPhonePlayer ||
+                    Application.platform == RuntimePlatform.WebGLPlayer)
+                {
+                    whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
+                }
             }
 
             SaveDirectoryType = whereSavesAreStored;
@@ -75,7 +88,16 @@ namespace Amanita.SaveSys
 
                     Registry = new SaveRegistry();
                     Loader = new SaveLoader(validMainCodecs);
-                    SaveRepo = new FileSaveRepository(saveReader, saveWriter, whereSavesAreStored);
+
+                    PrepRepo();
+                    void PrepRepo()
+                    {
+                        SaveStorageSettings defaultSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                        var resolver = new DefaultSavePathResolver();
+                        resolver.StorageSettings = defaultSettings;
+                        SaveRepo = new FileSaveRepository(saveReader, saveWriter, whereSavesAreStored, resolver);
+                    }
+
                     SaveManager = new SaveManager(SaveRepo, Registry, Loader, MetaFactory, MainStateFactory);
                 }
 
@@ -90,26 +112,29 @@ namespace Amanita.SaveSys
             InjectDependencies();
             void InjectDependencies()
             {
-                saveSystem = UnityObject.FindFirstObjectByType<SaveSystem>();
+                saveSystem = UnityObj.FindFirstObjectByType<SaveSystem>();
                 // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
                 // it through that. 
 
-                saveSystem.Init();
+                // Injecting dependendies before CoreLockMode activates.
                 saveSystem.SaveDirectoryType = whereSavesAreStored;
                 saveSystem.SaveManager = SaveManager;
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
-                SaveStorageSettings defaultSettings = DefaultAmanitaAssets.SaveStorageSettings;
-                DefaultSavePathResolver pathResolver = new DefaultSavePathResolver();
-                pathResolver.RelativePath = defaultSettings.RelativePath;
-                pathResolver.FileExtension = defaultSettings.FileExtension;
-
-                saveSystem.SavePathResolver = pathResolver;
+                
                 saveSystem.RegisterSaveDataAppliersMulti(validAppliers);
-
             }
+
+            saveSystem.Init();
+            IsFullyInitted = true;
+            SaveSysSignals.BaseSaveSysInstallationComplete();
         }
 
+        public virtual bool IsFullyInitted
+        {
+            get => initted;
+            protected set => initted = value;
+        }
         protected bool initted = false;
 
         public static SaveSystemInstaller S
@@ -117,13 +142,15 @@ namespace Amanita.SaveSys
             get { return _s; }
             set
             {
-                //Debug.Log($"{nameof(value)} S set to {value} at {Environment.StackTrace}");
                 _s = value;
             }
         }
         protected static SaveSystemInstaller _s;
-        public static SaveWriter SaveWriter { get; private set; }
-        public static SaveReader SaveReader { get; private set; }
+        public SaveReader SaveReader
+        {
+            get => saveReader;
+            protected set => saveReader = value;
+        }
         public static SaveDirectoryType SaveDirectoryType { get; private set; }
         public static IMetaFactory MetaFactory { get; private set; }
         public static IMainStateFactory MainStateFactory { get; private set; }
@@ -197,8 +224,6 @@ namespace Amanita.SaveSys
 
         public static void ResetStaticsForTest()
         {
-            SaveWriter = null;
-            SaveReader = null;
             SaveDirectoryType = SaveDirectoryType.DataPath;
             MetaFactory = null;
             MainStateFactory = null;
@@ -210,8 +235,6 @@ namespace Amanita.SaveSys
             // If we reset the statics for AmanitaManger after calling this func, then this func 
             // should work as intended
             S = null;
-            
-            
         }
     }
 }

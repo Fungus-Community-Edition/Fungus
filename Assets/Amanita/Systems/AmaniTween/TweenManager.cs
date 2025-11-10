@@ -19,8 +19,15 @@ namespace Amanita.Tweening
 
         public virtual void Init()
         {
+            if (IsFullyInitted)
+            {
+                return;
+            }
             Awake();
+            IsFullyInitted = true;
         }
+
+        public virtual bool IsFullyInitted { get; protected set; } = false;
 
         protected virtual void Awake()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
@@ -16,6 +17,8 @@ namespace Amanita.SaveSys
         /// <summary>
         /// To be triggered when the system has finished initializing save data reading on startup.
         /// </summary>
-        public static Action SaveReadInitDone = delegate { };
+        public static Action<IList<ISaveMetaData>> SaveMetasReadOnInit = delegate { };
+
+        public static Action BaseSaveSysInstallationComplete = delegate { };
     }
 }

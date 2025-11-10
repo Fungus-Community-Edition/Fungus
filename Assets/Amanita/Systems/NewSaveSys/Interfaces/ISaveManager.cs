@@ -6,6 +6,7 @@ namespace Amanita.SaveSys
 {
     public interface ISaveManager
     {
+        Task Init();
         Task SaveTo(int slotNumber, CancellationToken token = default);
         Task<CompositeSaveData> LoadMain(int slotNumber, bool loadScene, CancellationToken token = default);
         Task<ISaveMetaData> LoadMeta(int slotNumber, CancellationToken token = default);

@@ -13,6 +13,32 @@ namespace Amanita.SaveSys
 {
     public class SaveManager : ISaveManager
     {
+        public virtual async Task Init()
+        {
+            EnsureSaveFolderIsThere();
+            void EnsureSaveFolderIsThere()
+            {
+                var resolver = SaveRepo.PathResolver;
+                string folderDir = resolver.GetSaveFolderPath(SaveSystem.S.SaveDirectoryType);
+                if (!Directory.Exists(folderDir))
+                {
+                    Directory.CreateDirectory(folderDir);
+                }
+            }
+
+            await ReadMetasOnDisk();
+            async Task ReadMetasOnDisk()
+            {
+                IList<ISaveMetaData> metasOnDisk = await SaveRepo.LoadAllMetasOnDisk();
+                for (int i = 0; i < metasOnDisk.Count; i++)
+                {
+                    ISaveMetaData meta = metasOnDisk[i];
+                    SaveDataSet dataSet = new SaveDataSet(meta, null);
+                    Registry.AddSave(dataSet);
+                }
+                SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
+            }
+        }
         public virtual int MaxSlots { get; set; } = 100;
 
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
@@ -35,17 +61,6 @@ namespace Amanita.SaveSys
         public virtual SaveLoader Loader { get; set; }
         public virtual IMetaFactory MetaFactory { get; set; }
         public SaveDirectoryType SaveDirType { get; set; } = SaveDirectoryType.DataPath;
-        public virtual string SaveRelativePath { get; set; } = "/Saves";
-
-        public virtual string FullSaveDir
-        {
-            get
-            {
-                string baseDir = SaveSystem.S.GetSaveDirectory(SaveDirType);
-                string result = Path.Combine(baseDir, SaveRelativePath);
-                return result;
-            }
-        }
 
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
@@ -267,11 +282,6 @@ namespace Amanita.SaveSys
 
         protected static string deleteOp = "delete";
 
-        public virtual IList<SaveDataSet> GetAllSlots()
-        {
-            return Registry.GetAllSaves();
-        }
-
         public virtual IList<int> GetOccupiedSlots()
         {
             return Registry.GetOccupiedSlots();
@@ -280,18 +290,6 @@ namespace Amanita.SaveSys
         public virtual bool SlotExists(int slot)
         {
             return Registry.HasSaveInSlot(slot);
-        }
-
-        /// <summary>
-        /// Returns (what at least would be) the path to the save of the 
-        /// specified slot. This function does not take into account 
-        /// whether or not a save with that slot exists; it only
-        /// considers hypotheticals.
-        /// </summary>
-        public virtual string GetPathTo(int slot)
-        {
-            string result = SaveRepo.GetPathTo(slot);
-            return result;
         }
 
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();

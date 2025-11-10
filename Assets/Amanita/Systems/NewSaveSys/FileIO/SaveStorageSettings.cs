@@ -148,7 +148,6 @@ namespace Amanita.SaveSys
             }
         }
 
-        
         protected string fileNameFormat = "{0}_{1}.{2}";
         protected string filePathFormat = "{0}{1}"; // We expect a / or \ at the end of {0}
         public virtual string FileNameFormat => fileNameFormat;
@@ -171,63 +170,5 @@ namespace Amanita.SaveSys
 
         public static string DefaultSavePrefix => "saveData";
 
-        //public string GetSaveFilePath(string fileName, object input)
-        //{
-        //    if (input is not SaveDirectoryType)
-        //    {
-        //        Debug.LogWarning("Input is not of type SaveDirectoryType. Acting as if it was " +
-        //            "SaveDirectoryType.PersistentDataPath.");
-        //        input = SaveDirectoryType.PersistentDataPath;
-        //    }
-
-        //    return GetSaveFilePath(fileName, (SaveDirectoryType)input);
-        //}
-
-        //public string GetSaveFilePath(string fileName, SaveDirectoryType input)
-        //{
-        //    string folderPath = GetSaveFolderPath(input);
-        //    string fileNameWithExt = $"{fileName}.{FileExtension}";
-        //    string result = Path.Join(folderPath, fileNameWithExt);
-        //    return result;
-        //}
-
-        //public string GetSaveFolderPath(object input)
-        //{
-        //    string result;
-        //    if (input is not SaveDirectoryType)
-        //    {
-        //        Debug.LogWarning("Input is not of type SaveDirectoryType. Acting as if it was " +
-        //            "SaveDirectoryType.PersistentDataPath.");
-        //        input = SaveDirectoryType.PersistentDataPath;
-        //    }
-
-        //    result = GetSaveFolderPath((SaveDirectoryType)input);
-        //    return result;
-        //}
-
-        //public virtual string GetSaveFolderPath(SaveDirectoryType baseDir)
-        //{
-        //    string result;
-        //    switch (baseDir)
-        //    {
-        //        case SaveDirectoryType.PersistentDataPath:
-        //            result = Application.persistentDataPath; break;
-        //        case SaveDirectoryType.DataPath:
-        //        case SaveDirectoryType.InTheBalls:
-        //            result = Application.dataPath; break;
-        //        default:
-        //            result = "";
-        //            Debug.LogWarning("SaveDirectoryType is Null or unrecognized. " +
-        //                "Returning just the relative path."); break;
-        //    }
-
-        //    result = Path.Join(result, RelativePath);
-        //    return result;
-        //}
-
-        //public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
-        //{
-        //    throw new System.NotImplementedException();
-        //}
     }
 }

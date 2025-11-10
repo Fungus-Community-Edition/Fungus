@@ -18,7 +18,7 @@ namespace SaveSystemTests
             var testSlot = 9;
             var saveName = "InstallerIntegrationSave";
             var saveDirType = SaveSystemInstaller.SaveDirectoryType;
-            var installerSaveReader = SaveSystemInstaller.SaveReader;
+            var installerSaveReader = SaveSystemInstaller.S.SaveReader;
 
             // Make sure slot is clean
             var readReq = new SaveReadRequest { SlotNumber = testSlot };
@@ -29,7 +29,7 @@ namespace SaveSystemTests
             AmanitaSaveManager managerToUse = (AmanitaSaveManager)manager;
             // Act
             await managerToUse.SaveTo(testSlot, saveName, default);
-            //ISaveMetaData
+
             // Assert
             Assert.IsTrue(File.Exists(path), $"Save file at slot {testSlot} was not created");
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using FullSerializer;
 using System.Linq;
+using System.IO;
 
 namespace Amanita.SaveSys
 { 
@@ -23,7 +24,7 @@ namespace Amanita.SaveSys
 
         protected bool initted;
 
-        public virtual async void Init()
+        public virtual void Init()
         {
             if (S != null && S != this)
             {
@@ -32,12 +33,22 @@ namespace Amanita.SaveSys
                 return;
             }
 
+            if (initted)
+            {
+                Debug.LogWarning("SaveSystem already initialized. Init call ignored.");
+                return;
+            }
+
             S = this;
             initted = true;
 
-            await Task.Delay(coreLockDelay);
+            Invoke(nameof(ActivateCoreLockAndInitSaveManager), coreLockDelay);
+        }
+
+        protected virtual void ActivateCoreLockAndInitSaveManager()
+        {
             CoreLockMode = true;
-            
+            saveManager.Init();
         }
 
         // We expect an instance of this to be attached to the AmanitaManager singleton
@@ -51,7 +62,7 @@ namespace Amanita.SaveSys
         }
         protected static SaveSystem _s;
 
-        protected int coreLockDelay = 1000; // In milliseconds
+        protected float coreLockDelay = 1; // In seconds
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like
@@ -67,6 +78,9 @@ namespace Amanita.SaveSys
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
 
+        /// <summary>
+        /// Handler for saving and loading data to and from persistent storage.
+        /// </summary>
         public virtual ISaveRepository SaveRepo
         {
             get
@@ -194,7 +208,11 @@ namespace Amanita.SaveSys
         /// <summary>
         /// Decides what paths to use for saving and loading.
         /// </summary>
-        public virtual ISaveSlotPathResolver<SaveDirectoryType> SavePathResolver { get; set; } = new DefaultSavePathResolver();
+        public virtual IConfigurableSaveSlotPathResolver SavePathResolver
+        {
+            get => SaveRepo.PathResolver;
+            set => SaveRepo.PathResolver = value;
+        }
 
         public virtual void RegisterSaveDataAppliersMulti(IList<ISaveDataApplier> toRegister)
         {
@@ -285,6 +303,10 @@ namespace Amanita.SaveSys
         public virtual string GetSaveDirectory(SaveDirectoryType dirType)
         {
             string result = SavePathResolver.GetSaveFolderPath(dirType);
+            if (!Directory.Exists(result))
+            {
+                Directory.CreateDirectory(result);
+            }
             return result;
         }
 
