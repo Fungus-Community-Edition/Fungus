@@ -211,6 +211,12 @@ namespace Amanita.VScripting
         protected IVariableSource _owner;
 
         public abstract Muscariable Clone();
+
+        protected virtual void TriggerOnValueChanged()
+        {
+            OnValueChanged.Invoke(this);
+        }
+        public event Action<Muscariable> OnValueChanged = delegate { };
     }
 
     [Serializable]
@@ -248,7 +254,7 @@ namespace Amanita.VScripting
                 }
 
                 this.value = (T)this.FilterForValueSet(value);
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -264,16 +270,17 @@ namespace Amanita.VScripting
                 }
                 object filteredValue = this.FilterForValueSet(value);
                 this.value = (T)filteredValue;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
-        protected virtual void InvokeOnValueChanged()
+        protected override void TriggerOnValueChanged()
         {
+            base.TriggerOnValueChanged();
             OnValueChanged?.Invoke(value);
         }
 
-        public event Action<T> OnValueChanged = delegate { };
+        public new event Action<T> OnValueChanged = delegate { };
 
         public override void Apply(SetOperator setOperator, object toApply)
         {

@@ -5,6 +5,7 @@ using UnityEngine;
 using FullSerializer;
 using System.Linq;
 using System.IO;
+using System;
 
 namespace Amanita.SaveSys
 { 

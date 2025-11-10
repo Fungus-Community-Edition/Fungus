@@ -268,7 +268,7 @@ namespace Amanita.VScripting
                 Vector2 newVal = Value;
                 newVal.x = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -280,7 +280,7 @@ namespace Amanita.VScripting
                 Vector2 newVal = Value;
                 newVal.y = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -409,7 +409,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.x = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -421,7 +421,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.y = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -433,7 +433,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.z = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
