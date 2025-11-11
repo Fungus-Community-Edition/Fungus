@@ -364,7 +364,11 @@ namespace Amanita.VScripting
             foreach (Muscariable elem in Variables.Where((elem) => elem is Muscariable))
             {
                 elem.Owner = this;
+                elem.ParentFlowchart = this;
             }
+
+            // Legacy variables automatically get their owner-registration done;
+            // it's always the Flowchart they're attached to.
         }
 
         protected virtual void OnDisable()

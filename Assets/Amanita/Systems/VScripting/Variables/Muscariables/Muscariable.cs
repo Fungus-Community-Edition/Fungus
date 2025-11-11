@@ -209,7 +209,14 @@ namespace Amanita.VScripting
             set
             {
                 _owner = value;
-                _ownerId = Owner?.UniqueId;
+                if (_owner == null)
+                {
+                    _ownerId = string.Empty;
+                }
+                else
+                {
+                    _ownerId = Owner.UniqueId;
+                }
             }
         }
         protected IVariableSource _owner;

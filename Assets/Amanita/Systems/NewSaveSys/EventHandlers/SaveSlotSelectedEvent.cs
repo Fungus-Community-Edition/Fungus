@@ -33,6 +33,8 @@ namespace Amanita.SaveSys.VScripting
 
         private void HandleSaveSlotSelected(int index)
         {
+            // Need to make sure to rehydrate the variable reference, since what we have at this point
+            // might be a copy instead of the actual variable reference in the flowchart.
             if (saveSlotIndex != null)
             {
                 saveSlotIndex.Value = index;

@@ -224,6 +224,17 @@ namespace Amanita.VScripting
                 {
                     return LegacyVarRef;
                 }
+
+                // If our var ref is for a non-UnityObj type and the owner is missing, that means
+                // that the var ref we have points to a copy of the actual var. Thus, we need to try
+                // to resolve it again.
+                if (varRef != null && !string.IsNullOrEmpty(varRef.OwnerId) && varRef.Owner == null)
+                {
+                    Debug.Log($"VariableData<{typeof(TValue).Name}> detected that its varRef's owner is null. " +
+                        $"Attempting to re-resolve variable reference.");
+
+                    Refresh();
+                }
                 return varRef;
             }
             set
@@ -315,95 +326,89 @@ namespace Amanita.VScripting
 
         public override void Refresh()
         {
-            // If we still have a live reference or a legacy MB reference, nothing to do.
-            if (varRef != null || LegacyVarRef != null)
+            // We might have a live reference to a var, but it has no idea who the owner is. In such a case,
+            // that means our reference is a copy, not a pointer to the actual variable.
+            bool weHaveLiveRef = varRef != null || LegacyVarRef != null;
+            bool weKnowTheOwner = varRef != null && varRef.Owner != null &&
+                varRef.OwnerId == storedOwnerUid;
+            if (weHaveLiveRef && weKnowTheOwner)
             {
+                // The reason we don't worry about the owner for legacy vars is that those are MonoBehaviours,
+                // which Unity will automatically re-link on domain reload. Since Muscariables are plain
+                // C# objects, we have to do the re-linking ourselves.
                 return;
             }
 
-            if (storedItemId <= 0 && string.IsNullOrEmpty(storedNamespacedKey))
+            bool shouldFetchInfo = varRef != null && string.IsNullOrEmpty(storedOwnerUid);
+            if (shouldFetchInfo)
+            {
+                storedOwnerUid = varRef.OwnerId;
+                storedItemId = varRef.ItemId;
+            }
+
+            bool shouldLookForRef = !string.IsNullOrEmpty(storedOwnerUid) && storedItemId > 0;
+            if (shouldLookForRef)
+            {
+                FindVarRefFromOwner();
+            }
+
+        }
+
+        protected virtual void FindVarRefFromOwner()
+        {
+            if (string.IsNullOrEmpty(storedOwnerUid))
             {
                 return;
             }
-
-            TryRehydrate();
-            void TryRehydrate()
+            IVariableSource owner = FindOwnerWithID(storedOwnerUid);
+            if (owner != null)
             {
-                IVariable resolved = TryResolve();
-
-                if (resolved != null)
+                // Need to reference the exact variable instance from the owner. Us getting to this point
+                // in the code suggests that the varRef we do have is a copy, not a pointer
+                // to the actual variable.
+                var foundVar = owner.Variables.FirstOrDefault(ownedVar => ownedVar.ItemId == storedItemId);
+                if (foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType))
                 {
-                    // Reassign through VarRef to recapture identifiers (in case they changed)
-                    VarRef = resolved;
+                    varRef = (IVariable<TValue>)foundVar;
                 }
             }
         }
 
+        IVariableSource FindOwnerWithID(string id)
+        {
+            var owningFlowchart = Flowchart.CachedFlowcharts.FirstOrDefault(fc => fc.UniqueId == id);
+            if (owningFlowchart != null)
+            {
+                var foundVar = owningFlowchart.GetVariableById(varRef.ItemId);
+                if (foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType))
+                {
+                    varRef = (IVariable<TValue>)foundVar;
+                    return owningFlowchart;
+                }
+            }
+
+            AmanitaManager ammieManager = AmanitaManager.S;
+            if (ammieManager != null)
+            {
+                var owningSource = ammieManager.GlobalVariableSources
+                    .FirstOrDefault(vSource => vSource.UniqueId == id);
+                if (owningSource != null)
+                {
+                    var foundVar = owningSource.Variables
+                        .FirstOrDefault(ownedVar => ownedVar.ItemId == varRef.ItemId);
+                    if (foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType))
+                    {
+                        varRef = (IVariable<TValue>)foundVar;
+                        return owningSource;
+                    }
+                }
+            }
+            return null;
+        }
+
         protected virtual IVariable TryResolve()
         {
-            bool ownerIdRegistered = !string.IsNullOrEmpty(storedOwnerUid);
-            if (ownerIdRegistered)
-            {
-                bool ownerIsGlobalSource = storedNamespacedKey.StartsWith("~");
-                if (ownerIsGlobalSource)
-                {
-                    var manager = AmanitaManager.S;
-                    if (manager != null)
-                    {
-                        foreach (var src in manager.GlobalVariableSources)
-                        {
-                            if (src.UniqueId == storedOwnerUid && storedItemId > 0)
-                            {
-                                var varFound = src.Variables.FirstOrDefault(v => v.ItemId == storedItemId);
-                                if (varFound != null && ContentType.IsAssignableFrom(varFound.ContentType))
-                                {
-                                    return varFound;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    var flowcharts = Flowchart.CachedFlowcharts;
-                    var owningFc = flowcharts.FirstOrDefault(fc => fc.UniqueId == storedOwnerUid);
-                    if (owningFc != null && storedItemId > 0)
-                    {
-                        var varFound = owningFc.GetVariableById(storedItemId);
-                        if (varFound != null && ContentType.IsAssignableFrom(varFound.ContentType))
-                        {
-                            return varFound;
-                        }
-                    }
-                }
-            }
-
-            bool checkOtherFlowcharts = !string.IsNullOrEmpty(storedNamespacedKey);
-            if (checkOtherFlowcharts)
-            {
-                int slashIdx = storedNamespacedKey.IndexOf('/');
-                if (slashIdx > 0)
-                {
-                    string fcName = storedNamespacedKey.Substring(0, slashIdx);
-                    string varKey = storedNamespacedKey.Substring(slashIdx + 1);
-
-                    var flowcharts = Flowchart.CachedFlowcharts;
-                    foreach (var fc in flowcharts)
-                    {
-                        if (fc.gameObject.name == fcName)
-                        {
-                            var found = fc.Variables.FirstOrDefault(fcVar => fcVar.Key == varKey &&
-                            ContentType.IsAssignableFrom(fcVar.ContentType));
-                            if (found != null)
-                            {
-                                return found;
-                            }
-                        }
-                    }
-                }
-                
-            }
-
+            
             // Fallback: brute-force search by ItemId across all flowcharts
             if (storedItemId > 0)
             {
