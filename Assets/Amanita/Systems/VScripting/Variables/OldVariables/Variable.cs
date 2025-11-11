@@ -32,6 +32,19 @@ namespace Amanita.VScripting
 
         public static readonly int InvalidID = -1;
 
+        public virtual string OwnerId
+        {
+            get
+            {
+                var owner = GetFlowchart();
+                if (owner != null)
+                {
+                    return owner.UniqueId;
+                }
+                return string.Empty;
+            }
+        }
+
         public virtual bool IsScalar() => false;
 
         // Non-global variables each belong to a particular Flowchart. Thus, rather

@@ -113,8 +113,8 @@ namespace SaveSystemTests
             var firstSaveData = _saveCodec.EncodeToSave(firstVsa);
             var secondSaveData = _saveCodec.EncodeToSave(secondVsa);
 
-            bool recordsAssetID = firstSaveData.AssetId == firstVsa.AssetId &&
-                secondSaveData.AssetId == secondVsa.AssetId;
+            bool recordsAssetID = firstSaveData.AssetId == firstVsa.UniqueId &&
+                secondSaveData.AssetId == secondVsa.UniqueId;
             Assert.IsTrue(recordsAssetID,
                 "Encoded VariableSourceAssetSaveData should record the AssetId of the VariableSourceAsset it was created from.");
 

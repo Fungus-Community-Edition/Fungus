@@ -206,9 +206,20 @@ namespace Amanita.VScripting
         public virtual IVariableSource Owner
         {
             get { return _owner; }
-            set { _owner = value; }
+            set
+            {
+                _owner = value;
+                _ownerId = Owner?.UniqueId;
+            }
         }
         protected IVariableSource _owner;
+
+        public virtual string OwnerId
+        {
+            get { return _ownerId; }
+        }
+        [SerializeField] protected string _ownerId = string.Empty;
+        // ^The reference to the owner doesn't persist, so we store its unique ID for rehydration.
 
         public abstract Muscariable Clone();
 

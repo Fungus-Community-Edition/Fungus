@@ -509,6 +509,7 @@ namespace VScriptingTests.VariableOperations
             object _value;
             int _itemId;
 
+            public virtual string OwnerId => string.Empty;
             // IHasKey / IVariable.Key
             public string Key
             {

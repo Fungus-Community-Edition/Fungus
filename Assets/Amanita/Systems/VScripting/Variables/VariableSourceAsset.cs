@@ -23,7 +23,7 @@ namespace Amanita.VScripting
             set => includeInSaves = value;
         }
 
-        public string AssetId
+        public string UniqueId
         {
             get => assetID;
             set
@@ -342,6 +342,7 @@ namespace Amanita.VScripting
 
     public interface IVariableSource
     {
+        string UniqueId { get; }
         event Action<IVariable> VariableAdded;
         event Action<IVariable> VariableRemoved;
         IReadOnlyList<IVariable> Variables { get; }
@@ -384,7 +385,7 @@ namespace Amanita.VScripting
         protected override fsResult DoSerialize(VariableSourceAsset model, Dictionary<string, fsData> serialized)
         {
             VariableSourceAssetSaveData saveData = new VariableSourceAssetSaveData();
-            saveData.AssetId = model.AssetId;
+            saveData.AssetId = model.UniqueId;
             saveData.SavedVars = (IList<VariableSaveData>)model.Variables;
             SerializeMember(serialized, null, "saveData", saveData);
             return fsResult.Success;
@@ -405,7 +406,7 @@ namespace Amanita.VScripting
                 }
                 // Now, we can reconstruct the VariableSourceAsset from the save data.
                 model = ScriptableObject.CreateInstance<VariableSourceAsset>();
-                model.AssetId = saveData.AssetId;
+                model.UniqueId = saveData.AssetId;
                 model.IncludeInSaves = true;
                 model.Refresh();
                 
