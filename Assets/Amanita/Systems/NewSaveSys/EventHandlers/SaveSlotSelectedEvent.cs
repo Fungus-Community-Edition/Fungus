@@ -14,9 +14,13 @@ namespace Amanita.SaveSys.VScripting
         [VariableProperty(typeof(IntegerVariable), typeof(IntMuscariable))]
         [SerializeReference] protected IVariable<int> saveSlotIndex;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
-            ToggleSubs(true);
+            base.OnEnable();
+            if (Application.IsPlaying(this)) // We only want to subscribe at runtime
+            {
+                ToggleSubs(true);
+            }
         }
         
         protected virtual void ToggleSubs(bool on)
@@ -47,5 +51,7 @@ namespace Amanita.SaveSys.VScripting
         {
             ToggleSubs(false);
         }
+
+        protected override bool RehydrateVarInputs => true;
     }
 }
