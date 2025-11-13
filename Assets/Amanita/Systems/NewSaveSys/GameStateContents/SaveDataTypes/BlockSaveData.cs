@@ -9,10 +9,10 @@ namespace Amanita.SaveSys
     public class BlockSaveData : SaveData
     {
         [SerializeField] protected string blockName = string.Empty;
-        [SerializeField] protected int itemId = -1;
+        [SerializeField] protected ushort itemId = 0;
         [SerializeField] protected int activeCommandId = -1;
         [SerializeField] protected int activeCommandIndex = -1;
-        public virtual int ItemId
+        public virtual ushort ItemId
         {
             get => itemId;
             set => itemId = value;
@@ -41,7 +41,7 @@ namespace Amanita.SaveSys
 
         public static readonly BlockSaveData Null = new()
         {
-            ItemId = -1,
+            ItemId = 0,
             BlockName = "Null",
             ActiveCommandId = -1,
             ActiveCommandIndex = -1

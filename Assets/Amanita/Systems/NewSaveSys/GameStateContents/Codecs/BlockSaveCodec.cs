@@ -53,7 +53,7 @@ namespace Amanita.SaveSys
         public override BlockSaveData EncodeToSave(Block toCreateFrom)
         {
             // We assume that the Block was indeed executing at this point.
-            int itemId = toCreateFrom.ItemId;
+            ushort itemId = toCreateFrom.ItemId;
             string blockName = toCreateFrom.BlockName;
             int activeCommandId = -1, activeCommandIndex = -1;
 

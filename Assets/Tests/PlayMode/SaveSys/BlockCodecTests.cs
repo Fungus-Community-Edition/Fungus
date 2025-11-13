@@ -129,8 +129,8 @@ namespace SaveSystemTests
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
             Assert.IsTrue(result.Count == whatShouldBeIncluded.Count, "Encoded the wrong amount of Blocks");
 
-            IList<int> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
-            IList<int> resultIDs = result.Select(item => item.ItemId).ToList();
+            IList<ushort> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
+            IList<ushort> resultIDs = result.Select(item => item.ItemId).ToList();
 
             bool onlyTheRightStuff = idsThatShouldBeIncluded.SequenceEqual(resultIDs);
 

@@ -193,7 +193,7 @@ namespace SaveSystemTests
             // Corrupt all ItemIds so lookup by ID fails
             foreach (var sv in data.SavedVars)
             {
-                sv.ItemId += 999999; // ensure no match
+                sv.ItemId += 222; // ensure no match
             }
 
             // Change current values so we can detect the apply
@@ -218,12 +218,12 @@ namespace SaveSystemTests
             // Create save data with unknown AssetId
             var bogus = new VariableSourceAssetSaveData
             {
-                AssetId = "this-id-does-not-exist"
+                UniqueId = 0
             };
 
             // Expect a warning
             LogAssert.Expect(LogType.Warning,
-                $"No VariableSourceAsset with AssetId {bogus.AssetId} was found to apply save data to.");
+                $"No VariableSourceAsset with AssetId {bogus.UniqueId} was found to apply save data to.");
 
             // Act
             yield return _applier.Apply(bogus).AsIEnumerator();

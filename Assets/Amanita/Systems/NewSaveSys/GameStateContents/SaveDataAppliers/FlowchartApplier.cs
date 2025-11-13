@@ -212,7 +212,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected virtual Flowchart FindFlowchartById(string id)
+        protected virtual Flowchart FindFlowchartById(uint id)
         {
             return (from flowchart in allFlowcharts
                     where flowchart != null

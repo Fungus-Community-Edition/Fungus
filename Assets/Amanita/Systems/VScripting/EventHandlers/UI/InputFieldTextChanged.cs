@@ -14,10 +14,41 @@ namespace Amanita.VScripting.EventHandlers
         [SerializeField] [VariableProperty(typeof(StringVariable))]
         protected StringVariable output;
 
-        protected virtual void OnEnable()
+        protected override void Awake()
         {
-            InputField field = inputFieldHolder.Value.GetComponent<InputField>();
-            field.onValueChanged.AddListener(OnTextChanged);
+            base.Awake();
+            RegisterInputField();
+        }
+
+        protected virtual void RegisterInputField()
+        {
+            if (inputFieldHolder == null || inputFieldHolder.Value == null)
+            {
+                Debug.LogError($"[InputFieldTextChanged EventHandler]: Missing input field holder in Flowchart {fChart.name}, Block {ParentBlock.BlockName}");
+                return;
+            }
+
+            field = inputFieldHolder.Value.GetComponent<InputField>();
+        }
+
+        protected InputField field;
+
+        protected override void ToggleSubs(bool on)
+        {
+            base.ToggleSubs(on);
+            if (field == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                field.onValueChanged.AddListener(OnTextChanged);
+            }
+            else
+            {
+                field.onValueChanged.RemoveListener(OnTextChanged);
+            }
         }
 
         protected virtual void OnTextChanged(string newText)
@@ -26,13 +57,5 @@ namespace Amanita.VScripting.EventHandlers
             ExecuteBlock();
         }
 
-        protected virtual void OnDisable()
-        {
-            if (inputFieldHolder != null && inputFieldHolder.Value != null)
-            {
-                InputField field = inputFieldHolder.Value.GetComponent<InputField>();
-                field.onValueChanged.RemoveListener(OnTextChanged);
-            }
-        }
     }
 }

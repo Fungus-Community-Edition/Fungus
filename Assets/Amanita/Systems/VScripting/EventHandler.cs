@@ -112,10 +112,31 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnEnable()
         {
+            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+            {
+                ToggleSubs(true);
+            }
+            else if (!ToggleSubsOnlyInRuntime)
+            {
+                ToggleSubs(true);
+            }
+
             if (RehydrateVarInputs)
             {
                 DoRehydrationProcess();
             }
+        }
+
+        // We want subclasses to have control of when they sub. Some would prefer to only
+        // sub in runtime, so...
+        protected virtual bool ToggleSubsOnlyInRuntime => true;
+
+        /// <summary>
+        /// Enable or disable any subscriptions to events.
+        /// </summary>
+        protected virtual void ToggleSubs(bool on)
+        {
+
         }
 
         protected virtual bool RehydrateVarInputs => false;
@@ -209,6 +230,11 @@ namespace Amanita.VScripting.EventHandlers
                 return;
             }
 
+            if (fChart == null)
+            {
+                Debug.LogError($"Cannot rehydrate variable {field.Name} because Flowchart is null.");
+                return;
+            }
             var correct = fChart.GetVariableById(varToCheck.ItemId);
             if (correct == null)
             {
@@ -220,14 +246,26 @@ namespace Amanita.VScripting.EventHandlers
 
         protected bool didRuntimeRehydration = false;
 
+        protected virtual void OnDisable()
+        {
+            ToggleSubs(false);
+        }
+
         protected virtual void OnValidate()
         {
+            // Seems that when this is set to execute in edit mode, OnValidate can be called
+            // before Awake does. Thus, we need to ensure fChart is assigned.
+            if (fChart == null)
+            {
+                fChart = GetComponent<Flowchart>();
+            }
             if (RehydrateVarInputs)
             {
                 DoRehydrationProcess();
             }
         }
 
+        protected virtual EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
         
     }
 }

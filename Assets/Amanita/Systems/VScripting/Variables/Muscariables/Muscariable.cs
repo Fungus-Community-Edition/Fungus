@@ -12,9 +12,9 @@ namespace Amanita.VScripting
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected int itemID = InvalidID;
+        [SerializeField] protected byte itemID = 0;
 
-        public static readonly int InvalidID = 0;
+        public static readonly byte InvalidID = 0;
 
         public virtual VariableScope Scope
         {
@@ -28,7 +28,7 @@ namespace Amanita.VScripting
             set => key = value;
         }
 
-        public virtual int ItemId
+        public virtual byte ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -67,7 +67,7 @@ namespace Amanita.VScripting
             BoxedValue = otherVar.BoxedValue;
         }
 
-        public Muscariable(string key, int itemID, VariableScope scope)
+        public Muscariable(string key, byte itemID, VariableScope scope)
         {
             this.key = key;
             this.itemID = itemID;
@@ -211,7 +211,7 @@ namespace Amanita.VScripting
                 _owner = value;
                 if (_owner == null)
                 {
-                    _ownerId = string.Empty;
+                    _ownerId = 0;
                 }
                 else
                 {
@@ -221,11 +221,11 @@ namespace Amanita.VScripting
         }
         protected IVariableSource _owner;
 
-        public virtual string OwnerId
+        public virtual uint OwnerId
         {
             get { return _ownerId; }
         }
-        [SerializeField] protected string _ownerId = string.Empty;
+        [SerializeField] protected uint _ownerId = 0;
         // ^The reference to the owner doesn't persist, so we store its unique ID for rehydration.
 
         public abstract Muscariable Clone();

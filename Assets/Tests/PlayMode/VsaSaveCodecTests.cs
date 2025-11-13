@@ -113,8 +113,8 @@ namespace SaveSystemTests
             var firstSaveData = _saveCodec.EncodeToSave(firstVsa);
             var secondSaveData = _saveCodec.EncodeToSave(secondVsa);
 
-            bool recordsAssetID = firstSaveData.AssetId == firstVsa.UniqueId &&
-                secondSaveData.AssetId == secondVsa.UniqueId;
+            bool recordsAssetID = firstSaveData.UniqueId == firstVsa.UniqueId &&
+                secondSaveData.UniqueId == secondVsa.UniqueId;
             Assert.IsTrue(recordsAssetID,
                 "Encoded VariableSourceAssetSaveData should record the AssetId of the VariableSourceAsset it was created from.");
 
@@ -148,8 +148,8 @@ namespace SaveSystemTests
             var firstSavedVars = firstSaveData.SavedVars;
             var secondSavedVars = secondSaveData.SavedVars;
 
-            IList<int> firstEncodedItemIds = firstSavedVars.Select(vs => vs.ItemId).ToList();
-            IList<int> secondEncodedItemIds = secondSavedVars.Select(vs => vs.ItemId).ToList();
+            IList<byte> firstEncodedItemIds = firstSavedVars.Select(vs => vs.ItemId).ToList();
+            IList<byte> secondEncodedItemIds = secondSavedVars.Select(vs => vs.ItemId).ToList();
 
             var firstVarItemIds = firstVsa.Variables.Select(v => v.ItemId).ToList();
             var secondVarItemIds = secondVsa.Variables.Select(v => v.ItemId).ToList();

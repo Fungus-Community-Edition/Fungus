@@ -38,7 +38,7 @@ namespace Amanita.VScripting
 
     public interface IHasOwnerID
     {
-        string OwnerId { get; }
+        uint OwnerId { get; }
     }
 
 }

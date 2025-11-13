@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Amanita.VScripting
 {
@@ -28,11 +29,15 @@ namespace Amanita.VScripting
         [SerializeField] protected string key = "";
 
         [HideInInspector]
-        [SerializeField] private int itemID = InvalidID;
+        [SerializeField] private byte itemID = InvalidID;
 
-        public static readonly int InvalidID = -1;
+        [HideInInspector]
+        [FormerlySerializedAs("itemID")]
+        [SerializeField] private int oldItemID = 0;
 
-        public virtual string OwnerId
+        public static readonly byte InvalidID = 0;
+
+        public virtual uint OwnerId
         {
             get
             {
@@ -41,7 +46,7 @@ namespace Amanita.VScripting
                 {
                     return owner.UniqueId;
                 }
-                return string.Empty;
+                return InvalidID;
             }
         }
 
@@ -50,7 +55,7 @@ namespace Amanita.VScripting
         // Non-global variables each belong to a particular Flowchart. Thus, rather
         // than a unique string ID, it's best for them to get an int that their
         // Flowcharts assign them.
-        public int ItemId
+        public byte ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -182,6 +187,16 @@ namespace Amanita.VScripting
         }
 
         protected IVariableSource owner;
+
+        protected virtual void OnEnable()
+        {
+            // Backwards compatibility: migrate old int ItemID to uint
+            if (oldItemID != InvalidID)
+            {
+                itemID = (byte)oldItemID;
+                oldItemID = 0;
+            }
+        }
 
     }
 

@@ -14,31 +14,24 @@ namespace Amanita.SaveSys.VScripting
         [VariableProperty(typeof(IntegerVariable), typeof(IntMuscariable))]
         [SerializeReference] protected IVariable<int> saveSlotIndex;
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (Application.IsPlaying(this)) // We only want to subscribe at runtime
-            {
-                ToggleSubs(true);
-            }
-        }
+        protected override bool RehydrateVarInputs => true;
+        protected override bool ToggleSubsOnlyInRuntime => true;
         
-        protected virtual void ToggleSubs(bool on)
+        protected override void ToggleSubs(bool on)
         {
+            base.ToggleSubs(on);
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += HandleSaveSlotSelected;
+                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= HandleSaveSlotSelected;
+                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
             }
         }
 
-        private void HandleSaveSlotSelected(int index)
+        protected virtual void OnSaveSlotSelected(int index)
         {
-            // Need to make sure to rehydrate the variable reference, since what we have at this point
-            // might be a copy instead of the actual variable reference in the flowchart.
             if (saveSlotIndex != null)
             {
                 saveSlotIndex.Value = index;
@@ -47,11 +40,5 @@ namespace Amanita.SaveSys.VScripting
             ExecuteBlock();
         }
 
-        protected virtual void OnDisable()
-        {
-            ToggleSubs(false);
-        }
-
-        protected override bool RehydrateVarInputs => true;
     }
 }

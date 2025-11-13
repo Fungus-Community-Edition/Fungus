@@ -44,7 +44,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider3D_ValueAssignmentAndEvent()
         {
-            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 400 };
+            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 40 };
             collVar.Init();
 
             Collider captured = null;
@@ -58,9 +58,9 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider3D_EqualityOperatorsAndEvaluate()
         {
-            var firstCollVar = new ColliderMuscariableThreeD { Key = "a", ItemId = 401, Value = firstColliderThreeD };
-            var secondCollVar = new ColliderMuscariableThreeD { Key = "b", ItemId = 402, Value = firstColliderThreeD };
-            var thirdCollVar = new ColliderMuscariableThreeD { Key = "c", ItemId = 403, Value = secondColliderThreeD };
+            var firstCollVar = new ColliderMuscariableThreeD { Key = "a", ItemId = 41, Value = firstColliderThreeD };
+            var secondCollVar = new ColliderMuscariableThreeD { Key = "b", ItemId = 42, Value = firstColliderThreeD };
+            var thirdCollVar = new ColliderMuscariableThreeD { Key = "c", ItemId = 43, Value = secondColliderThreeD };
 
             bool firstEqualsSecond = firstCollVar.Evaluate(CompareOperator.Equals, secondCollVar.Value);
             Assert.IsTrue(firstEqualsSecond);
@@ -81,7 +81,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider3D_DestroyedObjectBehavesAsNull()
         {
-            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 404 };
+            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 44 };
             collVar.Init();
 
             collVar.Value = firstColliderThreeD;
@@ -92,7 +92,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider3D_WrongTypeAssignment_Throws()
         {
-            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 405 };
+            var collVar = new ColliderMuscariableThreeD { Key = "col3D", ItemId = 45 };
             collVar.Init();
             Muscariable baseVar = collVar;
             Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = "not a collider");
@@ -101,7 +101,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider2D_ValueAssignmentAndEvent()
         {
-            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 410 };
+            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 41 };
             collVar.Init();
 
             Collider2D captured = null;
@@ -115,9 +115,9 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider2D_EqualityOperatorsAndEvaluate()
         {
-            var firstCollVar = new ColliderMuscariableTwoD { Key = "a", ItemId = 411, Value = firstColliderTwoD };
-            var secondCollVar = new ColliderMuscariableTwoD { Key = "b", ItemId = 412, Value = firstColliderTwoD };
-            var thirdCollVar = new ColliderMuscariableTwoD { Key = "c", ItemId = 413, Value = secondColliderTwoD };
+            var firstCollVar = new ColliderMuscariableTwoD { Key = "a", ItemId = 41, Value = firstColliderTwoD };
+            var secondCollVar = new ColliderMuscariableTwoD { Key = "b", ItemId = 42, Value = firstColliderTwoD };
+            var thirdCollVar = new ColliderMuscariableTwoD { Key = "c", ItemId = 43, Value = secondColliderTwoD };
 
             bool firstEqualsSecond = firstCollVar.Evaluate(CompareOperator.Equals, secondCollVar.Value);
             Assert.IsTrue(firstEqualsSecond);
@@ -132,7 +132,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider2D_DestroyedObjectBehavesAsNull()
         {
-            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 414 };
+            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 44 };
             collVar.Init();
 
             collVar.Value = firstColliderTwoD;
@@ -143,7 +143,7 @@ namespace Amanita.MuscariableTests.DataOnly
         [Test]
         public void Collider2D_WrongTypeAssignment_Throws()
         {
-            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 415 };
+            var collVar = new ColliderMuscariableTwoD { Key = "col2D", ItemId = 45 };
             collVar.Init();
             Muscariable baseVar = collVar;
             Assert.Throws<ArgumentException>(() => baseVar.BoxedValue = 123);

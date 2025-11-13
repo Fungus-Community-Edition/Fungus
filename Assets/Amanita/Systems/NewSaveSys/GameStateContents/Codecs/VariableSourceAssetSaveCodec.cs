@@ -36,7 +36,7 @@ namespace Amanita.SaveSys
 
             IList<VariableSaveData> savedVars = SaveVars(toCreateFrom);
             VariableSourceAssetSaveData result = new VariableSourceAssetSaveData();
-            result.AssetId = toCreateFrom.UniqueId;
+            result.UniqueId = toCreateFrom.UniqueId;
             result.SavedVars = savedVars;
             return result;
         }

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
   m_Name: _BaseVarSource
   m_EditorClassIdentifier: 
+  includeInSaves: 1
+  assetID: 1
   variables: []
   _nextVarID: 0
   references:

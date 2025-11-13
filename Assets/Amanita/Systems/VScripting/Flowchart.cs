@@ -423,12 +423,12 @@ namespace Amanita.VScripting
         {
             // Make sure item ids are unique and monotonically increasing.
             // This should always be the case, but some legacy Flowcharts may have issues.
-            List<int> usedIds = new List<int>();
+            List<ushort> usedIds = new List<ushort>();
             var blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
+            for (ushort i = 0; i < blocks.Length; i++)
             {
                 var block = blocks[i];
-                if (block.ItemId == -1 || usedIds.Contains(block.ItemId))
+                if (block.ItemId == 0 || usedIds.Contains(block.ItemId))
                 {
                     block.ItemId = NextItemId();
                 }
@@ -436,10 +436,10 @@ namespace Amanita.VScripting
             }
             
             var commands = GetComponents<Command>();
-            for (int i = 0; i < commands.Length; i++)
+            for (ushort i = 0; i < commands.Length; i++)
             {
                 var command = commands[i];
-                if (command.ItemId == -1 || usedIds.Contains(command.ItemId))
+                if (command.ItemId == 0 || usedIds.Contains(command.ItemId))
                 {
                     command.ItemId = NextItemId();
                 }
@@ -454,10 +454,10 @@ namespace Amanita.VScripting
                 {
                     return;
                 }
-                int highestIDFound = varWithHighestID.ItemId;
+                byte highestIDFound = varWithHighestID.ItemId;
                 if (nextValidVarID < highestIDFound)
                 {
-                    nextValidVarID = highestIDFound + 1;
+                    nextValidVarID = (byte)(highestIDFound + 1);
                 }
             }
 
@@ -474,14 +474,20 @@ namespace Amanita.VScripting
 
                 foreach (var elem in varsInNeedOfIDs)
                 {
-                    elem.ItemId = nextValidVarID;
-                    nextValidVarID++;
+                    elem.ItemId = NextValidVarID();
                 }
             }
         }
 
+        protected virtual byte NextValidVarID()
+        {
+            byte toReturn = nextValidVarID;
+            nextValidVarID++;
+            return toReturn;
+        }
+
         [HideInInspector]
-        [SerializeField] protected int nextValidVarID = 1;
+        [SerializeField] protected byte nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {
@@ -730,13 +736,16 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Returns the next id to assign to a new flowchart item.
+        /// Returns the next id to assign to a new Block or Command.
         /// Item ids increase monotically so they are guaranteed to
         /// be unique within a Flowchart.
         /// </summary>
-        public int NextItemId()
+        public ushort NextItemId()
         {
-            int maxId = -1;
+            // As for why we make Blocks and Commands get IDs from the same pool while vars get their own...
+            // we want to give users the option to move commands between blocks without worrying about ID conflicts,
+            // but variables added to a Flowchart are supposed to forever be with that same Flowchart.
+            ushort maxId = 0;
             var blocks = GetComponents<Block>();
             for (int i = 0; i < blocks.Length; i++)
             {
@@ -750,8 +759,10 @@ namespace Amanita.VScripting
                 var command = commands[i];
                 maxId = Math.Max(maxId, command.ItemId);
             }
-            return maxId + 1;
+            return (ushort)(maxId + 1);
         }
+
+
 
         /// <summary>
         /// Create a new block node which you can then add commands to.
@@ -1055,9 +1066,14 @@ namespace Amanita.VScripting
 
         public virtual IVariable GetVariableById(int id)
         {
+            return GetVariableById((byte)id);
+        }
+
+        public virtual IVariable GetVariableById(byte id)
+        {
             IVariable result = (from varEl in muscariables
-                               where varEl.ItemId == id
-                               select varEl).FirstOrDefault();
+                                where varEl.ItemId == id
+                                select varEl).FirstOrDefault();
             if (result == null)
             {
                 Debug.LogWarning($"Variable with item ID {id} not found.");
@@ -1455,8 +1471,6 @@ namespace Amanita.VScripting
             return result;
         }
 
-        protected int nextMuscariableID = 1;
-
         /// <summary>
         /// Sets up the Muscariable to belong to this Flowchart before adding it.
         /// </summary>
@@ -1466,9 +1480,7 @@ namespace Amanita.VScripting
             bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemId == toAdd.ItemId && hasValidId);
             if (shouldAssignNewId)
             {
-                int newId = nextMuscariableID;
-                toAdd.ItemId = newId;
-                nextMuscariableID++;
+                toAdd.ItemId = NextValidVarID();
             }
 
             toAdd.ParentFlowchart = this;
@@ -1578,11 +1590,11 @@ namespace Amanita.VScripting
         #endregion
 
         [HideInInspector]
-        [SerializeField] private string uniqueId = "";
+        [SerializeField] private uint uniqueId = 0;
         /// <summary>
         /// Unique identifier not specific to localization.
         /// </summary>
-        public string UniqueId => uniqueId;
+        public uint UniqueId => uniqueId;
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
         {
@@ -1604,9 +1616,10 @@ namespace Amanita.VScripting
             }
 
 #if UNITY_EDITOR
-            if (string.IsNullOrEmpty(uniqueId))
+            if (uniqueId == 0)
             {
-                uniqueId = Guid.NewGuid().ToString();
+                uniqueId = nextUniqueId;
+                nextUniqueId++;
                 UnityEditor.EditorUtility.SetDirty(this);
             }
 #endif
@@ -1633,6 +1646,7 @@ namespace Amanita.VScripting
 
         }
 
+        protected static byte nextUniqueId = 1;
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
         {
@@ -1674,8 +1688,7 @@ namespace Amanita.VScripting
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
             newVar.Scope = scope;
-            newVar.ItemId = nextValidVarID;
-            nextValidVarID++;
+            newVar.ItemId = NextValidVarID();
 
             IVariable toRegister = newVar;
             bool createdLegacyVar = newVar is not Muscariable;

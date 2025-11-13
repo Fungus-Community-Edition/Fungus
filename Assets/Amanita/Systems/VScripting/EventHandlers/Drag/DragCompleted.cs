@@ -51,40 +51,33 @@ namespace Amanita.VScripting.EventHandlers
 
         protected Collider2D targetCollider = null;
 
-        protected EventDispatcher eventDispatcher;
-
-        protected virtual void OnEnable()
+        protected override bool ToggleSubsOnlyInRuntime => true;
+        protected override void ToggleSubs(bool on)
         {
-            if (Application.isPlaying)
+            base.ToggleSubs(on);
+            if (on)
             {
-                eventDispatcher = AmanitaManager.S.EventDispatcher;
-
-                eventDispatcher.AddListener<DragCompletedEvent>(OnDragCompletedEvent);
-                eventDispatcher.AddListener<DragEntered.DragEnteredEvent>(OnDragEnteredEvent);
-                eventDispatcher.AddListener<DragExited.DragExitedEvent>(OnDragExitedEvent);
+                EventDispatcher.AddListener<DragCompletedEvent>(OnDragCompletedEvent);
+                EventDispatcher.AddListener<DragEntered.DragEnteredEvent>(OnDragEnteredEvent);
+                EventDispatcher.AddListener<DragExited.DragExitedEvent>(OnDragExitedEvent);
 
                 foreach (Draggable2D dragObj in draggableObjects)
                 {
                     dragObj.RegisterHandler(this);
                 }
             }
-        }
-
-        protected virtual void OnDisable()
-        {
-            if (Application.isPlaying)
+            else
             {
-                eventDispatcher.RemoveListener<DragCompletedEvent>(OnDragCompletedEvent);
-                eventDispatcher.RemoveListener<DragEntered.DragEnteredEvent>(OnDragEnteredEvent);
-                eventDispatcher.RemoveListener<DragExited.DragExitedEvent>(OnDragExitedEvent);
+                EventDispatcher.RemoveListener<DragCompletedEvent>(OnDragCompletedEvent);
+                EventDispatcher.RemoveListener<DragEntered.DragEnteredEvent>(OnDragEnteredEvent);
+                EventDispatcher.RemoveListener<DragExited.DragExitedEvent>(OnDragExitedEvent);
 
                 foreach (Draggable2D dragObj in draggableObjects)
                 {
                     dragObj.UnregisterHandler(this);
                 }
-
-                eventDispatcher = null;
             }
+            
         }
 
         private void OnDragCompletedEvent(DragCompletedEvent evt)
@@ -113,8 +106,9 @@ namespace Amanita.VScripting.EventHandlers
         {
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             //add any dragableobject already present to list for backwards compatability
             if (draggableObject != null)
             {

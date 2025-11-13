@@ -168,7 +168,7 @@ namespace Amanita.VScripting
                         try
                         {
                             return current.ItemId == chosenVar.ItemId &&
-                                   string.Equals(current.OwnerId, chosenVar.OwnerId, StringComparison.Ordinal);
+                                   current.OwnerId == chosenVar.OwnerId;
                         }
                         catch
                         {
@@ -190,7 +190,7 @@ namespace Amanita.VScripting
                         try
                         {
                             return current.ItemId == chosenManaged.ItemId &&
-                                   string.Equals(current.OwnerId, chosenManaged.OwnerId, StringComparison.Ordinal);
+                                   current.OwnerId == chosenManaged.OwnerId;
                         }
                         catch
                         {

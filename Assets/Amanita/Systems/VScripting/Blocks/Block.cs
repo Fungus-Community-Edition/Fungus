@@ -27,7 +27,7 @@ namespace Amanita.VScripting
     [AddComponentMenu("")]
     public class Block : Node, IEquatable<Block>
     {
-        [SerializeField] protected int itemId = -1; // Invalid flowchart item id
+        [SerializeField] protected ushort itemId = 0; 
 
         [FormerlySerializedAs("sequenceName")]
         [Tooltip("The name of the block node as displayed in the Flowchart window")]
@@ -100,8 +100,8 @@ namespace Amanita.VScripting
         {
             // Give each child command a reference back to its parent block
             // and tell each command its index in the list.
-            int index = 0;
-            for (int i = 0; i < commandList.Count; i++)
+            byte index = 0;
+            for (byte i = 0; i < commandList.Count; i++)
             {
                 var command = commandList[i];
                 if (command == null)
@@ -126,8 +126,8 @@ namespace Amanita.VScripting
         // do this in player builds so we compile this bit out for those builds.
         protected virtual void Update()
         {
-            int index = 0;
-            for (int i = 0; i < commandList.Count; i++)
+            byte index = 0;
+            for (byte i = 0; i < commandList.Count; i++)
             {
                 var command = commandList[i];
                 if (command == null)// Null entry will be deleted automatically later
@@ -156,7 +156,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// Unique identifier for the Block.
         /// </summary>
-        public virtual int ItemId { get { return itemId; } set { itemId = value; } }
+        public virtual ushort ItemId { get { return itemId; } set { itemId = value; } }
 
         /// <summary>
         /// The name of the block node as displayed in the Flowchart window.

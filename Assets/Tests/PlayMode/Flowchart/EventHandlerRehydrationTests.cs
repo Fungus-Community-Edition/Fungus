@@ -121,7 +121,7 @@ namespace SaveSystemTests
         public IEnumerator InvalidItemIdLogsErrorAndDoesNotRehydrate()
         {
             // Arrange: assign a detached copy with a bogus ItemId
-            var bogusCopy = new StringMuscariable { Value = "Bogus", ItemId = -123 };
+            var bogusCopy = new StringMuscariable { Value = "Bogus", ItemId = 0 };
             typeof(TestRehydrationEventHandler)
                 .GetField("testStringVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 .SetValue(singleHandler, bogusCopy);

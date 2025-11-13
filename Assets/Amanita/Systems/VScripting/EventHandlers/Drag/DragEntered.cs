@@ -47,26 +47,19 @@ namespace Amanita.VScripting.EventHandlers
 
         [SerializeField] protected List<Collider2D> targetObjects;
 
-        protected EventDispatcher eventDispatcher;
-
-        protected virtual void OnEnable()
+        protected override bool ToggleSubsOnlyInRuntime => true;
+        protected override void ToggleSubs(bool on)
         {
-            if (Application.isPlaying)
+            base.ToggleSubs(on);
+            if (on)
             {
-                eventDispatcher = AmanitaManager.S.EventDispatcher;
-
-                eventDispatcher.AddListener<DragEnteredEvent>(OnDragEnteredEvent);
+                EventDispatcher.AddListener<DragEnteredEvent>(OnDragEnteredEvent);
             }
-        }
-
-        protected virtual void OnDisable()
-        {
-            if (Application.isPlaying)
+            else
             {
-                eventDispatcher.RemoveListener<DragEnteredEvent>(OnDragEnteredEvent);
-
-                eventDispatcher = null;
+                EventDispatcher.RemoveListener<DragEnteredEvent>(OnDragEnteredEvent);
             }
+            
         }
 
         private void OnDragEnteredEvent(DragEnteredEvent evt)
@@ -84,8 +77,9 @@ namespace Amanita.VScripting.EventHandlers
         {
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             //add any dragableobject already present to list for backwards compatability
             if (draggableObject != null)
             {

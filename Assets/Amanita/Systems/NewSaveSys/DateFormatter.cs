@@ -51,7 +51,6 @@ namespace Amanita.UI
                 }
                 catch (FormatException)
                 {
-                    Debug.LogWarning($"Invalid date format: {formatString}. Using default format: {DefaultFormat}.");
                     formatString = DefaultFormat;
                 }
             }

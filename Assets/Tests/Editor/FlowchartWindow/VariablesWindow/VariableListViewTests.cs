@@ -507,9 +507,9 @@ namespace VScriptingTests.VariableOperations
             // Minimal backing storage to satisfy the IVariable contract in tests.
             string _key;
             object _value;
-            int _itemId;
+            byte _itemId;
 
-            public virtual string OwnerId => string.Empty;
+            public virtual uint OwnerId => 0;
             // IHasKey / IVariable.Key
             public string Key
             {
@@ -518,7 +518,7 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IHasItemID
-            public int ItemId
+            public byte ItemId
             {
                 get => _itemId;
                 set => _itemId = value;
