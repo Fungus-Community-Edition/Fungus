@@ -79,9 +79,9 @@ namespace Amanita.VScripting
         protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
 
         // Persistent lookup data (survives when varRef does not)
-        [SerializeField] private uint storedItemId = 0;
-        [SerializeField] private uint storedOwnerUid = 0;
-        [SerializeField] private string storedNamespacedKey = ""; // Format used by the drawer (FlowchartName/VarKey) or ~GlobalSource~/VarKey
+        [SerializeField] protected uint storedItemId = 0;
+        [SerializeField] protected string storedOwnerUid = string.Empty;
+        [SerializeField] protected string storedNamespacedKey = ""; // Format used by the drawer (FlowchartName/VarKey) or ~GlobalSource~/VarKey
 
         public static implicit operator TValue(VariableData<TValue> someData)
         {
@@ -228,7 +228,7 @@ namespace Amanita.VScripting
                 // If our var ref is for a non-UnityObj type and the owner is missing, that means
                 // that the var ref we have points to a copy of the actual var. Thus, we need to try
                 // to resolve it again.
-                if (varRef != null && varRef.OwnerId > 0 && varRef.Owner == null)
+                if (varRef != null && !string.IsNullOrEmpty(varRef.OwnerId) && varRef.Owner == null)
                 {
                     Debug.Log($"VariableData<{typeof(TValue).Name}> detected that its varRef's owner is null. " +
                         $"Attempting to re-resolve variable reference.");
@@ -339,14 +339,14 @@ namespace Amanita.VScripting
                 return;
             }
 
-            bool shouldFetchInfo = varRef != null && storedOwnerUid == 0;
+            bool shouldFetchInfo = varRef != null && string.IsNullOrEmpty(storedOwnerUid);
             if (shouldFetchInfo)
             {
                 storedOwnerUid = varRef.OwnerId;
                 storedItemId = varRef.ItemId;
             }
 
-            bool shouldLookForRef = storedOwnerUid > 0 && storedItemId > 0;
+            bool shouldLookForRef = !string.IsNullOrEmpty(storedOwnerUid) && storedItemId > 0;
             if (shouldLookForRef)
             {
                 FindVarRefFromOwner();
@@ -356,7 +356,7 @@ namespace Amanita.VScripting
 
         protected virtual void FindVarRefFromOwner()
         {
-            if (storedOwnerUid == 0)
+            if (string.IsNullOrEmpty(storedOwnerUid))
             {
                 return;
             }
@@ -374,7 +374,7 @@ namespace Amanita.VScripting
             }
         }
 
-        IVariableSource FindOwnerWithID(uint id)
+        IVariableSource FindOwnerWithID(string id)
         {
             var owningFlowchart = Flowchart.CachedFlowcharts.FirstOrDefault(fc => fc.UniqueId == id);
             if (owningFlowchart != null)

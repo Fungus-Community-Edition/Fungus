@@ -5,10 +5,10 @@ namespace Amanita.SaveSys
 {
     public class VariableSourceAssetSaveData : SaveData
     {
-        [SerializeField] protected uint uniqueId = 0;
+        [SerializeField] protected string uniqueId = string.Empty;
         [SerializeField] protected List<VariableSaveData> savedVars = new List<VariableSaveData>();
 
-        public virtual uint UniqueId
+        public virtual string UniqueId
         {
             get => uniqueId;
             set => uniqueId = value;

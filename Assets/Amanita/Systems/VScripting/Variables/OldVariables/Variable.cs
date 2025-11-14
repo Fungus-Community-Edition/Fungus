@@ -37,7 +37,7 @@ namespace Amanita.VScripting
 
         public static readonly byte InvalidID = 0;
 
-        public virtual uint OwnerId
+        public virtual string OwnerId
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Amanita.VScripting
                 {
                     return owner.UniqueId;
                 }
-                return InvalidID;
+                return string.Empty;
             }
         }
 

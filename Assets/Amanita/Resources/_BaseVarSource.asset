@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _BaseVarSource
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  assetID: 1
+  uniqueId: 1
   variables: []
   _nextVarID: 0
   references:

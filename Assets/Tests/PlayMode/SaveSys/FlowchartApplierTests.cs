@@ -83,7 +83,7 @@ namespace SaveSystemTests
             await CommonSetupAsync();
 
             // Cache these before destroying anything
-            uint expectedId = flowchartSaveData.UniqueId;
+            string expectedId = flowchartSaveData.UniqueId;
             string expectedName = flowchartSaveData.FlowchartName;
 
             RemoveAllFlowchartsFromTheScene();
@@ -278,10 +278,10 @@ namespace SaveSystemTests
             await CommonSetupAsync();
 
             // Change the flowchart's UniqueId so it no longer matches the save data
-            uint originalId = flowchart.UniqueId;
+            string originalId = flowchart.UniqueId;
             typeof(Flowchart)
                 .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(flowchart, Guid.NewGuid().ToString());
+                .SetValue(flowchart, originalId + "erho8ufgiyswegfi7wfgf7o");
 
             // The save data still has the old ID, but the name matches
             // Change a variable so we can verify it gets restored

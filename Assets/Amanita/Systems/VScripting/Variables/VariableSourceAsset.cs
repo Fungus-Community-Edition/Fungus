@@ -4,9 +4,12 @@ using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Amanita.VScripting
 {
@@ -14,7 +17,7 @@ namespace Amanita.VScripting
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource
     {
         [SerializeField] protected bool includeInSaves = true;
-        [SerializeField, HideInInspector] protected uint assetID = 0;
+        [SerializeField, HideInInspector] protected string uniqueId = string.Empty;
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
 
         public bool IncludeInSaves
@@ -23,17 +26,17 @@ namespace Amanita.VScripting
             set => includeInSaves = value;
         }
 
-        public uint UniqueId
+        public string UniqueId
         {
-            get => assetID;
+            get => uniqueId;
             set
             {
-                if (assetID > 0)
+                if (!string.IsNullOrEmpty(uniqueId))
                 {
                     Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
                 }
 
-                assetID = value;
+                uniqueId = value;
             }
         }
         public IReadOnlyList<IVariable> Variables => variables.ToList();
@@ -98,7 +101,7 @@ namespace Amanita.VScripting
             var.Owner = this;
         }
 
-        [SerializeField, HideInInspector] protected byte _nextVarID = 0;
+        [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
         public Muscariable GetVariable(string name)
@@ -257,27 +260,43 @@ namespace Amanita.VScripting
         protected virtual void OnEnable()
         {
             EnsureValidAssetId();
+            EnsureValidVarIDs();
             EditorOnEnable();
         }
 
         protected virtual void EnsureValidAssetId()
         {
-            if (assetID == 0)
+            if (string.IsNullOrEmpty(uniqueId))
             {
-                assetID = nextAssetID;
-                nextAssetID++;
+                uniqueId = Guid.NewGuid().ToString();
 #if UNITY_EDITOR
-                UnityEditor.EditorUtility.SetDirty(this);
+                EditorUtility.SetDirty(this);
 #endif
             }
         }
 
-        protected static uint nextAssetID = 1;
+        protected virtual void EnsureValidVarIDs()
+        {
+            HashSet<int> usedIDs = new HashSet<int>();
+            foreach (var var in variables)
+            {
+                if (var.ItemId == 0 || usedIDs.Contains(var.ItemId))
+                {
+                    var.ItemId = _nextVarID;
+                    _nextVarID++;
+#if UNITY_EDITOR
+                    UnityEditor.EditorUtility.SetDirty(this);
+#endif
+                }
+                usedIDs.Add(var.ItemId);
+            }
+            
+        }
 
         protected virtual void EditorOnEnable()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
         }
 
@@ -343,6 +362,7 @@ namespace Amanita.VScripting
         protected virtual void OnValidate()
         {
             EnsureValidAssetId();
+            EnsureValidVarIDs();
         }
     }
 
@@ -358,7 +378,7 @@ namespace Amanita.VScripting
 
     public interface IHasUniqueID
     {
-        uint UniqueId { get; }
+        string UniqueId { get; }
     }
 
     public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable

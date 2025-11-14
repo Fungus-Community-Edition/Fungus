@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  assetID: 2
+  uniqueId: 2
   variables:
   - rid: 846271511759683584
   - rid: 846271512383848516

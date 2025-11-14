@@ -211,7 +211,7 @@ namespace Amanita.VScripting
                 _owner = value;
                 if (_owner == null)
                 {
-                    _ownerId = 0;
+                    _ownerId = string.Empty;
                 }
                 else
                 {
@@ -221,11 +221,11 @@ namespace Amanita.VScripting
         }
         protected IVariableSource _owner;
 
-        public virtual uint OwnerId
+        public virtual string OwnerId
         {
             get { return _ownerId; }
         }
-        [SerializeField] protected uint _ownerId = 0;
+        [SerializeField] protected string _ownerId = string.Empty;
         // ^The reference to the owner doesn't persist, so we store its unique ID for rehydration.
 
         public abstract Muscariable Clone();

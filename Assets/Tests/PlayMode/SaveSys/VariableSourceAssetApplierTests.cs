@@ -218,7 +218,7 @@ namespace SaveSystemTests
             // Create save data with unknown AssetId
             var bogus = new VariableSourceAssetSaveData
             {
-                UniqueId = 0
+                UniqueId = string.Empty
             };
 
             // Expect a warning
