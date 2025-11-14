@@ -87,7 +87,7 @@ namespace Amanita.VScripting
             }
 
             // Identity check: skip work if assigning the same variable
-            var current = ownerVarData.VarRef;            // May be a Unity Object (legacy) or a muscariable (managed ref)
+            var current = ownerVarData.VarRef; // May be a Unity Object (legacy) or a muscariable (managed ref)
             var chosenVar = chosen as IVariable;
 
             if (IsSameReference(current, chosen))
@@ -168,7 +168,7 @@ namespace Amanita.VScripting
                         try
                         {
                             return current.ItemId == chosenVar.ItemId &&
-                                   current.OwnerId == chosenVar.OwnerId;
+                                   current.OwnerIdIndex == chosenVar.OwnerIdIndex;
                         }
                         catch
                         {
@@ -190,7 +190,7 @@ namespace Amanita.VScripting
                         try
                         {
                             return current.ItemId == chosenManaged.ItemId &&
-                                   current.OwnerId == chosenManaged.OwnerId;
+                                   current.OwnerIdIndex == chosenManaged.OwnerIdIndex;
                         }
                         catch
                         {

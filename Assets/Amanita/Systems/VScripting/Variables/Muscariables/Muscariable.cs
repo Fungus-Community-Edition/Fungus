@@ -211,22 +211,22 @@ namespace Amanita.VScripting
                 _owner = value;
                 if (_owner == null)
                 {
-                    _ownerId = string.Empty;
+                    _ownerIdIndex = -1;
                 }
                 else
                 {
-                    _ownerId = Owner.UniqueId;
+                    _ownerIdIndex = AmanitaManager.GetNumericIdTiedTo(_owner.UniqueId);
                 }
             }
         }
         protected IVariableSource _owner;
 
-        public virtual string OwnerId
+        public virtual int OwnerIdIndex
         {
-            get { return _ownerId; }
+            get { return _ownerIdIndex; }
         }
-        [SerializeField] protected string _ownerId = string.Empty;
-        // ^The reference to the owner doesn't persist, so we store its unique ID for rehydration.
+        [SerializeField] protected int _ownerIdIndex = -1;
+        // ^The reference to the owner doesn't persist, so we store a key of sorts for rehydration.
 
         public abstract Muscariable Clone();
 

@@ -509,7 +509,7 @@ namespace VScriptingTests.VariableOperations
             object _value;
             byte _itemId;
 
-            public virtual string OwnerId => string.Empty;
+            public virtual int OwnerIdIndex => -1;
             // IHasKey / IVariable.Key
             public string Key
             {

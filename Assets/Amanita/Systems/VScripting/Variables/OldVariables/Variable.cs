@@ -37,16 +37,17 @@ namespace Amanita.VScripting
 
         public static readonly byte InvalidID = 0;
 
-        public virtual string OwnerId
+        public virtual int OwnerIdIndex
         {
             get
             {
                 var owner = GetFlowchart();
                 if (owner != null)
                 {
-                    return owner.UniqueId;
+                    return AmanitaManager.GetNumericIdTiedTo(owner.UniqueId);
                 }
-                return string.Empty;
+
+                return -1;
             }
         }
 

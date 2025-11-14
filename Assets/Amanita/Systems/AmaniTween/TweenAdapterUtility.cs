@@ -16,7 +16,9 @@ namespace Amanita.Tweening
             // Try to load from Resources
             var adapter = Resources.Load<DefaultTweenAdapter>(AssetName);
             if (adapter != null)
+            {
                 return adapter;
+            }
 
 #if UNITY_EDITOR
             EnsureResourcesFolderIsThere();

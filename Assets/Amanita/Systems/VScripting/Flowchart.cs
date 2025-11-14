@@ -26,7 +26,7 @@ namespace Amanita.VScripting
     /// </summary>
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
-        IReorderableVariableSource, IReorderableMuscariableSource
+        IReorderableVariableSource, IReorderableMuscariableSource, IForceResetUidHandler
     {
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
@@ -36,7 +36,16 @@ namespace Amanita.VScripting
             Debug.Log($"Flowchart InitOnLoad method executed");
         }
 #endif
-        public virtual IVariable GetVariable(int itemID)
+
+        /// <summary>
+        /// Force reset the unique identifier for this Flowchart. Use with caution!
+        /// </summary>
+        public virtual void ForceResetUid()
+        {
+            this.UniqueId = Guid.NewGuid().ToString();
+        }
+
+        public virtual IVariable GetVariable(byte itemID)
         {
             IVariable result = (from elem in Variables
                                 where elem.ItemId == itemID
@@ -341,8 +350,8 @@ namespace Amanita.VScripting
             }
         }
 
-        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene arg0,
-            UnityEngine.SceneManagement.Scene arg1)
+        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene prevScene,
+            UnityEngine.SceneManagement.Scene currentScene)
         {
             // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
             eventSystemPresent = false;
@@ -361,7 +370,6 @@ namespace Amanita.VScripting
             if (!cachedFlowcharts.Contains(this))
             {
                 cachedFlowcharts.Add(this);
-                //TODO these pairs could be replaced by something static that manages all active flowcharts
                 UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
 
@@ -370,6 +378,8 @@ namespace Amanita.VScripting
             UpdateVersion();
 
             StringSubstituter.RegisterHandler(this);   
+            VScriptSignals.UniqueIDHaverEnabled(this);
+
         }
 
         protected virtual void AssertOwnership()
@@ -1615,9 +1625,24 @@ namespace Amanita.VScripting
         [HideInInspector]
         [SerializeField] private string uniqueId = string.Empty;
         /// <summary>
-        /// Unique identifier not specific to localization.
+        /// Unique identifier not specific to localization. Don't assign to this unless you know what you're doing.
         /// </summary>
-        public string UniqueId => uniqueId;
+        public string UniqueId
+        {
+            get => uniqueId;
+            set
+            {
+                if (!string.IsNullOrEmpty(uniqueId))
+                {
+                    Debug.LogWarning($"Assigning a new unique ID to {this.name}, a Flowchart that already has one. " +
+                        $"Old ID: {uniqueId}, New ID: {value}. If this was intentional, make sure you " +
+                        $"know what you're doing.");
+                }
+
+                uniqueId = value;
+                VScriptSignals.UniqueGuidAssigned(this);
+            }
+        }
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
         {
@@ -1672,7 +1697,8 @@ namespace Amanita.VScripting
         {
             if (string.IsNullOrEmpty(uniqueId))
             {
-                uniqueId = Guid.NewGuid().ToString();
+                UniqueId = Guid.NewGuid().ToString();
+                // ^The property triggers the signal, so...
 #if UNITY_EDITOR
                 EditorUtility.SetDirty(this);
 #endif

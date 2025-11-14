@@ -50,13 +50,52 @@ namespace Amanita
 
         public IList<VariableSourceAsset> GlobalVariableSources
         {
-            get => globalVariables;
+            get => globalVariables.ToArray();
             set
             {
                 globalVariables.Clear();
                 globalVariables.AddRange(value);
             }
         }
+
+        public static int GetNumericIdTiedTo(string guid)
+        {
+            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
+            fcGuidRegistry.Refresh();
+            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
+            int result = fcGuidRegistry.GetOrAddNumericId(guid);
+            if (result >= 0)
+            {
+                return result;
+            }
+
+            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
+            vsaGuidRegistry.Refresh();
+            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
+            result = vsaGuidRegistry.GetOrAddNumericId(guid);
+            return result;
+        }
+
+        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
+        {
+            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
+            if (gotOneReady)
+            {
+                return existing;
+            }
+
+            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>(
+                typeof(T).Name + "GuidRegistry",
+                "GuidRegistries");
+            result.AddTypeStoredFor<T>();
+            typeToRegistryMap[typeof(T)] = result;
+            return result;
+        }
+
+        private static IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
+            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
+        {
+        };
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -209,6 +248,31 @@ namespace Amanita
                 return;
             }
             _s = this;
+
+            EnsureCurrentFlowchartUidsAreRegistered();
+            void EnsureCurrentFlowchartUidsAreRegistered()
+            {
+                var allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                    .Where((fChart) => fChart.gameObject.scene.isLoaded);
+                // ^To make sure we're only getting the Flowcharts in the scene(s) that are loaded.
+
+                var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
+                fcGuidRegistry.Refresh();
+
+                foreach (var fChart in allFlowcharts)
+                {
+                    if (string.IsNullOrEmpty(fChart.UniqueId))
+                    {
+                        Debug.Log($"Flowchart '{fChart.name}' has empty UniqueId. Forcing reset.");
+                        fChart.ForceResetUid(); // We expect the registry itself to pick up the new GUID via signal here.
+                        continue;
+                    }
+                    else
+                    {
+                        fcGuidRegistry.GetOrAddNumericId(fChart.UniqueId);
+                    }
+                }
+            }
 
             ResetAnchors();
             void ResetAnchors()

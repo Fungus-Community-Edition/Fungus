@@ -16,9 +16,9 @@ namespace Amanita.VScripting
         protected virtual IVariable ObjAsVar => _component as IVariable;
         public VariablePointer() { }
 
-        public virtual string OwnerId
+        public virtual int OwnerIdIndex
         {
-            get => ObjAsVar?.OwnerId ?? string.Empty;
+            get => ObjAsVar?.OwnerIdIndex ?? -1;
         }
         public VariablePointer(UnityObj component)
         {
