@@ -11,12 +11,13 @@ namespace Amanita.VScripting.EventHandlers
     [AddComponentMenu("")]
     public class FlowchartEnabled : EventHandler
     {   
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             // Blocks use coroutines to schedule command execution, but Unity's coroutines are
             // sometimes unreliable when enabling / disabling objects.
             // To workaround this we execute the block on the next frame.
-            Invoke("DoEvent", 0);
+            Invoke(nameof(DoEvent), 0);
         }
 
         protected virtual void DoEvent()

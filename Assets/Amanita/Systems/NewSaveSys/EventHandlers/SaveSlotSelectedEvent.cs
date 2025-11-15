@@ -14,24 +14,23 @@ namespace Amanita.SaveSys.VScripting
         [VariableProperty(typeof(IntegerVariable), typeof(IntMuscariable))]
         [SerializeReference] protected IVariable<int> saveSlotIndex;
 
-        protected virtual void OnEnable()
-        {
-            ToggleSubs(true);
-        }
+        protected override bool RehydrateVarInputs => true;
+        protected override bool ToggleSubsOnlyInRuntime => true;
         
-        protected virtual void ToggleSubs(bool on)
+        protected override void ToggleSubs(bool on)
         {
+            base.ToggleSubs(on);
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += HandleSaveSlotSelected;
+                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= HandleSaveSlotSelected;
+                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
             }
         }
 
-        private void HandleSaveSlotSelected(int index)
+        protected virtual void OnSaveSlotSelected(int index)
         {
             if (saveSlotIndex != null)
             {
@@ -41,9 +40,5 @@ namespace Amanita.SaveSys.VScripting
             ExecuteBlock();
         }
 
-        protected virtual void OnDisable()
-        {
-            ToggleSubs(false);
-        }
     }
 }

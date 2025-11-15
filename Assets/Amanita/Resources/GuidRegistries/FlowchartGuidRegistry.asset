@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
-  m_Name: _BaseVarSource
+  m_Script: {fileID: 11500000, guid: be35ebce7dc31a94ea8c81f6236f3571, type: 3}
+  m_Name: FlowchartGuidRegistry
   m_EditorClassIdentifier: 
-  includeInSaves: 1
-  uniqueId: c3b27f5f-511f-46e8-b78f-8501a65dadb2
-  variables: []
-  _nextVarID: 0
-  references:
-    version: 2
-    RefIds: []
+  typesStoredFor:
+  - Amanita.VScripting.Flowchart
+  guids:
+  - c552042c-67cb-4251-8f33-bc42c13e3ce0
+  - 1e8e258e-da8c-40cb-bd1d-f6beb1534948

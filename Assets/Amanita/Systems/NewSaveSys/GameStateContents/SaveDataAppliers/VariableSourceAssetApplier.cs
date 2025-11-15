@@ -24,10 +24,10 @@ namespace Amanita.SaveSys
 
         public override Task Apply(VariableSourceAssetSaveData saveData)
         {
-            VariableSourceAsset toApplyTo = variableSourceAssets.Where((elem) => elem.AssetId == saveData.AssetId).FirstOrDefault();
+            VariableSourceAsset toApplyTo = variableSourceAssets.Where((elem) => elem.UniqueId == saveData.UniqueId).FirstOrDefault();
             if (toApplyTo == null)
             {
-                Debug.LogWarning($"No VariableSourceAsset with AssetId {saveData.AssetId} was found to apply save data to.");
+                Debug.LogWarning($"No VariableSourceAsset with AssetId {saveData.UniqueId} was found to apply save data to.");
                 return Task.CompletedTask;
             }
 

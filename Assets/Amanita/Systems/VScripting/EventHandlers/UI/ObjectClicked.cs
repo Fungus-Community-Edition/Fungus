@@ -29,17 +29,28 @@ namespace Amanita.VScripting.EventHandlers
 
         protected EventDispatcher eventDispatcher;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             eventDispatcher = AmanitaManager.S.EventDispatcher;
-
-            eventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
+            base.OnEnable();
         }
 
-        protected virtual void OnDisable()
+        protected override void ToggleSubs(bool on)
         {
-            eventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
+            base.ToggleSubs(on);
+            if (on)
+            {
+                eventDispatcher.AddListener<ObjectClickedEvent>(OnObjectClickedEvent);
+            }
+            else
+            {
+                eventDispatcher.RemoveListener<ObjectClickedEvent>(OnObjectClickedEvent);
+            }
+        }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
             eventDispatcher = null;
         }
 

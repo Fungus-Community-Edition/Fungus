@@ -32,8 +32,9 @@ namespace Amanita.VScripting.EventHandlers
             ExecuteBlock();
         }
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
             if (waitForFrames <= 0)
             {
                 waitForFrames = 1;

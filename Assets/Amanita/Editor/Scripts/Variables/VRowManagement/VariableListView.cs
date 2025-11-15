@@ -137,8 +137,8 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
-                        Debug.Log($"Found row for variable with key '{currentVar.Key}' of type " +
-                            $"{currentVar.GetType().Name} at index={index}");
+                        //Debug.Log($"Found row for variable with key '{currentVar.Key}' of type " +
+                            //$"{currentVar.GetType().Name} at index={index}");
 
                         var visHandler = row.VisualHandler;
 
@@ -179,7 +179,9 @@ namespace Amanita.VScripting.EditorUtils
                         try
                         {
                             if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
-                                Debug.Log($"[VListView.unbindItem] index={index} key='{r.VarToRepresent.Key}'");
+                            {
+                                //Debug.Log($"[VListView.unbindItem] index={index} key='{r.VarToRepresent.Key}'");
+                            }
                         }
                         catch { }
                         rowHolder.userData = null;
@@ -197,7 +199,7 @@ namespace Amanita.VScripting.EditorUtils
                         {
                             if (rowHolder.userData is VariableRow rowAsUserData && rowAsUserData.VarToRepresent != null)
                             {
-                                Debug.Log($"[VListView.destroyItem] destroying row for key='{rowAsUserData.VarToRepresent.Key}'");
+                                //Debug.Log($"[VListView.destroyItem] destroying row for key='{rowAsUserData.VarToRepresent.Key}'");
                             }
                         }
                         catch { }
@@ -245,14 +247,14 @@ namespace Amanita.VScripting.EditorUtils
             bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
             if (rowAlreadyAssignedToIt)
             {
-                Debug.Log($"[GetOrCreateRow] Reusing existing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
+                //Debug.Log($"[GetOrCreateRow] Reusing existing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 return existing;
             }
 
             var row = _rowFactory.Create(variable);
             if (row != null)
             {
-                Debug.Log($"[GetOrCreateRow] Created new row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)} handlerType={row.VisualHandler?.GetType().FullName}");
+                //Debug.Log($"[GetOrCreateRow] Created new row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)} handlerType={row.VisualHandler?.GetType().FullName}");
                 _activeRows[variable] = row;
             }
             else
@@ -273,7 +275,7 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
             {
-                Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
+                ////Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 _activeRows.Remove(variable);
                 _rowFactory?.Release(row);
             }
@@ -282,7 +284,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
-            Debug.Log($"[ReleaseAllActiveRows] Releasing {_activeRows.Count} active rows");
+            ////Debug.Log($"[ReleaseAllActiveRows] Releasing {_activeRows.Count} active rows");
             foreach (var rowElem in _activeRows.Keys.ToList())
                 ReleaseRow(rowElem);
             _activeRows.Clear();
@@ -431,7 +433,7 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         SetFlowchart(obj);
                         found = true;
-                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via GlobalObjectId: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via GlobalObjectId: name='{obj.name}' instanceId={obj.GetInstanceID()}");
                     }
                 }
             }
@@ -452,7 +454,7 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         SetFlowchart(obj);
                         found = true;
-                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via old InstanceID: name='{obj.name}' instanceId={obj.GetInstanceID()}");
+                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via old InstanceID: name='{obj.name}' instanceId={obj.GetInstanceID()}");
                     }
                 }
             }
@@ -472,7 +474,7 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         SetFlowchart(viaWindow);
                         found = true;
-                        Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via FlowchartWindow: name='{viaWindow.name}' instanceId={viaWindow.GetInstanceID()}");
+                        //Debug.Log($"[AcquireFlowchartIfLost] Found Flowchart via FlowchartWindow: name='{viaWindow.name}' instanceId={viaWindow.GetInstanceID()}");
                     }
                 }
                 catch { }
@@ -496,7 +498,7 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     SetFlowchart(all[0]);
                     found = true;
-                    Debug.Log($"[AcquireFlowchartIfLost] Found single Flowchart in scene: name='{_flowchart.name}' instanceId={_flowchart.GetInstanceID()}");
+                    //Debug.Log($"[AcquireFlowchartIfLost] Found single Flowchart in scene: name='{_flowchart.name}' instanceId={_flowchart.GetInstanceID()}");
                 }
             }
 
@@ -542,7 +544,7 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
                         _listDisplay.hierarchy.Add(_testMaterializedContainer);
-                        Debug.Log($"Added test materialized container");
+                        //Debug.Log($"Added test materialized container");
                     }
                     container = _testMaterializedContainer;
                 }

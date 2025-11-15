@@ -52,7 +52,7 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
-        public virtual bool HasMultiEntriesWithIDs(IList<int> ids)
+        public virtual bool HasMultiEntriesWithIDs(IList<ushort> ids)
         {
             bool result = true;
 

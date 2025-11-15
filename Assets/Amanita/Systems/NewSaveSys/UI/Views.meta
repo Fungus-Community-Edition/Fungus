@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/TestSaves.meta
+guid: d9773d8df16eaa0488e0913bb6938573
+========
 guid: b09ac8c3c89e5174abcbf022e0bea59b
+>>>>>>>> newSaveSystem:Assets/Amanita/Systems/NewSaveSys/UI/Views.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
