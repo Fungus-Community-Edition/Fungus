@@ -63,7 +63,7 @@ namespace Amanita
             var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
             fcGuidRegistry.Refresh();
             fcGuidRegistry.AddTypeStoredFor<Flowchart>();
-            int result = fcGuidRegistry.GetOrAddNumericId(guid);
+            int result = fcGuidRegistry.GetNumericId(guid);
             if (result >= 0)
             {
                 return result;
@@ -72,7 +72,7 @@ namespace Amanita
             var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
             vsaGuidRegistry.Refresh();
             vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
-            result = vsaGuidRegistry.GetOrAddNumericId(guid);
+            result = vsaGuidRegistry.GetNumericId(guid);
             return result;
         }
 

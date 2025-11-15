@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Type = System.Type;
+using UnityEngine.SceneManagement;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -41,8 +43,9 @@ namespace Amanita.VScripting
                     Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
                 }
 
+                string prevId = uniqueId;
                 uniqueId = value;
-                VScriptSignals.UniqueGuidAssigned(this);
+                VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
         public IReadOnlyList<IVariable> Variables => variables.ToList();
@@ -205,7 +208,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
-            EnsureValidAssetId();
+            EnsureValidUniqueId();
 
             variables.RemoveAll(elem => elem == null);
 
@@ -272,14 +275,19 @@ namespace Amanita.VScripting
                 return;
             }
 #endif
-            EnsureValidAssetId();
+            EnsureValidUniqueId();
             EnsureValidVarIDs();
             EditorOnEnable();
             VScriptSignals.UniqueIDHaverEnabled(this);
         }
 
-        protected virtual void EnsureValidAssetId()
+        protected virtual void EnsureValidUniqueId()
         {
+            bool thisIsTestOnly = SceneManager.GetActiveScene().name.StartsWith("InitTestScene");
+            if (thisIsTestOnly)
+            {
+                return;
+            }
 
             if (string.IsNullOrEmpty(uniqueId))
             {
@@ -382,7 +390,7 @@ namespace Amanita.VScripting
                 // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
                 return;
             }
-            EnsureValidAssetId();
+            EnsureValidUniqueId();
             EnsureValidVarIDs();
         }
     }

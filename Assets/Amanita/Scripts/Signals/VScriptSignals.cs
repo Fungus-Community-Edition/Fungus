@@ -8,7 +8,7 @@ namespace Amanita.VScripting
     /// </summary>
     public static class VScriptSignals
     {
-        public static Action<IHasUniqueID> UniqueGuidAssigned = delegate { };
+        public static Action<string, IHasUniqueID> UniqueGuidAssigned = delegate { };
         public static Action<IHasUniqueID> UniqueIDHaverEnabled = delegate { };
     }
 }

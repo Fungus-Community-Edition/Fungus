@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: c69bcb47-7947-402a-b14d-f19acf5b4326
+  uniqueId: 3cddd8ed-a61b-42e5-9284-e470fabdefd5
   variables:
   - rid: 846271511759683584
   - rid: 846271512383848516

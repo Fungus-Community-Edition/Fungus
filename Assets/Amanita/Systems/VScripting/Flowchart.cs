@@ -13,6 +13,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.SceneManagement;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -365,21 +367,28 @@ namespace Amanita.VScripting
                 return;
             }
 
-            AssertUniqueID();
-            AssertOwnership();
             if (!cachedFlowcharts.Contains(this))
             {
                 cachedFlowcharts.Add(this);
-                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnActiveSceneChanged;
+                SceneManager.activeSceneChanged -= OnActiveSceneChanged; // Just in case.
+                SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
 
-            CheckItemIds();
-            CleanupComponents();
-            UpdateVersion();
+            Refresh();
 
             StringSubstituter.RegisterHandler(this);   
             VScriptSignals.UniqueIDHaverEnabled(this);
 
+        }
+
+        public virtual void Refresh()
+        {
+            AssertUniqueID();
+            AssertOwnership();
+            
+            CheckItemIds();
+            CleanupComponents();
+            UpdateVersion();
         }
 
         protected virtual void AssertOwnership()
@@ -1639,8 +1648,9 @@ namespace Amanita.VScripting
                         $"know what you're doing.");
                 }
 
+                string prevId = uniqueId;
                 uniqueId = value;
-                VScriptSignals.UniqueGuidAssigned(this);
+                VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
 
@@ -1669,9 +1679,7 @@ namespace Amanita.VScripting
                 uiModel.Owner = this.gameObject;
             }
 
-            AssertUniqueID();
-            AssertOwnership();
-            CheckItemIds();
+            Refresh();
 
             EnsureBlocksHaveAValidSize();
             void EnsureBlocksHaveAValidSize()
@@ -1695,6 +1703,13 @@ namespace Amanita.VScripting
 
         protected virtual void AssertUniqueID()
         {
+            var sceneWeAreIn = this.gameObject.scene;
+            bool thisIsTestOnly = sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
+            if (thisIsTestOnly)
+            {
+                UniqueId = $"TestFakeID_{cachedFlowcharts.Count + 1}";
+                return;
+            }
             if (string.IsNullOrEmpty(uniqueId))
             {
                 UniqueId = Guid.NewGuid().ToString();

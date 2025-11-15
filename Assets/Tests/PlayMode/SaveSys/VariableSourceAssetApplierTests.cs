@@ -16,8 +16,8 @@ namespace SaveSystemTests
     {
         private const string ResourcesFolder = "Assets/Resources";
         private const string TestResourcesSubFolder = "Assets/Resources/VarSrcApplierTests";
-        private const string AssetNameA = "TestVarSrcA.asset";
-        private const string AssetNameB = "TestVarSrcB.asset";
+        private const string FirstAssetName = "TestVarSrcA.asset";
+        private const string SecondAssetName = "TestVarSrcB.asset";
 
         private GenericVarCodec genericVarCodec;
         private VariableSourceAssetSaveCodec _saveCodec;
@@ -38,8 +38,10 @@ namespace SaveSystemTests
             }
 
             // Create VariableSourceAssets as real assets in Resources so the applier can find them
-            firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
-            secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+            firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
+            secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
+            RegisterTestOnlyVsa(firstVsa);
+            RegisterTestOnlyVsa(secondVsa);
 
             // Create variables on A
             var firstStringMuscari = firstVsa.AddNewVariableOfContentType<string>("playerName", "Amanita");
@@ -86,8 +88,8 @@ namespace SaveSystemTests
         {
 #if UNITY_EDITOR
             // Clean Resources assets we created
-            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameA));
-            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, AssetNameB));
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
+            TryDeleteAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
 
             foreach (var obj in toDestroyInTearDown)
             {

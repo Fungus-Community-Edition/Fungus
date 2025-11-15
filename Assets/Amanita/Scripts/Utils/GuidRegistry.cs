@@ -70,14 +70,25 @@ namespace Amanita
             // this registry instance was, so yeah.
             if (on)
             {
-                VScriptSignals.UniqueGuidAssigned += RegisterUidOf;
+                VScriptSignals.UniqueGuidAssigned += OnUniqueGuidAssigned;
                 VScriptSignals.UniqueIDHaverEnabled += RegisterUidOf;
             }
             else
             {
-                VScriptSignals.UniqueGuidAssigned -= RegisterUidOf;
+                VScriptSignals.UniqueGuidAssigned -= OnUniqueGuidAssigned;
                 VScriptSignals.UniqueIDHaverEnabled -= RegisterUidOf;
             }
+        }
+
+        protected virtual void OnUniqueGuidAssigned(string prevUid, IHasUniqueID uidHaver)
+        {
+            if (!StoresForType(uidHaver.GetType().FullName))
+            {
+                return;
+            }
+
+            RemoveGuid(prevUid);
+            RegisterUidOf(uidHaver);
         }
 
         protected virtual void RegisterUidOf(IHasUniqueID uidHaver)
@@ -99,6 +110,9 @@ namespace Amanita
             return typesStoredFor.Contains(typeName);
         }
 
+        /// <summary>
+        /// If the guid is not registered, returns InvalidNumericId.
+        /// </summary>
         public virtual int GetNumericId(string guid)
         {
             return guidToNumericId.TryGetValue(guid, out int id) ? id : InvalidNumericId;
