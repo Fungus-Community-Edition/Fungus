@@ -1,15 +1,26 @@
-using NUnit.Framework;
-using UnityEngine;
-using System.Collections;
-using Amanita.SaveSys;
-using UnityEngine.TestTools;
 using Amanita.Myceliaudio;
+using Amanita.SaveSys;
+using NUnit.Framework;
+using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace SaveSystemTests
 {
     public class MyceliaudioSaveTests : CommonTestFunctionality
     {
+        // Only need SaveSystem (for AudioSystem singleton); no scene or flowchart.
+        protected override bool ReqSaveSystem => true;
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+
+        protected MyceliaudioSaveCodec mycelSaveCodec;
+        protected WaitForSeconds quickWait;
+        protected WaitForSeconds wait;
+        protected readonly float quickWaitTime = 0.5f;
+        protected readonly float waitTime = 1.5f;
+
         [OneTimeSetUp]
         public override void DoOneTimeSetUp()
         {
@@ -18,41 +29,34 @@ namespace SaveSystemTests
             wait = new WaitForSeconds(waitTime);
         }
 
-        protected float quickWaitTime = 0.5f, waitTime = 1.5f;
-        protected WaitForSeconds quickWait, wait;
-
         [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
-            audioApplier = ScriptableObject.CreateInstance<MyceliaudioApplier>();
+            // Base already creates audioApplier. Only create codec here.
             mycelSaveCodec = ScriptableObject.CreateInstance<MyceliaudioSaveCodec>();
-            audioApplier.PreInstallInit();
             mycelSaveCodec.PreInstallInit();
-            toDestroyInTearDown.Add(audioApplier);
             toDestroyInTearDown.Add(mycelSaveCodec);
         }
 
-        protected MyceliaudioSaveCodec mycelSaveCodec;
-
         [UnityTest]
-        public virtual IEnumerator PlaysCorrectClip()
+        public IEnumerator PlaysCorrectClip()
         {
             yield return CommonSetup();
-            
+
             AudioSys.Play(playAudioArgsSO);
             MyceliaudioSaveData saveData = mycelSaveCodec.EncodeToSave(AudioSystem.S);
             yield return wait;
 
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
-            Task applyTask = audioApplier.ApplyRange(new MyceliaudioSaveData[] { saveData });
-            yield return WaitFor(applyTask);
-            AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
-            bool playingCorrectClip = clipPlaying == playAudioArgsSO.MainClip;
-            Assert.IsTrue(playingCorrectClip, $"The clip playing is not the one we expected it to be. We expected " +
-                $"{playAudioArgsSO.MainClip.name} but instead got {clipPlaying?.name}");
 
+            Task applyTask = audioApplier.ApplyRange(new[] { saveData });
+            yield return WaitFor(applyTask);
+
+            AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
+            Assert.IsTrue(clipPlaying == playAudioArgsSO.MainClip,
+                $"Expected {playAudioArgsSO.MainClip.name} but got {clipPlaying?.name}");
         }
 
         [UnityTest]
@@ -60,19 +64,16 @@ namespace SaveSystemTests
         {
             yield return CommonSetup();
 
-            // Ensure nothing is playing, then encode.
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
 
             var save = mycelSaveCodec.EncodeToSave(AudioSystem.S);
-
-            // Apply and ensure nothing starts playing.
             var apply = audioApplier.ApplyRange(new[] { save });
             yield return WaitFor(apply);
 
-            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0), "No BGM should be playing after " +
-                "applying a save captured with no playback.");
-            Assert.AreEqual(-1, save.GetBgmIndex(0), "Expected no valid BGM index when nothing was playing.");
+            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
+                "No BGM should be playing after applying a save captured with no playback.");
+            Assert.AreEqual(-1, save.GetBgmIndex(0), "Expected invalid BGM index when nothing was playing.");
         }
 
         [UnityTest]
@@ -80,30 +81,22 @@ namespace SaveSystemTests
         {
             yield return CommonSetup();
 
-            // Play a known clip and capture save data.
             AudioSys.Play(playAudioArgsSO);
             var save = mycelSaveCodec.EncodeToSave(AudioSystem.S);
             yield return wait;
 
-            // Stop current playback to force applier to re-play from save.
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
 
-            // Corrupt the saved index but keep a valid name to test name fallback.
-            save.AddBgmIndex(0, -1);
-
-            // Here, we let the inner PlayAudioArgs keep the reference to the clip
-            // since it registers the name from that. 
-
-            //save.PlayAudioArgs.MainClip = null;
-            //save.PlayAudioArgs.MainClipName = playAudioArgsSO.MainClip.name;
+            save.AddBgmIndex(0, -1); // Corrupt index; name should still resolve.
 
             var apply = audioApplier.ApplyRange(new[] { save });
             yield return WaitFor(apply);
 
             var clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
-            Assert.IsNotNull(clipPlaying, "Expected a clip to be playing after applying with name fallback.");
-            Assert.AreEqual(playAudioArgsSO.MainClip.name, clipPlaying.name, "Fallback by name should resolve and play the correct clip.");
+            Assert.IsNotNull(clipPlaying, "Clip should be playing via name fallback.");
+            Assert.AreEqual(playAudioArgsSO.MainClip.name, clipPlaying.name,
+                "Fallback by name did not play the expected clip.");
         }
 
         [UnityTest]
@@ -111,9 +104,7 @@ namespace SaveSystemTests
         {
             yield return CommonSetup();
 
-            // Build a save that requests playback but has invalid index and non-existent name among what's
-            // registered in ShadowDatabase
-            AudioClip fakeClip = AudioClip.Create("T4fuiy5tg7iwt57i46rt26t", 44100 * 2, 1, 44100, false);
+            AudioClip fakeClip = AudioClip.Create("NonExistentClipName_X", 44100 * 2, 1, 44100, false);
 
             var save = new MyceliaudioSaveData
             {
@@ -128,14 +119,14 @@ namespace SaveSystemTests
             };
             save.AddBgmIndex(0, -1);
 
-            // Expect warning from MyceliaudioApplier about missing clip by name.
-            LogAssert.Expect(LogType.Warning, 
+            LogAssert.Expect(LogType.Warning,
                 $"[MyceliaudioApplier]: Could not find audio clip with name: {fakeClip.name}. Cannot play BGM upon application.");
 
             var apply = audioApplier.ApplyRange(new[] { save });
             yield return WaitFor(apply);
 
-            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0), "Applier should not start playback when it cannot resolve the clip by index or name.");
+            Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
+                "Playback should not start when clip cannot be resolved.");
         }
 
         [Test]
@@ -143,12 +134,10 @@ namespace SaveSystemTests
         {
             Assert.IsTrue(mycelSaveCodec.CanHandle(typeof(AudioSystem).FullName),
                 "Codec should handle AudioSystem full type name.");
-
             Assert.IsTrue(mycelSaveCodec.CanHandle(typeof(MyceliaudioSaveData).Name),
                 "Codec should handle MyceliaudioSaveData type name.");
-
             Assert.IsFalse(mycelSaveCodec.CanHandle("CompletelyRandomTypeName"),
-                "Codec should not handle unknown type names.");
+                "Codec should reject unknown type names.");
         }
 
         [Test]
@@ -157,11 +146,11 @@ namespace SaveSystemTests
             var save = new MyceliaudioSaveData();
             save.AddBgmIndex(0, 7);
 
-            var ext = save.BgmIndexes; // Should be a copy
+            var ext = save.BgmIndexes; // copy
             ext[0] = 99;
 
-            Assert.AreEqual(7, save.GetBgmIndex(0), 
-                "External modifications to BgmIndexes copy should not affect internal state.");
+            Assert.AreEqual(7, save.GetBgmIndex(0),
+                "External modifications to copy should not affect internal state.");
         }
 
         [UnityTest]
@@ -173,7 +162,6 @@ namespace SaveSystemTests
             var save = mycelSaveCodec.EncodeToSave(AudioSystem.S);
             yield return wait;
 
-            // Stop, then apply twice.
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
 
@@ -188,7 +176,7 @@ namespace SaveSystemTests
             Assert.IsNotNull(firstClip);
             Assert.IsNotNull(secondClip);
             Assert.AreSame(firstClip, secondClip,
-                "Applying the same save twice should result in the same clip continuing to play.");
+                "Applying same save twice should result in same clip continuing to play.");
         }
     }
 }
