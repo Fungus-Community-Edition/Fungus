@@ -11,6 +11,9 @@ namespace SaveSystemTests
 {
     public class DecryptorTests : CommonTestFunctionality
     {
+        // Skip SaveSystem; we only need in-memory data and our own decryptor.
+        protected override bool ReqSaveSystem => false;
+
         protected Decryptor decryptor;
 
         [SetUp]
@@ -18,6 +21,7 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
             decryptor = ScriptableObject.CreateInstance<Decryptor>();
+            toDestroyInTearDown.Add(decryptor);
         }
 
         protected byte[] Encrypt(string plainText)
@@ -275,8 +279,8 @@ namespace SaveSystemTests
             Assert.IsNull(threadException, "Decryptor threw an exception during parallel calls.");
             for (int i = 1; i < threadCount; i++)
             {
-                Assert.AreEqual(serializerForTest.ToJson(results[0].Meta), 
-                    serializerForTest.ToJson(results[i].Meta), 
+                Assert.AreEqual(serializerForTest.ToJson(results[0].Meta),
+                    serializerForTest.ToJson(results[i].Meta),
                     $"Meta data mismatch between threads {0} and {i}.");
 
                 string r0Main = serializerForTest.ToJson(results[0].MainState, true);

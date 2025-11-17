@@ -14,6 +14,9 @@ namespace SaveSystemTests
 {
     public class FlowchartSaveCodecTests : CommonTestFunctionality
     {
+        // Faster: only need scene + flowchart + codecs.
+        protected override bool ReqSaveSystem => false;
+
         // Note that in CommonTestFunctionality, the flowchart save codec is put to use. What
         // we do in this suite is evaluate the results.
         [Test]
@@ -32,8 +35,7 @@ namespace SaveSystemTests
         public virtual IEnumerator SavesRightUniqueId()
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart); 
-            // ^Might need to stop the codec from saving in the superclass...
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             bool rightUniqueIdSaved = flowchart.UniqueId == flowchartSaveData.UniqueId;
             Assert.IsTrue(rightUniqueIdSaved);
         }
@@ -42,8 +44,7 @@ namespace SaveSystemTests
         public virtual IEnumerator SavesRightFlowchartName()
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart); 
-            // ^Might need to stop the codec from saving in the superclass...
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             bool rightFlowchartNameSaved = flowchart.name == flowchartSaveData.FlowchartName;
             Assert.IsTrue(rightFlowchartNameSaved);
         }
@@ -53,7 +54,6 @@ namespace SaveSystemTests
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            // ^Might need to stop the codec from saving in the superclass...
             bool rightVariableCountSaved = flowchart.Variables.Count == flowchartSaveData.SavedVars.Count;
             Assert.IsTrue(rightVariableCountSaved);
         }
@@ -96,23 +96,17 @@ namespace SaveSystemTests
             #region ThreeDPos
             Vector3 expectedThreeDPos = threeDPosVar.Value;
             relevantSave = varSaves.Where((elem) => elem.Key == threeDPosVar.Key).First();
-            // Remember: the format we're going with is "X,Y,Z"
-            VectorVarCodec vecVarCodec = new VectorVarCodec();
             string[] parts = relevantSave.Value.Split(',');
-            float xVal = 0, yVal = 0, zVal = 0;
-
-            float.TryParse(parts[0], out xVal);
-            float.TryParse(parts[1], out yVal);
-            float.TryParse(parts[2], out zVal);
+            float.TryParse(parts[0], out float xVal);
+            float.TryParse(parts[1], out float yVal);
+            float.TryParse(parts[2], out float zVal);
             Vector3 decoded = new Vector3(xVal, yVal, zVal);
             savedCorrectly = decoded == expectedThreeDPos;
             #endregion
 
             #region TwoDPos
-
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             relevantSave = varSaves.Where((elem) => elem.Key == twoDPosVar.Key).First();
-            // Remember: the format we're going with is "X,Y"
             fsSerializer serializer = AmanitaManager.DefaultSerializer;
             lock (serializer)
             {
@@ -134,35 +128,28 @@ namespace SaveSystemTests
             Transform expectedTransform = transformVar.Value;
             TransformState expectedTFormState = TransformState.From(expectedTransform);
             relevantSave = varSaves.Where((elem) => elem.Key == transformVar.Key).First();
-            // Note that the transform state should be saved as a TransformState, and thus...
             TransformState decodedTfState = new TransformState();
             fsData data = fsJsonParser.Parse(relevantSave.Value);
             serializer.TryDeserialize(data, ref decodedTfState);
-
             savedCorrectly = expectedTFormState.Equals(decodedTfState);
             #endregion
 
-            // For some reason, the rotation was screwed up...
             Assert.IsTrue(savedCorrectly, $"Did not properly save the transform var. " +
-                $"What was saved:\n{decodedTfState}\n\n" + 
+                $"What was saved:\n{decodedTfState}\n\n" +
                 $"What was expected:\n{expectedTFormState}");
-
         }
 
         [UnityTest]
         public virtual IEnumerator SavesRightNumberOfBlocks()
         {
             yield return new WaitForSeconds(0.1f); // Wait for the flowchart to initialize
-            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart); 
-            // ^Might need to stop the codec from saving in the superclass...
+            flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             IList<Block> blocksToSave = (from elem in flowchart.GetExecutingBlocks()
                                          where elem.IncludeInSaves
                                          select elem).ToList();
 
             bool rightBlockCountSaved = blocksToSave.Count == flowchartSaveData.SavedBlocks.Count;
             Assert.IsTrue(rightBlockCountSaved);
-
         }
-
     }
 }
