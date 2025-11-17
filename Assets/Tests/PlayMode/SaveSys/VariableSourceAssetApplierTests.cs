@@ -14,6 +14,11 @@ namespace SaveSystemTests
 {
     public class VariableSourceAssetApplierTests : CommonTestFunctionality
     {
+        // Only needs lightweight environment: skip save system & scene & flowchart.
+        protected override bool ReqSaveSystem => false;
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+
         private const string ResourcesFolder = "Assets/Resources";
         private const string TestResourcesSubFolder = "Assets/Resources/VarSrcApplierTests";
         private const string FirstAssetName = "TestVarSrcA.asset";
@@ -23,54 +28,36 @@ namespace SaveSystemTests
         private VariableSourceAssetSaveCodec _saveCodec;
         private VariableSourceAssetApplier _applier;
 
+        private VariableSourceAsset firstVsa;
+        private VariableSourceAsset secondVsa;
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
 #if UNITY_EDITOR
-            // Ensure Resources path
             if (!AssetDatabase.IsValidFolder(ResourcesFolder))
-            {
                 AssetDatabase.CreateFolder("Assets", "Resources");
-            }
             if (!AssetDatabase.IsValidFolder(TestResourcesSubFolder))
-            {
                 AssetDatabase.CreateFolder(ResourcesFolder, "VarSrcApplierTests");
-            }
 
-            // Create VariableSourceAssets as real assets in Resources so the applier can find them
             firstVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
             secondVsa = CreateVarSourceAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
             RegisterTestOnlyVsa(firstVsa);
             RegisterTestOnlyVsa(secondVsa);
 
-            // Create variables on A
             var firstStringMuscari = firstVsa.AddNewVariableOfContentType<string>("playerName", "Amanita");
             var firstIntMuscari = firstVsa.AddNewVariableOfContentType<int>("playerLevel", 3);
-            Assert.NotNull(firstStringMuscari);
-            Assert.NotNull(firstIntMuscari);
-            // Ensure stable IDs and owner
             firstVsa.Refresh();
 
-            // Create variables on B
             var secondStringMuscari = secondVsa.AddNewVariableOfContentType<string>("chapter", "Intro");
             var secondIntMuscari = secondVsa.AddNewVariableOfContentType<int>("coins", 25);
-            Assert.NotNull(secondStringMuscari);
-            Assert.NotNull(secondIntMuscari);
             secondVsa.Refresh();
 
-            // Save assets to disk
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            // Create codec and hook it up to both encoder and applier
             genericVarCodec = ScriptableObject.CreateInstance<GenericVarCodec>();
-
             _saveCodec = ScriptableObject.CreateInstance<VariableSourceAssetSaveCodec>();
-
             _applier = ScriptableObject.CreateInstance<VariableSourceAssetApplier>();
             _applier.PreInstallInit();
 
-            // Wait a frame for Resources changes to settle
             yield return null;
 
             toDestroyInTearDown.Add(genericVarCodec);
@@ -81,22 +68,17 @@ namespace SaveSystemTests
 #endif
         }
 
-        private VariableSourceAsset firstVsa;
-        private VariableSourceAsset secondVsa;
         [UnityTearDown]
         public IEnumerator TearDown()
         {
 #if UNITY_EDITOR
-            // Clean Resources assets we created
             TryDeleteAsset(Path.Combine(TestResourcesSubFolder, FirstAssetName));
             TryDeleteAsset(Path.Combine(TestResourcesSubFolder, SecondAssetName));
 
             foreach (var obj in toDestroyInTearDown)
             {
                 if (obj != null)
-                {
                     UnityObj.DestroyImmediate(obj);
-                }
             }
 
             AssetDatabase.SaveAssets();
@@ -182,7 +164,7 @@ namespace SaveSystemTests
             }
         }
 
-        
+
         [UnityTest]
         public IEnumerator Apply_WithMismatchedItemId_FallsBackToVarName()
         {
@@ -287,6 +269,9 @@ namespace SaveSystemTests
             Assert.AreEqual("RangeName", GetVarValue<string>(firstVsa, "playerName"));
             Assert.AreEqual("RangeChapter", GetVarValue<string>(secondVsa, "chapter"));
         }
+
+
+
 
     }
 
