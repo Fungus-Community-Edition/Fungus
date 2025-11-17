@@ -13,6 +13,20 @@ namespace SaveSystemTests
 {
     public class EncryptorTests : CommonTestFunctionality
     {
+        protected override bool ReqSaveSystem => false;
+
+        [SetUp]
+        public override void DoSetUp()
+        {
+            base.DoSetUp();
+
+            // Since we're skipping the save sys, we need to instantiate our own encryptor.
+            if (encryptor == null)
+            {
+                encryptor = ScriptableObject.CreateInstance<Encryptor>();
+                toDestroyInTearDown.Add(encryptor);
+            }
+        }
 
         [Test]
         public virtual void ReturnsExpectedBytes()
