@@ -13,10 +13,13 @@ namespace SaveSystemTests
     /// </summary>
     public class EventHandlerRehydrationTests : CommonTestFunctionality
     {
+        // No SaveSystem needed; we only need the scene + flowchart.
+        protected override bool ReqSaveSystem => false;
+
         private TestRehydrationEventHandler singleHandler;
         private MultiFieldRehydrationHandler multiHandler;
 
-        [UnitySetUp]
+        [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
@@ -27,13 +30,12 @@ namespace SaveSystemTests
             singleHandler.ParentBlock = multiHandler.ParentBlock;
         }
 
-
         [UnityTest]
         public IEnumerator RehydratesDetachedVariableReference()
         {
             // Arrange: assign a detached copy of the variable
             var detachedCopy = new StringMuscariable { Value = "Detached" };
-            detachedCopy.ItemId = nameVar.ItemId; // We want the rehydration to change the test string var to nameVar
+            detachedCopy.ItemId = nameVar.ItemId;
 
             typeof(TestRehydrationEventHandler)
                 .GetField("testStringVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
@@ -41,12 +43,11 @@ namespace SaveSystemTests
 
             Assert.That(detachedCopy.Owner, Is.Null, "Sanity check: detached copy should have null Owner");
 
-            // Act: trigger OnEnable → rehydration
+            // Act
             singleHandler.ForceRehydrateVariables();
+            yield return null;
 
-            yield return null; // let Unity lifecycle tick
-
-            // Assert: handler field should now point to the canonical Flowchart variable
+            // Assert
             var hydrated = singleHandler.TestStringVar;
             Assert.That(hydrated, Is.Not.Null);
             Assert.That(hydrated.Owner, Is.EqualTo(flowchart));
@@ -79,12 +80,11 @@ namespace SaveSystemTests
             Assert.That(detachedIsNew.Owner, Is.Null);
             #endregion
 
-            #region Act
+            // Act
             multiHandler.ForceRehydrateVariables();
             yield return null;
-            #endregion
 
-            #region Assert: all fields point to canonical Flowchart variables
+            // Assert: all fields point to canonical Flowchart variables
             Assert.That(multiHandler.TestNameVar, Is.SameAs(nameVar));
             Assert.That(multiHandler.TestScoreVar, Is.SameAs(scoreVar));
             Assert.That(multiHandler.TestIsNewPlayerVar, Is.SameAs(isNewPlayerVar));
@@ -92,9 +92,7 @@ namespace SaveSystemTests
             Assert.That(multiHandler.TestNameVar.Owner, Is.EqualTo(flowchart));
             Assert.That(multiHandler.TestScoreVar.Owner, Is.EqualTo(flowchart));
             Assert.That(multiHandler.TestIsNewPlayerVar.Owner, Is.EqualTo(flowchart));
-            #endregion
         }
-
 
         [UnityTest]
         public IEnumerator AlreadyHydratedVariableIsLeftAlone()
@@ -105,7 +103,6 @@ namespace SaveSystemTests
                 .SetValue(singleHandler, nameVar);
 
             var before = singleHandler.TestStringVar;
-
             Assert.That(before.Owner, Is.EqualTo(flowchart), "Sanity check: variable is already hydrated");
 
             // Act
@@ -139,13 +136,8 @@ namespace SaveSystemTests
             var after = singleHandler.TestStringVar;
             Assert.That(after, Is.SameAs(bogusCopy), "Invalid ItemId should not be replaced");
         }
-
     }
 
-    /// <summary>
-    /// Subclass of EventHandler with multiple variable fields.
-    /// Uses existing Flowchart variables from CommonTestFunctionality.
-    /// </summary>
     [EventHandlerInfo("Test", "MultiRehydration", "Triggered for multi-field rehydration tests.")]
     public class MultiFieldRehydrationHandler : EventHandler
     {
@@ -166,10 +158,6 @@ namespace SaveSystemTests
         protected override bool RehydrateVarInputs => true;
     }
 
-    /// <summary>
-    /// A simple subclass of EventHandler with a SerializeReference IVariable field.
-    /// This lets us test the reflection-based rehydration logic.
-    /// </summary>
     [EventHandlerInfo("Test", "Rehydration", "Triggered for rehydration tests.")]
     public class TestRehydrationEventHandler : EventHandler
     {
@@ -178,9 +166,7 @@ namespace SaveSystemTests
 
         public IVariable<string> TestStringVar => testStringVar;
         public virtual void ForceOnEnable() => OnEnable();
-
         public virtual void ForceRehydrateVariables() => RehydrateVariables();
         protected override bool RehydrateVarInputs => true;
     }
-
 }

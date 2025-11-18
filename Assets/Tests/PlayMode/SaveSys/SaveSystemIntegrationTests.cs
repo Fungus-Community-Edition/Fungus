@@ -13,6 +13,11 @@ namespace SaveSystemTests
     public class SaveSystemIntegrationTests : CommonTestFunctionality
     {
         protected override string PathToTestScene => "ScenePrefabs/SaveSysMonoBehaviourTests";
+        protected override bool ReqSaveSystem => true;
+        protected override bool ReqSceneLoad => true;
+        protected override bool ReqFlowchart => true;
+        protected override bool ShouldDeleteTestSavesAtEnd => true;
+
         protected SaveSystem saveSystem;
         protected new ISaveManager saveManager;
         protected IMetaFactory metaFactory;
@@ -30,7 +35,6 @@ namespace SaveSystemTests
             // Ensure clean state for Progress Markers between tests
             saveSystem.ClearProgressMarkers();
             RecordOrderCommand.ClearLog();
-            
         }
 
         protected virtual void ApplyResolvers()
@@ -50,7 +54,7 @@ namespace SaveSystemTests
             Assert.IsNotNull(flowchart, "Test scene does not contain a Flowchart.");
 
             int slot = 10;
-            ISaveMetaData meta = metaFactory.CreateMeta(slot); 
+            ISaveMetaData meta = metaFactory.CreateMeta(slot);
 
             // Use the main state factory to create the main state (should include FlowchartSaveData)
             CompositeSaveData mainState = await mainStateFactory.CreateMainState();
@@ -150,7 +154,7 @@ namespace SaveSystemTests
             await WaitForLogCountOrTimeout(expected.Length, 3000);
 
             // Ensure "Z" block did not run, and ordering matches
-            CollectionAssert.AreEqual(expected, RecordOrderCommand.ExecutionLog, 
+            CollectionAssert.AreEqual(expected, RecordOrderCommand.ExecutionLog,
                 "SaveLoaded blocks did not execute in expected order.");
             CollectionAssert.DoesNotContain(RecordOrderCommand.ExecutionLog, "Block_Z", "A block with " +
                 "non-registered marker IDs should not have executed.");
@@ -210,7 +214,7 @@ namespace SaveSystemTests
             var marker = saveSystem.GetProgressMarkerByID("P_REG");
             Assert.NotNull(marker);
             Assert.AreEqual(7, marker.Order, "Marker order not set during registration.");
-            
+
             toDestroyInTearDown.Add(flow.gameObject);
         }
 
@@ -585,7 +589,6 @@ namespace SaveSystemTests
             public object ToMakeFrom { get; set; }
 
             public bool NeedsInput { get; set; } = false;
-
 
             public bool CanHandle(object toMakeFrom)
             {

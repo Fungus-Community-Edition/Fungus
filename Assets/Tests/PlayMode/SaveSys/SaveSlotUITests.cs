@@ -14,15 +14,25 @@ namespace SaveSystemTests
     public class SaveSlotUITests : CommonTestFunctionality
     {
         protected override string PathToTestScene => "ScenePrefabs/SaveSlotUITestScene";
+        protected override bool ReqFlowchart => false;   // no flowchart needed
+        protected override bool ReqSaveSystem => false;  // no SaveSystem needed
 
-        protected override void PrepScene()
+        protected SaveSlotViewComposer viewComposer;
+        protected SaveSlotPlaytimeView playtimeView;
+        protected SaveSlotDateView dateView;
+        protected SaveSlotNumberView numberView;
+        protected TimeSpan expectedPlaytime = TimeSpan.FromHours(1.5);
+        protected Array playtimeFormatVals, slotNumFormatVals;
+
+        [SetUp]
+        public override void DoSetUp()
         {
-            base.PrepScene();
+            base.DoSetUp();
+
+            // Base loads the scene prefab; we discover UI and prime it here
             viewComposer = GameObject.FindFirstObjectByType<SaveSlotViewComposer>();
             Assert.IsNotNull(viewComposer, "SaveSlotUIViewComposer not found in the scene.");
 
-            // There's no guarantee that the view controller will have its views parented
-            // to its game object, hence the GetView func
             playtimeView = viewComposer.GetView<SaveSlotPlaytimeView>();
             dateView = viewComposer.GetView<SaveSlotDateView>();
             numberView = viewComposer.GetView<SaveSlotNumberView>();
@@ -35,34 +45,24 @@ namespace SaveSystemTests
                 TimeStamp = DateTime.UtcNow,
                 SaveVersion = "1.0.0",
                 Playtime = expectedPlaytime,
-                SlotNumber = 1 // For the sake of Roman Numeral support, we won't go with 0
+                SlotNumber = 1
             };
 
             viewComposer.Meta = metaData;
 
             playtimeFormatVals = Enum.GetValues(typeof(PlaytimeFormatEnum));
             slotNumFormatVals = Enum.GetValues(typeof(SlotNumFormat));
-
         }
 
-        protected SaveSlotViewComposer viewComposer;
-        protected SaveSlotPlaytimeView playtimeView;
-        protected SaveSlotDateView dateView;
-        protected SaveSlotNumberView numberView;
-        protected TimeSpan expectedPlaytime = TimeSpan.FromHours(1.5);
-        protected Array playtimeFormatVals, slotNumFormatVals;
-
-        protected override bool ReqFlowchart => false;
         public override void DoOneTimeTearDown()
         {
             base.DoOneTimeTearDown();
             if (viewComposer != null)
-            {
                 UnityObj.Destroy(viewComposer.gameObject);
-            }
         }
 
-        protected virtual TimeSpan Playtime { get => metaData.Playtime; }
+        protected virtual TimeSpan Playtime => metaData.Playtime;
+        protected virtual int SlotNumber => metaData.SlotNumber;
 
         [TestCaseSource(nameof(ValidSlotNumFormats))]
         public virtual void UpdatesNumberView_WithFormat(string format)
@@ -73,29 +73,20 @@ namespace SaveSystemTests
             testFormatter.FormatString = format;
             numberView.Formatter = testFormatter;
 
-            string numStr;
-            if (format.Equals("Roman", StringComparison.OrdinalIgnoreCase))
-            {
-                numStr = RomanNumeralConverter.ToRoman(SlotNumber);
-            }
-            else
-            {
-                numStr = SlotNumber.ToString(format);
-            }
+            string numStr = format.Equals("Roman", StringComparison.OrdinalIgnoreCase)
+                ? RomanNumeralConverter.ToRoman(SlotNumber)
+                : SlotNumber.ToString(format);
+
             string expectedText = $"{numberView.Prefix}{numStr}{numberView.Postfix}";
-            
             Assert.AreEqual(expectedText, numberView.Text);
         }
 
-        protected virtual int SlotNumber => metaData.SlotNumber;
-
         public static IEnumerable<string> ValidSlotNumFormats()
         {
-            yield return "D1"; // Default format, one digit
-            yield return "D2"; // Default format
-            yield return "D3"; // Three digits
-            yield return "Roman"; // Roman numeral format
-
+            yield return "D1";
+            yield return "D2";
+            yield return "D3";
+            yield return "Roman";
         }
 
         [TestCaseSource(nameof(ValidPlaytimeFormats))]
@@ -117,7 +108,6 @@ namespace SaveSystemTests
             yield return "mm:ss";
             yield return "hh:mm:ss";
             yield return "d.hh:mm:ss";
-
         }
 
         public static IEnumerable<TestCaseData> DateFormatTestCases()
@@ -142,12 +132,9 @@ namespace SaveSystemTests
             Assert.AreEqual(expected, expectedResult);
         }
 
-        //
-
         [Test]
         public void MetaPropagation_PassesMetaToAllViews()
         {
-            // Arrange
             var testMeta = new SaveMetaData
             {
                 TimeStamp = DateTime.UtcNow,
@@ -156,10 +143,8 @@ namespace SaveSystemTests
                 SlotNumber = 7
             };
 
-            // Act
             viewComposer.Meta = testMeta;
 
-            // Assert
             Assert.AreEqual(testMeta, playtimeView.Meta, "PlaytimeView did not receive meta");
             Assert.AreEqual(testMeta, dateView.Meta, "DateView did not receive meta");
             Assert.AreEqual(testMeta, numberView.Meta, "NumberView did not receive meta");
@@ -168,10 +153,7 @@ namespace SaveSystemTests
         [Test]
         public void GetView_ReturnsCorrectViewType()
         {
-            // Act
             var retrieved = viewComposer.GetView<SaveSlotPlaytimeView>();
-
-            // Assert
             Assert.IsNotNull(retrieved, "GetView should return a valid PlaytimeView");
             Assert.AreSame(playtimeView, retrieved, "GetView did not return the expected instance");
         }
@@ -179,14 +161,9 @@ namespace SaveSystemTests
         [Test]
         public void GetView_ReturnsNull_WhenTypeNotPresent()
         {
-            // Act
             var nonExistent = viewComposer.GetView<FakeSlotView>();
-
-            // Assert
             Assert.IsNull(nonExistent, "GetView should return null when view type is not present");
         }
-
-        //
 
         [Test]
         public void PassMetaToViews_SkipsNullViews_LogsError()
@@ -194,11 +171,11 @@ namespace SaveSystemTests
             GameObject viewControllerGo = viewComposer.gameObject;
             UnityObj.Destroy(viewComposer);
             TestComposer testComposer = viewControllerGo.AddComponent<TestComposer>();
-            
+
             var currentViews = new List<ISaveSlotView>
             {
                 playtimeView,
-                null, // simulate misconfigured prefab
+                null,
                 numberView
             };
 
@@ -215,26 +192,22 @@ namespace SaveSystemTests
             string expectedWarnMsg = "View at index 1 is null. Cannot pass meta data.";
             LogAssert.Expect(LogType.Warning, expectedWarnMsg);
 
-            // Act + Assert: should not throw
             Assert.DoesNotThrow(() => testComposer.Meta = testMeta,
                 "Composer should skip null views without throwing exceptions.");
 
-            // Verify that non-null views still received the meta
             Assert.AreEqual(testMeta, playtimeView.Meta, "PlaytimeView did not receive meta");
             Assert.AreEqual(testMeta, numberView.Meta, "NumberView did not receive meta");
-
         }
 
         [Test]
         public void GetView_ReturnsNull_WhenViewIsNull()
         {
-            // Arrange
             var viewsField = typeof(SaveSlotViewComposer)
                 .GetField("views", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             var currentViews = new List<ISaveSlotView>
             {
-                null // simulate all views missing
+                null
             };
 
             viewsField.SetValue(viewComposer, currentViews);
@@ -242,15 +215,9 @@ namespace SaveSystemTests
             string expectedErrorMsg = "View at index 0 is null. This may indicate a misconfigured prefab.";
             LogAssert.Expect(LogType.Error, expectedErrorMsg);
 
-            // Act
             var retrieved = viewComposer.GetView<SaveSlotPlaytimeView>();
-
-            // Assert
             Assert.IsNull(retrieved, "GetView should return null when the stored view is null.");
         }
-
-
-        // 
 
         [Test]
         public void HandlesExtremePlaytime()
@@ -315,24 +282,13 @@ namespace SaveSystemTests
         private class FakeSlotView : ISaveSlotView
         {
             public ISaveMetaData Meta { get; set; }
-
-            public void Refresh()
-            {
-                // No implementation needed for this test
-            }
+            public void Refresh() { }
         }
+
         private class TestComposer : SaveSlotViewComposer
         {
             public void InjectViews(IList<ISaveSlotView> injected) => views = injected;
-
-            protected override void EnsureViews()
-            {
-                // No op to keep this from interfering with things
-            }
+            protected override void EnsureViews() { }
         }
-
-
-
-
     }
 }
