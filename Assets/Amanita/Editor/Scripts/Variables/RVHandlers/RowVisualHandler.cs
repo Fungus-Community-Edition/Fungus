@@ -199,14 +199,30 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (on)
             {
+                if (_currentVariable is Muscariable muscari)
+                {
+                    muscari.OnValueChanged += OnVarValueChanged;
+                }
                 _keyField.RegisterValueChangedCallback(OnKeyFieldChanged);
                 _scopeField.RegisterValueChangedCallback(OnScopeValueChanged);
             }
             else
             {
+                if (_currentVariable is Muscariable muscari)
+                {
+                    muscari.OnValueChanged -= OnVarValueChanged;
+                }
                 _keyField.UnregisterValueChangedCallback(OnKeyFieldChanged);
                 _scopeField.UnregisterValueChangedCallback(OnScopeValueChanged);
             }
+        }
+
+        /// <summary>
+        /// For when the var's value is changed outside the editor field (e.g. via script).
+        /// </summary>
+        protected virtual void OnVarValueChanged(Muscariable varWithValChanged)
+        {
+            ApplyVarValueToValueField();
         }
 
         protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
@@ -344,5 +360,6 @@ namespace Amanita.VScripting.EditorUtils
         "UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
+
     }
 }

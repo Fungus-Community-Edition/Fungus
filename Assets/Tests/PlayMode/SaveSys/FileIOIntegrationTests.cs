@@ -12,6 +12,10 @@ namespace SaveSystemTests
 {
     public class FileIOIntegrationTests : CommonTestFunctionality
     {
+        // Needs SaveSystem, but not scene/flowchart.
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+
         public override void DoSetUp()
         {
             base.DoSetUp();
@@ -20,7 +24,6 @@ namespace SaveSystemTests
         }
 
         protected TestSaveReader saveReaderFallback;
-        // ^For when we need to avoid hangs from async calls (what with the quirks with the test runner)
 
         [Test]
         public async Task SmallData_RoundTrip()
@@ -28,7 +31,7 @@ namespace SaveSystemTests
             var data = new CompositeSaveData();
             data.Add(new RawIntSaveData(42));
 
-            var writeReq = new SaveWriteRequest
+            var writeReqLocal = new SaveWriteRequest
             {
                 SaveName = "SmallRT",
                 SlotNumber = 1,
@@ -36,17 +39,16 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
-            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReq.SlotNumber);
+            await saveWriter.WriteOneToDisk(writeReqLocal);
+            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
-            var readReq = new SaveReadRequest
+            var readReqLocal = new SaveReadRequest
             {
                 SlotNumber = 1,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
-
+            var result = await saveReader.ReadMainSaveDataFromDisk(readReqLocal);
             Assert.IsTrue(data.Equals(result));
         }
 

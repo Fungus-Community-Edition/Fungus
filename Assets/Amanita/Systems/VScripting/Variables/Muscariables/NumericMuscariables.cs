@@ -251,7 +251,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2))]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
@@ -268,7 +268,7 @@ namespace Amanita.VScripting
                 Vector2 newVal = Value;
                 newVal.x = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -280,7 +280,7 @@ namespace Amanita.VScripting
                 Vector2 newVal = Value;
                 newVal.y = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -392,7 +392,7 @@ namespace Amanita.VScripting
 
     }
 
-    [System.Serializable]
+    [Serializable]
     [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3))]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
@@ -409,7 +409,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.x = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -421,7 +421,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.y = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -433,7 +433,7 @@ namespace Amanita.VScripting
                 Vector3 newVal = Value;
                 newVal.z = value;
                 Value = newVal;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 

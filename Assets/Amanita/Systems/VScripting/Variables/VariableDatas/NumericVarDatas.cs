@@ -23,7 +23,6 @@ namespace Amanita.VScripting
         public IntegerData(int startVal) : base(startVal)
         {
         }
-
     }
 
     /// <summary>
@@ -46,7 +45,6 @@ namespace Amanita.VScripting
         public FloatData(float startVal) : base(startVal)
         {
         }
-
     }
 
     /// <summary>
@@ -76,18 +74,16 @@ namespace Amanita.VScripting
         {
             return booleanData.Value;
         }
-
     }
-
 
     /// <summary>
     /// Container for a Vector2 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    [VariableData(typeof(Vector2), typeof(Vector2Variable))]
+    [VariableData(typeof(Vector2), typeof(IVariable<Vector2>))]
     public class Vector2Data : VariableData<Vector2>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(Vector2Variable))]
         public Vector2Variable vector2Ref;
 
@@ -101,15 +97,14 @@ namespace Amanita.VScripting
         }
     }
 
-
     /// <summary>
     /// Container for a Vector3 variable reference or constant value.
     /// </summary>
     [System.Serializable]
-    [VariableData(typeof(Vector3), typeof(Vector3Variable))]
+    [VariableData(typeof(Vector3), typeof(IVariable<Vector3>))]
     public class Vector3Data : VariableData<Vector3>
     {
-        [SerializeField, SerializeReference]
+        [SerializeField]
         [VariableProperty("<Value>", typeof(Vector3Variable))]
         public Vector3Variable vector3Ref;
 

@@ -19,17 +19,27 @@ namespace Amanita.VScripting.EventHandlers
         [VariableProperty()]
         [SerializeField] protected Variable variable;
 
-        public virtual void OnEnable()
+        protected override void ToggleSubs(bool on)
         {
-            inputAction.action.performed += InputAction_performed;
+            base.ToggleSubs(on);
+            if (inputAction == null)
+            {
+                Debug.LogError($"[InputActionEventHandler]: Missing InputAction in Flowchart {fChart.name}, " +
+                    $"Block {ParentBlock.BlockName}");
+                return;
+            }
+
+            if (on)
+            {
+                inputAction.action.performed += OnInputActionPerformed;
+            }
+            else
+            {
+                inputAction.action.performed -= OnInputActionPerformed;
+            }
         }
 
-        public virtual void OnDisable()
-        {
-            inputAction.action.performed -= InputAction_performed;
-        }
-
-        private void InputAction_performed(InputAction.CallbackContext obj)
+        protected virtual void OnInputActionPerformed(InputAction.CallbackContext obj)
         {
             if (variable != null)
             {

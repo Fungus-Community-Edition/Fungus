@@ -4,18 +4,28 @@ using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
+using UnityEngine.SceneManagement;
+
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
-    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource
+    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler
     {
         [SerializeField] protected bool includeInSaves = true;
-        [SerializeField, HideInInspector] protected string assetID = string.Empty;
+        [SerializeField, HideInInspector] protected string uniqueId = string.Empty;
         [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
+
+        public virtual void ForceResetUid()
+        {
+            UniqueId = Guid.NewGuid().ToString();
+        }
 
         public bool IncludeInSaves
         {
@@ -23,17 +33,19 @@ namespace Amanita.VScripting
             set => includeInSaves = value;
         }
 
-        public string AssetId
+        public string UniqueId
         {
-            get => assetID;
+            get => uniqueId;
             set
             {
-                if (!string.IsNullOrEmpty(assetID))
+                if (!string.IsNullOrEmpty(uniqueId))
                 {
                     Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
                 }
 
-                assetID = value;
+                string prevId = uniqueId;
+                uniqueId = value;
+                VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
         public IReadOnlyList<IVariable> Variables => variables.ToList();
@@ -93,11 +105,12 @@ namespace Amanita.VScripting
         {
             var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
-            var.ItemId = UniqueIdGenerator.GetUniqueIdFor(var, toPass, _nextVarID);
+            var.ItemId = _nextVarID;
+            _nextVarID++;
             var.Owner = this;
         }
 
-        [SerializeField, HideInInspector] protected int _nextVarID = 0;
+        [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
         public Muscariable GetVariable(string name)
@@ -112,6 +125,12 @@ namespace Amanita.VScripting
             }
 
             return null;
+        }
+
+        public virtual IVariable GetVariable(byte itemID)
+        {
+            IVariable result = variables.Where((elem) => elem.ItemId == itemID).FirstOrDefault();
+            return result;
         }
 
         public virtual IList<Muscariable> GetVarsByContentType<TContent>()
@@ -189,10 +208,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
-            if (string.IsNullOrEmpty(assetID))
-            {
-                assetID = Guid.NewGuid().ToString();
-            }
+            EnsureValidUniqueId();
 
             variables.RemoveAll(elem => elem == null);
 
@@ -210,18 +226,12 @@ namespace Amanita.VScripting
 
         public event Action Refreshed = delegate { };
 
-        public virtual IVariable GetVariable(int itemID)
-        {
-            IVariable result = variables.Where((elem) => elem.ItemId == itemID).FirstOrDefault();
-            return result;
-        }
-
         public Muscariable AddVariable(Muscariable toAdd)
         {
             if (!variables.ContainsReference(toAdd))
             {
                 MakeUniqueForThisSource(toAdd);
-                _nextVarID = toAdd.ItemId + 1;
+                _nextVarID = (byte)(toAdd.ItemId + 1);
 #if UNITY_EDITOR
                 AnyRightBeforeVarAdded(toAdd);
 #endif
@@ -258,13 +268,58 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
+#if UNITY_EDITOR
+            if (!AssetDatabase.Contains(this))
+            {
+                // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
+                return;
+            }
+#endif
+            EnsureValidUniqueId();
+            EnsureValidVarIDs();
             EditorOnEnable();
+            VScriptSignals.UniqueIDHaverEnabled(this);
+        }
+
+        protected virtual void EnsureValidUniqueId()
+        {
+            bool thisIsTestOnly = SceneManager.GetActiveScene().name.StartsWith("InitTestScene");
+            if (thisIsTestOnly)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(uniqueId))
+            {
+                uniqueId = Guid.NewGuid().ToString();
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
+            }
+        }
+
+        protected virtual void EnsureValidVarIDs()
+        {
+            HashSet<int> usedIDs = new HashSet<int>();
+            foreach (var var in variables)
+            {
+                if (var.ItemId == 0 || usedIDs.Contains(var.ItemId))
+                {
+                    var.ItemId = _nextVarID;
+                    _nextVarID++;
+#if UNITY_EDITOR
+                    UnityEditor.EditorUtility.SetDirty(this);
+#endif
+                }
+                usedIDs.Add(var.ItemId);
+            }
+            
         }
 
         protected virtual void EditorOnEnable()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
         }
 
@@ -324,29 +379,40 @@ namespace Amanita.VScripting
         protected virtual void EditorOnDisable()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-        }
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
+        }
+
         protected virtual void OnValidate()
         {
-            if (string.IsNullOrEmpty(assetID))
+            if (!AssetDatabase.Contains(this))
             {
-                assetID = Guid.NewGuid().ToString();
-#if UNITY_EDITOR
-                UnityEditor.EditorUtility.SetDirty(this);
-#endif
+                // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
+                return;
             }
+            EnsureValidUniqueId();
+            EnsureValidVarIDs();
         }
     }
 
-    public interface IVariableSource
+    public interface IVariableSource : IHasUniqueID
     {
         event Action<IVariable> VariableAdded;
         event Action<IVariable> VariableRemoved;
         IReadOnlyList<IVariable> Variables { get; }
         IVariable AddVariable(IVariable toAdd);
         void RemoveVariable(IVariable toRemove);
-        IVariable GetVariable(int itemId);
+        IVariable GetVariable(byte itemId);
+    }
+
+    public interface IHasUniqueID
+    {
+        string UniqueId { get; }
+    }
+
+    public interface IForceResetUidHandler
+    {
+        void ForceResetUid();
     }
 
     public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable
@@ -383,7 +449,7 @@ namespace Amanita.VScripting
         protected override fsResult DoSerialize(VariableSourceAsset model, Dictionary<string, fsData> serialized)
         {
             VariableSourceAssetSaveData saveData = new VariableSourceAssetSaveData();
-            saveData.AssetId = model.AssetId;
+            saveData.UniqueId = model.UniqueId;
             saveData.SavedVars = (IList<VariableSaveData>)model.Variables;
             SerializeMember(serialized, null, "saveData", saveData);
             return fsResult.Success;
@@ -404,7 +470,7 @@ namespace Amanita.VScripting
                 }
                 // Now, we can reconstruct the VariableSourceAsset from the save data.
                 model = ScriptableObject.CreateInstance<VariableSourceAsset>();
-                model.AssetId = saveData.AssetId;
+                model.UniqueId = saveData.UniqueId;
                 model.IncludeInSaves = true;
                 model.Refresh();
                 

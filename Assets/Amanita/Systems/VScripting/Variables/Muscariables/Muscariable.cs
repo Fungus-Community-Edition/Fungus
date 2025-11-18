@@ -7,14 +7,14 @@ namespace Amanita.VScripting
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    public abstract class Muscariable : IVariable
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected int itemID = InvalidID;
+        [SerializeField] protected byte itemID = 0;
 
-        public static readonly int InvalidID = 0;
+        public static readonly byte InvalidID = 0;
 
         public virtual VariableScope Scope
         {
@@ -28,13 +28,36 @@ namespace Amanita.VScripting
             set => key = value;
         }
 
-        public virtual int ItemId
+        public virtual byte ItemId
         {
             get => itemID;
             set => itemID = value;
         }
 
         public Muscariable() : base() { }
+
+        // We want to check for semantic equality mainly
+        public static bool operator == (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return true; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return sameValue;
+        }
+
+        public static bool operator != (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return false; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return !sameValue;
+        }
+
+        /// <summary>
+        /// Determines whether the specified Muscariable is (semantically) equal to the current Muscariable.
+        /// </summary>
+        public virtual bool Equals(Muscariable other)
+        {
+            return other != null && this.BoxedValue.Equals(other.BoxedValue);
+        }
 
         public Muscariable (IVariable otherVar)
         {
@@ -44,7 +67,7 @@ namespace Amanita.VScripting
             BoxedValue = otherVar.BoxedValue;
         }
 
-        public Muscariable(string key, int itemID, VariableScope scope)
+        public Muscariable(string key, byte itemID, VariableScope scope)
         {
             this.key = key;
             this.itemID = itemID;
@@ -183,11 +206,35 @@ namespace Amanita.VScripting
         public virtual IVariableSource Owner
         {
             get { return _owner; }
-            set { _owner = value; }
+            set
+            {
+                _owner = value;
+                if (_owner == null)
+                {
+                    _ownerIdIndex = -1;
+                }
+                else
+                {
+                    _ownerIdIndex = AmanitaManager.GetNumericIdTiedTo(_owner.UniqueId);
+                }
+            }
         }
         protected IVariableSource _owner;
 
+        public virtual int OwnerIdIndex
+        {
+            get { return _ownerIdIndex; }
+        }
+        [SerializeField] protected int _ownerIdIndex = -1;
+        // ^The reference to the owner doesn't persist, so we store a key of sorts for rehydration.
+
         public abstract Muscariable Clone();
+
+        protected virtual void TriggerOnValueChanged()
+        {
+            OnValueChanged.Invoke(this);
+        }
+        public event Action<Muscariable> OnValueChanged = delegate { };
     }
 
     [Serializable]
@@ -225,7 +272,7 @@ namespace Amanita.VScripting
                 }
 
                 this.value = (T)this.FilterForValueSet(value);
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
@@ -241,16 +288,17 @@ namespace Amanita.VScripting
                 }
                 object filteredValue = this.FilterForValueSet(value);
                 this.value = (T)filteredValue;
-                InvokeOnValueChanged();
+                TriggerOnValueChanged();
             }
         }
 
-        protected virtual void InvokeOnValueChanged()
+        protected override void TriggerOnValueChanged()
         {
+            base.TriggerOnValueChanged();
             OnValueChanged?.Invoke(value);
         }
 
-        public event Action<T> OnValueChanged = delegate { };
+        public new event Action<T> OnValueChanged = delegate { };
 
         public override void Apply(SetOperator setOperator, object toApply)
         {

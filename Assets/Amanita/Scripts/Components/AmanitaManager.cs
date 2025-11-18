@@ -7,7 +7,6 @@ using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -18,13 +17,15 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-        [InitializeOnLoadMethod]
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoadMethod]
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void MaintainStatics()
         {
             Debug.Log("AmanitaManager: MaintainStatics called");
             ShadowDB = Resources.Load<ShadowDatabase>("ShadowDatabase");
         }
+#endif
 
         [SerializeField] private List<VariableSourceAsset> globalVariables;
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
@@ -49,13 +50,52 @@ namespace Amanita
 
         public IList<VariableSourceAsset> GlobalVariableSources
         {
-            get => globalVariables;
+            get => globalVariables.ToArray();
             set
             {
                 globalVariables.Clear();
                 globalVariables.AddRange(value);
             }
         }
+
+        public static int GetNumericIdTiedTo(string guid)
+        {
+            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
+            fcGuidRegistry.Refresh();
+            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
+            int result = fcGuidRegistry.GetNumericId(guid);
+            if (result >= 0)
+            {
+                return result;
+            }
+
+            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
+            vsaGuidRegistry.Refresh();
+            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
+            result = vsaGuidRegistry.GetNumericId(guid);
+            return result;
+        }
+
+        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
+        {
+            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
+            if (gotOneReady)
+            {
+                return existing;
+            }
+
+            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>(
+                typeof(T).Name + "GuidRegistry",
+                "GuidRegistries");
+            result.AddTypeStoredFor<T>();
+            typeToRegistryMap[typeof(T)] = result;
+            return result;
+        }
+
+        private static IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
+            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
+        {
+        };
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -111,6 +151,7 @@ namespace Amanita
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
+        /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
         public static AmanitaManager EnsureExists()
         {
@@ -124,96 +165,81 @@ namespace Amanita
             {
                 // Double-check after taking the lock
                 if (_s != null)
-                    return _s;
-
-#if UNITY_EDITOR
-                // In the editor, include inactive scene objects but skip prefab assets in Resources
-                List<AmanitaManager> allManagers = UnityObj.FindObjectsByType<AmanitaManager>(FindObjectsSortMode.None).ToList();
-                AmanitaManager sceneInstance = allManagers.FirstOrDefault();
-                if (sceneInstance != null)
                 {
-                    _s = sceneInstance;
-                    _s.Init();
-                    CleanUpOtherInstances();
-                    void CleanUpOtherInstances()
-                    {
-                        allManagers.Remove(sceneInstance);
-                        foreach (var dup in allManagers)
-                        {
-                            if (dup != null && dup != _s)
-                            {
-                                Debug.Log("AmanitaManager instance already exists. Destroying the new one.");
-                                UnityObj.DestroyImmediate(dup.gameObject);
-                            }
-                        }
-                        allManagers.Clear(); // Help GC
-                    }
                     return _s;
                 }
-#else
-                // Runtime: regular lookup (active scene)
-                var existing = UnityObj.FindObjectOfType<AmanitaManager>();
-                if (existing != null)
+
+                _s = FindFirstObjectByType<AmanitaManager>(FindObjectsInactive.Include);
+                if (_s != null)
                 {
-                    _s = existing;
+                    _s.gameObject.SetActive(true);
                     _s.Init();
                     return _s;
                 }
-#endif
 
-                // None found -> try to instantiate from prefab
-                AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
-                if (prefab == null)
+                bool needToCreateNewOne = _s == null;
+                AmanitaManager newlyInstantiated = null;
+                if (needToCreateNewOne)
                 {
-                    Debug.LogError($"AmanitaManager prefab not found at Resources/{AmanitaConstants.PathToAmanitaManagerPrefab}.");
-                    return null;
+                    newlyInstantiated = CreateNewManager();
                 }
-
-                // Instantiate the prefab. Resources.Load may call Awake on the prefab's script in some Unity versions,
-                // so we null-check again after instantiation.
-                AmanitaManager instantiated = Instantiate(prefab);
-                instantiated.gameObject.name = prefab.name; // remove "(Clone)"
 
                 // After creating, re-scan to ensure we didn't race with another instantiation.
+                if (!Application.isPlaying)
+                {
 #if UNITY_EDITOR
-                var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>();
-                AmanitaManager keeper = null;
-                foreach (var elem in postAll)
-                {
-                    // Skip assets (prefabs)
-                    #if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.IsPersistent(elem.gameObject))
-                        continue;
-                    #endif
-                    // Prefer an existing one that is not the newly instantiated one
-                    if (keeper == null)
-                        keeper = elem;
-                }
+                    // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
+                    var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
+                        .Where((elem) => !UnityEditor.EditorUtility.IsPersistent(elem.gameObject) && 
+                        elem != newlyInstantiated && elem != null);
+                    // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
+                    // stuff in the scene.
 
-                if (keeper != null && keeper != instantiated)
-                {
-                    // Another instance won the race. Destroy the one we just created.
-                    DestroyImmediate(instantiated.gameObject);
-                    _s = keeper;
-                    _s.Init();
-                    return _s;
-                }
+                    // Prefer an existing one that is not the newly instantiated one
+                    AmanitaManager keeper = postAll.FirstOrDefault();
+                    if (keeper != null)
+                    {
+                        // Another instance won the race. Thus...
+                        DestroyImmediate(newlyInstantiated.gameObject);
+                        _s = keeper;
+                        _s.Init();
+                        return _s;
+                    }
 #endif
+                }
 
                 // Otherwise keep the instantiated one
-                _s = instantiated;
+                _s = newlyInstantiated;
                 _s.Init();
                 return _s;
             }
         }
 
+        private static AmanitaManager CreateNewManager()
+        {
+            AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
+            if (prefab == null)
+            {
+                Debug.LogError($"AmanitaManager prefab not found at Resources/{AmanitaConstants.PathToAmanitaManagerPrefab}.");
+                return null;
+            }
+
+            // Resources.Load may call Awake on the prefab's script in some Unity versions,
+            // so we null-check again after instantiation.
+            AmanitaManager instantiated = Instantiate(prefab);
+            instantiated.gameObject.name = prefab.name; // We don't want "Clone" in the name
+            return instantiated;
+        }
+
         public void Init()
         {
-            if (IsInitted)
+            if (IsFullyInitted)
             {
                 return;
             }
 
+            // We do this in both inits since not all scenes will necessarily have a Flowchart that
+            // will ensure an instance of this exists.
             bool thisIsDuplicate = S != this && S != null;
             if (thisIsDuplicate)
             {
@@ -221,12 +247,31 @@ namespace Amanita
                 Destroy(this.gameObject);
                 return;
             }
-
             _s = this;
 
-            if (S == null)
+            EnsureCurrentFlowchartUidsAreRegistered();
+            void EnsureCurrentFlowchartUidsAreRegistered()
             {
-                Debug.LogError($"AmanitaManager's claim to the S field was ignored.");
+                var allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                    .Where((fChart) => fChart.gameObject.scene.isLoaded);
+                // ^To make sure we're only getting the Flowcharts in the scene(s) that are loaded.
+
+                var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
+                fcGuidRegistry.Refresh();
+
+                foreach (var fChart in allFlowcharts)
+                {
+                    if (string.IsNullOrEmpty(fChart.UniqueId))
+                    {
+                        Debug.Log($"Flowchart '{fChart.name}' has empty UniqueId. Forcing reset.");
+                        fChart.ForceResetUid(); // We expect the registry itself to pick up the new GUID via signal here.
+                        continue;
+                    }
+                    else
+                    {
+                        fcGuidRegistry.GetOrAddNumericId(fChart.UniqueId);
+                    }
+                }
             }
 
             ResetAnchors();
@@ -239,27 +284,32 @@ namespace Amanita
                     {
                         var anchorFound = kv.Value;
                         if (anchorFound == null) continue;
-#if UNITY_EDITOR
-                        DestroyImmediate(anchorFound);
-#else
-                        Destroy(anchorFound);
-#endif
+
+                        if (!Application.isPlaying)
+                        {
+                            DestroyImmediate(anchorFound);
+                        }
+                        else
+                        {
+                            Destroy(anchorFound);
+                        }
                     }
                     _adapterAnchors.Clear();
                 }
-
-                // Ensure a tween anchor holder exists so GetOrCreateAnchorFor can parent anchors.
-                EnsureTweenAnchorHolder();
-                
             }
+
+            // So GetOrCreateAnchorFor can parent anchors.
+            EnsureTweenAnchorHolder();
             PrepSubmodules();
 
-            if (Application.isPlaying)
-            {
-                DontDestroyOnLoad(_s.gameObject);
-            }
-            IsInitted = true;
+        }
 
+        public bool IsFullyInitted
+        {
+            get => (TweenManager != null && TweenManager.IsFullyInitted) &&
+                (NarrativeLog != null && NarrativeLog.IsFullyInitted) &&
+                (AudioSystem != null && AudioSystem.IsFullyInitted) &&
+                (SaveSysInstaller != null && SaveSysInstaller.IsFullyInitted);
         }
 
         private void PrepSubmodules()
@@ -267,7 +317,6 @@ namespace Amanita
             // We assume that these are each on separate GameObjects (for the sake of easier testing)
             CameraManager = GetComponentInChildren<CameraManager>();
             EventDispatcher = GetComponentInChildren<EventDispatcher>();
-            MainAudioMixer = GetComponentInChildren<MainAudioMixer>();
             NarrativeLog = GetComponentInChildren<NarrativeLog>();
             AudioSystem = GetComponentInChildren<AudioSystem>();
             SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
@@ -279,7 +328,6 @@ namespace Amanita
                 // The order here matters
                 TweenManager.Init();
                 NarrativeLog.Init();
-                MainAudioMixer.Init();
                 AudioSystem.Init();
                 SaveSysInstaller.Init();
             }
@@ -301,37 +349,37 @@ namespace Amanita
 
         private void Awake()
         {
-            if (_s == null)
+            if (_s != null && _s != this)
             {
-                _s = this;
-                if (Application.isPlaying)
-                    DontDestroyOnLoad(gameObject);
-
-                Init();
-            }
-            else if (_s != this)
-            {
-                if (!Application.isPlaying)
+                CleanSelfUp();
+                void CleanSelfUp()
                 {
-                    // Since DestroyImmediate doesn't call OnDestroy...
-                    OnDestroy();
-                    if (AudioSystem != null)
+                    if (!Application.isPlaying)
                     {
-                        AudioSystem.OnDestroy();
+                        // Since DestroyImmediate doesn't call OnDestroy...
+                        OnDestroy();
+                        if (AudioSystem != null)
+                        {
+                            AudioSystem.OnDestroy();
+                        }
+                        DestroyImmediate(this.gameObject); // Prevents duplicates in edit mode
                     }
-                    DestroyImmediate(gameObject); // Prevents duplicates in edit mode
+                    else
+                    {
+                        Destroy(this.gameObject);
+                    }
                 }
-                else
-                    Destroy(gameObject);
                 return;
             }
-            else if (IsInitted == false)
+            
+            _s = this;
+            if (Application.isPlaying)
             {
-                Init();
+                DontDestroyOnLoad(gameObject);
             }
-        }
 
-        public bool IsInitted { get; private set; } = false;
+            Init();
+        }
 
         private SaveSystemInstaller SaveSysInstaller { get; set; }
 
@@ -346,6 +394,7 @@ namespace Amanita
         /// <summary>
         /// Gets the music manager singleton instance.
         /// </summary>
+        
         public MusicManager MusicManager { get; private set; }
 
         /// <summary>
@@ -353,21 +402,16 @@ namespace Amanita
         /// </summary>
         public EventDispatcher EventDispatcher { get; private set; }
 
-        public MainAudioMixer MainAudioMixer { get; private set; }
-
-#if UNITY_5_3_OR_NEWER
         /// <summary>
         /// Gets the save manager singleton instance.
         /// </summary>
         public SaveManager SaveManager { get; private set; }
-        
+
         /// <summary>
         /// Gets the history manager singleton instance.
         /// </summary>
         public NarrativeLog NarrativeLog { get; private set; }
         
-#endif
-
         /// <summary>
         /// Gets the FungusManager singleton instance.
         /// </summary>
@@ -410,7 +454,6 @@ namespace Amanita
                 }
 
                 _s = null;
-                IsInitted = false;
 
                 SaveSystem.S = null;
             }

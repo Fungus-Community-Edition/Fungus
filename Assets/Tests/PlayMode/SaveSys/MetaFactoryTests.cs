@@ -14,22 +14,24 @@ namespace SaveSystemTests
     {
         protected override bool ReqFlowchart => false;
         protected override bool ReqSceneLoad => false;
+        protected override bool ReqSaveSystem => true;
+
+        protected FakeVersionProvider VersionProvider { get; set; }
+        protected IMetaFactory Factory { get; set; }
+
+        [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
             VersionProvider = new FakeVersionProvider();
             Factory = new DefaultMetaFactory(VersionProvider);
-        }  
-
-        protected FakeVersionProvider VersionProvider { get; set; }
-        protected IMetaFactory Factory { get; set; }
+        }
 
         [Test]
         [TestCaseSource(nameof(SlotsToTestWith))]
         public void CreateMeta_AssignsSlotNumber(int expectedSlot)
         {
             var meta = Factory.CreateMeta(expectedSlot);
-
             Assert.AreEqual(expectedSlot, meta.SlotNumber);
         }
 
@@ -46,7 +48,6 @@ namespace SaveSystemTests
         {
             VersionProvider.VersionToReturn = appVersion;
             var meta = Factory.CreateMeta(slotNumber: 1);
-
             Assert.AreEqual(appVersion, meta.SaveVersion);
         }
 
@@ -62,8 +63,6 @@ namespace SaveSystemTests
         {
             VersionProvider.VersionToReturn = string.Empty;
             var meta = Factory.CreateMeta(slotNumber: 1);
-
-            // Either null or empty string is acceptable as "not set"
             bool success = meta.SaveVersion == SaveSysConstants.NullSaveVer;
             Assert.IsTrue(success, "Meta save version is not null when app version is empty");
         }
@@ -73,8 +72,6 @@ namespace SaveSystemTests
         {
             VersionProvider.VersionToReturn = SaveSysConstants.NullSaveVer;
             var meta = Factory.CreateMeta(slotNumber: 1);
-
-            // Either null or empty string is acceptable as "not set"
             bool success = meta.SaveVersion == SaveSysConstants.NullSaveVer;
             Assert.IsTrue(success, "Meta save version is not null when app version is empty");
         }
@@ -84,11 +81,7 @@ namespace SaveSystemTests
         {
             var first = Factory.CreateMeta(1);
             var second = Factory.CreateMeta(1);
-
             Assert.AreNotSame(first, second);
         }
-
-
-
     }
 }

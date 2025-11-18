@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Color variable type.
     /// </summary>
-    [VariableInfo("Graphic", "Color", typeof(Color))]
+    [VariableInfo("Graphic", "Color", typeof(Color), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class ColorVariable : VariableBase<Color>

@@ -19,6 +19,11 @@ namespace Amanita.Myceliaudio
 
         public virtual void Init()
         {
+            if (IsFullyInitted)
+            {
+                return;
+            }
+
             if (_s != null && _s != this)
             {
                 // With how this should be part of the AmanitaManager prefab, we'll let
@@ -34,6 +39,7 @@ namespace Amanita.Myceliaudio
             void PrepSettings()
             {
 #if !UNITY_WEBGL
+                // Since we can't work with directories in WebGL...
                 var filePath = Path.Combine(Application.dataPath, SystemSettingsFileName);
 
                 if (!File.Exists(filePath))
@@ -87,8 +93,10 @@ namespace Amanita.Myceliaudio
                     TrackManagers[managerEl.Group] = managerEl;
                 }
             }
+            IsFullyInitted = true;
         }
 
+        public virtual bool IsFullyInitted { get; protected set; } = false;
         protected fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
         protected static AudioSystem _s;

@@ -13,6 +13,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.SceneManagement;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -26,7 +28,7 @@ namespace Amanita.VScripting
     /// </summary>
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
-        IReorderableVariableSource, IReorderableMuscariableSource
+        IReorderableVariableSource, IReorderableMuscariableSource, IForceResetUidHandler
     {
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
@@ -36,7 +38,16 @@ namespace Amanita.VScripting
             Debug.Log($"Flowchart InitOnLoad method executed");
         }
 #endif
-        public virtual IVariable GetVariable(int itemID)
+
+        /// <summary>
+        /// Force reset the unique identifier for this Flowchart. Use with caution!
+        /// </summary>
+        public virtual void ForceResetUid()
+        {
+            this.UniqueId = Guid.NewGuid().ToString();
+        }
+
+        public virtual IVariable GetVariable(byte itemID)
         {
             IVariable result = (from elem in Variables
                                 where elem.ItemId == itemID
@@ -166,6 +177,12 @@ namespace Amanita.VScripting
             
         protected virtual void Awake()
         {
+            if (gameObject.scene.isLoaded == false)
+            {
+                // Don't do anything if this isn't even in the scene yet
+                return;
+            }
+
             UIModel.Owner = this.gameObject;
             CheckEventSystem();
 
@@ -180,7 +197,7 @@ namespace Amanita.VScripting
             if (Application.IsPlaying(this))
             {
                 AmanitaManager.EnsureExists();
-                StartCoroutine(HandleGameStartedBlock());
+                StartCoroutine(HandleGameStartedBlocks());
             }
         }
 
@@ -215,7 +232,7 @@ namespace Amanita.VScripting
             eventSystemPresent = true;
         }
 
-        protected virtual IEnumerator HandleGameStartedBlock()
+        protected virtual IEnumerator HandleGameStartedBlocks()
         {
             IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
 
@@ -224,7 +241,7 @@ namespace Amanita.VScripting
                 yield break;
             }
 
-            while (AmanitaManager.S == null || !AmanitaManager.S.IsInitted)
+            while (AmanitaManager.S == null || !AmanitaManager.S.IsFullyInitted)
             {
                 yield return null;
             }
@@ -335,8 +352,8 @@ namespace Amanita.VScripting
             }
         }
 
-        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene arg0,
-            UnityEngine.SceneManagement.Scene arg1)
+        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene prevScene,
+            UnityEngine.SceneManagement.Scene currentScene)
         {
             // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
             eventSystemPresent = false;
@@ -344,19 +361,34 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
-            AssertOwnership();
+            if (gameObject.scene.isLoaded == false)
+            {
+                // Don't do anything if this isn't even in the scene yet
+                return;
+            }
+
             if (!cachedFlowcharts.Contains(this))
             {
                 cachedFlowcharts.Add(this);
-                //TODO these pairs could be replaced by something static that manages all active flowcharts
-                UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnActiveSceneChanged;
+                SceneManager.activeSceneChanged -= OnActiveSceneChanged; // Just in case.
+                SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
 
+            Refresh();
+
+            StringSubstituter.RegisterHandler(this);   
+            VScriptSignals.UniqueIDHaverEnabled(this);
+
+        }
+
+        public virtual void Refresh()
+        {
+            AssertUniqueID();
+            AssertOwnership();
+            
             CheckItemIds();
             CleanupComponents();
             UpdateVersion();
-
-            StringSubstituter.RegisterHandler(this);   
         }
 
         protected virtual void AssertOwnership()
@@ -364,7 +396,11 @@ namespace Amanita.VScripting
             foreach (Muscariable elem in Variables.Where((elem) => elem is Muscariable))
             {
                 elem.Owner = this;
+                elem.ParentFlowchart = this;
             }
+
+            // Legacy variables automatically get their owner-registration done;
+            // it's always the Flowchart they're attached to.
         }
 
         protected virtual void OnDisable()
@@ -419,27 +455,36 @@ namespace Amanita.VScripting
         {
             // Make sure item ids are unique and monotonically increasing.
             // This should always be the case, but some legacy Flowcharts may have issues.
-            List<int> usedIds = new List<int>();
-            var blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
+            List<ushort> usedIds = new List<ushort>();
+            CheckForBlocks();
+            void CheckForBlocks()
             {
-                var block = blocks[i];
-                if (block.ItemId == -1 || usedIds.Contains(block.ItemId))
+                
+                var blocks = GetComponents<Block>();
+                for (ushort i = 0; i < blocks.Length; i++)
                 {
-                    block.ItemId = NextItemId();
+                    var block = blocks[i];
+                    if (block.ItemId == 0 || usedIds.Contains(block.ItemId))
+                    {
+                        block.ItemId = NextItemId();
+                    }
+                    usedIds.Add(block.ItemId);
                 }
-                usedIds.Add(block.ItemId);
             }
             
-            var commands = GetComponents<Command>();
-            for (int i = 0; i < commands.Length; i++)
+            CheckForCommands();
+            void CheckForCommands()
             {
-                var command = commands[i];
-                if (command.ItemId == -1 || usedIds.Contains(command.ItemId))
+                var commands = GetComponents<Command>();
+                for (ushort i = 0; i < commands.Length; i++)
                 {
-                    command.ItemId = NextItemId();
+                    var command = commands[i];
+                    if (command.ItemId == 0 || usedIds.Contains(command.ItemId))
+                    {
+                        command.ItemId = NextItemId();
+                    }
+                    usedIds.Add(command.ItemId);
                 }
-                usedIds.Add(command.ItemId);
             }
 
             UpdateNextValidVarID();
@@ -450,10 +495,10 @@ namespace Amanita.VScripting
                 {
                     return;
                 }
-                int highestIDFound = varWithHighestID.ItemId;
+                byte highestIDFound = varWithHighestID.ItemId;
                 if (nextValidVarID < highestIDFound)
                 {
-                    nextValidVarID = highestIDFound + 1;
+                    nextValidVarID = (byte)(highestIDFound + 1);
                 }
             }
 
@@ -463,21 +508,28 @@ namespace Amanita.VScripting
             EnsureVarsHaveValidIDs();
             void EnsureVarsHaveValidIDs()
             {
-                var varsInNeedOfIDs = (from elem in Variables
-                                       where elem.ItemId <= 0
-                                       where elem.Scope != VariableScope.Global
-                                       select elem).ToList();
-
-                foreach (var elem in varsInNeedOfIDs)
+                IList<byte> usedIds = new List<byte>();
+                for (int i = 0; i < Variables.Count; i++)
                 {
-                    elem.ItemId = nextValidVarID;
-                    nextValidVarID++;
+                    var currentVar = Variables[i];
+                    if (usedIds.Contains(currentVar.ItemId) || currentVar.ItemId == 0)
+                    {
+                        currentVar.ItemId = NextValidVarID();
+                    }
+                    usedIds.Add(currentVar.ItemId);
                 }
             }
         }
 
+        protected virtual byte NextValidVarID()
+        {
+            byte toReturn = nextValidVarID;
+            nextValidVarID++;
+            return toReturn;
+        }
+
         [HideInInspector]
-        [SerializeField] protected int nextValidVarID = 1;
+        [SerializeField] protected byte nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {
@@ -726,13 +778,16 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Returns the next id to assign to a new flowchart item.
+        /// Returns the next id to assign to a new Block or Command.
         /// Item ids increase monotically so they are guaranteed to
         /// be unique within a Flowchart.
         /// </summary>
-        public int NextItemId()
+        public ushort NextItemId()
         {
-            int maxId = -1;
+            // As for why we make Blocks and Commands get IDs from the same pool while vars get their own...
+            // we want to give users the option to move commands between blocks without worrying about ID conflicts,
+            // but variables added to a Flowchart are supposed to forever be with that same Flowchart.
+            ushort maxId = 0;
             var blocks = GetComponents<Block>();
             for (int i = 0; i < blocks.Length; i++)
             {
@@ -746,8 +801,10 @@ namespace Amanita.VScripting
                 var command = commands[i];
                 maxId = Math.Max(maxId, command.ItemId);
             }
-            return maxId + 1;
+            return (ushort)(maxId + 1);
         }
+
+
 
         /// <summary>
         /// Create a new block node which you can then add commands to.
@@ -1051,9 +1108,14 @@ namespace Amanita.VScripting
 
         public virtual IVariable GetVariableById(int id)
         {
+            return GetVariableById((byte)id);
+        }
+
+        public virtual IVariable GetVariableById(byte id)
+        {
             IVariable result = (from varEl in muscariables
-                               where varEl.ItemId == id
-                               select varEl).FirstOrDefault();
+                                where varEl.ItemId == id
+                                select varEl).FirstOrDefault();
             if (result == null)
             {
                 Debug.LogWarning($"Variable with item ID {id} not found.");
@@ -1451,8 +1513,6 @@ namespace Amanita.VScripting
             return result;
         }
 
-        protected int nextMuscariableID = 1;
-
         /// <summary>
         /// Sets up the Muscariable to belong to this Flowchart before adding it.
         /// </summary>
@@ -1462,9 +1522,7 @@ namespace Amanita.VScripting
             bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemId == toAdd.ItemId && hasValidId);
             if (shouldAssignNewId)
             {
-                int newId = nextMuscariableID;
-                toAdd.ItemId = newId;
-                nextMuscariableID++;
+                toAdd.ItemId = NextValidVarID();
             }
 
             toAdd.ParentFlowchart = this;
@@ -1574,11 +1632,27 @@ namespace Amanita.VScripting
         #endregion
 
         [HideInInspector]
-        [SerializeField] private string uniqueId = "";
+        [SerializeField] private string uniqueId = string.Empty;
         /// <summary>
-        /// Unique identifier not specific to localization.
+        /// Unique identifier not specific to localization. Don't assign to this unless you know what you're doing.
         /// </summary>
-        public string UniqueId => uniqueId;
+        public string UniqueId
+        {
+            get => uniqueId;
+            set
+            {
+                if (!string.IsNullOrEmpty(uniqueId))
+                {
+                    Debug.LogWarning($"Assigning a new unique ID to {this.name}, a Flowchart that already has one. " +
+                        $"Old ID: {uniqueId}, New ID: {value}. If this was intentional, make sure you " +
+                        $"know what you're doing.");
+                }
+
+                string prevId = uniqueId;
+                uniqueId = value;
+                VScriptSignals.UniqueGuidAssigned(prevId, this);
+            }
+        }
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
         {
@@ -1590,6 +1664,12 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
+            if (gameObject.scene.isLoaded == false)
+            {
+                // Don't do anything if this isn't even in the scene yet
+                return;
+            }
+
             legacyVariables.RemoveAll((elem) => elem == null);
             muscariables.RemoveAll((elem) => elem == null);
 
@@ -1599,15 +1679,7 @@ namespace Amanita.VScripting
                 uiModel.Owner = this.gameObject;
             }
 
-#if UNITY_EDITOR
-            if (string.IsNullOrEmpty(uniqueId))
-            {
-                uniqueId = Guid.NewGuid().ToString();
-                UnityEditor.EditorUtility.SetDirty(this);
-            }
-#endif
-            AssertOwnership();
-            CheckItemIds();
+            Refresh();
 
             EnsureBlocksHaveAValidSize();
             void EnsureBlocksHaveAValidSize()
@@ -1627,6 +1699,25 @@ namespace Amanita.VScripting
                 }
             }
 
+        }
+
+        protected virtual void AssertUniqueID()
+        {
+            var sceneWeAreIn = this.gameObject.scene;
+            bool thisIsTestOnly = sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
+            if (thisIsTestOnly)
+            {
+                UniqueId = $"TestFakeID_{cachedFlowcharts.Count + 1}";
+                return;
+            }
+            if (string.IsNullOrEmpty(uniqueId))
+            {
+                UniqueId = Guid.NewGuid().ToString();
+                // ^The property triggers the signal, so...
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
+            }
         }
 
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
@@ -1670,8 +1761,7 @@ namespace Amanita.VScripting
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
             newVar.Scope = scope;
-            newVar.ItemId = nextValidVarID;
-            nextValidVarID++;
+            newVar.ItemId = NextValidVarID();
 
             IVariable toRegister = newVar;
             bool createdLegacyVar = newVar is not Muscariable;

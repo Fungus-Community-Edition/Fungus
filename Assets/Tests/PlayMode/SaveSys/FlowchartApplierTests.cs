@@ -92,8 +92,6 @@ namespace SaveSystemTests
             // Should not throw, should log a warning
             LogAssert.Expect(LogType.Warning, $"Flowchart with ID {flowchartSaveData.UniqueId} or name {flowchartSaveData.FlowchartName} not found.");
             await flowchartApplier.Apply(flowchartSaveData);
-
-
         }
 
         protected virtual void RemoveAllFlowchartsFromTheScene()
@@ -101,13 +99,6 @@ namespace SaveSystemTests
             IList<Flowchart> toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             foreach (var fc in toRemove)
             {
-                // We want to skip the FCs that are part of the AmanitaManager prefab, since that's
-                // too core to the functionality of Amanita itself
-                bool isPartOfMainManager = fc.GetComponentInParent<AmanitaManager>() != null;
-                if (isPartOfMainManager)
-                {
-                    continue;
-                }
                 UnityObject.DestroyImmediate(fc.gameObject);
             }
         }
@@ -213,6 +204,7 @@ namespace SaveSystemTests
             // Create a second flowchart in the scene
             var secondFlowchartGO = new GameObject("SecondFlowchart");
             var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
+            RegisterTestFlowchart(secondFlowchart);
 
             // Add a variable to the second flowchart
             string initSecondVarVal = "initial";
@@ -281,7 +273,7 @@ namespace SaveSystemTests
             string originalId = flowchart.UniqueId;
             typeof(Flowchart)
                 .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(flowchart, Guid.NewGuid().ToString());
+                .SetValue(flowchart, originalId + "erho8ufgiyswegfi7wfgf7o");
 
             // The save data still has the old ID, but the name matches
             // Change a variable so we can verify it gets restored
