@@ -103,7 +103,7 @@ namespace Amanita.SaveSys
                 writeReq.MainState = saveSet.MainState;
             }
             
-            await saveWriter.WriteOneToDisk(writeReq, token);
+            await saveWriter.WriteOneToDiskAsync(writeReq, token);
             
         }
 

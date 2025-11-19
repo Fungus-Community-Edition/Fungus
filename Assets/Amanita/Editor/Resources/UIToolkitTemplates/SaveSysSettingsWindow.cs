@@ -22,7 +22,7 @@ namespace Amanita.SaveSys.EditorUtils
             wnd.minSize = wnd.maxSize = windowSize;
 
             var settings = GetSysSettings();
-            SaveSystemSettings GetSysSettings()
+            static SaveSystemSettings GetSysSettings()
             {
                 SaveSystemSettings sysSettings = Resources.Load<SaveSystemSettings>("SaveSys/Settings/SaveSystemSettings");
                 if (sysSettings == null)
@@ -56,38 +56,49 @@ namespace Amanita.SaveSys.EditorUtils
             PopulateDropdowns();
 
             PrepMapForReadersAndWriters();
-            void PrepMapForReadersAndWriters()
+            static void PrepMapForReadersAndWriters()
             {
+                // So that when a choice changes, we can change the settings to an already-prepped instance.
                 _readerInstanceMap.Clear();
                 _writerInstanceMap.Clear();
 
-                void CheckDefaults()
+                CheckDefaults();
+                static void CheckDefaults()
                 {
-                    string defaultsSubfolder = "SaveSys/Defaults";
-                    IList<ISaveReader> defaultSOs = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
+                    string defaultsSubfolder = AmanitaConstants.PathToSaveSysDefaultsFolder;
+                    IList<ISaveReader> defaultReaders = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
                         .Where((elem) => elem is ISaveReader)
                         .Cast<ISaveReader>()
                         .ToList();
 
-                    foreach (var so in defaultSOs)
+                    foreach (var elem in defaultReaders)
                     {
-                        
-                        string name = $"{so.GetType().Name} ({so.GetType().Namespace})";
-                        _readerInstanceMap[name] = so;
+                        _readerInstanceMap[elem.GetType()] = elem;
+                    }
+
+                    IList<ISaveWriter> defaultWriters = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
+                        .Where((elem) => elem is ISaveWriter)
+                        .Cast<ISaveWriter>()
+                        .ToList();
+
+                    foreach (var elem in defaultWriters)
+                    {
+                        _writerInstanceMap[elem.GetType()] = elem;
                     }
                 }
+
                 string settingsSubfolder = "SaveSys/Settings";
                 foreach (var readerType in SaveReaderTypeRegistry.ReaderTypes)
                 {
-                    if (_readerInstanceMap.ContainsKey(readerType.FullName))
+                    if (_readerInstanceMap.ContainsKey(readerType))
                     {
-                        continue;
+                        continue; // Already have a default assigned
                     }
 
                     // We assume that all the reader types are either ScriptableObjects or
                     // concrete types with empty constructors.
                     ISaveReader readerInstance;
-                    if (soType.IsAssignableFrom(readerType))
+                    if (scriptableObjType.IsAssignableFrom(readerType))
                     {
                         string assetName = $"Generated{readerType.FullName}";
                         readerInstance = (ISaveReader)SOUtils.GetOrCreateScriptableObject(readerType, settingsSubfolder,
@@ -99,25 +110,39 @@ namespace Amanita.SaveSys.EditorUtils
                     }
 
                     string name = $"{readerType.Name} ({readerType.Namespace})";
-                    _readerInstanceMap[name] = readerInstance;
+                    _readerInstanceMap[readerType] = readerInstance;
 
                 }
 
-                // TODO: Implement the save writer type registry and uncomment this
-                //foreach (var writerType in SaveWriterTypeRegistry.WriterTypes)
-                //{
-                //    if (soType.IsAssignableFrom(writerType) && writerType.GetConstructor(Type.EmptyTypes) != null)
-                //    {
-                //        string name = $"{writerType.Name} ({writerType.Namespace})";
-                //        _writerInstanceMap[name] = writerType;
-                //    }
-                //}
+                // TODO: Implement SaveWriterTypeRegistry and do the same for writers
+                foreach (var writerType in SaveWriterTypeRegistry.WriterTypes)
+                {
+                    if (_writerInstanceMap.ContainsKey(writerType))
+                    {
+                        continue; // Already have a default assigned
+                    }
+                    // We assume that all the writer types are either ScriptableObjects or
+                    // concrete types with empty constructors.
+                    ISaveWriter writerInstance;
+                    if (scriptableObjType.IsAssignableFrom(writerType))
+                    {
+                        string assetName = $"Generated{writerType.FullName}";
+                        writerInstance = (ISaveWriter)SOUtils.GetOrCreateScriptableObject(writerType, settingsSubfolder,
+                            assetName);
+                    }
+                    else
+                    {
+                        writerInstance = (ISaveWriter)System.Activator.CreateInstance(writerType);
+                    }
+                    string name = $"{writerType.Name} ({writerType.Namespace})";
+                    _writerInstanceMap[writerType] = writerInstance;
+                }
             }
             ToggleSubs(true);
         }
 
         protected VisualElement Root => rootVisualElement;
-        protected static Type soType = typeof(ScriptableObject);
+        protected static Type scriptableObjType = typeof(ScriptableObject);
         protected static Type iSaveReaderType = typeof(ISaveReader);
 
         protected virtual void RegisterViews()
@@ -132,6 +157,9 @@ namespace Amanita.SaveSys.EditorUtils
 
         protected virtual void PopulateDropdowns()
         {
+            // Each viable type will get its own dropdown entry. This cuts down on the need for the
+            // user to manually create and assign their own ScriptableObject types. In fact, this even
+            // reduces the need to make certain things ScriptableObjects in the first place.
             foreach (var readerType in SaveReaderTypeRegistry.ReaderTypes)
             {
                 string name = $"{readerType.Name} ({readerType.Namespace})";
@@ -146,12 +174,26 @@ namespace Amanita.SaveSys.EditorUtils
             }
 
             _saveReaderDropdown.value = _saveReaderDropdown.choices[0];
+
+            foreach (var writerType in SaveWriterTypeRegistry.WriterTypes)
+            {
+                string name = $"{writerType.Name} ({writerType.Namespace})";
+                if (name.Contains("Test"))
+                {
+                    continue;
+                }
+                _writerTypeMap[name] = writerType;
+                _saveWriterDropdown.choices.Add(name);
+            }
+
+            _saveWriterDropdown.value = _saveWriterDropdown.choices[0];
         }
 
         protected static IDictionary<string, Type> _readerTypeMap = new Dictionary<string, Type>();
+        protected static IDictionary<string, Type> _writerTypeMap = new Dictionary<string, Type>();
 
-        protected static IDictionary<string, ISaveReader> _readerInstanceMap = new Dictionary<string, ISaveReader>();
-        protected static IDictionary<string, Type> _writerInstanceMap = new Dictionary<string, Type>();
+        protected static IDictionary<Type, ISaveReader> _readerInstanceMap = new Dictionary<Type, ISaveReader>(new TypeNameComparer());
+        protected static IDictionary<Type, ISaveWriter> _writerInstanceMap = new Dictionary<Type, ISaveWriter>(new TypeNameComparer());
         // ^We have this map so we can easily change the reader or writer the SO uses
 
         protected virtual void ToggleSubs(bool on)

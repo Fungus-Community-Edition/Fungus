@@ -55,7 +55,6 @@ namespace Amanita.EditorUtils
         }
 
         private static string resourcesPath = "Assets/Amanita/Resources/";
-        private static string saveSysResourcesPath = resourcesPath + "SaveSys/";
 
         public static Encryptor EnsureDefaultEncryptor()
         {

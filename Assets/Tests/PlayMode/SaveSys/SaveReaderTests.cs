@@ -38,7 +38,7 @@ namespace SaveSystemTests
 
         protected virtual IEnumerator CommonMetadataReadTest()
         {
-            Task writeTask = saveWriter.WriteOneToDisk(writeReq);
+            Task writeTask = saveWriter.WriteOneToDiskAsync(writeReq);
             yield return WaitFor(writeTask);
 
             var expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
@@ -52,7 +52,7 @@ namespace SaveSystemTests
 
         protected virtual async Task CommonMetadataReadTestAsync()
         {
-            await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
+            await saveWriter.WriteOneToDiskAsync(writeReq).ConfigureAwait(false);
 
             var expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
 
@@ -69,7 +69,7 @@ namespace SaveSystemTests
 
             saveReader.ExpectEncryption = saveWriter.ExpectEncryption = false;
 
-            await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
+            await saveWriter.WriteOneToDiskAsync(writeReq).ConfigureAwait(false);
 
             var expectedMainSaveData = writeReq.MainState as CompositeSaveData;
             var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false);
@@ -84,7 +84,7 @@ namespace SaveSystemTests
 
             saveReader.ExpectEncryption = saveWriter.ExpectEncryption = true;
 
-            await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
+            await saveWriter.WriteOneToDiskAsync(writeReq).ConfigureAwait(false);
 
             var expectedMainSaveData = writeReq.MainState as CompositeSaveData;
             var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false);
@@ -243,7 +243,7 @@ namespace SaveSystemTests
 
             saveWriter.ExpectEncryption = saveReader.ExpectEncryption = false;
 
-            await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
+            await saveWriter.WriteOneToDiskAsync(writeReq).ConfigureAwait(false);
 
             var otherReadReq = new SaveReadRequest(readReq) { SlotNumber = metaBefore.SlotNumber };
             var metaAfter = (SaveMetaData)await saveReader.ReadMetadataFromDiskAsync(otherReadReq).ConfigureAwait(false);
