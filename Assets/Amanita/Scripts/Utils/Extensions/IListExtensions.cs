@@ -33,6 +33,20 @@ namespace Collections
             return false;
         }
 
+        public static int IndexOfReference<T>(this IList<T> list, object item) where T : class
+        {
+            int index = -1;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (ReferenceEquals(list[i], item))
+                {
+                    index = i;
+                }
+            }
+
+            return index;
+        }
+
         // Adds the item if the list isn't at capacity
         public static void Add<T>(this IList<T> list, T item, int capacity)
         {
