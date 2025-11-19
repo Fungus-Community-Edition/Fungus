@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/SaveSysSettingsWindow.uss?fileID=7433441132597879392&amp;guid=16b5f91ec91c1eb4280cc20ae0b17452&amp;type=3#SaveSysSettingsWindow" />
+    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/SaveSysSettingsWindowStyle.uss?fileID=7433441132597879392&amp;guid=16b5f91ec91c1eb4280cc20ae0b17452&amp;type=3#SaveSysSettingsWindowStyle" />
     <ui:VisualElement name="WindowRoot" style="flex-grow: 1;">
         <ui:Label text="Save Sys Settings" name="TopLabel" />
         <ui:DropdownField label="Save Reader" name="SaveReaderDropdown" />
@@ -9,5 +9,8 @@
             <ui:ListView name="MainAppliersList" />
         </ui:VisualElement>
         <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita" />
+        <ui:VisualElement name="RefreshButtonHolder">
+            <ui:Button text="Refresh" name="RefreshButton" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

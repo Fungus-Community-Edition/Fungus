@@ -4,21 +4,46 @@ namespace Amanita.SaveSys
 {
     public class SaveSystemSettings : ScriptableObject
     {
-        [SerializeField] protected SaveReader _saveReader;
-        [SerializeField] protected SaveWriter _saveWriter;
-        
+        // We have these as ScriptableObject references to reduce persistence headaches. This means
+        // that all custom ISaveReader and ISaveWriter implementations must also be ScriptableObjects.
+        [SerializeField] protected ScriptableObject _saveReader;
+        [SerializeField] protected ScriptableObject _saveWriter;
         [SerializeField] protected SaveStorageSettings _storageSettings;
 
-        public virtual SaveReader SaveReader
+        public virtual ISaveReader SaveReader
         {
-            get => _saveReader;
-            set => _saveReader = value;
+            get => _saveReader as ISaveReader;
+            set
+            {
+                if (value == _saveReader as ISaveReader)
+                {
+                    return;
+                }
+                if (value is not ScriptableObject so)
+                {
+                    Debug.LogError("SaveReader must be a ScriptableObject.", this);
+                    return;
+                }
+                _saveReader = value as ScriptableObject;
+            }
         }
 
-        public virtual SaveWriter SaveWriter
+        public virtual ISaveWriter SaveWriter
         {
-            get => _saveWriter;
-            set => _saveWriter = value;
+            get => _saveWriter as ISaveWriter;
+            set
+            {
+                if (value == _saveWriter as ISaveWriter)
+                {
+                    return;
+                }
+                if (value is not ScriptableObject so)
+                {
+                    Debug.LogError("SaveWriter must be a ScriptableObject.", this);
+                    return;
+                }
+                _saveWriter = value as ScriptableObject;
+            }
         }
 
         public SaveStorageSettings StorageSettings

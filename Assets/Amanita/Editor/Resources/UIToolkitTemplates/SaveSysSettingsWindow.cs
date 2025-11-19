@@ -3,16 +3,16 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 using Type = System.Type;
-using System.Reflection;
 using UnityEditor.UIElements;
 using System.Linq;
+using Collections;
 
 namespace Amanita.SaveSys.EditorUtils
 {
     public class SaveSysSettingsWindow : EditorWindow
     {
         [SerializeField]
-        private VisualTreeAsset m_VisualTreeAsset = default;
+        protected VisualTreeAsset m_VisualTreeAsset = default;
 
         [MenuItem("Window/Amanita/Save Sys Settings")]
         public static void Open()
@@ -27,7 +27,7 @@ namespace Amanita.SaveSys.EditorUtils
                 SaveSystemSettings sysSettings = Resources.Load<SaveSystemSettings>("SaveSys/Settings/SaveSystemSettings");
                 if (sysSettings == null)
                 {
-                    sysSettings = SOUtils.GetOrCreateScriptableObject<SaveSystemSettings>("SaveSys/Settings", 
+                    sysSettings = SOUtils.GetOrCreateScriptableObject<SaveSystemSettings>("SaveSys/Settings",
                         "SaveSystemSettings");
 
                     if (sysSettings != null)
@@ -53,92 +53,96 @@ namespace Amanita.SaveSys.EditorUtils
             VisualElement mainUxml = m_VisualTreeAsset.Instantiate();
             Root.Add(mainUxml);
             RegisterViews();
-            PopulateDropdowns();
+            UpdateCacheFromTypeRegistries();
+            RefreshDropdowns();
+            
+            PrepReaderAndWriterInstances();
+            ToggleSubs(true);
+        }
 
-            PrepMapForReadersAndWriters();
-            static void PrepMapForReadersAndWriters()
+        protected virtual void UpdateCacheFromTypeRegistries()
+        {
+            validReaderTypes.Clear();
+            validWriterTypes.Clear();
+
+            // For the sake of easier persistence (and reduced headache), we'll only work with types that not only
+            // implement the right interface, but also inherit from ScriptableObject.
+            IList<Type> scriptableObjReaders = SaveReaderTypeRegistry.ReaderTypes
+                .Where((elem) => scriptableObjType.IsAssignableFrom(elem)
+                    && iSaveReaderType.IsAssignableFrom(elem)).ToList();
+            validReaderTypes.AddRange(scriptableObjReaders);
+
+            IList<Type> scriptableObjWriters = SaveWriterTypeRegistry.WriterTypes
+                .Where((elem) => scriptableObjType.IsAssignableFrom(elem)
+                    && typeof(ISaveWriter).IsAssignableFrom(elem)).ToList();
+            validWriterTypes.AddRange(scriptableObjWriters);
+        }
+
+        protected static IList<Type> validReaderTypes = new List<Type>();
+        protected static IList<Type> validWriterTypes = new List<Type>();
+
+        static void PrepReaderAndWriterInstances()
+        {
+            // So that when a choice changes, we can change the settings to an already-prepped instance.
+            readerInstanceMap.Clear();
+            writerInstanceMap.Clear();
+
+            RegisterDefaultsFor(readerInstanceMap);
+
+            static IList<Type> RegisterDefaultsFor<T>(IDictionary<TypeChoiceInfo, T> map)
             {
-                // So that when a choice changes, we can change the settings to an already-prepped instance.
-                _readerInstanceMap.Clear();
-                _writerInstanceMap.Clear();
+                // The defaults we'll consider here are all ScriptableObjects.
+                IList<Type> result = new List<Type>();
+                const string defaultsSubfolder = AmanitaConstants.PathToSaveSysDefaultsFolder;
+                IList<T> defaultInstances = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
+                    .Where((elem) => elem is T)
+                    .Cast<T>()
+                    .ToList();
 
-                CheckDefaults();
-                static void CheckDefaults()
+                foreach (var elem in defaultInstances)
                 {
-                    string defaultsSubfolder = AmanitaConstants.PathToSaveSysDefaultsFolder;
-                    IList<ISaveReader> defaultReaders = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
-                        .Where((elem) => elem is ISaveReader)
-                        .Cast<ISaveReader>()
-                        .ToList();
-
-                    foreach (var elem in defaultReaders)
+                    Type elemType = elem.GetType();
+                    result.Add(elemType);
+                    TypeChoiceInfo info = new TypeChoiceInfo
                     {
-                        _readerInstanceMap[elem.GetType()] = elem;
-                    }
-
-                    IList<ISaveWriter> defaultWriters = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
-                        .Where((elem) => elem is ISaveWriter)
-                        .Cast<ISaveWriter>()
-                        .ToList();
-
-                    foreach (var elem in defaultWriters)
-                    {
-                        _writerInstanceMap[elem.GetType()] = elem;
-                    }
+                        Type = elemType,
+                        ChoiceText = $"{elemType.Name} ({elemType.Namespace})"
+                    };
+                    map[info] = elem;
                 }
 
+                return result;
+            }
+
+            RegisterDefaultsFor(writerInstanceMap);
+
+            GetOrGenerateAssetsFor(readerInstanceMap, validReaderTypes);
+            void GetOrGenerateAssetsFor<T>(IDictionary<TypeChoiceInfo, T> map, IList<Type> validTypes) where T: class
+            {
                 string settingsSubfolder = "SaveSys/Settings";
-                foreach (var readerType in SaveReaderTypeRegistry.ReaderTypes)
+                foreach (var type in validTypes)
                 {
-                    if (_readerInstanceMap.ContainsKey(readerType))
+                    bool alreadyRegisteredForThisType = map.Keys
+                        .Where((elem) => elem.Type.Equals(type)).Any();
+                    if (alreadyRegisteredForThisType)
                     {
-                        continue; // Already have a default assigned
+                        continue; // We only want one instance per concrete type.
                     }
-
-                    // We assume that all the reader types are either ScriptableObjects or
-                    // concrete types with empty constructors.
-                    ISaveReader readerInstance;
-                    if (scriptableObjType.IsAssignableFrom(readerType))
+                    T instance;
+                    string assetName = $"Generated{type.FullName}";
+                    instance = SOUtils.GetOrCreateScriptableObject(type, settingsSubfolder,
+                        assetName) as T;
+                    string name = $"{type.Name} ({type.Namespace})";
+                    TypeChoiceInfo choiceInfo = new TypeChoiceInfo
                     {
-                        string assetName = $"Generated{readerType.FullName}";
-                        readerInstance = (ISaveReader)SOUtils.GetOrCreateScriptableObject(readerType, settingsSubfolder,
-                            assetName);
-                    }
-                    else
-                    {
-                        readerInstance = (ISaveReader)System.Activator.CreateInstance(readerType);
-                    }
-
-                    string name = $"{readerType.Name} ({readerType.Namespace})";
-                    _readerInstanceMap[readerType] = readerInstance;
-
-                }
-
-                // TODO: Implement SaveWriterTypeRegistry and do the same for writers
-                foreach (var writerType in SaveWriterTypeRegistry.WriterTypes)
-                {
-                    if (_writerInstanceMap.ContainsKey(writerType))
-                    {
-                        continue; // Already have a default assigned
-                    }
-                    // We assume that all the writer types are either ScriptableObjects or
-                    // concrete types with empty constructors.
-                    ISaveWriter writerInstance;
-                    if (scriptableObjType.IsAssignableFrom(writerType))
-                    {
-                        string assetName = $"Generated{writerType.FullName}";
-                        writerInstance = (ISaveWriter)SOUtils.GetOrCreateScriptableObject(writerType, settingsSubfolder,
-                            assetName);
-                    }
-                    else
-                    {
-                        writerInstance = (ISaveWriter)System.Activator.CreateInstance(writerType);
-                    }
-                    string name = $"{writerType.Name} ({writerType.Namespace})";
-                    _writerInstanceMap[writerType] = writerInstance;
+                        Type = type,
+                        ChoiceText = name
+                    };
+                    map[choiceInfo] = instance;
                 }
             }
-            ToggleSubs(true);
+            GetOrGenerateAssetsFor(writerInstanceMap, validWriterTypes);
+
         }
 
         protected VisualElement Root => rootVisualElement;
@@ -147,86 +151,116 @@ namespace Amanita.SaveSys.EditorUtils
 
         protected virtual void RegisterViews()
         {
-            _saveReaderDropdown = Root.Q<DropdownField>("SaveReaderDropdown");
-            _saveWriterDropdown = Root.Q<DropdownField>("SaveWriterDropdown");
-            _storageSettings = Root.Q<ObjectField>("StorageSettings");
+            saveReaderDropdown = Root.Q<DropdownField>("SaveReaderDropdown");
+            saveWriterDropdown = Root.Q<DropdownField>("SaveWriterDropdown");
+            storageSettings = Root.Q<ObjectField>("StorageSettings");
+            _refreshButton = Root.Q<Button>("RefreshButton");
         }
 
-        protected DropdownField _saveReaderDropdown, _saveWriterDropdown;
-        protected ObjectField _storageSettings;
+        protected DropdownField saveReaderDropdown, saveWriterDropdown;
+        protected ObjectField storageSettings;
+        protected Button _refreshButton;
 
-        protected virtual void PopulateDropdowns()
+        protected virtual void RefreshDropdowns()
         {
             // Each viable type will get its own dropdown entry. This cuts down on the need for the
             // user to manually create and assign their own ScriptableObject types. In fact, this even
             // reduces the need to make certain things ScriptableObjects in the first place.
-            foreach (var readerType in SaveReaderTypeRegistry.ReaderTypes)
+            readerTypeMap.Clear();
+            writerTypeMap.Clear();
+            saveReaderDropdown.choices.Clear();
+            saveWriterDropdown.choices.Clear();
+
+            Populate(readerTypeMap, validReaderTypes, saveReaderDropdown);
+            static void Populate(IDictionary<string, Type> map, IList<Type> validTypes, DropdownField dropdown)
             {
-                string name = $"{readerType.Name} ({readerType.Namespace})";
-                if (name.Contains("Test"))
+                foreach (var type in validTypes)
                 {
-                    continue;
+                    // In the future, we might want to add an attribute that lets the classes decide their
+                    // display names in this window.
+                    string name = $"{type.Name} ({type.Namespace})";
+                    if (name.Contains("Test"))
+                    {
+                        continue;
+                    }
+                    map[name] = type;
+                    dropdown.choices.Add(name);
                 }
-
-                _readerTypeMap[name] = readerType;
-                _saveReaderDropdown.choices.Add(name);
-
             }
+            Populate(writerTypeMap, validWriterTypes, saveWriterDropdown);
 
-            _saveReaderDropdown.value = _saveReaderDropdown.choices[0];
-
-            foreach (var writerType in SaveWriterTypeRegistry.WriterTypes)
-            {
-                string name = $"{writerType.Name} ({writerType.Namespace})";
-                if (name.Contains("Test"))
-                {
-                    continue;
-                }
-                _writerTypeMap[name] = writerType;
-                _saveWriterDropdown.choices.Add(name);
-            }
-
-            _saveWriterDropdown.value = _saveWriterDropdown.choices[0];
+            saveReaderDropdown.value = saveReaderDropdown.choices[0];
+            saveWriterDropdown.value = saveWriterDropdown.choices[0];
         }
 
-        protected static IDictionary<string, Type> _readerTypeMap = new Dictionary<string, Type>();
-        protected static IDictionary<string, Type> _writerTypeMap = new Dictionary<string, Type>();
+        // The key is the choice text shown in the dropdown.
+        protected static IDictionary<string, Type> readerTypeMap = new Dictionary<string, Type>();
+        protected static IDictionary<string, Type> writerTypeMap = new Dictionary<string, Type>();
 
-        protected static IDictionary<Type, ISaveReader> _readerInstanceMap = new Dictionary<Type, ISaveReader>(new TypeNameComparer());
-        protected static IDictionary<Type, ISaveWriter> _writerInstanceMap = new Dictionary<Type, ISaveWriter>(new TypeNameComparer());
+        protected static IDictionary<TypeChoiceInfo, ISaveReader> readerInstanceMap = new Dictionary<TypeChoiceInfo, ISaveReader>();
+        protected static IDictionary<TypeChoiceInfo, ISaveWriter> writerInstanceMap = new Dictionary<TypeChoiceInfo, ISaveWriter>();
         // ^We have this map so we can easily change the reader or writer the SO uses
 
         protected virtual void ToggleSubs(bool on)
         {
             if (on)
             {
-                _storageSettings.RegisterValueChangedCallback(OnStorageSettingsChanged);
-                _saveReaderDropdown.RegisterValueChangedCallback(OnReaderDropdownChoiceChanged);
-                _saveWriterDropdown.RegisterValueChangedCallback(OnWriterDropdownChoiceChanged);
+                storageSettings.RegisterValueChangedCallback(OnStorageSettingsChanged);
+                saveReaderDropdown.RegisterValueChangedCallback(OnReaderDropdownChoiceChanged);
+                saveWriterDropdown.RegisterValueChangedCallback(OnWriterDropdownChoiceChanged);
+                _refreshButton.clicked += Refresh;
             }
             else
             {
-                _storageSettings.UnregisterValueChangedCallback(OnStorageSettingsChanged);
-                _saveReaderDropdown.UnregisterValueChangedCallback(OnReaderDropdownChoiceChanged);
-                _saveWriterDropdown.UnregisterValueChangedCallback(OnWriterDropdownChoiceChanged);
+                storageSettings.UnregisterValueChangedCallback(OnStorageSettingsChanged);
+                saveReaderDropdown.UnregisterValueChangedCallback(OnReaderDropdownChoiceChanged);
+                saveWriterDropdown.UnregisterValueChangedCallback(OnWriterDropdownChoiceChanged);
+                _refreshButton.clicked -= Refresh;
             }
         }
 
-        private void OnWriterDropdownChoiceChanged(ChangeEvent<string> evt)
+        protected virtual void OnWriterDropdownChoiceChanged(ChangeEvent<string> evt)
         {
-            // TODO: Assign the selected writer type to the SysSettings
-            throw new System.NotImplementedException();
+            // At this point, we should have all the appropriate instances prepped in writerInstanceMap.
+            string selectedChoice = evt.newValue;
+            Type typeLinkedToChoice = writerTypeMap[selectedChoice];
+            TypeChoiceInfo choiceInfo = writerInstanceMap.Keys
+                .Where((elem) => elem.Type.Equals(typeLinkedToChoice))
+                .FirstOrDefault();
+            if (choiceInfo != null && writerInstanceMap.ContainsKey(choiceInfo))
+            {
+                ISaveWriter writerToAssign = writerInstanceMap[choiceInfo];
+                _sysSettings.SaveWriter = writerToAssign;
+                MakeSysSettingsChangesStick();
+            }
+            
         }
 
-        private void OnReaderDropdownChoiceChanged(ChangeEvent<string> evt)
+        protected virtual void MakeSysSettingsChangesStick()
         {
-            // TODO: Assign the selected reader type to the SysSettings
-            throw new System.NotImplementedException();
+            EditorUtility.SetDirty(_sysSettings);
+            AssetDatabase.SaveAssetIfDirty(_sysSettings);
         }
 
-        private void OnStorageSettingsChanged(ChangeEvent<Object> evt)
+        protected virtual void OnReaderDropdownChoiceChanged(ChangeEvent<string> evt)
+        {
+            string selectedChoice = evt.newValue;
+            Type typeLinkedToChoice = readerTypeMap[selectedChoice];
+            TypeChoiceInfo choiceInfo = readerInstanceMap.Keys
+                .Where((elem) => elem.Type.Equals(typeLinkedToChoice))
+                .FirstOrDefault();
+            if (choiceInfo != null && readerInstanceMap.ContainsKey(choiceInfo))
+            {
+                ISaveReader readerToAssign = readerInstanceMap[choiceInfo];
+                _sysSettings.SaveReader = readerToAssign;
+                MakeSysSettingsChangesStick();
+            }
+        }
+
+        protected virtual void OnStorageSettingsChanged(ChangeEvent<Object> evt)
         {
             _sysSettings.StorageSettings = evt.newValue as SaveStorageSettings;
+            MakeSysSettingsChangesStick();
         }
 
         protected SaveSystemSettings SysSettings
@@ -242,8 +276,15 @@ namespace Amanita.SaveSys.EditorUtils
             }
         }
         protected SaveSystemSettings _sysSettings;
+
         protected virtual void Refresh()
         {
+            SaveReaderTypeRegistry.DiscoverAndRegister();
+            SaveWriterTypeRegistry.DiscoverAndRegister();
+            UpdateCacheFromTypeRegistries();
+            RefreshDropdowns();
+            PrepReaderAndWriterInstances();
+
             ToggleSubs(false);
             ToggleSubs(true);
 
@@ -257,21 +298,29 @@ namespace Amanita.SaveSys.EditorUtils
                 }
 
                 // Set Storage Settings
-                _storageSettings.SetValueWithoutNotify(_sysSettings.StorageSettings);
+                storageSettings.SetValueWithoutNotify(_sysSettings.StorageSettings);
                 if (SysSettings.SaveReader != null)
                 {
                     var readerType = SysSettings.SaveReader.GetType();
-                    _saveReaderDropdown.SetValueWithoutNotify($"{readerType.Name} ({readerType.Namespace})");
+                    saveReaderDropdown.SetValueWithoutNotify($"{readerType.Name} ({readerType.Namespace})");
                 }
 
                 if (SysSettings.SaveWriter != null)
                 {
                     var writerType = SysSettings.SaveWriter.GetType();
-                    _saveWriterDropdown.SetValueWithoutNotify($"{writerType.Name} ({writerType.Namespace})");
+                    saveWriterDropdown.SetValueWithoutNotify($"{writerType.Name} ({writerType.Namespace})");
                 }
             }
 
         }
 
+        public class TypeChoiceInfo
+        {
+            public Type Type { get; set; }
+            public string ChoiceText { get; set; }
+        }
+
     }
+
+    
 }

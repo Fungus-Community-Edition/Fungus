@@ -25,10 +25,7 @@ namespace Amanita.SaveSys
         private static void RefreshTypeRegistry()
         {
             _readerTypes.Clear();
-            IList<Type> readerTypesFound = AppDomain.CurrentDomain.GetAssemblies()
-                         .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, _saveReaderType))
-                         .ToList();
+            IList<Type> readerTypesFound = TypeUtils.GetInstantiatableTypes(_iSaveReaderType);
             _readerTypes.AddRange(readerTypesFound);
         }
 
@@ -58,7 +55,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        private static readonly Type _saveReaderType = typeof(ISaveReader);
+        private static readonly Type _iSaveReaderType = typeof(ISaveReader);
 
         private static bool IsInstantiatableType(Type typeToCheck, Type baseVarType)
         {

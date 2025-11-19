@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _saveReader: {fileID: 0}
   _saveWriter: {fileID: 0}
-  _storageSettings: {fileID: 0}
+  _storageSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
