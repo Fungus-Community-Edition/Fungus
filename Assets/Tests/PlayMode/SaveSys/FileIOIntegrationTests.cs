@@ -48,7 +48,7 @@ namespace SaveSystemTests
                 SlotNumber = 1,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReqLocal);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReqLocal);
             Assert.IsTrue(data.Equals(result));
         }
 
@@ -132,7 +132,7 @@ namespace SaveSystemTests
                 SlotNumber = slotNumber,
                 BaseSaveDirectory = dirType
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result));
         }
@@ -161,7 +161,7 @@ namespace SaveSystemTests
                 SlotNumber = 2,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result), "Encrypted round-trip did not preserve data.");
         }
@@ -193,7 +193,7 @@ namespace SaveSystemTests
                 SlotNumber = 3,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMetadataFromDisk(readReq);
+            var result = await saveReader.ReadMetadataFromDiskAsync(readReq);
 
             Assert.AreEqual(meta.SaveName, result.SaveName, "Encrypted metadata round-trip did not preserve SaveName.");
         }
@@ -232,7 +232,7 @@ namespace SaveSystemTests
             string assertErrorMessage = "Corrupted encrypted file did not throw.";
             Assert.ThrowsAsync<InvalidDataException>(async () =>
             {
-                await saveReaderFallback.ReadMainSaveDataFromDisk(readReq);
+                await saveReaderFallback.ReadMainSaveDataFromDiskAsync(readReq);
             }, assertErrorMessage);
         }
 
@@ -260,7 +260,7 @@ namespace SaveSystemTests
                 SlotNumber = 5,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(result.Items.OfType<RawStringSaveData>().Any(u => u.Value == unicodeString),
                 $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
@@ -308,7 +308,7 @@ namespace SaveSystemTests
             };
 
             string assertErrorMessage = "Reading unencrypted file as encrypted did not throw.";
-            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false),
+            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false),
                 assertErrorMessage);
         }
     }

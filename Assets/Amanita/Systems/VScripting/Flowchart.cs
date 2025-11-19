@@ -352,8 +352,7 @@ namespace Amanita.VScripting
             }
         }
 
-        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene prevScene,
-            UnityEngine.SceneManagement.Scene currentScene)
+        protected void OnActiveSceneChanged(Scene prevScene, Scene currentScene)
         {
             // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
             eventSystemPresent = false;
@@ -1712,6 +1711,7 @@ namespace Amanita.VScripting
             }
             if (string.IsNullOrEmpty(uniqueId))
             {
+                Debug.Log($"Flowchart {this.name} did not have a unique ID assigned. Generating one now.");
                 UniqueId = Guid.NewGuid().ToString();
                 // ^The property triggers the signal, so...
 #if UNITY_EDITOR

@@ -43,7 +43,7 @@ namespace SaveSystemTests
 
             var expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
 
-            Task<ISaveMetaData> readTask = saveReader.ReadMetadataFromDisk(readReq);
+            Task<ISaveMetaData> readTask = saveReader.ReadMetadataFromDiskAsync(readReq);
             yield return WaitFor(readTask);
 
             var whatWeGot = (SaveMetaData)readTask.Result;
@@ -56,7 +56,7 @@ namespace SaveSystemTests
 
             var expectedMeta = (SaveMetaData)writeReq.SaveMetaData;
 
-            var meta = await saveReader.ReadMetadataFromDisk(readReq).ConfigureAwait(false);
+            var meta = await saveReader.ReadMetadataFromDiskAsync(readReq).ConfigureAwait(false);
             var whatWeGot = (SaveMetaData)meta;
 
             Assert.AreEqual(expectedMeta, whatWeGot, "The save meta datas do not match.");
@@ -72,7 +72,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
 
             var expectedMainSaveData = writeReq.MainState as CompositeSaveData;
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false);
 
             Assert.AreEqual(expectedMainSaveData, result, "The main save data was not read from disk properly.");
         }
@@ -87,7 +87,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
 
             var expectedMainSaveData = writeReq.MainState as CompositeSaveData;
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false);
 
             Assert.AreEqual(expectedMainSaveData, result, "The (encrypted) main save data was not read from disk properly.");
         }
@@ -105,7 +105,7 @@ namespace SaveSystemTests
             string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
             GetFullFilePath(requestForNonexistentFile, saveFolderPath, out _);
 
-            Assert.ThrowsAsync<FileNotFoundException>(() => saveReader.ReadMetadataFromDisk(requestForNonexistentFile));
+            Assert.ThrowsAsync<FileNotFoundException>(() => saveReader.ReadMetadataFromDiskAsync(requestForNonexistentFile));
         }
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
@@ -140,7 +140,7 @@ namespace SaveSystemTests
             string saveFolderPath = GetAndPrepSaveFolderPath(requestForNonexistentFile);
             GetFullFilePath(requestForNonexistentFile, saveFolderPath, out _);
 
-            Assert.ThrowsAsync<FileNotFoundException>(() => saveReader.ReadMainSaveDataFromDisk(requestForNonexistentFile));
+            Assert.ThrowsAsync<FileNotFoundException>(() => saveReader.ReadMainSaveDataFromDiskAsync(requestForNonexistentFile));
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace SaveSystemTests
             string randomJunk = "e45 yvtm8q345yfg78 ty278rty452rt34t 7864r t376 r3";
             await File.WriteAllTextAsync(filePath, randomJunk);
 
-            var readTask = saveReader.ReadMainSaveDataFromDisk(reqForMalformedFile);
+            var readTask = saveReader.ReadMainSaveDataFromDiskAsync(reqForMalformedFile);
 
             Assert.ThrowsAsync<IOException>(() => readTask, "Does not throw an IOException upon reading invalid content");
 
@@ -185,7 +185,7 @@ namespace SaveSystemTests
 
             try
             {
-                await saveReader.ReadMetadataFromDisk(reqForMalformedFile).ConfigureAwait(false);
+                await saveReader.ReadMetadataFromDiskAsync(reqForMalformedFile).ConfigureAwait(false);
                 Assert.Fail("Does not throw the expected IOException upon reading invalid content");
             }
             catch (IOException)
@@ -246,7 +246,7 @@ namespace SaveSystemTests
             await saveWriter.WriteOneToDisk(writeReq).ConfigureAwait(false);
 
             var otherReadReq = new SaveReadRequest(readReq) { SlotNumber = metaBefore.SlotNumber };
-            var metaAfter = (SaveMetaData)await saveReader.ReadMetadataFromDisk(otherReadReq).ConfigureAwait(false);
+            var metaAfter = (SaveMetaData)await saveReader.ReadMetadataFromDiskAsync(otherReadReq).ConfigureAwait(false);
 
             Assert.AreEqual(metaBefore, metaAfter);
         }

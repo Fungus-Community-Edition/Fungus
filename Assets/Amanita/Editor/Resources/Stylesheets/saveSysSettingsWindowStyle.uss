@@ -1,0 +1,24 @@
+:root {
+    --main-font: resource('Fonts/Exo2/Exo2-Regular');
+    --dark-mode-text-color: rgb(230, 230, 230);
+    --dark-mode-text-bg-color: rgb(26, 26, 26);
+    --text-field-font-size: 14px;
+    --text-field-border-radius: 5px;
+}
+
+#TopLabel 
+{
+    -unity-font-definition: var(--main-font);
+    font-size: 36px;
+    -unity-text-align: upper-center;
+}
+
+#SaveReaderDropdown
+{
+    font-size: 20px;
+}
+
+#SaveWriterDropdown
+{
+    font-size: 20px;
+}

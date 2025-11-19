@@ -1,0 +1,89 @@
+:root {
+    --main-font: resource('Fonts/Exo2/Exo2-Regular');
+    --dark-mode-text-color: rgb(230, 230, 230);
+    --dark-mode-text-bg-color: rgb(26, 26, 26);
+    --text-field-font-size: 14px;
+    --text-field-border-radius: 5px;
+    --half-the-width: 50%;
+}
+
+#WindowRoot
+{
+    height: 100%;
+    width: 100%;
+    padding: 5px 10px 5px 10px;
+    -unity-font-definition: var(--main-font);
+}
+
+#TopLabel 
+{
+    -unity-font-definition: var(--main-font);
+    font-size: 36px;
+    -unity-text-align: upper-center;
+    margin-bottom: 10px;
+}
+
+#SaveReaderDropdown
+{
+    font-size: var(--text-field-font-size);
+}
+
+#SaveReaderDropdown > Label
+{
+    width: var(--half-the-width);
+}
+
+#SaveWriterDropdown
+{
+    font-size: var(--text-field-font-size);
+}
+
+#SaveWriterDropdown > Label
+{
+    width: var(--half-the-width);
+}
+
+#WhereSavesAreStored
+{
+    font-size: var(--text-field-font-size);
+}
+
+#WhereSavesAreStored > Label
+{
+     font-size: 16px;
+
+}
+
+#WhereSavesAreStored > Label
+{
+    width: var(--half-the-width);
+}
+
+#MainAppliersHolder
+{
+    font-size: var(--text-field-font-size);
+    height: 50px;
+    flex-direction: row;
+}
+
+#MainAppliersHolder > Label
+{
+    width: 50%;
+    
+}
+
+#MainAppliersHolder > #MainAppliersList
+{
+    width: 50%;
+}
+
+#StorageSettings
+{
+    font-size: var(--text-field-font-size);
+}
+#StorageSettings > Label
+{
+    width: 50%;
+    font-size: var(--text-field-font-size);
+}
+

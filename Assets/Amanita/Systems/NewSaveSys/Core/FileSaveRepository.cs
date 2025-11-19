@@ -84,7 +84,7 @@ namespace Amanita.SaveSys
         public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var mainState = await saveReader.ReadMainSaveDataFromDisk(readRequest, token);
+            var mainState = await saveReader.ReadMainSaveDataFromDiskAsync(readRequest, token);
             return mainState;
         }
 
@@ -110,7 +110,7 @@ namespace Amanita.SaveSys
         public virtual async Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var meta = await saveReader.ReadMetadataFromDisk(readRequest, token);
+            var meta = await saveReader.ReadMetadataFromDiskAsync(readRequest, token);
             return meta;
         }
 
