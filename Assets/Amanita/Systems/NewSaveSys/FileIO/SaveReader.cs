@@ -8,6 +8,7 @@ using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
+    [SaveSysDisplayName("Save Reader (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor, ISaveReader
     {

@@ -19,7 +19,7 @@ namespace Amanita.SaveSys
                 {
                     return;
                 }
-                if (value is not ScriptableObject so)
+                if (value != null && value is not ScriptableObject so)
                 {
                     Debug.LogError("SaveReader must be a ScriptableObject.", this);
                     return;
@@ -37,11 +37,13 @@ namespace Amanita.SaveSys
                 {
                     return;
                 }
-                if (value is not ScriptableObject so)
+
+                if (value != null && value is not ScriptableObject)
                 {
                     Debug.LogError("SaveWriter must be a ScriptableObject.", this);
                     return;
                 }
+
                 _saveWriter = value as ScriptableObject;
             }
         }

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcaded4cc2bfbd349b05bd4397f0dbda, type: 3}
   m_Name: SaveSystemSettings
   m_EditorClassIdentifier: 
-  _saveReader: {fileID: 0}
-  _saveWriter: {fileID: 0}
+  _saveReader: {fileID: 11400000, guid: eebf7b36e257e6b4493dd574b3bf0c3a, type: 2}
+  _saveWriter: {fileID: 11400000, guid: aeb4d82e775666541ac5493bf752f594, type: 2}
   _storageSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}

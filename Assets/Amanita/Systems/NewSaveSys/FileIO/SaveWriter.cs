@@ -15,6 +15,7 @@ namespace Amanita.SaveSys
     /// <summary>
     /// This class is responsible for writing save data to disk.
     /// </summary>
+    [SaveSysDisplayName("Save Writer (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor, ISaveWriter
     {
