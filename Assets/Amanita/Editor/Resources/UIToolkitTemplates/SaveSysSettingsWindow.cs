@@ -5,22 +5,48 @@ using System.Collections.Generic;
 using Type = System.Type;
 using UnityEditor.UIElements;
 using System.Linq;
-using Collections;
 using System.Reflection;
+using Collections;
 
 namespace Amanita.SaveSys.EditorUtils
 {
     public class SaveSysSettingsWindow : EditorWindow
     {
+        // Enforced single instance
+        public static SaveSysSettingsWindow Instance { get; set; }
+
+        // Persist prior UI selections across recreation
+        protected static string _lastReaderChoice;
+        protected static string _lastWriterChoice;
+
         [SerializeField]
         protected VisualTreeAsset m_VisualTreeAsset = default;
 
         [MenuItem("Window/Amanita/Save Sys Settings")]
         public static void Open()
         {
+            // If already open, just focus and return.
+            if (Instance != null)
+            {
+                // Re-apply size constraints in case they were lost.
+                Instance.minSize = Instance.maxSize = windowSize;
+                // Only enforce position size if user previously resized beyond constraints.
+                var currentSize = Instance.position.size;
+                if (currentSize.x < windowSize.x || currentSize.y < windowSize.y)
+                {
+                    Instance.position = new Rect(Instance.position.position, windowSize);
+                }
+                Instance.Focus();
+                return;
+            }
+
+            // GetWindow will reuse an existing one of the same type if present.
             SaveSysSettingsWindow wnd = GetWindow<SaveSysSettingsWindow>();
             wnd.titleContent = new GUIContent("Save Sys Settings");
             wnd.minSize = wnd.maxSize = windowSize;
+
+            Instance = wnd;
+            wnd.EnsureSingleInstance();
 
             var settings = GetSysSettings();
             static SaveSystemSettings GetSysSettings()
@@ -43,10 +69,52 @@ namespace Amanita.SaveSys.EditorUtils
                 return sysSettings;
             }
 
-            wnd.SysSettings = settings; // Runs after CreateGUI
+            wnd.SysSettings = settings; // Runs after CreateGUI via property setter
+            wnd.Focus();
         }
 
         protected static Vector2 windowSize = new Vector2(600, 700);
+
+        protected void EnsureSingleInstance()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                return;
+            }
+
+            if (Instance != this)
+            {
+                // A second window appeared; close this duplicate.
+                Close();
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            EnsureSingleInstance();
+            // Apply constraints when enabling (covers domain reload).
+            if (Instance == this)
+            {
+                minSize = maxSize = windowSize;
+                // Avoid forcing size larger than current if user kept it >= constraints.
+                var currentSize = position.size;
+                if (currentSize.x < windowSize.x || currentSize.y < windowSize.y)
+                {
+                    position = new Rect(position.position, windowSize);
+                }
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                // Record current choices before clearing instance.
+                RecordCurrentChoices();
+                Instance = null;
+            }
+        }
 
         public virtual void CreateGUI()
         {
@@ -56,15 +124,12 @@ namespace Amanita.SaveSys.EditorUtils
             UpdateCacheFromTypeRegistries();
             RefreshDropdowns();
             PrepReaderAndWriterInstances();
+            RestoreLastChoicesIfAny();
             ToggleSubs(true);
             FillMissingAssetSettingsBasedOnUi();
         }
 
         protected VisualElement Root => rootVisualElement;
-        protected static Type scriptableObjType = typeof(ScriptableObject);
-        protected static Type iSaveReaderType = typeof(ISaveReader);
-
-        #region UI Setup / Registration
 
         protected virtual void RegisterViews()
         {
@@ -78,45 +143,71 @@ namespace Amanita.SaveSys.EditorUtils
         protected ObjectField storageSettings;
         protected Button _refreshButton;
 
-        #endregion
-
-        #region Type Discovery / Caches
-
         protected virtual void UpdateCacheFromTypeRegistries()
         {
             validReaderTypes.Clear();
             validWriterTypes.Clear();
 
-            // For the sake of easier persistence (and reduced headache), only
-            // allow ScriptableObject-based readers/writers.
             IList<Type> scriptableObjReaders = SaveReaderTypeRegistry.ReaderTypes
                 .Where(typeEl => !typeEl.Name.Contains("Test") &&
-                scriptableObjType.IsAssignableFrom(typeEl)
-                    && iSaveReaderType.IsAssignableFrom(typeEl)).ToList();
+                                 scriptableObjType.IsAssignableFrom(typeEl) &&
+                                 iSaveReaderType.IsAssignableFrom(typeEl)).ToList();
             validReaderTypes.AddRange(scriptableObjReaders);
 
             IList<Type> scriptableObjWriters = SaveWriterTypeRegistry.WriterTypes
                 .Where(typeEl => !typeEl.Name.Contains("Test") &&
-                scriptableObjType.IsAssignableFrom(typeEl)
-                    && typeof(ISaveWriter).IsAssignableFrom(typeEl)).ToList();
+                                 scriptableObjType.IsAssignableFrom(typeEl) &&
+                                 typeof(ISaveWriter).IsAssignableFrom(typeEl)).ToList();
             validWriterTypes.AddRange(scriptableObjWriters);
         }
 
         protected static IList<Type> validReaderTypes = new List<Type>();
         protected static IList<Type> validWriterTypes = new List<Type>();
 
-        #endregion
+        protected static Type scriptableObjType = typeof(ScriptableObject);
+        protected static Type iSaveReaderType = typeof(ISaveReader);
+        protected static Type iSaveWriterType = typeof(ISaveWriter);
 
-        #region Instance Provisioning
+        protected virtual void RefreshDropdowns()
+        {
+            readerTypeMap.Clear();
+            writerTypeMap.Clear();
+            saveReaderDropdown.choices.Clear();
+            saveWriterDropdown.choices.Clear();
+
+            Populate(readerTypeMap, validReaderTypes, saveReaderDropdown);
+            Populate(writerTypeMap, validWriterTypes, saveWriterDropdown);
+
+            static void Populate(IDictionary<string, Type> map, IList<Type> validTypes, DropdownField dropdown)
+            {
+                foreach (var type in validTypes)
+                {
+                    string name = GetDisplayName(type);
+                    if (name.Contains("Test"))
+                    {
+                        continue;
+                    }
+                    map[name] = type;
+                    dropdown.choices.Add(name);
+                }
+            }
+            // Do not assign initial values here.
+        }
+
+        protected static IDictionary<string, Type> readerTypeMap = new Dictionary<string, Type>();
+        protected static IDictionary<string, Type> writerTypeMap = new Dictionary<string, Type>();
 
         static void PrepReaderAndWriterInstances()
         {
-            // So that when a choice changes, we can instantly change the settings
-            // to an already-prepped instance.
             readerInstanceMap.Clear();
             writerInstanceMap.Clear();
 
-            RegisterDefaultsFor(readerInstanceMap, typeof(ISaveReader));
+            RegisterDefaultsFor(readerInstanceMap, iSaveReaderType);
+            RegisterDefaultsFor(writerInstanceMap, iSaveWriterType);
+
+            GetOrGenerateAssetsFor(readerInstanceMap, validReaderTypes);
+            GetOrGenerateAssetsFor(writerInstanceMap, validWriterTypes);
+
             static void RegisterDefaultsFor(IDictionary<TypeChoiceInfo, ScriptableObject> map, Type interfaceType)
             {
                 const string defaultsSubfolder = AmanitaConstants.PathToSaveSysDefaultsFolder;
@@ -135,9 +226,7 @@ namespace Amanita.SaveSys.EditorUtils
                     map[info] = elem;
                 }
             }
-            RegisterDefaultsFor(writerInstanceMap, typeof(ISaveWriter));
 
-            GetOrGenerateAssetsFor(readerInstanceMap, validReaderTypes);
             static void GetOrGenerateAssetsFor(IDictionary<TypeChoiceInfo, ScriptableObject> map, IList<Type> validTypes)
             {
                 const string settingsSubfolder = "SaveSys/Settings";
@@ -159,47 +248,27 @@ namespace Amanita.SaveSys.EditorUtils
                     map[choiceInfo] = instance;
                 }
             }
-            GetOrGenerateAssetsFor(writerInstanceMap, validWriterTypes);
         }
-
-        #endregion
-
-        #region Dropdown Population
-
-        protected virtual void RefreshDropdowns()
-        {
-            readerTypeMap.Clear();
-            writerTypeMap.Clear();
-            saveReaderDropdown.choices.Clear();
-            saveWriterDropdown.choices.Clear();
-
-            Populate(readerTypeMap, validReaderTypes, saveReaderDropdown);
-            static void Populate(IDictionary<string, Type> map, IList<Type> validTypes, DropdownField dropdown)
-            {
-                foreach (var type in validTypes)
-                {
-                    string name = GetDisplayName(type);
-                    if (name.Contains("Test"))
-                    {
-                        continue;
-                    }
-                    map[name] = type;
-                    dropdown.choices.Add(name);
-                }
-            }
-            Populate(writerTypeMap, validWriterTypes, saveWriterDropdown);
-
-            
-            // Let later logic decide initial selections (do not assign here).
-        }
-
-        protected static IDictionary<string, Type> readerTypeMap = new Dictionary<string, Type>();
-        protected static IDictionary<string, Type> writerTypeMap = new Dictionary<string, Type>();
 
         protected static IDictionary<TypeChoiceInfo, ScriptableObject> readerInstanceMap = new Dictionary<TypeChoiceInfo, ScriptableObject>();
         protected static IDictionary<TypeChoiceInfo, ScriptableObject> writerInstanceMap = new Dictionary<TypeChoiceInfo, ScriptableObject>();
 
-        #endregion
+        protected virtual void RestoreLastChoicesIfAny()
+        {
+            if (saveReaderDropdown != null &&
+                !string.IsNullOrEmpty(_lastReaderChoice) &&
+                saveReaderDropdown.choices.Contains(_lastReaderChoice))
+            {
+                saveReaderDropdown.SetValueWithoutNotify(_lastReaderChoice);
+            }
+
+            if (saveWriterDropdown != null &&
+                !string.IsNullOrEmpty(_lastWriterChoice) &&
+                saveWriterDropdown.choices.Contains(_lastWriterChoice))
+            {
+                saveWriterDropdown.SetValueWithoutNotify(_lastWriterChoice);
+            }
+        }
 
         #region Event Subscriptions
 
@@ -235,47 +304,10 @@ namespace Amanita.SaveSys.EditorUtils
                     _sysSettings.SaveReader = so as ISaveReader;
                     if (so != null)
                     {
+                        _lastReaderChoice = saveReaderDropdown.value;
                         MakeSysSettingsChangesStick();
                     }
                 });
-        }
-
-        protected virtual void AssignSelection(
-            string selectedChoice,
-            IDictionary<string, Type> typeMap,
-            IDictionary<TypeChoiceInfo, ScriptableObject> instanceMap,
-            System.Action<ScriptableObject> applyAction)
-        {
-            if (string.IsNullOrEmpty(selectedChoice))
-            {
-                applyAction(null);
-                return;
-            }
-
-            ScriptableObject instance = GetInstanceForChoice(selectedChoice, typeMap, instanceMap);
-            applyAction(instance);
-        }
-
-        protected virtual ScriptableObject GetInstanceForChoice(
-            string choice,
-            IDictionary<string, Type> typeMap,
-            IDictionary<TypeChoiceInfo, ScriptableObject> instanceMap)
-        {
-            ScriptableObject result = null;
-            Type concreteType = null;
-            bool validChoice = !string.IsNullOrEmpty(choice) && typeMap.TryGetValue(choice, out concreteType);
-            if (validChoice)
-            {
-                // Avoid repeated LINQ by simple loop.
-                foreach (var kvp in instanceMap)
-                {
-                    if (kvp.Key.Type == concreteType)
-                    {
-                        return kvp.Value;
-                    }
-                }
-            }
-            return result;
         }
 
         protected virtual void OnWriterDropdownChoiceChanged(ChangeEvent<string> evt)
@@ -286,6 +318,7 @@ namespace Amanita.SaveSys.EditorUtils
                     _sysSettings.SaveWriter = so as ISaveWriter;
                     if (so != null)
                     {
+                        _lastWriterChoice = saveWriterDropdown.value;
                         MakeSysSettingsChangesStick();
                     }
                 });
@@ -306,12 +339,32 @@ namespace Amanita.SaveSys.EditorUtils
             return $"{type.Name} ({type.Namespace})";
         }
 
+        protected virtual void AssignSelection(
+            string selectedChoice,
+            IDictionary<string, Type> typeMap,
+            IDictionary<TypeChoiceInfo, ScriptableObject> instanceMap,
+            System.Action<ScriptableObject> applyAction)
+        {
+            if (string.IsNullOrEmpty(selectedChoice))
+            {
+                applyAction(null);
+                return;
+            }
+
+            ScriptableObject instance = GetInstanceForChoice(selectedChoice, typeMap, instanceMap);
+            applyAction(instance);
+        }
+
         #endregion
 
         #region SaveSystemSettings Synchronization
 
         protected virtual void MakeSysSettingsChangesStick()
         {
+            if (_sysSettings == null)
+            {
+                return;
+            }
             EditorUtility.SetDirty(_sysSettings);
             AssetDatabase.SaveAssetIfDirty(_sysSettings);
         }
@@ -320,7 +373,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             if (_sysSettings == null)
             {
-                Debug.LogWarning("SysSettings is null, cannot fill missing asset settings.");
+                Debug.LogWarning("SysSettings is null. Cannot fill missing asset settings.");
                 return;
             }
 
@@ -334,6 +387,41 @@ namespace Amanita.SaveSys.EditorUtils
             {
                 var writerInstance = GetInstanceForChoice(saveWriterDropdown.value, writerTypeMap, writerInstanceMap);
                 _sysSettings.SaveWriter = writerInstance as ISaveWriter;
+            }
+
+            RecordCurrentChoices();
+        }
+
+        protected virtual ScriptableObject GetInstanceForChoice(
+            string choice,
+            IDictionary<string, Type> typeMap,
+            IDictionary<TypeChoiceInfo, ScriptableObject> instanceMap)
+        {
+            if (string.IsNullOrEmpty(choice) || !typeMap.TryGetValue(choice, out var concreteType))
+            {
+                return null;
+            }
+
+            foreach (var kvp in instanceMap)
+            {
+                if (kvp.Key.Type == concreteType)
+                {
+                    return kvp.Value;
+                }
+            }
+            return null;
+        }
+
+        protected virtual void RecordCurrentChoices()
+        {
+            if (saveReaderDropdown != null && !string.IsNullOrEmpty(saveReaderDropdown.value))
+            {
+                _lastReaderChoice = saveReaderDropdown.value;
+            }
+
+            if (saveWriterDropdown != null && !string.IsNullOrEmpty(saveWriterDropdown.value))
+            {
+                _lastWriterChoice = saveWriterDropdown.value;
             }
         }
 
@@ -349,25 +437,37 @@ namespace Amanita.SaveSys.EditorUtils
             ToggleSubs(true);
 
             ApplySettingsAssetToUI();
+        }
 
-            void ApplySettingsAssetToUI()
+        protected virtual void ApplySettingsAssetToUI()
+        {
+            if (_sysSettings == null)
             {
-                if (_sysSettings == null)
+                Debug.LogWarning("SysSettings is null, cannot apply to UI.");
+                return;
+            }
+
+            storageSettings?.SetValueWithoutNotify(_sysSettings.StorageSettings);
+
+            if (SysSettings.SaveReader != null)
+            {
+                var readerType = SysSettings.SaveReader.GetType();
+                string choice = GetDisplayName(readerType);
+                if (saveReaderDropdown.choices.Contains(choice))
                 {
-                    Debug.LogWarning("SysSettings is null, cannot apply to UI.");
-                    return;
+                    saveReaderDropdown.SetValueWithoutNotify(choice);
+                    _lastReaderChoice = choice;
                 }
+            }
 
-                storageSettings.SetValueWithoutNotify(_sysSettings.StorageSettings);
-
-                if (SysSettings.SaveReader != null)
+            if (SysSettings.SaveWriter != null)
+            {
+                var writerType = SysSettings.SaveWriter.GetType();
+                string choice = GetDisplayName(writerType);
+                if (saveWriterDropdown.choices.Contains(choice))
                 {
-                    saveReaderDropdown.SetValueWithoutNotify(GetDisplayName(SysSettings.SaveReader.GetType()));
-                }
-
-                if (SysSettings.SaveWriter != null)
-                {
-                    saveWriterDropdown.SetValueWithoutNotify(GetDisplayName(SysSettings.SaveWriter.GetType()));
+                    saveWriterDropdown.SetValueWithoutNotify(choice);
+                    _lastWriterChoice = choice;
                 }
             }
         }

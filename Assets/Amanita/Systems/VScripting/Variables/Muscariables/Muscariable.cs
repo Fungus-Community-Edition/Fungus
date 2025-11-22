@@ -56,7 +56,8 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual bool Equals(Muscariable other)
         {
-            return other != null && this.BoxedValue.Equals(other.BoxedValue);
+            bool result = other != null && this.BoxedValue?.Equals(other.BoxedValue) == true;
+            return result;
         }
 
         public Muscariable (IVariable otherVar)

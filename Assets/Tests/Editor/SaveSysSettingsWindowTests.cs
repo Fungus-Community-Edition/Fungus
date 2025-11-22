@@ -71,22 +71,21 @@ public class SaveSysSettingsWindowTests
     [Test]
     public void Open_SetsWindowSize_ToWindowSizeStatic()
     {
-        // Prepare the window so CreateGUI does not throw (assign UXML before Open is used).
-        var preppedWindow = CreateWindowWithUxmlAssigned();
+        // Ensure no prior instance
+        foreach (var wnd in Resources.FindObjectsOfTypeAll<SaveSysSettingsWindow>())
+        {
+            wnd.Close();
+        }
+        SaveSysSettingsWindow.Instance = null;
 
-        // Call the real Open() which sets minSize/maxSize to windowSize.
         SaveSysSettingsWindow.Open();
 
-        // Find the window that is opened.
-        var wnd = Resources.FindObjectsOfTypeAll<SaveSysSettingsWindow>().FirstOrDefault();
-        Assert.IsNotNull(wnd, "SaveSysSettingsWindow not found after Open().");
+        var wndFound = Resources.FindObjectsOfTypeAll<SaveSysSettingsWindow>().FirstOrDefault();
+        Assert.IsNotNull(wndFound, "SaveSysSettingsWindow not found after Open().");
 
-        var windowSizeField = _windowType.GetField("windowSize", _reflectionFlags);
-        Assert.IsNotNull(windowSizeField, "Could not reflect windowSize static field.");
-        var expected = (Vector2)windowSizeField.GetValue(null);
-
-        Assert.AreEqual(expected, wnd.minSize, "minSize should be set to windowSize.");
-        Assert.AreEqual(expected, wnd.maxSize, "maxSize should be set to windowSize.");
+        var expected = new Vector2(600, 700);
+        Assert.AreEqual(expected, wndFound.minSize, "minSize should be set to windowSize.");
+        Assert.AreEqual(expected, wndFound.maxSize, "maxSize should be set to windowSize.");
     }
 
     // Helper to create a window instance with UXML assigned before CreateGUI is invoked.
