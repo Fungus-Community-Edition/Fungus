@@ -15,7 +15,6 @@ using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.SceneManagement;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -281,16 +280,19 @@ namespace Amanita.VScripting
 
         public virtual void RemoveVariable(IVariable toRemove)
         {
+            // Different variables have Equals() implementations that don't always
+            // return true based on ref, so we have to be extra clear about
+            // how we care about references here.
             int index;
-            if (legacyVariables.Contains(toRemove))
+            if (legacyVariables.ContainsReference(toRemove))
             {
-                index = legacyVariables.IndexOf(toRemove as Variable);
+                index = legacyVariables.IndexOfReference(toRemove);
                 RemoveVariableAtIndex(index);
             }
 
-            if (muscariables.Contains(toRemove))
+            if (muscariables.ContainsReference(toRemove))
             {
-                index = muscariables.IndexOf(toRemove as Muscariable);
+                index = muscariables.IndexOfReference(toRemove);
                 RemoveMuscariableAtIndex(index);
             }
         }
@@ -1810,11 +1812,6 @@ namespace Amanita.VScripting
             toAdd = toAdd.ToMuscariable();
             Muscariable muscari = toAdd as Muscariable;
             AddVariable(muscari);
-        }
-
-        protected virtual bool CheckRefEquals(IVariable firstVar, IVariable secondVar)
-        {
-            return ReferenceEquals(firstVar, secondVar);
         }
 
         public static void ResetStaticsForTest()
