@@ -8,14 +8,16 @@ using Amanita.IO;
 using System.Threading;
 using FullSerializer;
 using Amanita.FSExt;
+using Action = System.Action;
 
 namespace Amanita.SaveSys
 {
     /// <summary>
     /// This class is responsible for writing save data to disk.
     /// </summary>
+    [SaveSysDisplayName("Save Writer (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
-    public class SaveWriter : SaveDiskAccessor
+    public class SaveWriter : SaveDiskAccessor, ISaveWriter
     {
         [SerializeField] protected ScriptableObject encryptor;
 
@@ -45,17 +47,42 @@ namespace Amanita.SaveSys
             }
         }
 
-        /// <summary>
-        /// Writes all the save datas to the passed save directory, returning true if successful,
-        /// false otherwise.
-        /// </summary>
-        public virtual async Task<bool> WriteAllToDisk(IList<SaveWriteRequest> args, CancellationToken token = default)
+        public virtual bool WriteAllToDisk(IList<SaveWriteRequest> args, Action onComplete = null)
         {
             bool didWeSucceed = default;
             for (int i = 0; i < args.Count; i++)
             {
                 SaveWriteRequest currentArgs = args[i];
-                didWeSucceed = await WriteOneToDisk(currentArgs);
+                didWeSucceed = WriteOneToDisk(currentArgs);
+                if (!didWeSucceed)
+                {
+                    break;
+                }
+            }
+            onComplete?.Invoke();
+            return didWeSucceed;
+        }
+
+        public virtual bool WriteOneToDisk(SaveWriteRequest request, Action onComplete = null)
+        {
+            Task<bool> writeTask = WriteOneToDiskAsync(request);
+            writeTask.Wait();
+            bool result = writeTask.Result;
+            onComplete?.Invoke();
+            return result;
+        }
+
+        /// <summary>
+        /// Writes all the save datas to the passed save directory, returning true if successful,
+        /// false otherwise.
+        /// </summary>
+        public virtual async Task<bool> WriteAllToDiskAsync(IList<SaveWriteRequest> args, CancellationToken token = default)
+        {
+            bool didWeSucceed = default;
+            for (int i = 0; i < args.Count; i++)
+            {
+                SaveWriteRequest currentArgs = args[i];
+                didWeSucceed = await WriteOneToDiskAsync(currentArgs);
                 if (!didWeSucceed)
                 {
                     break;
@@ -70,7 +97,7 @@ namespace Amanita.SaveSys
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual async Task<bool> WriteOneToDisk(SaveWriteRequest request, CancellationToken token = default)
+        public virtual async Task<bool> WriteOneToDiskAsync(SaveWriteRequest request, CancellationToken token = default)
         {
             // Safety.
             Validate(request);
@@ -264,5 +291,13 @@ namespace Amanita.SaveSys
     {
         public virtual SaveDataSet SaveDataSet { get; set; }
         public virtual string CompletionMarker { get; set; }
+    }
+
+    public interface ISaveWriter
+    {
+        bool WriteOneToDisk(SaveWriteRequest request, Action onComplete = null);
+        bool WriteAllToDisk(IList<SaveWriteRequest> args, Action onComplete = null);
+        Task<bool> WriteOneToDiskAsync(SaveWriteRequest request, CancellationToken token = default);
+        Task<bool> WriteAllToDiskAsync(IList<SaveWriteRequest> args, CancellationToken token = default);
     }
 }

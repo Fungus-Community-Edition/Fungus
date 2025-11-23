@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -7,8 +8,9 @@ using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
+    [SaveSysDisplayName("Save Reader (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
-    public class SaveReader : SaveDiskAccessor
+    public class SaveReader : SaveDiskAccessor, ISaveReader
     {
         [SerializeField] protected ScriptableObject decryptor;
 
@@ -17,35 +19,43 @@ namespace Amanita.SaveSys
         protected override void OnEnable()
         {
             base.OnEnable();
-            PrepDefaultDecryptor();
-            void PrepDefaultDecryptor()
+            HandleDecryptorField();
+            void HandleDecryptorField()
             {
-                if (defaultDecryptor == null)
+                EnsureDefaultDecryptor();
+                void EnsureDefaultDecryptor()
                 {
-                    defaultDecryptor = CreateInstance<Decryptor>();
+                    if (defaultDecryptor == null)
+                    {
+                        defaultDecryptor = DefaultAmanitaAssets.Decryptor;
+                    }
                 }
-            }
 
-            if (decryptor == null)
-            {
-                decryptor = defaultDecryptor;
-            }
+                if (decryptor == null)
+                {
+                    decryptor = DefaultAmanitaAssets.Decryptor;
+                }
+                if (decryptor == null)
+                {
+                    decryptor = defaultDecryptor;
+                }
 
-            usableDecryptor = decryptor as IDecryptor;
+                usableDecryptor = decryptor as IDecryptor;
+            }
         }
 
-        protected Decryptor defaultDecryptor;
+        protected static Decryptor defaultDecryptor;
         protected IDecryptor usableDecryptor;
 
-        public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request,
+        public virtual async Task<ISaveMetaData> ReadMetadataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            await PrepDecryptionRequest(request, cancelToken);
+            await PrepDecryptionRequestAsync(request, cancelToken);
             SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
             return result;
         }
 
-        protected virtual async Task PrepDecryptionRequest(SaveReadRequest request,
+        protected virtual async Task PrepDecryptionRequestAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
             string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
@@ -74,10 +84,10 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request,
+        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            await PrepDecryptionRequest(request, cancelToken);
+            await PrepDecryptionRequestAsync(request, cancelToken);
             string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(decryptionRequest);
             
@@ -93,6 +103,10 @@ namespace Amanita.SaveSys
         protected override void OnValidate()
         {
             base.OnValidate();
+            if (decryptor == null)
+            {
+                decryptor = DefaultAmanitaAssets.Decryptor;
+            }
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)
             {
@@ -128,6 +142,36 @@ namespace Amanita.SaveSys
             }
             return result;
         }
+
+        public virtual ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request, Action onComplete = null)
+        {
+            PrepDecryptionRequest(request);
+            var result = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
+            onComplete ??= delegate { };
+            onComplete();
+            return result;
+        }
+
+        protected virtual void PrepDecryptionRequest(SaveReadRequest request)
+        {
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
+            Validate(filePath);
+            bool writtenAsPlainText = !ExpectEncryption;
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            decryptionRequest.RawBytes = rawBytes;
+            decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
+            decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+        }
+
+        public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null)
+        {
+            PrepDecryptionRequest(request);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
+            CompositeSaveData result = (CompositeSaveData)usableDecryptor.DecryptMainState(decryptionRequest);
+            return result;
+        }
+
+        
     }
 
     public class BaseDecryptionRequest
@@ -135,6 +179,17 @@ namespace Amanita.SaveSys
         public byte[] RawBytes { get; set; }
         public bool WrittenAsPlainText { get; set; }
         public string CompletionMarker { get; set; }
+    }
+
+    public interface ISaveReader
+    {
+        ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request, Action onComplete = null);
+        Task<ISaveMetaData> ReadMetadataFromDiskAsync(SaveReadRequest request,
+            CancellationToken cancelToken = default);
+
+        CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null);
+        Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
+            CancellationToken cancelToken = default);
     }
 
 }

@@ -275,7 +275,7 @@ namespace Amanita.VScripting.EditorUtils
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
             {
-                ////Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
+                //Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 _activeRows.Remove(variable);
                 _rowFactory?.Release(row);
             }
@@ -544,29 +544,51 @@ namespace Amanita.VScripting.EditorUtils
                     {
                         _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
                         _listDisplay.hierarchy.Add(_testMaterializedContainer);
-                        //Debug.Log($"Added test materialized container");
+                        Debug.Log($"[ForceMaterializeAllRowsForTests] Using test materialized container");
                     }
                     container = _testMaterializedContainer;
                 }
             }
 
-            bool tooManyChildrenOrActiveRows = container.childCount >= varsToDisplay.Count || _activeRows.Count >= varsToDisplay.Count;
-            if (tooManyChildrenOrActiveRows)
+            // Removed the early bailout that skipped creation when child counts matched.
+            // Tests need full row materialization regardless of existing placeholder children.
+            PrepRowsForTheVars();
+            void PrepRowsForTheVars()
             {
-                return;
-            }
+                for (int i = 0; i < varsToDisplay.Count; i++)
+                {
+                    var variable = varsToDisplay[i];
+                    if (variable == null)
+                        continue;
 
-            for (int i = 0; i < varsToDisplay.Count; i++)
-            {
-                var elem = varsToDisplay[i];
-                if (elem == null) continue;
+                    var row = GetOrCreateRow(variable);
+                    if (row == null)
+                        continue;
 
-                var row = GetOrCreateRow(elem);
-                if (row?.RootElement == null) continue;
+                    // If visuals not yet built, attempt a refresh to force template cloning.
+                    if (row.RootElement == null && row.VisualHandler != null)
+                    {
+                        try
+                        {
+                            row.VisualHandler.Refresh();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Refresh failed for var key='{variable.Key}': {ex.Message}");
+                        }
+                    }
 
-                if (row.RootElement.parent == null)
-                    container.Add(row.RootElement);
+                    if (row.RootElement == null)
+                    {
+                        Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Row.RootElement still null for key='{variable.Key}'. Pooling will work but UI won’t show.");
+                        continue;
+                    }
 
+                    if (row.RootElement.parent == null)
+                    {
+                        container.Add(row.RootElement);
+                    }
+                }
             }
         }
 

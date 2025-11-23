@@ -106,16 +106,29 @@ namespace VScriptingTests.VariableOperations
             _fcHolder = new GameObject("FC");
             _firstFc = _fcHolder.AddComponent<Flowchart>();
 
-            var floatVar = _fcHolder.AddComponent<FloatVariable>(); floatVar.Key = "floatVar";
-            var stringVar = _fcHolder.AddComponent<StringVariable>(); stringVar.Key = "stringVar";
-            var intVar = _fcHolder.AddComponent<IntegerVariable>(); intVar.Key = "intVar";
-            var goVar = _fcHolder.AddComponent<GameObjectVariable>(); goVar.Key = "goVar";
-            var boolVar = _fcHolder.AddComponent<BooleanVariable>(); boolVar.Key = "boolVar";
-
-            _initVars = new List<IVariable>()
+            RegisterInitVars();
+            void RegisterInitVars()
             {
-                floatVar, stringVar, intVar, goVar, boolVar
-            };
+                var floatVar = _fcHolder.AddComponent<FloatVariable>();
+                floatVar.Key = "floatVar";
+
+                var stringVar = _fcHolder.AddComponent<StringVariable>();
+                stringVar.Key = "stringVar";
+
+                var intVar = _fcHolder.AddComponent<IntegerVariable>();
+                intVar.Key = "intVar";
+
+                var goVar = _fcHolder.AddComponent<GameObjectVariable>();
+                goVar.Key = "goVar";
+
+                var boolVar = _fcHolder.AddComponent<BooleanVariable>();
+                boolVar.Key = "boolVar";
+
+                _initVars = new List<IVariable>()
+                {
+                    floatVar, stringVar, intVar, goVar, boolVar
+                };
+            }
 
             AddInitVarsToFlowchart();
         }
@@ -174,11 +187,13 @@ namespace VScriptingTests.VariableOperations
             yield return null;
 
             _firstListView.ForceMaterializeAllRowsForTests();
-            // (Optional) yield one more frame to mimic a layout pass
+            // (Optional) yield a bit longer to mimic a layout pass
             yield return new WaitForSeconds(1);
 
             int initialVisible = _firstListView.RowCount;
             Assert.Greater(initialVisible, 1, "Precondition failed: need at least 2 variables.");
+
+            Assert.IsTrue(_firstListView.Rows.Count == _firstFc.VariableCount, "Row count mismatch after initialization.");
 
             var toRemove = new IVariable[]
             {
@@ -187,13 +202,16 @@ namespace VScriptingTests.VariableOperations
             };
 
             foreach (var elem in toRemove)
+            {
                 _firstFc.RemoveVariable(elem);
+                yield return null;
+            }
 
             Assert.AreEqual(_firstFc.VariableCount, _firstListView.RowCount,
                 "Row count mismatch after removals.");
 
             string expectedLabelText = string.Format(countLabelFormat, _firstFc.VariableCount);
-            Assert.AreEqual(expectedLabelText, _countLabel.text);
+            Assert.AreEqual(expectedLabelText, _countLabel.text, $"Expected count label text to be '{expectedLabelText}'.");
 
             // Now pooling should reflect the two released rows
             Assert.AreEqual(2, PooledRowCount, "Expected 2 pooled rows after removal.");

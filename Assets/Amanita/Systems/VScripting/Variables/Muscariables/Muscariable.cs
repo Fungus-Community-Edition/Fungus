@@ -51,12 +51,22 @@ namespace Amanita.VScripting
             return !sameValue;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Muscariable other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+
         /// <summary>
         /// Determines whether the specified Muscariable is (semantically) equal to the current Muscariable.
         /// </summary>
         public virtual bool Equals(Muscariable other)
         {
-            return other != null && this.BoxedValue.Equals(other.BoxedValue);
+            bool result = other != null && this.BoxedValue?.Equals(other.BoxedValue) == true;
+            return result;
         }
 
         public Muscariable (IVariable otherVar)
@@ -360,6 +370,7 @@ namespace Amanita.VScripting
 
             return result;
         }
+
 
         public virtual bool Equals(T other)
         {

@@ -39,7 +39,7 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReqLocal);
+            await saveWriter.WriteOneToDiskAsync(writeReqLocal);
             string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
@@ -48,7 +48,7 @@ namespace SaveSystemTests
                 SlotNumber = 1,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReqLocal);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReqLocal);
             Assert.IsTrue(data.Equals(result));
         }
 
@@ -76,7 +76,7 @@ namespace SaveSystemTests
                 SaveMetaData = meta,
                 MainState = originalData
             };
-            await saveWriter.WriteOneToDisk(firstWrite);
+            await saveWriter.WriteOneToDiskAsync(firstWrite);
 
             Assert.IsTrue(File.Exists(savePath), "Initial file was not created.");
 
@@ -92,7 +92,7 @@ namespace SaveSystemTests
                 MainState = newData
             };
             saveWriter.DeleteBackupsPostOverwrite = false; // to allow checking the backup
-            await saveWriter.WriteOneToDisk(secondWrite);
+            await saveWriter.WriteOneToDiskAsync(secondWrite);
 
             Assert.IsTrue(File.Exists(savePath), "Overwritten file was not created.");
             Assert.IsTrue(File.Exists(backupPath), "Backup file was not created during overwrite.");
@@ -104,7 +104,7 @@ namespace SaveSystemTests
 
             // STEP 3 — Write again with deletion enabled
             saveWriter.DeleteBackupsPostOverwrite = true;
-            await saveWriter.WriteOneToDisk(secondWrite); // trigger overwrite
+            await saveWriter.WriteOneToDiskAsync(secondWrite); // trigger overwrite
 
             Assert.IsFalse(File.Exists(backupPath), "Backup file was not deleted after overwrite with cleanup enabled.");
         }
@@ -125,14 +125,14 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = dirType
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = slotNumber,
                 BaseSaveDirectory = dirType
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result));
         }
@@ -154,14 +154,14 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 2,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result), "Encrypted round-trip did not preserve data.");
         }
@@ -186,14 +186,14 @@ namespace SaveSystemTests
                 SaveMetaData = meta,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 3,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMetadataFromDisk(readReq);
+            var result = await saveReader.ReadMetadataFromDiskAsync(readReq);
 
             Assert.AreEqual(meta.SaveName, result.SaveName, "Encrypted metadata round-trip did not preserve SaveName.");
         }
@@ -215,7 +215,7 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             // Corrupt the file
             var path = saveReaderFallback.GetSavePath(new SaveReadRequest { SlotNumber = 4, BaseSaveDirectory = SaveDirectoryType.DataPath });
@@ -232,7 +232,7 @@ namespace SaveSystemTests
             string assertErrorMessage = "Corrupted encrypted file did not throw.";
             Assert.ThrowsAsync<InvalidDataException>(async () =>
             {
-                await saveReaderFallback.ReadMainSaveDataFromDisk(readReq);
+                await saveReaderFallback.ReadMainSaveDataFromDiskAsync(readReq);
             }, assertErrorMessage);
         }
 
@@ -253,14 +253,14 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 5,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(result.Items.OfType<RawStringSaveData>().Any(u => u.Value == unicodeString),
                 $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
@@ -296,7 +296,7 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             // Try to read as encrypted
             TestSaveReader saveReader = saveReaderFallback;
@@ -308,7 +308,7 @@ namespace SaveSystemTests
             };
 
             string assertErrorMessage = "Reading unencrypted file as encrypted did not throw.";
-            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false),
+            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false),
                 assertErrorMessage);
         }
     }
