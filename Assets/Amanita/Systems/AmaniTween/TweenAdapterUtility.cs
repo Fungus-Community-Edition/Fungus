@@ -38,7 +38,9 @@ namespace Amanita.Tweening
             {
                 string assetPath = $"{ResourcesPath}{AssetName}.asset";
                 AssetDatabase.CreateAsset(adapter, assetPath);
-                AssetDatabase.SaveAssets();
+                EditorUtility.SetDirty(adapter);
+                AssetDatabase.SaveAssetIfDirty(adapter);
+                AssetDatabase.Refresh();
                 Debug.Log($"Created new {nameof(DefaultTweenAdapter)} at {assetPath}");
             }
 #endif

@@ -8,7 +8,6 @@ using UnityEngine;
 using Type = System.Type;
 using UnityEngine.SceneManagement;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -390,6 +389,9 @@ namespace Amanita.VScripting
                 // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
                 return;
             }
+
+            variables.RemoveAll(elem => elem == null);
+
             EnsureValidUniqueId();
             EnsureValidVarIDs();
         }

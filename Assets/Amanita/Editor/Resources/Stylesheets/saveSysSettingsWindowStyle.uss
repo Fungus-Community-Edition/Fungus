@@ -5,6 +5,7 @@
     --text-field-font-size: 14px;
     --text-field-border-radius: 5px;
     --half-the-width: 50%;
+    --dropdown-height: 30px;
 }
 
 #WindowRoot
@@ -26,6 +27,7 @@
 #SaveReaderDropdown
 {
     font-size: var(--text-field-font-size);
+    min-height: var(--dropdown-height);
 }
 
 #SaveReaderDropdown > Label
@@ -36,6 +38,7 @@
 #SaveWriterDropdown
 {
     font-size: var(--text-field-font-size);
+    min-height: var(--dropdown-height);
 }
 
 #SaveWriterDropdown > Label
@@ -62,8 +65,9 @@
 #MainAppliersHolder
 {
     font-size: var(--text-field-font-size);
-    height: 50px;
+    min-height: 50px;
     flex-direction: row;
+    padding: 0px 10px 0px 5px;
 }
 
 #MainAppliersHolder > Label
@@ -72,9 +76,12 @@
     
 }
 
-#MainAppliersHolder > #MainAppliersList
+#MainAppliersHolder > #MainAppliers
 {
     width: 50%;
+    min-height: 50px;
+    max-height: 300px;
+    flex-grow: 1;
 }
 
 #StorageSettings

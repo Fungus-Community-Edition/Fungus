@@ -1,13 +1,13 @@
-using Collections;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Type = System.Type;
+using System.Linq;
+using Collections;
 
 namespace Amanita.SaveSys
 {
-    public class SaveWriterTypeRegistry
+    public class SaveDataApplierRegistry : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
@@ -22,27 +22,25 @@ namespace Amanita.SaveSys
 
         private static void RefreshTypeRegistry()
         {
-            _writerTypes.Clear();
-            IList<Type> writerTypesFound = TypeUtils.GetInstantiatableTypes(_iSaveWriterType);
-            _writerTypes.AddRange(writerTypesFound);
+            _applierTypes.Clear();
+            IList<Type> typesFound = TypeUtils.GetInstantiatableTypes(_iSaveDataApplierType);
+            _applierTypes.AddRange(typesFound);
         }
 
         /// <summary>
         /// All of these types are concrete ones that implement ISaveReader.
         /// </summary>
-        public static IList<Type> WriterTypes
+        public static IList<Type> Types
         {
-            get => _writerTypes.ToList(); // We don't want clients to be able to change the list directly
+            get => _applierTypes.ToList(); // We don't want clients to be able to change the list directly
             private set
             {
-                _writerTypes.Clear();
-                _writerTypes.AddRange(value);
+                _applierTypes.Clear();
+                _applierTypes.AddRange(value);
             }
         }
+        private static readonly IList<Type> _applierTypes = new List<Type>();
 
-        private static readonly IList<Type> _writerTypes = new List<Type>();
-
-        private static readonly Type _iSaveWriterType = typeof(ISaveWriter);
-
+        private static readonly Type _iSaveDataApplierType = typeof(ISaveDataApplier);
     }
 }

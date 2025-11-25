@@ -19,7 +19,6 @@ namespace Amanita.SaveSys
 
             AssemblyReloadEvents.afterAssemblyReload -= RefreshTypeRegistry;
             AssemblyReloadEvents.afterAssemblyReload += RefreshTypeRegistry;
-
         }
 
         private static void RefreshTypeRegistry()
@@ -32,7 +31,7 @@ namespace Amanita.SaveSys
         /// <summary>
         /// All of these types are concrete ones that implement ISaveReader.
         /// </summary>
-        public static IList<Type> ReaderTypes
+        public static IList<Type> Types
         {
             get => _readerTypes.ToList(); // We don't want clients to be able to change the list directly
             private set
@@ -43,24 +42,7 @@ namespace Amanita.SaveSys
         }
         private static readonly IList<Type> _readerTypes = new List<Type>();
 
-        static IEnumerable<Type> SafeGetTypes(Assembly toGetTypesFrom)
-        {
-            try
-            {
-                return toGetTypesFrom.GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                return ex.Types.Where(typeFound => typeFound != null);
-            }
-        }
-
         private static readonly Type _iSaveReaderType = typeof(ISaveReader);
 
-        private static bool IsInstantiatableType(Type typeToCheck, Type baseVarType)
-        {
-            bool result = typeToCheck.IsConcrete() && baseVarType.IsAssignableFrom(typeToCheck);
-            return result;
-        }
     }
 }

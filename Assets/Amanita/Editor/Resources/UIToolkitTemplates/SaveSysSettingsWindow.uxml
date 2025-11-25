@@ -1,12 +1,11 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/SaveSysSettingsWindowStyle.uss?fileID=7433441132597879392&amp;guid=16b5f91ec91c1eb4280cc20ae0b17452&amp;type=3#SaveSysSettingsWindowStyle" />
+    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/saveSysSettingsWindowStyle.uss?fileID=7433441132597879392&amp;guid=16b5f91ec91c1eb4280cc20ae0b17452&amp;type=3#saveSysSettingsWindowStyle" />
     <ui:VisualElement name="WindowRoot" style="flex-grow: 1;">
         <ui:Label text="Save Sys Settings" name="TopLabel" />
         <ui:DropdownField label="Save Reader" name="SaveReaderDropdown" />
         <ui:DropdownField label="Save Writer" name="SaveWriterDropdown" />
         <ui:VisualElement name="MainAppliersHolder">
-            <ui:Label text="Main Appliers" name="Label" />
-            <ui:ListView name="MainAppliersList" />
+            <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="true" fixed-item-height="30" />
         </ui:VisualElement>
         <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita" />
         <ui:VisualElement name="RefreshButtonHolder">
