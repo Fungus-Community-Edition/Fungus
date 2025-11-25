@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -6,9 +7,10 @@ namespace Amanita.SaveSys
     {
         // We have these as ScriptableObject references to reduce persistence headaches. This means
         // that all custom ISaveReader and ISaveWriter implementations must also be ScriptableObjects.
-        [SerializeField] protected ScriptableObject _saveReader;
-        [SerializeField] protected ScriptableObject _saveWriter;
-        [SerializeField] protected SaveStorageSettings _storageSettings;
+        [SerializeField] private ScriptableObject _saveReader;
+        [SerializeField] private ScriptableObject _saveWriter;
+        [SerializeField] private SaveStorageSettings _storageSettings;
+        [SerializeField] private List<ScriptableObject> mainAppliers = new List<ScriptableObject>() { };
 
         public virtual ISaveReader SaveReader
         {
@@ -52,6 +54,56 @@ namespace Amanita.SaveSys
         {
             get => _storageSettings;
             set => _storageSettings = value;
+        }
+
+        /// <summary>
+        /// The appliers that will apply the main save data to the game state.
+        /// All of these need to be ScriptableObjects, ideally in the form
+        /// of project assets.
+        /// </summary>
+        public virtual IList<IMainSaveApplier<CompositeSaveData>> MainAppliers
+        {
+            get
+            {
+                List<IMainSaveApplier<CompositeSaveData>> appliers = mainAppliers
+                    .ConvertAll(so => so as IMainSaveApplier<CompositeSaveData>)
+                    .FindAll(applier => applier != null);
+                return appliers;
+            }
+            set
+            {
+                mainAppliers.Clear();
+                foreach (var applier in value)
+                {
+                    if (applier is ScriptableObject so)
+                    {
+                        mainAppliers.Add(so);
+                    }
+                    else
+                    {
+                        Debug.LogError("All MainAppliers must be ScriptableObjects.", this);
+                    }
+                }
+            }
+        }
+    
+        public virtual void SetMainApplierAtIndex(IMainSaveApplier<CompositeSaveData> applier, int index)
+        {
+            #region Validation
+            if (applier is not ScriptableObject so)
+            {
+                Debug.LogError("MainApplier must be a ScriptableObject.", this);
+                return;
+            }
+
+            if (index < 0 || index >= mainAppliers.Count)
+            {
+                Debug.LogError("Index out of range when setting MainApplier.", this);
+                return;
+            }
+            #endregion
+
+            mainAppliers[index] = so;
         }
     }
 }

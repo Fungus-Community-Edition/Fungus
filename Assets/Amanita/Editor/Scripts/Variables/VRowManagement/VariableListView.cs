@@ -137,9 +137,6 @@ namespace Amanita.VScripting.EditorUtils
                             return;
                         }
 
-                        //Debug.Log($"Found row for variable with key '{currentVar.Key}' of type " +
-                            //$"{currentVar.GetType().Name} at index={index}");
-
                         var visHandler = row.VisualHandler;
 
                         AttachVisual();
@@ -194,15 +191,6 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     _listDisplay.destroyItem = rowHolder =>
                     {
-                        // Diagnostics: log destroy
-                        try
-                        {
-                            if (rowHolder.userData is VariableRow rowAsUserData && rowAsUserData.VarToRepresent != null)
-                            {
-                                //Debug.Log($"[VListView.destroyItem] destroying row for key='{rowAsUserData.VarToRepresent.Key}'");
-                            }
-                        }
-                        catch { }
                         rowHolder.userData = null;
                         rowHolder.Clear();
                     };
