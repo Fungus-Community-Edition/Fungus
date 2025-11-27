@@ -5,8 +5,7 @@
         <ui:DropdownField label="Save Reader" name="SaveReaderDropdown" />
         <ui:DropdownField label="Save Writer" name="SaveWriterDropdown" />
         <ui:VisualElement name="MainAppliersHolder">
-            <ui:Label text="Main Appliers" name="Label" />
-            <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="false" show-add-remove-footer="true" />
+            <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="true" fixed-item-height="30" />
         </ui:VisualElement>
         <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita" />
         <ui:VisualElement name="RefreshButtonHolder">

@@ -7,7 +7,7 @@ using Collections;
 
 namespace Amanita.SaveSys
 {
-    public class MainSaveApplierRegistry : MonoBehaviour
+    public class SaveDataApplierRegistry : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
@@ -23,7 +23,7 @@ namespace Amanita.SaveSys
         private static void RefreshTypeRegistry()
         {
             _applierTypes.Clear();
-            IList<Type> typesFound = TypeUtils.GetInstantiatableTypes(_iMainSaveApplierType);
+            IList<Type> typesFound = TypeUtils.GetInstantiatableTypes(_iSaveDataApplierType);
             _applierTypes.AddRange(typesFound);
         }
 
@@ -41,6 +41,6 @@ namespace Amanita.SaveSys
         }
         private static readonly IList<Type> _applierTypes = new List<Type>();
 
-        private static readonly Type _iMainSaveApplierType = typeof(IMainSaveApplier<CompositeSaveData>);
+        private static readonly Type _iSaveDataApplierType = typeof(ISaveDataApplier);
     }
 }

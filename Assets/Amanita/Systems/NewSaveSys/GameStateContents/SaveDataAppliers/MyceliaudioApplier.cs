@@ -7,7 +7,7 @@ using Lorekeeper;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "NewMyceliaudioApplier", menuName = "Amanita/SaveSys/Appliers/MyceliaudioApplier")]
+    [SaveSysDisplayName("Myceliaudio Applier (Amanita Default)")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
         public override Task Apply(MyceliaudioSaveData saveData)

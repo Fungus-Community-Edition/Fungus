@@ -61,12 +61,12 @@ namespace Amanita.SaveSys
         /// All of these need to be ScriptableObjects, ideally in the form
         /// of project assets.
         /// </summary>
-        public virtual IList<IMainSaveApplier<CompositeSaveData>> MainAppliers
+        public virtual IList<ISaveDataApplier> MainAppliers
         {
             get
             {
-                List<IMainSaveApplier<CompositeSaveData>> appliers = mainAppliers
-                    .ConvertAll(so => so as IMainSaveApplier<CompositeSaveData>)
+                List<ISaveDataApplier> appliers = mainAppliers
+                    .ConvertAll(so => so as ISaveDataApplier)
                     .FindAll(applier => applier != null);
                 return appliers;
             }
@@ -86,8 +86,20 @@ namespace Amanita.SaveSys
                 }
             }
         }
-    
-        public virtual void SetMainApplierAtIndex(IMainSaveApplier<CompositeSaveData> applier, int index)
+        
+        public virtual void AddMainApplier(ISaveDataApplier applier)
+        {
+            if (applier is ScriptableObject so)
+            {
+                mainAppliers.Add(so);
+            }
+            else
+            {
+                Debug.LogError("MainApplier must be a ScriptableObject.", this);
+            }
+        }
+
+        public virtual void SetMainApplierAtIndex(ISaveDataApplier applier, int index)
         {
             #region Validation
             if (applier is not ScriptableObject so)

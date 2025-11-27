@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b05c64d37223753429d9157702a86582, type: 3}
-  m_Name: 02_DefaultFlowchartApplier
+  m_Script: {fileID: 11500000, guid: 4a21431d0fce1804992856963d895b27, type: 3}
+  m_Name: Generated_Myceliaudio_Applier_(Amanita_Default)
   m_EditorClassIdentifier: 
-  order: 1
-  varCodecs:
-  - {fileID: 11400000, guid: 99af32feb8c4a354489456433da49e02, type: 2}
+  order: 0

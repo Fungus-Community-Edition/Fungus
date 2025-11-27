@@ -104,6 +104,7 @@ namespace Amanita.SaveSys.EditorUtils
                     position = new Rect(position.position, windowSize);
                 }
             }
+            Refresh();
         }
 
         private void OnDestroy()
@@ -120,6 +121,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             VisualElement mainUxml = m_VisualTreeAsset.Instantiate();
             Root.Add(mainUxml);
+            _rootIsReady = true;
             RegisterViews();
             UpdateCacheFromTypeRegistries();
             RefreshDropdowns();
@@ -129,10 +131,16 @@ namespace Amanita.SaveSys.EditorUtils
             FillMissingAssetSettingsBasedOnUi();
         }
 
+        private bool _rootIsReady = false;
         private VisualElement Root => rootVisualElement;
 
         private void RegisterViews()
         {
+            if (!_rootIsReady)
+            {
+                // This can happen when Refresh is called before CreateGUI.
+                return;
+            }
             saveReaderDropdown = Root.Q<DropdownField>("SaveReaderDropdown");
             saveWriterDropdown = Root.Q<DropdownField>("SaveWriterDropdown");
             storageSettings = Root.Q<ObjectField>("StorageSettings");
@@ -177,22 +185,23 @@ namespace Amanita.SaveSys.EditorUtils
             PopulateMainApplierTypesAndChoices();
             void PopulateMainApplierTypesAndChoices()
             {
-                IList<Type> mainApplierTypes = MainSaveApplierRegistry.Types
+                IList<Type> mainApplierTypes = SaveDataApplierRegistry.Types
                 .Where(typeEl => !typeEl.Name.Contains("Test") &&
                                  scriptableObjType.IsAssignableFrom(typeEl) &&
-                                 iMainSaveApplierType.IsAssignableFrom(typeEl)).ToList();
+                                 iSaveDataApplierType.IsAssignableFrom(typeEl)).ToList();
                 validMainApplierTypes.AddRange(mainApplierTypes);
 
                 for (int i = 0; i < validMainApplierTypes.Count; i++)
                 {
                     var applierType = validMainApplierTypes[i];
                     string displayName = GetDisplayName(applierType);
-
+                    string displayNameWithUnderscores = displayName.Replace(space, underscore);
+                    string assetName = $"Generated_{displayNameWithUnderscores}";
                     var applierInstance = SOUtils.GetOrCreateScriptableObject(
                         applierType,
                         "SaveSys/SaveAppliers",
-                        $"Generated{applierType.FullName}");
-                    if (applierInstance is IMainSaveApplier<CompositeSaveData> applier)
+                        assetName);
+                    if (applierInstance is ISaveDataApplier applier)
                     {
                         validMainApplierChoices[displayName] = applier;
                     }
@@ -205,17 +214,21 @@ namespace Amanita.SaveSys.EditorUtils
         private readonly static IList<Type> validMainApplierTypes = new List<Type>();
 
         // Keys are the display names, values are the applier instances
-        private readonly static Dictionary<string, IMainSaveApplier<CompositeSaveData>> validMainApplierChoices = 
-            new Dictionary<string, IMainSaveApplier<CompositeSaveData>>();
+        private readonly static Dictionary<string, ISaveDataApplier> validMainApplierChoices = 
+            new Dictionary<string, ISaveDataApplier>();
 
         private readonly static Type scriptableObjType = typeof(ScriptableObject);
         private readonly static Type iSaveReaderType = typeof(ISaveReader);
         private readonly static Type iSaveWriterType = typeof(ISaveWriter);
-        private readonly static Type iMainSaveApplierType = typeof(IMainSaveApplier<CompositeSaveData>);
-
+        private readonly static Type iSaveDataApplierType = typeof(ISaveDataApplier);
 
         private void RefreshDropdowns()
         {
+            if (!_rootIsReady)
+            {
+                return;
+            }
+
             readerTypeMap.Clear();
             writerTypeMap.Clear();
             saveReaderDropdown.choices.Clear();
@@ -322,6 +335,11 @@ namespace Amanita.SaveSys.EditorUtils
 
         private void ToggleSubs(bool on)
         {
+            if (!_rootIsReady)
+            {
+                return;
+            }
+
             if (on)
             {
                 storageSettings.RegisterValueChangedCallback(OnStorageSettingsChanged);
@@ -397,29 +415,51 @@ namespace Amanita.SaveSys.EditorUtils
         private VisualElement OnMakeItemForMainAppliers()
         {
             var dropdown = new DropdownField();
-            dropdown.choices = validMainApplierChoices.Keys.ToList();
+            dropdown.style.flexGrow = 1;
+            dropdown.style.minWidth = 100;
+            dropdown.style.marginBottom = dropdown.style.marginTop = 15;
             return dropdown;
         }
 
         private void OnMainApplierDropdownChoiceChanged(ChangeEvent<string> evt)
         {
-            DropdownField dropdown = evt.target as DropdownField;
-            throw new System.NotImplementedException();
+            DropdownField dropdown = (DropdownField)evt.target;
+            // Find the applier tied to the current choice
+            string currentChoice = evt.newValue;
+            ISaveDataApplier applierInstance = validMainApplierChoices[currentChoice];
+
+            int index = (int)dropdown.userData;
+            bool changeAtIndex = index < SysSettings.MainAppliers.Count;
+            if (changeAtIndex)
+            {
+                SysSettings.SetMainApplierAtIndex(applierInstance, index);
+                Debug.Log($"Set MainApplier at index {index} to {applierInstance.GetType().Name}");
+            }
+            else
+            {
+                SysSettings.AddMainApplier(applierInstance);
+                Debug.Log($"Added MainApplier {applierInstance.GetType().Name} at index {index}");
+            }
+
+            MakeSysSettingsChangesStick();
+
         }
+
+        private static string space = " ", underscore = "_";
 
         private void OnBindItemForMainAppliers(VisualElement visElem, int index)
         {
-            DropdownField dropdown = visElem as DropdownField;
+            DropdownField dropdown = (DropdownField)visElem;
             dropdown.userData = index;
+            dropdown.choices = validMainApplierChoices.Keys.ToList();
             dropdown.RegisterValueChangedCallback(OnMainApplierDropdownChoiceChanged);
         }
 
         private void OnUnbindItemForMainAppliers(VisualElement visElem, int index)
         {
-            DropdownField dropdown = visElem as DropdownField;
+            DropdownField dropdown = (DropdownField)visElem;
             dropdown.UnregisterValueChangedCallback(OnMainApplierDropdownChoiceChanged);
             visElem.userData = null;
-            visElem.Clear();
         }
 
         private void OnDestroyItemForMainAppliers(VisualElement element)
@@ -538,7 +578,11 @@ namespace Amanita.SaveSys.EditorUtils
         {
             SaveReaderTypeRegistry.DiscoverAndRegister();
             SaveWriterTypeRegistry.DiscoverAndRegister();
+            SaveDataApplierRegistry.DiscoverAndRegister();
+            
             UpdateCacheFromTypeRegistries();
+            
+            RegisterViews();
             RefreshDropdowns();
             PrepReaderAndWriterInstances();
 
@@ -595,6 +639,12 @@ namespace Amanita.SaveSys.EditorUtils
         }
         private SaveSystemSettings _sysSettings;
 
+        private void OnDisable()
+        {
+            ToggleSubs(false);
+            _rootIsReady = false;
+        }
+    
         #endregion
 
         #region Nested Types
