@@ -1,13 +1,11 @@
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.IO;
-using System.Collections.Generic;
-using Amanita.VScripting;
 using UitkLabel = UnityEngine.UIElements.Label;
-using System;
-using UnityEditorInternal;
 
 namespace Amanita.EditorUtils
 {
@@ -16,7 +14,7 @@ namespace Amanita.EditorUtils
         private string CurrentAssemblyName => currentAsmDefNameLabel?.value;
         private string NewAssemblyName => newAsmDefNameLabel?.value;
 
-        [MenuItem("Window/Amanita/Assembly Migration")]
+        [MenuItem("Window/Atelier Mycelia/Amanita/Assembly Migration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<AssemblyMigrationWindow>();
@@ -184,10 +182,13 @@ namespace Amanita.EditorUtils
         private void UpdateCurrentAsmDefNameLabel()
         {
             var currentAsmDefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
+            
+
             string updatedCurrentAssemblyName;
             if (currentAsmDefFile != null)
             {
-                updatedCurrentAssemblyName = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(currentAsmDefFile));
+                AsmdefData defData = AsmdefData.FromAsset(currentAsmDefFile);
+                updatedCurrentAssemblyName = defData.name;
             }
             else
             {
@@ -235,14 +236,17 @@ namespace Amanita.EditorUtils
             }
             #endregion
 
-            #region Migrate VariableSourceAssets
-            string[] guids = AssetDatabase.FindAssets("t:VariableSourceAsset");
-            IList<VariableSourceAsset> assetsToMigrate = new List<VariableSourceAsset>();
+            #region Migrate ScriptableObjects
+            string[] guids = AssetDatabase.FindAssets("t:ScriptableObject");
+            IDictionary<string, ScriptableObject> assetsToMigrate = new Dictionary<string, ScriptableObject>();
 
+            string oldAsmMarker = $"asm: {CurrentAssemblyName}}}";
+            string newAsmMarker = $"asm: {NewAssemblyName}}}";
+            string summaryToAppend = string.Empty;
             foreach (string guidEl in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guidEl);
-                var asset = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
+                var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
 
                 if (asset == null)
                 {
@@ -250,60 +254,73 @@ namespace Amanita.EditorUtils
                     continue;
                 }
 
-                if (IsDryRun)
+                // To see if we should consider this asset for migration, we need to check the contents
+                // of its YAML. When it references an instance of a type, it has lines like this:
+                // asm: {insertAssemblyNameHere}. 
+                // What we need to do is change those to asm: {newAssemblyNameHere}.
+                string assetYaml = File.ReadAllText(path);
+                if (assetYaml == null)
                 {
-                    AppendSummary($"[Dry Run] Would mark VariableSourceAsset dirty: {path}");
+                    AppendSummary($"WARNING: Could not read YAML for asset at path: {path}");
+                    continue;
                 }
-                else
+
+                if (assetYaml.Contains(oldAsmMarker))
                 {
-                    EditorUtility.SetDirty(asset);
-                    AssetDatabase.SaveAssetIfDirty(asset);
-                }
-
-            }
-
-            foreach (var asset in assetsToMigrate)
-            {
-                AssetDatabase.SaveAssetIfDirty(asset);
-            }
-            #endregion
-
-            #region Update Asmdef Files
-            if (!IsDryRun)
-            {
-                var currentAsmDefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
-                currentAsmDefFile.name = newAsmDefNameLabel.value;
-            }
-
-            string[] asmdefGuids = AssetDatabase.FindAssets("t:asmdef");
-            foreach (string guidEl in asmdefGuids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guidEl);
-                string json = File.ReadAllText(path);
-                var asmdefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
-
-                if (json.Contains(CurrentAssemblyName))
-                {
-                    string updatedJson = json.Replace(CurrentAssemblyName, NewAssemblyName);
-
                     if (IsDryRun)
                     {
-                        AppendSummary($"[Dry Run] Would update asmdef: {path}\nFrom: {CurrentAssemblyName}\nTo: {NewAssemblyName}");
+                        summaryToAppend = $"[Dry Run] Would update ScriptableObject {asset.name}'s YAML: " +
+                            $"{path}\nFrom: {oldAsmMarker}\nTo: {newAsmMarker}";
+                        AppendSummary(summaryToAppend);
                     }
-                    else
-                    {
-                        File.WriteAllText(path, updatedJson);
-                        AssetDatabase.ImportAsset(path);
-                        AppendSummary($"Updated asmdef: {path}");
-                    }
-
+                    assetsToMigrate.Add(path, asset);
                 }
 
             }
+
+            if (!IsDryRun)
+            {
+                foreach (var pathToAsset in assetsToMigrate.Keys)
+                {
+                    ScriptableObject asset = assetsToMigrate[pathToAsset];
+                    string assetYaml = File.ReadAllText(pathToAsset);
+                    string updatedYaml = assetYaml.Replace(oldAsmMarker, newAsmMarker);
+                    File.WriteAllText(pathToAsset, updatedYaml);
+                    AssetDatabase.ImportAsset(pathToAsset);
+                    AppendSummary($"Updated VariableSourceAsset: {pathToAsset}");
+                    AssetDatabase.SaveAssetIfDirty(asset);
+                }
+            }
             #endregion
 
+            // Update the current asmdef file name and all references in other asmdef files
+            // Get path to current asmdef file
+            AssemblyDefinitionAsset currentAsmDef = asmDefToChangePicker.value as AssemblyDefinitionAsset;
+            AsmdefData defData = AsmdefData.FromAsset(currentAsmDef);
+            string prevName = defData.name;
+
+            defData.name = NewAssemblyName;
+
+            if (IsDryRun)
+            {
+                summaryToAppend = $"[Dry Run] Would update part of asmdef {currentAsmDef.name}'s json." +
+                    $"\nFrom: {prevName}\nTo: {NewAssemblyName}";
+                AppendSummary(summaryToAppend);
+            }
+            else
+            {
+                string currentAsmDefPath = AssetDatabase.GetAssetPath(currentAsmDef);
+                string updatedJson = JsonUtility.ToJson(defData, true);
+                //currentAsmDef.name = NewAssemblyName;
+                File.WriteAllText(currentAsmDefPath, updatedJson);
+                AssetDatabase.ImportAsset(currentAsmDefPath);
+                AppendSummary($"Updated asmdef {currentAsmDef.name} @ {currentAsmDefPath}");
+            }
+
             AssetDatabase.Refresh();
-            AppendSummary($"Migration {(IsDryRun ? "dry run" : "complete")}. Checked {guids.Length} VariableSourceAssets and {asmdefGuids.Length} asmdefs.");
+            summaryToAppend = $"Migration {(IsDryRun ? "dry run" : "complete")}. Checked {guids.Length} " +
+                $"ScriptableObjects.";
+            AppendSummary(summaryToAppend);
 
         }
 
@@ -311,5 +328,30 @@ namespace Amanita.EditorUtils
         {
             asmDefToChangePicker.UnregisterValueChangedCallback(OnAsmDefPickerValueChanged);
         }
+
+        [System.Serializable]
+        public class AsmdefData
+        {
+            public string name;
+            public string rootNamespace;
+            public string[] references;
+            public string[] includePlatforms;
+            public string[] excludePlatforms;
+            public bool allowUnsafeCode;
+            public bool overrideReferences;
+            public string[] precompiledReferences;
+            public string[] defineConstraints;
+            public string[] versionDefines;
+            public bool noEngineReferences;
+
+            public static AsmdefData FromAsset(AssemblyDefinitionAsset asmDefAsset)
+            {
+                string pathToFile = AssetDatabase.GetAssetPath(asmDefAsset);
+                string json = File.ReadAllText(pathToFile);
+                AsmdefData result = JsonUtility.FromJson<AsmdefData>(json);
+                return result;
+            }
+        }
+
     }
 }

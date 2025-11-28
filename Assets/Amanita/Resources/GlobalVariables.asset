@@ -13,69 +13,69 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: 98ba5945-d19a-4e54-be99-71678dbbb43f
+  uniqueId: 10f539ba-c332-455f-9005-8b3a5b216f78
   variables:
-  - rid: 846271511759683584
-  - rid: 846271512383848516
-  - rid: 846271512383848517
-  - rid: 846271512383848518
-  - rid: 846271512383848519
-  - rid: 846271512383848521
-  _nextVarID: 11
+  - rid: 7903258329788710967
+  - rid: 7903258329788710968
+  - rid: 7903258329788710969
+  - rid: 7903258329926860800
+  - rid: 7903258329926860801
+  - rid: 7903258329957269504
+  _nextVarID: 7
   references:
     version: 2
     RefIds:
-    - rid: 846271511759683584
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329788710967
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Naruto
         itemID: 1
         _ownerIdIndex: -1
         value: Believe it!
-    - rid: 846271512383848516
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329788710968
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: One Piece
-        itemID: 3
+        itemID: 2
         _ownerIdIndex: -1
         value: 'I will become the
 
           Pirate King!'
-    - rid: 846271512383848517
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329788710969
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Bleach
-        itemID: 5
+        itemID: 3
         _ownerIdIndex: -1
         value: Throwing away victory for the sake of manners is a cookie mistake.
           Captains don't have the time to waste on that kind of thing. Don't waste
           your time trying to play the good guy. No matter what debts you may owe,
           from the instant you find yourself on the battleground, both sides are
           evil.
-    - rid: 846271512383848518
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329926860800
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: meaningOfLife
-        itemID: 7
+        itemID: 4
         _ownerIdIndex: -1
         value: 24
-    - rid: 846271512383848519
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329926860801
+      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: cuteBgm
-        itemID: 9
+        itemID: 5
         _ownerIdIndex: -1
         value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
-    - rid: 846271512383848521
-      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258329957269504
+      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: pi
-        itemID: 10
+        itemID: 6
         _ownerIdIndex: -1
         value: 3.14159

@@ -5,8 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
-        "AmanitaEditor",
-        "Amanita.Core"
+        "Amanita.Core",
+        "Amanita.Core.Editor"
     ],
     "includePlatforms": [
         "Editor"

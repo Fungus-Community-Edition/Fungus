@@ -22,7 +22,7 @@ namespace Amanita.SaveSys.EditorUtils
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        [MenuItem("Window/Amanita/Save Sys Settings")]
+        [MenuItem("Window/Atelier Mycelia/Amanita/Save Sys Settings")]
         public static void Open()
         {
             // If already open, just focus and return.
