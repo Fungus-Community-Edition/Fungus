@@ -13,9 +13,8 @@ namespace Amanita.EditorUtils
 {
     public class AssemblyMigrationWindow : EditorWindow
     {
-        private string currentAssemblyName = "Amanita";
-        private string newAssemblyName = "Amanita.Core";
-        private DefaultAsset asmdefFile;
+        private string CurrentAssemblyName => currentAsmDefNameLabel?.value;
+        private string NewAssemblyName => newAsmDefNameLabel?.value;
 
         [MenuItem("Window/Amanita/Assembly Migration")]
         public static void ShowWindow()
@@ -25,25 +24,22 @@ namespace Amanita.EditorUtils
             wnd.minSize = wnd.maxSize = windowSize;
         }
 
-        private readonly static Vector2 windowSize = new Vector2(600, 400);
+        private readonly static Vector2 windowSize = new Vector2(600, 600);
 
         public void CreateGUI()
         {
-            var root = rootVisualElement;
-            IStyle rootStyle = root.style;
+            IStyle rootStyle = Root.style;
             rootStyle.paddingLeft = rootStyle.paddingRight = 20;
             rootStyle.paddingTop = rootStyle.paddingBottom = 10;
 
             PrepFields();
-            #region Add Elements to Root
-            root.Add(titleLabel);
-            root.Add(asmDefToChangePicker);
-            root.Add(currentAsmDefNameLabel);
-            root.Add(newAsmDefNameLabel);
-            root.Add(dryRunToggle);
-            root.Add(runButton);
-            #endregion
+            AddElementsToRoot();
         }
+
+        VisualElement Root => rootVisualElement;
+
+        ScrollView summaryScroll;
+        UitkLabel summaryLabel;
 
         private bool IsDryRun
         {
@@ -126,34 +122,79 @@ namespace Amanita.EditorUtils
             };
 
             IStyle runButtonStyle = runButton.style;
+            runButtonStyle.marginBottom = gapBetweenStuff;
             runButtonStyle.fontSize = asmFieldFontSize;
             runButtonStyle.height = runButtonHeight;
             #endregion
 
             UpdateCurrentAsmDefNameLabel();
+
+            #region Summary Report
+
+            summaryScroll = new ScrollView();
+            IStyle scrollStyle = summaryScroll.style;
+            scrollStyle.fontSize = asmFieldFontSize;
+            scrollStyle.paddingBottom = scrollStyle.paddingTop = 
+                scrollStyle.paddingLeft = scrollStyle.paddingRight = 8;
+            scrollStyle.flexGrow = 1; // fill remaining space
+            scrollStyle.borderTopWidth = scrollStyle.borderRightWidth = 
+                scrollStyle.borderBottomWidth = scrollStyle.borderLeftWidth = 1;
+
+            scrollStyle.borderTopColor = scrollStyle.borderRightColor = 
+                scrollStyle.borderBottomColor = scrollStyle.borderLeftColor = Color.gray;
+
+            summaryLabel = new UitkLabel("Summary report will appear here...");
+            IStyle summaryLabelStyle = summaryLabel.style;
+            summaryLabelStyle.whiteSpace = WhiteSpace.Normal; // allow wrapping
+            summaryLabelStyle.fontSize = 14;
+            summaryLabelStyle.unityTextAlign = TextAnchor.UpperLeft;
+
+            summaryScroll.Add(summaryLabel);
+
+            #endregion
+
         }
 
         Toggle dryRunToggle;
 
+        private void AddElementsToRoot()
+        {
+            Root.Add(titleLabel);
+            Root.Add(asmDefToChangePicker);
+            Root.Add(currentAsmDefNameLabel);
+            Root.Add(newAsmDefNameLabel);
+            Root.Add(dryRunToggle);
+            Root.Add(runButton);
+            Root.Add(summaryScroll);
+        }
+
+        private void AppendSummary(string message)
+        {
+            if (summaryLabel != null)
+            {
+                summaryLabel.text += message + "\n\n";
+            }
+        }
+
         protected virtual void OnAsmDefPickerValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
-            asmdefFile = evt.newValue as DefaultAsset;
             UpdateCurrentAsmDefNameLabel();
         }
 
         private void UpdateCurrentAsmDefNameLabel()
         {
             var currentAsmDefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
+            string updatedCurrentAssemblyName;
             if (currentAsmDefFile != null)
             {
-                currentAssemblyName = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(currentAsmDefFile));
+                updatedCurrentAssemblyName = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(currentAsmDefFile));
             }
             else
             {
-                currentAssemblyName = string.Empty;
+                updatedCurrentAssemblyName = string.Empty;
             }
 
-            currentAsmDefNameLabel.value = currentAssemblyName;
+            currentAsmDefNameLabel.value = updatedCurrentAssemblyName;
         }
 
         UitkLabel titleLabel;
@@ -167,20 +208,29 @@ namespace Amanita.EditorUtils
         private static readonly float labelWidthPercent = 40f;
         private static readonly float runButtonHeight = 40f;
 
+        private void ClearSummary()
+        {
+            if (summaryLabel != null)
+            {
+                summaryLabel.text = string.Empty;
+            }
+        }
+
         private void RunMigration()
         {
+            ClearSummary();
             #region Validation
             bool thereIsAsmDefToChange = asmDefToChangePicker.value != null;
             bool newNameIsValid = !string.IsNullOrEmpty(newAsmDefNameLabel.value) &&
                 newAsmDefNameLabel.value.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
             if (!thereIsAsmDefToChange)
             {
-                Debug.LogError("Please select an asmdef to change.");
+                AppendSummary("ERROR: Please select an asmdef to change.");
                 return;
             }
             if (!newNameIsValid && !IsDryRun)
             {
-                Debug.LogError("Please enter a valid new asmdef name.");
+                AppendSummary("ERROR: Please enter a valid new asmdef name.");
                 return;
             }
             #endregion
@@ -196,13 +246,13 @@ namespace Amanita.EditorUtils
 
                 if (asset == null)
                 {
-                    Debug.LogWarning($"Could not load asset at path: {path}");
+                    AppendSummary($"WARNING: Could not load asset at path: {path}");
                     continue;
                 }
 
                 if (IsDryRun)
                 {
-                    Debug.Log($"[Dry Run] Would mark VariableSourceAsset dirty: {path}");
+                    AppendSummary($"[Dry Run] Would mark VariableSourceAsset dirty: {path}");
                 }
                 else
                 {
@@ -230,21 +280,21 @@ namespace Amanita.EditorUtils
             {
                 string path = AssetDatabase.GUIDToAssetPath(guidEl);
                 string json = File.ReadAllText(path);
-                asmdefFile = AssetDatabase.LoadAssetAtPath<DefaultAsset>(path);
+                var asmdefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
 
-                if (json.Contains(currentAssemblyName))
+                if (json.Contains(CurrentAssemblyName))
                 {
-                    string updatedJson = json.Replace(currentAssemblyName, newAssemblyName);
+                    string updatedJson = json.Replace(CurrentAssemblyName, NewAssemblyName);
 
                     if (IsDryRun)
                     {
-                        Debug.Log($"[Dry Run] Would update asmdef: {path}\nFrom: {currentAssemblyName}\nTo:   {newAssemblyName}");
+                        AppendSummary($"[Dry Run] Would update asmdef: {path}\nFrom: {CurrentAssemblyName}\nTo: {NewAssemblyName}");
                     }
                     else
                     {
                         File.WriteAllText(path, updatedJson);
                         AssetDatabase.ImportAsset(path);
-                        Debug.Log($"Updated asmdef: {path}");
+                        AppendSummary($"Updated asmdef: {path}");
                     }
 
                 }
@@ -253,7 +303,7 @@ namespace Amanita.EditorUtils
             #endregion
 
             AssetDatabase.Refresh();
-            Debug.Log($"Migration {(IsDryRun ? "dry run" : "complete")}. Checked {guids.Length} VariableSourceAssets and {asmdefGuids.Length} asmdefs.");
+            AppendSummary($"Migration {(IsDryRun ? "dry run" : "complete")}. Checked {guids.Length} VariableSourceAssets and {asmdefGuids.Length} asmdefs.");
 
         }
 
