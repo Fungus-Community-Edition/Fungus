@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 677b57dfc08ebb344ba32891ec8ff775, type: 3}
-  m_Name: 01_DefaultVariableSourceAssetApplier
+  m_Script: {fileID: 11500000, guid: be35ebce7dc31a94ea8c81f6236f3571, type: 3}
+  m_Name: GuidRegistries
   m_EditorClassIdentifier: 
-  order: 0
-  varCodecs:
-  - {fileID: 11400000, guid: 99af32feb8c4a354489456433da49e02, type: 2}
+  typesStoredFor: []
+  guids: []

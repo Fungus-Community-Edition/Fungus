@@ -4,8 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
-        "Amanita.LeanTweenIntegration"
+        "Amanita.LeanTweenIntegration",
+        "Amanita.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

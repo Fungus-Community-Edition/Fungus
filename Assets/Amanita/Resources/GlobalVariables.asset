@@ -13,69 +13,72 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: 3cddd8ed-a61b-42e5-9284-e470fabdefd5
+  uniqueId: ffc98e0d-2421-46ab-a629-c0b7f51ef183
   variables:
-  - rid: 846271511759683584
-  - rid: 846271512383848516
-  - rid: 846271512383848517
-  - rid: 846271512383848518
-  - rid: 846271512383848519
-  - rid: 846271512383848521
-  _nextVarID: 11
+  - rid: 7903258335965610039
+  - rid: 7903258335965610040
+  - rid: 7903258335965610041
+  - rid: 7903258335965610042
+  - rid: 7903258335965610043
+  - rid: 7903258335965610044
+  _nextVarID: 6
   references:
     version: 2
     RefIds:
-    - rid: 846271511759683584
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258335965610039
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Naruto
-        itemID: 1
+        itemID: 0
         _ownerIdIndex: -1
         value: Believe it!
-    - rid: 846271512383848516
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258335965610040
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: One Piece
-        itemID: 3
+        itemID: 1
         _ownerIdIndex: -1
         value: 'I will become the
 
           Pirate King!'
-    - rid: 846271512383848517
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258335965610041
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Bleach
-        itemID: 5
+        itemID: 2
         _ownerIdIndex: -1
-        value: Throwing away victory for the sake of manners is a cookie mistake.
-          Captains don't have the time to waste on that kind of thing. Don't waste
-          your time trying to play the good guy. No matter what debts you may owe,
-          from the instant you find yourself on the battleground, both sides are
-          evil.
-    - rid: 846271512383848518
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita}
+        value: 'Throwing away victory for the sake of manners is a cookie mistake.
+          Captains don''t have the time to waste on that kind of thing.
+
+
+          Don''t
+          waste your time trying to play the good guy. No matter what debts you may
+          owe, from the instant you find yourself on the battleground, both sides
+          are evil.'
+    - rid: 7903258335965610042
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: meaningOfLife
-        itemID: 7
+        itemID: 3
         _ownerIdIndex: -1
         value: 24
-    - rid: 846271512383848519
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258335965610043
+      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: cuteBgm
-        itemID: 9
+        itemID: 4
         _ownerIdIndex: -1
         value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
-    - rid: 846271512383848521
-      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita}
+    - rid: 7903258335965610044
+      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: pi
-        itemID: 10
+        itemID: 5
         _ownerIdIndex: -1
         value: 3.14159

@@ -4,10 +4,10 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
         "Unity.PerformanceTesting",
         "AmanitaEditor",
-        "AmanitaLegacyCollection"
+        "AmanitaLegacyCollection",
+        "Amanita.Core"
     ],
     "includePlatforms": [
         "Editor"

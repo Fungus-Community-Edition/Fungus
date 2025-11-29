@@ -15,7 +15,6 @@ using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.SceneManagement;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -281,16 +280,19 @@ namespace Amanita.VScripting
 
         public virtual void RemoveVariable(IVariable toRemove)
         {
+            // Different variables have Equals() implementations that don't always
+            // return true based on ref, so we have to be extra clear about
+            // how we care about references here.
             int index;
-            if (legacyVariables.Contains(toRemove))
+            if (legacyVariables.ContainsReference(toRemove))
             {
-                index = legacyVariables.IndexOf(toRemove as Variable);
+                index = legacyVariables.IndexOfReference(toRemove);
                 RemoveVariableAtIndex(index);
             }
 
-            if (muscariables.Contains(toRemove))
+            if (muscariables.ContainsReference(toRemove))
             {
-                index = muscariables.IndexOf(toRemove as Muscariable);
+                index = muscariables.IndexOfReference(toRemove);
                 RemoveMuscariableAtIndex(index);
             }
         }
@@ -352,8 +354,7 @@ namespace Amanita.VScripting
             }
         }
 
-        protected void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene prevScene,
-            UnityEngine.SceneManagement.Scene currentScene)
+        protected void OnActiveSceneChanged(Scene prevScene, Scene currentScene)
         {
             // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
             eventSystemPresent = false;
@@ -1664,7 +1665,7 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
-            if (gameObject.scene.isLoaded == false)
+            if (gameObject.scene.isLoaded == false)//
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
@@ -1704,7 +1705,7 @@ namespace Amanita.VScripting
         protected virtual void AssertUniqueID()
         {
             var sceneWeAreIn = this.gameObject.scene;
-            bool thisIsTestOnly = sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
+            bool thisIsTestOnly = this.name.StartsWith("Test") || sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
             if (thisIsTestOnly)
             {
                 UniqueId = $"TestFakeID_{cachedFlowcharts.Count + 1}";
@@ -1712,6 +1713,7 @@ namespace Amanita.VScripting
             }
             if (string.IsNullOrEmpty(uniqueId))
             {
+                Debug.Log($"Flowchart {this.name} did not have a unique ID assigned. Generating one now.");
                 UniqueId = Guid.NewGuid().ToString();
                 // ^The property triggers the signal, so...
 #if UNITY_EDITOR
@@ -1812,11 +1814,6 @@ namespace Amanita.VScripting
             AddVariable(muscari);
         }
 
-        protected virtual bool CheckRefEquals(IVariable firstVar, IVariable secondVar)
-        {
-            return ReferenceEquals(firstVar, secondVar);
-        }
-
         public static void ResetStaticsForTest()
         {
             cachedFlowcharts.Clear();
@@ -1887,5 +1884,6 @@ namespace Amanita.VScripting
         {
             return muscariables.Where((elem) => elem.ItemId == itemId).FirstOrDefault();
         }
+
     }
 }

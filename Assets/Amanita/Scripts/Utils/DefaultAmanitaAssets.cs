@@ -10,10 +10,6 @@ namespace Amanita
         {
             get
             {
-                if (storageSettings == null)
-                {
-                    storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-                }
                 return storageSettings;
             }
             set

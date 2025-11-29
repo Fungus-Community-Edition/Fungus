@@ -5,32 +5,38 @@ namespace Amanita
 {
     public static class SOUtils
     {
-        public static T GetOrCreateScriptableObject<T>(string assetName, string resourcesFolderPath)
+        public static T GetOrCreateScriptableObject<T>(string resourcesSubfolderPath, string assetName)
             where T : ScriptableObject
         {
             // Try to load from Resources
-            var result = Resources.Load<T>($"GuidRegistries/{assetName}");
+            T result = (T)GetOrCreateScriptableObject(typeof(T), resourcesSubfolderPath, assetName);
+            return result;
+        }
+
+        public static ScriptableObject GetOrCreateScriptableObject(System.Type soType, string resourcesSubfolderPath,
+            string assetName)
+        {
+            // Try to load from Resources
+            var result = Resources.Load<ScriptableObject>($"{resourcesSubfolderPath}/{assetName}");
             if (result != null)
             {
                 return result;
             }
-
             // Create new instance, making sure it's an asset at the requested path
-            result = ScriptableObject.CreateInstance<T>();
+            result = ScriptableObject.CreateInstance(soType);
 
 #if UNITY_EDITOR
-            string folderPath = Path.Combine("Assets/Resources", resourcesFolderPath);
-            bool folderExists = UnityEditor.AssetDatabase.IsValidFolder(folderPath);
-            if (!folderExists)
-            {
-                UnityEditor.AssetDatabase.CreateFolder("Assets/Resources", resourcesFolderPath);
-            }
-            string assetPath = Path.Combine(folderPath, assetName + ".asset");//
+            string folderPath = Path.Combine("Assets/Resources", resourcesSubfolderPath);
+            AssetUtils.EnsureFolderExists(folderPath);
+            string assetPath = Path.Combine(folderPath, assetName + ".asset").Replace("\\", "/");
+
             UnityEditor.AssetDatabase.CreateAsset(result, assetPath);
-            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.EditorUtility.SetDirty(result);
+            UnityEditor.AssetDatabase.SaveAssetIfDirty(result);
             UnityEditor.AssetDatabase.Refresh();
 #endif
             return result;
+
         }
     }
 }

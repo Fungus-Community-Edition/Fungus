@@ -50,9 +50,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bd16cc194d7026b429cbe1844f238281, type: 2}
   - {fileID: 11400000, guid: c7199b1400feabb48bfcf91deaa7ed24, type: 2}
   mainAppliers:
-  - {fileID: 11400000, guid: 2099d6198fd4f75448dabf0594004fa6, type: 2}
-  - {fileID: 11400000, guid: eeb0b9c338cfefb4a818f739234d2d86, type: 2}
-  - {fileID: 11400000, guid: bf610938255c03545bf71bc36e7191fe, type: 2}
+  - {fileID: 11400000, guid: 6752589e7b619374da687ef8a5859c26, type: 2}
+  - {fileID: 11400000, guid: 2f52580e6036f5e46842716c5d19f3e2, type: 2}
+  - {fileID: 11400000, guid: 47e270fc0062d754e83432e60f4e5271, type: 2}
   saveWriter: {fileID: 11400000, guid: aeb4d82e775666541ac5493bf752f594, type: 2}
   saveReader: {fileID: 11400000, guid: eebf7b36e257e6b4493dd574b3bf0c3a, type: 2}
   whereSavesAreStored: 1

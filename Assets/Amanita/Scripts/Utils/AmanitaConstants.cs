@@ -49,9 +49,12 @@ namespace Amanita
 
         public const string PathToAmanitaManagerPrefab = "Prefabs/AmanitaManager";
         public const string PathToDefaultTweenAdapter = "DefaultTweenAdapter";
-        public const string PathToDefaultSaveStorageSettings = "SaveSys/DefaultSaveStorageSettings";
-        public const string PathToDefaultEncryptor = "SaveSys/DefaultEncryptor";
-        public const string PathToDefaultDecryptor = "SaveSys/DefaultDecryptor";
+        public const string PathToDefaultSaveStorageSettings = "SaveSys/Defaults/DefaultSaveStorageSettings";
+        public const string PathToDefaultEncryptor = "SaveSys/Defaults/DefaultEncryptor";
+        public const string PathToSaveSysDefaultsFolder = "SaveSys/Defaults";
+        public const string PathToDefaultDecryptor = "SaveSys/Defaults/DefaultDecryptor";
+        public const string PathToDefaultSaveReader = "SaveSys/Defaults/DefaultSaveReader";
+        public const string PathToDefaultSaveWriter = "SaveSys/Defaults/DefaultSaveWriter";
 
         /// <summary>
         /// This is relative to a Resources folder.

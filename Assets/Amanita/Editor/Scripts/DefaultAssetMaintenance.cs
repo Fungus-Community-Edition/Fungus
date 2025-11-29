@@ -29,87 +29,45 @@ namespace Amanita.EditorUtils
 
         public static SaveStorageSettings EnsureSaveStorageSettings()
         {
-            if (DefaultAmanitaAssets.SaveStorageSettings != null)
-            {
-                return DefaultAmanitaAssets.SaveStorageSettings; // All good
-            }
-            string pathToDefault = AmanitaConstants.PathToDefaultSaveStorageSettings;
-            var settings = Resources.Load<SaveStorageSettings>(pathToDefault);
+            SaveStorageSettings settings = DefaultAmanitaAssets.SaveStorageSettings;
             if (settings == null)
             {
-                settings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-                string pathToAsset = $"{saveSysResourcesPath}DefaultSaveStorageSettings.asset";
-                AssetDatabase.CreateAsset(settings, pathToAsset);
-                AssetDatabase.SaveAssets();
-                Debug.Log($"Created default SaveStorageSettings at {pathToAsset}");
+                string path = AmanitaConstants.PathToSaveSysDefaultsFolder;
+                settings = SOUtils.GetOrCreateScriptableObject<SaveStorageSettings>(path, "DefaultSaveStorageSettings");
             }
-            
+
             DefaultAmanitaAssets.SaveStorageSettings = settings;
             return settings;
-
         }
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {
-            if (DefaultAmanitaAssets.TweenAdapter != null)
+            DefaultTweenAdapter adaptor = DefaultAmanitaAssets.TweenAdapter;
+            if (adaptor == null)
             {
-                return DefaultAmanitaAssets.TweenAdapter; // All good
+                string pathToContainingFolder = string.Empty; // Relative to Resources
+                adaptor = SOUtils.GetOrCreateScriptableObject<DefaultTweenAdapter>(pathToContainingFolder,
+                    "DefaultTweenAdapter");
             }
 
-            string pathToAdapter = AmanitaConstants.PathToDefaultTweenAdapter; // Relative to Resources
-            var adapter = Resources.Load<DefaultTweenAdapter>(pathToAdapter);
-            if (adapter == null)
-            {
-                // This will create it in Resources if not there
-                adapter = ScriptableObject.CreateInstance<DefaultTweenAdapter>();
-                adapter.name = "DefaultTweenAdapter";
-                string pathToAsset = $"{resourcesPath}{adapter.name}.asset";
-                AssetDatabase.CreateAsset(adapter, pathToAsset);
-                AssetDatabase.SaveAssets();
-                Debug.Log($"Created default DefaultTweenAdapter at {pathToAsset}");
-            }
-
-            DefaultAmanitaAssets.TweenAdapter = adapter;
-            return adapter;
+            DefaultAmanitaAssets.TweenAdapter = adaptor;
+            return adaptor;
         }
 
         private static string resourcesPath = "Assets/Amanita/Resources/";
-        private static string saveSysResourcesPath = resourcesPath + "SaveSys/";
 
         public static Encryptor EnsureDefaultEncryptor()
         {
-            string pathToEncryptor = AmanitaConstants.PathToDefaultEncryptor; // Relative to Resources
-            var encryptor = Resources.Load<Encryptor>(pathToEncryptor);
-            if (encryptor == null)
-            {
-                // This will create it in Resources if not there
-                encryptor = ScriptableObject.CreateInstance<Encryptor>();
-                encryptor.name = "DefaultEncryptor";
-                string pathToAsset = $"{saveSysResourcesPath}{encryptor.name}.asset";
-                AssetDatabase.CreateAsset(encryptor, pathToAsset);
-                AssetDatabase.SaveAssets();
-                Debug.Log($"Created default Encryptor at {pathToAsset}");
-            }
-
+            string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
+            var encryptor = SOUtils.GetOrCreateScriptableObject<Encryptor>(path, "DefaultEncryptor");
             DefaultAmanitaAssets.Encryptor = encryptor;
             return encryptor;
         }
 
         public static Decryptor EnsureDefaultDecryptor()
         {
-            string pathToDecryptor = AmanitaConstants.PathToDefaultDecryptor; // Relative to Resources
-            var decryptor = Resources.Load<Decryptor>(pathToDecryptor);
-            if (decryptor == null)
-            {
-                // This will create it in Resources if not there
-                decryptor = ScriptableObject.CreateInstance<Decryptor>();
-                decryptor.name = "DefaultDecryptor";
-                string pathToAsset = $"{saveSysResourcesPath}{decryptor.name}.asset";
-                AssetDatabase.CreateAsset(decryptor, pathToAsset);
-                AssetDatabase.SaveAssets();
-                Debug.Log($"Created default Decryptor at {pathToAsset}");
-            }
-
+            string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
+            var decryptor = SOUtils.GetOrCreateScriptableObject<Decryptor>(path, "DefaultDecryptor");
             DefaultAmanitaAssets.Decryptor = decryptor;
             return decryptor;
         }
