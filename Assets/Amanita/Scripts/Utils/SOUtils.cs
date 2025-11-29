@@ -27,12 +27,9 @@ namespace Amanita
 
 #if UNITY_EDITOR
             string folderPath = Path.Combine("Assets/Resources", resourcesSubfolderPath);
-            bool folderExists = UnityEditor.AssetDatabase.IsValidFolder(folderPath);
-            if (!folderExists)
-            {
-                UnityEditor.AssetDatabase.CreateFolder("Assets/Resources", resourcesSubfolderPath);
-            }
-            string assetPath = Path.Combine(folderPath, assetName + ".asset");//
+            AssetUtils.EnsureFolderExists(folderPath);
+            string assetPath = Path.Combine(folderPath, assetName + ".asset").Replace("\\", "/");
+
             UnityEditor.AssetDatabase.CreateAsset(result, assetPath);
             UnityEditor.EditorUtility.SetDirty(result);
             UnityEditor.AssetDatabase.SaveAssetIfDirty(result);

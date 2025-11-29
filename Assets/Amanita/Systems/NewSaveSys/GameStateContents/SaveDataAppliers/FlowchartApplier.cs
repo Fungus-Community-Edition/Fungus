@@ -10,9 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "FlowchartApplier",
-        menuName = "Amanita/SaveSys/Appliers/FlowchartApplier",
-        order = 0)]
+    [SaveSysDisplayName("Flowchart Applier (Amanita Default)")]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
         protected IList<Flowchart> allFlowcharts = new List<Flowchart>();

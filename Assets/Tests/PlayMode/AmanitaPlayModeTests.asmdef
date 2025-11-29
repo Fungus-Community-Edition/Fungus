@@ -4,10 +4,10 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
-        "AmanitaEditor",
         "AmanitaEditorTests",
-        "Lorekeeper"
+        "Lorekeeper",
+        "Amanita.Core",
+        "Amanita.Core.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

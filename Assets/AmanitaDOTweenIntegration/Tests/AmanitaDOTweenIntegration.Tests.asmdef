@@ -4,9 +4,9 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
         "DOTween.Modules",
-        "Amanita.DOTweenIntegration"
+        "Amanita.DOTweenIntegration",
+        "Amanita.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
