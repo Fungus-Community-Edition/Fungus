@@ -134,7 +134,7 @@ namespace Amanita
             {
                 if (shadowDb == null)
                 {
-                    shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase");
+                    shadowDb = SOUtils.GetOrCreateScriptableObject<ShadowDatabase>("", "ShadowDatabase");
                     if (shadowDb == null)
                     {
                         Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
