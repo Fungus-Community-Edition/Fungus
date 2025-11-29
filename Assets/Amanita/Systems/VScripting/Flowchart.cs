@@ -1665,7 +1665,7 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
-            if (gameObject.scene.isLoaded == false)
+            if (gameObject.scene.isLoaded == false)//
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
@@ -1705,7 +1705,7 @@ namespace Amanita.VScripting
         protected virtual void AssertUniqueID()
         {
             var sceneWeAreIn = this.gameObject.scene;
-            bool thisIsTestOnly = sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
+            bool thisIsTestOnly = this.name.StartsWith("Test") || sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
             if (thisIsTestOnly)
             {
                 UniqueId = $"TestFakeID_{cachedFlowcharts.Count + 1}";
@@ -1884,5 +1884,6 @@ namespace Amanita.VScripting
         {
             return muscariables.Where((elem) => elem.ItemId == itemId).FirstOrDefault();
         }
+
     }
 }

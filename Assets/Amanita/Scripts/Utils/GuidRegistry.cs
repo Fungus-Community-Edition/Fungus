@@ -115,6 +115,7 @@ namespace Amanita
         /// </summary>
         public virtual int GetNumericId(string guid)
         {
+            Refresh();
             return guidToNumericId.TryGetValue(guid, out int id) ? id : InvalidNumericId;
         }
 
