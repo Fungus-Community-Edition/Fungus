@@ -216,14 +216,14 @@ namespace Amanita.VScripting
                 GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
                 if (prefab != null)
                 {
-                    GameObject go = Instantiate(prefab);
-                    eventSystem = go.GetComponent<EventSystem>();
-                    go.name = "EventSystem";
+                    GameObject holder = Instantiate(prefab);
+                    eventSystem = holder.GetComponent<EventSystem>();
+                    holder.name = "EventSystem";
                 }
                 else
                 {
                     string errorMessage = "Event System prefab for Amanita not found.";
-                    throw new System.MissingFieldException(errorMessage);
+                    throw new MissingFieldException(errorMessage);
                 }
             }
 
@@ -407,7 +407,7 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             cachedFlowcharts.Remove(this);
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
         }
 
@@ -1835,13 +1835,6 @@ namespace Amanita.VScripting
 
         protected virtual void AssertUniqueID()
         {
-            var sceneWeAreIn = this.gameObject.scene;
-            bool thisIsTestOnly = this.name.StartsWith("Test") || sceneWeAreIn.name.StartsWith("InitTestScene", StringComparison.OrdinalIgnoreCase);
-            if (thisIsTestOnly)
-            {
-                UniqueId = $"TestFakeID_{cachedFlowcharts.Count + 1}";
-                return;
-            }
             if (string.IsNullOrEmpty(uniqueId))
             {
                 Debug.Log($"Flowchart {this.name} did not have a unique ID assigned. Generating one now.");
@@ -1853,6 +1846,8 @@ namespace Amanita.VScripting
             }
         }
         
+        public virtual bool IsTestOnly { get; set; } = false;
+
         protected virtual void LetUserKnowVarDoesntExist(string varName)
         {
             string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just like Santa Claus: it doesn't exist.";
@@ -1865,5 +1860,14 @@ namespace Amanita.VScripting
             eventSystemPresent = false;
         }
 
+#if UNITY_EDITOR
+        public virtual void OnTearDown()
+        {
+            GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
+            fcReg.RemoveGuid(this.UniqueId);
+            cachedFlowcharts.Remove(this);
+        }
+
+#endif
     }
 }

@@ -179,6 +179,11 @@ namespace Amanita
             ToggleSubs(false);
         }
 
+        protected virtual void OnDestroy()
+        {
+            ToggleSubs(false);
+        }
+
         protected virtual void OnValidate()
         {
             Refresh();
