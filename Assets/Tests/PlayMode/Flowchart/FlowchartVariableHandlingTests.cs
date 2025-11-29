@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Amanita.VScripting;
 using Amanita;
+using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.FlowchartLifecycle
 {
@@ -31,27 +32,53 @@ namespace VScriptingTests.FlowchartLifecycle
             }
         }
 
+        [SetUp]
+        public virtual void DoSetUp()
+        {
+            AmanitaManager.EnsureExists();
+            fChartHolder = new GameObject("Flowchart_VariableHandlingTestHolder");
+            fChart = fChartHolder.AddComponent<Flowchart>();
+            toDestroyInTearDown.Add(fChartHolder);
+        }
+
+        private GameObject fChartHolder;
+        private Flowchart fChart;
+        private readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
+
+        [TearDown]
+        public virtual void DoTearDown()
+        {
+            foreach (var obj in toDestroyInTearDown)
+            {
+                if (obj != null)
+                {
+                    UnityObj.Destroy(obj);
+                }
+            }
+            toDestroyInTearDown.Clear();
+            fChartHolder = null;
+            fChart = null;
+        }
+
         [UnityTest]
         public IEnumerator ClearVariables_EmptiesAllInternalLists()
         {
             AmanitaManager.EnsureExists();
-            var go = new GameObject("Flowchart_ClearVariables");
-            var fc = go.AddComponent<Flowchart>();
-            go.SetActive(true);
+            fChartHolder.SetActive(true);
             yield return null;
 
             // Use reflection to access protected lists
-            IList legacyList = GetLegacyVariablesList(fc);
-            IList muscariList = GetMuscariablesList(fc);
+            IList legacyList = GetLegacyVariablesList(fChart);
+            IList muscariList = GetMuscariablesList(fChart);
             Assert.NotNull(legacyList, "Could not access legacyVariables list via reflection.");
             Assert.NotNull(muscariList, "Could not access muscariables list via reflection.");
 
             // Populate muscariable list with a test muscariable
             var testMusca = new TestIntMuscariable { Value = 42, Key = "muscaA" };
-            fc.IntegrateMuscariable(testMusca);
+            fChart.IntegrateMuscariable(testMusca);
 
             // Attempt to create a legacy variable component (if any legacy type exists)
-            MonoBehaviour legacyVar = TryCreateLegacyVariableComponent(go);
+            MonoBehaviour legacyVar = TryCreateLegacyVariableComponent(fChartHolder);
             if (legacyVar != null)
             {
                 // Assign a key property (if present) to avoid null key collisions
@@ -65,42 +92,37 @@ namespace VScriptingTests.FlowchartLifecycle
                 Assert.Greater(legacyList.Count, 0, "Precondition failed: legacyVariables list not populated.");
             }
 
-            fc.ClearVariables();
+            fChart.ClearVariables();
             yield return null;
 
             Assert.AreEqual(0, muscariList.Count, "muscariables list should be empty after ClearVariables.");
             Assert.AreEqual(0, legacyList.Count, "legacyVariables list should be empty after ClearVariables.");
-            Assert.AreEqual(0, fc.Variables.Count, "Flowchart.Variables should report empty after ClearVariables.");
+            Assert.AreEqual(0, fChart.Variables.Count, "Flowchart.Variables should report empty after ClearVariables.");
 
-            UnityEngine.Object.Destroy(go);
         }
 
         [UnityTest]
         public IEnumerator AddedVariables_GetUniqueNonClashingItemIds()
         {
             AmanitaManager.EnsureExists();
-            var go = new GameObject("Flowchart_VarIds");
-            var fc = go.AddComponent<Flowchart>();
-            go.SetActive(true);
             yield return null;
 
             const int varCount = 6;
             var created = new List<Muscariable>();
             for (int i = 0; i < varCount; i++)
             {
-                var v = fc.AddNewMuscariable<int, TestIntMuscariable>($"idVar_{i}", i);
-                created.Add(v);
+                var varElem = fChart.AddNewMuscariable<int, TestIntMuscariable>($"idVar_{i}", i);
+                created.Add(varElem);
             }
 
             // Extract ItemIds
-            var ids = created.Select(v => v.ItemId).ToList();
+            var ids = created.Select(varElem => varElem.ItemId).ToList();
             Assert.AreEqual(varCount, ids.Distinct().Count(), "All ItemIds must be unique among newly added variables.");
 
             // Ensure no ID clashes with re-added variable
-            var extra = fc.AddNewMuscariable<int, TestIntMuscariable>("idVar_extra", 999);
+            var extra = fChart.AddNewMuscariable<int, TestIntMuscariable>("idVar_extra", 999);
             Assert.False(ids.Contains(extra.ItemId), "New variable should not reuse an existing ItemId.");
 
-            UnityEngine.Object.Destroy(go);
             yield return null;
         }
 
@@ -110,13 +132,10 @@ namespace VScriptingTests.FlowchartLifecycle
             AmanitaManager.EnsureExists();
             TestIntMuscariable.InitCalls = 0;
 
-            var go = new GameObject("Flowchart_VarInit");
-            var fc = go.AddComponent<Flowchart>();
-            go.SetActive(true);
             yield return null;
 
-            var v1 = fc.AddNewMuscariable<int, TestIntMuscariable>("initVar1", 10);
-            var v2 = fc.AddNewMuscariable<int, TestIntMuscariable>("initVar2", 20);
+            var firstVar = fChart.AddNewMuscariable<int, TestIntMuscariable>("initVar1", 10);
+            var secondVar = fChart.AddNewMuscariable<int, TestIntMuscariable>("initVar2", 20);
 
             yield return null; // Allow any additional lifecycle init passes
 
@@ -124,32 +143,29 @@ namespace VScriptingTests.FlowchartLifecycle
                 "Each added muscariable should have had Init called at least once (total calls >= number created).");
 
             // Disable & re-enable to trigger potential re-init paths (if any)
-            go.SetActive(false);
+            fChartHolder.SetActive(false);
             yield return null;
-            go.SetActive(true);
+            fChartHolder.SetActive(true);
             yield return null;
 
             // If Flowchart re-initializes variables on re-enable, calls should increase
             Assert.GreaterOrEqual(TestIntMuscariable.InitCalls, 2,
                 "Init call count should remain >= initial variable count after re-enable.");
 
-            UnityEngine.Object.Destroy(go);
         }
 
         // ------------- Helper Reflection Methods -------------
 
-        private static IList GetLegacyVariablesList(Flowchart fc)
+        private static IList GetLegacyVariablesList(Flowchart fChart)
         {
-            return typeof(Flowchart)
-                .GetField("legacyVariables", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?.GetValue(fc) as IList;
+            return fcType.GetField("legacyVariables", bindingFlags)?.GetValue(fChart) as IList;
         }
 
-        private static IList GetMuscariablesList(Flowchart fc)
+        private static readonly Type fcType = typeof(Flowchart);
+
+        private static IList GetMuscariablesList(Flowchart fChart)
         {
-            return typeof(Flowchart)
-                .GetField("muscariables", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?.GetValue(fc) as IList;
+            return fcType.GetField("muscariables", bindingFlags)?.GetValue(fChart) as IList;
         }
 
         private static MonoBehaviour TryCreateLegacyVariableComponent(GameObject host)
@@ -179,29 +195,33 @@ namespace VScriptingTests.FlowchartLifecycle
             return host.AddComponent(variableType) as MonoBehaviour;
         }
 
-        private static bool IsMuscariableType(Type t)
+        private static bool IsMuscariableType(Type typeToCheck)
         {
-            return t != null && (t == typeof(Muscariable) ||
-                                 (t.IsSubclassOf(typeof(Muscariable)) ||
-                                  (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Muscariable<>))));
+            return typeToCheck != null && typeToCheck.IsAssignableFrom(muscariableType);
         }
+
+        private static readonly Type muscariableType = typeof(Muscariable);
 
         private static void SetStringPropertyIfExists(object obj, string propName, string value)
         {
             if (obj == null) return;
-            var prop = obj.GetType().GetProperty(propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (prop != null && prop.CanWrite && prop.PropertyType == typeof(string))
+            Type objType = obj.GetType();
+            var prop = objType.GetProperty(propName, bindingFlags);
+            if (prop != null && prop.CanWrite && prop.PropertyType == stringType)
             {
                 prop.SetValue(obj, value, null);
             }
             else
             {
-                var field = obj.GetType().GetField(propName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (field != null && field.FieldType == typeof(string))
+                var field = objType.GetField(propName, bindingFlags);
+                if (field != null && field.FieldType == stringType)
                 {
                     field.SetValue(obj, value);
                 }
             }
         }
+
+        private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private static readonly Type stringType = typeof(string);
     }
 }
