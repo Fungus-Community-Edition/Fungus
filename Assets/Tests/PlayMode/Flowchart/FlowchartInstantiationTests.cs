@@ -65,6 +65,7 @@ namespace VScriptingTests.FlowchartLifecycle
                     UnityObj.Destroy(obj);
                 }
             }
+
             toDestroyOnTearDown.Clear();
             fcHolder = null;
             testFc = null;

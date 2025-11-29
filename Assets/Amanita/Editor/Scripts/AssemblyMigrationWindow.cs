@@ -6,6 +6,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
+using System.Text.RegularExpressions;
 
 namespace AtMycelia.EditorUtils
 {
@@ -87,7 +88,7 @@ namespace AtMycelia.EditorUtils
                 currentAsmStyle.marginBottom = gapBetweenStuff;
                 IStyle currentAsmLabelStyle = currentAsmDefNameLabel.labelElement.style;
                 currentAsmLabelStyle.width = Length.Percent(labelWidthPercent);
-                currentAsmDefNameLabel.isReadOnly = true;
+                //currentAsmDefNameLabel.isReadOnly = true;
             }
 
             PrepNewAsmDefNameField();
@@ -166,7 +167,7 @@ namespace AtMycelia.EditorUtils
             Root.Add(summaryScroll);
         }
 
-        private void AppendSummary(string message)
+        public void AppendSummary(string message)
         {
             if (summaryLabel != null)
             {
@@ -183,7 +184,6 @@ namespace AtMycelia.EditorUtils
         {
             var currentAsmDefFile = asmDefToChangePicker.value as AssemblyDefinitionAsset;
             
-
             string updatedCurrentAssemblyName;
             if (currentAsmDefFile != null)
             {
@@ -344,10 +344,9 @@ namespace AtMycelia.EditorUtils
             }
             #endregion
 
-
+            #region Update Current Asmdef File
             // Update the current asmdef file name and all references in other asmdef files
             // Get path to current asmdef file
-
             AsmdefData defData = AsmdefData.FromAsset(asmDefWeAreChangingNameOf);
             string prevName = defData.name;
             defData.name = NewAssemblyName;
@@ -367,7 +366,34 @@ namespace AtMycelia.EditorUtils
                 AssetDatabase.ImportAsset(currentAsmDefPath);
                 AppendSummary($"Updated asmdef {asmDefWeAreChangingNameOf.name} @ {currentAsmDefPath}");
             }
+            #endregion
 
+            #region Update References to the old assembly in Uxmls
+
+            // Need to find all assets that are UXML files
+            string[] uxmlGuids = AssetDatabase.FindAssets("t:VisualTreeAsset");
+            foreach (string guidElem in uxmlGuids)
+            {
+                string uxmlPath = AssetDatabase.GUIDToAssetPath(guidElem);
+                var uxmlAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
+                if (uxmlAsset == null)
+                {
+                    AppendSummary($"WARNING: Could not load UXML asset at path: {uxmlPath}");
+                    continue;
+                }
+                string uxmlText = File.ReadAllText(uxmlPath);
+                if (uxmlText == null)
+                {
+                    AppendSummary($"WARNING: Could not read UXML text for asset at path: {uxmlPath}");
+                    continue;
+                }
+
+                // Use the UxmlFixer to fix the uxml text
+                UxmlAssemblyFixer.FixUxmlFile(uxmlPath, CurrentAssemblyName, NewAssemblyName, this, IsDryRun);
+
+            }
+
+            #endregion
             AssetDatabase.Refresh();
             summaryToAppend = $"Migration {(IsDryRun ? "dry run" : "complete")}. Checked {guids.Length} " +
                 $"ScriptableObjects.";
@@ -428,4 +454,66 @@ namespace AtMycelia.EditorUtils
         }
 
     }
+
+
+    public static class UxmlAssemblyFixer
+    {
+        // Regex to capture type attributes with assembly names
+        // Example match: type="Amanita.VScripting.VariableScope, Amanita"
+        // We want to make sure to match the exact assembly name only,
+        // not substrings inside longer names.
+        static Regex TypeRegex(string oldAssembly) => new Regex(
+            $@"(type|data-source-type)=""([^""]+),\s*({Regex.Escape(oldAssembly)})""",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        /// <summary>
+        /// Scans a UXML file and replaces old assembly names with new ones.
+        /// </summary>
+        public static void FixUxmlFile(string path,
+                                       string oldAssembly,
+                                       string newAssembly,
+                                       AssemblyMigrationWindow migrationWindow,
+                                       bool dryRun = true)
+        {
+            string text = File.ReadAllText(path);
+            bool changed = false;
+
+            var regex = TypeRegex(oldAssembly);
+
+            string result = regex.Replace(text, match =>
+            {
+                string attrName = match.Groups[1].Value; // "type" or "data-source-type"
+                string fullType = match.Groups[2].Value; // e.g. Amanita.VScripting.VariableScope
+                string assembly = match.Groups[3].Value; // e.g. Amanita
+
+                bool exactMatch = assembly.Equals(oldAssembly);
+                if (exactMatch)
+                {
+                    changed = true;
+                    return $"{attrName}=\"{fullType}, {newAssembly}\"";
+                }
+                return match.Value;
+            });
+
+            string summaryToAppend = string.Empty;
+            if (changed)
+            {
+                if (dryRun)
+                {
+                    summaryToAppend = $"[Dry Run] Would update UXML file: {path}\n" +
+                        $"From assembly: {oldAssembly}\nTo assembly: {newAssembly}";
+                }
+                else
+                {
+                    File.WriteAllText(path, result);
+                    summaryToAppend = $"Updated UXML file: {path}\n" +
+                        $"From assembly: {oldAssembly}\nTo assembly: {newAssembly}";
+                }
+
+                migrationWindow.AppendSummary(summaryToAppend);
+            }
+        }
+
+    }
+
 }
