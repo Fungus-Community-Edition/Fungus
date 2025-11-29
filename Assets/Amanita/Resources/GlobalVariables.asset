@@ -13,69 +13,72 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: 10f539ba-c332-455f-9005-8b3a5b216f78
+  uniqueId: ffc98e0d-2421-46ab-a629-c0b7f51ef183
   variables:
-  - rid: 7903258329788710967
-  - rid: 7903258329788710968
-  - rid: 7903258329788710969
-  - rid: 7903258329926860800
-  - rid: 7903258329926860801
-  - rid: 7903258329957269504
-  _nextVarID: 7
+  - rid: 7903258335965610039
+  - rid: 7903258335965610040
+  - rid: 7903258335965610041
+  - rid: 7903258335965610042
+  - rid: 7903258335965610043
+  - rid: 7903258335965610044
+  _nextVarID: 6
   references:
     version: 2
     RefIds:
-    - rid: 7903258329788710967
+    - rid: 7903258335965610039
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Naruto
-        itemID: 1
+        itemID: 0
         _ownerIdIndex: -1
         value: Believe it!
-    - rid: 7903258329788710968
+    - rid: 7903258335965610040
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: One Piece
-        itemID: 2
+        itemID: 1
         _ownerIdIndex: -1
         value: 'I will become the
 
           Pirate King!'
-    - rid: 7903258329788710969
+    - rid: 7903258335965610041
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Bleach
-        itemID: 3
+        itemID: 2
         _ownerIdIndex: -1
-        value: Throwing away victory for the sake of manners is a cookie mistake.
-          Captains don't have the time to waste on that kind of thing. Don't waste
-          your time trying to play the good guy. No matter what debts you may owe,
-          from the instant you find yourself on the battleground, both sides are
-          evil.
-    - rid: 7903258329926860800
+        value: 'Throwing away victory for the sake of manners is a cookie mistake.
+          Captains don''t have the time to waste on that kind of thing.
+
+
+          Don''t
+          waste your time trying to play the good guy. No matter what debts you may
+          owe, from the instant you find yourself on the battleground, both sides
+          are evil.'
+    - rid: 7903258335965610042
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: meaningOfLife
-        itemID: 4
+        itemID: 3
         _ownerIdIndex: -1
         value: 24
-    - rid: 7903258329926860801
+    - rid: 7903258335965610043
       type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: cuteBgm
-        itemID: 5
+        itemID: 4
         _ownerIdIndex: -1
         value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
-    - rid: 7903258329957269504
+    - rid: 7903258335965610044
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: pi
-        itemID: 6
+        itemID: 5
         _ownerIdIndex: -1
         value: 3.14159

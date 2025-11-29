@@ -7,14 +7,14 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.EditorUtils
 {
     public class AssemblyMigrationWindow : EditorWindow
     {
         private string CurrentAssemblyName => currentAsmDefNameLabel?.value;
         private string NewAssemblyName => newAsmDefNameLabel?.value;
 
-        [MenuItem("Window/Atelier Mycelia/Amanita/Assembly Migration")]
+        [MenuItem("Window/Atelier Mycelia/Assembly Migration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<AssemblyMigrationWindow>();
@@ -241,6 +241,7 @@ namespace Amanita.EditorUtils
             IDictionary<string, ScriptableObject> assetsToMigrate = new Dictionary<string, ScriptableObject>();
 
             string oldAsmMarker = $"asm: {CurrentAssemblyName}}}";
+            // ^That extra } at the end is important. Need to include it to avoid matching the wrong parts of the yaml.
             string newAsmMarker = $"asm: {NewAssemblyName}}}";
             string summaryToAppend = string.Empty;
             foreach (string guidEl in guids)
@@ -287,34 +288,84 @@ namespace Amanita.EditorUtils
                     string updatedYaml = assetYaml.Replace(oldAsmMarker, newAsmMarker);
                     File.WriteAllText(pathToAsset, updatedYaml);
                     AssetDatabase.ImportAsset(pathToAsset);
-                    AppendSummary($"Updated VariableSourceAsset: {pathToAsset}");
+                    AppendSummary($"Updated ScriptableObject: {pathToAsset}");
                     AssetDatabase.SaveAssetIfDirty(asset);
                 }
             }
             #endregion
 
+            // Now we go through all other asmdefs and update references to this one, keeping
+            // in mind whether or not they likely use guids or not.
+            AssemblyDefinitionAsset asmDefWeAreChangingNameOf = asmDefToChangePicker.value as AssemblyDefinitionAsset;
+
+            #region Migrate Asmdef References in Other Asmdefs
+            string[] asmDefGuids = AssetDatabase.FindAssets("t:AssemblyDefinitionAsset");
+            foreach (string elem in asmDefGuids)
+            {
+                string asmDefPath = AssetDatabase.GUIDToAssetPath(elem);
+                var asmDefAsset = AssetDatabase.LoadAssetAtPath<AssemblyDefinitionAsset>(asmDefPath);
+                if (asmDefAsset == asmDefWeAreChangingNameOf)
+                {
+                    continue; 
+                }
+
+                AsmdefData asmDefData = AsmdefData.FromAsset(asmDefAsset);
+                bool needsUpdate = false;
+                for (int i = 0; i < asmDefData.references.Length; i++)
+                {
+                    string reference = asmDefData.references[i];
+                    
+                    if (reference.Contains(CurrentAssemblyName))
+                    {
+                        asmDefData.references[i] = reference.Replace(CurrentAssemblyName, NewAssemblyName);
+                        needsUpdate = true;
+                    }
+                }
+
+                if (needsUpdate)
+                {
+                    if (IsDryRun)
+                    {
+                        summaryToAppend = $"[Dry Run] Would update asmdef {asmDefAsset.name}'s references in its json.\n" +
+                            "(It seems to NOT reference other assemblies through guids.)\n" +
+                        $"From: references containing {CurrentAssemblyName}\nTo: references containing {NewAssemblyName}";
+                    }
+                    else
+                    {
+                        string updatedJson = JsonUtility.ToJson(asmDefData, true);
+                        File.WriteAllText(asmDefPath, updatedJson);
+                        AssetDatabase.ImportAsset(asmDefPath);
+                        summaryToAppend = $"Updated asmdef {asmDefAsset.name}'s references in its json." +
+                            $"\nFrom: references containing {CurrentAssemblyName}\nTo: references containing {NewAssemblyName}";
+                    }
+
+                    AppendSummary(summaryToAppend);
+                }
+            }
+            #endregion
+
+
             // Update the current asmdef file name and all references in other asmdef files
             // Get path to current asmdef file
-            AssemblyDefinitionAsset currentAsmDef = asmDefToChangePicker.value as AssemblyDefinitionAsset;
-            AsmdefData defData = AsmdefData.FromAsset(currentAsmDef);
-            string prevName = defData.name;
 
+            AsmdefData defData = AsmdefData.FromAsset(asmDefWeAreChangingNameOf);
+            string prevName = defData.name;
             defData.name = NewAssemblyName;
 
             if (IsDryRun)
             {
-                summaryToAppend = $"[Dry Run] Would update part of asmdef {currentAsmDef.name}'s json." +
+                summaryToAppend = $"[Dry Run] Would update part of asmdef {asmDefWeAreChangingNameOf.name}'s json." +
                     $"\nFrom: {prevName}\nTo: {NewAssemblyName}";
                 AppendSummary(summaryToAppend);
             }
             else
             {
-                string currentAsmDefPath = AssetDatabase.GetAssetPath(currentAsmDef);
+                string currentAsmDefPath = AssetDatabase.GetAssetPath(asmDefWeAreChangingNameOf);
                 string updatedJson = JsonUtility.ToJson(defData, true);
-                //currentAsmDef.name = NewAssemblyName;
+                asmDefWeAreChangingNameOf.name = NewAssemblyName;
                 File.WriteAllText(currentAsmDefPath, updatedJson);
                 AssetDatabase.ImportAsset(currentAsmDefPath);
-                AppendSummary($"Updated asmdef {currentAsmDef.name} @ {currentAsmDefPath}");
+                AppendSummary($"Updated asmdef {asmDefWeAreChangingNameOf.name} @ {currentAsmDefPath}");
             }
 
             AssetDatabase.Refresh();
@@ -332,17 +383,18 @@ namespace Amanita.EditorUtils
         [System.Serializable]
         public class AsmdefData
         {
-            public string name;
-            public string rootNamespace;
-            public string[] references;
-            public string[] includePlatforms;
-            public string[] excludePlatforms;
-            public bool allowUnsafeCode;
-            public bool overrideReferences;
-            public string[] precompiledReferences;
-            public string[] defineConstraints;
-            public string[] versionDefines;
-            public bool noEngineReferences;
+            public string name = string.Empty;
+            public string rootNamespace = string.Empty;
+            public string[] references = new string[] { };
+            public string[] includePlatforms = new string[] { };
+            public string[] excludePlatforms = new string[] { };
+            public bool allowUnsafeCode = false;
+            public bool overrideReferences = false;
+            public string[] precompiledReferences = new string[] { };
+            public bool autoReferenced = false;
+            public string[] defineConstraints = new string[] { };
+            public string[] versionDefines = new string[] { };
+            public bool noEngineReferences = false;
 
             public static AsmdefData FromAsset(AssemblyDefinitionAsset asmDefAsset)
             {
@@ -350,6 +402,28 @@ namespace Amanita.EditorUtils
                 string json = File.ReadAllText(pathToFile);
                 AsmdefData result = JsonUtility.FromJson<AsmdefData>(json);
                 return result;
+            }
+
+            public bool LikelyGoesWithGuids
+            {
+                get
+                {
+                    // We can tell based on the contents of the references array. If it has anything
+                    // that starts with "GUID:", then it's likely that this asmdef goes with guids.
+                    // Otherwise, it instead references things by assembly name. The name in the json,
+                    // not the name of the file on disk.
+                    if (references != null)
+                    {
+                        foreach (var reference in references)
+                        {
+                            if (reference.StartsWith("GUID:"))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
             }
         }
 
