@@ -122,7 +122,6 @@ namespace Amanita.VScripting.EditorUtils
 
             _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
             valueField = (IBindable)RowRoot.Q("ValueField");
-
             _scopeField = RowRoot.Q<EnumField>("Scope");
             _removeButton = RowRoot.Q<Button>("RemoveButton");
         }

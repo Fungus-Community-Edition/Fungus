@@ -23,7 +23,8 @@ namespace Amanita
         private static void MaintainStatics()
         {
             Debug.Log("AmanitaManager: MaintainStatics called");
-            ShadowDB = Resources.Load<ShadowDatabase>("ShadowDatabase");
+            EnsureShadowDbAvailable();
+            EnsureGuidRegistriesAvailable();
         }
 #endif
 
@@ -84,9 +85,8 @@ namespace Amanita
                 return existing;
             }
 
-            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>(
-                typeof(T).Name + "GuidRegistry",
-                "GuidRegistries");
+            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>("GuidRegistries", 
+                typeof(T).Name + "GuidRegistry");
             result.AddTypeStoredFor<T>();
             typeToRegistryMap[typeof(T)] = result;
             return result;
@@ -132,14 +132,7 @@ namespace Amanita
         {
             get
             {
-                if (shadowDb == null)
-                {
-                    shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase");
-                    if (shadowDb == null)
-                    {
-                        Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
-                    }
-                }
+                EnsureShadowDbAvailable();
                 return shadowDb;
             }
             private set
@@ -147,7 +140,22 @@ namespace Amanita
                 shadowDb = value;
             }
         }
+
+        private static void EnsureShadowDbAvailable()
+        {
+            shadowDb = SOUtils.GetOrCreateScriptableObject<ShadowDatabase>("", "ShadowDatabase");
+            if (shadowDb == null)
+            {
+                Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
+            }
+        }
         private static ShadowDatabase shadowDb;
+
+        private static void EnsureGuidRegistriesAvailable()
+        {
+            GetOrAddGuidRegistryFor<Flowchart>();
+            GetOrAddGuidRegistryFor<VariableSourceAsset>();
+        }
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).

@@ -15,7 +15,6 @@ namespace SaveSystemTests
 {
     public class FlowchartApplierTests : CommonTestFunctionality
     {
-
         [Test]
         public virtual async Task AppliesVarStates()
         {

@@ -7,7 +7,7 @@
         <ui:VisualElement name="MainAppliersHolder">
             <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="true" fixed-item-height="30" />
         </ui:VisualElement>
-        <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita" />
+        <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita.Core" />
         <ui:VisualElement name="RefreshButtonHolder">
             <ui:Button text="Refresh" name="RefreshButton" />
         </ui:VisualElement>

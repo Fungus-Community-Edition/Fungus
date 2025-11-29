@@ -116,7 +116,12 @@ namespace Amanita
         public virtual int GetNumericId(string guid)
         {
             Refresh();
-            return guidToNumericId.TryGetValue(guid, out int id) ? id : InvalidNumericId;
+            bool valueFound = guidToNumericId.TryGetValue(guid, out int id);
+            if (valueFound)
+            {
+                return id;
+            }
+            return InvalidNumericId;
         }
 
         public static readonly int InvalidNumericId = -1;
@@ -175,6 +180,11 @@ namespace Amanita
         }
 
         protected virtual void OnDisable()
+        {
+            ToggleSubs(false);
+        }
+
+        protected virtual void OnDestroy()
         {
             ToggleSubs(false);
         }

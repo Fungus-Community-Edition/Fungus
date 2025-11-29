@@ -7,7 +7,7 @@
         <engine:VisualElement name="ValueFieldHolder">
             <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="value" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

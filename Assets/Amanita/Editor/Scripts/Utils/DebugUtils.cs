@@ -14,7 +14,7 @@ namespace Amanita.EditorUtils
         {
             Debug.Log($"Resetting all UIDs and GUID registries at {System.DateTime.Now}");
 
-            var fcGuidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
+            var fcGuidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();//
             var vsaGuidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
             fcGuidRegistry.Clear();
             vsaGuidRegistry.Clear();
