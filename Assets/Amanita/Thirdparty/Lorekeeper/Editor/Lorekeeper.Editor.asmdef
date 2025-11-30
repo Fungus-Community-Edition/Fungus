@@ -1,0 +1,16 @@
+{
+    "name": "Lorekeeper.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:579f7dd4b62c6a74d9bdb0cf8bbc31ae"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
