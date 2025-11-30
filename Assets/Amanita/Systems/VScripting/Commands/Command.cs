@@ -247,7 +247,7 @@ namespace Amanita.VScripting
             {
                 return "";
             }
-            string fcName = ParentBlock.GetFlowchart().GetName();
+            string fcName = ParentBlock.GetFlowchart().name;
             string thisTypeName = this.GetType().Name;
             string indexStr = CommandIndex.ToString();
 
@@ -346,7 +346,7 @@ namespace Amanita.VScripting
             string localizationId = GetFlowchart().LocalizationId;
             if (localizationId.Length == 0)
             {
-                localizationId = flowchart.GetName();            
+                localizationId = flowchart.name;
             }
 
             return localizationId;

@@ -7,7 +7,7 @@
         <engine:VisualElement name="ValueFieldHolder">
             <engine:FloatField value="0" name="ValueField" binding-path="value" class="numericField" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

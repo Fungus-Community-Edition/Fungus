@@ -76,10 +76,13 @@ namespace Amanita.VScripting
         /// Will not record undo or mark dirty if the assignment is effectively a no-op
         /// (same variable identity already assigned).
         /// </summary>
-        public static void AssignVarRef(this SerializedProperty varRefProp, VariableData ownerVarData, object chosen, Type contentType)
+        public static void AssignVarRef(this SerializedProperty varRefProp, VariableData ownerVarData, 
+            object chosen, Type contentType)
         {
             if (varRefProp == null)
+            {
                 throw new ArgumentNullException(nameof(varRefProp));
+            }
             if (ownerVarData == null)
             {
                 Debug.LogError($"AssignVarRef: ownerVarData is null for {varRefProp.propertyPath}");
@@ -108,7 +111,8 @@ namespace Amanita.VScripting
             }
             catch (Exception e)
             {
-                Debug.LogError($"AssignVarRef: failed to set VariableData.VarRef on {varRefProp.propertyPath}. Exception: {e}");
+                Debug.LogError($"AssignVarRef: failed to set VariableData.VarRef on {varRefProp.propertyPath}. " +
+                    $"Exception: {e}");
             }
 
             // 2) Mirror into SerializedProperty so the inspector reflects the selection immediately
@@ -118,25 +122,41 @@ namespace Amanita.VScripting
                 {
                     varRefProp.objectReferenceValue = chosen as UnityObj;
                 }
-                else
+                else // ManagedReference or Generic (SerializeReference)
                 {
-                    var currentAfterSet = ownerVarData.VarRef;
-
-                    if (currentAfterSet == null)
+                    // If user selected <Value>, force managed ref null regardless of what the getter returns.
+                    if (chosen == null)
                     {
-                        // Likely stored into a legacy field (e.g., IntegerVariable), keep managed ref null.
                         varRefProp.managedReferenceValue = null;
+                    }
+                    else if (chosen is UnityObj unityObj && chosen is IVariable)
+                    {
+                        // Wrap Unity Object-backed variables for managed reference fields
+                        varRefProp.managedReferenceValue = CreatePointerWrapper(unityObj, contentType);
                     }
                     else
                     {
-                        // Muscariable path: store the interface instance (SerializeReference)
-                        varRefProp.managedReferenceValue = currentAfterSet;
+                        // If VariableData translates the selection, prefer what it exposes after set
+                        var currentAfterSet = ownerVarData.VarRef;
+
+                        if (currentAfterSet is UnityObj currentUnityObj)
+                        {
+                            // Still a Unity Object-backed variable: wrap it
+                            varRefProp.managedReferenceValue = CreatePointerWrapper(currentUnityObj, contentType);
+                        }
+                        else
+                        {
+                            // Pure managed IVariable
+                            varRefProp.managedReferenceValue = currentAfterSet;
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"AssignVarRef: Failed to mirror into SerializedProperty for {varRefProp.propertyPath}. Exception: {e}");
+                string warningMessage = $"AssignVarRef: Failed to mirror into SerializedProperty for " +
+                    $"{varRefProp.propertyPath}. Exception: {e}";
+                Debug.LogWarning(warningMessage);
             }
 
             // 3) Apply and mark dirty to persist across reloads
@@ -144,7 +164,9 @@ namespace Amanita.VScripting
             foreach (var t in so.targetObjects)
             {
                 if (t != null)
+                {
                     EditorUtility.SetDirty(t);
+                }
             }
 
             static bool IsSameReference(IVariable current, object chosenObj)
@@ -200,6 +222,22 @@ namespace Amanita.VScripting
                 }
 
                 return false;
+            }
+
+            static object CreatePointerWrapper(UnityObj unityObj, Type contentType)
+            {
+                var pointerType = typeof(VariablePointer<>).MakeGenericType(contentType);
+                var ctor = pointerType.GetConstructor(new[] { typeof(UnityObj) });
+
+                if (ctor != null)
+                {
+                    return ctor.Invoke(new object[] { unityObj });
+                }
+
+                var wrapper = Activator.CreateInstance(pointerType);
+                var field = pointerType.GetField("_component", BindingFlags.NonPublic | BindingFlags.Instance);
+                field?.SetValue(wrapper, unityObj);
+                return wrapper;
             }
         }
     }

@@ -241,6 +241,7 @@ namespace SaveSystemTests
             flowchart = testScene.GetComponentInChildren<Flowchart>(true);
             if (flowchart == null)
                 throw new Exception("Flowchart component not found in test scene prefab.");
+            flowchart.IsTestOnly = true;
             flowchart.gameObject.SetActive(true);
 
             // Variables
@@ -298,7 +299,9 @@ namespace SaveSystemTests
             toDestroyInTearDown.Add(saveReader);
             toDestroyInTearDown.Add(storageSettings);
             if (AmanitaManager.S != null)
+            {
                 toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
+            }
 
             // Flowchart may spawn an EventSystem
             foreach (var evt in UnityObj.FindObjectsByType<EventSystem>(FindObjectsSortMode.None))

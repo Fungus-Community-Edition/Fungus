@@ -47,9 +47,25 @@ namespace Amanita.VScripting
                 VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
-        public IReadOnlyList<IVariable> Variables => variables.ToList();
 
-        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => variables.ToList();
+        // Always return a list, even if the backing field was deserialized as null.
+        public IReadOnlyList<IVariable> Variables
+        {
+            get
+            {
+                EnsureVariablesList();
+                return variables.Cast<IVariable>().ToList();
+            }
+        }
+
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
+        {
+            get
+            {
+                EnsureVariablesList();
+                return variables.ToList();
+            }
+        }
 
         /// <summary>
         /// Creates and returns a new Muscariable of the content type,
@@ -65,6 +81,7 @@ namespace Amanita.VScripting
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
+            EnsureVariablesList();
             Muscariable var = VariableFactory.CreateByContentType(contentType, null);
             var.Key = key;
             AddVariable(var);
@@ -77,6 +94,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual IVariable AddVariable(IVariable var)
         {
+            EnsureVariablesList();
             Muscariable muscari = var.ToMuscariable();
             if (muscari == null)
             {
@@ -102,6 +120,7 @@ namespace Amanita.VScripting
         // So that we can avoid what (at least look like) duplicates
         protected virtual void MakeUniqueForThisSource(Muscariable var)
         {
+            EnsureVariablesList();
             var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
             IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
             var.ItemId = _nextVarID;
@@ -114,6 +133,7 @@ namespace Amanita.VScripting
 
         public Muscariable GetVariable(string name)
         {
+            EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
             {
                 Muscariable var = variables[i];
@@ -128,6 +148,7 @@ namespace Amanita.VScripting
 
         public virtual IVariable GetVariable(byte itemID)
         {
+            EnsureVariablesList();
             IVariable result = variables.Where((elem) => elem.ItemId == itemID).FirstOrDefault();
             return result;
         }
@@ -139,6 +160,7 @@ namespace Amanita.VScripting
 
         public virtual IList<Muscariable> GetVarsByContentType(Type contentType)
         {
+            EnsureVariablesList();
             IList<Muscariable> result = variables.Where(VarIsOfContentType).ToList();
 
             bool VarIsOfContentType(Muscariable elem)
@@ -156,12 +178,14 @@ namespace Amanita.VScripting
 
         public virtual IList<Muscariable> GetVarsByType(Type varType)
         {
+            EnsureVariablesList();
             IList<Muscariable> result = variables.Where((elem) => varType.IsAssignableFrom(elem.GetType())).ToList();
             return result;
         }
 
         public void ReorderVariables(IList<IVariable> newOrder)
         {
+            EnsureVariablesList();
             if (newOrder == null || newOrder.Count == 0) return;
 
             IList<Muscariable> toCompareTo = newOrder.OfType<Muscariable>().ToList();
@@ -182,12 +206,14 @@ namespace Amanita.VScripting
 
         public virtual void RemoveVariable(string key)
         {
+            EnsureVariablesList();
             IVariable toRemove = variables.Find(elem => elem.Key == key);
             RemoveVariable(toRemove);
         }
 
         public virtual void RemoveVariable(IVariable variable)
         {
+            EnsureVariablesList();
             if (variable is not Muscariable muscari)
             {
                 string logMessage = $"Cannot remove {variable} (a non-Muscariable) from a VariableSource asset; " +
@@ -207,6 +233,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
+            EnsureVariablesList();
             EnsureValidUniqueId();
 
             variables.RemoveAll(elem => elem == null);
@@ -227,6 +254,7 @@ namespace Amanita.VScripting
 
         public Muscariable AddVariable(Muscariable toAdd)
         {
+            EnsureVariablesList();
             if (!variables.ContainsReference(toAdd))
             {
                 MakeUniqueForThisSource(toAdd);
@@ -248,6 +276,7 @@ namespace Amanita.VScripting
 
         Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
         {
+            EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
             {
                 Muscariable var = variables[i];
@@ -262,11 +291,13 @@ namespace Amanita.VScripting
 
         public virtual bool ContainsVar(IVariable var)
         {
+            EnsureVariablesList();
             return variables.ContainsReference(var);
         }
 
         protected virtual void OnEnable()
         {
+            EnsureVariablesList();
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {
@@ -299,6 +330,7 @@ namespace Amanita.VScripting
 
         protected virtual void EnsureValidVarIDs()
         {
+            EnsureVariablesList();
             HashSet<int> usedIDs = new HashSet<int>();
             foreach (var var in variables)
             {
@@ -333,6 +365,7 @@ namespace Amanita.VScripting
                 ReadyBackups();
                 void ReadyBackups()
                 {                     
+                    EnsureVariablesList();
                     backupMuscariables.Clear();
                     foreach (var var in variables)
                     {
@@ -347,6 +380,7 @@ namespace Amanita.VScripting
                 RestoreFromBackups();
                 void RestoreFromBackups()
                 {
+                    EnsureVariablesList();
                     // Rather than recreating the vars as "restored" ones, we apply the values
                     // of the backups to the ones we got.
                     for (int i = 0; i < backupMuscariables.Count; i++)
@@ -384,16 +418,33 @@ namespace Amanita.VScripting
 
         protected virtual void OnValidate()
         {
-            if (!AssetDatabase.Contains(this))
+            EnsureVariablesList();
+            if (!AssetDatabase.Contains(this))//
             {
                 // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
                 return;
             }
 
-            variables.RemoveAll(elem => elem == null);
+            //variables.RemoveAll(elem => elem == null);
 
             EnsureValidUniqueId();
             EnsureValidVarIDs();
+        }
+
+        // Centralized guard to materialize the list if it was deserialized as null. Will
+        // use this a lot to compensate for Unity's serialization quirks.
+        protected void EnsureVariablesList()
+        {
+            if (variables == null)
+            {
+                variables = new List<Muscariable>();
+#if UNITY_EDITOR
+                if (AssetDatabase.Contains(this))
+                {
+                    EditorUtility.SetDirty(this);
+                }
+#endif
+            }
         }
     }
 
@@ -472,10 +523,10 @@ namespace Amanita.VScripting
                 }
                 // Now, we can reconstruct the VariableSourceAsset from the save data.
                 model = ScriptableObject.CreateInstance<VariableSourceAsset>();
-                model.UniqueId = saveData.UniqueId;
                 model.IncludeInSaves = true;
                 model.Refresh();
                 
+                model.UniqueId = saveData.UniqueId;
                 foreach (var varSave in saveData.SavedVars)
                 {
                     Muscariable var = VariableFactory.CreateByVarTypeName(varSave.VarTypeName, null);
@@ -488,7 +539,5 @@ namespace Amanita.VScripting
                 return fsResult.Fail("No 'saveData' found in data for VariableSourceAsset deserialization.");
             }
         }
-
-
     }
 }

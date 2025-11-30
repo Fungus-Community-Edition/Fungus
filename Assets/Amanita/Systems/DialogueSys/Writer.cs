@@ -414,7 +414,7 @@ namespace Amanita.DialogueSys
                 case TokenType.Message:
                     if (CheckParamCount(token.paramList, 1)) 
                     {
-                        Flowchart.BroadcastFungusMessage(token.paramList[0]);
+                        Debug.LogWarning($"BroadcastFungusMessage token no longer supported.");
                     }
                     break;
                     
