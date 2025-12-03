@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.ateliermycelia.unityassemblymigrator/Editor/Resources/UxmlTemplates/SomeEditorWindow.uss?fileID=7433441132597879392&amp;guid=c7aef00a1a4417643a6eb0bd88d1b7e7&amp;type=3#SomeEditorWindow" />
+    <ui:Label text="Assembly Rename Migration" name="TitleLabel" />
+    <uie:ObjectField label="Asmdef to Change" name="AsmDefToChangePicker" allow-scene-objects="false" type="UnityEditorInternal.AssemblyDefinitionAsset, UnityEditor.CoreModule" style="height: 29px;" />
+    <ui:TextField picking-mode="Ignore" label="Current Asmdef Name" name="CurrentAsmDefName" />
+    <ui:TextField picking-mode="Ignore" label="New Asmdef Name" name="NewAsmDefName" />
+    <ui:Toggle label="Dry Run" name="DryRun" value="true" />
+    <ui:Button text="Run Migration" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RunMigration" />
+    <ui:ScrollView name="SummaryReport">
+        <ui:Label tabindex="-1" text="Summary report will appear here." parse-escape-sequences="true" display-tooltip-when-elided="true" name="SummaryLabel" />
+    </ui:ScrollView>
+</ui:UXML>
