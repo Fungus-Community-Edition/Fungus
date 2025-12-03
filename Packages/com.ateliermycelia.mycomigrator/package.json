@@ -1,0 +1,11 @@
+{
+  "name": "com.ateliermycelia.unityassemblymigrator",
+  "version": "1.0.2",
+  "displayName": "MycoMigrator: Unity Assembly Migration Tool",
+  "description": "Makes it easy to rename your assemblies without breaking things like other assemblies, uxml files, etc.",
+  "unity": "2022.3",
+  "author": {
+    "name": "CG-Tespy"
+  },
+  "samples": []
+}
