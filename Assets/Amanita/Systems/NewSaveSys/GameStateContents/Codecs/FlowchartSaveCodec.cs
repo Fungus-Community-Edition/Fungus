@@ -10,8 +10,6 @@ using FullSerializer;
 namespace Amanita.SaveSys
 {
     [SaveSysDisplayName("Flowchart Codec (Amanita Default)")]
-    [CreateAssetMenu(fileName = "FlowchartCodec",
-        menuName = "Amanita/SaveSys/Codecs/FlowchartSaveCodec")]
     public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec, IMainSaveDataProducer
     {
         public virtual void PreInstallInit()
