@@ -46,7 +46,8 @@ public class SaveSysSettingsEventBinderTests
 
         // Synchronizer
         _synchronizer = new SaveSysSettingsSynchronizer();
-        _synchronizer.Init(_settingsAsset, _dropdownController);
+        _fakeRegistrar = new FakeRegistrar();
+        _synchronizer.Init(_settingsAsset, _dropdownController, _fakeRegistrar);
 
         // Binder under test
         _binder = new SaveSysSettingsEventBinder();
@@ -56,6 +57,7 @@ public class SaveSysSettingsEventBinderTests
     }
 
     private IList<UnityObj> destroyOnTearDown = new List<UnityObj>();
+    private FakeRegistrar _fakeRegistrar;
 
     [TearDown]
     public void TearDown()

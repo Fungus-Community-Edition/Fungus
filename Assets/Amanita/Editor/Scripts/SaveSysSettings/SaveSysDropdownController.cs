@@ -12,6 +12,9 @@ namespace Amanita.SaveSys.EditorUtils
     /// </summary>
     public class SaveSysDropdownController : IDisposable
     {
+        /// <summary>
+        /// Initializes the controller with the relevant UI elements and type cache.
+        /// </summary>
         public virtual void Init(VisualElement root, SaveSysSettingsTypeCache typeCache)
         {
             _readerDropdown = root.Q<DropdownField>("SaveReaderDropdown");
@@ -26,6 +29,9 @@ namespace Amanita.SaveSys.EditorUtils
         public DropdownField ReaderDropdown => _readerDropdown;
         public DropdownField WriterDropdown => _writerDropdown;
 
+        /// <summary>
+        /// Refreshes the dropdown options based on the current type cache.
+        /// </summary>
         public virtual void Refresh()
         {
             RefreshTypeMap(_readerTypeMap, _typeCache.ReaderTypes);
@@ -166,6 +172,32 @@ namespace Amanita.SaveSys.EditorUtils
             _writerDropdown = null;
             _readerInstanceMap.Clear();
             _writerInstanceMap.Clear();
+        }
+
+        public virtual void SetFrom(SaveSystemSettings sysSettings)
+        {
+            _readerDropdown.SetValueWithoutNotify("");
+            _writerDropdown.SetValueWithoutNotify("");
+
+            if (sysSettings.SaveReader != null)
+            {
+                var readerType = sysSettings.SaveReader.GetType();
+                var readerDisplayName = SaveSysTypeUtils.GetDisplayName(readerType);
+                if (_readerTypeMap.ContainsKey(readerDisplayName))
+                {
+                    _readerDropdown.SetValueWithoutNotify(readerDisplayName);
+                }
+            }
+
+            if (sysSettings.SaveWriter != null)
+            {
+                var writerType = sysSettings.SaveWriter.GetType();
+                var writerDisplayName = SaveSysTypeUtils.GetDisplayName(writerType);
+                if (_writerTypeMap.ContainsKey(writerDisplayName))
+                {
+                    _writerDropdown.SetValueWithoutNotify(writerDisplayName);
+                }
+            }
         }
     }
 

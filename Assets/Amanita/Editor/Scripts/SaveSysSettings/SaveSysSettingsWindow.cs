@@ -97,19 +97,7 @@ namespace Amanita.SaveSys.EditorUtils
 
         private void OnEnable()
         {
-            EnsureSingleInstance();
-            // Apply constraints when enabling (covers domain reload).
-            if (Instance == this)
-            {
-                minSize = maxSize = windowSize;
-                // Avoid forcing size larger than current if user kept it >= constraints.
-                var currentSize = position.size;
-                if (currentSize.x < windowSize.x || currentSize.y < windowSize.y)
-                {
-                    position = new Rect(position.position, windowSize);
-                }
-            }
-
+            _lifecycle.HandleOnEnable(this);
             if (_uiIsReadyForAccess)
             {
                 Refresh();
@@ -118,12 +106,8 @@ namespace Amanita.SaveSys.EditorUtils
 
         private void OnDestroy()
         {
-            if (Instance == this)
-            {
-                // Record current choices before clearing instance.
-                RecordCurrentChoices();
-                Instance = null;
-            }
+            _lifecycle.HandleOnDestroy(this, _uiRegistrar);
+            Instance = null;
         }
 
         /// <summary>
@@ -136,16 +120,19 @@ namespace Amanita.SaveSys.EditorUtils
             _uiIsReadyForAccess = true;
 
             _typeCache.Refresh();
+
             _dropdownController.Init(Root, _typeCache);
             _mainAppliersController.Init(Root, _typeCache);
-            RegisterViews();
-            _dropdownController.Refresh();
-            _synchronizer.Init(SysSettings, _dropdownController);
-            _eventBinder.Init(SysSettings, _dropdownController, _synchronizer, storageSettings, _refreshButton);
+            _uiRegistrar.Register(Root);
 
-            RestoreLastChoicesIfAny();
+            _dropdownController.Refresh();
+            _synchronizer.Init(SysSettings, _dropdownController, _uiRegistrar);
+            _eventBinder.Init(SysSettings, _dropdownController, _synchronizer,
+                _uiRegistrar.StorageSettings, _uiRegistrar.RefreshButton);
+
+            _uiRegistrar.RestoreLastChoices();
             _eventBinder.Toggle(true);
-            FillMissingAssetSettingsBasedOnUi();
+            _synchronizer.FillMissingAssetSettings();
         }
 
 
@@ -154,18 +141,6 @@ namespace Amanita.SaveSys.EditorUtils
 
         private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
         private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
-
-        private void RegisterViews()
-        {
-            if (!_uiIsReadyForAccess)
-            {
-                // This can happen when Refresh is called before CreateGUI.
-                return;
-            }
-
-            storageSettings = Root.Q<ObjectField>("StorageSettings");
-            _refreshButton = Root.Q<Button>("RefreshButton");
-        }
 
         private DropdownField SaveReaderDropdown
         {
@@ -192,74 +167,11 @@ namespace Amanita.SaveSys.EditorUtils
             }
         }
 
-        private ObjectField storageSettings;
-        private Button _refreshButton;
 
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
 
-        private void RestoreLastChoicesIfAny()
-        {
-            bool dropdownsReady = SaveReaderDropdown != null && SaveWriterDropdown != null;
-            bool thereAreLastChoices = !string.IsNullOrEmpty(_lastReaderChoice) ||
-                                    !string.IsNullOrEmpty(_lastWriterChoice);
-            if (!dropdownsReady || !thereAreLastChoices)
-            {
-                return;
-            }
-
-            if (SaveReaderDropdown.choices.Contains(_lastReaderChoice))
-            {
-                SaveReaderDropdown.SetValueWithoutNotify(_lastReaderChoice);
-            }
-
-            if (SaveWriterDropdown.choices.Contains(_lastWriterChoice))
-            {
-                SaveWriterDropdown.SetValueWithoutNotify(_lastWriterChoice);
-            }
-        }
 
         #region SaveSystemSettings Synchronization
-
-        private void FillMissingAssetSettingsBasedOnUi()
-        {
-            if (_sysSettings == null)
-            {
-                Debug.LogWarning("SysSettings is null. Cannot fill missing asset settings.");
-                return;
-            }
-
-            FillForReaderAndWriter();
-            void FillForReaderAndWriter()
-            {
-                if (_sysSettings.SaveReader == null && !string.IsNullOrEmpty(SaveReaderDropdown?.value))
-                {
-                    var readerInstance = _dropdownController.GetInstanceForChoice(SaveReaderDropdown.value, isReader: true);
-                    _sysSettings.SaveReader = readerInstance as ISaveReader;
-
-                }
-
-                if (_sysSettings.SaveWriter == null && !string.IsNullOrEmpty(SaveWriterDropdown?.value))
-                {
-                    var writerInstance = _dropdownController.GetInstanceForChoice(SaveWriterDropdown.value, isReader: false);
-                    _sysSettings.SaveWriter = writerInstance as ISaveWriter;
-                }
-            }
-
-            RecordCurrentChoices();
-        }
-
-        private void RecordCurrentChoices()
-        {
-            if (SaveReaderDropdown != null && !string.IsNullOrEmpty(SaveReaderDropdown.value))
-            {
-                _lastReaderChoice = SaveReaderDropdown.value;
-            }
-
-            if (SaveWriterDropdown != null && !string.IsNullOrEmpty(SaveWriterDropdown.value))
-            {
-                _lastWriterChoice = SaveWriterDropdown.value;
-            }
-        }
 
         private void Refresh()
         {
@@ -277,20 +189,7 @@ namespace Amanita.SaveSys.EditorUtils
             _mainAppliersController.ToggleSubs(false);
             _eventBinder.Toggle(true);
             _mainAppliersController.ToggleSubs(true);
-            ApplySettingsAssetToUI();
-        }
-
-        private void ApplySettingsAssetToUI()
-        {
-            if (_sysSettings == null)
-            {
-                Debug.LogWarning("SysSettings is null, cannot apply to UI.");
-                return;
-            }
-
-            storageSettings?.SetValueWithoutNotify(_sysSettings.StorageSettings);
-
-            _mainAppliersController.BindToSettings(SysSettings);
+            _synchronizer.ApplyAssetToUI();
         }
 
         private SaveSystemSettings SysSettings
@@ -308,6 +207,9 @@ namespace Amanita.SaveSys.EditorUtils
         private SaveSystemSettings _sysSettings;
 
         private readonly SaveSysSettingsEventBinder _eventBinder = new SaveSysSettingsEventBinder();
+        private readonly SaveSysSettingsUiRegistrar _uiRegistrar = new SaveSysSettingsUiRegistrar();
+        private readonly SaveSysSettingsLifecycleManager _lifecycle = new SaveSysSettingsLifecycleManager();
+
 
         private void OnDisable()
         {

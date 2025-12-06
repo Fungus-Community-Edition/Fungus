@@ -1,46 +1,42 @@
 using System;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Amanita.SaveSys.EditorUtils
-{
+{     
     /// <summary>
-    /// Synchronizes SaveSystemSettings asset state with UI selections.
-    /// Decouples persistence logic from the EditorWindow orchestration.
+    /// Synchronizes SaveSystemSettings asset with the SaveSysSettingsWindow UI.
+    /// Decouples synchronization logic from the window orchestration.
     /// </summary>
     public sealed class SaveSysSettingsSynchronizer : IDisposable
     {
         public void Init(SaveSystemSettings sysSettings,
-                                           SaveSysDropdownController dropdownController)
+                         SaveSysDropdownController dropdownController,
+                         SaveSysSettingsUiRegistrar uiRegistrar)
         {
             _sysSettings = sysSettings;
             _dropdownController = dropdownController;
+            _uiRegistrar = uiRegistrar;
         }
 
         private SaveSystemSettings _sysSettings;
         private SaveSysDropdownController _dropdownController;
+        private SaveSysSettingsUiRegistrar _uiRegistrar;
 
         /// <summary>
         /// Apply changes to the backing asset and mark it dirty.
         /// </summary>
         public void MakeChangesStick()
         {
-            if (_sysSettings == null)
-            {
-                return;
-            }
-
+            if (_sysSettings == null) return;
             EditorUtility.SetDirty(_sysSettings);
             AssetDatabase.SaveAssetIfDirty(_sysSettings);
         }
 
         /// <summary>
         /// Fill missing asset settings based on current UI state.
-        /// Ensures reader/writer instances are assigned if dropdowns have values.
         /// </summary>
-        public void FillMissingAssetSettings(DropdownField readerDropdown, DropdownField writerDropdown)
+        public void FillMissingAssetSettings()
         {
             if (_sysSettings == null)
             {
@@ -48,29 +44,28 @@ namespace Amanita.SaveSys.EditorUtils
                 return;
             }
 
-            bool readerDropdownHasValue = !string.IsNullOrEmpty(readerDropdown?.value);
-            if (_sysSettings.SaveReader == null && readerDropdownHasValue)
+            var readerDropdown = _uiRegistrar.ReaderDropdown;
+            var writerDropdown = _uiRegistrar.WriterDropdown;
+
+            if (_sysSettings.SaveReader == null && !string.IsNullOrEmpty(readerDropdown?.value))
             {
                 var readerInstance = _dropdownController.GetInstanceForChoice(readerDropdown.value, isReader: true);
                 _sysSettings.SaveReader = readerInstance as ISaveReader;
             }
 
-            bool writerDropdownHasValue = !string.IsNullOrEmpty(writerDropdown?.value);
-            if (_sysSettings.SaveWriter == null && writerDropdownHasValue)
+            if (_sysSettings.SaveWriter == null && !string.IsNullOrEmpty(writerDropdown?.value))
             {
                 var writerInstance = _dropdownController.GetInstanceForChoice(writerDropdown.value, isReader: false);
                 _sysSettings.SaveWriter = writerInstance as ISaveWriter;
             }
 
-            RecordCurrentChoices(readerDropdown, writerDropdown);
+            _uiRegistrar.RecordCurrentChoices();
         }
 
         /// <summary>
-        /// Apply asset values back to the UI (storage settings, dropdowns).
+        /// Apply asset values back to the UI.
         /// </summary>
-        public void ApplyAssetToUI(ObjectField storageSettings,
-                                   DropdownField readerDropdown,
-                                   DropdownField writerDropdown)
+        public void ApplyAssetToUI()
         {
             if (_sysSettings == null)
             {
@@ -78,40 +73,23 @@ namespace Amanita.SaveSys.EditorUtils
                 return;
             }
 
-            storageSettings?.SetValueWithoutNotify(_sysSettings.StorageSettings);
+            var storageSettingsView = _uiRegistrar.StorageSettings;
+            storageSettingsView?.SetValueWithoutNotify(_sysSettings.StorageSettings);
 
             if (_sysSettings.SaveReader != null)
             {
                 string choice = SaveSysTypeUtils.GetDisplayName(_sysSettings.SaveReader.GetType());
+                var readerDropdown = _uiRegistrar.ReaderDropdown;
                 if (readerDropdown.choices.Contains(choice))
-                {
                     readerDropdown.SetValueWithoutNotify(choice);
-                }
             }
 
             if (_sysSettings.SaveWriter != null)
             {
                 string choice = SaveSysTypeUtils.GetDisplayName(_sysSettings.SaveWriter.GetType());
+                var writerDropdown = _uiRegistrar.WriterDropdown;
                 if (writerDropdown.choices.Contains(choice))
-                {
                     writerDropdown.SetValueWithoutNotify(choice);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Record current dropdown choices for persistence across reloads.
-        /// </summary>
-        private void RecordCurrentChoices(DropdownField readerDropdown, DropdownField writerDropdown)
-        {
-            if (readerDropdown != null && !string.IsNullOrEmpty(readerDropdown.value))
-            {
-                SaveSysSettingsWindow.LastReaderChoice = readerDropdown.value;
-            }
-
-            if (writerDropdown != null && !string.IsNullOrEmpty(writerDropdown.value))
-            {
-                SaveSysSettingsWindow.LastWriterChoice = writerDropdown.value;
             }
         }
 
@@ -119,6 +97,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             _sysSettings = null;
             _dropdownController = null;
+            _uiRegistrar = null;
         }
     }
 }

@@ -16,6 +16,9 @@ namespace Amanita.SaveSys.EditorUtils
         private SaveSysSettingsTypeCache _typeCache;
         private SaveSystemSettings _sysSettings;
 
+        /// <summary>
+        /// Initializes the controller with references to UI elements and type cache.
+        /// </summary>
         public void Init(VisualElement root, SaveSysSettingsTypeCache typeCache)
         {
             _mainAppliersView = root.Q<ListView>("MainAppliers");
