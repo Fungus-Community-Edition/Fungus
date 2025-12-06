@@ -1,10 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections;
 using Type = System.Type;
 using UnityEditor.UIElements;
-using System.Linq;
 
 namespace Amanita.SaveSys.EditorUtils
 {
@@ -102,7 +100,7 @@ namespace Amanita.SaveSys.EditorUtils
                 }
             }
 
-            if (_rootIsReady)
+            if (_uiIsReadyForAccess)
             {
                 Refresh();
             }
@@ -125,38 +123,36 @@ namespace Amanita.SaveSys.EditorUtils
         {
             VisualElement mainUxml = m_VisualTreeAsset.Instantiate();
             Root.Add(mainUxml);
-            _rootIsReady = true;
+            _uiIsReadyForAccess = true;
 
-            UpdateCacheFromTypeRegistries();
+            _typeCache.Refresh();
+            _dropdownController.Init(Root, _typeCache);
+            _mainAppliersController.Init(Root, _typeCache);
             RegisterViews();
-            RefreshDropdowns();
+            _dropdownController.Refresh();
 
-            _dropdownController.PrepReaderAndWriterInstances();
-            
             RestoreLastChoicesIfAny();
             ToggleSubs(true);
             FillMissingAssetSettingsBasedOnUi();
         }
 
 
-        private bool _rootIsReady = false;
+        private bool _uiIsReadyForAccess = false;
         private VisualElement Root => rootVisualElement;
 
-        private SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
+        private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
+        private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
 
         private void RegisterViews()
         {
-            if (!_rootIsReady)
+            if (!_uiIsReadyForAccess)
             {
                 // This can happen when Refresh is called before CreateGUI.
                 return;
             }
 
-            _dropdownController.Init(Root, _typeCache);
-
             storageSettings = Root.Q<ObjectField>("StorageSettings");
             _refreshButton = Root.Q<Button>("RefreshButton");
-            _mainAppliersView = Root.Q<ListView>("MainAppliers");
         }
 
         private DropdownField SaveReaderDropdown
@@ -186,54 +182,37 @@ namespace Amanita.SaveSys.EditorUtils
 
         private ObjectField storageSettings;
         private Button _refreshButton;
-        private ListView _mainAppliersView;
-        // ^Separate from the version in SysSettings to avoid direct coupling in the UI.
 
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
 
-        private void UpdateCacheFromTypeRegistries()
+        private void RestoreLastChoicesIfAny()
         {
-            _typeCache.Refresh();
-        }
-
-        private void RefreshDropdowns()
-        {
-            if (_dropdownController == null)
+            bool dropdownsReady = SaveReaderDropdown != null && SaveWriterDropdown != null;
+            bool thereAreLastChoices = !string.IsNullOrEmpty(_lastReaderChoice) ||
+                                    !string.IsNullOrEmpty(_lastWriterChoice);
+            if (!dropdownsReady || !thereAreLastChoices)
             {
                 return;
             }
 
-            _dropdownController.Refresh();
-        }
-
-        private static string GetDisplayName(Type type)
-        {
-            return SaveSysTypeUtils.GetDisplayName(type);
-        }
-
-        private void RestoreLastChoicesIfAny()
-        {
-            if (SaveReaderDropdown != null &&
-                !string.IsNullOrEmpty(_lastReaderChoice) &&
-                SaveReaderDropdown.choices.Contains(_lastReaderChoice))
+            if (SaveReaderDropdown.choices.Contains(_lastReaderChoice))
             {
                 SaveReaderDropdown.SetValueWithoutNotify(_lastReaderChoice);
             }
 
-            if (SaveWriterDropdown != null &&
-                !string.IsNullOrEmpty(_lastWriterChoice) &&
-                SaveWriterDropdown.choices.Contains(_lastWriterChoice))
+            if (SaveWriterDropdown.choices.Contains(_lastWriterChoice))
             {
                 SaveWriterDropdown.SetValueWithoutNotify(_lastWriterChoice);
             }
-
         }
 
         #region Event Subscriptions
 
         private void ToggleSubs(bool on)
         {
-            if (!_rootIsReady)
+            // If the root's not ready, that means that the UI controls (such as DropdownController)
+            // are not ready either.
+            if (!_uiIsReadyForAccess)
             {
                 return;
             }
@@ -253,7 +232,7 @@ namespace Amanita.SaveSys.EditorUtils
                 _refreshButton.clicked -= Refresh;
             }
 
-            ToggleForMainAppliers(on);
+            _mainAppliersController.ToggleSubs(on);
         }
 
         private void OnStorageSettingsChanged(ChangeEvent<Object> evt)
@@ -286,99 +265,6 @@ namespace Amanita.SaveSys.EditorUtils
                     MakeSysSettingsChangesStick();
                 }
             });
-        }
-
-        private void ToggleForMainAppliers(bool on)
-        {
-            if (on)
-            {
-                _mainAppliersView.makeItem += OnMakeItemForMainAppliers;
-                _mainAppliersView.bindItem += OnBindItemForMainAppliers;
-                _mainAppliersView.unbindItem += OnUnbindItemForMainAppliers;
-                _mainAppliersView.destroyItem += OnDestroyItemForMainAppliers;
-                _mainAppliersView.canStartDrag += OnCanStartDragForMainAppliers;
-            }
-            else
-            {
-                _mainAppliersView.makeItem -= OnMakeItemForMainAppliers;
-                _mainAppliersView.bindItem -= OnBindItemForMainAppliers;
-                _mainAppliersView.unbindItem -= OnUnbindItemForMainAppliers;
-                _mainAppliersView.destroyItem -= OnDestroyItemForMainAppliers;
-                _mainAppliersView.canStartDrag -= OnCanStartDragForMainAppliers;
-            }
-        }
-
-        private VisualElement OnMakeItemForMainAppliers()
-        {
-            var dropdown = new DropdownField();
-            dropdown.style.flexGrow = 1;
-            dropdown.style.minWidth = 100;
-            dropdown.style.marginBottom = dropdown.style.marginTop = 15;
-            return dropdown;
-        }
-
-        private void OnMainApplierDropdownChoiceChanged(ChangeEvent<string> evt)
-        {
-            DropdownField dropdown = (DropdownField)evt.target;
-            // Find the applier tied to the current choice
-            string currentChoice = evt.newValue;
-            ISaveDataApplier applierInstance = _typeCache.MainApplierChoices[currentChoice];
-
-            int index = (int)dropdown.userData;
-            bool changeAtIndex = index < SysSettings.MainAppliers.Count;
-            if (changeAtIndex)
-            {
-                SysSettings.SetMainApplierAtIndex(applierInstance, index);
-                Debug.Log($"Set MainApplier at index {index} to {applierInstance.GetType().Name}");
-            }
-            else
-            {
-                SysSettings.AddMainApplier(applierInstance);
-                Debug.Log($"Added MainApplier {applierInstance.GetType().Name} at index {index}");
-            }
-
-            MakeSysSettingsChangesStick();
-
-        }
-
-        private void OnBindItemForMainAppliers(VisualElement visElem, int index)
-        {
-            DropdownField dropdown = (DropdownField)visElem;
-            dropdown.userData = index;
-            dropdown.choices = _typeCache.MainApplierChoices.Keys.ToList();
-            dropdown.RegisterValueChangedCallback(OnMainApplierDropdownChoiceChanged);
-            // Set initial value based on current settings
-            if (index < SysSettings.MainAppliers.Count)
-            {
-                var applier = SysSettings.MainAppliers[index];
-                string displayName = GetDisplayName(applier.GetType());
-                if (dropdown.choices.Contains(displayName))
-                {
-                    dropdown.SetValueWithoutNotify(displayName);
-                }
-            }
-            else
-            {
-                dropdown.SetValueWithoutNotify(string.Empty);
-            }
-        }
-
-        private void OnUnbindItemForMainAppliers(VisualElement visElem, int index)
-        {
-            DropdownField dropdown = (DropdownField)visElem;
-            dropdown.UnregisterValueChangedCallback(OnMainApplierDropdownChoiceChanged);
-            visElem.userData = null;
-        }
-
-        private void OnDestroyItemForMainAppliers(VisualElement element)
-        {
-            element.userData = null; // In case we decide to assign such in the future
-            element.Clear();
-        }
-
-        private bool OnCanStartDragForMainAppliers(CanStartDragArgs args)
-        {
-            return true;
         }
 
         #endregion
@@ -438,18 +324,15 @@ namespace Amanita.SaveSys.EditorUtils
 
         private void Refresh()
         {
-            UpdateCacheFromTypeRegistries();
+            _typeCache.Refresh();
 
-            if (!_rootIsReady) // For when called before CreateGUI
+            if (!_uiIsReadyForAccess) // For when called before CreateGUI
             {
                 return;
             }
 
-            RegisterViews();
-            RefreshDropdowns();
-
-            // Directly use the controller here too
-            _dropdownController?.PrepReaderAndWriterInstances();
+            _dropdownController.Refresh();
+            _mainAppliersController.BindToSettings(SysSettings);
 
             ToggleSubs(false);
             ToggleSubs(true);
@@ -466,29 +349,7 @@ namespace Amanita.SaveSys.EditorUtils
 
             storageSettings?.SetValueWithoutNotify(_sysSettings.StorageSettings);
 
-            if (SysSettings.SaveReader != null)
-            {
-                var readerType = SysSettings.SaveReader.GetType();
-                string choice = GetDisplayName(readerType);
-                if (SaveReaderDropdown.choices.Contains(choice))
-                {
-                    SaveReaderDropdown.SetValueWithoutNotify(choice);
-                    _lastReaderChoice = choice;
-                }
-            }
-
-            if (SysSettings.SaveWriter != null)
-            {
-                var writerType = SysSettings.SaveWriter.GetType();
-                string choice = GetDisplayName(writerType);
-                if (SaveWriterDropdown.choices.Contains(choice))
-                {
-                    SaveWriterDropdown.SetValueWithoutNotify(choice);
-                    _lastWriterChoice = choice;
-                }
-            }
-
-            _mainAppliersView.itemsSource = (IList)SysSettings.MainAppliers;
+            _mainAppliersController.BindToSettings(SysSettings);
         }
 
         private SaveSystemSettings SysSettings
@@ -508,7 +369,7 @@ namespace Amanita.SaveSys.EditorUtils
         private void OnDisable()
         {
             ToggleSubs(false);
-            _rootIsReady = false;
+            _uiIsReadyForAccess = false;
         }
     
         #endregion

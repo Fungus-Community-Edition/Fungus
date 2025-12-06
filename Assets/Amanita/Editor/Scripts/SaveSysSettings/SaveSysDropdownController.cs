@@ -39,6 +39,8 @@ namespace Amanita.SaveSys.EditorUtils
 
             RefreshDropdown(_readerDropdown, _readerTypeMap);
             RefreshDropdown(_writerDropdown, _writerTypeMap);
+
+            PrepReaderAndWriterInstances();
         }
 
         // The keys here are the display names.
