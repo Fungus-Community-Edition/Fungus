@@ -19,9 +19,15 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor, ISaveWriter
     {
-        [SerializeField] protected ScriptableObject encryptor;
+        [SerializeField] private ScriptableObject encryptor;
 
-        [SerializeField] protected bool deleteBackupsPostOverwrite = true;
+        [SerializeField] private bool deleteBackupsPostOverwrite = true;
+
+        public virtual ScriptableObject Encryptor
+        {
+            get => encryptor;
+            set => encryptor = value;
+        }
 
         public virtual bool DeleteBackupsPostOverwrite
         {
@@ -29,7 +35,7 @@ namespace Amanita.SaveSys
             set => deleteBackupsPostOverwrite = value;
         }
 
-        protected FileEncoding actualEncoding = FileEncoding.UTF8;
+        private readonly FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
         /// Invoked when this particular SaveWriter writes CompositeSaveData.
@@ -92,7 +98,7 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        protected string debugSaveFolder, debugFilePath;
+        private string debugSaveFolder, debugFilePath;
         /// <summary>
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
@@ -220,16 +226,15 @@ namespace Amanita.SaveSys
             return true;
         }
 
-        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
-        protected BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
-        protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
+        private static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        private readonly BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
+        private readonly SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 
-        protected string backupFileExtension = ".bak";
+        private static readonly string backupFileExtension = ".bak";
         public virtual string BackupFileExtension
         {
             get => backupFileExtension;
         }
-        protected string tempFileExtension = ".tmp";
 
         /// <summary>
         /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.

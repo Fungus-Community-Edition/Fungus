@@ -52,7 +52,9 @@ namespace Amanita.SaveSys.EditorUtils
                 {
                     sysSettings = SOUtils.GetOrCreateScriptableObject<SaveSystemSettings>("SaveSys/Settings",
                         "SaveSystemSettings");
-
+                    sysSettings.SaveReader = DefaultAmanitaAssets.SaveReader;
+                    sysSettings.SaveWriter = DefaultAmanitaAssets.SaveWriter;
+                    sysSettings.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
                     if (sysSettings != null)
                     {
                         Debug.Log("Created SaveSystemSettings asset in Resources/SaveSys/Settings folder.");
