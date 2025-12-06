@@ -245,6 +245,12 @@ namespace Amanita.VScripting
             OnValueChanged.Invoke(this);
         }
         public event Action<Muscariable> OnValueChanged = delegate { };
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 
     [Serializable]
@@ -424,6 +430,7 @@ namespace Amanita.VScripting
         {
             return Value != null ? Value.GetHashCode() : 0;
         }
+
 
     }
 

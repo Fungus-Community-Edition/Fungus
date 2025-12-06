@@ -527,8 +527,6 @@ namespace Amanita
             _adapterAnchors.Remove(key);
         }
 
-        private readonly static string anchorNameSuffix = "_TweenAnchor";
-
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
     }
