@@ -159,10 +159,14 @@ namespace Amanita.SaveSys
                     bool blockWasExecuting = blockSave.ActiveCommandIndex != -1;
                     if (blockWasExecuting)
                     {
-                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId)
-                            ?? blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex);
-
+                        Command commandToApplyTo = blockToApplyTo.FindCommandByID(blockSave.ActiveCommandId);
                         if (commandToApplyTo == null)
+                        {
+                            commandToApplyTo = blockToApplyTo.FindCommandByIndex(blockSave.ActiveCommandIndex); 
+                        }
+
+                        bool stillNothing = commandToApplyTo == null;
+                        if (stillNothing)
                         {
                             Debug.LogWarning($"Command {blockSave.ActiveCommandId} not found in block {blockToApplyTo.BlockName}.");
                             continue;

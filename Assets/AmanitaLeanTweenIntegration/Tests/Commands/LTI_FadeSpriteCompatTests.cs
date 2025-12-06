@@ -19,7 +19,7 @@ namespace CommandCompat
             spriteRenderer.color = Color.white;
 
             // Assign private fields via reflection
-            Type cmdType = typeof(FadeSprite);
+            
             BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
             cmdType.GetField("spriteRenderer", flags)
                 .SetValue(cmd, spriteRenderer);
@@ -33,6 +33,8 @@ namespace CommandCompat
             cmdType.GetField("doFadeTween", flags)
                 .SetValue(cmd, adapter);
         }
+
+        static readonly Type cmdType = typeof(FadeSprite);
 
         protected override void AssertFinalState()
         {
@@ -49,7 +51,7 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator WaitUntilFinished_ChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(command, new BooleanData(true));
 
             yield return RunBlockAndWait();
@@ -62,7 +64,7 @@ namespace CommandCompat
         [UnityTest]
         public IEnumerator NoWait_ContinuesImmediately_AndChangesColor()
         {
-            typeof(FadeSprite).GetField("waitUntilFinished", flags)
+            cmdType.GetField("waitUntilFinished", flags)
                 .SetValue(command, new BooleanData(false));
 
             bool continued = false;
