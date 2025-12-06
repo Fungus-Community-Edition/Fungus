@@ -12,6 +12,10 @@ namespace Amanita.SaveSys.EditorUtils
     /// </summary>
     public class SaveSysDropdownController : IDisposable
     {
+        #region Configuration
+        private static readonly string settingsSubfolder = "SaveSys/Settings";
+        #endregion
+
         /// <summary>
         /// Initializes the controller with the relevant UI elements and type cache.
         /// </summary>
@@ -109,7 +113,6 @@ namespace Amanita.SaveSys.EditorUtils
         private static void GetOrGenerateAssetsFor(IDictionary<TypeChoiceInfo, ScriptableObject> map,
             IReadOnlyList<Type> validTypes)
         {
-            const string settingsSubfolder = "SaveSys/Settings";
             foreach (var type in validTypes)
             {
                 if (map.Keys.Any(keyEl => keyEl.Type == type))

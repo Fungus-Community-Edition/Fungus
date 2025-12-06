@@ -35,8 +35,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             if (Instance != null)
             {
-                Instance.ApplySizeConstraints(); // In case they were lost.
-                Instance.Focus();
+                Instance._lifecycle.HandleOnRefresh(Instance);
                 // No more need for setup (remember, we want only one instance active at a time), so...
                 return;
             }
@@ -44,8 +43,6 @@ namespace Amanita.SaveSys.EditorUtils
             // GetWindow will reuse an existing one of the same type if present.
             SaveSysSettingsWindow wnd = GetWindow<SaveSysSettingsWindow>();
             wnd.titleContent = new GUIContent("Save Sys Settings");
-            wnd.ApplySizeConstraints();
-            wnd.EnsureSingleInstance();
 
             var settings = GetSysSettings();
             static SaveSystemSettings GetSysSettings()
@@ -71,28 +68,6 @@ namespace Amanita.SaveSys.EditorUtils
             wnd.SysSettings = settings; // Runs after CreateGUI via property setter
             wnd.Refresh();
             wnd.Focus();
-        }
-
-        private void ApplySizeConstraints()
-        {
-            minSize = maxSize = windowSize;
-        }
-
-        private static Vector2 windowSize = new Vector2(600, 700);
-
-        private void EnsureSingleInstance()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                return;
-            }
-
-            if (Instance != this)
-            {
-                // A second window appeared; close this duplicate.
-                Close();
-            }
         }
 
         private void OnEnable()
@@ -142,40 +117,14 @@ namespace Amanita.SaveSys.EditorUtils
         private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
         private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
 
-        private DropdownField SaveReaderDropdown
-        {
-            get
-            {
-                if (_dropdownController == null)
-                {
-                    return null;
-                }
-
-                return _dropdownController.ReaderDropdown;
-            }
-        }
-
-        private DropdownField SaveWriterDropdown
-        {
-            get
-            {
-                if (_dropdownController == null)
-                {
-                    return null;
-                }
-                return _dropdownController.WriterDropdown;
-            }
-        }
-
-
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
-
 
         #region SaveSystemSettings Synchronization
 
         private void Refresh()
         {
             _typeCache.Refresh();
+            _lifecycle.HandleOnRefresh(this);
 
             if (!_uiIsReadyForAccess) // For when called before CreateGUI
             {
@@ -183,7 +132,11 @@ namespace Amanita.SaveSys.EditorUtils
             }
 
             _dropdownController.Refresh();
+            _dropdownController.SetFrom(SysSettings);
             _mainAppliersController.BindToSettings(SysSettings);
+            
+            var storageSettingsView = _uiRegistrar.StorageSettings;
+            storageSettingsView.SetValueWithoutNotify(SysSettings.StorageSettings);
 
             _eventBinder.Toggle(false);
             _mainAppliersController.ToggleSubs(false);
@@ -209,7 +162,6 @@ namespace Amanita.SaveSys.EditorUtils
         private readonly SaveSysSettingsEventBinder _eventBinder = new SaveSysSettingsEventBinder();
         private readonly SaveSysSettingsUiRegistrar _uiRegistrar = new SaveSysSettingsUiRegistrar();
         private readonly SaveSysSettingsLifecycleManager _lifecycle = new SaveSysSettingsLifecycleManager();
-
 
         private void OnDisable()
         {

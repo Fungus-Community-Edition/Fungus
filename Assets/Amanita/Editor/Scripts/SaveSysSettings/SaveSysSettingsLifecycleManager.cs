@@ -7,6 +7,12 @@ namespace Amanita.SaveSys.EditorUtils
     {
         private static readonly Vector2 WindowSize = new Vector2(600, 700);
         
+        public void HandleOnRefresh(SaveSysSettingsWindow wnd)
+        {
+            ApplySizeConstraints(wnd);
+            EnsureSingleInstance(wnd);
+        }
+
         public void HandleOnEnable(SaveSysSettingsWindow wnd)
         {
             ApplySizeConstraints(wnd);
