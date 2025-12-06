@@ -1,6 +1,7 @@
 using Amanita;
 using Amanita.SaveSys;
 using Amanita.SaveSys.EditorUtils;
+using Amanita.VScripting;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,10 @@ public class SaveSysSettingsWindowTests
         SafeDeleteAsset(GeneratedReaderAssetPath);
         SafeDeleteAsset(GeneratedWriterAssetPath);
         AssetDatabase.Refresh();
+        saveReaderDropdown = null;
+        saveWriterDropdown = null;
+        storageSettings = null;
+        refreshButton = null;
     }
 
     private static void SafeDeleteAsset(string assetPath)
@@ -114,34 +119,45 @@ public class SaveSysSettingsWindowTests
         return wnd;
     }
 
+    private void RegisterUxmlControls(SaveSysSettingsWindow wnd)
+    {
+        SaveSysDropdownController dropdownController;
+        var dropdownControllerField = _windowType.GetField("_dropdownController", _reflectionFlags);
+        Assert.NotNull(dropdownControllerField);
+        dropdownController = dropdownControllerField.GetValue(wnd) as SaveSysDropdownController;
+        Assert.IsNotNull(dropdownController, "DropdownController should be registered.");
+
+        saveReaderDropdown = dropdownController.ReaderDropdown;
+        saveWriterDropdown = dropdownController.WriterDropdown;
+        var storageSettingsField = _windowType.GetField("storageSettings", _reflectionFlags);
+        var refreshButtonField = _windowType.GetField("_refreshButton", _reflectionFlags);
+
+        Assert.NotNull(storageSettingsField);
+        Assert.NotNull(refreshButtonField);
+
+        storageSettings = storageSettingsField.GetValue(wnd) as ObjectField;
+        refreshButton = refreshButtonField.GetValue(wnd) as Button;
+    }
+
+    private ObjectField storageSettings;
+    private Button refreshButton;
+
     protected static readonly Type _windowType = typeof(SaveSysSettingsWindow);
     protected static readonly BindingFlags _reflectionFlags = BindingFlags.Instance | BindingFlags.NonPublic | 
         BindingFlags.Public | BindingFlags.Static;
 
+    // Shim fields for tests (pre-refactor API compatibility)
+    private DropdownField saveReaderDropdown;
+    private DropdownField saveWriterDropdown;
 
     [Test]
     public void CreateGUI_RegistersViews_FromUXML()
     {
         var wnd = CreateWindowWithUxmlAssigned();
+        RegisterUxmlControls(wnd);
 
-        // Access protected fields set by RegisterViews
-        var readerDropdownField = _windowType.GetField("saveReaderDropdown", _reflectionFlags);
-        var writerDropdownField = _windowType.GetField("saveWriterDropdown", _reflectionFlags);
-        var storageSettingsField =  _windowType.GetField("storageSettings", _reflectionFlags);
-        var refreshButtonField = _windowType.GetField("_refreshButton", _reflectionFlags);
-
-        Assert.NotNull(readerDropdownField);
-        Assert.NotNull(writerDropdownField);
-        Assert.NotNull(storageSettingsField);
-        Assert.NotNull(refreshButtonField);
-
-        var readerDropdown = readerDropdownField.GetValue(wnd) as DropdownField;
-        var writerDropdown = writerDropdownField.GetValue(wnd) as DropdownField;
-        var storageSettings = storageSettingsField.GetValue(wnd) as ObjectField;
-        var refreshButton = refreshButtonField.GetValue(wnd) as Button;
-
-        Assert.IsNotNull(readerDropdown, "SaveReaderDropdown should be registered.");
-        Assert.IsNotNull(writerDropdown, "SaveWriterDropdown should be registered.");
+        Assert.IsNotNull(saveReaderDropdown, "SaveReaderDropdown should be registered.");
+        Assert.IsNotNull(saveWriterDropdown, "SaveWriterDropdown should be registered.");
         Assert.IsNotNull(storageSettings, "StorageSettings ObjectField should be registered.");
         Assert.IsNotNull(refreshButton, "RefreshButton should be registered.");
 
@@ -156,19 +172,22 @@ public class SaveSysSettingsWindowTests
     public void UpdateCache_Enumerates_ValidReaderAndWriterTypes()
     {
         var wnd = CreateWindowWithUxmlAssigned();
+        RegisterUxmlControls(wnd);
 
-        var validReaderTypesField = _windowType.GetField("validReaderTypes", _reflectionFlags);
-        var validWriterTypesField = _windowType.GetField("validWriterTypes", _reflectionFlags);
-        Assert.NotNull(validReaderTypesField);
-        Assert.NotNull(validWriterTypesField);
+        var typeCacheField = _windowType.GetField("_typeCache", _reflectionFlags);
+        Assert.NotNull(typeCacheField);
+        var typeCache = typeCacheField.GetValue(wnd) as SaveSysSettingsTypeCache;
+        Assert.IsNotNull(typeCache, "TypeCache should be registered.");
+        typeCache.Refresh();
 
-        var validReaderTypes = (IList<Type>)validReaderTypesField.GetValue(null);
-        var validWriterTypes = (IList<Type>)validWriterTypesField.GetValue(null);
+
+        var validReaderTypes = typeCache.ReaderTypes;
+        var validWriterTypes = typeCache.WriterTypes;
 
         // Must include the default concrete types
-        Assert.IsTrue(validReaderTypes.Any(t => t == _saveReaderType),
+        Assert.IsTrue(validReaderTypes.Any(readerType => readerType == _saveReaderType),
             "validReaderTypes should include SaveReader.");
-        Assert.IsTrue(validWriterTypes.Any(t => t == _saveWriterType),
+        Assert.IsTrue(validWriterTypes.Any(writerType => writerType == _saveWriterType),
             "validWriterTypes should include SaveWriter.");
 
         // Ensure all entries are ScriptableObjects and implement expected interfaces.
@@ -190,26 +209,23 @@ public class SaveSysSettingsWindowTests
     public void ChoosingReader_AssignsInstance_ToSaveSystemSettings()
     {
         var wnd = CreateWindowWithUxmlAssigned();
-
-        // Access dropdown
-        var readerDropdownField = _windowType.GetField("saveReaderDropdown", _reflectionFlags);
-        var readerDropdown = (DropdownField)readerDropdownField.GetValue(wnd);
-        Assert.IsNotNull(readerDropdown, "SaveReaderDropdown should be available.");
+        RegisterUxmlControls(wnd);
 
         // Build the expected choice label for SaveReader
-
         string readerChoiceLabel = GetDisplayName(_saveReaderType);
-        Assert.IsTrue(readerDropdown.choices.Contains(readerChoiceLabel), $"Reader dropdown choices should contain '{readerChoiceLabel}'.");
+        Assert.IsTrue(saveReaderDropdown.choices.Contains(readerChoiceLabel), 
+            $"Reader dropdown choices should contain '{readerChoiceLabel}'.");
 
         // Set the label to null so we can make sure assignment is triggered when we assign a legit string value
-        readerDropdown.value = string.Empty;
+        saveReaderDropdown.value = string.Empty;
 
         // Change selection to trigger assignment
-        readerDropdown.value = readerChoiceLabel;
+        saveReaderDropdown.value = readerChoiceLabel;
 
         // The window sets _sysSettings.SaveReader in the callback
         Assert.IsNotNull(_settingsAsset.SaveReader, "SaveSystemSettings.SaveReader should be assigned after selection.");
-        Assert.AreEqual(_saveReaderType, _settingsAsset.SaveReader.GetType(), "Assigned SaveReader should match selected type.");
+        Assert.AreEqual(_saveReaderType, _settingsAsset.SaveReader.GetType(), 
+            "Assigned SaveReader should match selected type.");
 
         // Prefer the prepackaged default instance if present
         var defaultReader = Resources.LoadAll<ScriptableObject>(AmanitaConstants.PathToSaveSysDefaultsFolder)
@@ -236,25 +252,24 @@ public class SaveSysSettingsWindowTests
     public void ChoosingWriter_AssignsInstance_ToSaveSystemSettings()
     {
         var wnd = CreateWindowWithUxmlAssigned();
-
-        // Access dropdown
-        var writerDropdownField = _windowType.GetField("saveWriterDropdown", _reflectionFlags);
-        var writerDropdown = (DropdownField)writerDropdownField.GetValue(wnd);
-        Assert.IsNotNull(writerDropdown, "SaveWriterDropdown should be available.");
+        RegisterUxmlControls(wnd);
 
         // Build the expected choice label for SaveWriter
         string writerChoiceLabel = GetDisplayName(_saveWriterType);
-        Assert.IsTrue(writerDropdown.choices.Contains(writerChoiceLabel), $"Writer dropdown choices should contain '{writerChoiceLabel}'.");
+        Assert.IsTrue(saveWriterDropdown.choices.Contains(writerChoiceLabel),
+            $"Writer dropdown choices should contain '{writerChoiceLabel}'.");
 
         // Set the label to null so we can make sure assignment is triggered when we assign a legit string value
-        writerDropdown.value = string.Empty;
+        saveWriterDropdown.value = string.Empty;
 
         // Change selection to trigger assignment
-        writerDropdown.value = writerChoiceLabel;
+        saveWriterDropdown.value = writerChoiceLabel;
 
         // The window sets _sysSettings.SaveWriter in the callback
-        Assert.IsNotNull(_settingsAsset.SaveWriter, "SaveSystemSettings.SaveWriter should be assigned after selection.");
-        Assert.AreEqual(_saveWriterType, _settingsAsset.SaveWriter.GetType(), "Assigned SaveWriter should match selected type.");
+        Assert.IsNotNull(_settingsAsset.SaveWriter,
+            "SaveSystemSettings.SaveWriter should be assigned after selection.");
+        Assert.AreEqual(_saveWriterType, _settingsAsset.SaveWriter.GetType(),
+            "Assigned SaveWriter should match selected type.");
 
         // Prefer the prepackaged default instance if present
         var defaultWriter = Resources.LoadAll<ScriptableObject>(AmanitaConstants.PathToSaveSysDefaultsFolder)
@@ -269,7 +284,7 @@ public class SaveSysSettingsWindowTests
     [Test]
     public void Defaults_DoNotGenerate_DuplicateAssets()
     {
-        var wnd = CreateWindowWithUxmlAssigned();
+        CreateWindowWithUxmlAssigned();
 
         // Ensure defaults exist
         var defaultReader = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveReader);

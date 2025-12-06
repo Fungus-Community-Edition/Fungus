@@ -10,6 +10,10 @@ namespace Amanita.EditorUtils
     /// </summary>
     public static class DefaultAssetMaintenance 
     {
+        #region Configuration
+        private static readonly string resourcesPath = "Assets/Amanita/Resources/";
+        #endregion
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
         public static void Init()
@@ -25,8 +29,12 @@ namespace Amanita.EditorUtils
             EnsureDefaultTweenAdapter();
             EnsureDefaultEncryptor();
             EnsureDefaultDecryptor();
+            EnsureSaveReader();
+            EnsureSaveWriter();
         }
 
+        // We have these separate Ensure methods in case the user wants to call them individually
+        // or during runtime.
         public static SaveStorageSettings EnsureSaveStorageSettings()
         {
             SaveStorageSettings settings = DefaultAmanitaAssets.SaveStorageSettings;
@@ -38,6 +46,37 @@ namespace Amanita.EditorUtils
 
             DefaultAmanitaAssets.SaveStorageSettings = settings;
             return settings;
+        }
+
+        public static SaveReader EnsureSaveReader()
+        {
+            string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
+            SaveReader reader = DefaultAmanitaAssets.SaveReader;
+            if (reader == null)
+            {
+                reader = SOUtils.GetOrCreateScriptableObject<SaveReader>(path, "DefaultSaveReader");
+            }
+
+            reader.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+            reader.Decryptor = DefaultAmanitaAssets.Decryptor;
+            DefaultAmanitaAssets.SaveReader = reader;
+            return reader;
+        }
+
+        public static SaveWriter EnsureSaveWriter()
+        {
+            string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
+            SaveWriter writer = DefaultAmanitaAssets.SaveWriter;
+            if (writer == null)
+            {
+                writer = SOUtils.GetOrCreateScriptableObject<SaveWriter>(path, "DefaultSaveWriter");
+            }
+
+            writer.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+            writer.Encryptor = DefaultAmanitaAssets.Encryptor;
+
+            DefaultAmanitaAssets.SaveWriter = writer;
+            return writer;
         }
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
@@ -54,7 +93,7 @@ namespace Amanita.EditorUtils
             return adaptor;
         }
 
-        private static string resourcesPath = "Assets/Amanita/Resources/";
+        
 
         public static Encryptor EnsureDefaultEncryptor()
         {
@@ -71,5 +110,6 @@ namespace Amanita.EditorUtils
             DefaultAmanitaAssets.Decryptor = decryptor;
             return decryptor;
         }
+
     }
 }
