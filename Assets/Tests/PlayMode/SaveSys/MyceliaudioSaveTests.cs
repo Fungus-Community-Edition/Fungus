@@ -157,7 +157,7 @@ namespace SaveSystemTests
         public IEnumerator ApplyingSameSaveTwiceIsIdempotent()
         {
             yield return CommonSetup();
-
+            
             AudioSys.Play(playAudioArgsSO);
             var save = mycelSaveCodec.EncodeToSave(AudioSystem.S);
             yield return wait;

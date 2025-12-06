@@ -131,6 +131,7 @@ MonoBehaviour:
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
+  alwaysKeepGuid: 0
   nextValidVarID: 8
   uniqueId: 05b08fbe-bc51-47c3-bab0-20deaac90bc0
   references:
@@ -275,7 +276,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 6
   blockName: TestBlock
   description: 
   eventHandler: {fileID: 7505458795986732438}

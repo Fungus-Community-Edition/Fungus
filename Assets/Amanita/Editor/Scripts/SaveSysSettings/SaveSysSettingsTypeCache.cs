@@ -17,6 +17,9 @@ namespace Amanita.SaveSys.EditorUtils
         private readonly IList<Type> _validMainApplierTypes = new List<Type>();
         private readonly Dictionary<string, ISaveDataApplier> _validMainApplierChoices =
             new Dictionary<string, ISaveDataApplier>();
+        private readonly IList<Type> _validCodecTypes = new List<Type>();
+        private readonly Dictionary<string, IMainSaveCodec> _validMainCodecChoices =
+            new Dictionary<string, IMainSaveCodec>();
 
         private static readonly Type ScriptableObjType = typeof(ScriptableObject);
         private static readonly Type ReaderInterface = typeof(ISaveReader);
@@ -27,16 +30,21 @@ namespace Amanita.SaveSys.EditorUtils
         public IReadOnlyList<Type> WriterTypes => (IReadOnlyList<Type>)_validWriterTypes;
         public IReadOnlyList<Type> MainApplierTypes => (IReadOnlyList<Type>)_validMainApplierTypes;
         public IReadOnlyDictionary<string, ISaveDataApplier> MainApplierChoices => _validMainApplierChoices;
+        public IReadOnlyList<Type> MainCodecTypes => (IReadOnlyList<Type>)_validCodecTypes;
+        public IReadOnlyDictionary<string, IMainSaveCodec> MainCodecChoices => _validMainCodecChoices;
 
         public void Refresh()
         {
             SaveReaderTypeRegistry.DiscoverAndRegister();
             SaveWriterTypeRegistry.DiscoverAndRegister();
-            SaveDataApplierRegistry.DiscoverAndRegister();
+            SaveDataApplierTypeRegistry.DiscoverAndRegister();
+            SaveDataCodecTypeRegistry.DiscoverAndRegister();
+
             ClearCaches();
             PopulateReaderTypes();
             PopulateWriterTypes();
             PopulateMainApplierTypesAndChoices();
+            PopulateMainCodecTypesAndChoices();
         }
 
         private void ClearCaches()
@@ -69,7 +77,7 @@ namespace Amanita.SaveSys.EditorUtils
 
         private void PopulateMainApplierTypesAndChoices()
         {
-            List<Type> appliers = SaveDataApplierRegistry.Types
+            List<Type> appliers = SaveDataApplierTypeRegistry.Types
                 .Where(IsValidApplierType)
                 .ToList();
 
@@ -90,6 +98,30 @@ namespace Amanita.SaveSys.EditorUtils
             }
         }
 
+        private void PopulateMainCodecTypesAndChoices()
+        {
+            List<Type> codecs = SaveDataCodecTypeRegistry.Types
+                .Where(codecType => !codecType.Name.Contains("Test") &&
+                            ScriptableObjType.IsAssignableFrom(codecType) &&
+                            CodecInterface.IsAssignableFrom(codecType))
+                .ToList();
+            _validCodecTypes.AddRange(codecs);
+
+            foreach (var codecType in _validCodecTypes)
+            {
+                string baseDisplayName = GetDisplayName(codecType);
+                string assetName = $"Generated_{baseDisplayName}";
+                assetName = assetName.Replace(" ", "_");
+                var codecInstance = SOUtils.GetOrCreateScriptableObject(codecType,
+                    whereCodecsShouldGo,
+                    assetName);
+                // We already know that these instances inherit the right interface, so...
+                _validMainCodecChoices[baseDisplayName] = (IMainSaveCodec)codecInstance;
+            }
+        }
+
+        private static readonly Type CodecInterface = typeof(IMainSaveCodec);
+
         private static bool IsValidApplierType(Type type)
         {
             return !type.Name.Contains("Test") &&
@@ -98,6 +130,7 @@ namespace Amanita.SaveSys.EditorUtils
         }
 
         private static readonly string whereAppliersShouldGo = "SaveSys/SaveAppliers";
+        private static readonly string whereCodecsShouldGo = "SaveSys/SaveCodecs";
 
         private static string GetDisplayName(Type type)
         {

@@ -1,13 +1,13 @@
-using Collections;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Type = System.Type;
+using System.Linq;
+using Collections;
 
 namespace Amanita.SaveSys
 {
-    public class SaveReaderTypeRegistry
+    public class SaveDataCodecTypeRegistry : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
@@ -21,9 +21,9 @@ namespace Amanita.SaveSys
 
         private static void RefreshTypeRegistry()
         {
-            _readerTypes.Clear();
-            IList<Type> readerTypesFound = TypeUtils.GetInstantiatableTypes(_iSaveReaderType);
-            _readerTypes.AddRange(readerTypesFound);
+            _codecTypes.Clear();
+            IList<Type> typesFound = TypeUtils.GetInstantiatableTypes(_iMainCodecType);//
+            _codecTypes.AddRange(typesFound);
         }
 
         /// <summary>
@@ -31,16 +31,15 @@ namespace Amanita.SaveSys
         /// </summary>
         public static IList<Type> Types
         {
-            get => _readerTypes.ToList(); // We don't want clients to be able to change the list directly
+            get => _codecTypes.ToList(); // We don't want clients to be able to change the list directly
             private set
             {
-                _readerTypes.Clear();
-                _readerTypes.AddRange(value);
+                _codecTypes.Clear();
+                _codecTypes.AddRange(value);
             }
         }
-        private static readonly IList<Type> _readerTypes = new List<Type>();
+        private static readonly IList<Type> _codecTypes = new List<Type>();
 
-        private static readonly Type _iSaveReaderType = typeof(ISaveReader);
-
+        private static readonly Type _iMainCodecType = typeof(IMainSaveCodec);
     }
 }

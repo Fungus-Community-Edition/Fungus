@@ -98,8 +98,30 @@ namespace Amanita.SaveSys.EditorUtils
 
             _typeCache.Refresh();
 
+            // Appliers
+            _mainAppliersController = new SaveSysListController<ISaveDataApplier>(
+                "MainAppliers",
+                cache => cache.MainApplierChoices,
+                settings => (System.Collections.IList)settings.MainAppliers,
+                (settings, inst, idx) => settings.SetMainApplierAtIndex(inst, idx),
+                (settings, inst) => settings.AddMainApplier(inst),
+                (settings, inst) => settings.RemoveMainApplier(inst)
+            );
+
+            // Codecs
+            _mainCodecsController = new SaveSysListController<IMainSaveCodec>(
+                "MainCodecs",
+                cache => cache.MainCodecChoices,
+                settings => (System.Collections.IList)settings.MainCodecs,
+                (settings, inst, idx) => settings.SetMainCodecAtIndex(inst, idx),
+                (settings, inst) => settings.AddMainCodec(inst),
+                (settings, inst) => settings.RemoveMainCodec(inst)
+            );
+
             _dropdownController.Init(Root, _typeCache);
             _mainAppliersController.Init(Root, _typeCache);
+
+            _mainCodecsController.Init(Root, _typeCache);
             _uiRegistrar.Register(Root);
 
             _dropdownController.Refresh();
@@ -117,7 +139,8 @@ namespace Amanita.SaveSys.EditorUtils
         private VisualElement Root => rootVisualElement;
 
         private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
-        private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
+        private SaveSysListController<ISaveDataApplier> _mainAppliersController;
+        private SaveSysListController<IMainSaveCodec> _mainCodecsController;
 
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
 
@@ -136,14 +159,20 @@ namespace Amanita.SaveSys.EditorUtils
             _dropdownController.Refresh();
             _dropdownController.SetFrom(SysSettings);
             _mainAppliersController.BindToSettings(SysSettings);
-            
+            _mainCodecsController.BindToSettings(SysSettings);
+
             var storageSettingsView = _uiRegistrar.StorageSettings;
             storageSettingsView.SetValueWithoutNotify(SysSettings.StorageSettings);
 
+            #region Unsubs right before resubs
             _eventBinder.Toggle(false);
             _mainAppliersController.ToggleSubs(false);
+            _mainCodecsController.ToggleSubs(false);
             _eventBinder.Toggle(true);
             _mainAppliersController.ToggleSubs(true);
+            _mainCodecsController.ToggleSubs(true);
+            #endregion
+
             _synchronizer.ApplyAssetToUI();
         }
 
@@ -169,6 +198,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             _eventBinder.Toggle(false);
             _mainAppliersController.ToggleSubs(false);
+            _mainCodecsController.ToggleSubs(false);
             _synchronizer.Dispose();
             _dropdownController.Dispose();
             _uiIsReadyForAccess = false;

@@ -39,6 +39,7 @@ public abstract class DTI_CommandTestBase<TCommand> where TCommand : Command
 
         go = new GameObject(typeof(TCommand).Name + "_TestGO");
         flowchart = go.AddComponent<Flowchart>();
+        flowchart.IsTestOnly = true;
         block = flowchart.CreateBlock(Vector2.zero);
         block.BlockName = "TestBlock";
 
@@ -63,6 +64,7 @@ public abstract class DTI_CommandTestBase<TCommand> where TCommand : Command
     [TearDown]
     public virtual void TearDown()
     {
+        flowchart.OnTearDown();
         foreach (var elem in toDestroyInTearDown)
         {
             if (elem != null) 

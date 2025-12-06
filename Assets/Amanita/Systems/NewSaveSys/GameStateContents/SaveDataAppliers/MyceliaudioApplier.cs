@@ -33,7 +33,6 @@ namespace Amanita.SaveSys
                 // save data waaaay too big), and thus we need to fetch them based
                 // on the clip name. 
                 
-
                 var shadowDb = AmanitaManager.ShadowDB;
                 IList<AudioClip> allAudioClips = shadowDb.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
                 PlayAudioArgs audioArgs = saveData.PlayAudioArgs;

@@ -10,10 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08de3be5b33754f41a2ee4f0bee35cd2, type: 3}
-  m_Name: FlowchartSaveCodec
+  m_Name: Generated_Flowchart_Codec_(Amanita_Default)
   m_EditorClassIdentifier: 
   order: 0
-  subCodecs:
-  - {fileID: 11400000, guid: d19614720eea53e47880b854d0693992, type: 2}
-  varCodecs:
-  - {fileID: 11400000, guid: 99af32feb8c4a354489456433da49e02, type: 2}
+  subCodecs: []

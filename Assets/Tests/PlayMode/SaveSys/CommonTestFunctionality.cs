@@ -527,10 +527,10 @@ namespace SaveSystemTests
                 if (!Directory.Exists(root)) continue;
 
                 var allPaths = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith(".save") ||
-                                f.EndsWith(".save.meta") ||
-                                f.EndsWith(".save.bak") ||
-                                f.EndsWith(".save.bak.meta"))
+                    .Where(path => path.EndsWith(".save") ||
+                                path.EndsWith(".save.meta") ||
+                                path.EndsWith(".save.bak") ||
+                                path.EndsWith(".save.bak.meta"))
                     .ToList();
 
                 foreach (var filePath in allPaths)

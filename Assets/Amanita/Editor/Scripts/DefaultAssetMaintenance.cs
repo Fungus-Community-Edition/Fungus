@@ -10,10 +10,6 @@ namespace Amanita.EditorUtils
     /// </summary>
     public static class DefaultAssetMaintenance 
     {
-        #region Configuration
-        private static readonly string resourcesPath = "Assets/Amanita/Resources/";
-        #endregion
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]
         public static void Init()
@@ -25,8 +21,10 @@ namespace Amanita.EditorUtils
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
-            EnsureSaveStorageSettings();
             EnsureDefaultTweenAdapter();
+
+
+            EnsureSaveStorageSettings();
             EnsureDefaultEncryptor();
             EnsureDefaultDecryptor();
             EnsureSaveReader();
@@ -110,6 +108,7 @@ namespace Amanita.EditorUtils
             DefaultAmanitaAssets.Decryptor = decryptor;
             return decryptor;
         }
+
 
     }
 }

@@ -18,13 +18,21 @@ namespace Amanita.SaveSys
             get => pathResolver;
             set
             {
-                pathResolver = saveReader.PathResolver = saveWriter.PathResolver = value;
+                pathResolver = value;
+                if (saveReader is IHasConfigurableSaveSlotPathResolver readerWithPathResolver && 
+                    saveWriter is IHasConfigurableSaveSlotPathResolver writerWithPathResolver)
+                {
+                    readerWithPathResolver.PathResolver = writerWithPathResolver.PathResolver = this.pathResolver;
+                }
                 // ^Need to keep things in sync so they're working with the right sets
                 // of directories and paths.
             }
         }
-        protected IConfigurableSaveSlotPathResolver pathResolver;
-        public FileSaveRepository(SaveReader saveReader, SaveWriter saveWriter,
+
+        
+
+        private IConfigurableSaveSlotPathResolver pathResolver;
+        public FileSaveRepository(ISaveReader saveReader, ISaveWriter saveWriter,
             SaveDirectoryType saveDir, IConfigurableSaveSlotPathResolver resolver = null)
         {
             Validate(saveReader, saveWriter);
@@ -34,12 +42,7 @@ namespace Amanita.SaveSys
             this.pathResolver = resolver;
 
             KeepResolversInSync();
-            void KeepResolversInSync()
-            {
-                pathResolver ??= saveReader.PathResolver;
-                pathResolver ??= saveWriter.PathResolver;
-                saveReader.PathResolver = saveWriter.PathResolver = pathResolver;
-            }
+            
 
             PrepRequestCache();
             void PrepRequestCache()
@@ -60,7 +63,29 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected virtual void Validate(SaveReader reader, SaveWriter writer)
+        void KeepResolversInSync()
+        {
+            IHasConfigurableSaveSlotPathResolver readerWithPathResolver =
+                saveReader as IHasConfigurableSaveSlotPathResolver;
+            IHasConfigurableSaveSlotPathResolver writerWithPathResolver =
+                saveWriter as IHasConfigurableSaveSlotPathResolver;
+            if (readerWithPathResolver != null)
+            {
+                this.pathResolver ??= readerWithPathResolver.PathResolver;
+            }
+
+            if (writerWithPathResolver != null)
+            {
+                this.pathResolver ??= writerWithPathResolver.PathResolver;
+            }
+
+            if (readerWithPathResolver != null && writerWithPathResolver != null)
+            {
+                readerWithPathResolver.PathResolver = writerWithPathResolver.PathResolver = this.pathResolver;
+            }
+        }
+
+        private void Validate(ISaveReader reader, ISaveWriter writer)
         {
             if (reader == null)
             {
@@ -73,13 +98,13 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected SaveReader saveReader;
-        protected SaveWriter saveWriter;
-        protected SaveDirectoryType saveDir;
+        private ISaveReader saveReader;
+        private ISaveWriter saveWriter;
+        private SaveDirectoryType saveDir;
 
-        protected SaveReadRequest readRequest;
-        protected SaveWriteRequest writeReq;
-        protected SaveReadRequest forPathFinding;
+        private SaveReadRequest readRequest;
+        private SaveWriteRequest writeReq;
+        private SaveReadRequest forPathFinding;
 
         public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default)
         {
@@ -138,7 +163,7 @@ namespace Amanita.SaveSys
                 forPathFinding.SlotNumber = slot;
             }
 
-            string result = saveReader.GetSaveFilePath(saveDir, slot);
+            string result = pathResolver.GetSaveFilePath(saveDir, slot);
             return result;
         }
 

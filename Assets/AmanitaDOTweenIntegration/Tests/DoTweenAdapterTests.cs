@@ -18,17 +18,11 @@ public class DoTweenAdapterTests
     {
         DOTween.KillAll(false);
         _testGo = new GameObject("TweenTestGO");
-        AmanitaManager prefab = Resources.Load<AmanitaManager>(pathToManager);
-        if (prefab == null)
-        {
-            throw new System.MissingFieldException("Wrong path to the Amanita Manager");
-        }
-        manager = UnityObj.Instantiate(prefab);
+        manager = AmanitaManager.EnsureExists();
         _adapter = ScriptableObject.CreateInstance<AmaniDoTweenAdapter>();
     }
 
     protected AmanitaManager manager;
-    protected readonly string pathToManager = "Prefabs/AmanitaManager";
 
     [TearDown]
     public virtual void TearDown()

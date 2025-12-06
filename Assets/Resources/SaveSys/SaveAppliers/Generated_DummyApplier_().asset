@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a571c38b02e2274aa476e39d99a5326, type: 3}
-  m_Name: MyceliaudioSaveCodec
-  m_EditorClassIdentifier: 
-  order: 0
-  subCodecs: []
+  m_Script: {fileID: 0}
+  m_Name: Generated_DummyApplier_()
+  m_EditorClassIdentifier: AmanitaEditorTests::DummyApplier
