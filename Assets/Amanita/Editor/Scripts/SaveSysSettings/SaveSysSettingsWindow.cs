@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Type = System.Type;
 using UnityEditor.UIElements;
 
 namespace Amanita.SaveSys.EditorUtils
@@ -14,6 +13,19 @@ namespace Amanita.SaveSys.EditorUtils
         // Persist prior UI selections across recreation
         private static string _lastReaderChoice;
         private static string _lastWriterChoice;
+
+        private readonly SaveSysSettingsSynchronizer _synchronizer = new SaveSysSettingsSynchronizer();
+
+        public static string LastReaderChoice
+        {
+            get => _lastReaderChoice;
+            set => _lastReaderChoice = value;
+        }
+        public static string LastWriterChoice
+        {
+            get => _lastWriterChoice;
+            set => _lastWriterChoice = value;
+        }
 
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
@@ -33,8 +45,6 @@ namespace Amanita.SaveSys.EditorUtils
             SaveSysSettingsWindow wnd = GetWindow<SaveSysSettingsWindow>();
             wnd.titleContent = new GUIContent("Save Sys Settings");
             wnd.ApplySizeConstraints();
-
-            Instance = wnd;
             wnd.EnsureSingleInstance();
 
             var settings = GetSysSettings();
@@ -130,9 +140,11 @@ namespace Amanita.SaveSys.EditorUtils
             _mainAppliersController.Init(Root, _typeCache);
             RegisterViews();
             _dropdownController.Refresh();
+            _synchronizer.Init(SysSettings, _dropdownController);
+            _eventBinder.Init(SysSettings, _dropdownController, _synchronizer, storageSettings, _refreshButton);
 
             RestoreLastChoicesIfAny();
-            ToggleSubs(true);
+            _eventBinder.Toggle(true);
             FillMissingAssetSettingsBasedOnUi();
         }
 
@@ -206,80 +218,7 @@ namespace Amanita.SaveSys.EditorUtils
             }
         }
 
-        #region Event Subscriptions
-
-        private void ToggleSubs(bool on)
-        {
-            // If the root's not ready, that means that the UI controls (such as DropdownController)
-            // are not ready either.
-            if (!_uiIsReadyForAccess)
-            {
-                return;
-            }
-
-            if (on)
-            {
-                storageSettings.RegisterValueChangedCallback(OnStorageSettingsChanged);
-                SaveReaderDropdown.RegisterValueChangedCallback(OnReaderDropdownChoiceChanged);
-                SaveWriterDropdown.RegisterValueChangedCallback(OnWriterDropdownChoiceChanged);
-                _refreshButton.clicked += Refresh;
-            }
-            else
-            {
-                storageSettings.UnregisterValueChangedCallback(OnStorageSettingsChanged);
-                SaveReaderDropdown.UnregisterValueChangedCallback(OnReaderDropdownChoiceChanged);
-                SaveWriterDropdown.UnregisterValueChangedCallback(OnWriterDropdownChoiceChanged);
-                _refreshButton.clicked -= Refresh;
-            }
-
-            _mainAppliersController.ToggleSubs(on);
-        }
-
-        private void OnStorageSettingsChanged(ChangeEvent<Object> evt)
-        {
-            _sysSettings.StorageSettings = evt.newValue as SaveStorageSettings;
-            MakeSysSettingsChangesStick();
-        }
-
-        private void OnReaderDropdownChoiceChanged(ChangeEvent<string> evt)
-        {
-            _dropdownController.AssignSelection(evt.newValue, true, so =>
-            {
-                _sysSettings.SaveReader = so as ISaveReader;
-                if (so != null)
-                {
-                    _lastReaderChoice = SaveReaderDropdown.value;
-                    MakeSysSettingsChangesStick();
-                }
-            });
-        }
-
-        private void OnWriterDropdownChoiceChanged(ChangeEvent<string> evt)
-        {
-            _dropdownController.AssignSelection(evt.newValue, false, so =>
-            {
-                _sysSettings.SaveWriter = so as ISaveWriter;
-                if (so != null)
-                {
-                    _lastWriterChoice = SaveWriterDropdown.value;
-                    MakeSysSettingsChangesStick();
-                }
-            });
-        }
-
-        #endregion
-
         #region SaveSystemSettings Synchronization
-
-        private void MakeSysSettingsChangesStick()
-        {
-            if (_sysSettings == null)
-            {
-                return;
-            }
-            EditorUtility.SetDirty(_sysSettings);
-            AssetDatabase.SaveAssetIfDirty(_sysSettings);
-        }
 
         private void FillMissingAssetSettingsBasedOnUi()
         {
@@ -334,8 +273,10 @@ namespace Amanita.SaveSys.EditorUtils
             _dropdownController.Refresh();
             _mainAppliersController.BindToSettings(SysSettings);
 
-            ToggleSubs(false);
-            ToggleSubs(true);
+            _eventBinder.Toggle(false);
+            _mainAppliersController.ToggleSubs(false);
+            _eventBinder.Toggle(true);
+            _mainAppliersController.ToggleSubs(true);
             ApplySettingsAssetToUI();
         }
 
@@ -366,19 +307,18 @@ namespace Amanita.SaveSys.EditorUtils
         }
         private SaveSystemSettings _sysSettings;
 
+        private readonly SaveSysSettingsEventBinder _eventBinder = new SaveSysSettingsEventBinder();
+
         private void OnDisable()
         {
-            ToggleSubs(false);
+            _eventBinder.Toggle(false);
+            _mainAppliersController.ToggleSubs(false);
+            _synchronizer.Dispose();
+            _dropdownController.Dispose();
             _uiIsReadyForAccess = false;
         }
     
         #endregion
-
-        public class TypeChoiceInfo
-        {
-            public Type Type { get; set; }
-            public string ChoiceText { get; set; }
-        }
 
     }
 }

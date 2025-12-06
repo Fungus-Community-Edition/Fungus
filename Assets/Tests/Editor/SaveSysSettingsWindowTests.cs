@@ -121,7 +121,7 @@ public class SaveSysSettingsWindowTests
 
     private void RegisterUxmlControls(SaveSysSettingsWindow wnd)
     {
-        SaveSysDropdownController dropdownController = null;
+        SaveSysDropdownController dropdownController;
         var dropdownControllerField = _windowType.GetField("_dropdownController", _reflectionFlags);
         Assert.NotNull(dropdownControllerField);
         dropdownController = dropdownControllerField.GetValue(wnd) as SaveSysDropdownController;
@@ -149,11 +149,6 @@ public class SaveSysSettingsWindowTests
     // Shim fields for tests (pre-refactor API compatibility)
     private DropdownField saveReaderDropdown;
     private DropdownField saveWriterDropdown;
-
-    // Shim static lists for tests to read valid types
-    private static IList<Type> validReaderTypes = new List<Type>();
-    private static IList<Type> validWriterTypes = new List<Type>();
-
 
     [Test]
     public void CreateGUI_RegistersViews_FromUXML()
@@ -289,7 +284,7 @@ public class SaveSysSettingsWindowTests
     [Test]
     public void Defaults_DoNotGenerate_DuplicateAssets()
     {
-        var wnd = CreateWindowWithUxmlAssigned();
+        CreateWindowWithUxmlAssigned();
 
         // Ensure defaults exist
         var defaultReader = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveReader);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static Amanita.SaveSys.EditorUtils.SaveSysSettingsWindow;
 
 namespace Amanita.SaveSys.EditorUtils
 {
@@ -11,14 +10,9 @@ namespace Amanita.SaveSys.EditorUtils
     /// Handles population, persistence, and instance mapping for SaveSys dropdowns.
     /// Decouples dropdown logic from the EditorWindow orchestration.
     /// </summary>
-    public sealed class SaveSysDropdownController
+    public class SaveSysDropdownController : IDisposable
     {
-        private readonly IDictionary<TypeChoiceInfo, ScriptableObject> _readerInstanceMap = 
-            new Dictionary<TypeChoiceInfo, ScriptableObject>();
-        private readonly IDictionary<TypeChoiceInfo, ScriptableObject> _writerInstanceMap = 
-            new Dictionary<TypeChoiceInfo, ScriptableObject>();
-
-        public void Init(VisualElement root, SaveSysSettingsTypeCache typeCache)
+        public virtual void Init(VisualElement root, SaveSysSettingsTypeCache typeCache)
         {
             _readerDropdown = root.Q<DropdownField>("SaveReaderDropdown");
             _writerDropdown = root.Q<DropdownField>("SaveWriterDropdown");
@@ -32,7 +26,7 @@ namespace Amanita.SaveSys.EditorUtils
         public DropdownField ReaderDropdown => _readerDropdown;
         public DropdownField WriterDropdown => _writerDropdown;
 
-        public void Refresh()
+        public virtual void Refresh()
         {
             RefreshTypeMap(_readerTypeMap, _typeCache.ReaderTypes);
             RefreshTypeMap(_writerTypeMap, _typeCache.WriterTypes);
@@ -68,7 +62,7 @@ namespace Amanita.SaveSys.EditorUtils
             dropdown.choices = typeMap.Keys.ToList();
         }
 
-        public void PrepReaderAndWriterInstances()
+        public virtual void PrepReaderAndWriterInstances()
         {
             _readerInstanceMap.Clear();
             _writerInstanceMap.Clear();
@@ -79,6 +73,11 @@ namespace Amanita.SaveSys.EditorUtils
             GetOrGenerateAssetsFor(_readerInstanceMap, _typeCache.ReaderTypes);
             GetOrGenerateAssetsFor(_writerInstanceMap, _typeCache.WriterTypes);
         }
+
+        private readonly IDictionary<TypeChoiceInfo, ScriptableObject> _readerInstanceMap =
+            new Dictionary<TypeChoiceInfo, ScriptableObject>();
+        private readonly IDictionary<TypeChoiceInfo, ScriptableObject> _writerInstanceMap =
+            new Dictionary<TypeChoiceInfo, ScriptableObject>();
 
         private static readonly Type iReaderType = typeof(ISaveReader);
         private static readonly Type iWriterType = typeof(ISaveWriter);
@@ -128,7 +127,7 @@ namespace Amanita.SaveSys.EditorUtils
 
         private static readonly string space = " ", underScore = "_";
 
-        public void AssignSelection(string selectedChoice, bool isReader, Action<ScriptableObject> applyAction)
+        public virtual void AssignSelection(string selectedChoice, bool isReader, Action<ScriptableObject> applyAction)
         {
             if (string.IsNullOrEmpty(selectedChoice))
             {
@@ -140,7 +139,7 @@ namespace Amanita.SaveSys.EditorUtils
             applyAction(instance);
         }
 
-        public ScriptableObject GetInstanceForChoice(string choice, bool isReader)
+        public virtual ScriptableObject GetInstanceForChoice(string choice, bool isReader)
         {
             var typeMap = isReader ? _readerTypeMap : _writerTypeMap;
             var instanceMap = isReader ? _readerInstanceMap : _writerInstanceMap;
@@ -159,6 +158,14 @@ namespace Amanita.SaveSys.EditorUtils
             }
 
             return null;
+        }
+
+        public virtual void Dispose()
+        {
+            _readerDropdown = null;
+            _writerDropdown = null;
+            _readerInstanceMap.Clear();
+            _writerInstanceMap.Clear();
         }
     }
 

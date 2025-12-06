@@ -495,10 +495,14 @@ namespace SaveSystemTests
         {
             var fcUidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             foreach (var fc in testOnlyFlowcharts)
-                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            {
+                fc.OnTearDown();
+            }
 
             foreach (var fc in UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None))
-                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            {
+                fc.OnTearDown();
+            }
 
             var vsaRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
             foreach (var vsa in testOnlyVarSourceAssets)
