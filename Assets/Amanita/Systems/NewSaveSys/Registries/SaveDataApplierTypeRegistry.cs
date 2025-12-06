@@ -7,7 +7,7 @@ using Collections;
 
 namespace Amanita.SaveSys
 {
-    public class SaveDataApplierRegistry : MonoBehaviour
+    public class SaveDataApplierTypeRegistry : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         [InitializeOnLoadMethod]

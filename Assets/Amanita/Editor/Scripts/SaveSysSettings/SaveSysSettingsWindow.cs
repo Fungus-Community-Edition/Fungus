@@ -100,6 +100,7 @@ namespace Amanita.SaveSys.EditorUtils
 
             _dropdownController.Init(Root, _typeCache);
             _mainAppliersController.Init(Root, _typeCache);
+            _mainCodecsController.Init(Root, _typeCache);
             _uiRegistrar.Register(Root);
 
             _dropdownController.Refresh();
@@ -118,6 +119,7 @@ namespace Amanita.SaveSys.EditorUtils
 
         private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
         private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
+        private readonly SaveSysMainCodecsController _mainCodecsController = new SaveSysMainCodecsController();
 
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
 
@@ -136,14 +138,20 @@ namespace Amanita.SaveSys.EditorUtils
             _dropdownController.Refresh();
             _dropdownController.SetFrom(SysSettings);
             _mainAppliersController.BindToSettings(SysSettings);
-            
+            _mainCodecsController.BindToSettings(SysSettings);
+
             var storageSettingsView = _uiRegistrar.StorageSettings;
             storageSettingsView.SetValueWithoutNotify(SysSettings.StorageSettings);
 
+            #region Unsubs right before resubs
             _eventBinder.Toggle(false);
             _mainAppliersController.ToggleSubs(false);
+            _mainCodecsController.ToggleSubs(false);
             _eventBinder.Toggle(true);
             _mainAppliersController.ToggleSubs(true);
+            _mainCodecsController.ToggleSubs(true);
+            #endregion
+
             _synchronizer.ApplyAssetToUI();
         }
 
@@ -169,6 +177,7 @@ namespace Amanita.SaveSys.EditorUtils
         {
             _eventBinder.Toggle(false);
             _mainAppliersController.ToggleSubs(false);
+            _mainCodecsController.ToggleSubs(false);
             _synchronizer.Dispose();
             _dropdownController.Dispose();
             _uiIsReadyForAccess = false;
