@@ -42,7 +42,7 @@ namespace Amanita.Examples
             if (gazeCounter >= gazeTime && curCounter <= gazeTime)
             {
                 runBlockWhenGazed.Execute();
-                fungusBoolHasGazed.Set(true);
+                fungusBoolHasGazed.SetValue(true);
             }
         }
     }

@@ -14,8 +14,8 @@ namespace Amanita.SaveSys.VScripting
         "Save Loaded blocks depending on the marker's order. Lower number = earlier execution")]
     public class SaveLoadedEvent : VSEvent
     {
-        [VariableProperty(typeof(StringVariable), typeof(StringMuscariable))]
-        [SerializeReference] protected List<IVariable<string>> markerIDs = new List<IVariable<string>>();
+        [ContentTypeConstraint(typeof(string))]
+        [SerializeField] protected List<VariableReference> markerIDs = new List<VariableReference>();
 
         [Tooltip("If enabled, this event will respond to any save load regardless of marker ID.")]
         [SerializeField] protected bool respondToAny = false;
@@ -29,7 +29,9 @@ namespace Amanita.SaveSys.VScripting
                     return Array.Empty<string>();
                 }
 
-                return markerIDs.Select(elem => elem.Value).ToList().AsReadOnly();
+                return markerIDs.Select(elem => elem.GetValue<string>())
+                    .ToList()
+                    .AsReadOnly();
             }
         }
 
@@ -39,12 +41,35 @@ namespace Amanita.SaveSys.VScripting
             set { respondToAny = value; }
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            AssertOwnership();
+        }
+
+        protected virtual void AssertOwnership()
+        {
+            foreach (var idRef in markerIDs)
+            {
+                if (idRef != null)
+                {
+                    idRef.VarOwner = fChart;
+                }
+            }
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            AssertOwnership();
+        }
+
         public virtual bool HasAnyRegisteredIDs()
         {
             SaveSystem saveSys = SaveSystem.S;
             var registeredIDs = saveSys.ProgressMarkers.Select(elem => elem.Id).ToHashSet();
 
-            return markerIDs != null && markerIDs.Any(elem => registeredIDs.Contains(elem.Value));
+            return markerIDs != null && markerIDs.Any(elem => registeredIDs.Contains(elem.GetValue<string>()));
         }
 
         /// <summary>
@@ -61,9 +86,9 @@ namespace Amanita.SaveSys.VScripting
             SaveSystem saveSys = SaveSystem.S;
             for (int i = 0; i < markerIDs.Count; i++)
             {
-                IVariable<string> var = markerIDs[i];
+                VariableReference currentRef = markerIDs[i];
 
-                ProgressMarker marker = saveSys.GetProgressMarkerByID(var.Value);
+                ProgressMarker marker = saveSys.GetProgressMarkerByID(currentRef.GetValue<string>());
                 if (marker != null && marker.Order < result)
                 {
                     result = marker.Order;
@@ -84,8 +109,11 @@ namespace Amanita.SaveSys.VScripting
 #if UNITY_EDITOR
         public virtual void AddMarkerIDVariable(IVariable<string> var)
         {
-            markerIDs ??= new List<IVariable<string>>();
-            markerIDs.Add(var);
+            markerIDs ??= new List<VariableReference>();
+            VariableReference varRef = new VariableReference();
+            varRef.VarOwner = fChart;
+            varRef.Variable = var;
+            markerIDs.Add(varRef);
         }
 #endif
     }

@@ -14,6 +14,8 @@ using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.SceneManagement;
+using MoonSharp.Interpreter.Tree.Statements;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -364,7 +366,7 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
-            if (gameObject.scene.isLoaded == false)
+            if (!gameObject.scene.IsValid())
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
@@ -1895,6 +1897,11 @@ namespace Amanita.VScripting
             GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             fcReg.RemoveGuid(this.UniqueId);
             cachedFlowcharts.Remove(this);
+        }
+
+        public bool Contains(IVariable var)
+        {
+            return legacyVariables.Contains(var) || muscariables.Contains(var);
         }
 
 #endif
