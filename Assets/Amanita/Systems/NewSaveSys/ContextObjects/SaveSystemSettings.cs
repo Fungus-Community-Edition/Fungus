@@ -173,5 +173,15 @@ namespace Amanita.SaveSys
             #endregion
             mainCodecs[index] = so;
         }
+
+        public virtual void RemoveMainApplier(ISaveDataApplier applier)
+        {
+            mainAppliers.Remove(applier as ScriptableObject);
+        }
+
+        public virtual void RemoveMainCodec(IMainSaveCodec codec)
+        {
+            mainCodecs.Remove(codec as ScriptableObject);
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace Amanita.SaveSys.EditorUtils
         private readonly Func<SaveSystemSettings, IList> _collectionSelector;
         private readonly Action<SaveSystemSettings, T, int> _setAtIndex;
         private readonly Action<SaveSystemSettings, T> _addItem;
+        private readonly Action<SaveSystemSettings, T> _removeItem;
 
         private ListView _listView;
         private SaveSysSettingsTypeCache _typeCache;
@@ -25,23 +26,20 @@ namespace Amanita.SaveSys.EditorUtils
         /// SetAtIndex: Given the SaveSystemSettings, an instance of T, and an index, sets the item at that index.
         /// AddItem: Given the SaveSystemSettings and an instance of T, adds it to the collection.
         /// </summary>
-        /// <param name="listViewName"></param>
-        /// <param name="choicesSelector"></param>
-        /// <param name="collectionSelector"></param>
-        /// <param name="setAtIndex"></param>
-        /// <param name="addItem"></param>
         public SaveSysListController(
             string listViewName,
             Func<SaveSysSettingsTypeCache, IReadOnlyDictionary<string, T>> choicesSelector,
             Func<SaveSystemSettings, IList> collectionSelector,
             Action<SaveSystemSettings, T, int> setAtIndex,
-            Action<SaveSystemSettings, T> addItem)
+            Action<SaveSystemSettings, T> addItem,
+            Action<SaveSystemSettings, T> removeItem)
         {
             _listViewName = listViewName;
             _choicesSelector = choicesSelector;
             _collectionSelector = collectionSelector;
             _setAtIndex = setAtIndex;
             _addItem = addItem;
+            _removeItem = removeItem;
         }
 
         public void Init(VisualElement root, SaveSysSettingsTypeCache typeCache)
@@ -73,6 +71,7 @@ namespace Amanita.SaveSys.EditorUtils
                 _listView.unbindItem += OnUnbindItem;
                 _listView.destroyItem += OnDestroyItem;
                 _listView.canStartDrag += OnCanStartDrag;
+                _listView.itemsRemoved += OnItemRemoved;
             }
             else
             {
@@ -81,8 +80,11 @@ namespace Amanita.SaveSys.EditorUtils
                 _listView.unbindItem -= OnUnbindItem;
                 _listView.destroyItem -= OnDestroyItem;
                 _listView.canStartDrag -= OnCanStartDrag;
+                _listView.itemsRemoved -= OnItemRemoved;
             }
         }
+
+        
 
         private VisualElement OnMakeItem()
         {
@@ -156,6 +158,15 @@ namespace Amanita.SaveSys.EditorUtils
 
             EditorUtility.SetDirty(_sysSettings);
             AssetDatabase.SaveAssetIfDirty(_sysSettings);
+        }
+
+        private void OnItemRemoved(IEnumerable<int> indexesOfWhatWasRemoved)
+        {
+            // We assume that only one thing can be removed at a time
+            int index = indexesOfWhatWasRemoved.First();
+            T whatToRemove = (T)_collectionSelector(_sysSettings)[index];
+            _removeItem(_sysSettings, whatToRemove);
+
         }
     }
 }
