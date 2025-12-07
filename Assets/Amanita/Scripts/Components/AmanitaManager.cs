@@ -7,6 +7,7 @@ using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -256,6 +257,8 @@ namespace Amanita
                 return;
             }
             _s = this;
+
+            VariableRegistry = new VariableRegistry(this);
 
             EnsureCurrentFlowchartUidsAreRegistered();
             void EnsureCurrentFlowchartUidsAreRegistered()
@@ -529,7 +532,7 @@ namespace Amanita
 
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
-
+        public VariableRegistry VariableRegistry { get; private set; }
         private void OnValidate()
         {
             // Best make sure to log errors and such when this has any screwy fields
@@ -541,6 +544,29 @@ namespace Amanita
             {
                 Debug.LogError("AmanitaManager has null global variable sources.");
             }
+
+            EnsureVariableRegistryIsReady();
+
+        }
+
+        private void EnsureVariableRegistryIsReady()
+        {
+            if (VariableRegistry == null)
+            {
+                VariableRegistry = new VariableRegistry(this);
+                var selected = Selection.activeGameObject;
+                Flowchart currentFc = null;
+                if (selected != null)
+                {
+                    selected.TryGetComponent(out currentFc);
+                }
+                VariableRegistry.Rebuild(currentFc);
+            }
+        }
+
+        private void OnEnable()
+        {
+            EnsureVariableRegistryIsReady();
         }
     }
 }

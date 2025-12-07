@@ -31,7 +31,7 @@ namespace Amanita.VScripting
             {
                 if (value == null)
                 {
-                    itemId = 0;
+                    itemId = Muscariable.InvalidID;
                 }
                 else
                 {

@@ -14,7 +14,7 @@ namespace Amanita.SaveSys.VScripting
         "Save Loaded blocks depending on the marker's order. Lower number = earlier execution")]
     public class SaveLoadedEvent : VSEvent
     {
-        [VarTypeConstraint(typeof(StringMuscariable))]
+        [ContentTypeConstraint(typeof(string))]
         [SerializeField] protected List<VariableReference> markerIDs = new List<VariableReference>();
 
         [Tooltip("If enabled, this event will respond to any save load regardless of marker ID.")]

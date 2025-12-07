@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Amanita.VScripting
 {
-    public class VarTypeConstraintAttribute : PropertyAttribute
+    public class ContentTypeConstraintAttribute : PropertyAttribute
     {
-        public VarTypeConstraintAttribute(params System.Type[] types)
+        public ContentTypeConstraintAttribute(params System.Type[] types)
         {
             AllowedTypes = types;
         }

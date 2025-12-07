@@ -20,33 +20,46 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUI.BeginProperty(position, label, property);
 
             UnityObj targetObject = property.serializedObject.targetObject;
-            Type[] allowedTypes = GetAllowedTypes(fieldInfo);
-            List<IVariable> candidates = CollectVariables(targetObject, allowedTypes);
+            Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
 
-            string[] options = candidates.Select(varEl => varEl.Key)
+            var ammieManager = AmanitaManager.S;
+            if (ammieManager == null)
+            {
+                EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
+                EditorGUI.EndProperty();
+                return;
+            }
+
+            var varRegistry = ammieManager.VariableRegistry;
+            var validVarsInScene = varRegistry.GetVarsOfTypes(allowedContentTypes);
+            
+            List<IVariable> candidates = validVarsInScene.Values.ToList();
+            string[] options = validVarsInScene.Keys
                 .Prepend("<None>")
                 .ToArray();
 
             SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
             int currentItemId = itemIdProp.intValue;
             int currentIndex = 0;
-            if (currentItemId != 0)
+            if (currentItemId != Muscariable.InvalidID)
             {
                 int found = candidates.FindIndex(varEl => varEl.ItemId == currentItemId);
-                if (found >= 0) currentIndex = found + 1;
+                if (found >= 0)
+                {
+                    currentIndex = found + 1;
+                }
             }
-
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
 
             if (newIndex == 0)
             {
-                itemIdProp.intValue = 0;
+                itemIdProp.intValue = Muscariable.InvalidID;
             }
             else
             {
                 IVariable chosen = candidates[newIndex - 1];
+                // ^Need the -1 because of the <None> option at index 0
                 itemIdProp.intValue = chosen.ItemId;
-                // If you want to persist VarOwner, mark it [SerializeField] and set it here too
             }
 
             property.serializedObject.ApplyModifiedProperties();
@@ -60,47 +73,17 @@ namespace Amanita.VScripting.EditorUtils
 
         private static Type[] GetAllowedTypes(FieldInfo fieldInfo)
         {
-            var attr = fieldInfo.GetCustomAttribute<VarTypeConstraintAttribute>();
+            Type[] result;
+            var attr = fieldInfo.GetCustomAttribute<ContentTypeConstraintAttribute>();
             if (attr != null && attr.AllowedTypes != null && attr.AllowedTypes.Count > 0)
-                return attr.AllowedTypes.ToArray();
-            return Array.Empty<Type>();
-        }
-
-        private static List<IVariable> CollectVariables(UnityEngine.Object context, Type[] allowedTypes)
-        {
-            Flowchart fChart = context as Flowchart;
-            if (fChart == null)
             {
-                var comp = context as Component;
-                if (comp != null)
-                    fChart = comp.GetComponentInParent<Flowchart>();
+                result = attr.AllowedTypes.ToArray();
             }
-
-            if (fChart == null)
+            else
             {
-                return new List<IVariable>();
+                result = Array.Empty<Type>();
             }
-
-            var vars = fChart.Variables;
-            bool goForAnyType = allowedTypes.Length == 0;
-            if (goForAnyType)
-            {
-                return vars.ToList();
-            }
-
-            List<IVariable> result = vars.Where(varEl => IsTypeAllowed(varEl, allowedTypes)).ToList();
             return result;
-        }
-
-        private static bool IsTypeAllowed(IVariable variable, Type[] allowedTypes)
-        {
-            if (allowedTypes.Length == 0)
-            {
-                return true;
-            }
-            Type varType = variable.GetType();
-            bool result = allowedTypes.Any(typeEl => typeEl.IsAssignableFrom(varType));
-            return result;  
         }
     }
 }
