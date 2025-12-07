@@ -13,7 +13,6 @@ namespace Amanita.VScripting
         [InitializeOnLoadMethod]
         public static void DiscoverAndRegister()
         {
-            Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
             RefreshVariableTypeRegistry();
             RefreshVariableDataTypeRegistry();
 

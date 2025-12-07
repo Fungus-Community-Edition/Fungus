@@ -289,12 +289,6 @@ namespace Amanita.VScripting
             return null;
         }
 
-        public virtual bool ContainsVar(IVariable var)
-        {
-            EnsureVariablesList();
-            return variables.ContainsReference(var);
-        }
-
         protected virtual void OnEnable()
         {
             EnsureVariablesList();
@@ -446,6 +440,12 @@ namespace Amanita.VScripting
 #endif
             }
         }
+
+        public bool Contains(IVariable var)
+        {
+            EnsureVariablesList();
+            return variables.ContainsReference(var);
+        }
     }
 
     public interface IVariableSource : IHasUniqueID
@@ -456,6 +456,7 @@ namespace Amanita.VScripting
         IVariable AddVariable(IVariable toAdd);
         void RemoveVariable(IVariable toRemove);
         IVariable GetVariable(byte itemId);
+        bool Contains(IVariable var);
     }
 
     public interface IHasUniqueID

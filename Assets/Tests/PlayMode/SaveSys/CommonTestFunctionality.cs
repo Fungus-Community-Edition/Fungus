@@ -241,6 +241,7 @@ namespace SaveSystemTests
             flowchart = testScene.GetComponentInChildren<Flowchart>(true);
             if (flowchart == null)
                 throw new Exception("Flowchart component not found in test scene prefab.");
+            flowchart.IsTestOnly = true;
             flowchart.gameObject.SetActive(true);
 
             // Variables
@@ -298,7 +299,9 @@ namespace SaveSystemTests
             toDestroyInTearDown.Add(saveReader);
             toDestroyInTearDown.Add(storageSettings);
             if (AmanitaManager.S != null)
+            {
                 toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
+            }
 
             // Flowchart may spawn an EventSystem
             foreach (var evt in UnityObj.FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
@@ -492,10 +495,14 @@ namespace SaveSystemTests
         {
             var fcUidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             foreach (var fc in testOnlyFlowcharts)
-                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            {
+                fc.OnTearDown();
+            }
 
             foreach (var fc in UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None))
-                fcUidRegistry.RemoveGuid(fc.UniqueId);
+            {
+                fc.OnTearDown();
+            }
 
             var vsaRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
             foreach (var vsa in testOnlyVarSourceAssets)
@@ -520,10 +527,10 @@ namespace SaveSystemTests
                 if (!Directory.Exists(root)) continue;
 
                 var allPaths = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith(".save") ||
-                                f.EndsWith(".save.meta") ||
-                                f.EndsWith(".save.bak") ||
-                                f.EndsWith(".save.bak.meta"))
+                    .Where(path => path.EndsWith(".save") ||
+                                path.EndsWith(".save.meta") ||
+                                path.EndsWith(".save.bak") ||
+                                path.EndsWith(".save.bak.meta"))
                     .ToList();
 
                 foreach (var filePath in allPaths)

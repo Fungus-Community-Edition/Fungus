@@ -9,8 +9,7 @@ using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "VariableSourceAssetSaveCodec",
-        menuName = "Amanita/SaveSys/Codecs/VSASaveCodec")]
+    [SaveSysDisplayName("VSA Codec (Amanita Default)")]
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {

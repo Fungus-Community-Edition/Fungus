@@ -37,6 +37,15 @@ namespace Amanita.VScripting.EditorUtils
         protected void OnEnable()
         {
             ClearEditors();
+            var ammieManager = AmanitaManager.S;
+            Flowchart currentFc = FlowchartWindow.GetFlowchart();
+            if (ammieManager != null && currentFc != null)
+            {
+                Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
+                var varRegistry = ammieManager.VariableRegistry;
+                varRegistry.Rebuild(currentFc);
+                // ^For cases where the fc the FlowchartWindow is handling is not selected
+            }
         }
 
         protected void ClearEditors()
@@ -78,15 +87,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            //EnsureABlockIsSelected();
-            //void EnsureABlockIsSelected()
-            //{
-            //    if (flowchart.SelectedBlockCount == 0)
-            //    {
-            //        flowchart.AddToSelection(block);
-            //    }
-            //}
-            
             EnsureBlockEditorTargetsOurBlock();
             void EnsureBlockEditorTargetsOurBlock()
             {

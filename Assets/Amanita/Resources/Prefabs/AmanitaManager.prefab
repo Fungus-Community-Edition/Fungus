@@ -45,17 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2440eed014d8fdd4c9829bbb119d4f24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCodecs:
-  - {fileID: 11400000, guid: edbafabae260b9446aa606094cc7bf10, type: 2}
-  - {fileID: 11400000, guid: bd16cc194d7026b429cbe1844f238281, type: 2}
-  - {fileID: 11400000, guid: c7199b1400feabb48bfcf91deaa7ed24, type: 2}
-  mainAppliers:
-  - {fileID: 11400000, guid: 6752589e7b619374da687ef8a5859c26, type: 2}
-  - {fileID: 11400000, guid: 2f52580e6036f5e46842716c5d19f3e2, type: 2}
-  - {fileID: 11400000, guid: 47e270fc0062d754e83432e60f4e5271, type: 2}
-  saveWriter: {fileID: 11400000, guid: aeb4d82e775666541ac5493bf752f594, type: 2}
-  saveReader: {fileID: 11400000, guid: eebf7b36e257e6b4493dd574b3bf0c3a, type: 2}
-  whereSavesAreStored: 1
 --- !u!114 &7102582836988295032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalVariables:
-  - {fileID: 11400000, guid: c13d3265b37cdbd429123273e44d468e, type: 2}
+  - {fileID: 11400000, guid: 74b46277754bc6141985690e88db95d1, type: 2}
   tweenAnchorHolder: {fileID: 0}
 --- !u!1 &3624992616929410890
 GameObject:

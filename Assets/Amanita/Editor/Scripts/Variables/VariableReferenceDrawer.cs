@@ -1,194 +1,89 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
-    /// Custom drawer for the VariableReference, allows for selecting a target variable.
-    /// Supports both legacy Variable (MonoBehaviour) and Muscariable (SerializeReference IVariable).
+    /// Custom drawer for VariableReference, allows selecting a target variable.
+    /// Supports filtering via VarTypeConstraint.
     /// </summary>
     [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
     {
-        public Flowchart lastFlowchart;
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (property == null)
+            EditorGUI.BeginProperty(position, label, property);
+
+            UnityObj targetObject = property.serializedObject.targetObject;
+            Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
+
+            var ammieManager = AmanitaManager.S;
+            if (ammieManager == null)
             {
-                Debug.LogWarning("VariableReferenceDrawer ONGUI has no property to work with. Exiting early.");
-                return;
-            }
-
-            if (property.serializedObject == null || property.serializedObject.targetObject == null)
-            {
-                EditorGUI.LabelField(position, label, new GUIContent("Target lost"));
-                return;
-            }
-
-            var beginLabel = EditorGUI.BeginProperty(position, label, property);
-            var startPos = position;
-            position = EditorGUI.PrefixLabel(position, beginLabel);
-            position.height = EditorGUIUtility.singleLineHeight;
-
-            // Prefer managed IVariable path; legacy fallback supported
-            var managedVarProp = property.FindPropertyRelative("variable");
-            var legacyVarProp = property.FindPropertyRelative("legacyVariable");
-
-            if (managedVarProp == null && legacyVarProp == null)
-            {
-                EditorGUI.LabelField(position, label, new GUIContent("Invalid VariableReference (missing fields)"));
+                EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
                 EditorGUI.EndProperty();
                 return;
             }
 
-            bool isManaged = managedVarProp != null &&
-                             managedVarProp.propertyType == SerializedPropertyType.ManagedReference;
+            var varRegistry = ammieManager.VariableRegistry;
+            var validVarsInScene = varRegistry.GetVarsOfTypes(allowedContentTypes);
+            
+            List<IVariable> candidates = validVarsInScene.Values.ToList();
+            string[] options = validVarsInScene.Keys
+                .Prepend("<None>")
+                .ToArray();
 
-            Variable legacyVar = null;
-            IVariable selectedIVar = null;
-
-            if (isManaged)
+            SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
+            int currentItemId = itemIdProp.intValue;
+            int currentIndex = 0;
+            if (currentItemId != Muscariable.InvalidID)
             {
-                selectedIVar = managedVarProp.managedReferenceValue as IVariable;
-            }
-            else if (legacyVarProp != null)
-            {
-                legacyVar = legacyVarProp.objectReferenceValue as Variable;
-            }
-
-            // Auto-detect owning flowchart once
-            if (lastFlowchart == null)
-            {
-                if (isManaged && selectedIVar != null)
+                int found = candidates.FindIndex(varEl => varEl.ItemId == currentItemId);
+                if (found >= 0)
                 {
-                    var owner = ResolveOwnerFlowchart(selectedIVar);
-                    if (owner != null) lastFlowchart = owner;
-                }
-                else if (!isManaged && legacyVar != null)
-                {
-                    lastFlowchart = legacyVar.GetComponent<Flowchart>();
+                    currentIndex = found + 1;
                 }
             }
+            int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
 
-            // Flowchart selector
-            lastFlowchart = EditorGUI.ObjectField(position, lastFlowchart, typeof(Flowchart), true) as Flowchart;
-            position.y += EditorGUIUtility.singleLineHeight;
-
-            // If managed reference selected and it belongs to a different flowchart and is Private, clear it.
-            if (isManaged && selectedIVar != null && lastFlowchart != null)
+            if (newIndex == 0)
             {
-                var owner = ResolveOwnerFlowchart(selectedIVar);
-                if (owner != null &&
-                    !ReferenceEquals(owner, lastFlowchart) &&
-                    selectedIVar.Scope == VariableScope.Private)
-                {
-                    managedVarProp.managedReferenceValue = null;
-                    selectedIVar = null;
-                }
-            }
-
-            if (lastFlowchart != null)
-            {
-                var popupRect = startPos;
-                popupRect.y = position.y;
-
-                string typeName = isManaged
-                    ? (selectedIVar != null ? selectedIVar.GetType().Name : "No Var Selected")
-                    : (legacyVar != null ? legacyVar.GetType().Name : "No Var Selected");
-
-                var prefixLabel = new GUIContent(typeName);
-                EditorGUI.indentLevel++;
-                var propToEdit = isManaged ? managedVarProp : legacyVarProp;
-
-                VariableEditor.VariableField(
-                    propToEdit,
-                    prefixLabel,
-                    lastFlowchart,
-                    "<None>",
-                    null,
-                    (popupLabel, selectedIndex, displayedOptions) =>
-                        EditorGUI.Popup(popupRect, popupLabel, selectedIndex, displayedOptions)
-                );
-                EditorGUI.indentLevel--;
+                itemIdProp.intValue = Muscariable.InvalidID;
             }
             else
             {
-                EditorGUI.PrefixLabel(position, new GUIContent("Flowchart Required"));
+                IVariable chosen = candidates[newIndex - 1];
+                // ^Need the -1 because of the <None> option at index 0
+                itemIdProp.intValue = chosen.ItemId;
             }
 
-            // Commit changes defensively
-            managedVarProp?.serializedObject?.ApplyModifiedProperties();
-            legacyVarProp?.serializedObject?.ApplyModifiedProperties();
-            property.serializedObject?.ApplyModifiedProperties();
-
+            property.serializedObject.ApplyModifiedProperties();
             EditorGUI.EndProperty();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUIUtility.singleLineHeight * 2f;
+            return EditorGUIUtility.singleLineHeight;
         }
 
-        private static Flowchart ResolveOwnerFlowchart(IVariable varToCheckFor)
+        private static Type[] GetAllowedTypes(FieldInfo fieldInfo)
         {
-            if (varToCheckFor == null) return null;
-
-            // Direct owner
-            if (varToCheckFor.Owner is Flowchart fOwner) return fOwner;
-
-            // Parent link on Muscariable
-            if (varToCheckFor is Muscariable m && m.ParentFlowchart != null) return m.ParentFlowchart;
-
-            var list = Flowchart.CachedFlowcharts;
-
-            // Prefer ItemId + Key match to avoid cross-flow collisions (ItemId restarts per Flowchart)
-            try
+            Type[] result;
+            var attr = fieldInfo.GetCustomAttribute<ContentTypeConstraintAttribute>();
+            if (attr != null && attr.AllowedTypes != null && attr.AllowedTypes.Count > 0)
             {
-                int id = varToCheckFor.ItemId;
-                string key = varToCheckFor.Key;
-
-                if (id != 0 && !string.IsNullOrEmpty(key))
-                {
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        var fChart = list[i];
-                        var match = fChart.Variables.FirstOrDefault(varEl =>
-                            varEl != null &&
-                            varEl.ItemId == id &&
-                            !string.IsNullOrEmpty(varEl.Key) &&
-                            varEl.Key == key);
-                        if (match != null) return fChart;
-                    }
-                }
+                result = attr.AllowedTypes.ToArray();
             }
-            catch { /* ignore */ }
-
-            // Fallback: uniquely match by Key across flowcharts (only if unique)
-            try
+            else
             {
-                if (!string.IsNullOrEmpty(varToCheckFor.Key))
-                {
-                    Flowchart unique = null;
-                    int hits = 0;
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        var fChart = list[i];
-                        bool has = fChart.Variables.Any(varEl => varEl != null && varEl.Key == varToCheckFor.Key);
-                        if (has)
-                        {
-                            unique = fChart;
-                            hits++;
-                            if (hits > 1) break;
-                        }
-                    }
-                    if (hits == 1) return unique;
-                }
+                result = Array.Empty<Type>();
             }
-            catch { /* ignore */ }
-
-            return null;
+            return result;
         }
     }
 }

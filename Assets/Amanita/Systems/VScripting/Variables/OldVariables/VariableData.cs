@@ -83,8 +83,6 @@ namespace Amanita.VScripting
 
         protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
 
-        
-
         public static implicit operator TValue(VariableData<TValue> someData)
         {
             someData.Refresh();

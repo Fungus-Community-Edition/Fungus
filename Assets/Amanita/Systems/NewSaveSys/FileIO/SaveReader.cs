@@ -12,9 +12,18 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor, ISaveReader
     {
-        [SerializeField] protected ScriptableObject decryptor;
+        [SerializeField] private ScriptableObject decryptor;
+        public ScriptableObject Decryptor
+        {
+            get => decryptor;
+            set
+            {
+                decryptor = value;
+                usableDecryptor = decryptor as IDecryptor;
+            }
+        }
 
-        protected FileEncoding actualEncoding = FileEncoding.UTF8;
+        private readonly FileEncoding actualEncoding = FileEncoding.UTF8;
 
         protected override void OnEnable()
         {
@@ -44,8 +53,8 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected static Decryptor defaultDecryptor;
-        protected IDecryptor usableDecryptor;
+        private static Decryptor defaultDecryptor;
+        private IDecryptor usableDecryptor;
 
         public virtual async Task<ISaveMetaData> ReadMetadataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
@@ -55,7 +64,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected virtual async Task PrepDecryptionRequestAsync(SaveReadRequest request,
+        private async Task PrepDecryptionRequestAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
             string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
@@ -72,9 +81,9 @@ namespace Amanita.SaveSys
             return await File.ReadAllBytesAsync(filePath, cancelToken).ConfigureAwait(false);
         }
 
-        protected BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
+        private readonly BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
 
-        protected virtual void Validate(string filePath)
+        private void Validate(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -152,7 +161,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected virtual void PrepDecryptionRequest(SaveReadRequest request)
+        private void PrepDecryptionRequest(SaveReadRequest request)
         {
             string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             Validate(filePath);
@@ -171,7 +180,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        
     }
 
     public class BaseDecryptionRequest
@@ -189,6 +197,9 @@ namespace Amanita.SaveSys
 
         CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null);
         Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
+            CancellationToken cancelToken = default);
+
+        Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
             CancellationToken cancelToken = default);
     }
 

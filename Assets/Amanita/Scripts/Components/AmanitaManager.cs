@@ -7,6 +7,7 @@ using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -23,11 +24,12 @@ namespace Amanita
         private static void MaintainStatics()
         {
             Debug.Log("AmanitaManager: MaintainStatics called");
-            ShadowDB = Resources.Load<ShadowDatabase>("ShadowDatabase");
+            EnsureShadowDbAvailable();
+            EnsureGuidRegistriesAvailable();
         }
 #endif
 
-        [SerializeField] private List<VariableSourceAsset> globalVariables;
+        [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
@@ -84,15 +86,14 @@ namespace Amanita
                 return existing;
             }
 
-            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>(
-                typeof(T).Name + "GuidRegistry",
-                "GuidRegistries");
+            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>("GuidRegistries", 
+                typeof(T).Name + "GuidRegistry");
             result.AddTypeStoredFor<T>();
             typeToRegistryMap[typeof(T)] = result;
             return result;
         }
 
-        private static IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
+        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
             new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
         {
         };
@@ -123,7 +124,7 @@ namespace Amanita
         }
 
         static DefaultTweenAdapter _defaultTweener;
-        static string pathToAdapter = "DefaultTweenAdapter";
+        static readonly string pathToAdapter = "DefaultTweenAdapter";
 
         volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to the multi-thread.
         private static readonly object _ensureLock = new object();
@@ -132,14 +133,7 @@ namespace Amanita
         {
             get
             {
-                if (shadowDb == null)
-                {
-                    shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase");
-                    if (shadowDb == null)
-                    {
-                        Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
-                    }
-                }
+                EnsureShadowDbAvailable();
                 return shadowDb;
             }
             private set
@@ -147,7 +141,22 @@ namespace Amanita
                 shadowDb = value;
             }
         }
+
+        private static void EnsureShadowDbAvailable()
+        {
+            shadowDb = SOUtils.GetOrCreateScriptableObject<ShadowDatabase>("", "ShadowDatabase");
+            if (shadowDb == null)
+            {
+                Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
+            }
+        }
         private static ShadowDatabase shadowDb;
+
+        private static void EnsureGuidRegistriesAvailable()
+        {
+            GetOrAddGuidRegistryFor<Flowchart>();
+            GetOrAddGuidRegistryFor<VariableSourceAsset>();
+        }
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
@@ -248,6 +257,8 @@ namespace Amanita
                 return;
             }
             _s = this;
+
+            VariableRegistry = new VariableRegistry(this);
 
             EnsureCurrentFlowchartUidsAreRegistered();
             void EnsureCurrentFlowchartUidsAreRegistered()
@@ -519,9 +530,43 @@ namespace Amanita
             _adapterAnchors.Remove(key);
         }
 
-        private readonly static string anchorNameSuffix = "_TweenAnchor";
-
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
+        public VariableRegistry VariableRegistry { get; private set; }
+        private void OnValidate()
+        {
+            // Best make sure to log errors and such when this has any screwy fields
+            if (globalVariables == null)
+            {
+                Debug.LogError("AmanitaManager has no globalVariables list assigned.");
+            }
+            else if (globalVariables.Any(elem => elem == null))
+            {
+                Debug.LogError("AmanitaManager has null global variable sources.");
+            }
+
+            EnsureVariableRegistryIsReady();
+
+        }
+
+        private void EnsureVariableRegistryIsReady()
+        {
+            if (VariableRegistry == null)
+            {
+                VariableRegistry = new VariableRegistry(this);
+                var selected = Selection.activeGameObject;
+                Flowchart currentFc = null;
+                if (selected != null)
+                {
+                    selected.TryGetComponent(out currentFc);
+                }
+                VariableRegistry.Rebuild(currentFc);
+            }
+        }
+
+        private void OnEnable()
+        {
+            EnsureVariableRegistryIsReady();
+        }
     }
 }

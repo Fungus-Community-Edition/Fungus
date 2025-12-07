@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Amanita.SaveSys
 {
     public class SaveDiskAccessor : ScriptableObject, ISaveFolderPathResolver,
-        ISaveFilePathResolver, ISaveSlotPathResolver
+        ISaveFilePathResolver, ISaveSlotPathResolver, IHasConfigurableSaveSlotPathResolver
     {
         [SerializeField] protected SaveStorageSettings storageSettings;
 

@@ -10,8 +10,7 @@ using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
-    [CreateAssetMenu(fileName = "MyceliaudioSaveCodec",
-        menuName = "Amanita/SaveSys/Codecs/MyceliaudioSaveCodec")]
+    [SaveSysDisplayName("Myceliaudio Codec (Amanita Default)")]
     public class MyceliaudioSaveCodec : SaveCodec<AudioSystem, MyceliaudioSaveData>, IMainSaveCodec
     {
         // TODO: Support multiple BGM channels

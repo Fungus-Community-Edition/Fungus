@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
-        "AmanitaEditor",
+        "Amanita.Core.Editor",
         "AmanitaLegacyCollection",
         "Amanita.Core"
     ],

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: ffc98e0d-2421-46ab-a629-c0b7f51ef183
+  uniqueId: 641db096-9308-4e34-831e-a1e8f39db73c
   variables:
   - rid: 7903258335965610039
   - rid: 7903258335965610040
@@ -21,7 +21,7 @@ MonoBehaviour:
   - rid: 7903258335965610042
   - rid: 7903258335965610043
   - rid: 7903258335965610044
-  _nextVarID: 6
+  _nextVarID: 7
   references:
     version: 2
     RefIds:
@@ -30,7 +30,7 @@ MonoBehaviour:
       data:
         scope: 0
         key: Naruto
-        itemID: 0
+        itemID: 6
         _ownerIdIndex: -1
         value: Believe it!
     - rid: 7903258335965610040

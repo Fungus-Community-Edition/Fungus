@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05c64d37223753429d9157702a86582, type: 3}
   m_Name: Generated_Flowchart_Applier_(Amanita_Default)
   m_EditorClassIdentifier: 
-  order: 0
+  order: 1
