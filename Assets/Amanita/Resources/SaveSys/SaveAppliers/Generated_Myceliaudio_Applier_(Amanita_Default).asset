@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a21431d0fce1804992856963d895b27, type: 3}
   m_Name: Generated_Myceliaudio_Applier_(Amanita_Default)
   m_EditorClassIdentifier: 
-  order: 0
+  order: 2

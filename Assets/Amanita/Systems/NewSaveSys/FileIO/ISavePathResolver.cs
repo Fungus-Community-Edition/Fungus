@@ -12,6 +12,7 @@ namespace Amanita.SaveSys
         string GetSaveFolderPath(object input);
     }
 
+
     public interface ISaveFolderPathResolver<TInput> : ISaveFolderPathResolver
     {
         string GetSaveFolderPath(TInput input);
@@ -59,6 +60,11 @@ namespace Amanita.SaveSys
     public interface IConfigurableSaveSlotPathResolver : IConfigurableSavePathResolver, ISaveSlotPathResolver
     {
         new string NumberFormat { get; set; }
+    }
+
+    public interface IHasConfigurableSaveSlotPathResolver
+    {
+        IConfigurableSaveSlotPathResolver PathResolver { get; set; }
     }
 
     public interface IConfigurableSaveSlotPathResolver<TInput> : IConfigurableSavePathResolver<TInput>, IConfigurableSaveSlotPathResolver, ISaveSlotPathResolver<TInput>

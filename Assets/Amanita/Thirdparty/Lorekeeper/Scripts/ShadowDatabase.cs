@@ -128,6 +128,7 @@ namespace Lorekeeper
 
         public virtual void ClearAllAssets()
         {
+            Debug.Log("[ShadowDatabase]: Clearing all assets from Shadow Database.");
             RefreshAsNeeded();
 
             foreach (var list in _assetDictionary.Values)

@@ -92,7 +92,7 @@ namespace Amanita
             return result;
         }
 
-        private static IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
+        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
             new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
         {
         };
@@ -123,7 +123,7 @@ namespace Amanita
         }
 
         static DefaultTweenAdapter _defaultTweener;
-        static string pathToAdapter = "DefaultTweenAdapter";
+        static readonly string pathToAdapter = "DefaultTweenAdapter";
 
         volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to the multi-thread.
         private static readonly object _ensureLock = new object();
@@ -526,8 +526,6 @@ namespace Amanita
             }
             _adapterAnchors.Remove(key);
         }
-
-        private readonly static string anchorNameSuffix = "_TweenAnchor";
 
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();

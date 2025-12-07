@@ -3,8 +3,8 @@
     <ui:Label text="Save Sys Settings" name="TopLabel" />
     <ui:DropdownField label="Save Reader" name="SaveReaderDropdown" class="dropdown" />
     <ui:DropdownField label="Save Writer" name="SaveWriterDropdown" class="dropdown" />
-    <ui:ListView name="MainCodecs" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Codecs" virtualization-method="FixedHeight" horizontal-scrolling="true" fixed-item-height="30" class="save-list-view" />
-    <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="true" fixed-item-height="30" class="save-list-view" />
+    <ui:ListView name="MainCodecs" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Codecs" virtualization-method="FixedHeight" horizontal-scrolling="false" fixed-item-height="30" reorder-mode="Animated" class="save-list-view" />
+    <ui:ListView name="MainAppliers" reorderable="true" show-foldout-header="true" show-add-remove-footer="true" header-title="Main Appliers" virtualization-method="FixedHeight" horizontal-scrolling="false" fixed-item-height="30" reorder-mode="Animated" class="save-list-view" />
     <uie:ObjectField label="Storage Settings" name="StorageSettings" type="Amanita.SaveSys.SaveStorageSettings, Amanita.Core" />
     <ui:Button text="Refresh" name="RefreshButton" />
 </ui:UXML>

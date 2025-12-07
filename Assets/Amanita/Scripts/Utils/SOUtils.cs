@@ -17,7 +17,12 @@ namespace Amanita
             string assetName)
         {
             // Try to load from Resources
-            var result = Resources.Load<ScriptableObject>($"{resourcesSubfolderPath}/{assetName}");
+            string fullPath = $"{resourcesSubfolderPath}/{assetName}";
+            if (fullPath.StartsWith("/")) // For when resourcesSubfolderPath is empty
+            {
+                fullPath = fullPath.Substring(1);
+            }
+            var result = Resources.Load<ScriptableObject>(fullPath);
             if (result != null)
             {
                 return result;

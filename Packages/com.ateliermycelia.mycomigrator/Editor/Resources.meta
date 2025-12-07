@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Packages/com.ateliermycelia.mycomigrator/Editor/Resources.meta
 guid: 3076097b34d19ca4c80a49262973a463
+========
+guid: cf837938766d06b4b9984b8e64066821
+>>>>>>>> newSaveSystem:Assets/Resources/SaveSys.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

@@ -198,6 +198,9 @@ namespace Amanita.SaveSys
         CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null);
         Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default);
+
+        Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+            CancellationToken cancelToken = default);
     }
 
 }

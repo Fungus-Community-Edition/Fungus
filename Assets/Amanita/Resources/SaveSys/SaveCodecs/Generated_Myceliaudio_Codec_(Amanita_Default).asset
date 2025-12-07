@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cbc348937ce8ff49ad2dc2285e828a3, type: 3}
-  m_Name: VariableSourceAssetSaveCodec
+  m_Script: {fileID: 11500000, guid: 1a571c38b02e2274aa476e39d99a5326, type: 3}
+  m_Name: Generated_Myceliaudio_Codec_(Amanita_Default)
   m_EditorClassIdentifier: 
   order: 0
   subCodecs: []
-  varCodecs: []

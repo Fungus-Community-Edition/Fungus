@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCodecs:
-  - {fileID: 11400000, guid: edbafabae260b9446aa606094cc7bf10, type: 2}
-  - {fileID: 11400000, guid: bd16cc194d7026b429cbe1844f238281, type: 2}
-  - {fileID: 11400000, guid: c7199b1400feabb48bfcf91deaa7ed24, type: 2}
+  - {fileID: 11400000, guid: 2084b83003802b04e9e00fdc40e6fc1b, type: 2}
+  - {fileID: 11400000, guid: 48fb1c7e4487735449a6dd7bf0affdc6, type: 2}
+  - {fileID: 11400000, guid: c5e17755ae0d6b548b29f80ae52693f8, type: 2}
   mainAppliers:
   - {fileID: 11400000, guid: 6752589e7b619374da687ef8a5859c26, type: 2}
   - {fileID: 11400000, guid: 2f52580e6036f5e46842716c5d19f3e2, type: 2}

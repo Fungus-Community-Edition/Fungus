@@ -129,14 +129,8 @@ public class SaveSysSettingsWindowTests
 
         saveReaderDropdown = dropdownController.ReaderDropdown;
         saveWriterDropdown = dropdownController.WriterDropdown;
-        var storageSettingsField = _windowType.GetField("storageSettings", _reflectionFlags);
-        var refreshButtonField = _windowType.GetField("_refreshButton", _reflectionFlags);
-
-        Assert.NotNull(storageSettingsField);
-        Assert.NotNull(refreshButtonField);
-
-        storageSettings = storageSettingsField.GetValue(wnd) as ObjectField;
-        refreshButton = refreshButtonField.GetValue(wnd) as Button;
+        storageSettings = wnd.rootVisualElement.Q<ObjectField>("StorageSettings");
+        refreshButton = wnd.rootVisualElement.Q<Button>("RefreshButton");
     }
 
     private ObjectField storageSettings;

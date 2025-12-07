@@ -1,6 +1,5 @@
 using Amanita.VScripting;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
@@ -14,12 +13,6 @@ namespace Amanita.SaveSys
         // Other modules that want to inject their own dependencies (say, for an RPG) should
         // do so in Start. This installer will handle all the initialization for the SaveSystem Singleton,
         // not just giving it its initial dependencies.
-        [SerializeField] protected List<ScriptableObject> mainCodecs = new List<ScriptableObject>() { };
-        [SerializeField] protected List<ScriptableObject> mainAppliers = new List<ScriptableObject>() { };
-        [SerializeField] protected SaveWriter saveWriter = null;
-        [SerializeField] protected SaveReader saveReader = null;
-        [Tooltip("The base path for where the saves are stored, to be more precise. \"In WebGL, things will be saved to PlayerPrefs due to the file system limitations web browsers have. In which case, this field won't make a difference.\"")]
-        [SerializeField] protected SaveDirectoryType whereSavesAreStored = SaveDirectoryType.InTheBalls;
 
         // We have this func instead of Awake so that when the time comes to set up any
         // global Flowcharts, the Amanita Manager will be ready. Otherwise, there's a
@@ -45,35 +38,51 @@ namespace Amanita.SaveSys
                 return;
             }
 
+            string pathToSysSettings = "SaveSys/Settings/SaveSystemSettings"; // Relative to the Resources folder
+            sysSettings = Resources.Load<SaveSystemSettings>(pathToSysSettings);
+            if (sysSettings == null)
+            {
+                Debug.LogError($"[{nameof(SaveSystemInstaller)}] No SaveSystemSettings found at " +
+                    $"Resources/{pathToSysSettings}! Cannot install save system.");
+                return;
+            }
+
+            storageSettings = sysSettings.StorageSettings;
             CorrectSaveDirTypeAsNeeded();
             void CorrectSaveDirTypeAsNeeded()
             {
-                if (whereSavesAreStored == SaveDirectoryType.InTheBalls)
+                SaveDirectoryType dirType = storageSettings.DirectoryType;
+                if (dirType == SaveDirectoryType.InTheBalls)
                 {
-                    whereSavesAreStored = SaveDirectoryType.DataPath;
+                    dirType = SaveDirectoryType.DataPath;
                 }
 
                 if (Application.platform == RuntimePlatform.Android ||
                     Application.platform == RuntimePlatform.IPhonePlayer ||
                     Application.platform == RuntimePlatform.WebGLPlayer)
                 {
-                    whereSavesAreStored = SaveDirectoryType.PersistentDataPath;
+                    dirType = SaveDirectoryType.PersistentDataPath;
                 }
+
+                storageSettings.DirectoryType = dirType;
             }
 
-            SaveDirectoryType = whereSavesAreStored;
-
-            // We assume these are valid due to what we have OnValidate do
-            IList<IMainSaveCodec> validMainCodecs = mainCodecs.Cast<IMainSaveCodec>().ToList();
-            foreach (var codec in validMainCodecs)
+            IList<IMainSaveCodec> mainCodecs;
+            IList<ISaveDataApplier> appliers;
+            InitCodecsAndAppliers();
+            void InitCodecsAndAppliers()
             {
-                codec.PreInstallInit();
-            }
+                mainCodecs = sysSettings.MainCodecs;
+                foreach (var codec in mainCodecs)
+                {
+                    codec.PreInstallInit();
+                }
 
-            IList<ISaveDataApplier> validAppliers = mainAppliers.Cast<ISaveDataApplier>().ToList();
-            foreach (var applier in validAppliers)
-            {
-                applier.PreInstallInit();
+                appliers = sysSettings.MainAppliers;
+                foreach (var applierEl in appliers)
+                {
+                    applierEl.PreInstallInit();
+                }
             }
 
             PrepDependencies();
@@ -84,10 +93,10 @@ namespace Amanita.SaveSys
                 {
                     var versionProvider = new UnityVersionProvider();
                     MetaFactory = new DefaultMetaFactory(versionProvider);
-                    MainStateFactory = new DefaultMainStateFactory(validAppliers, validMainCodecs);
+                    MainStateFactory = new DefaultMainStateFactory(appliers, mainCodecs);
 
                     Registry = new SaveRegistry();
-                    Loader = new SaveLoader(validMainCodecs);
+                    Loader = new SaveLoader(mainCodecs);
 
                     PrepRepo();
                     void PrepRepo()
@@ -95,18 +104,12 @@ namespace Amanita.SaveSys
                         SaveStorageSettings defaultSettings = DefaultAmanitaAssets.SaveStorageSettings;
                         var resolver = new DefaultSavePathResolver();
                         resolver.StorageSettings = defaultSettings;
-                        SaveRepo = new FileSaveRepository(saveReader, saveWriter, whereSavesAreStored, resolver);
+                        SaveRepo = new FileSaveRepository(sysSettings.SaveReader, sysSettings.SaveWriter,
+                            sysSettings.StorageSettings.DirectoryType, resolver);
                     }
 
                     SaveManager = new SaveManager(SaveRepo, Registry, Loader, MetaFactory, MainStateFactory);
                 }
-
-                saveDirectoryPaths = new Dictionary<SaveDirectoryType, string>
-                {
-                    { SaveDirectoryType.DataPath, Application.dataPath },
-                    { SaveDirectoryType.PersistentDataPath, Application.persistentDataPath },
-                };
-
             }
 
             InjectDependencies();
@@ -117,12 +120,12 @@ namespace Amanita.SaveSys
                 // it through that. 
 
                 // Injecting dependendies before CoreLockMode activates.
-                saveSystem.SaveDirectoryType = whereSavesAreStored;
+                saveSystem.SaveDirectoryType = sysSettings.StorageSettings.DirectoryType;
                 saveSystem.SaveManager = SaveManager;
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
                 
-                saveSystem.RegisterSaveDataAppliersMulti(validAppliers);
+                saveSystem.RegisterSaveDataAppliersMulti(appliers);
             }
 
             saveSystem.Init();
@@ -130,6 +133,8 @@ namespace Amanita.SaveSys
             SaveSysSignals.BaseSaveSysInstallationComplete();
         }
 
+        private SaveSystemSettings sysSettings;
+        private SaveStorageSettings storageSettings;
         public virtual bool IsFullyInitted
         {
             get => initted;
@@ -146,10 +151,18 @@ namespace Amanita.SaveSys
             }
         }
         protected static SaveSystemInstaller _s;
-        public SaveReader SaveReader
+        public ISaveReader SaveReader
         {
-            get => saveReader;
-            protected set => saveReader = value;
+            get
+            {
+                if (sysSettings == null)
+                {
+                    return null;
+                }
+
+                return sysSettings.SaveReader;
+            }
+
         }
         public static SaveDirectoryType SaveDirectoryType { get; private set; }
         public static IMetaFactory MetaFactory { get; private set; }
@@ -158,61 +171,10 @@ namespace Amanita.SaveSys
         public static SaveLoader Loader { get; private set; }
         public static ISaveRepository SaveRepo { get; private set; }
         public static ISaveManager SaveManager { get; private set; }
-        protected IDictionary<SaveDirectoryType, string> saveDirectoryPaths;
 
         protected SaveSystem saveSystem;
 
-        protected IList<ISaveDataApplier> validAppliers;
         protected Flowchart saveSysFlowchart;
-
-        public static string SaveNameKey { get => AmanitaConstants.SaveNameVarName; }
-        public static string SaveNamePrefixKey { get => AmanitaConstants.SaveNamePrefixVarName; }
-        public static string SaveNameSuffixKey { get => AmanitaConstants.SaveNameSuffixVarName; }
-
-        protected virtual void OnValidate()
-        {
-            if (whereSavesAreStored == SaveDirectoryType.Null)
-            {
-                whereSavesAreStored = SaveDirectoryType.InTheBalls;
-            }
-
-            ValidateAppliers();
-            void ValidateAppliers()
-            {
-                // We assume that the nulls are from the user pressing the + button on adding to the lists.
-                // Thus, we won't report those.
-                IList<ScriptableObject> invalidAppliers = (from elem in mainAppliers
-                                                           where elem != null
-                                                           where elem is not ISaveDataApplier
-                                                           select elem).ToList();
-
-                for (int i = 0; i < invalidAppliers.Count; i++)
-                {
-                    ScriptableObject elem = invalidAppliers[i];
-                    string warningMessage = $"{elem.name} is not a valid applier. It does not implement ISaveDataApplier.";
-                    Debug.LogWarning(warningMessage);
-                }
-
-            }
-
-            ValidateMainCodecs();
-            void ValidateMainCodecs()
-            {
-                IList<ScriptableObject> invalidCodecs = (from elem in mainCodecs
-                                                         where elem is not IMainSaveCodec
-                                                         where elem != null
-                                                         select elem).ToList();
-                
-
-                for (int i = 0; i < invalidCodecs.Count; i++)
-                {
-                    ScriptableObject elem = invalidCodecs[i];
-                    string warningMessage = $"{elem.name} is not a valid main save codec. It does not implement IMainSaveCodec.";
-                    Debug.LogWarning(warningMessage);
-                }
-
-            }
-        }
 
         protected virtual void OnDestroy()
         {

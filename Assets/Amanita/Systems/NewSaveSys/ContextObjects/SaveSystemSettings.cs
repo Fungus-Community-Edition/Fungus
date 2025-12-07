@@ -11,6 +11,7 @@ namespace Amanita.SaveSys
         [SerializeField] private ScriptableObject _saveWriter;
         [SerializeField] private SaveStorageSettings _storageSettings;
         [SerializeField] private List<ScriptableObject> mainAppliers = new List<ScriptableObject>() { };
+        [SerializeField] private List<ScriptableObject> mainCodecs = new List<ScriptableObject>() { };
 
         public virtual ISaveReader SaveReader
         {
@@ -87,6 +88,32 @@ namespace Amanita.SaveSys
             }
         }
         
+        public virtual IList<IMainSaveCodec> MainCodecs
+        {
+            get
+            {
+                List<IMainSaveCodec> codecs = mainCodecs
+                    .ConvertAll(so => so as IMainSaveCodec)
+                    .FindAll(codec => codec != null);
+                return codecs;
+            }
+            set
+            {
+                mainCodecs.Clear();
+                foreach (var codec in value)
+                {
+                    if (codec is ScriptableObject so)
+                    {
+                        mainCodecs.Add(so);
+                    }
+                    else
+                    {
+                        Debug.LogError("All MainSaveCodecs must be ScriptableObjects.", this);
+                    }
+                }
+            }
+        }
+
         public virtual void AddMainApplier(ISaveDataApplier applier)
         {
             if (applier is ScriptableObject so)
@@ -96,6 +123,18 @@ namespace Amanita.SaveSys
             else
             {
                 Debug.LogError("MainApplier must be a ScriptableObject.", this);
+            }
+        }
+
+        public virtual void AddMainCodec(IMainSaveCodec codec)
+        {
+            if (codec is ScriptableObject so)
+            {
+                mainCodecs.Add(so);
+            }
+            else
+            {
+                Debug.LogError("MainSaveCodec must be a ScriptableObject.", this);
             }
         }
 
@@ -116,6 +155,33 @@ namespace Amanita.SaveSys
             #endregion
 
             mainAppliers[index] = so;
+        }
+
+        public virtual void SetMainCodecAtIndex(IMainSaveCodec codec, int index)
+        {
+            #region Validation
+            if (codec is not ScriptableObject so)
+            {
+                Debug.LogError("MainSaveCodec must be a ScriptableObject.", this);
+                return;
+            }
+            if (index < 0 || index >= mainCodecs.Count)
+            {
+                Debug.LogError("Index out of range when setting MainSaveCodec.", this);
+                return;
+            }
+            #endregion
+            mainCodecs[index] = so;
+        }
+
+        public virtual void RemoveMainApplier(ISaveDataApplier applier)
+        {
+            mainAppliers.Remove(applier as ScriptableObject);
+        }
+
+        public virtual void RemoveMainCodec(IMainSaveCodec codec)
+        {
+            mainCodecs.Remove(codec as ScriptableObject);
         }
     }
 }

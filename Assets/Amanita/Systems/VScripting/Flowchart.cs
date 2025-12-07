@@ -124,6 +124,8 @@ namespace Amanita.VScripting
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
         [SerializeField] protected int loadPriority = 0;
 
+        [SerializeField] private bool alwaysKeepGuid = true;
+
         /// <summary>
         /// Scroll position of Flowchart editor window.
         /// </summary>
@@ -407,6 +409,11 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             cachedFlowcharts.Remove(this);
+            if (!AlwaysKeepGuid)
+            {
+                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
+                fcReg.RemoveGuid(this.UniqueId);
+            }
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
         }
@@ -1846,7 +1853,29 @@ namespace Amanita.VScripting
             }
         }
         
-        public virtual bool IsTestOnly { get; set; } = false;
+        public virtual bool IsTestOnly
+        {
+            get
+            {
+                return !alwaysKeepGuid;
+            }
+            set
+            {
+                alwaysKeepGuid = !value;
+            }
+        }
+
+        public virtual bool AlwaysKeepGuid
+        {
+            get
+            {
+                return alwaysKeepGuid;
+            }
+            set
+            {
+                alwaysKeepGuid = value;
+            }
+        }
 
         protected virtual void LetUserKnowVarDoesntExist(string varName)
         {

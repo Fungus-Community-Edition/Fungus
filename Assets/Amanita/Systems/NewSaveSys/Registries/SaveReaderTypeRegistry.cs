@@ -2,7 +2,6 @@ using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace Amanita.SaveSys
         [InitializeOnLoadMethod]
         public static void DiscoverAndRegister()
         {
-            Debug.Log("VariableTypeDiscovery: DiscoverAndRegister called");
             RefreshTypeRegistry();
 
             AssemblyReloadEvents.afterAssemblyReload -= RefreshTypeRegistry;
