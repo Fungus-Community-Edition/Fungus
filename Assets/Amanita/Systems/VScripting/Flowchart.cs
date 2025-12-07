@@ -366,7 +366,7 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
-            if (gameObject.scene.isLoaded == false)
+            if (!gameObject.scene.IsValid())
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
