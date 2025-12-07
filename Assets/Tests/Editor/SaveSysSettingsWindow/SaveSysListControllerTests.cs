@@ -1,13 +1,15 @@
 using Amanita.SaveSys;
 using Amanita.SaveSys.EditorUtils;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.UIElements;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
-using System.Linq;
+using Type = System.Type;
 
+[TestFixture]
 public class SaveSysListControllerTests
 {
     private SaveSystemSettings _settingsAsset;
@@ -16,13 +18,17 @@ public class SaveSysListControllerTests
     private SaveSysListController<ISaveDataApplier> _appliersController;
     private SaveSysListController<IMainSaveCodec> _codecsController;
 
+    private readonly IList<UnityObj> destroyOnTearDown = new List<UnityObj>();
+
     [SetUp]
     public void SetUp()
     {
         _settingsAsset = ScriptableObject.CreateInstance<SaveSystemSettings>();
-        DummyApplier dummyApplier = ScriptableObject.CreateInstance<DummyApplier>();
+
+        var dummyApplier = ScriptableObject.CreateInstance<DummyApplier>();
+        var dummyCodec = ScriptableObject.CreateInstance<DummyCodec>();
+
         _settingsAsset.AddMainApplier(dummyApplier);
-        DummyCodec dummyCodec = ScriptableObject.CreateInstance<DummyCodec>();
         _settingsAsset.AddMainCodec(dummyCodec);
 
         destroyOnTearDown.Add(_settingsAsset);
@@ -35,13 +41,15 @@ public class SaveSysListControllerTests
         // Inject dummy choices via reflection
         TypeCacheTestHelpers.SetApplierChoices(_typeCache,
             new Dictionary<string, ISaveDataApplier> { { "DummyApplier", dummyApplier } });
-
         TypeCacheTestHelpers.SetCodecChoices(_typeCache,
             new Dictionary<string, IMainSaveCodec> { { "DummyCodec", dummyCodec } });
 
         _applierListView = new ListView { name = "MainAppliers", fixedItemHeight = 20 };
+        _codecListView = new ListView { name = "MainCodecs", fixedItemHeight = 20 };
+
         var root = new VisualElement();
         root.Add(_applierListView);
+        root.Add(_codecListView);
 
         _appliersController = new SaveSysListController<ISaveDataApplier>(
             "MainAppliers",
@@ -63,73 +71,70 @@ public class SaveSysListControllerTests
         _appliersController.BindToSettings(_settingsAsset);
         _appliersController.ToggleSubs(true);
 
-        _codecListView = new ListView { name = "MainCodecs", fixedItemHeight = 20 };
-        root.Add(_codecListView);
         _codecsController.Init(root, _typeCache);
         _codecsController.BindToSettings(_settingsAsset);
         _codecsController.ToggleSubs(true);
-
     }
-
-    private readonly IList<UnityObj> destroyOnTearDown = new List<UnityObj>();
 
     [TearDown]
     public void TearDown()
     {
         foreach (var obj in destroyOnTearDown)
         {
-            if (obj != null)
-            {
-                UnityObj.DestroyImmediate(obj);
-            }
+            if (obj != null) UnityObj.DestroyImmediate(obj);
         }
     }
 
-    [Test]
-    public void BindToSettings_SetsItemsSource_ForAppliers()
+    // Parameter source
+    private static IEnumerable<TestCaseData> ControllerCases()
     {
-        CollectionAssert.AreEqual(_settingsAsset.MainAppliers, _applierListView.itemsSource,
-            "ListView itemsSource should be bound to settings.MainAppliers.");
+        yield return new TestCaseData(
+            "Appliers",
+            (Func<SaveSystemSettings, System.Collections.IList>)(s => (System.Collections.IList)s.MainAppliers),
+            "DummyApplier",
+            typeof(DummyApplier)
+        ).SetName("BindAndAdd_Applier");
+
+        yield return new TestCaseData(
+            "Codecs",
+            (Func<SaveSystemSettings, System.Collections.IList>)(s => (System.Collections.IList)s.MainCodecs),
+            "DummyCodec",
+            typeof(DummyCodec)
+        ).SetName("BindAndAdd_Codec");
     }
 
-    [Test]
-    public void BindToSettings_SetsItemsSource_ForCodecs()
+    [TestCaseSource(nameof(ControllerCases))]
+    public void BindToSettings_SetsItemsSource(string label,
+        Func<SaveSystemSettings, System.Collections.IList> collectionSelector,
+        string dummyChoice,
+        Type expectedType)
     {
-        CollectionAssert.AreEqual(_settingsAsset.MainCodecs, _codecListView.itemsSource,
-            "ListView itemsSource should be bound to settings.MainCodecs.");
+        var collection = collectionSelector(_settingsAsset);
+        var listView = label == "Appliers" ? _applierListView : _codecListView;
+
+        CollectionAssert.AreEqual(collection, listView.itemsSource,
+            $"ListView itemsSource should be bound to settings.{label}.");
     }
 
-    [Test]
-    public void OnChoiceChanged_AddsNewApplier_WhenIndexBeyondCollection()
+    [TestCaseSource(nameof(ControllerCases))]
+    public void OnChoiceChanged_AddsNewItem(string label,
+        Func<SaveSystemSettings, System.Collections.IList> collectionSelector,
+        string dummyChoice,
+        Type expectedType)
     {
-        var dropdown = (DropdownField)_controllerTestHelpers.MakeAndBindItem(_appliersController, _applierListView, 0);
+        var listView = label == "Appliers" ? _applierListView : _codecListView;
+        var controller = label == "Appliers" ? (object)_appliersController : _codecsController;
 
-        // Simulate user choice change
-        dropdown.SetValueWithoutNotify("DummyApplier");
-        var evt = ChangeEvent<string>.GetPooled(null, "DummyApplier");
+        var dropdown = (DropdownField)_controllerTestHelpers.MakeAndBindItem((dynamic)controller, listView, 0);
+
+        dropdown.SetValueWithoutNotify(dummyChoice);
+        var evt = ChangeEvent<string>.GetPooled(null, dummyChoice);
         evt.target = dropdown;
         dropdown.SendEvent(evt);
 
-        Assert.AreEqual(1, _settingsAsset.MainAppliers.Count,
-            "MainAppliers should contain one item after choice change.");
-        Assert.IsInstanceOf<DummyApplier>(_settingsAsset.MainAppliers[0],
-            "Item should be of type DummyApplier.");
-    }
-
-    [Test]
-    public void OnChoiceChanged_AddsNewCodec_WhenIndexBeyondCollection()
-    {
-        var dropdown = (DropdownField)_controllerTestHelpers.MakeAndBindItem(_codecsController, _codecListView, 0);
-
-        dropdown.SetValueWithoutNotify("DummyCodec");
-        var evt = ChangeEvent<string>.GetPooled(null, "DummyCodec");
-        evt.target = dropdown;
-        dropdown.SendEvent(evt);
-
-        Assert.AreEqual(1, _settingsAsset.MainCodecs.Count,
-            "MainCodecs should contain one item after choice change.");
-        Assert.IsInstanceOf<DummyCodec>(_settingsAsset.MainCodecs[0],
-            "Item should be of type DummyCodec.");
+        var collection = collectionSelector(_settingsAsset);
+        Assert.AreEqual(1, collection.Count, $"{label} should contain one item after choice change.");
+        Assert.IsInstanceOf(expectedType, collection[0], $"Item should be of type {expectedType.Name}.");
     }
 }
 
@@ -138,10 +143,28 @@ internal static class _controllerTestHelpers
 {
     public static VisualElement MakeAndBindItem<T>(SaveSysListController<T> controller, ListView listView, int index)
     {
+        // Make sure handlers are actually attached
+        if (listView.makeItem == null)
+        {
+            Assert.Fail($"ListView.makeItem is null. Ensure controller.Init(root, cache) and ToggleSubs(true) were called, and that a ListView named '{GetExpectedName(controller)}' exists in root.");
+        }
+        if (listView.bindItem == null)
+        {
+            Assert.Fail($"ListView.bindItem is null. Ensure controller.ToggleSubs(true) was called.");
+        }
+
         var item = listView.makeItem.Invoke();
         listView.bindItem.Invoke(item, index);
+
+        // Sanity: verify we actually got a DropdownField
+        var dropdown = item as DropdownField;
+        Assert.IsNotNull(dropdown, "Controller's makeItem should create a DropdownField.");
+
         return item;
     }
+
+    // If you can expose the controller’s listViewName, use that instead of hardcoding.
+    private static string GetExpectedName<T>(SaveSysListController<T> controller) => "MainAppliers"; // or "MainCodecs" based on the test
 }
 
 // Dummy types for testing
