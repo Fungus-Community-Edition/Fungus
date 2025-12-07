@@ -156,7 +156,6 @@ namespace SaveSystemTests
         [UnityTest]
         public IEnumerator ApplyingSameSaveTwiceIsIdempotent()
         {
-            Assert.Fail();
             yield return CommonSetup();
             
             AudioSys.Play(playAudioArgsSO);
