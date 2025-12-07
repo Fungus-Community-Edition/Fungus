@@ -116,6 +116,10 @@ namespace Amanita
         public virtual int GetNumericId(string guid)
         {
             Refresh();
+            if (guid == null)
+            {
+                return InvalidNumericId;
+            }
             bool valueFound = guidToNumericId.TryGetValue(guid, out int id);
             if (valueFound)
             {
