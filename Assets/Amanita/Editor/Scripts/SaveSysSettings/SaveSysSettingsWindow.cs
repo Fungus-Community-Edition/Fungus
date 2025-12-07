@@ -98,8 +98,27 @@ namespace Amanita.SaveSys.EditorUtils
 
             _typeCache.Refresh();
 
+            // Appliers
+            _mainAppliersController = new SaveSysListController<ISaveDataApplier>(
+                "MainAppliers",
+                cache => cache.MainApplierChoices,
+                settings => (System.Collections.IList)settings.MainAppliers,
+                (settings, inst, idx) => settings.SetMainApplierAtIndex(inst, idx),
+                (settings, inst) => settings.AddMainApplier(inst)
+            );
+
+            // Codecs
+            _mainCodecsController = new SaveSysListController<IMainSaveCodec>(
+                "MainCodecs",
+                cache => cache.MainCodecChoices,
+                settings => (System.Collections.IList)settings.MainCodecs,
+                (settings, inst, idx) => settings.SetMainCodecAtIndex(inst, idx),
+                (settings, inst) => settings.AddMainCodec(inst)
+            );
+
             _dropdownController.Init(Root, _typeCache);
             _mainAppliersController.Init(Root, _typeCache);
+
             _mainCodecsController.Init(Root, _typeCache);
             _uiRegistrar.Register(Root);
 
@@ -118,8 +137,8 @@ namespace Amanita.SaveSys.EditorUtils
         private VisualElement Root => rootVisualElement;
 
         private readonly SaveSysDropdownController _dropdownController = new SaveSysDropdownController();
-        private readonly SaveSysMainAppliersController _mainAppliersController = new SaveSysMainAppliersController();
-        private readonly SaveSysMainCodecsController _mainCodecsController = new SaveSysMainCodecsController();
+        private SaveSysListController<ISaveDataApplier> _mainAppliersController;
+        private SaveSysListController<IMainSaveCodec> _mainCodecsController;
 
         private static readonly SaveSysSettingsTypeCache _typeCache = new SaveSysSettingsTypeCache();
 

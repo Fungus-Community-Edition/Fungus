@@ -115,7 +115,8 @@ namespace Lorekeeper.EditorCode
             EditorUtility.SetDirty(database);
             AssetDatabase.SaveAssetIfDirty(database);
             AssetDatabase.Refresh();
-            Debug.Log($"[ShadowDatabaseMaintenance.Refresh]: Shadow Database refreshed with {database.TotalAssetCount} assets.");
+            Debug.Log($"[ShadowDatabaseMaintenance.Refresh]: Shadow Database refreshed with " +
+                $"{database.TotalAssetCount} assets.");
         }
     
         private static LorekeeperSettings settings;
