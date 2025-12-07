@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Type = System.Type;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -18,8 +19,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
             VariableData varData = varDataProp.boxedValue as VariableData;
-            varData.Refresh();
-            varDataProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
             // Find the two key sub-properties
             SerializedProperty literalValueProp, referenceVarProp;
@@ -62,13 +61,21 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
-            System.Type contentType = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
+            #region Resolve Content Type
+            Type contentType = GetContentType();
+            Type GetContentType()
+            {
+                var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
+                Type result = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
+                return result;
+            }
+
             if (contentType == null)
             {
                 Debug.LogWarning($"Unable to resolve ContentType for {varData.GetType().Name}. Showing only literal <Value> option.");
                 return;
             }
+            #endregion
 
             int selectedIndex = 0;
             IVariable selectedVariable = referenceVarProp.boxedValue as IVariable;
@@ -151,7 +158,8 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     if (_validVarsOrdered.ContainsKey(label))
                     {
-                        Debug.LogWarning($"Variable key collision when trying to add variable {label} to the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
+                        Debug.LogWarning($"Variable key collision when trying to add variable {label} to " +
+                            $"the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
                         return;
                     }
 

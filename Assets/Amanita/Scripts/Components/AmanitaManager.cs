@@ -28,7 +28,7 @@ namespace Amanita
         }
 #endif
 
-        [SerializeField] private List<VariableSourceAsset> globalVariables;
+        [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
@@ -529,5 +529,18 @@ namespace Amanita
 
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
+
+        private void OnValidate()
+        {
+            // Best make sure to log errors and such when this has any screwy fields
+            if (globalVariables == null)
+            {
+                Debug.LogError("AmanitaManager has no globalVariables list assigned.");
+            }
+            else if (globalVariables.Any(elem => elem == null))
+            {
+                Debug.LogError("AmanitaManager has null global variable sources.");
+            }
+        }
     }
 }
