@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using DefaultHandler = Amanita.VScripting.EditorUtils.DefaultRowVisualHandler;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     [TestFixture]
     public class RowVisualHandlerResolverTests

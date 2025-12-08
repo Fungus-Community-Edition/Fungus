@@ -8,8 +8,9 @@ using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
 using Amanita.VScripting;
+using Amanita;
 
-namespace Amanita.MuscariableTests
+namespace VScriptingTests.MuscariableTests
 {
     public abstract class MuscariableWithSceneTestsCommon : MuscariableTestsCommon
     {
@@ -160,7 +161,7 @@ namespace Amanita.MuscariableTests
                 DestroyEventSystems();
                 void DestroyEventSystems()
                 {
-                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsOfType<EventSystem>();
+                    EventSystem[] possiblyMadeByFlowchart = UnityObject.FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
 
                     foreach (var elem in possiblyMadeByFlowchart)
                     {

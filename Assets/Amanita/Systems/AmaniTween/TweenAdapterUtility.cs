@@ -16,7 +16,9 @@ namespace Amanita.Tweening
             // Try to load from Resources
             var adapter = Resources.Load<DefaultTweenAdapter>(AssetName);
             if (adapter != null)
+            {
                 return adapter;
+            }
 
 #if UNITY_EDITOR
             EnsureResourcesFolderIsThere();
@@ -36,7 +38,9 @@ namespace Amanita.Tweening
             {
                 string assetPath = $"{ResourcesPath}{AssetName}.asset";
                 AssetDatabase.CreateAsset(adapter, assetPath);
-                AssetDatabase.SaveAssets();
+                EditorUtility.SetDirty(adapter);
+                AssetDatabase.SaveAssetIfDirty(adapter);
+                AssetDatabase.Refresh();
                 Debug.Log($"Created new {nameof(DefaultTweenAdapter)} at {assetPath}");
             }
 #endif

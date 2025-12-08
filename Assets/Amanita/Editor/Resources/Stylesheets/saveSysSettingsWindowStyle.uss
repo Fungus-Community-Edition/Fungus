@@ -1,0 +1,89 @@
+:root {
+    --main-font: resource('Fonts/Exo2/Exo2-Regular');
+    --dark-mode-text-color: rgb(230, 230, 230);
+    --dark-mode-text-bg-color: rgb(26, 26, 26);
+    --text-field-font-size: 14px;
+    --text-field-border-radius: 5px;
+    --half-the-width: 50%;
+    --dropdown-height: 30px;
+    padding: 5px 10px 5px 10px;
+    -unity-font-definition: var(--main-font);
+}
+
+.save-list-view 
+{
+    font-size: var(--text-field-font-size);
+
+    min-height: 50px;
+    max-height: 300px;
+
+    flex-direction: row;
+    padding: 0 10px 0 5px;
+    margin-bottom: 12px;
+
+}
+
+.half-label 
+{
+    width: var(--half-the-width);
+}
+
+.dropdown 
+{
+    font-size: var(--text-field-font-size);
+    min-height: var(--dropdown-height);
+}
+
+.holder-label 
+{
+    width: 50%;
+}
+
+.holder-list 
+{
+    width: 50%;
+    
+    flex-grow: 1;
+}
+
+#TopLabel 
+{
+    font-size: 36px;
+    -unity-text-align: upper-center;
+    margin-bottom: 10px;
+}
+
+.dropdown > Label 
+{
+    width: var(--half-the-width);
+}
+
+#MainAppliersHolder > Label 
+{
+    width: 50%;
+}
+
+#MainAppliers
+{
+    width: 100%;
+}
+
+#StorageSettings 
+{
+    font-size: var(--text-field-font-size);
+}
+
+#StorageSettings > .unity-label 
+{
+    width: 50%;
+}
+
+#RefreshButton 
+{
+    justify-content: center;
+    margin-top: 10px;
+    align-self: center;
+    font-size: var(--text-field-font-size);
+    width: 100px;
+    height: 30px;
+}

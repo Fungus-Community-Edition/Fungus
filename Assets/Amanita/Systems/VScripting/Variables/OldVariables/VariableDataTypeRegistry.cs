@@ -65,8 +65,22 @@ namespace Amanita.VScripting
 
         public static Type GetDataTypeLinkedToVarType(Type variableType)
         {
-            _typeMap.TryGetValue(variableType, out var result);
-            return result;
+            // For polymorphism, we need to check assignability
+            foreach (var val in _typeMap.Values)
+            {
+                VariableDataAttribute attr = val.GetCustomAttribute<VariableDataAttribute>();
+                if (attr != null)
+                {
+                    foreach (var varTypeEl in attr.VariableTypes)
+                    {
+                        if (varTypeEl != null && varTypeEl.IsAssignableFrom(variableType))
+                        {
+                            return val;
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
     }

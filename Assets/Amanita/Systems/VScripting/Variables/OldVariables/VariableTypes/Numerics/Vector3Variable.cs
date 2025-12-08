@@ -5,7 +5,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector3 variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Vector3", typeof(Vector3))]
+    [VariableInfo("Numeric", "Vector3", typeof(Vector3), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class Vector3Variable : VariableBase<Vector3>
@@ -45,23 +45,4 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for a Vector3 variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(Vector3), typeof(Vector3Variable))]
-    public class Vector3Data : VariableData<Vector3>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(Vector3Variable))]
-        public IVariable<Vector3> vector3Ref;
-        
-        public Vector3Data() : base(default) { }
-        public Vector3Data(Vector3 startVal = default) : base(startVal) { }
-
-        public override void Refresh()
-        {
-            varRef ??= vector3Ref;
-        }
-    }
 }

@@ -60,11 +60,7 @@ namespace Amanita.DialogueSys
         // This method will automatically instantiate one if none exists.
         protected virtual void CheckEventSystem()
         {
-        #if UNITY_6000
             EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>();
-        #else
-            EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
-        #endif
             if (eventSystem == null)
             {
                 // Auto spawn an Event System from the prefab
@@ -85,13 +81,9 @@ namespace Amanita.DialogueSys
             }
 
 #if ENABLE_INPUT_SYSTEM
-            if(inputSystemUIInputModule == null)
+            if (inputSystemUIInputModule == null)
             {
-            #if UNITY_6000
                 inputSystemUIInputModule = FindFirstObjectByType<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-            #else
-                inputSystemUIInputModule = FindObjectOfType<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-            #endif
             }
             
             if (writer != null && writer.IsWriting)
@@ -179,7 +171,7 @@ namespace Amanita.DialogueSys
         /// </summary>
         public virtual void SetNextLineFlag()
         {
-            if(writer.IsWaitingForInput || writer.IsWriting)
+            if (writer.IsWaitingForInput || writer.IsWriting)
             {
                 nextLineInputFlag = true;
             }

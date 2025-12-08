@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Amanita.VScripting
 {
@@ -59,7 +59,7 @@ namespace Amanita.VScripting
         
         public override Color GetButtonColor()
         {
-            return new Color32(235, 191, 217, 255);
+            return CommandColors.Flow;
         }
 
         public override bool HasReference(Variable variable)
@@ -77,7 +77,6 @@ namespace Amanita.VScripting
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-
             f.DetermineSubstituteVariables(text, referencedVariables);
         }
 #endif

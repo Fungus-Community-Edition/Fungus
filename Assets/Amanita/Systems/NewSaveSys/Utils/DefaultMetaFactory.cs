@@ -14,7 +14,9 @@ namespace Amanita.SaveSys
             var meta = new SaveMetaData
             {
                 SlotNumber = slotNumber,
+                ProgressMarkers = SaveSystem.S.ProgressMarkers
             };
+
             meta.RegisterCurrentSceneInfo();
 
             string version = versionProvider.GetVersion();

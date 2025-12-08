@@ -1,0 +1,83 @@
+:root
+{
+	padding: 10px 20px 10px 20px;
+	--gap-between-stuff: 12px;
+	--field-font-size: 20px;
+	--half-row-width: 50%;
+	font-size: var(--field-font-size);
+	--run-button-height: 40px;
+}
+
+#TitleLabel
+{
+	font-size: 32px;
+	-unity-font-style: bold;
+	align-self: center;
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#AsmDefToChangePicker
+{
+	margin-bottom: var(--gap-between-stuff);
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#AsmDefToChangePicker > Label
+{
+	width: var(--half-row-width);
+}
+
+#CurrentAsmDefName
+{
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#CurrentAsmDefName > Label
+{
+	width: var(--half-row-width);
+}
+
+#NewAsmDefName
+{
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#NewAsmDefName > Label
+{
+	width: var(--half-row-width);
+}
+
+#DryRun
+{
+		margin-bottom: var(--gap-between-stuff);
+}
+
+#DryRun > Label
+{
+	width: var(--half-row-width);
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#SummaryReport
+{
+	padding: 8px;
+	flex-grow: 1;
+	border-width: 2px;
+	border-color: rgb(177, 177, 177);
+	margin-bottom: var(--gap-between-stuff);
+}
+
+#SummaryLabel
+{
+	white-space: normal;
+	font-size: 16px;
+	-unity-text-align: upper-left;
+	flex-grow: 1;
+}
+
+#RunMigration
+{
+	height: var(--run-button-height);
+	margin-bottom: var(--gap-between-stuff);
+	font-size: var(--field-font-size);
+}

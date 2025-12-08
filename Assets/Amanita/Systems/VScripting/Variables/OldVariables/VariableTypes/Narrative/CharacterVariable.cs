@@ -6,7 +6,7 @@ namespace Amanita.VScripting
 	/// <summary>
 	/// Character variable type.
 	/// </summary>
-	[VariableInfo("Narrative", "Character", typeof(Character))]
+	[VariableInfo("Narrative", "Character", typeof(Character), false)]
 	[AddComponentMenu("")]
 	[System.Serializable]
 	public class CharacterVariable : VariableBase<Amanita.Character>
@@ -19,12 +19,12 @@ namespace Amanita.VScripting
 	[VariableData(typeof(Character), typeof(CharacterVariable))]
 	public class CharacterData : VariableData<Character>
 	{
-		[SerializeField, SerializeReference]
+		[SerializeField]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]
-		public IVariable<Character> characterRef;
+		public CharacterVariable characterRef;
 
 
-		public static implicit operator Amanita.Character(CharacterData CharacterData)
+		public static implicit operator Character(CharacterData CharacterData)
 		{
 			return CharacterData.Value;
 		}
@@ -32,9 +32,10 @@ namespace Amanita.VScripting
 		public CharacterData() : base(default) { }
 		public CharacterData(Character startVal = null) : base(startVal) { }
 
-		public override void Refresh()
+		protected override Variable LegacyVarRef
 		{
-			varRef ??= characterRef;
+			get => characterRef;
+			set => characterRef = value as CharacterVariable;
 		}
 	}
 }

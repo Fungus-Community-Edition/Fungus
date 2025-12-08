@@ -5,6 +5,8 @@ using UnityEngine;
 using Amanita;
 using UnityObj = UnityEngine.Object;
 using Amanita.SaveSys;
+using Type = System.Type;
+using System.Reflection;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
@@ -23,6 +25,11 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
     [SetUp]
     public virtual void SetUp()
     {
+        if (AmanitaManager.S != null)
+        {
+            UnityObj.DestroyImmediate(AmanitaManager.S.gameObject);
+        }
+
         string pathToManager = "Prefabs/AmanitaManager";
         AmanitaManager managerPrefab = Resources.Load<AmanitaManager>(pathToManager);
 
@@ -41,16 +48,20 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
         command = block.gameObject.AddComponent<TCommand>();
         block.CommandList.Add(command);
 
+        cmdType = command.GetType();
         ConfigureCommand(command);
+        
     }
 
     protected AmanitaManager manager;
+    protected Type cmdType;
+    protected readonly BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
 
     [TearDown]
     public virtual void TearDown()
     {
-        Object.DestroyImmediate(go);
-        Object.DestroyImmediate(manager.gameObject);
+        UnityObj.DestroyImmediate(go);
+        UnityObj.DestroyImmediate(manager.gameObject);
         go = null;
         manager = null;
         SaveSystem.ResetStaticsForTest();

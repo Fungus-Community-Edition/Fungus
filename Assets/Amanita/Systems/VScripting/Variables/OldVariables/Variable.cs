@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Amanita.VScripting
 {
@@ -28,16 +29,34 @@ namespace Amanita.VScripting
         [SerializeField] protected string key = "";
 
         [HideInInspector]
-        [SerializeField] private int itemID = InvalidID;
+        [SerializeField] private byte itemID = InvalidID;
 
-        public static readonly int InvalidID = -1;
+        [HideInInspector]
+        [FormerlySerializedAs("itemID")]
+        [SerializeField] private int oldItemID = 0;
+
+        public static readonly byte InvalidID = 0;
+
+        public virtual int OwnerIdIndex
+        {
+            get
+            {
+                var owner = GetFlowchart();
+                if (owner != null)
+                {
+                    return AmanitaManager.GetNumericIdTiedTo(owner.UniqueId);
+                }
+
+                return -1;
+            }
+        }
 
         public virtual bool IsScalar() => false;
 
         // Non-global variables each belong to a particular Flowchart. Thus, rather
         // than a unique string ID, it's best for them to get an int that their
         // Flowcharts assign them.
-        public int ItemID
+        public byte ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -145,7 +164,40 @@ namespace Amanita.VScripting
         }
         #endregion
 
-        public virtual IVariableSource Owner { get { return GetComponent<Flowchart>(); } }
+        public abstract object BoxedValue { get; set; }
+
+        public virtual IVariableSource Owner
+        {
+            get
+            {
+                owner ??= GetComponent<Flowchart>();
+                return owner;
+            }
+            set
+            {
+                string errorMessage = $"Cannot set the owner of a legacy variable";
+                Debug.LogError(errorMessage);
+            }
+        }
+
+        public virtual bool IsRelationalSupported => false;
+
+        protected virtual void OnValidate()
+        {
+            owner ??= GetComponent<Flowchart>();
+        }
+
+        protected IVariableSource owner;
+
+        protected virtual void OnEnable()
+        {
+            // Backwards compatibility: migrate old int ItemID to uint
+            if (oldItemID != InvalidID)
+            {
+                itemID = (byte)oldItemID;
+                oldItemID = 0;
+            }
+        }
 
     }
 
@@ -154,9 +206,41 @@ namespace Amanita.VScripting
     /// </summary>
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
-        public override System.Type ContentType => typeof(T);
+        public override Type ContentType => typeof(T);
 
         [SerializeField] protected T value;
+
+        // Explicit IVariable implementation for object-typed access
+        object IVariable.BoxedValue
+        {
+            get => value; // boxes T correctly (works for structs like Vector2)
+            set
+            {
+                if (value != null && ContentType.IsAssignableFrom(value.GetType()))
+                {
+                    this.value = (T)value;
+                    return;
+                }
+                // Optional: allow numeric conversions or throw
+                throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+            }
+        }
+
+        public override object BoxedValue
+        {
+            get => value;
+            set
+            {
+                if (value is T || value == null)
+                {
+                    this.value = (T)value;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot assign value of type {value?.GetType().Name ?? "null"} to {typeof(T).Name}.");
+                }
+            }
+        }
 
         // Preserve the typed Value required by IVariable<T>
         public virtual new T Value

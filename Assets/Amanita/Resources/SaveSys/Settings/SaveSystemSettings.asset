@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcaded4cc2bfbd349b05bd4397f0dbda, type: 3}
+  m_Name: SaveSystemSettings
+  m_EditorClassIdentifier: 
+  _saveReader: {fileID: 11400000, guid: eebf7b36e257e6b4493dd574b3bf0c3a, type: 2}
+  _saveWriter: {fileID: 11400000, guid: aeb4d82e775666541ac5493bf752f594, type: 2}
+  _storageSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
+  mainAppliers:
+  - {fileID: 11400000, guid: 6752589e7b619374da687ef8a5859c26, type: 2}
+  - {fileID: 11400000, guid: 2f52580e6036f5e46842716c5d19f3e2, type: 2}
+  - {fileID: 11400000, guid: 47e270fc0062d754e83432e60f4e5271, type: 2}
+  mainCodecs:
+  - {fileID: 11400000, guid: 2084b83003802b04e9e00fdc40e6fc1b, type: 2}
+  - {fileID: 11400000, guid: 48fb1c7e4487735449a6dd7bf0affdc6, type: 2}
+  - {fileID: 11400000, guid: c5e17755ae0d6b548b29f80ae52693f8, type: 2}

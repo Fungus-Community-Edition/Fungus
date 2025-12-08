@@ -28,5 +28,30 @@ namespace Amanita.Utils
                 return Thread.CurrentThread.ManagedThreadId == _mainThreadId;
             }
         }
+
+        /// <summary>
+        /// This assumes a scene is running. If not (and you're calling from outside the main thread),
+        /// this will cause an error.
+        /// </summary>
+        public static void RunOnMainThread(System.Action action)
+        {
+            if (IsMainThread)
+            {
+                action();
+            }
+            else
+            {
+                // Schedule the action to run on the main thread
+                using (var countdown = new CountdownEvent(1))
+                {
+                    MainThreadDispatcher.Enqueue(() =>
+                    {
+                        action();
+                        countdown.Signal(); // Signal that we're done
+                    });
+                    countdown.Wait(); // Wait for the main thread to finish
+                }
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 // Host window to provide a valid IMGUI Event context for OnInspectorGUI calls.
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.FCWindowOperations
 {
     public class BlockInspectorEditorTests
     {

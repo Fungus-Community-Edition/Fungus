@@ -1,5 +1,5 @@
 using Amanita.Myceliaudio;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -9,8 +9,8 @@ namespace Amanita.SaveSys
     {
         [SerializeField] protected PlayAudioArgs playAudioArgs = PlayAudioArgs.Null;
         [SerializeField] protected VolumeSettings volumeSettings = new VolumeSettings();
-        [SerializeField] protected string pathToMainBGM = string.Empty;
-        // ^Whatever's playing in BGMusic Track 0, if anything.
+        [SerializeField] protected IDictionary<int, int> bgmIndexes = new Dictionary<int, int>();
+        // ^The keys are the BGM track numbers, the values are the asset indexes in ShadowDatabase
 
         public virtual PlayAudioArgs PlayAudioArgs
         {
@@ -24,49 +24,51 @@ namespace Amanita.SaveSys
             set { volumeSettings = value; }
         }
 
-        public MyceliaudioSaveData()
+        /// <summary>
+        /// The keys are the BGM track numbers in AudioSystem, the values are the
+        /// AudioClip asset indexes in ShadowDatabase.
+        /// </summary>
+        public virtual IDictionary<int, int> BgmIndexes
         {
-            // We automatically check the current state of Myceliaudio and then register it
-            AudioSystem audioSys = AudioSystem.S;
-            volumeSettings = audioSys.GetVolumeSettings();
-            bool currentlyPlaying = audioSys.GetIsPlaying(TrackGroup.BGMusic, 0);
-            AudioClip mainBGM = audioSys.GetBaseMainClip(TrackGroup.BGMusic, 0);
-
-            if (currentlyPlaying)
+            get { return new Dictionary<int, int>(bgmIndexes); }
+            set
             {
-                SavePlayAudioArgs();
-                void SavePlayAudioArgs()
+                bgmIndexes.Clear();
+                foreach (var kvp in value)
                 {
-                    PlayAudioArgs = new PlayAudioArgs()
-                    {
-                        MainClip = mainBGM,
-                        TrackGroup = TrackGroup.BGMusic,
-                        Track = 0,
-                        Loop = audioSys.IsLoopingMain(TrackGroup.BGMusic, 0),
-                        LoopStartPoint = audioSys.GetLoopStartPoint(TrackGroup.BGMusic, 0),
-                        LoopEndPoint = audioSys.GetLoopEndPoint(TrackGroup.BGMusic, 0),
-                        OneShot = false
-                    };
-
-                    AudioClip[] allAudioClips = Resources.FindObjectsOfTypeAll<AudioClip>();
-                    AudioClip clipPlaying = audioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
-                    bool clipIsProjectAsset = allAudioClips.Contains(clipPlaying);
-
-                    if (clipIsProjectAsset)
-                    {
-                        playAudioArgs.MainClip = clipPlaying;
-                    }
+                    bgmIndexes[kvp.Key] = kvp.Value;
                 }
-
             }
-
         }
 
-        public override SaveDataUnit Serialized()
+        public virtual void AddBgmIndex(int trackNumber, int assetIndex)
         {
-            string json = JsonUtility.ToJson(this, true);
-            SaveDataUnit serializedSaveData = new SaveDataUnit(TypeName, json);
-            return serializedSaveData;
+            bgmIndexes[trackNumber] = assetIndex;
+        }
+
+        public virtual void RemoveBgmIndex(int trackNumber)
+        {
+            if (bgmIndexes.ContainsKey(trackNumber))
+            {
+                bgmIndexes.Remove(trackNumber);
+            }
+        }
+
+        public virtual int GetBgmIndex(int trackNumber)
+        {
+            if (bgmIndexes.ContainsKey(trackNumber))
+            {
+                return bgmIndexes[trackNumber];
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public MyceliaudioSaveData()
+        {
+            
         }
     }
 }

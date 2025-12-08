@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-#if UNITY_5_0 || UNITY_5_1 || UNITY_5_2
-#else
 using UnityEngine.SceneManagement;
-#endif
 using System.Collections;
 
 namespace Amanita
@@ -10,8 +7,10 @@ namespace Amanita
     /// <summary>
     /// Helper component for loading a new scene.
     /// A fullscreen loading image is displayed while loading the new scene.
-    /// All Rooms are destroyed and unused assets are released from memory before loading the new scene to minimize memory footprint.
-    /// For streaming Web Player builds, the loading image will be displayed until the requested level has finished downloading.
+    /// All Rooms are destroyed and unused assets are released from memory before loading the new 
+    /// scene to minimize memory footprint.
+    /// For streaming Web Player builds, the loading image will be displayed until the requested 
+    /// level has finished downloading.
     /// </summary>
     public class SceneLoader : MonoBehaviour
     {
@@ -46,11 +45,7 @@ namespace Amanita
             }
 
             // Load the scene (happens at end of frame)
-#if UNITY_5_0 || UNITY_5_1 || UNITY_5_2
-            Application.LoadLevel(sceneToLoad);
-#else
             SceneManager.LoadScene(sceneToLoad);
-#endif
 
             yield return new WaitForEndOfFrame();
 
@@ -70,13 +65,13 @@ namespace Amanita
 
             GUI.depth = -2000;
             
-            float h = Screen.height;
-            float w = (float)loadingTexture.width * (h / (float)loadingTexture.height);
+            float height = Screen.height;
+            float width = (float)loadingTexture.width * (height / (float)loadingTexture.height);
             
-            float x = Screen.width / 2 - w / 2;
-            float y = 0;
+            float xPos = Screen.width / 2 - width / 2;
+            float yPos = 0;
             
-            Rect rect = new Rect(x, y, w, h);
+            Rect rect = new Rect(xPos, yPos, width, height);
 
             GUI.DrawTexture(rect, loadingTexture);
 

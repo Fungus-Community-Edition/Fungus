@@ -1,37 +1,91 @@
-﻿namespace Amanita.VScripting
+﻿using UnityEngine;
+using Type = System.Type;
+
+namespace Amanita.VScripting
 {
-    /// <summary>
-    /// A simple struct wrapping a reference to a Fungus Variable. Allows for VariableReferenceDrawer. 
-    /// This is the a way to directly reference a fungus variable in external c# scripts, it will 
-    /// give you an inspector field that gives a drop down of all the variables on the targeted
-    /// flowchart, in a similar way to what you would expect from selecting a variable on a command.
-    /// 
-    /// Also recommend implementing IVariableReference on any custom classes that use this so your
-    /// references can show up in searches for usage.
-    /// </summary>
     [System.Serializable]
-    public struct VariableReference
+    public class VariableReference
     {
-        public Variable variable;
+        // What we do is store the id of the var, and then return the var itself based on
+        // what source we're asked to work with. This minimizes the amount of data we need to serialize.
+        [SerializeField] private byte itemId;
 
-        public T Get<T>()
+        /// <summary>
+        /// The owner of the var this is meant to reference. Changing this will
+        /// change the context in which the variable is looked up. It is
+        /// automatically changed when setting the Variable property.
+        /// </summary>
+        public IVariableSource VarOwner { get; set; }
+
+        public IVariable Variable
         {
-            T retval = default(T);
-
-            var asType = variable as VariableBase<T>;
-
-            if (asType != null)
-                return asType.Value;
-
-            return retval;
+            get
+            {
+                if (VarOwner == null)
+                {
+                    return null;
+                }
+                return VarOwner.GetVariable(itemId);
+            }
+            set
+            {
+                if (value == null)
+                {
+                    itemId = Muscariable.InvalidID;
+                }
+                else
+                {
+                    itemId = value.ItemId;
+                    VarOwner = value.Owner;
+                }
+            }
+        }
+        
+        public T GetValue<T>()
+        {
+            T result = default;
+            IVariable varToFetchFrom = Variable;
+            if (varToFetchFrom == null)
+            {
+                Debug.LogError("VariableReference: Variable is null.");
+            }
+            else
+            {
+                var contentType = varToFetchFrom.ContentType;
+                var targetType = typeof(T);
+                if (!targetType.IsAssignableFrom(contentType))
+                {
+                    Debug.LogError($"VariableReference: Variable content type {contentType} is not " +
+                        $"assignable to target type {targetType}.");
+                }
+                else
+                {
+                    result = (T)varToFetchFrom.BoxedValue;
+                }
+            }
+            return result;
         }
 
-        public void Set<T>(T val)
+        public void SetValue<T>(T value)
         {
-            var asType = variable as VariableBase<T>;
-
-            if (asType != null)
-                asType.Value = val;
+            if (Variable == null)
+            {
+                Debug.LogError("VariableReference: Variable is null.");
+            }
+            else
+            {
+                var contentType = Variable.ContentType;
+                var valueType = value?.GetType();
+                if (value != null && !contentType.IsAssignableFrom(valueType))
+                {
+                    Debug.LogError($"VariableReference: Value type {valueType} is not " +
+                        $"assignable to variable content type {contentType}.");
+                }
+                else
+                {
+                    Variable.BoxedValue = value;
+                }
+            }
         }
     }
 }

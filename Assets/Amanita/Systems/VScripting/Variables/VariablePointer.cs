@@ -12,10 +12,15 @@ namespace Amanita.VScripting
 
     public class VariablePointer<T> : IVariable<T>, IVariablePointer
     {
-        [SerializeField] private UnityEngine.Object _component; // MonoBehaviour or ScriptableObject
+        [SerializeField] private UnityObj _component; // MonoBehaviour or ScriptableObject
+        protected virtual IVariable ObjAsVar => _component as IVariable;
         public VariablePointer() { }
 
-        public VariablePointer(UnityEngine.Object component)
+        public virtual int OwnerIdIndex
+        {
+            get => ObjAsVar?.OwnerIdIndex ?? -1;
+        }
+        public VariablePointer(UnityObj component)
         {
             _component = component;
         }
@@ -23,21 +28,24 @@ namespace Amanita.VScripting
         // IHasKey / IVariable shared members
         public string Key
         {
-            get => (_component as IVariable)?.Key ?? string.Empty;
+            get => ObjAsVar?.Key ?? string.Empty;
             set { if (_component is IVariable iv) iv.Key = value; }
         }
 
-        public VariableScope Scope =>
-            (_component as IVariable)?.Scope ?? VariableScope.Private;
-
-        public int ItemID
+        public VariableScope Scope
         {
-            get => (_component as IVariable)?.ItemID ?? 0;
-            set { if (_component is IVariable iv) iv.ItemID = value; }
+            get => ObjAsVar?.Scope ?? VariableScope.Private;
+            set { if (_component is IVariable iv) iv.Scope = value; }
+        }
+
+        public byte ItemId
+        {
+            get => ObjAsVar?.ItemId ?? 0;
+            set { if (_component is IVariable iv) iv.ItemId = value; }
         }
 
         public Type ContentType =>
-            (_component as IVariable)?.ContentType ?? typeof(T);
+            ObjAsVar?.ContentType ?? typeof(T);
 
         public void Init()
         {
@@ -46,12 +54,12 @@ namespace Amanita.VScripting
 
         public bool IsComparisonSupported()
         {
-            return (_component as IVariable)?.IsComparisonSupported() ?? false;
+            return ObjAsVar?.IsComparisonSupported() ?? false;
         }
 
         public bool Evaluate(CompareOperator compareOperator, object value)
         {
-            return (_component as IVariable)?.Evaluate(compareOperator, value) ?? false;
+            return ObjAsVar?.Evaluate(compareOperator, value) ?? false;
         }
 
         public void Apply(SetOperator setOperator, object value)
@@ -88,8 +96,13 @@ namespace Amanita.VScripting
             return false;
         }
 
+        public bool IsArithmeticSupported(SetOperator setOperator)
+        {
+            throw new NotImplementedException();
+        }
+
         // Explicit IVariable.Value (object) to avoid the name clash
-        object IVariable.Value
+        object IVariable.BoxedValue
         {
             get => Value;
             set
@@ -108,7 +121,12 @@ namespace Amanita.VScripting
         // Convenience
         public UnityObj Component { get => _component; set => _component = value; }
 
-        public virtual IVariableSource Owner =>
-            (_component as IVariable)?.Owner;
+        public virtual IVariableSource Owner
+        {
+            get => ObjAsVar?.Owner;
+            set { if (_component is IVariable iv) iv.Owner = value; }
+        }
+
+        public bool IsRelationalSupported => ObjAsVar?.IsRelationalSupported ?? false;
     }
 }

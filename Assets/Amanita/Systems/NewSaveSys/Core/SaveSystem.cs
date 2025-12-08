@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using Amanita.VScripting;
+using FullSerializer;
+using System.Linq;
+using System.IO;
+using System;
 
 namespace Amanita.SaveSys
 { 
-    public class SaveSystem : MonoBehaviour
+    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager
     {
         protected virtual void Awake()
         {
@@ -22,7 +25,7 @@ namespace Amanita.SaveSys
 
         protected bool initted;
 
-        public virtual async void Init()
+        public virtual void Init()
         {
             if (S != null && S != this)
             {
@@ -31,13 +34,22 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            S = this;
+            if (initted)
+            {
+                Debug.LogWarning("SaveSystem already initialized. Init call ignored.");
+                return;
+            }
 
+            S = this;
             initted = true;
 
-            await Task.Delay(coreLockDelay);
+            Invoke(nameof(ActivateCoreLockAndInitSaveManager), coreLockDelay);
+        }
+
+        protected virtual void ActivateCoreLockAndInitSaveManager()
+        {
             CoreLockMode = true;
-            
+            saveManager.Init();
         }
 
         // We expect an instance of this to be attached to the AmanitaManager singleton
@@ -51,7 +63,7 @@ namespace Amanita.SaveSys
         }
         protected static SaveSystem _s;
 
-        protected int coreLockDelay = 1000; // In milliseconds
+        protected float coreLockDelay = 1; // In seconds
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like
@@ -59,11 +71,17 @@ namespace Amanita.SaveSys
         /// </summary>
         protected virtual bool CoreLockMode { get; set; }
 
+        #region Submodules
         // For third-party customizability, we want to give the option to inject the 
         // individual SaveManager dependencies (instead of needing to prep a whole
         // SaveManager themselves, then passing it to this class). Client code might
         // only want to swap out one module of the implementation, after all
 
+        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
+
+        /// <summary>
+        /// Handler for saving and loading data to and from persistent storage.
+        /// </summary>
         public virtual ISaveRepository SaveRepo
         {
             get
@@ -184,17 +202,17 @@ namespace Amanita.SaveSys
             }
         }
         protected ISaveManager saveManager;
+        #endregion
 
-        public virtual SaveDirectoryType SaveDirectoryType { get; set; }
+        #region Submodule-Registration
 
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
+        /// <summary>
+        /// Decides what paths to use for saving and loading.
+        /// </summary>
+        public virtual IConfigurableSaveSlotPathResolver SavePathResolver
         {
-            SaveManager.RegisterMultiMainCodecs(codecs);
-        }
-
-        public virtual void RegisterMainCodec(IMainSaveCodec codec)
-        {
-            SaveManager.RegisterMainCodec(codec);
+            get => SaveRepo.PathResolver;
+            set => SaveRepo.PathResolver = value;
         }
 
         public virtual void RegisterSaveDataAppliersMulti(IList<ISaveDataApplier> toRegister)
@@ -241,7 +259,9 @@ namespace Amanita.SaveSys
         {
             saveDataAppliers.Clear();
         }
+        #endregion
 
+        #region Save/Load/Delete Operations
         public virtual Task SaveTo(int slotNum)
         {
             return saveManager.SaveTo(slotNum);
@@ -262,173 +282,7 @@ namespace Amanita.SaveSys
         {
             saveManager.DeleteSave(slotNum);    
         }
-
-        /// <summary>
-        /// CoreLock applies. Getter returns a copy.
-        /// </summary>
-        public virtual IDictionary<SaveDirectoryType, string> SaveDirectoryPaths
-        {
-            get
-            {
-                return new Dictionary<SaveDirectoryType, string>(saveDirectoryPaths);
-                // ^We don't want to allow directly changing the contents
-            }
-            set
-            {
-                if (CoreLockMode)
-                {
-                    string warningMessage = "Cannot set save directory paths on module lock.";
-                    Debug.Log(warningMessage);
-                    return;
-                }
-
-                saveDirectoryPaths = value;
-            }
-        }
-
-        protected IDictionary<SaveDirectoryType, string> saveDirectoryPaths;
-
-        /// <summary>
-        /// CoreLock applies.
-        /// </summary>
-        public virtual void SetSaveDirPath(SaveDirectoryType saveDirectoryType, string path)
-        {
-            if (CoreLockMode)
-            {
-                string warningMessage = "Cannot set save directory paths during CoreLockMode.";
-                Debug.Log(warningMessage);
-                return;
-            }
-
-            if (saveDirectoryPaths.ContainsKey(saveDirectoryType))
-            {
-                saveDirectoryPaths[saveDirectoryType] = path;
-            }
-            else
-            {
-                saveDirectoryPaths.Add(saveDirectoryType, path);
-            }
-        }
-
-        public virtual Flowchart GlobalFlowchart
-        {
-            set
-            {
-                if (value == null)
-                {
-                    string warningMessage = "Cannot set SaveSystem global Flowchart to null.";
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                if (CoreLockMode)
-                {
-                    string warningMessage = "Cannot set SaveSystem global Flowchart during CoreLock mode.";
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                globalFc = value;
-                CacheSaveNameVars();
-            }
-        }
-
-        protected Flowchart globalFc;
-
-        protected virtual void CacheSaveNameVars()
-        {
-            // So we can return the right values without having to query the Flowchart
-            // with each request
-            saveNameVar = globalFc.GetVariable<StringVariable>(SaveNameKey);
-            saveNamePrefixVar = globalFc.GetVariable<StringVariable>(SaveNamePrefixKey);
-            saveNameSuffixVar = globalFc.GetVariable<StringVariable>(SaveNameSuffixKey);
-        }
-
-        protected StringVariable saveNameVar, saveNamePrefixVar, saveNameSuffixVar;
-        protected static string SaveNameKey { get => AmanitaConstants.SaveNameVarName; }
-        protected static string SaveNamePrefixKey { get => AmanitaConstants.SaveNamePrefixVarName; }
-        protected static string SaveNameSuffixKey { get => AmanitaConstants.SaveNameSuffixVarName; }
-
-        public virtual string SaveName
-        {
-            get
-            {
-                if (saveNameVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveName));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
-
-                return saveNameVar.Value;
-            }
-            set
-            {
-                if (saveNameVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveName));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                saveNameVar.Value = value;
-            }
-        }
-
-        protected static string InaccessibleVarFormat => "Cannot get value of {0}. It's not properly registered yet.";
-        protected static string UnmutableVarFormat => "Cannot alter value of {0}. It's not properly registered yet.";
-
-        public virtual string SaveNamePrefix
-        {
-            get
-            {
-                if (saveNamePrefixVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNamePrefix));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
-
-                return saveNamePrefixVar.Value;
-            }
-            set
-            {
-                if (saveNamePrefixVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNamePrefix));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                saveNamePrefixVar.Value = value;
-            }
-        }
-
-        public virtual string SaveNameSuffix
-        {
-            get
-            {
-                if (saveNameSuffixVar == null)
-                {
-                    string warningMessage = string.Format(InaccessibleVarFormat, nameof(SaveNameSuffix));
-                    Debug.LogWarning(warningMessage);
-                    return string.Empty;
-                }
-
-                return saveNameSuffixVar.Value;
-            }
-            set
-            {
-                if (saveNameSuffixVar == null)
-                {
-                    string warningMessage = string.Format(UnmutableVarFormat, nameof(SaveNameSuffix));
-                    Debug.LogWarning(warningMessage);
-                    return;
-                }
-
-                saveNameSuffixVar.Value = value;
-            }
-        }
+        #endregion
 
         public static void ResetStaticsForTest()
         {
@@ -443,6 +297,226 @@ namespace Amanita.SaveSys
             }
         }
 
+        #region Resolving Details about Paths
+
+        public virtual SaveDirectoryType SaveDirectoryType { get; set; }
+
+        public virtual string GetSaveDirectory(SaveDirectoryType dirType)
+        {
+            string result = SavePathResolver.GetSaveFolderPath(dirType);
+            if (!Directory.Exists(result))
+            {
+                Directory.CreateDirectory(result);
+            }
+            return result;
+        }
+
+        public string FileExtension => SavePathResolver.FileExtension;
+
+        public string RelativePath => SavePathResolver.RelativePath;
+
+        public string NumberFormat => SavePathResolver.NumberFormat;
+
+        public string GetSaveFilePath(string fileName, object input)
+        {
+            return SavePathResolver.GetSaveFilePath(fileName, input);
+        }
+
+        public string GetSaveFolderPath(object input)
+        {
+            return SavePathResolver.GetSaveFolderPath(input);
+        }
+
+        public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
+        {
+            return SavePathResolver.GetSaveFilePath(input, slotNumber);
+        }
+
+        public string GetSaveFolderPath(SaveDirectoryType input)
+        {
+            return SavePathResolver.GetSaveFolderPath(input);
+        }
+
+        public string GetSaveFilePath(string fileName, SaveDirectoryType input)
+        {
+            return SavePathResolver.GetSaveFilePath(fileName, input);
+        }
+
+        public string GetSaveFileName(int slotNumber)
+        {
+            return SavePathResolver.GetSaveFileName(slotNumber);
+        }
+
+        public string GetSaveFilePath(object input, int slotNumber)
+        {
+            return SavePathResolver.GetSaveFilePath(input, slotNumber);
+        }
+        #endregion
+
+        #region ProgressMarker-Management
+        public virtual void RegisterProgressMarker(string id, int order = 0)
+        {
+            markerManager.RegisterProgressMarker(id, order);
+
+        }
+
+        protected ProgressMarkerManager markerManager = new ProgressMarkerManager();
+
+        protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
+
+        public virtual void UnregisterProgressMarker(string id)
+        {
+            markerManager.UnregisterProgressMarker(id);
+        }
+
+        public virtual IList<ProgressMarker> ProgressMarkers
+        {
+            get { return markerManager.ProgressMarkers; }
+        }
+
+        public virtual ProgressMarker GetProgressMarkerByID(string id)
+        {
+            return markerManager.GetProgressMarkerByID(id);
+        }
+
+        public virtual void ClearProgressMarkers()
+        {
+            markerManager.ClearProgressMarkers();
+        }
+
+        public virtual void SetProgressMarkerOrder(string id, int order)
+        {
+            markerManager.SetProgressMarkerOrder(id, order);
+        }
+
+        public virtual bool IsProgressMarkerRegistered(string id)
+        {
+            return markerManager.IsProgressMarkerRegistered(id);
+        }
+
+        public IEnumerable<ProgressMarker> GetOrderedMarkers()
+        {
+            return markerManager.GetOrderedMarkers();
+        }
+
+        public virtual void EnsureMarkerRegistered(string id, int order = 0)
+        {
+            if (!IsProgressMarkerRegistered(id))
+            {
+                RegisterProgressMarker(id, order);
+            }
+        }
+        #endregion
+
+    }
+
+    public interface IProgressMarkerManager
+    {
+        void RegisterProgressMarker(string id, int order = 0);
+
+        /// <summary>
+        /// Unregisters a progress marker by its ID. If the attempt was successful, returns true.
+        /// Otherwise, false.
+        /// </summary>
+        void UnregisterProgressMarker(string id);
+        IList<ProgressMarker> ProgressMarkers { get; }
+        ProgressMarker GetProgressMarkerByID(string id);
+        void ClearProgressMarkers();
+        void SetProgressMarkerOrder(string id, int order);
+        bool IsProgressMarkerRegistered(string id);
+        IEnumerable<ProgressMarker> GetOrderedMarkers();
+    }
+
+    public class ProgressMarkerManager : IProgressMarkerManager
+    {
+        // Dictionary for O(1) lookups by ID
+        protected readonly Dictionary<string, ProgressMarker> progressMarkers
+            = new Dictionary<string, ProgressMarker>();
+
+        public virtual void RegisterProgressMarker(string id, int order = 0)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Cannot register a null or empty ProgressMarker ID.");
+                return;
+            }
+
+            if (progressMarkers.ContainsKey(id))
+            {
+                Debug.LogWarning($"ProgressMarker with ID '{id}' is already registered.");
+                return;
+            }
+
+            progressMarkers[id] = new ProgressMarker(id, order);
+        }
+
+        public virtual void UnregisterProgressMarker(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Cannot unregister a null or empty ProgressMarker ID.");
+            }
+            else
+            {
+                bool successfullyRemoved = progressMarkers.Remove(id);
+                if (!successfullyRemoved)
+                {
+                    Debug.LogWarning($"No ProgressMarker with ID '{id}' found to unregister.");
+                }
+            }
+
+        }
+
+        public virtual IList<ProgressMarker> ProgressMarkers
+        {
+            get { return progressMarkers.Values.ToList(); }
+        }
+
+        public virtual ProgressMarker GetProgressMarkerByID(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+
+            progressMarkers.TryGetValue(id, out var marker);
+            return marker;
+        }
+
+        public virtual void ClearProgressMarkers()
+        {
+            progressMarkers.Clear();
+        }
+
+        public virtual void SetProgressMarkerOrder(string id, int newOrder)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Cannot set order for a null or empty ProgressMarker ID.");
+                return;
+            }
+
+            if (progressMarkers.TryGetValue(id, out var marker))
+            {
+                marker.Order = newOrder;
+            }
+            else
+            {
+                Debug.LogWarning($"No ProgressMarker with ID '{id}' found to set order. Creating new one.");
+                RegisterProgressMarker(id, newOrder);
+            }
+        }
+
+        public virtual bool IsProgressMarkerRegistered(string id)
+        {
+            return !string.IsNullOrEmpty(id) && progressMarkers.ContainsKey(id);
+        }
+
+        // Handy helper for ordered execution
+        public virtual IEnumerable<ProgressMarker> GetOrderedMarkers()
+        {
+            return progressMarkers.Values.OrderBy(elem => elem.Order);
+        }
     }
 
     public enum SaveDirectoryType

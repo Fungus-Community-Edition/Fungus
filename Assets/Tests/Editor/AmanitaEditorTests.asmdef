@@ -4,9 +4,9 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
         "Unity.PerformanceTesting",
-        "AmanitaEditor"
+        "Amanita.Core",
+        "Amanita.Core.Editor"
     ],
     "includePlatforms": [
         "Editor"

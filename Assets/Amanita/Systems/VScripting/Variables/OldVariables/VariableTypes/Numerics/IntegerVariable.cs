@@ -6,7 +6,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Integer variable type.
     /// </summary>
-    [VariableInfo("Numeric", "Integer", typeof(int))]
+    [VariableInfo("Numeric", "Integer", typeof(int), false)]
     [AddComponentMenu("")]
     [System.Serializable]
     public class IntegerVariable : VariableBase<int>
@@ -82,27 +82,4 @@ namespace Amanita.VScripting
         }
     }
 
-    /// <summary>
-    /// Container for an integer variable reference or constant value.
-    /// </summary>
-    [System.Serializable]
-    [VariableData(typeof(int), typeof(IntegerVariable))]
-    public class IntegerData : VariableData<int>
-    {
-        [SerializeField, SerializeReference]
-        [VariableProperty("<Value>", typeof(IntegerVariable))]
-        public IntegerVariable integerRef;
-
-        public IntegerData() : base(default) { }
-
-        public IntegerData(int startVal) : base(startVal)
-        {
-        }
-
-        public override void Refresh()
-        {
-            varRef ??= integerRef;
-        }
-
-    }
 }

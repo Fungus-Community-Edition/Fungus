@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
 using Amanita.VScripting;
+using Amanita;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class FlowchartApplierTests : CommonTestFunctionality
     {
-
         [Test]
         public virtual async Task AppliesVarStates()
         {
@@ -91,28 +91,13 @@ namespace Amanita.SaveSystemTests
             // Should not throw, should log a warning
             LogAssert.Expect(LogType.Warning, $"Flowchart with ID {flowchartSaveData.UniqueId} or name {flowchartSaveData.FlowchartName} not found.");
             await flowchartApplier.Apply(flowchartSaveData);
-
-
         }
 
         protected virtual void RemoveAllFlowchartsFromTheScene()
         {
-            IList<Flowchart> toRemove = null;
-
-#if UNITY_6000_0_OR_NEWER
-            toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#else
-            toRemove = Object.FindObjectsOfType<Flowchart>();
-#endif
+            IList<Flowchart> toRemove = UnityObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             foreach (var fc in toRemove)
             {
-                // We want to skip the FCs that are part of the AmanitaManager prefab, since that's
-                // too core to the functionality of Amanita itself
-                bool isPartOfMainManager = fc.GetComponentInParent<AmanitaManager>() != null;
-                if (isPartOfMainManager)
-                {
-                    continue;
-                }
                 UnityObject.DestroyImmediate(fc.gameObject);
             }
         }
@@ -204,17 +189,25 @@ namespace Amanita.SaveSystemTests
         {
             await CommonSetupAsync();
 
+            var origFirstVarVals = GetValsOfFirstVars();
+            IList<object> GetValsOfFirstVars()
+            {
+                IList<object> result = new List<object>();
+                foreach (var elem in flowchart.Variables)
+                {
+                    result.Add(elem.BoxedValue);
+                }
+                return result;
+            }
+
             // Create a second flowchart in the scene
             var secondFlowchartGO = new GameObject("SecondFlowchart");
             var secondFlowchart = secondFlowchartGO.AddComponent<Flowchart>();
-            //secondFlowchartGO.hideFlags = HideFlags.HideAndDontSave;
+            RegisterTestFlowchart(secondFlowchart);
 
             // Add a variable to the second flowchart
-            var secondVar = secondFlowchartGO.AddComponent<StringVariable>();
             string initSecondVarVal = "initial";
-            secondVar.Key = "secondVar";
-            secondVar.Value = initSecondVarVal;
-            secondFlowchart.AddVariable(secondVar);
+            var secondVar = secondFlowchart.AddNewMuscariable<string, StringMuscariable>("secondVar", initSecondVarVal);
 
             FlowchartSaveData secondSaveData = flowchartSaveCodec.EncodeToSave(secondFlowchart);
 
@@ -225,8 +218,11 @@ namespace Amanita.SaveSystemTests
             await flowchartApplier.ApplyRange(new[] { flowchartSaveData, secondSaveData });
 
             // Assert both flowcharts' variables were restored
-            Assert.AreEqual(flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value, nameVar.Value,
-                "First flowchart variable was not restored.");
+            var firstSavedVars = flowchartSaveData.SavedVars;
+
+            var varsAfterRestoration = GetValsOfFirstVars();
+            bool firstFcVarsRestored = varsAfterRestoration.SequenceEqual(origFirstVarVals);
+            Assert.IsTrue(firstFcVarsRestored, "First flowchart variables were not restored.");
             Assert.AreEqual(initSecondVarVal, secondVar.Value, "Second flowchart variable was not restored.");
 
             // Cleanup
@@ -276,7 +272,7 @@ namespace Amanita.SaveSystemTests
             string originalId = flowchart.UniqueId;
             typeof(Flowchart)
                 .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(flowchart, Guid.NewGuid().ToString());
+                .SetValue(flowchart, originalId + "erho8ufgiyswegfi7wfgf7o");
 
             // The save data still has the old ID, but the name matches
             // Change a variable so we can verify it gets restored

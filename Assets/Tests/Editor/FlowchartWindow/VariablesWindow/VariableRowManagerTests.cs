@@ -1,7 +1,4 @@
-﻿// --- Only the specified failing tests have been adapted for the virtualized VariableListView (Option A + C). ---
-// Other tests were intentionally left unchanged per request.
-
-using Amanita.VScripting;
+﻿using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
@@ -14,8 +11,10 @@ using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
+using Amanita.EditorUtils;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableRowManagerTests 
     {
@@ -51,7 +50,7 @@ namespace Amanita.Tests.EditMode
             PrepRowManager();
             void PrepRowManager()
             {
-                string pathToUxml = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+                string pathToUxml = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
                 _rootTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
                 _root = _rootTemplate.CloneTree();
                 _holdsManager = new VisualElement();
@@ -107,16 +106,29 @@ namespace Amanita.Tests.EditMode
             _fcHolder = new GameObject("FC");
             _firstFc = _fcHolder.AddComponent<Flowchart>();
 
-            var floatVar = _fcHolder.AddComponent<FloatVariable>(); floatVar.Key = "floatVar";
-            var stringVar = _fcHolder.AddComponent<StringVariable>(); stringVar.Key = "stringVar";
-            var intVar = _fcHolder.AddComponent<IntegerVariable>(); intVar.Key = "intVar";
-            var goVar = _fcHolder.AddComponent<GameObjectVariable>(); goVar.Key = "goVar";
-            var boolVar = _fcHolder.AddComponent<BooleanVariable>(); boolVar.Key = "boolVar";
-
-            _initVars = new List<IVariable>()
+            RegisterInitVars();
+            void RegisterInitVars()
             {
-                floatVar, stringVar, intVar, goVar, boolVar
-            };
+                var floatVar = _fcHolder.AddComponent<FloatVariable>();
+                floatVar.Key = "floatVar";
+
+                var stringVar = _fcHolder.AddComponent<StringVariable>();
+                stringVar.Key = "stringVar";
+
+                var intVar = _fcHolder.AddComponent<IntegerVariable>();
+                intVar.Key = "intVar";
+
+                var goVar = _fcHolder.AddComponent<GameObjectVariable>();
+                goVar.Key = "goVar";
+
+                var boolVar = _fcHolder.AddComponent<BooleanVariable>();
+                boolVar.Key = "boolVar";
+
+                _initVars = new List<IVariable>()
+                {
+                    floatVar, stringVar, intVar, goVar, boolVar
+                };
+            }
 
             AddInitVarsToFlowchart();
         }
@@ -175,11 +187,13 @@ namespace Amanita.Tests.EditMode
             yield return null;
 
             _firstListView.ForceMaterializeAllRowsForTests();
-            // (Optional) yield one more frame to mimic a layout pass
+            // (Optional) yield a bit longer to mimic a layout pass
             yield return new WaitForSeconds(1);
 
             int initialVisible = _firstListView.RowCount;
             Assert.Greater(initialVisible, 1, "Precondition failed: need at least 2 variables.");
+
+            Assert.IsTrue(_firstListView.Rows.Count == _firstFc.VariableCount, "Row count mismatch after initialization.");
 
             var toRemove = new IVariable[]
             {
@@ -188,13 +202,16 @@ namespace Amanita.Tests.EditMode
             };
 
             foreach (var elem in toRemove)
+            {
                 _firstFc.RemoveVariable(elem);
+                yield return null;
+            }
 
             Assert.AreEqual(_firstFc.VariableCount, _firstListView.RowCount,
                 "Row count mismatch after removals.");
 
             string expectedLabelText = string.Format(countLabelFormat, _firstFc.VariableCount);
-            Assert.AreEqual(expectedLabelText, _countLabel.text);
+            Assert.AreEqual(expectedLabelText, _countLabel.text, $"Expected count label text to be '{expectedLabelText}'.");
 
             // Now pooling should reflect the two released rows
             Assert.AreEqual(2, PooledRowCount, "Expected 2 pooled rows after removal.");
@@ -227,19 +244,22 @@ namespace Amanita.Tests.EditMode
             // With no visual binding, nothing was ever created; pools remain 0.
             Assert.AreEqual(0, PooledRowCount, "Rows should not be pooled (none created).");
             Assert.AreEqual(0, PooledHandlerCount, "Handlers should not be pooled (none created).");
-            Assert.AreEqual(0, _firstFc.VariableCount);
+            Assert.AreEqual(0, _firstFc.VariableCount, 
+                "Flowchart still has at least one var after they were supposed to have all been cleared.");
 
             // Re-add distinct-type variables (reuse original instances)
-            foreach (var v in originalVars)
-                _firstFc.AddVariable(v);
+            foreach (var toAdd in originalVars)
+            {
+                _firstFc.AddVariable(toAdd);
+            }
 
             // Still no UI binding => pools remain 0
             Assert.AreEqual(0, PooledRowCount);
             Assert.AreEqual(0, PooledHandlerCount);
-            Assert.AreEqual(originalCount, _firstFc.VariableCount);
+            Assert.AreEqual(originalCount, _firstFc.VariableCount, 
+                $"Flowchart does not get back its original var count after things were added back in.");
         }
 
-        // 2. Dispose_ClearsAllAndUnsubscribes (ADAPTED)
         [Test]
         public void Dispose_ClearsAllAndUnsubscribes()
         {
@@ -308,7 +328,7 @@ namespace Amanita.Tests.EditMode
                 List = newList,
                 CountLabel = newLabel,
                 RowFactory = new VariableRowFactory(),
-                
+                AssetResolver = new DefaultEditorAssetResolver(),
             };
             var secondView = new VariableListView(secondArgs);
             VRowManagerInitArgs initArgs = new VRowManagerInitArgs()
@@ -341,7 +361,8 @@ namespace Amanita.Tests.EditMode
                 List = thirdList,
                 CountLabel = thirdLabel,
                 RowFactory = new VariableRowFactory(),
-                
+                AssetResolver = new DefaultEditorAssetResolver(),
+
             };
             var thirdView = new VariableListView(thirdArgs);
             _rowManager.Init(new VRowManagerInitArgs
@@ -398,19 +419,6 @@ namespace Amanita.Tests.EditMode
             Assert.AreEqual(1, poolMap[stringHandlerType].Count,
                 "String handler stack count mismatch.");
         }
-
-        // ---------------------------------------------------------------------------------
-        // UNCHANGED TESTS (left as-is intentionally) 
-        // ---------------------------------------------------------------------------------
-
-        [Test] public void ReadyTheTemplates_LogsError_WhenTemplateMissing() { /* unchanged */ }
-        [Test] public void AllRowVisualHandlers_HaveAttribute() { /* unchanged */ }
-        [Test] public void Refresh_Idempotent_DoesNotGrowHandlerPool() { /* unchanged */ }
-        [Test] public void AddingSameVariableTwice_NoDuplicateRow() { /* unchanged */ }
-        [Test] public void RemoveAlreadyRemoved_Variable_NoCrash_NoPoolChange() { /* unchanged */ }
-        [Test] public void PreviousRootRowsPersist_AfterReinit() { /* unchanged */ }
-        [Test] public void Refresh_ReleasesOnlyCurrentRootRows() { /* unchanged */ }
-        [Test] public void Dispose_IgnoresSubsequentFlowchartEvents() { /* unchanged */ }
 
         protected static readonly string countLabelFormat = "Count: {0}";
 

@@ -1,9 +1,11 @@
 #define MYCELIAUDIO
 #define AMANITA_MYCELIAUDIO
+using FullSerializer;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using Amanita.FSExt;
 
 namespace Amanita.Myceliaudio
 {
@@ -17,6 +19,11 @@ namespace Amanita.Myceliaudio
 
         public virtual void Init()
         {
+            if (IsFullyInitted)
+            {
+                return;
+            }
+
             if (_s != null && _s != this)
             {
                 // With how this should be part of the AmanitaManager prefab, we'll let
@@ -32,18 +39,19 @@ namespace Amanita.Myceliaudio
             void PrepSettings()
             {
 #if !UNITY_WEBGL
+                // Since we can't work with directories in WebGL...
                 var filePath = Path.Combine(Application.dataPath, SystemSettingsFileName);
 
                 if (!File.Exists(filePath))
                 {
                     systemSettings = new MyceliaudioSettings();
-                    string whatToWrite = JsonUtility.ToJson(systemSettings);
+                    string whatToWrite = Serializer.ToJson(systemSettings);
                     File.WriteAllText(filePath, whatToWrite);
                 }
                 else
                 {
                     string jsonString = File.ReadAllText(filePath);
-                    systemSettings = JsonUtility.FromJson<MyceliaudioSettings>(jsonString);
+                    systemSettings = Serializer.FromJson<MyceliaudioSettings>(jsonString);
                 }
 #else
             systemSettings = new MyceliaudioSettings();
@@ -85,7 +93,11 @@ namespace Amanita.Myceliaudio
                     TrackManagers[managerEl.Group] = managerEl;
                 }
             }
+            IsFullyInitted = true;
         }
+
+        public virtual bool IsFullyInitted { get; protected set; } = false;
+        protected fsSerializer Serializer => AmanitaManager.DefaultSerializer;
 
         protected static AudioSystem _s;
         private static MyceliaudioSettings systemSettings;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using Amanita.VScripting;
+using Amanita.Tweening;
 
 namespace Amanita.DialogueSys
 {
@@ -55,6 +56,9 @@ namespace Amanita.DialogueSys
         [SerializeField] protected bool instantComplete = true;
 
         [SerializeField] protected bool doReadAheadText = true;
+
+        [Tooltip("Tween adaptor that handles punching text or camera")]
+        [SerializeField] protected ScriptableObject shakerSO;
 
         // This property is true when the writer is waiting for user input to continue
         protected bool isWaitingForInput;
@@ -121,6 +125,12 @@ namespace Amanita.DialogueSys
 
         protected virtual void Awake()
         {
+            posShaker = shakerSO as IPositionShaker;
+            if (posShaker == null)
+            {
+                Debug.LogWarning("ShakerSO does not implement IPositionShaker");
+            }
+
             GameObject go = targetTextObject;
             if (go == null)
             {
@@ -404,7 +414,7 @@ namespace Amanita.DialogueSys
                 case TokenType.Message:
                     if (CheckParamCount(token.paramList, 1)) 
                     {
-                        Flowchart.BroadcastFungusMessage(token.paramList[0]);
+                        Debug.LogWarning($"BroadcastFungusMessage token no longer supported.");
                     }
                     break;
                     
@@ -805,27 +815,32 @@ namespace Amanita.DialogueSys
         
         protected virtual void Punch(Vector3 axis, float time)
         {
-            GameObject go = punchObject;
-            if (go == null)
+            GameObject target = punchObject;
+            if (target == null)
             {
-                go = Camera.main.gameObject;
+                target = Camera.main.gameObject;
             }
 
-            if (go != null)
+            if (target != null && posShaker != null)
             {
-                LeanTweenHelpers.ShakePosition(go.transform, axis, new Vector2(30,60), time);
+                posShaker.ShakePosition(target.transform, axis, new Vector2(30,60), time);
             }
         }
+
+        protected IPositionShaker posShaker;
         
         protected virtual void Flash(float duration)
         {
             var cameraManager = AmanitaManager.S.CameraManager;
 
             cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
-            cameraManager.Fade(1f, duration, delegate {
-                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f,1f,1f,1f), 32, 32);
+            
+            cameraManager.Fade(1f, duration, OnFadeDone);
+            void OnFadeDone()
+            {
+                cameraManager.ScreenFadeTexture = CameraManager.CreateColorTexture(new Color(1f, 1f, 1f, 1f), 32, 32);
                 cameraManager.Fade(0f, duration, null);
-            });
+            }
         }
         
         protected virtual AudioSource FindAudio(string audioObjectName)

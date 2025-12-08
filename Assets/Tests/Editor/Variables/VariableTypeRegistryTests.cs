@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Type = System.Type;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableTypeRegistryTests
     {

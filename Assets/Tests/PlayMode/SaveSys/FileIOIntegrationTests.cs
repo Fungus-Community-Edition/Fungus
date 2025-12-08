@@ -8,26 +8,30 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class FileIOIntegrationTests : CommonTestFunctionality
     {
+        // Needs SaveSystem, but not scene/flowchart.
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+
         public override void DoSetUp()
         {
             base.DoSetUp();
             saveReaderFallback = new TestSaveReader();
+            saveReaderFallback.StorageSettings = storageSettings;
         }
 
         protected TestSaveReader saveReaderFallback;
-        // ^For when we need to avoid hangs from async calls (what with the quirks with the test runner)
 
         [Test]
         public async Task SmallData_RoundTrip()
         {
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
-            var writeReq = new SaveWriteRequest
+            var writeReqLocal = new SaveWriteRequest
             {
                 SaveName = "SmallRT",
                 SlotNumber = 1,
@@ -35,15 +39,16 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReqLocal);
+            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
+            saveFilePathsForCleanup.Add(filePath);
 
-            var readReq = new SaveReadRequest
+            var readReqLocal = new SaveReadRequest
             {
                 SlotNumber = 1,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
-
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReqLocal);
             Assert.IsTrue(data.Equals(result));
         }
 
@@ -56,14 +61,13 @@ namespace Amanita.SaveSystemTests
             var meta = new SaveMetaData();
 
             // Ensure fresh test directory
-            string savePath = FileUtils.GetPathToFile(baseDir, slotNumber, saveWriter);
+            string savePath = saveWriter.GetSaveFilePath(baseDir, slotNumber);
             string backupPath = savePath + saveWriter.BackupFileExtension;
-            if (File.Exists(savePath)) File.Delete(savePath);
-            if (File.Exists(backupPath)) File.Delete(backupPath);
+            saveFilePathsForCleanup.Add(savePath);
+            saveFilePathsForCleanup.Add(backupPath);
 
-            // STEP 1 — Write initial data
             var originalData = new CompositeSaveData();
-            originalData.Add(new SaveDataUnit("State", "{\"value\":1}"));
+            originalData.Add(new RawIntSaveData(1));
 
             var firstWrite = new SaveWriteRequest
             {
@@ -72,13 +76,13 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = meta,
                 MainState = originalData
             };
-            await saveWriter.WriteOneToDisk(firstWrite);
+            await saveWriter.WriteOneToDiskAsync(firstWrite);
 
             Assert.IsTrue(File.Exists(savePath), "Initial file was not created.");
 
             // STEP 2 — Overwrite with new data
             var newData = new CompositeSaveData();
-            newData.Add(new SaveDataUnit("State", "{\"value\":999}"));
+            newData.Add(new RawIntSaveData(999));
 
             var secondWrite = new SaveWriteRequest
             {
@@ -88,23 +92,22 @@ namespace Amanita.SaveSystemTests
                 MainState = newData
             };
             saveWriter.DeleteBackupsPostOverwrite = false; // to allow checking the backup
-            await saveWriter.WriteOneToDisk(secondWrite);
+            await saveWriter.WriteOneToDiskAsync(secondWrite);
 
             Assert.IsTrue(File.Exists(savePath), "Overwritten file was not created.");
             Assert.IsTrue(File.Exists(backupPath), "Backup file was not created during overwrite.");
 
-            // Optional: Verify that the backup contains the original content
+            // Verify that the backup contains the original content (Value = 1)
             var backupContent = await File.ReadAllTextAsync(backupPath);
             string unescaped = Regex.Unescape(backupContent);
-            Assert.IsTrue(unescaped.Contains("\"value\":1"), "Backup file did not preserve original content.");
+            Assert.IsTrue(unescaped.Contains("\"Value\": 1"), "Backup file did not preserve original content.");
 
             // STEP 3 — Write again with deletion enabled
             saveWriter.DeleteBackupsPostOverwrite = true;
-            await saveWriter.WriteOneToDisk(secondWrite); // trigger overwrite
+            await saveWriter.WriteOneToDiskAsync(secondWrite); // trigger overwrite
 
             Assert.IsFalse(File.Exists(backupPath), "Backup file was not deleted after overwrite with cleanup enabled.");
         }
-
 
         [TestCase(1, SaveDirectoryType.DataPath)]
         [TestCase(5, SaveDirectoryType.PersistentDataPath)]
@@ -112,7 +115,7 @@ namespace Amanita.SaveSystemTests
         public async Task SmallData_RoundTrip_VariedSlots(int slotNumber, SaveDirectoryType dirType)
         {
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
             var writeReq = new SaveWriteRequest
             {
@@ -122,14 +125,14 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = dirType
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = slotNumber,
                 BaseSaveDirectory = dirType
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result));
         }
@@ -137,11 +140,11 @@ namespace Amanita.SaveSystemTests
         [Test]
         public async Task EncryptedData_RoundTrip()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":123}"));
+            data.Add(new RawIntSaveData(123));
 
             var writeReq = new SaveWriteRequest
             {
@@ -151,14 +154,14 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 2,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
             Assert.IsTrue(data.Equals(result), "Encrypted round-trip did not preserve data.");
         }
@@ -166,14 +169,14 @@ namespace Amanita.SaveSystemTests
         [Test]
         public async Task EncryptedMetaData_RoundTrip()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var meta = new SaveMetaData();
             meta.SaveName = "EncryptedMetaTest";
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Bar", "{\"y\":456}"));
+            data.Add(new RawStringSaveData("hello meta"));
 
             var writeReq = new SaveWriteRequest
             {
@@ -183,14 +186,14 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = meta,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 3,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMetadataFromDisk(readReq);
+            var result = await saveReader.ReadMetadataFromDiskAsync(readReq);
 
             Assert.AreEqual(meta.SaveName, result.SaveName, "Encrypted metadata round-trip did not preserve SaveName.");
         }
@@ -198,11 +201,11 @@ namespace Amanita.SaveSystemTests
         [Test]
         public async Task EncryptedFile_Corruption_Throws()
         {
-            saveWriter.WriteEncrypted = true;
-            saveReaderFallback.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReaderFallback.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":999}"));
+            data.Add(new RawIntSaveData(999));
 
             var writeReq = new SaveWriteRequest
             {
@@ -212,7 +215,7 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             // Corrupt the file
             var path = saveReaderFallback.GetSavePath(new SaveReadRequest { SlotNumber = 4, BaseSaveDirectory = SaveDirectoryType.DataPath });
@@ -229,18 +232,18 @@ namespace Amanita.SaveSystemTests
             string assertErrorMessage = "Corrupted encrypted file did not throw.";
             Assert.ThrowsAsync<InvalidDataException>(async () =>
             {
-                await saveReaderFallback.ReadMainSaveDataFromDisk(readReq);
+                await saveReaderFallback.ReadMainSaveDataFromDiskAsync(readReq);
             }, assertErrorMessage);
         }
 
         [Test, TestCaseSource(nameof(UnicodeTestCases))]
         public async Task EncryptedUnicodeData_RoundTrip(string unicodeString)
         {
-            saveWriter.WriteEncrypted = true;
-            saveReader.ReadEncrypted = true;
+            saveWriter.ExpectEncryption = true;
+            saveReader.ExpectEncryption = true;
 
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Unicode", unicodeString));
+            data.Add(new RawStringSaveData(unicodeString));
 
             var writeReq = new SaveWriteRequest
             {
@@ -250,16 +253,17 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 5,
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            var result = await saveReader.ReadMainSaveDataFromDisk(readReq);
+            var result = await saveReader.ReadMainSaveDataFromDiskAsync(readReq);
 
-            Assert.IsTrue(result.Units.Any(u => u.Content == unicodeString), $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
+            Assert.IsTrue(result.Items.OfType<RawStringSaveData>().Any(u => u.Value == unicodeString),
+                $"Unicode data '{unicodeString}' was not preserved in encrypted round-trip.");
         }
 
         public static IEnumerable<string> UnicodeTestCases()
@@ -276,14 +280,13 @@ namespace Amanita.SaveSystemTests
             yield return "Zażółć gęślą jaźń"; // Polish diacritics
         }
 
-
         [Test]
         public async Task EncryptedFlag_Mismatch_Throws()
         {
             // Write unencrypted
-            saveWriter.WriteEncrypted = false;
+            saveWriter.ExpectEncryption = false;
             var data = new CompositeSaveData();
-            data.Add(new SaveDataUnit("Foo", "{\"x\":42}"));
+            data.Add(new RawIntSaveData(42));
 
             var writeReq = new SaveWriteRequest
             {
@@ -293,11 +296,11 @@ namespace Amanita.SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            await saveWriter.WriteOneToDisk(writeReq);
+            await saveWriter.WriteOneToDiskAsync(writeReq);
 
             // Try to read as encrypted
             TestSaveReader saveReader = saveReaderFallback;
-            saveReader.ReadEncrypted = true;
+            saveReader.ExpectEncryption = true;
             var readReq = new SaveReadRequest
             {
                 SlotNumber = 6,
@@ -305,10 +308,21 @@ namespace Amanita.SaveSystemTests
             };
 
             string assertErrorMessage = "Reading unencrypted file as encrypted did not throw.";
-            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDisk(readReq).ConfigureAwait(false),
+            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false),
                 assertErrorMessage);
         }
+    }
+
+    // Simple test SaveData types for round-trips
+    [System.Serializable]
+    public class RawIntSaveData : SaveData
+    {
+        [SerializeField] public int Value;
+
+        public RawIntSaveData() { }
+        public RawIntSaveData(int value) { Value = value; }
 
     }
 
+    
 }

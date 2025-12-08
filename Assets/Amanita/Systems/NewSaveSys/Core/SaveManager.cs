@@ -6,17 +6,45 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Amanita.SaveSys.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {
     public class SaveManager : ISaveManager
     {
+        public virtual async Task Init()
+        {
+            EnsureSaveFolderIsThere();
+            void EnsureSaveFolderIsThere()
+            {
+                var resolver = SaveRepo.PathResolver;
+                string folderDir = resolver.GetSaveFolderPath(SaveSystem.S.SaveDirectoryType);
+                if (!Directory.Exists(folderDir))
+                {
+                    Directory.CreateDirectory(folderDir);
+                }
+            }
+
+            await ReadMetasOnDisk();
+            async Task ReadMetasOnDisk()
+            {
+                IList<ISaveMetaData> metasOnDisk = await SaveRepo.LoadAllMetasOnDisk();
+                for (int i = 0; i < metasOnDisk.Count; i++)
+                {
+                    ISaveMetaData meta = metasOnDisk[i];
+                    SaveDataSet dataSet = new SaveDataSet(meta, null);
+                    Registry.AddSave(dataSet);
+                }
+                SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
+            }
+        }
         public virtual int MaxSlots { get; set; } = 100;
 
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
         public virtual IVersionProvider VersionProvider { get; protected set; }
-        
+
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
                         IMainStateFactory mainStateFactory)
@@ -33,45 +61,6 @@ namespace Amanita.SaveSys
         public virtual SaveLoader Loader { get; set; }
         public virtual IMetaFactory MetaFactory { get; set; }
         public SaveDirectoryType SaveDirType { get; set; } = SaveDirectoryType.DataPath;
-        public virtual string SaveRelativePath { get; set; } = "/Saves";
-
-        public virtual string FullSaveDir
-        {
-            get
-            {
-                string baseDir = SaveSystem.S.SaveDirectoryPaths[SaveDirType];
-                string result = Path.Combine(baseDir, SaveRelativePath);
-                return result;
-            }
-        }
-        
-        public virtual void RegisterMultiMainCodecs(IList<IMainSaveCodec> codecs)
-        {
-            if (codecs == null || codecs.Count == 0)
-            {
-                Debug.LogWarning("No main codecs provided to register.");
-                return;
-            }
-
-            for (int i = 0; i < codecs.Count; i++)
-            {
-                IMainSaveCodec currentEncoder = codecs[i];
-                if (currentEncoder == null)
-                {
-                    Debug.LogWarning($"Main codec at index {i} is null. Skipping registration.");
-                    continue;
-                }
-                RegisterMainCodec(currentEncoder);
-            }
-        }
-
-        public virtual void RegisterMainCodec(IMainSaveCodec codec)
-        {
-            mainCodecs.Add(codec);
-            Loader.Add(codec);
-        }
-
-        protected IList<IMainSaveCodec> mainCodecs = new List<IMainSaveCodec>();
 
         public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
         {
@@ -101,7 +90,7 @@ namespace Amanita.SaveSys
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
         protected static string registerAndWriteOp = "register or write";
-        
+
         protected virtual bool Validate(int slotNum, string operation)
         {
             bool result;
@@ -155,7 +144,7 @@ namespace Amanita.SaveSys
                     {
                         sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
-                    
+
                     bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
                     if (!shouldLoadScene)
                     {
@@ -193,7 +182,59 @@ namespace Amanita.SaveSys
             await Loader.LoadMain(mainData, sceneToLoad);
 
             await ExecuteHandlers(AfterSceneLoadAsync);
+
+            ExecuteSaveLoadedHandlers();
+            void ExecuteSaveLoadedHandlers()
+            {
+                SaveSystem saveSys = SaveSystem.S;
+                var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
+
+                // We only want to count the handlers that are either:
+                // - set to respond to any save load
+                // - set to respond to at least one marker that is registered in the SaveSystem
+                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
+                .FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
+                .Where(handler => handler.IsAbleToRespond)
+                .ToList();
+
+                Sort(saveLoadedHandlers);
+
+                for (int i = 0; i < saveLoadedHandlers.Count; i++)
+                {
+                    var handler = saveLoadedHandlers[i];
+                    handler.ExecuteBlock();
+                }
+            }
+
             return mainData;
+        }
+
+        protected virtual void Sort(List<SaveLoadedEvent> toSort)
+        {
+            SaveSystem saveSys = SaveSystem.S;
+
+            // To save clock cycles, precompute orders
+            var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
+            foreach (var handler in toSort)
+            {
+                handlerOrders[handler] = handler.LowestOrder();
+            }
+
+            toSort.Sort((first, second) =>
+            {
+                int firstOrder = handlerOrders[first];
+                int secondOrder = handlerOrders[second];
+
+                bool shouldUseFallback = firstOrder == secondOrder;
+                if (shouldUseFallback)
+                {
+                    int firstId = first.GetInstanceID();
+                    int secondId = second.GetInstanceID();
+                    return firstId.CompareTo(secondId);
+                }
+
+                return firstOrder.CompareTo(secondOrder);
+            });
         }
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
@@ -227,7 +268,7 @@ namespace Amanita.SaveSys
                 Debug.LogWarning(errorMessage);
                 return;
             }
-            
+
             if (!SlotExists(slotNum))
             {
                 string warningMessage = $"Cannot delete save in slot {slotNum} because it does not exist.";
@@ -241,11 +282,6 @@ namespace Amanita.SaveSys
 
         protected static string deleteOp = "delete";
 
-        public virtual IList<SaveDataSet> GetAllSlots()
-        {
-            return Registry.GetAllSaves();
-        }
-
         public virtual IList<int> GetOccupiedSlots()
         {
             return Registry.GetOccupiedSlots();
@@ -256,25 +292,11 @@ namespace Amanita.SaveSys
             return Registry.HasSaveInSlot(slot);
         }
 
-        /// <summary>
-        /// Returns (what at least would be) the path to the save of the 
-        /// specified slot. This function does not take into account 
-        /// whether or not a save with that slot exists; it only
-        /// considers hypotheticals.
-        /// </summary>
-        public virtual string GetPathTo(int slot)
-        {
-            string result = SaveRepo.GetPathTo(slot);
-            return result;
-        }
-
         protected SaveReadRequest reqForPathFinding = new SaveReadRequest();
-        // ^Better to cache this than create a new request every time client code
-        // wants to know the path of a save.
-    
+
         public virtual CompositeSaveData GetMainFrom(int slot)
         {
-            CompositeSaveData mainData = (CompositeSaveData) Registry.GetMainSave(slot);
+            CompositeSaveData mainData = (CompositeSaveData)Registry.GetMainSave(slot);
             return mainData;
         }
 
@@ -282,7 +304,7 @@ namespace Amanita.SaveSys
         {
             Registry.Clear();
         }
-    
+
         public virtual void SetSaveNameFor(int slot, string newSaveName)
         {
             Registry.SetSaveNameFor(slot, newSaveName);

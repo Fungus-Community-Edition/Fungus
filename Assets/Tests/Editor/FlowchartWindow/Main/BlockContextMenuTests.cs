@@ -6,7 +6,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.FCWindowOperations
 {
     [TestFixture]
     class BlockContextMenuHandlerTests
@@ -180,18 +180,18 @@ namespace Amanita.Tests.EditMode
         public virtual void Cut_DeletesTheRightOriginals()
         {
             string errorMessage = string.Empty;
-            CommonCutTest(out IList<Block> selectedBlocks, out IList<int> blockIDsBeforeCut);
+            CommonCutTest(out IList<Block> selectedBlocks, out IList<ushort> blockIDsBeforeCut);
             
             bool allNulls = selectedBlocks.All(item => item == null);
             Assert.IsTrue(allNulls, "All of the original vers of the cut blocks should be null");
 
         }
 
-        protected virtual void CommonCutTest(out IList<Block> selectedBlocks, out IList<int> selectedBlockIDsBeforeCut)
+        protected virtual void CommonCutTest(out IList<Block> selectedBlocks, out IList<ushort> selectedBlockIDsBeforeCut)
         {
             Assert.IsTrue(handler.Handle(rightClickBlock, ctx), "Handler should consume the right-click");
             IList<Block> localSelectedBlocks;
-            IList<int> localBlockIDsBeforeCut;
+            IList<ushort> localBlockIDsBeforeCut;
             // ^So we can later pass to the out params with less hassle
             string errorMessage = string.Empty;
 
@@ -229,7 +229,7 @@ namespace Amanita.Tests.EditMode
         public virtual void Cut_RegistersCorrectCopies()
         {
             string errorMessage = string.Empty;
-            CommonCutTest(out IList<Block> selectedBlocks, out IList<int> blockIDsBeforeCut);
+            CommonCutTest(out IList<Block> selectedBlocks, out IList<ushort> blockIDsBeforeCut);
 
             CheckThatTheRightStuffWasCut();
             void CheckThatTheRightStuffWasCut()

@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableEditorTests
     {
@@ -47,42 +46,19 @@ namespace Amanita.Tests.EditMode
         }
 
         [Test]
-        public void OnEnable_HidesVariableInInspector()
-        {
-            var boolVar = CreateVarComponent<BooleanVariable>(_firstFc, "BoolVar", VariableScope.Private);
-            // Creating editor should trigger OnEnable
-            var editor = Editor.CreateEditor(boolVar, typeof(VariableEditor)) as VariableEditor;
-            Assert.NotNull(editor);
-            Assert.IsTrue((boolVar.hideFlags & HideFlags.HideInInspector) != 0,
-                "VariableEditor.OnEnable failed to set HideInInspector on Variable.");
-            UnityObject.DestroyImmediate(editor);
-        }
-
-        protected T CreateVarComponent<T>(Flowchart fc, string key, VariableScope scope) where T : Variable
-        {
-            var result = fc.gameObject.AddComponent<T>();
-            result.Scope = scope;
-            result.Key = key;
-            // Register into flowchart list so Flowchart.Variables exposes it
-            fc.AddVariable(result);
-            _toDestroy.Add(result);
-            return result;
-        }
-
-        [Test]
         public void GetVariableInfo_ReturnsAttribute()
         {
             // IntegerVariable should have a VariableInfoAttribute (from Fungus)
-            var attr = VariableEditor.GetVariableInfo(typeof(IntegerVariable));
-            Assert.NotNull(attr, "VariableInfoAttribute not found for IntegerVariable.");
+            var attr = VariableEditor.GetVariableInfo(typeof(IntMuscariable));
+            Assert.NotNull(attr, "VariableInfoAttribute not found for IntMuscariable.");
             Assert.IsFalse(string.IsNullOrEmpty(attr.OptionDisplayName), "VariableType string should not be empty.");
         }
 
         [Test]
         public void VariableField_SelectsLocalVariable()
         {
-            var boolVar = CreateVarComponent<BooleanVariable>(_firstFc, "BoolVar", VariableScope.Private);
-            var floatVar = CreateVarComponent<FloatVariable>(_firstFc, "FloatVar", VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
+            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, VariableScope.Private);
 
             var (serialObj, holdsVar, _) = MakeHolder();
 
@@ -108,7 +84,7 @@ namespace Amanita.Tests.EditMode
         /// Invokes VariableField capturing the produced options (via drawer delegate) and forcing selection index.
         /// Returns (selectedVariable, optionsArrayPassedToDrawer).
         /// </summary>
-        protected (Variable selected, string[] options) InvokeVariableFieldWithCapture(
+        protected (IVariable selected, string[] options) InvokeVariableFieldWithCapture(
             Flowchart owningFlowchart,
             SerializedProperty prop,
             int forcedIndex,
@@ -130,14 +106,20 @@ namespace Amanita.Tests.EditMode
                                          drawer);
 
             prop.serializedObject.ApplyModifiedProperties();
-            return (prop.objectReferenceValue as Variable, capturedOptions);
+
+            IVariable selected =
+                prop.propertyType == SerializedPropertyType.ManagedReference
+                    ? prop.managedReferenceValue as IVariable
+                    : prop.objectReferenceValue as IVariable;
+
+            return (selected, capturedOptions);
         }
 
         [Test]
         public void VariableField_Filter_OnlyBooleanVars()
         {
-            var boolVar = CreateVarComponent<BooleanVariable>(_firstFc, "BoolVar", VariableScope.Private);
-            var floatVar = CreateVarComponent<FloatVariable>(_firstFc, "FloatVar", VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
+            var floatVar = _firstFc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", default, VariableScope.Private);
 
             var (serialObj, holdsVar, _) = MakeHolder();
 
@@ -155,46 +137,31 @@ namespace Amanita.Tests.EditMode
         public void VariableField_IncludesPublicFromOtherFlowchart_ExcludesPrivate()
         {
             // Local
-            var localVar = CreateVarComponent<BooleanVariable>(_firstFc, "LocalBool", VariableScope.Private);
+            var localVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("LocalBool", default, VariableScope.Private);
 
             // Remote public + private
-            var publicVar = CreateVarComponent<BooleanVariable>(_secondFc, "RemotePublic", VariableScope.Public);
-            CreateVarComponent<IntegerVariable>(_secondFc, "RemotePrivate", VariableScope.Private);
+            var publicVar = _secondFc.AddNewMuscariable<bool, BoolMuscariable>("RemotePublic", default, VariableScope.Public);
+            _secondFc.AddNewMuscariable<int, IntMuscariable>("RemotePrivate", default, VariableScope.Private);
 
             var (serialObj, holdsProp, _) = MakeHolder();
 
-            // Force index 2: options expected order: 0 default, 1 LocalBool, 2 Flowchart_B/RemotePublic
+            // Force index 2: options expected order: 0 default null, 1 LocalBool, 2 Flowchart_B/RemotePublic
+            // Note that after the default null is local vars followed by other flowchart vars, 
+            // and then finally whatever globals AmanitaManager might have.
             var (selected, options) = InvokeVariableFieldWithCapture(_firstFc, holdsProp, forcedIndex: 2);
 
             string expectedRemoteLabel = $"{_secondFc.name}/RemotePublic";
             CollectionAssert.Contains(options, expectedRemoteLabel, "Public remote variable not included.");
             Assert.IsFalse(options.Any(optionEl => optionEl.Contains("RemotePrivate")),
                 "Private remote variable should not appear.");
-            Assert.AreEqual(publicVar, selected, "Expected remote public variable to be selected.");
-        }
-
-        [Test]
-        public void VariableField_protectedVarFromOtherFlowchart_IsCleared()
-        {
-            // Remote private variable assigned initially
-            var remotePrivate = CreateVarComponent<BooleanVariable>(_secondFc, "RemotePrivate", VariableScope.Private);
-
-            var (serialObj, propWithVar, holder) = MakeHolder();
-            propWithVar.objectReferenceValue = remotePrivate;
-            serialObj.ApplyModifiedPropertiesWithoutUndo();
-
-            // Call with owning flowchart A -> should clear because selected variable belongs to
-            // other flowchart & is private
-            var (selected, options) = InvokeVariableFieldWithCapture(_firstFc, propWithVar, forcedIndex: 0);
-
-            Assert.IsNull(selected, "Private variable from another flowchart should have been cleared.");
-            Assert.AreEqual("<None>", options[0], "Default option text expected at index 0.");
+            Assert.AreEqual(publicVar, selected, $"Expected remote public variable {publicVar.Key} to be " +
+                $"selected. Instead selected {selected.Key}");
         }
 
         [Test]
         public void VariableField_DefaultOptionPresentAsFirstEntry()
         {
-            CreateVarComponent<BooleanVariable>(_firstFc, "BoolVar", VariableScope.Private);
+            var boolVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("BoolVar", default, VariableScope.Private);
             var (serialObj, propWithVar, _) = MakeHolder();
 
             string defaultOption = "<Select>";
@@ -205,4 +172,3 @@ namespace Amanita.Tests.EditMode
         }
     }
 }
-#endif

@@ -5,20 +5,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Amanita.VScripting;
+using Amanita.FSExt;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class BlockCodecTests : CommonTestFunctionality
     {
-        protected override void PrepScene()
-        {
-            base.PrepScene();
-            block = flowchart.FindBlock("TestBlock");
-            blockSaveData = blockSaveCodec.EncodeToSave(block);
-        }
+        // Faster: this suite needs scene + flowchart + codecs, not the SaveSystem.
+        protected override bool ReqSaveSystem => false;
 
         protected Block block;
         protected BlockSaveData blockSaveData = null;
+
+        [SetUp]
+        public override void DoSetUp()
+        {
+            base.DoSetUp();
+
+            // Prepare per-test block state now that base no longer calls subclass PrepScene
+            block = flowchart.FindBlock("TestBlock");
+            Assert.IsNotNull(block, "TestBlock not found in Flowchart.");
+            blockSaveData = blockSaveCodec.EncodeToSave(block);
+        }
 
         [Test]
         public virtual void CorrectBlockID_ENcoded()
@@ -35,8 +43,8 @@ namespace Amanita.SaveSystemTests
         [Test]
         public virtual void CorrectBlockName_DEcoded()
         {
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedStr = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedStr);
             Assert.AreEqual(block.BlockName, deserializedBlock.BlockName, "Serialized Block name mismatch.");
         }
 
@@ -45,8 +53,8 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(100);
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedStr = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedStr);
             Assert.AreEqual(block.ItemId, deserializedBlock.ItemId, "Serialized Block ID mismatch.");
         }
 
@@ -65,8 +73,8 @@ namespace Amanita.SaveSystemTests
             await Task.Delay(500);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedData = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
         }
 
@@ -85,8 +93,8 @@ namespace Amanita.SaveSystemTests
             await Task.Delay(100);
             Assert.IsNotNull(block.ActiveCommand, "Active command not found in block.");
             blockSaveData = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = blockSaveData.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
+            string serializedData = serializer.ToJson(blockSaveData);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
         }
 
@@ -95,9 +103,9 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(100);
             BlockSaveData beforeSerializing = blockSaveCodec.EncodeToSave(block);
-            SaveDataUnit serializedData = beforeSerializing.Serialized();
-            BlockSaveData deserializedBlock = BlockSaveData.DeserializeFrom(serializedData);
-            
+            string serializedData = serializer.ToJson(beforeSerializing);
+            BlockSaveData deserializedBlock = serializer.FromJson<BlockSaveData>(serializedData);
+
             Assert.IsNotNull(deserializedBlock, "Deserialized Block is null.");
             Assert.AreEqual(block.ActiveCommand.CommandIndex, deserializedBlock.ActiveCommandIndex, "Active command index mismatch.");
             Assert.AreEqual(block.ActiveCommand.ItemId, deserializedBlock.ActiveCommandId, "Active command ID mismatch.");
@@ -105,13 +113,9 @@ namespace Amanita.SaveSystemTests
             Assert.AreEqual(block.BlockName, deserializedBlock.BlockName, "Serialized Block name mismatch.");
         }
 
-
         [Test]
         public async Task EncodeToMultiSave_IncludeCorrectBlocks()
         {
-            // The correct Blocks here being the ones that:
-            // - have their Include In Saves flag set to true
-            // - are executing at the time of saving
             await Task.Delay(100);
             IList<Block> allBlocks = flowchart.GetComponents<Block>();
             IList<Block> whatShouldNOTBeIncluded = (from elem in allBlocks
@@ -128,11 +132,10 @@ namespace Amanita.SaveSystemTests
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
             Assert.IsTrue(result.Count == whatShouldBeIncluded.Count, "Encoded the wrong amount of Blocks");
 
-            IList<int> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
-            IList<int> resultIDs = result.Select(item => item.ItemId).ToList();
+            IList<ushort> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
+            IList<ushort> resultIDs = result.Select(item => item.ItemId).ToList();
 
             bool onlyTheRightStuff = idsThatShouldBeIncluded.SequenceEqual(resultIDs);
-
             Assert.IsTrue(onlyTheRightStuff, "Encoded at least one Block that shouldn't have been included");
         }
 
@@ -141,7 +144,7 @@ namespace Amanita.SaveSystemTests
         {
             flowchart.IncludeInSaves = false;
             FlowchartSaveData saveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            Assert.IsNull(saveData); 
+            Assert.IsNull(saveData);
         }
 
         [Test]
@@ -149,17 +152,14 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(100);
             IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            // Find all blocks that are executing but have IncludeInSaves == false
             var excludedBlocks = allBlocks.Where(b => !b.IncludeInSaves && b.IsExecuting()).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == false");
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
-            foreach (var block in excludedBlocks)
-            {
-                Assert.IsFalse(resultIDs.Contains(block.ItemId), $"Block {block.BlockName} (ID {block.ItemId}) should not be included when IncludeInSaves is false.");
-            }
+            foreach (var b in excludedBlocks)
+                Assert.IsFalse(resultIDs.Contains(b.ItemId), $"Block {b.BlockName} (ID {b.ItemId}) should not be included when IncludeInSaves is false.");
         }
 
         [Test]
@@ -167,17 +167,14 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(100);
             IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            // Find all blocks that have IncludeInSaves == true but are not executing
             var excludedBlocks = allBlocks.Where(b => b.IncludeInSaves && !b.IsExecuting()).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one non-executing Block with IncludeInSaves == true");
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
-            foreach (var block in excludedBlocks)
-            {
-                Assert.IsFalse(resultIDs.Contains(block.ItemId), $"Block {block.BlockName} (ID {block.ItemId}) should not be included when not executing.");
-            }
+            foreach (var b in excludedBlocks)
+                Assert.IsFalse(resultIDs.Contains(b.ItemId), $"Block {b.BlockName} (ID {b.ItemId}) should not be included when not executing.");
         }
 
         [Test]
@@ -185,7 +182,6 @@ namespace Amanita.SaveSystemTests
         {
             await Task.Delay(100);
             IList<Block> allBlocks = flowchart.GetComponents<Block>();
-            // Find all blocks that are both executing and have IncludeInSaves == true
             var includedBlocks = allBlocks.Where(b => b.IncludeInSaves && b.IsExecuting()).ToList();
             Assume.That(includedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == true");
 
@@ -193,10 +189,8 @@ namespace Amanita.SaveSystemTests
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
             Assert.AreEqual(includedBlocks.Count, result.Count, "Encoded the wrong number of Blocks.");
-            foreach (var block in includedBlocks)
-            {
-                Assert.IsTrue(resultIDs.Contains(block.ItemId), $"Block {block.BlockName} (ID {block.ItemId}) should be included.");
-            }
+            foreach (var b in includedBlocks)
+                Assert.IsTrue(resultIDs.Contains(b.ItemId), $"Block {b.BlockName} (ID {b.ItemId}) should be included.");
         }
 
         [Test]
@@ -220,13 +214,10 @@ namespace Amanita.SaveSystemTests
 
             IList<Block> allBlocks = flowchart.GetComponents<Block>();
             foreach (var elem in allBlocks)
-            {
                 elem.IncludeInSaves = false;
-            }
 
             IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
             Assert.IsTrue(result.Count == 0, "Created block save data from Flowchart with all Blocks set to NOT be included");
         }
-
     }
 }

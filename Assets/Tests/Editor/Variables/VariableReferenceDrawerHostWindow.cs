@@ -2,7 +2,7 @@ using Amanita.VScripting.EditorUtils;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableReferenceDrawerHostWindow : EditorWindow
     {

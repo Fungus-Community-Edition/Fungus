@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.MuscariableTests
+namespace VScriptingTests.MuscariableTests
 {
     public abstract class MuscariableTestsCommon
     {

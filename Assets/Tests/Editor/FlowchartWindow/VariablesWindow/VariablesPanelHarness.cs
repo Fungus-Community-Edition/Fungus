@@ -1,4 +1,3 @@
-// Assets/Editor/Amanita/Tests/VariablesPanelHarness.cs
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -42,9 +41,9 @@ namespace Amanita.VScripting.EditorUtils.Tests
 
         // Load your UXML from the same path you use in FlowchartWindow.OnEnable
         // Make sure the asset exists at this Resources path.
-        private const string UxmlResourcesPath = "_EditorResources/UIToolkitTemplates/VariableDisplayEditor";
+        private const string UxmlResourcesPath = AmanitaConstants.PathToAmanitaVariableDisplayEditorUxml;
 
-        [MenuItem("Amanita/Tests/Variables Panel Harness")]
+        [MenuItem("Tools/Amanita/Tests/Variables Panel Harness")]
         public static void Open()
         {
             var w = GetWindow<VariablesPanelHarnessWindow>();
@@ -104,8 +103,6 @@ namespace Amanita.VScripting.EditorUtils.Tests
             // or wrap FakeFlowchart in an adapter that exposes the same API.
             public new object Flowchart => _host.Flowchart;
 
-            // For the harness, return false so BuildManager only runs when we tell it to.
-            public new bool HandleFlowchartSelectionChange() => false;
         }
     }
 }

@@ -12,9 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f06ea061e958b2c4a9e32f4c1a613aea, type: 3}
   m_Name: TestSaveReader
   m_EditorClassIdentifier: 
-  savePrefix: saveData
-  fileExtension: save
-  relativeSavePath: Saves/
-  saveNumberFormat: D2
-  readEncrypted: 0
+  storageSettings: {fileID: 11400000, guid: 9e53282b53af66348b24d95543a53ad8, type: 2}
   decryptor: {fileID: 11400000, guid: 3a898ba32ee0242468c4d3926788fd2f, type: 2}

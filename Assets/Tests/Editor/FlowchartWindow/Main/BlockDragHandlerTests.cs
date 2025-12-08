@@ -7,8 +7,9 @@ using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
+using Amanita;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.FCWindowOperations
 {
     public class BlockDragHandlerTests
     {

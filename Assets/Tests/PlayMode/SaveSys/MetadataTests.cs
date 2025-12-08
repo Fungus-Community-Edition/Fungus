@@ -1,13 +1,18 @@
 using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using Amanita.FSExt;
 
-namespace Amanita.SaveSystemTests
+namespace SaveSystemTests
 {
     public class MetadataTests : CommonTestFunctionality
     {
+        // Reduce setup: no scene, flowchart, or save system required.
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+        protected override bool ReqSaveSystem => false;
+
         [SetUp]
         public override void DoSetUp()
         {
@@ -23,60 +28,41 @@ namespace Amanita.SaveSystemTests
 
             metaData.SaveVersion = expectedSaveVer;
             metaData.TimeStamp = DateTime.UtcNow;
-
-            serializedMetaData = metaData.Serialized();
-            deserializedMetaData = SaveMetaData.DeserializeFrom(serializedMetaData);
         }
 
-        protected SaveDataUnit serializedMetaData;
         protected SaveMetaData deserializedMetaData;
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
-
-        [Test]
-        public virtual void Metadata_TypeNameSerializedProperly()
-        {
-            Assert.AreEqual(serializedMetaData.DataTypeName, expectedTypeName);
-        }
-
-        [Test]
-        public virtual void Metadata_MainFieldsSerializedProperly()
-        {
-            Debug.Log($"Checking if the main metadata fields were serialized properly.");
-            bool success = metaData.Equals(deserializedMetaData);
-            Assert.IsTrue(success);
-        }
-
 
         [Test]
         public virtual void Metadata_AssignsOwnIDWhenNonePassed()
         {
             SaveMetaData testMeta = new SaveMetaData("");
-
-            bool hasNoID = string.IsNullOrEmpty(testMeta.SaveID);
-            Assert.IsFalse(hasNoID, "Meta did not set itself up with an id upon being given a null or empty one.");
+            Assert.IsFalse(string.IsNullOrEmpty(testMeta.SaveID));
         }
 
         [Test]
         public virtual void Metadata_AssignsCorrectTimeStampWhenNonePassed()
         {
-
-            DateTime correctTimeStamp = DateTime.UtcNow;
+            // Capture a time window around construction to avoid flaky millisecond differences
+            DateTime before = DateTime.UtcNow;
             SaveMetaData testMeta = new SaveMetaData("");
+            DateTime after = DateTime.UtcNow;
 
-            Assert.AreEqual(correctTimeStamp, testMeta.TimeStamp, "Wrong time stamp assigned");
+            Assert.That(
+                testMeta.TimeStamp,
+                Is.InRange(before, after),
+                $"Expected timestamp to be between {before:o} and {after:o}, but was {testMeta.TimeStamp:o}");
         }
 
         [Test]
         public virtual void Metadata_AcceptsLegitTimeStampPassed()
         {
+            DateTime ts = DateTime.UtcNow;
+            SaveMetaData testMeta = new SaveMetaData("", ts);
+            Assert.AreEqual(ts, testMeta.TimeStamp);
 
-            DateTime correctTimeStamp = DateTime.UtcNow;
-            SaveMetaData testMeta = new SaveMetaData("", correctTimeStamp);
-
-            Assert.AreEqual(correctTimeStamp, testMeta.TimeStamp, "Wrong time stamp assigned");
-
-            testMeta = new SaveMetaData("g4w578", correctTimeStamp);
-            Assert.AreEqual(correctTimeStamp, testMeta.TimeStamp, "Wrong time stamp assigned after being passed an ID");
+            testMeta = new SaveMetaData("g4w578", ts);
+            Assert.AreEqual(ts, testMeta.TimeStamp);
         }
 
         [Test]
@@ -84,80 +70,59 @@ namespace Amanita.SaveSystemTests
         {
             string theID = "esahgui94r35hoifg";
             SaveMetaData testMeta = new SaveMetaData(theID);
-            Assert.AreEqual(theID, testMeta.SaveID, "Save meta registered the wrong ID");
-
-            DateTime someTimeStamp = DateTime.UtcNow;
-            testMeta = new SaveMetaData(theID, someTimeStamp);
-            Assert.AreEqual(someTimeStamp, testMeta.TimeStamp, "Wrong time stamp assigned after being passed an ID");
+            Assert.AreEqual(theID, testMeta.SaveID);
         }
 
         [Test]
         public virtual void MetadataConsistency_SerializeThenDeserialize_NONEncrypted()
         {
             SaveMetaData metaBefore = new SaveMetaData("egu8hohgb", DateTime.UtcNow);
-            string asJson = JsonUtility.ToJson(metaBefore);
-            SaveMetaData metaAfter = JsonUtility.FromJson<SaveMetaData>(asJson);
-
-            Assert.AreEqual(metaBefore, metaAfter, "The serialization and deserialization are not complimentary.");
+            string asJson = serializer.ToJson(metaBefore);
+            SaveMetaData metaAfter = serializer.FromJson<SaveMetaData>(asJson);
+            Assert.AreEqual(metaBefore, metaAfter);
         }
-
-
 
         [Test]
         public virtual void Metadata_HandlesOverlyLongIDs()
         {
             string crazyLongID = string.Empty;
+            for (int i = 0; i < 1000; i++)
+                crazyLongID += Guid.NewGuid().ToString();
 
-            int howManyLoops = 1000;
-            for (int i = 0; i < howManyLoops; i++)
-            {
-                crazyLongID += System.Guid.NewGuid().ToString();
-            }
-
-            string expectedAsEndResult = crazyLongID[..SaveMetaData.IDAndVersionLengthCap];
+            string expected = crazyLongID[..SaveMetaData.IDAndVersionLengthCap];
             SaveMetaData testMeta = new SaveMetaData(crazyLongID, DateTime.UtcNow);
-            Assert.AreEqual(expectedAsEndResult, testMeta.SaveID, "Did not enforce id length cap");
-            Assert.AreNotEqual(crazyLongID, testMeta.SaveID, "Issue with crazy long id length?");
+            Assert.AreEqual(expected, testMeta.SaveID);
         }
 
         [Test]
         public virtual void Metadata_HandlesOverlyLongSaveVersions()
         {
-            int howManyLoops = 1000;
             string crazyLongVersion = string.Empty;
-
-            for (int i = 0; i < howManyLoops; i++)
-            {
-                crazyLongVersion += System.Guid.NewGuid().ToString();
-            }
+            for (int i = 0; i < 1000; i++)
+                crazyLongVersion += Guid.NewGuid().ToString();
 
             string expectedVer = crazyLongVersion[..SaveMetaData.IDAndVersionLengthCap];
             SaveMetaData testMeta = new SaveMetaData("", DateTime.UtcNow);
             testMeta.SaveVersion = crazyLongVersion;
-
-            Assert.AreEqual(expectedVer, testMeta.SaveVersion, "Version char count cap not properly enforced");
-            Assert.AreNotEqual(crazyLongVersion, testMeta.SaveVersion, "Crazy long version issue?");
+            Assert.AreEqual(expectedVer, testMeta.SaveVersion);
         }
 
         [Test]
         public virtual void Metadata_RejectsNullOrEmptySaveVersions()
         {
             SaveMetaData testMeta = new SaveMetaData(null, DateTime.UtcNow);
-            Assert.Throws<System.ArgumentException>(() => testMeta.SaveVersion = null, "Did not throw an argument exception");
+            Assert.Throws<ArgumentException>(() => testMeta.SaveVersion = null);
         }
 
-        [Test] public virtual void Metadata_RejectsNegativeSlotNumbers()
+        [Test]
+        public virtual void Metadata_RejectsNegativeSlotNumbers()
         {
-            SaveMetaData toAssignNegativeSlotNumbers = SaveMetaData.CreateFrom(metaData);
-
-            IList<int> negativeNums = new int[] { -1, -3, -3249, -3459780, -2589 };
-
-            foreach (var numEl in negativeNums)
+            SaveMetaData copy = SaveMetaData.CreateFrom(metaData);
+            IList<int> negatives = new int[] { -1, -3, -3249, -3459780, -2589 };
+            foreach (var n in negatives)
             {
-                Assert.Throws<ArgumentException>(() => toAssignNegativeSlotNumbers.SlotNumber = numEl, $"Allowed negative slot number {numEl}");
+                Assert.Throws<ArgumentException>(() => copy.SlotNumber = n);
             }
         }
-
-
     }
 }

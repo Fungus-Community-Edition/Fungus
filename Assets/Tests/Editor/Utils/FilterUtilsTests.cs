@@ -5,7 +5,7 @@ using UnityObject = UnityEngine.Object;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.FCWindowOperations
 {
     // Minimal stub for Command to supply searchable content
     class DummyCommand : Command

@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 1752780474336798940}
   - component: {fileID: 1749631385722854176}
   m_Layer: 0
-  m_Name: Flowchart
+  m_Name: TestFlowchart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,21 +92,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: 0, y: 0}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 240
-  zoom: 1
-  scrollViewRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
-  selectedBlocks: []
-  selectedCommands: []
-  variables:
+  legacyVariables:
   - {fileID: 108686680755132427}
   - {fileID: 2677308742917868254}
   - {fileID: 5708265625975436602}
@@ -114,6 +116,7 @@ MonoBehaviour:
   - {fileID: 2894303634136426304}
   - {fileID: 1975970902030707167}
   - {fileID: 5244056966308270914}
+  muscariables: []
   description: 
   stepPause: 0
   colorCommands: 1
@@ -122,14 +125,18 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
+  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
+  alwaysKeepGuid: 0
   nextValidVarID: 8
   uniqueId: 05b08fbe-bc51-47c3-bab0-20deaac90bc0
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &108686680755132427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,6 +152,7 @@ MonoBehaviour:
   scope: 0
   key: name
   itemID: 1
+  oldItemID: 1
   value: Alice
 --- !u!114 &2677308742917868254
 MonoBehaviour:
@@ -161,6 +169,7 @@ MonoBehaviour:
   scope: 0
   key: score
   itemID: 2
+  oldItemID: 2
   value: 132
 --- !u!114 &5708265625975436602
 MonoBehaviour:
@@ -177,6 +186,7 @@ MonoBehaviour:
   scope: 0
   key: newPlayer
   itemID: 3
+  oldItemID: 3
   value: 1
 --- !u!114 &5717713915927640460
 MonoBehaviour:
@@ -193,6 +203,7 @@ MonoBehaviour:
   scope: 0
   key: fastestTimeInSeconds
   itemID: 4
+  oldItemID: 4
   value: 12.348
 --- !u!114 &2894303634136426304
 MonoBehaviour:
@@ -209,6 +220,7 @@ MonoBehaviour:
   scope: 0
   key: twoDPos
   itemID: 5
+  oldItemID: 5
   value: {x: 12, y: 34}
 --- !u!114 &1975970902030707167
 MonoBehaviour:
@@ -225,6 +237,7 @@ MonoBehaviour:
   scope: 0
   key: threeDPos
   itemID: 6
+  oldItemID: 6
   value: {x: 23, y: 45, z: 78}
 --- !u!114 &5244056966308270914
 MonoBehaviour:
@@ -241,6 +254,7 @@ MonoBehaviour:
   scope: 0
   key: someTrans
   itemID: 7
+  oldItemID: 7
   value: {fileID: 2288069364643417435}
 --- !u!114 &3080362346236546621
 MonoBehaviour:
@@ -262,7 +276,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 6
   blockName: TestBlock
   description: 
   eventHandler: {fileID: 7505458795986732438}
@@ -386,9 +400,18 @@ MonoBehaviour:
   itemId: 4
   indentLevel: 0
   _duration:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 5
   durationOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &1749631385722854176
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,10 +429,19 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 2267836562425437019}
   startLabel:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!1 &4017282831232097748
 GameObject:
   m_ObjectHideFlags: 0

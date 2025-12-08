@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableDataFactoryTests
     {
@@ -72,11 +72,6 @@ namespace Amanita.Tests.EditMode
             VariableDataFactory.CreateForVar(null);
         }
 
-        [VariableData(typeof(float), typeof(StringMuscariable))]
-        public class FakeStringVariableData : VariableData<string>
-        {
-        }
-
     }
 
     [VariableData(typeof(int), typeof(IntMuscariable))]
@@ -97,7 +92,7 @@ namespace Amanita.Tests.EditMode
 
                 if (value.ContentType.Equals(this.ContentType))
                 {
-                    _intRef.Value = (int)value.Value;
+                    _intRef.BoxedValue = (int)value.BoxedValue;
                 }
                 else
                 {

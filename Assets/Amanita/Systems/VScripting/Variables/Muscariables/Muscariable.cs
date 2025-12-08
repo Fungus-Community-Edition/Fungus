@@ -7,14 +7,14 @@ namespace Amanita.VScripting
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    public abstract class Muscariable : IVariable
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected int itemID = InvalidID;
+        [SerializeField] protected byte itemID = 0;
 
-        public static readonly int InvalidID = 0;
+        public static readonly byte InvalidID = 0;
 
         public virtual VariableScope Scope
         {
@@ -28,7 +28,7 @@ namespace Amanita.VScripting
             set => key = value;
         }
 
-        public virtual int ItemID
+        public virtual byte ItemId
         {
             get => itemID;
             set => itemID = value;
@@ -36,56 +36,69 @@ namespace Amanita.VScripting
 
         public Muscariable() : base() { }
 
+        // We want to check for semantic equality mainly
+        public static bool operator == (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return true; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return sameValue;
+        }
+
+        public static bool operator != (Muscariable left, Muscariable right)
+        {
+            if (ReferenceEquals(left, right)) return false; // In case both are null or same ref
+            bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
+            return !sameValue;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Muscariable other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether the specified Muscariable is (semantically) equal to the current Muscariable.
+        /// </summary>
+        public virtual bool Equals(Muscariable other)
+        {
+            bool result = other != null && this.BoxedValue?.Equals(other.BoxedValue) == true;
+            return result;
+        }
+
         public Muscariable (IVariable otherVar)
         {
             key = otherVar.Key;
             scope = otherVar.Scope;
-            itemID = otherVar.ItemID;
-            value = otherVar.Value;
+            itemID = otherVar.ItemId;
+            BoxedValue = otherVar.BoxedValue;
         }
 
-        public Muscariable(string key, int itemID, VariableScope scope)
+        public Muscariable(string key, byte itemID, VariableScope scope)
         {
             this.key = key;
             this.itemID = itemID;
             this.scope = scope;
         }
 
-        public virtual System.Type ContentType => typeof(Type);
+        public abstract Type ContentType { get; }
         // ^So clients can see the type even through this non-generic interface
 
-        public virtual System.Object Value
+        public abstract object BoxedValue
         {
-            get { return this.value; }
-            set
-            {
-                bool sameAsAssignedVal = !ReferenceEquals(value, null) && value.Equals(this.value); 
-                // ^For some reason, == won't work here
-                if (sameAsAssignedVal) 
-                {
-                    return;
-                }
-                if (!CanHoldAsValue(value))
-                {
-                    string errorMessage = $"Variable {Key} cannot hold {value} as a value.";
-                    throw new System.ArgumentException(errorMessage, "value");
-                }
-
-                object prevValue = this.value;
-                object filtered = FilterForValueSet(value);
-                this.value = filtered;
-                OnBaseValueSet(prevValue);
-            }
+            get;
+            set;
         }
-
-        protected System.Object value;
 
         protected virtual object FilterForValueSet(object valueToConvert)
         {
             return valueToConvert;
         }
 
-        protected virtual bool CanHoldAsValue(System.Object obj)
+        protected virtual bool CanHoldAsValue(object obj)
         {
             bool result;
 
@@ -99,11 +112,6 @@ namespace Amanita.VScripting
             }
 
             return result;
-        }
-
-        public virtual void OnReset()
-        {
-
         }
 
         public virtual void Init()
@@ -127,13 +135,15 @@ namespace Amanita.VScripting
             }
         }
 
+        public virtual void OnReset()
+        {
+            // Optional override by child classes
+        }
+
         /// <summary>
         /// Used by SetVariable. Child classes required to declare and implement operators.
         /// </summary>
-        public virtual void Apply(SetOperator setOperator, object toApply)
-        {
-            value = toApply;
-        }
+        public abstract void Apply(SetOperator setOperator, object toApply);
 
         /// <summary>
         /// Used by Ifs, While, and the like. Child classes required to declare and implement comparisons.
@@ -143,7 +153,11 @@ namespace Amanita.VScripting
         /// <summary>
         /// Does the underlying type provide support for +-*/
         /// </summary>
-        public virtual bool IsArithmeticSupported { get; } = false;
+        public virtual bool IsArithmeticSupported(SetOperator setOperator)
+        {
+            bool result = setOperator == SetOperator.Assign;
+            return result;
+        }
 
         /// <summary>
         /// Does the underlying type provide support for < <= > >=
@@ -157,23 +171,13 @@ namespace Amanita.VScripting
         public virtual bool IsComparisonSupported() => false;
 
         /// <summary>
-        /// A callback for right after the base value is set. The previous value,
-        /// as it sounds, is the value the base had right before being set
-        /// to the new one.
-        /// </summary>
-        protected virtual void OnBaseValueSet(object previousValue)
-        {
-
-        }
-
-        /// <summary>
         /// When you expect the value to be a value type (as opposed to a ref type), use this rather than 
         /// directly casting to that specific value type. One quirk of C# is that when casting a
-        /// System.Object, it only works if said System.Object is of the type you're casting to.
+        /// object, it only works if said object is of the type you're casting to.
         /// </summary>
         public TVal GetValueAs<TVal>()
         {
-            object val = Value;
+            object val = BoxedValue;
             if (val == null)
             {
                 return default;
@@ -212,28 +216,58 @@ namespace Amanita.VScripting
         public virtual IVariableSource Owner
         {
             get { return _owner; }
-            set { _owner = value; }
+            set
+            {
+                _owner = value;
+                if (_owner == null)
+                {
+                    _ownerIdIndex = -1;
+                }
+                else
+                {
+                    _ownerIdIndex = AmanitaManager.GetNumericIdTiedTo(_owner.UniqueId);
+                }
+            }
         }
-        [SerializeField] protected IVariableSource _owner;
+        protected IVariableSource _owner;
+
+        public virtual int OwnerIdIndex
+        {
+            get { return _ownerIdIndex; }
+        }
+        [SerializeField] protected int _ownerIdIndex = -1;
+        // ^The reference to the owner doesn't persist, so we store a key of sorts for rehydration.
+
+        public abstract Muscariable Clone();
+
+        protected virtual void TriggerOnValueChanged()
+        {
+            OnValueChanged.Invoke(this);
+        }
+        public event Action<Muscariable> OnValueChanged = delegate { };
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 
     [Serializable]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
-        [SerializeField] protected new T value;
+        [SerializeField] protected T value;
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
         public Muscariable() : base()
         {
             value = default;
-            base.value = value;
         }
 
         public Muscariable(T startVal) : this()
         {
             value = startVal;
-            base.value = startVal;
         }
 
         public static implicit operator T(Muscariable<T> genericMuscari)
@@ -243,7 +277,7 @@ namespace Amanita.VScripting
 
         public override Type ContentType { get { return typeof(T); } }
 
-        public virtual new T Value
+        public virtual T Value
         {
             get { return value; }
             set
@@ -253,21 +287,34 @@ namespace Amanita.VScripting
                     return;
                 }
 
-                // We call base.Value here so that when this instance is being
-                // cast as a non-generic Muscariable, clients can still access the right value
-                T prev = this.value;
-                base.Value = value;
-                OnGenericValueSet(prev);
-                InvokeOnValueChanged();
+                this.value = (T)this.FilterForValueSet(value);
+                TriggerOnValueChanged();
             }
         }
 
-        protected virtual void InvokeOnValueChanged()
+        public override object BoxedValue
         {
+            get { return value; }
+            set
+            {
+                if (!this.CanHoldAsValue(value))
+                {
+                    string errorMessage = $"Cannot set {ContentType.Name} variable {Key} to value of type {value.GetType().Name}.";
+                    throw new ArgumentException(errorMessage);
+                }
+                object filteredValue = this.FilterForValueSet(value);
+                this.value = (T)filteredValue;
+                TriggerOnValueChanged();
+            }
+        }
+
+        protected override void TriggerOnValueChanged()
+        {
+            base.TriggerOnValueChanged();
             OnValueChanged?.Invoke(value);
         }
 
-        public event Action<T> OnValueChanged = delegate { };
+        public new event Action<T> OnValueChanged = delegate { };
 
         public override void Apply(SetOperator setOperator, object toApply)
         {
@@ -330,6 +377,7 @@ namespace Amanita.VScripting
             return result;
         }
 
+
         public virtual bool Equals(T other)
         {
             return this.Value.Equals(other);
@@ -350,18 +398,12 @@ namespace Amanita.VScripting
             return otherVar != null && this.Value.Equals(otherVar.Value);
         }
 
-        protected override void OnBaseValueSet(object previousValue)
+        public override Muscariable Clone()
         {
-            // We don't care about the prev val here. We're just making sure that
-            // the generic field stays in sync with the base field when appropriate.
-            // Say, when this instance's Value property is set through a base class.
-            value = (T)base.value;
+            Muscariable result = VariableFactory.CreateByContentType(typeof(T), this);
+            return result;
         }
 
-        protected virtual void OnGenericValueSet(T previousValue)
-        {
-
-        }
 
     }
 
@@ -380,8 +422,7 @@ namespace Amanita.VScripting
 
         public override bool Equals(object obj)
         {
-            var other = obj as GenericMuscariable;
-            if (other is null) return false;
+            if (obj is not GenericMuscariable other) return false;
             return this.Value == other.Value;
         }
 
@@ -390,8 +431,7 @@ namespace Amanita.VScripting
             return Value != null ? Value.GetHashCode() : 0;
         }
 
-    }
 
-    
+    }
 
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tests.EditMode
+namespace VScriptingTests.VariableOperations
 {
     public class VariableFactoryTests
     {
@@ -22,7 +22,6 @@ namespace Amanita.Tests.EditMode
                 VariableTypeRegistry.RegisterVariableType(typeof(HookedIntMuscariable), new VariableTypeActions());
                 VariableTypeRegistry.RegisterVariableType(typeof(FakeIntLegacyVar), new VariableTypeActions());
             }
-            
         }
 
         [TearDown]
@@ -41,34 +40,19 @@ namespace Amanita.Tests.EditMode
             {
                 Key = "TestKey",
                 Scope = VariableScope.Global,
-                ItemID = 42,
+                ItemId = 42,
                 Value = 99
             };
 
             // Act
-            var created = VariableFactory.Create(contentType, source) as IntMuscariable;
+            var created = VariableFactory.CreateByContentType(contentType, source) as IntMuscariable;
 
             // Assert
             Assert.NotNull(created);
             Assert.AreEqual("TestKey", created.Key);
             Assert.AreEqual(VariableScope.Global, created.Scope);
-            Assert.AreEqual(42, created.ItemID);
+            Assert.AreEqual(42, created.ItemId);
             Assert.AreEqual(99, created.Value);
-        }
-
-        [Test]
-        public void AddLegacyVarTo_AddsComponent_AndRegisters()
-        {
-            // Arrange
-            var go = new GameObject("FlowchartHolder");
-            var flowchart = go.AddComponent<Flowchart>();
-            
-            // Act
-            var added = VariableFactory.AddLegacyVarTo(flowchart, typeof(int));
-
-            // Assert
-            Assert.NotNull(added);
-            Assert.IsTrue(flowchart.HasVariable(added));
         }
 
         [Test]
@@ -83,7 +67,7 @@ namespace Amanita.Tests.EditMode
             Type wrongContentType = typeof(int); // Since the int is the source while the string is the intended output
             Type rightContentType = typeof(string);
 
-            var result = VariableFactory.Create(rightContentType, source);
+            var result = VariableFactory.CreateByContentType(rightContentType, source);
 
             // Assert
             Assert.IsNull(result, "Factory should not create when source content type mismatches that of the intended result");
@@ -103,7 +87,7 @@ namespace Amanita.Tests.EditMode
                     $"{wrongContentType.Name} when creating a Muscariable of ContentType {rightContentType.Name}. "
                     + "Returning null.";
             LogAssert.Expect(LogType.Warning, expectedLogMessage);
-            var result = VariableFactory.Create(rightContentType, source);
+            var result = VariableFactory.CreateByContentType(rightContentType, source);
 
         }
 
@@ -178,7 +162,7 @@ namespace Amanita.Tests.EditMode
         public void Create_Returns_Registered_Muscariable_Type(Type contentType, Type expectedMuscariType)
         {
             VariableTypeDiscovery.DiscoverAndRegister();
-            var created = VariableFactory.Create(contentType, null);
+            var created = VariableFactory.CreateByContentType(contentType, null);
             Assert.IsNotNull(created, "VariableFactory.Create returned null for contentType " + contentType.Name);
             Assert.AreEqual(expectedMuscariType, created.GetType(), $"Factory did not return the expected Muscariable type for {contentType.Name}");
             Assert.AreEqual(contentType, created.ContentType, "Created Muscariable did not report correct ContentType.");

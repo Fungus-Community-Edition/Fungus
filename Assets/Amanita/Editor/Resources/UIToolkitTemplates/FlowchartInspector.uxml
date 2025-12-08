@@ -1,0 +1,28 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <engine:Template name="VariableDisplayEditor" src="project://database/Assets/Amanita/Editor/Resources/UIToolkitTemplates/VariableDisplayEditor.uxml?fileID=9197481963319205126&amp;guid=43fc496ae8989fe449ddd9c69138ed9b&amp;type=3#VariableDisplayEditor" />
+    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/inspectorStyle.uss?fileID=7433441132597879392&amp;guid=9e22a25197c37394cb88cdfa12198daf&amp;type=3#inspectorStyle" />
+    <engine:VisualElement name="InspectorRoot" style="flex-grow: 1;">
+        <engine:TextField label="Description" placeholder-text="Insert desc here" select-all-on-mouse-up="false" select-all-on-focus="false" multiline="true" name="DescField" hide-placeholder-on-focus="true" binding-path="description" vertical-scroller-visibility="Auto" />
+        <engine:TextField label="Localization ID" name="LocalizationIDField" binding-path="localizationId" hide-placeholder-on-focus="true" />
+        <engine:Foldout text="Editor Only" name="EditorOnly">
+            <engine:Toggle label="Color Commands" name="ColorCommands" value="false" binding-path="colorCommands" />
+            <engine:Toggle label="Hide Components" name="HideComponents" binding-path="hideComponents" />
+            <engine:Toggle label="Save Selection" name="SaveSelections" binding-path="saveSelection" />
+            <engine:Slider label="Step Pause" value="42" high-value="5" name="StepPause" binding-path="stepPause" fill="true" show-input-field="true" />
+            <editor:PropertyField name="HideCommands" binding-path="hideCommands" />
+        </engine:Foldout>
+        <engine:Foldout text="Lua Support&#10;" name="LuaSupport">
+            <editor:ObjectField label="Lua Environment" name="LuaEnvironment" binding-path="luaEnvironment" />
+            <engine:TextField label="Lua Binding Name" placeholder-text="filler text" name="BindingName" binding-path="luaBindingName" />
+        </engine:Foldout>
+        <engine:Foldout text="Save Sys Involvement" name="SaveSysInvolvement">
+            <engine:Toggle label="Include in Saves" name="IncludeinSaves" binding-path="includeInSaves" />
+            <engine:Toggle label="Save Blocks" name="SaveBlocks" binding-path="saveBlocks" />
+            <engine:Toggle label="Save Variables" name="SaveVariables" binding-path="saveVariables" />
+            <engine:IntegerField label="Load Priority" value="42" name="LoadPriority" binding-path="loadPriority" />
+        </engine:Foldout>
+        <engine:Toggle label="Always Keep Guid" name="AlwaysKeepGuid" value="true" binding-path="alwaysKeepGuid" />
+        <engine:Button text="Open Flowchart Window" name="OpenFlowchartWindow" />
+        <engine:Instance template="VariableDisplayEditor" name="VariableDisplayEditor" />
+    </engine:VisualElement>
+</engine:UXML>

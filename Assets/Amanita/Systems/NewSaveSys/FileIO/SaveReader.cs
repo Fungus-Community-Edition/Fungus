@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,57 +8,68 @@ using FileEncoding = System.Text.Encoding;
 
 namespace Amanita.SaveSys
 {
+    [SaveSysDisplayName("Save Reader (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
-    public class SaveReader : SaveDiskAccessor
+    public class SaveReader : SaveDiskAccessor, ISaveReader
     {
-        [SerializeField] protected bool readEncrypted = false;
-        public virtual bool ReadEncrypted
+        [SerializeField] private ScriptableObject decryptor;
+        public ScriptableObject Decryptor
         {
-            get => readEncrypted;
-            set => readEncrypted = value;
+            get => decryptor;
+            set
+            {
+                decryptor = value;
+                usableDecryptor = decryptor as IDecryptor;
+            }
         }
 
-        [SerializeField] protected ScriptableObject decryptor;
-
-        protected FileEncoding actualEncoding = FileEncoding.UTF8;
+        private readonly FileEncoding actualEncoding = FileEncoding.UTF8;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            PrepDefaultDecryptor();
-            void PrepDefaultDecryptor()
+            HandleDecryptorField();
+            void HandleDecryptorField()
             {
-                if (defaultDecryptor == null)
+                EnsureDefaultDecryptor();
+                void EnsureDefaultDecryptor()
                 {
-                    defaultDecryptor = CreateInstance<Decryptor>();
+                    if (defaultDecryptor == null)
+                    {
+                        defaultDecryptor = DefaultAmanitaAssets.Decryptor;
+                    }
                 }
-            }
 
-            if (decryptor == null)
-            {
-                decryptor = defaultDecryptor;
-            }
+                if (decryptor == null)
+                {
+                    decryptor = DefaultAmanitaAssets.Decryptor;
+                }
+                if (decryptor == null)
+                {
+                    decryptor = defaultDecryptor;
+                }
 
-            usableDecryptor = decryptor as IDecryptor;
+                usableDecryptor = decryptor as IDecryptor;
+            }
         }
 
-        protected Decryptor defaultDecryptor;
-        protected IDecryptor usableDecryptor;
+        private static Decryptor defaultDecryptor;
+        private IDecryptor usableDecryptor;
 
-        public virtual async Task<ISaveMetaData> ReadMetadataFromDisk(SaveReadRequest request,
+        public virtual async Task<ISaveMetaData> ReadMetadataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            await PrepDecryptionRequest(request, cancelToken);
+            await PrepDecryptionRequestAsync(request, cancelToken);
             SaveMetaData result = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
             return result;
         }
 
-        protected virtual async Task PrepDecryptionRequest(SaveReadRequest request,
+        private async Task PrepDecryptionRequestAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            string filePath = FileUtils.GetPathToFile(request.BaseSaveDirectory, request.SlotNumber, this);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             Validate(filePath);
-            bool writtenAsPlainText = !readEncrypted;
+            bool writtenAsPlainText = !ExpectEncryption;
             byte[] rawBytes = await ReadAllBytesAsync(filePath, cancelToken);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
@@ -68,19 +81,9 @@ namespace Amanita.SaveSys
             return await File.ReadAllBytesAsync(filePath, cancelToken).ConfigureAwait(false);
         }
 
-        protected BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
-        protected virtual string GetFullFilePath(SaveReadRequest request)
-        {
-            string saveFolderPath = FileUtils.GetPathToFolder(request.BaseSaveDirectory, RelativeSavePath);
-            
-            string numFormatted = request.SlotNumber.ToString(saveNumberFormat);
-            string fileName = string.Format(fileNameFormat, savePrefix,
-                numFormatted, fileExtension);
-            string filePath = saveFolderPath + fileName;
-            return filePath;
-        }
+        private readonly BaseDecryptionRequest decryptionRequest = new BaseDecryptionRequest();
 
-        protected virtual void Validate(string filePath)
+        private void Validate(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -90,11 +93,11 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDisk(SaveReadRequest request,
+        public virtual async Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default)
         {
-            await PrepDecryptionRequest(request, cancelToken);
-            string filePath = GetFullFilePath(request);
+            await PrepDecryptionRequestAsync(request, cancelToken);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             CompositeSaveData result = (CompositeSaveData) usableDecryptor.DecryptMainState(decryptionRequest);
             
             return result;
@@ -102,13 +105,17 @@ namespace Amanita.SaveSys
 
         public virtual string GetSavePath(SaveReadRequest request)
         {
-            string result = GetFullFilePath(request);
+            string result = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             return result;
         }
 
         protected override void OnValidate()
         {
             base.OnValidate();
+            if (decryptor == null)
+            {
+                decryptor = DefaultAmanitaAssets.Decryptor;
+            }
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)
             {
@@ -116,6 +123,63 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IDecryptor. Reverting to default.");
             }
         }
+    
+        public virtual async Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+            CancellationToken cancelToken = default)
+        {
+            IList<ISaveMetaData> result = new List<ISaveMetaData>();
+            string folderPath = GetSaveFolderPath(dirType);
+            if (!Directory.Exists(folderPath))
+            {
+                string logMessage = $"Cannot read any meta datas from folder at path {folderPath}, because that " +
+                    $"folder does not exist.";
+                Debug.LogWarning(logMessage);
+            }
+            else
+            {
+                string[] saveFilesFound = Directory.GetFiles(folderPath, $"*.{storageSettings.FileExtension}");
+                foreach (var file in saveFilesFound)
+                {
+                    cancelToken.ThrowIfCancellationRequested();
+                    byte[] rawBytes = await ReadAllBytesAsync(file, cancelToken);
+                    decryptionRequest.RawBytes = rawBytes;
+                    decryptionRequest.WrittenAsPlainText = !ExpectEncryption;
+                    decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+                    var meta = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
+                    result.Add(meta);
+                }
+            }
+            return result;
+        }
+
+        public virtual ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request, Action onComplete = null)
+        {
+            PrepDecryptionRequest(request);
+            var result = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
+            onComplete ??= delegate { };
+            onComplete();
+            return result;
+        }
+
+        private void PrepDecryptionRequest(SaveReadRequest request)
+        {
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
+            Validate(filePath);
+            bool writtenAsPlainText = !ExpectEncryption;
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            decryptionRequest.RawBytes = rawBytes;
+            decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
+            decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+        }
+
+        public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null)
+        {
+            PrepDecryptionRequest(request);
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
+            CompositeSaveData result = (CompositeSaveData)usableDecryptor.DecryptMainState(decryptionRequest);
+            return result;
+        }
+
     }
 
     public class BaseDecryptionRequest
@@ -123,6 +187,20 @@ namespace Amanita.SaveSys
         public byte[] RawBytes { get; set; }
         public bool WrittenAsPlainText { get; set; }
         public string CompletionMarker { get; set; }
+    }
+
+    public interface ISaveReader
+    {
+        ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request, Action onComplete = null);
+        Task<ISaveMetaData> ReadMetadataFromDiskAsync(SaveReadRequest request,
+            CancellationToken cancelToken = default);
+
+        CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null);
+        Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
+            CancellationToken cancelToken = default);
+
+        Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+            CancellationToken cancelToken = default);
     }
 
 }

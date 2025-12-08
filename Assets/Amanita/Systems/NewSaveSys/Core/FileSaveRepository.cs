@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
@@ -12,12 +13,36 @@ namespace Amanita.SaveSys
     /// </summary>
     public class FileSaveRepository : ISaveRepository
     {
-        public FileSaveRepository(SaveReader saveReader, SaveWriter saveWriter, SaveDirectoryType saveDir)
+        public IConfigurableSaveSlotPathResolver PathResolver
+        {
+            get => pathResolver;
+            set
+            {
+                pathResolver = value;
+                if (saveReader is IHasConfigurableSaveSlotPathResolver readerWithPathResolver && 
+                    saveWriter is IHasConfigurableSaveSlotPathResolver writerWithPathResolver)
+                {
+                    readerWithPathResolver.PathResolver = writerWithPathResolver.PathResolver = this.pathResolver;
+                }
+                // ^Need to keep things in sync so they're working with the right sets
+                // of directories and paths.
+            }
+        }
+
+        
+
+        private IConfigurableSaveSlotPathResolver pathResolver;
+        public FileSaveRepository(ISaveReader saveReader, ISaveWriter saveWriter,
+            SaveDirectoryType saveDir, IConfigurableSaveSlotPathResolver resolver = null)
         {
             Validate(saveReader, saveWriter);
             this.saveReader = saveReader;
             this.saveWriter = saveWriter;
             this.saveDir = saveDir;
+            this.pathResolver = resolver;
+
+            KeepResolversInSync();
+            
 
             PrepRequestCache();
             void PrepRequestCache()
@@ -38,7 +63,29 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected virtual void Validate(SaveReader reader, SaveWriter writer)
+        void KeepResolversInSync()
+        {
+            IHasConfigurableSaveSlotPathResolver readerWithPathResolver =
+                saveReader as IHasConfigurableSaveSlotPathResolver;
+            IHasConfigurableSaveSlotPathResolver writerWithPathResolver =
+                saveWriter as IHasConfigurableSaveSlotPathResolver;
+            if (readerWithPathResolver != null)
+            {
+                this.pathResolver ??= readerWithPathResolver.PathResolver;
+            }
+
+            if (writerWithPathResolver != null)
+            {
+                this.pathResolver ??= writerWithPathResolver.PathResolver;
+            }
+
+            if (readerWithPathResolver != null && writerWithPathResolver != null)
+            {
+                readerWithPathResolver.PathResolver = writerWithPathResolver.PathResolver = this.pathResolver;
+            }
+        }
+
+        private void Validate(ISaveReader reader, ISaveWriter writer)
         {
             if (reader == null)
             {
@@ -51,18 +98,18 @@ namespace Amanita.SaveSys
             }
         }
 
-        protected SaveReader saveReader;
-        protected SaveWriter saveWriter;
-        protected SaveDirectoryType saveDir;
+        private ISaveReader saveReader;
+        private ISaveWriter saveWriter;
+        private SaveDirectoryType saveDir;
 
-        protected SaveReadRequest readRequest;
-        protected SaveWriteRequest writeReq;
-        protected SaveReadRequest forPathFinding;
+        private SaveReadRequest readRequest;
+        private SaveWriteRequest writeReq;
+        private SaveReadRequest forPathFinding;
 
         public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var mainState = await saveReader.ReadMainSaveDataFromDisk(readRequest, token);
+            var mainState = await saveReader.ReadMainSaveDataFromDiskAsync(readRequest, token);
             return mainState;
         }
 
@@ -81,14 +128,14 @@ namespace Amanita.SaveSys
                 writeReq.MainState = saveSet.MainState;
             }
             
-            await saveWriter.WriteOneToDisk(writeReq, token);
+            await saveWriter.WriteOneToDiskAsync(writeReq, token);
             
         }
 
         public virtual async Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
-            var meta = await saveReader.ReadMetadataFromDisk(readRequest, token);
+            var meta = await saveReader.ReadMetadataFromDiskAsync(readRequest, token);
             return meta;
         }
 
@@ -116,22 +163,33 @@ namespace Amanita.SaveSys
                 forPathFinding.SlotNumber = slot;
             }
 
-            string result = FileUtils.GetPathToFile(saveDir, slot, saveReader);
+            string result = pathResolver.GetSaveFilePath(saveDir, slot);
             return result;
         }
 
-        
+        public virtual async Task<IList<ISaveMetaData>> LoadAllMetasOnDisk()
+        {
+            IList<ISaveMetaData> metasOnDisk = await saveReader.ReadAllMetaDatasFromFolder(saveDir);
+            return metasOnDisk;
+        }
+
     }
 
+    /// <summary>
+    /// For handling the interactions with persistent storage for loading and saving game data.
+    /// </summary>
     public interface ISaveRepository
     {
+        IConfigurableSaveSlotPathResolver PathResolver { get; set; }
+        Task<IList<ISaveMetaData>> LoadAllMetasOnDisk();
+
         /// <summary>
-        /// Reads save data from file based on theinput, returning said data.
+        /// Loads save data from file based on the input, returning said data.
         /// </summary>
         Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default);
 
         /// <summary>
-        /// Reads only the metadata for a given slot number from file.
+        /// Loads only the metadata for a given slot number from file.
         /// </summary>
         Task<ISaveMetaData> LoadMetaDataAsync(int slot, CancellationToken token = default);    
         Task SaveAsync(SaveDataSet saveSet, CancellationToken token = default);

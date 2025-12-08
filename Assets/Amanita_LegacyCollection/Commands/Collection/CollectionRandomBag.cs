@@ -64,7 +64,9 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return base.HasReference(variable) || duplicatesToPutInBag.integerRef == variable || currentIndex.integerRef;
+            return base.HasReference(variable) || 
+                ReferenceEquals(duplicatesToPutInBag.integerRef, variable) || 
+                ReferenceEquals(currentIndex.integerRef, variable);
         }
 
         public override string GetSummary()

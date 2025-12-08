@@ -6,25 +6,28 @@ using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
 using Amanita.IO;
 using System.Threading;
+using FullSerializer;
+using Amanita.FSExt;
+using Action = System.Action;
 
 namespace Amanita.SaveSys
 {
     /// <summary>
     /// This class is responsible for writing save data to disk.
     /// </summary>
+    [SaveSysDisplayName("Save Writer (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
-    public class SaveWriter : SaveDiskAccessor
+    public class SaveWriter : SaveDiskAccessor, ISaveWriter
     {
-        [SerializeField] protected bool writeEncrypted = false;
-        public virtual bool WriteEncrypted
+        [SerializeField] private ScriptableObject encryptor;
+
+        [SerializeField] private bool deleteBackupsPostOverwrite = true;
+
+        public virtual ScriptableObject Encryptor
         {
-            get => writeEncrypted;
-            set => writeEncrypted = value;
+            get => encryptor;
+            set => encryptor = value;
         }
-
-        [SerializeField] protected ScriptableObject encryptor;
-
-        [SerializeField] protected bool deleteBackupsPostOverwrite = true;
 
         public virtual bool DeleteBackupsPostOverwrite
         {
@@ -32,7 +35,7 @@ namespace Amanita.SaveSys
             set => deleteBackupsPostOverwrite = value;
         }
 
-        protected FileEncoding actualEncoding = FileEncoding.UTF8;
+        private readonly FileEncoding actualEncoding = FileEncoding.UTF8;
 
         /// <summary>
         /// Invoked when this particular SaveWriter writes CompositeSaveData.
@@ -43,34 +46,49 @@ namespace Amanita.SaveSys
         protected override void OnEnable()
         {
             base.OnEnable();
-            EnsureWeHaveBackupEncryptor();
-            void EnsureWeHaveBackupEncryptor()
-            {
-                if (defaultEncryptor == null)
-                {
-                    defaultEncryptor = CreateInstance<Encryptor>();
-                }
-            }
 
             if (encryptor == null)
             {
-                encryptor = CreateInstance<Encryptor>();
+                encryptor = DefaultAmanitaAssets.Encryptor;
             }
         }
 
-        protected Encryptor defaultEncryptor;
-
-        /// <summary>
-        /// Writes all the save datas to the passed save directory, returning true if successful,
-        /// false otherwise.
-        /// </summary>
-        public virtual async Task<bool> WriteAllToDisk(IList<SaveWriteRequest> args, CancellationToken token = default)
+        public virtual bool WriteAllToDisk(IList<SaveWriteRequest> args, Action onComplete = null)
         {
             bool didWeSucceed = default;
             for (int i = 0; i < args.Count; i++)
             {
                 SaveWriteRequest currentArgs = args[i];
-                didWeSucceed = await WriteOneToDisk(currentArgs);
+                didWeSucceed = WriteOneToDisk(currentArgs);
+                if (!didWeSucceed)
+                {
+                    break;
+                }
+            }
+            onComplete?.Invoke();
+            return didWeSucceed;
+        }
+
+        public virtual bool WriteOneToDisk(SaveWriteRequest request, Action onComplete = null)
+        {
+            Task<bool> writeTask = WriteOneToDiskAsync(request);
+            writeTask.Wait();
+            bool result = writeTask.Result;
+            onComplete?.Invoke();
+            return result;
+        }
+
+        /// <summary>
+        /// Writes all the save datas to the passed save directory, returning true if successful,
+        /// false otherwise.
+        /// </summary>
+        public virtual async Task<bool> WriteAllToDiskAsync(IList<SaveWriteRequest> args, CancellationToken token = default)
+        {
+            bool didWeSucceed = default;
+            for (int i = 0; i < args.Count; i++)
+            {
+                SaveWriteRequest currentArgs = args[i];
+                didWeSucceed = await WriteOneToDiskAsync(currentArgs);
                 if (!didWeSucceed)
                 {
                     break;
@@ -80,24 +98,20 @@ namespace Amanita.SaveSys
             return didWeSucceed;
         }
 
-        protected string debugSaveFolder, debugFilePath;
+        private string debugSaveFolder, debugFilePath;
         /// <summary>
         /// Writes the passed save data to the passed save directory, returning true if successful, or 
         /// false otherwise.
         /// </summary>
-        public virtual async Task<bool> WriteOneToDisk(SaveWriteRequest request, CancellationToken token = default)
+        public virtual async Task<bool> WriteOneToDiskAsync(SaveWriteRequest request, CancellationToken token = default)
         {
             // Safety.
             Validate(request);
 
-            string saveFolder = GetFolderToAccess(request.BaseSaveDirectory),
-                numFormatted = request.SlotNumber.ToString(SaveNumberFormat);
-
+            string saveFolder = GetSaveFolderPath(request.BaseSaveDirectory);
             Directory.CreateDirectory(saveFolder); // In case it doesn't exist.
 
-            string fileName = string.Format(fileNameFormat, savePrefix,
-                    numFormatted, fileExtension);
-            string filePath = saveFolder + fileName;
+            string filePath = GetSaveFilePath(request.BaseSaveDirectory, request.SlotNumber);
             debugSaveFolder = saveFolder;
 
             debugFilePath = filePath;
@@ -147,7 +161,7 @@ namespace Amanita.SaveSys
                     }
                 }
 
-                if (!writeEncrypted)
+                if (!ExpectEncryption)
                 {
                     await WriteFullJsonTextToFile();
                     async Task WriteFullJsonTextToFile()
@@ -158,10 +172,10 @@ namespace Amanita.SaveSys
                         void DecideTextToWrite()
                         {
                             ISaveMetaData meta = request.SaveMetaData;
-                            metaTextToWrite = JsonUtility.ToJson(meta, true);
+                            metaTextToWrite = Serializer.ToJson(meta, true);
 
                             ISaveData saveData = request.MainState;
-                            mainStateTextToWrite = JsonUtility.ToJson(saveData, true);
+                            mainStateTextToWrite = Serializer.ToJson(saveData, true);
                         }
 
                         string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}" +
@@ -199,7 +213,7 @@ namespace Amanita.SaveSys
             void AnnounceResults()
             {
                 writeResults.FilePath = filePath;
-                writeResults.FileName = fileName;
+                writeResults.FileName = GetSaveFileName(request.SlotNumber);
                 writeResults.SaveData = request.MainState as CompositeSaveData;
                 writeResults.Success = true;
                 writeResults.ErrorMessage = string.Empty;
@@ -212,15 +226,15 @@ namespace Amanita.SaveSys
             return true;
         }
 
-        protected BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
-        protected SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
+        private static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        private readonly BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
+        private readonly SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 
-        protected string backupFileExtension = ".bak";
+        private static readonly string backupFileExtension = ".bak";
         public virtual string BackupFileExtension
         {
             get => backupFileExtension;
         }
-        protected string tempFileExtension = ".tmp";
 
         /// <summary>
         /// If there's anything wrong, an exception will be thrown. Otherwise, returns true.
@@ -238,7 +252,8 @@ namespace Amanita.SaveSys
                 throw exception;
             }
 
-            bool validBaseDirectory = SaveSystem.S.SaveDirectoryPaths.ContainsKey(writeArgs.BaseSaveDirectory);
+            string baseDirectory = SaveSystem.S.GetSaveDirectory(writeArgs.BaseSaveDirectory);
+            bool validBaseDirectory = !string.IsNullOrEmpty(baseDirectory);
             if (!validBaseDirectory)
             {
                 errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a valid SaveDirectoryType.\n";
@@ -267,17 +282,11 @@ namespace Amanita.SaveSys
         protected override void OnValidate()
         {
             base.OnValidate();
-
             bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
             if (wrongTypeOfSOAssigned)
             {
-                encryptor = defaultEncryptor;
+                encryptor = DefaultAmanitaAssets.Encryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
-            }
-
-            if (string.IsNullOrEmpty(relativeSavePath))
-            {
-                relativeSavePath = "/";
             }
         }
 
@@ -287,5 +296,13 @@ namespace Amanita.SaveSys
     {
         public virtual SaveDataSet SaveDataSet { get; set; }
         public virtual string CompletionMarker { get; set; }
+    }
+
+    public interface ISaveWriter
+    {
+        bool WriteOneToDisk(SaveWriteRequest request, Action onComplete = null);
+        bool WriteAllToDisk(IList<SaveWriteRequest> args, Action onComplete = null);
+        Task<bool> WriteOneToDiskAsync(SaveWriteRequest request, CancellationToken token = default);
+        Task<bool> WriteAllToDiskAsync(IList<SaveWriteRequest> args, CancellationToken token = default);
     }
 }

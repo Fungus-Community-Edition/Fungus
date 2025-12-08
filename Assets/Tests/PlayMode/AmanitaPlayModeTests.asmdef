@@ -4,16 +4,18 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Amanita",
-        "AmanitaEditor",
-        "AmanitaEditorTests"
+        "AmanitaEditorTests",
+        "Lorekeeper",
+        "Amanita.Core",
+        "Amanita.Core.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "FullSerializer.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

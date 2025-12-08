@@ -1,0 +1,58 @@
+#SectionPlate
+{
+	height: 40px;
+	width: 100%;
+	margin-bottom: 12px;
+	margin-top: 12px;
+}
+
+#RelativeToAssetsPathListView
+{
+	flex-direction: column-reverse;
+	height: 250px;
+	width: auto;
+	border-color: black;
+	border-width: 2px;
+	border-radius: 4px;
+	justify-content: center;
+	margin: 0px 10px 0px 10px;
+	padding: 4px 4px 4px 4px;
+
+}
+
+#RelativeToLibraryPathListView
+{
+	flex-direction: column-reverse;
+	height: 150px;
+	width: auto;
+	border-color: black;
+	border-width: 2px;
+	border-radius: 4px;
+	justify-content: center;
+	margin: 0px 10px 0px 10px;
+	padding: 4px 4px 4px 4px;
+}
+
+#BottomButtons
+{
+	flex-direction: row;
+	height: 40px;
+	width: 100%;
+	padding-left: 4px;
+	padding-right: 4px;
+	align-items: center;
+	justify-content: center;
+
+}
+
+#AddPathButton
+{
+	width: 30%;
+	height: 30px;
+}
+
+#SaveButton
+{
+	width: 30%;
+	height: 30px;
+}

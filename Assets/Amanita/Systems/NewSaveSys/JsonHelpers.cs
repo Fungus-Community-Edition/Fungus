@@ -1,4 +1,5 @@
-using UnityEngine;
+using FullSerializer;
+using Amanita.FSExt;
 
 namespace Amanita.IO
 {
@@ -8,13 +9,19 @@ namespace Amanita.IO
         {
             try
             {
-                JsonUtility.FromJsonOverwrite(jsonString, toOverwrite);
-                return true;
+                // FullSerializer is not thread-safe; serialize access to the shared serializer.
+                lock (AmanitaManager.DefaultSerializer)
+                {
+                    bool result = Serializer.TryFromJsonOverwrite(jsonString, toOverwrite);
+                    return result;
+                }
             }
             catch (System.Exception)
             {
                 return false;
             }
         }
+
+        private static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
     }
 }

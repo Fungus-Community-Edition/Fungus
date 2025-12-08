@@ -7,6 +7,11 @@ namespace Amanita.SaveSys
     public interface ISaveDataApplier
     {
         /// <summary>
+        /// Gets called during SaveSystem initialization for any setup this applier needs to do.
+        /// </summary>
+        void PreInstallInit();
+
+        /// <summary>
         /// Decides when this applier should be executed relative to other appliers.
         /// Lower order means it will execute sooner.
         /// </summary>
@@ -15,7 +20,6 @@ namespace Amanita.SaveSys
         /// Checks if this applier can apply the given SaveData.
         /// </summary>
         bool CanApply(SaveData saveData);
-        bool CanApply(SaveDataUnit unit);
 
         Task ApplyRange(IList<SaveData> datas);
         Task Apply(SaveData saveData);
@@ -27,14 +31,20 @@ namespace Amanita.SaveSys
         [Tooltip("Lower order = executing sooner")]
         [SerializeField] protected int order = 0;
 
+        /// <summary>
+        /// For when there are things you want this applier to do during startup.
+        /// </summary>
+        public virtual void PreInstallInit()
+        {
+
+        }
+
         public virtual int Order => order;
 
         public virtual bool CanApply(SaveData saveData)
         {
             return false;
         }
-
-        public abstract bool CanApply(SaveDataUnit unit);
 
         public virtual async Task ApplyRange(IList<SaveData> datas)
         {
@@ -64,11 +74,6 @@ namespace Amanita.SaveSys
             return saveData is TSaveData;
         }
 
-        public override bool CanApply(SaveDataUnit unit)
-        {
-            string typeName = typeof(TSaveData).Name;
-            return unit.DataTypeName == typeName;
-        }
         
     }
 
