@@ -14,7 +14,7 @@ namespace Amanita.Myceliaudio.Editor
         [SerializeField]
         protected StyleSheet m_StyleSheet = default;
 
-        [MenuItem("Tools/Amanita/Myceliaudio Settings")]
+        [MenuItem("Window/Atelier Mycelia/Amanita/Myceliaudio Settings")]
         public static void ShowExample()
         {
             MyceliaudioSettingsWindow window = GetWindow<MyceliaudioSettingsWindow>();

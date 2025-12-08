@@ -8,9 +8,9 @@ namespace Amanita.EditorUtils
 {
     /// <summary>
     /// Static class that hooks into the hierachy changed and item gui callbacks to put
-    /// a fungus icon infront of all GOs that have a flowchart on them
+    /// an Amanita icon in front of all GOs that have a Flowchart on them.
     /// 
-    /// Reference; http://answers.unity3d.com/questions/431952/how-to-show-an-icon-in-hierarchy-view.html
+    /// Reference: http://answers.unity3d.com/questions/431952/how-to-show-an-icon-in-hierarchy-view.html
     /// 
     /// TODO
     /// There is what appears like a bug but is currently out of our control. When Unity reloads the built scripts it fires
@@ -19,8 +19,8 @@ namespace Amanita.EditorUtils
     [InitializeOnLoad]
     public class HierarchyIcons
     {
-        // the fungus mushroom icon
-        static Texture2D TextureIcon { get { return Amanita.EditorUtils.AmanitaEditorResources.FungusMushroom; } }
+        // the Amanita icon
+        static Texture2D TextureIcon { get { return AmanitaEditorResources.FungusMushroom; } }
 
         //sorted list of the GO instance IDs that have flowcharts on them
         static List<int> flowchartIDs = new List<int>();
