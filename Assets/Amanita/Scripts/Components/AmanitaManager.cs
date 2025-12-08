@@ -86,12 +86,14 @@ namespace Amanita
                 return existing;
             }
 
-            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>("GuidRegistries", 
-                typeof(T).Name + "GuidRegistry");
+            string assetName = $"{typeof(T).Name}GuidRegistry";
+            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>(whereGuidRegistriesGo, assetName);
             result.AddTypeStoredFor<T>();
             typeToRegistryMap[typeof(T)] = result;
             return result;
         }
+
+        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
 
         private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
             new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
@@ -154,7 +156,7 @@ namespace Amanita
 
         private static void EnsureGuidRegistriesAvailable()
         {
-            GetOrAddGuidRegistryFor<Flowchart>();
+            GetOrAddGuidRegistryFor<Flowchart>();//
             GetOrAddGuidRegistryFor<VariableSourceAsset>();
         }
 

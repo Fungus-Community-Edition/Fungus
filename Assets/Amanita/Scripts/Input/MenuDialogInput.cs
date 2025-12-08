@@ -38,25 +38,53 @@ namespace Amanita.DialogueSys.UI
 
         protected MenuDialog menuDialog;
 
-#if ENABLE_INPUT_SYSTEM
         protected virtual void OnEnable()
         {
-            EnableAndListenForInputActions();
+            ToggleSubs(true);
+        }
 
-            void EnableAndListenForInputActions()
+        protected virtual void ToggleSubs(bool on)
+        {
+            ToggleForNewInputSys(on);
+        }
+
+        protected virtual void ToggleForNewInputSys(bool on)
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (on)
             {
-                foreach (InputActionReference actionRef in inputActions)
+                EnableAndListenForInputActions();
+
+                void EnableAndListenForInputActions()
                 {
-                    if (actionRef != null && actionRef.action != null)
+                    foreach (InputActionReference actionRef in inputActions)
                     {
-                        actionRef.action.Enable();
-                        actionRef.action.performed += OnActionPerformed;
+                        if (actionRef != null && actionRef.action != null)
+                        {
+                            actionRef.action.Enable();
+                            actionRef.action.performed += OnActionPerformed;
+                        }
                     }
                 }
             }
-
+            else
+            {
+                UNlistenForInput();
+                void UNlistenForInput()
+                {
+                    foreach (InputActionReference actionRef in inputActions)
+                    {
+                        if (actionRef != null && actionRef.action != null)
+                        {
+                            actionRef.action.performed -= OnActionPerformed;
+                        }
+                    }
+                }
+            }
+#endif
         }
 
+#if ENABLE_INPUT_SYSTEM
         protected virtual void OnActionPerformed(InputAction.CallbackContext context)
         {
             EnsureOneOptionIsSelected();
@@ -74,7 +102,8 @@ namespace Amanita.DialogueSys.UI
 
             if (!anyOptionsSelected)
             {
-                Button toSelect = CachedButtons.FirstOrDefault(option => option.gameObject.activeInHierarchy && option.interactable);
+                Button toSelect = CachedButtons.FirstOrDefault(option => option.gameObject.activeInHierarchy && 
+                option.interactable);
 
                 if (toSelect != null)
                 {
@@ -91,22 +120,10 @@ namespace Amanita.DialogueSys.UI
             }
         }
 
-#if ENABLE_INPUT_SYSTEM
         protected virtual void OnDisable()
         {
-            UNlistenForInput();
-            void UNlistenForInput()
-            {
-                foreach (InputActionReference actionRef in inputActions)
-                {
-                    if (actionRef != null && actionRef.action != null)
-                    {
-                        actionRef.action.performed -= OnActionPerformed;
-                    }
-                }
-            }
+            ToggleSubs(false);
         }
-#endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
         protected virtual void Update()
