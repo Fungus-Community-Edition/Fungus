@@ -13,7 +13,7 @@ using Amanita.VScripting;
 namespace Amanita.EditorUtils
 {
     /// <summary>
-    /// Helper functions for generating the markdown files for Fungus Commands and Events.
+    /// Helper functions for generating the markdown files for Commands and Events.
     /// </summary>
     public static class ExportReferenceDocs
     {
@@ -51,7 +51,7 @@ namespace Amanita.EditorUtils
 
             var sb = new System.Text.StringBuilder(@"# Command Reference
 
-This is the reference documentation for all Fungus commands.
+This is the reference documentation for all Amanita commands.
 
 ");
             // Output the commands in each category
