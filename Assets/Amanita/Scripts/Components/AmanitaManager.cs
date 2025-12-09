@@ -405,12 +405,6 @@ namespace Amanita
         public CameraManager CameraManager { get; private set; }
 
         /// <summary>
-        /// Gets the music manager singleton instance.
-        /// </summary>
-        
-        public MusicManager MusicManager { get; private set; }
-
-        /// <summary>
         /// Gets the event dispatcher singleton instance.
         /// </summary>
         public EventDispatcher EventDispatcher { get; private set; }

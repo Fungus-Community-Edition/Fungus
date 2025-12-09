@@ -26,9 +26,7 @@ namespace Amanita.VScripting
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.S.MusicManager;
-
-            musicManager.SetAudioVolume(volume, fadeDuration, () => {
+            MusicManager.S.SetAudioVolume(volume, fadeDuration, () => {
                 if (waitUntilFinished)
                 {
                     Continue();

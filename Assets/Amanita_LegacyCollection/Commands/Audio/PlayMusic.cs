@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace Amanita.VScripting.Legacy
 {
     /// <summary>
     /// Plays looping game music. If any game music is already playing, it is stopped. Game music will continue playing across scene loads.
@@ -9,7 +9,7 @@ namespace Amanita.VScripting
                  "Play Music",
                  "Plays looping game music. If any game music is already playing, it is stopped. Game music will continue playing across scene loads.")]
     [AddComponentMenu("")]
-    public class PlayMusic : Command
+    public class PlayMusic : LegacyAudioCommand
     {
         [Tooltip("Music sound clip to play")]
         [SerializeField] protected AudioClip musicClip;
@@ -27,11 +27,8 @@ namespace Amanita.VScripting
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.S.MusicManager;
-
             float startTime = Mathf.Max(0, atTime);
-            musicManager.PlayMusic(musicClip, loop, fadeDuration, startTime);
-                
+            MusicManager.PlayMusic(musicClip, loop, fadeDuration, startTime);
             Continue();
         }
                     

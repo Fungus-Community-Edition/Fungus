@@ -1,5 +1,7 @@
 using UnityEngine;
 using Amanita.Tweening;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Amanita
 {
@@ -7,7 +9,6 @@ namespace Amanita
     /// Music manager which provides basic music and sound effect functionality.
     /// Music playback persists across scene loads.
     /// </summary>
-    //[RequireComponent(typeof(AudioSource))]
     public class MusicManager : MonoBehaviour
     {
         protected AudioSource audioSourceMusic;
@@ -21,29 +22,80 @@ namespace Amanita
         public AudioSource DefaultVoiceAudioSource { get { return audioSourceDefaultVoice; } }
         public AudioSource WriterSoundEffectAudioSource { get { return audioSourceWriterSoundEffect; } }
 
+        public static MusicManager EnsureExists()
+        {
+            if (S != null)
+            {
+                return S;
+            }
+
+            GameObject musicManagerGO = new GameObject("Amanita_LegacyMusicManager");
+            MusicManager musicManager = musicManagerGO.AddComponent<MusicManager>();
+            musicManager.Init();
+            return musicManager;
+        }
+
+        private void Awake()
+        {
+            if (S != null && S != this)
+            {
+                Debug.LogWarning("Multiple MusicManager instances detected; destroying duplicate.");
+                Destroy(this.gameObject);
+                return;
+            }
+            S = this;
+            DontDestroyOnLoad(this.gameObject);
+            this.name = "Amanita_LegacyMusicManager";
+        }
+
         void Reset()
         {
-            int audioSourceCount = this.GetComponents<AudioSource>().Length;
-            for (int i = 0; i < RequiredAudioSources - audioSourceCount; i++)
-                gameObject.AddComponent<AudioSource>();
+            EnsureWeHaveEnoughAudioSources();
         }
+
+        private void EnsureWeHaveEnoughAudioSources()
+        {
+            audioSources ??= GetComponents<AudioSource>().ToList();
+            bool enoughSourcesAvailable = audioSources.Count >= RequiredAudioSources;
+            while (!enoughSourcesAvailable)
+            {
+                audioSources.Add(gameObject.AddComponent<AudioSource>());
+                enoughSourcesAvailable = audioSources.Count >= RequiredAudioSources;
+            }
+        }
+
+        private List<AudioSource> audioSources;
 
         public virtual void Init()
         {
+            if (S != null && S != this)
+            {
+                Debug.LogWarning("Multiple MusicManager instances detected; destroying duplicate.");
+                Destroy(this.gameObject);
+                return;
+            }
+            S = this;
             Reset();
-            AudioSource[] audioSources = GetComponents<AudioSource>();
-            audioSourceMusic = audioSources[0];
-            audioSourceAmbiance = audioSources[1];
-            audioSourceSoundEffect = audioSources[2];
-            audioSourceDefaultVoice = audioSources[3];
-            audioSourceWriterSoundEffect = audioSources[4];
 
-            audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
-            audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
+            PrepAudioSources();
+            void PrepAudioSources()
+            {
+                EnsureWeHaveEnoughAudioSources();
 
+                audioSourceMusic = audioSources[0];
+                audioSourceAmbiance = audioSources[1];
+                audioSourceSoundEffect = audioSources[2];
+                audioSourceDefaultVoice = audioSources[3];
+                audioSourceWriterSoundEffect = audioSources[4];
+
+                audioSourceAmbiance.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
+                audioSourceWriterSoundEffect.outputAudioMixerGroup = audioSourceSoundEffect.outputAudioMixerGroup;
+            }
             fadeMusicVolume.Target = fadeMusicPitch.Target = audioSourceMusic;
             fadeAmbianceVolume.Target = fadeAmbiancePitch.Target = audioSourceAmbiance;
         }
+
+        public static MusicManager S { get; set; }
 
         protected AudioTweenArgs fadeMusicVolume = new AudioTweenArgs(), fadeMusicPitch = new AudioTweenArgs(),
             fadeAmbianceVolume = new AudioTweenArgs(), fadeAmbiancePitch = new AudioTweenArgs();
