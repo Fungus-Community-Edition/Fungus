@@ -39,7 +39,7 @@ namespace Amanita.EditorUtils
             if (settings == null)
             {
                 string path = AmanitaConstants.PathToSaveSysDefaultsFolder;
-                settings = SOUtils.GetOrCreateScriptableObject<SaveStorageSettings>(path, "DefaultSaveStorageSettings");
+                settings = SOUtils.EnsureSOExists<SaveStorageSettings>(path, "DefaultSaveStorageSettings");
             }
 
             DefaultAmanitaAssets.SaveStorageSettings = settings;
@@ -52,7 +52,7 @@ namespace Amanita.EditorUtils
             SaveReader reader = DefaultAmanitaAssets.SaveReader;
             if (reader == null)
             {
-                reader = SOUtils.GetOrCreateScriptableObject<SaveReader>(path, "DefaultSaveReader");
+                reader = SOUtils.EnsureSOExists<SaveReader>(path, "DefaultSaveReader");
             }
 
             reader.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
@@ -67,7 +67,7 @@ namespace Amanita.EditorUtils
             SaveWriter writer = DefaultAmanitaAssets.SaveWriter;
             if (writer == null)
             {
-                writer = SOUtils.GetOrCreateScriptableObject<SaveWriter>(path, "DefaultSaveWriter");
+                writer = SOUtils.EnsureSOExists<SaveWriter>(path, "DefaultSaveWriter");
             }
 
             writer.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
@@ -83,7 +83,7 @@ namespace Amanita.EditorUtils
             if (adaptor == null)
             {
                 string pathToContainingFolder = string.Empty; // Relative to Resources
-                adaptor = SOUtils.GetOrCreateScriptableObject<DefaultTweenAdapter>(pathToContainingFolder,
+                adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(pathToContainingFolder,
                     "DefaultTweenAdapter");
             }
 
@@ -96,7 +96,7 @@ namespace Amanita.EditorUtils
         public static Encryptor EnsureDefaultEncryptor()
         {
             string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
-            var encryptor = SOUtils.GetOrCreateScriptableObject<Encryptor>(path, "DefaultEncryptor");
+            var encryptor = SOUtils.EnsureSOExists<Encryptor>(path, "DefaultEncryptor");
             DefaultAmanitaAssets.Encryptor = encryptor;
             return encryptor;
         }
@@ -104,7 +104,7 @@ namespace Amanita.EditorUtils
         public static Decryptor EnsureDefaultDecryptor()
         {
             string path = AmanitaConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
-            var decryptor = SOUtils.GetOrCreateScriptableObject<Decryptor>(path, "DefaultDecryptor");
+            var decryptor = SOUtils.EnsureSOExists<Decryptor>(path, "DefaultDecryptor");
             DefaultAmanitaAssets.Decryptor = decryptor;
             return decryptor;
         }
