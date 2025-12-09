@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace Amanita.VScripting.Legacy
 {
     /// <summary>
     /// Stops the currently playing game music.
@@ -9,16 +9,13 @@ namespace Amanita.VScripting
                  "Stop Music", 
                  "Stops the currently playing game music.")]
     [AddComponentMenu("")]
-    public class StopMusic : Command
+    public class StopMusic : LegacyAudioCommand
     {
         #region Public members
 
         public override void OnEnter()
         {
-            var musicManager = AmanitaManager.S.MusicManager;
-
-            musicManager.StopMusic();
-
+            MusicManager.StopMusic();
             Continue();
         }
 

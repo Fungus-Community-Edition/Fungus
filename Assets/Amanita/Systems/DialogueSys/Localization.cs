@@ -37,14 +37,6 @@ namespace Amanita.LocalizationSys
 
         protected static Dictionary<string, string> localizedStrings = new Dictionary<string, string>();
 
-        #if UNITY_5_4_OR_NEWER
-        #else
-        public virtual void OnLevelWasLoaded(int level) 
-        {
-            LevelWasLoaded();
-        }
-        #endif
-
         protected virtual void LevelWasLoaded()
         {
             // Check if a language has been selected using the Set Language command in a previous scene.
@@ -63,17 +55,13 @@ namespace Amanita.LocalizationSys
         protected virtual void OnEnable()
         {
             StringSubstituter.RegisterHandler(this);
-            #if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
-            #endif
         }
 
         protected virtual void OnDisable()
         {
             StringSubstituter.UnregisterHandler(this);
-            #if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-            #endif
         }
 
         protected virtual void Start()
