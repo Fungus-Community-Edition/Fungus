@@ -192,11 +192,8 @@ namespace Amanita.SaveSys
             // If empty, (re)build the cache; include inactive flowcharts
             if (allFlowcharts.Count == 0)
             {
-#if UNITY_2022_3_OR_NEWER
                 allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None).ToList();
-#else
-                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-#endif
+
             }
 
             flowchart = FindFlowchartById(saveData.UniqueId) ?? FindFlowchartByName(saveData.FlowchartName);

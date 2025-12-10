@@ -26,16 +26,15 @@ namespace Amanita.VScripting
 
         public override void OnEnter()
         {
-            System.Action onComplete = () => {
+            void OnPitchChangeDone()
+            {
                 if (waitUntilFinished)
                 {
                     Continue();
                 }
-            };
+            }
 
-            var musicManager = AmanitaManager.S.MusicManager;
-
-            musicManager.SetAudioPitch(pitch * 100, fadeDuration, onComplete);
+            MusicManager.S.SetAudioPitch(pitch * 100, fadeDuration, OnPitchChangeDone);
 
             if (!waitUntilFinished)
             {
