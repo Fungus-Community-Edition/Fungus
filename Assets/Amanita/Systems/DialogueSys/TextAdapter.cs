@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Amanita
 {
@@ -12,9 +13,7 @@ namespace Amanita
         protected Text textUI;
         protected InputField inputField;
         protected TextMesh textMesh;
-#if UNITY_2018_1_OR_NEWER
         protected TMPro.TMP_Text tmpro;
-#endif
         protected Component textComponent;
         protected PropertyInfo textProperty;
         protected IWriterTextDestination writerTextDestination;
@@ -31,9 +30,7 @@ namespace Amanita
                 textUI = go.GetComponent<Text>();
                 inputField = go.GetComponent<InputField>();
                 textMesh = go.GetComponent<TextMesh>();
-#if UNITY_2018_1_OR_NEWER
                 tmpro = go.GetComponent<TMPro.TMP_Text>();
-#endif
                 writerTextDestination = go.GetComponent<IWriterTextDestination>();
             }
             else
@@ -41,32 +38,40 @@ namespace Amanita
                 textUI = go.GetComponentInChildren<Text>();
                 inputField = go.GetComponentInChildren<InputField>();
                 textMesh = go.GetComponentInChildren<TextMesh>();
-#if UNITY_2018_1_OR_NEWER
                 tmpro = go.GetComponentInChildren<TMPro.TMP_Text>();
-#endif
                 writerTextDestination = go.GetComponentInChildren<IWriterTextDestination>();
             }
             
-            // Try to find any component with a text property
             if (textUI == null && inputField == null && textMesh == null && writerTextDestination == null)
             {
-                Component[] allcomponents = null;
-                if (!includeChildren)
-                    allcomponents = go.GetComponents<Component>();
-                else
-                    allcomponents = go.GetComponentsInChildren<Component>();
+                textComponent = FindFirstComponentWithTextProperty(go, includeChildren);
+            }
+        }
 
-                for (int i = 0; i < allcomponents.Length; i++)
+        private Component FindFirstComponentWithTextProperty(GameObject baseGo, bool includeChildren)
+        {
+            Component result = null;
+            IList<Component> allComponents;
+            if (!includeChildren)
+            {
+                allComponents = baseGo.GetComponents<Component>();
+            }
+            else
+            {
+                allComponents = baseGo.GetComponentsInChildren<Component>();
+            }
+
+            for (int i = 0; i < allComponents.Count; i++)
+            {
+                var elem = allComponents[i];
+                textProperty = elem.GetType().GetProperty("text");
+                if (textProperty != null)
                 {
-                    var c = allcomponents[i];
-                    textProperty = c.GetType().GetProperty("text");
-                    if (textProperty != null)
-                    {
-                        textComponent = c;
-                        break;
-                    }
+                    result = elem;
+                    break;
                 }
             }
+            return result;
         }
 
         public void ForceRichText()
@@ -83,12 +88,10 @@ namespace Amanita
                 textMesh.richText = true;
             }
 
-#if UNITY_2018_1_OR_NEWER
             if (tmpro != null)
             {
                 tmpro.richText = true;
             }
-#endif
 
             if (writerTextDestination != null)
             {
@@ -113,12 +116,12 @@ namespace Amanita
             {
                 textMesh.color = textColor;
             }
-#if UNITY_2018_1_OR_NEWER
+
             else if (tmpro != null)
             {
                 tmpro.color = textColor;
             }
-#endif
+
             else if (writerTextDestination != null)
             {
                 writerTextDestination.SetTextColor(textColor);
@@ -148,12 +151,12 @@ namespace Amanita
                 tempColor.a = textAlpha;
                 textMesh.color = tempColor;
             }
-#if UNITY_2018_1_OR_NEWER
+
             else if (tmpro != null)
             {
                 tmpro.alpha = textAlpha;
             }
-#endif
+
             else if (writerTextDestination != null)
             {
                 writerTextDestination.SetTextAlpha(textAlpha);
@@ -162,11 +165,8 @@ namespace Amanita
 
         public bool HasTextObject()
         {
-            return (textUI != null || inputField != null || textMesh != null || textComponent != null ||
-#if UNITY_2018_1_OR_NEWER
-                tmpro != null ||
-#endif
-                 writerTextDestination != null);
+            return (textUI != null || inputField != null || textMesh != null 
+                || textComponent != null || tmpro != null || writerTextDestination != null);
         }
 
         public bool SupportsRichText()
@@ -183,12 +183,12 @@ namespace Amanita
             {
                 return textMesh.richText;
             }
-#if UNITY_2018_1_OR_NEWER
+
             if (tmpro != null)
             {
                 return true;
             }
-#endif
+
             if (writerTextDestination != null)
             {
                 return writerTextDestination.SupportsRichText();
@@ -198,12 +198,11 @@ namespace Amanita
 
         public bool SupportsHiddenCharacters()
         {
-#if UNITY_2018_1_OR_NEWER
             if (tmpro != null)
             {
                 return true;
             }
-#endif
+
             return false;
         }
 
@@ -211,22 +210,22 @@ namespace Amanita
         {
             get
             {
-#if UNITY_2018_1_OR_NEWER
+
                 if (tmpro != null)
                 {
                     return tmpro.maxVisibleCharacters;
                 }
-#endif
+
                 return 0;
             }
             set
             {
-#if UNITY_2018_1_OR_NEWER
+
                 if (tmpro != null)
                 {
                     tmpro.maxVisibleCharacters = value;
                 }
-#endif
+
             }
         }
 
@@ -234,7 +233,7 @@ namespace Amanita
         {
             get
             {
-#if UNITY_2018_1_OR_NEWER
+
                 if (tmpro != null && tmpro.textInfo != null && tmpro.textInfo.characterInfo != null)
                 {
                     if (tmpro.maxVisibleCharacters < tmpro.textInfo.characterInfo.Length && tmpro.maxVisibleCharacters > 0)
@@ -242,7 +241,7 @@ namespace Amanita
                         return tmpro.textInfo.characterInfo[tmpro.maxVisibleCharacters - 1].character;
                     }
                 }
-#endif
+
                 return (char)0;
             }
         }
@@ -251,12 +250,12 @@ namespace Amanita
         {
             get
             {
-#if UNITY_2018_1_OR_NEWER
+
                 if (tmpro != null)
                 {
                     return tmpro.textInfo.characterCount;
                 }
-#endif
+
                 return 0;
             }
         }
@@ -281,12 +280,12 @@ namespace Amanita
                 {
                     return textMesh.text;
                 }
-#if UNITY_2018_1_OR_NEWER
+
                 else if (tmpro != null)
                 {
                     return tmpro.text;
                 }
-#endif
+
                 else if (textProperty != null)
                 {
                     return textProperty.GetValue(textComponent, null) as string;
@@ -313,13 +312,13 @@ namespace Amanita
                 {
                     textMesh.text = value;
                 }
-#if UNITY_2018_1_OR_NEWER
+
                 else if (tmpro != null)
                 {
                     tmpro.text = value;
                     tmpro.ForceMeshUpdate();
                 }
-#endif
+
                 else if (textProperty != null)
                 {
                     textProperty.SetValue(textComponent, value, null);

@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-
-#if UNITY_2018_1_OR_NEWER
-
 namespace Amanita
 {
     /// <summary>
@@ -103,5 +100,3 @@ namespace Amanita
         }
     }
 }
-
-#endif
