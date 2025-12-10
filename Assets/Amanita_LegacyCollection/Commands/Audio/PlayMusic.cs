@@ -29,7 +29,16 @@ namespace Amanita.VScripting.Legacy
         {
             float startTime = Mathf.Max(0, atTime);
             MusicManager.PlayMusic(musicClip, loop, fadeDuration, startTime);
-            Continue();
+
+            if (waitUntilFinished && !loop && musicClip != null)
+            {
+                _delayBeforeContinue = musicClip.length - startTime;
+                Invoke(nameof(Continue), _delayBeforeContinue);
+            }
+            else
+            {
+                Continue();
+            }
         }
                     
         public override string GetSummary()

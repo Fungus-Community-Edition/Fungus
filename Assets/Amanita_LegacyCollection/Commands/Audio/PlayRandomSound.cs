@@ -21,11 +21,6 @@ namespace Amanita.VScripting.Legacy
 		protected float volume = 1;
 
 
-		protected virtual void DoWait()
-		{
-			Continue();
-		}
-
 		#region Public members
 
 		public override void OnEnter()
@@ -49,7 +44,6 @@ namespace Amanita.VScripting.Legacy
 				Continue();
 			}
 		}
-
 
 		public override string GetSummary()
 		{

@@ -24,11 +24,6 @@ namespace Amanita.VScripting.Legacy
         [SerializeField]
         protected bool loop;
 
-        protected virtual void DoWait()
-        {
-            Continue();
-        }
-
         #region Public members
 
         public override void OnEnter()
@@ -41,7 +36,14 @@ namespace Amanita.VScripting.Legacy
 
             MusicManager.PlayAmbianceSound(soundClip, loop, volume);
 
-            Continue();
+            if (waitUntilFinished)
+            {
+                Invoke(nameof(Continue), soundClip.length);
+            }
+            else
+            {
+                Continue();
+            }
         }
 
         public override string GetSummary()

@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Amanita.VScripting.Legacy
 {
-
     public abstract class LegacyAudioCommand : Command
     {
         [Tooltip("Wait until the sound has finished playing before continuing execution.")]
@@ -15,33 +14,17 @@ namespace Amanita.VScripting.Legacy
 
         protected static MusicManager MusicManager { get => MusicManager.S; }
 
-        public override void Continue()
+        protected virtual void OnTimerReachedZero()
         {
-            if (waitUntilFinished)
-            {
-                ContinueAfterDelay();
-            }
             base.Continue();
         }
-        protected virtual void ContinueAfterDelay()
+
+        public virtual void DelayedContinue()
         {
-            if (_delayBeforeContinue <= 0f)
-            {
-                ContinueImmediately();
-                return;
-            }
-            Invoke(nameof(ContinueImmediately), _delayBeforeContinue);
+            Invoke(nameof(Continue), _delayBeforeContinue);
         }
 
         protected float _delayBeforeContinue;
-
-        protected virtual void ContinueImmediately()
-        {
-            CancelInvoke(nameof(ContinueImmediately));
-            Continue();
-        }
-
-        
 
     }
 }

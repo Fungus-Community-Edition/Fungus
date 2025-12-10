@@ -18,11 +18,6 @@ namespace Amanita.VScripting.Legacy
         [Tooltip("Volume level of the sound effect")]
         [SerializeField] protected float volume = 1;
 
-        protected virtual void DoWait()
-        {
-            Continue();
-        }
-
         #region Public members
 
         public override void OnEnter()
