@@ -5,7 +5,7 @@ namespace Amanita
 {
     public static class SOUtils
     {
-        public static T GetOrCreateScriptableObject<T>(string resourcesSubfolderPath, string assetName)
+        public static T EnsureSOExists<T>(string resourcesSubfolderPath, string assetName)
             where T : ScriptableObject
         {
             // Try to load from Resources

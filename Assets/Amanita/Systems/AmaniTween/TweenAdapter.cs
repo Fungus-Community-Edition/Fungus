@@ -1,3 +1,0 @@
-namespace Amanita.Tweening
-{
-}
