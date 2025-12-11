@@ -6,29 +6,24 @@ namespace Amanita
     public static class ScriptableObjectExtensions
     {
         /// <summary>
-        /// Marks the ScriptableObject as dirty and saves the asset database.
+        /// Marks the ScriptableObject as dirty and saves the asset database. Make sure to only
+        /// call this method on ScriptableObjects that are assets in the project, not ones that are
+        /// only in memory.
         /// </summary>
-        public static void MarkDirtyAndSave(this ScriptableObject so)
+        public static void MarkDirtyAndSave(this ScriptableObject sObj)
         {
             // As editor-centric as this method is, we want this in the core assembly so that other classes can
             // call it without needing to create an editor assembly dependency. Given how Amanita's core
             // editor one depends on Amanita's core runtime one... yeah.
-            EditorUtility.SetDirty(so);
+            EditorUtility.SetDirty(sObj);
+            AssetDatabase.SaveAssetIfDirty(sObj);
 
-            string path = AssetDatabase.GetAssetPath(so);
-            bool soIsAssetInProject = !string.IsNullOrEmpty(path) && !AssetDatabase.IsSubAsset(so);
-            if (soIsAssetInProject)
-            {
-                var mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
-                if (mainAsset != null)
-                {
-                    EditorUtility.SetDirty(mainAsset);
-                    Debug.Log($"Asset file for {so.name} marked dirty at path: {path}");
-                }
-            }
+        }
 
-            AssetDatabase.SaveAssetIfDirty(so);
-
+        public static bool IsAssetInProject(this ScriptableObject sObj)
+        {
+            var path = AssetDatabase.GetAssetPath(sObj);
+            return !string.IsNullOrEmpty(path);
         }
     }
 }

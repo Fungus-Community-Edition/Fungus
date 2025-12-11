@@ -57,9 +57,7 @@ namespace Amanita.EditorUtils
                     }
                 }
 
-                // Make sure that the changes stick
-                EditorUtility.SetDirty(registryEl);
-                AssetDatabase.SaveAssetIfDirty(registryEl);
+                registryEl.MarkDirtyAndSave();
             }
 
             AssetDatabase.Refresh();
