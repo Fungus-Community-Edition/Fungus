@@ -49,7 +49,6 @@ namespace Amanita.VScripting
                 AssetDatabase.SaveAssetIfDirty(this);
                 AssetDatabase.Refresh();
 #endif
-                VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
 
@@ -307,7 +306,6 @@ namespace Amanita.VScripting
             EnsureValidUniqueId();
             EnsureValidVarIDs();
             EditorOnEnable();
-            VScriptSignals.UniqueIDHaverEnabled(this);
         }
 
         protected virtual void EnsureValidUniqueId()

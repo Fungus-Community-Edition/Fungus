@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: GlobalVariables
   m_EditorClassIdentifier: 
   includeInSaves: 1
-  uniqueId: bed1eb11-63c4-4edd-9dc5-1faf2c73bf8c
+  uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
   variables:
   - rid: 7903258335965610039
+  - rid: 7903258335965610044
   - rid: 7903258335965610040
   - rid: 7903258335965610041
   - rid: 7903258335965610042
   - rid: 7903258335965610043
-  - rid: 7903258335965610044
   _nextVarID: 7
   references:
     version: 2
@@ -31,15 +31,15 @@ MonoBehaviour:
         scope: 0
         key: Naruto
         itemID: 6
-        _ownerIdIndex: 2
-        value: Believe it!
+        _ownerIdIndex: 1
+        value: Believe it! esytg
     - rid: 7903258335965610040
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: One Piece
         itemID: 1
-        _ownerIdIndex: 2
+        _ownerIdIndex: 1
         value: 'I will become the
 
           Pirate King!'
@@ -49,7 +49,7 @@ MonoBehaviour:
         scope: 0
         key: Bleach
         itemID: 2
-        _ownerIdIndex: 2
+        _ownerIdIndex: 1
         value: 'Throwing away victory for the sake of manners is a cookie mistake.
           Captains don''t have the time to waste on that kind of thing.
 
@@ -64,7 +64,7 @@ MonoBehaviour:
         scope: 0
         key: meaningOfLife
         itemID: 3
-        _ownerIdIndex: 2
+        _ownerIdIndex: 1
         value: 24
     - rid: 7903258335965610043
       type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -72,7 +72,7 @@ MonoBehaviour:
         scope: 0
         key: cuteBgm
         itemID: 4
-        _ownerIdIndex: 2
+        _ownerIdIndex: 1
         value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
     - rid: 7903258335965610044
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -80,5 +80,5 @@ MonoBehaviour:
         scope: 0
         key: pi
         itemID: 5
-        _ownerIdIndex: 2
+        _ownerIdIndex: 1
         value: 3.14159

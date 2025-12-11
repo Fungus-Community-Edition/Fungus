@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace Amanita.SaveSys.UI
 {
@@ -7,7 +8,7 @@ namespace Amanita.SaveSys.UI
     {
         [SerializeField] protected SaveSlotViewComposer _viewComposerPrefab;
         [SerializeField] protected Transform _slotHolder;
-        [SerializeField] protected int initialSlotCount = 10;
+        [SerializeField] private int initialSlotCount = 10;
 
         protected virtual void Awake()
         {
@@ -30,13 +31,41 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void OnEnable()
         {
-
+            ToggleSubs(true);
         }
 
         protected virtual void ToggleSubs(bool on)
         {
+            if (on)
+            {
+                SaveSysSignals.SaveMetasReadOnInit += OnSaveMetasReadOnInit;
+            }
+            else
+            {
+                SaveSysSignals.SaveMetasReadOnInit -= OnSaveMetasReadOnInit;
+            }
         }
 
-        
+        protected virtual void OnSaveMetasReadOnInit(IList<ISaveMetaData> list)
+        {
+            // Pass the metas to the slots
+            for (int i = 0; i < _slotUis.Count; i++)
+            {
+                var slot = _slotUis[i];
+                if (i < list.Count)
+                {
+                    slot.Meta = list[i];
+                }
+                else
+                {
+                    slot.Meta = null;
+                }
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            ToggleSubs(false);
+        }
     }
 }

@@ -1,6 +1,8 @@
 using Amanita.VScripting;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Amanita
 {
@@ -11,6 +13,8 @@ namespace Amanita
         [SerializeField] protected List<string> guids = new List<string>();
         protected Dictionary<string, int> guidToNumericId;
         protected Dictionary<int, string> numericIdToGuid;
+
+        public virtual IReadOnlyList<string> TypesStoredFor => typesStoredFor.AsReadOnly();
 
         public virtual void AddTypeStoredFor<T>()
         {
@@ -64,34 +68,10 @@ namespace Amanita
 
         protected virtual void ToggleSubs(bool on)
         {
-            // We want to know when new GUIDs are assigned so we can add them to the registry right away.
-            // And in case we miss anything going that route... we also want to know when implementors of
-            // IHasUniqueID get enabled. The latter mostly helps catch instances that were set up before
-            // this registry instance was, so yeah.
-            if (on)
-            {
-                VScriptSignals.UniqueGuidAssigned += OnUniqueGuidAssigned;
-                VScriptSignals.UniqueIDHaverEnabled += RegisterUidOf;
-            }
-            else
-            {
-                VScriptSignals.UniqueGuidAssigned -= OnUniqueGuidAssigned;
-                VScriptSignals.UniqueIDHaverEnabled -= RegisterUidOf;
-            }
+            
         }
 
-        protected virtual void OnUniqueGuidAssigned(string prevUid, IHasUniqueID uidHaver)
-        {
-            if (!StoresForType(uidHaver.GetType().FullName))
-            {
-                return;
-            }
-
-            RemoveGuid(prevUid);
-            RegisterUidOf(uidHaver);
-        }
-
-        protected virtual void RegisterUidOf(IHasUniqueID uidHaver)
+        public virtual void RegisterUidOf(IHasUniqueID uidHaver)
         {
             if (!StoresForType(uidHaver.GetType().FullName))
             {
@@ -108,9 +88,16 @@ namespace Amanita
             }
         }
 
-        protected virtual bool StoresForType(string typeName)
+        public virtual bool StoresForType(string typeName)
         {
-            return typesStoredFor.Contains(typeName);
+            for (int i = 0; i < typesStoredFor.Count; i++)
+            {
+                if (typesStoredFor[i].Equals(typeName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

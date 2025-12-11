@@ -382,7 +382,6 @@ namespace Amanita.VScripting
             Refresh();
 
             StringSubstituter.RegisterHandler(this);   
-            VScriptSignals.UniqueIDHaverEnabled(this);
 
         }
 
@@ -1791,7 +1790,6 @@ namespace Amanita.VScripting
 
                 string prevId = uniqueId;
                 uniqueId = value;
-                VScriptSignals.UniqueGuidAssigned(prevId, this);
             }
         }
 

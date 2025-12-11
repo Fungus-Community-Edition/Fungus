@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Amanita.EditorUtils
+namespace Amanita
 {
     public static class ScriptableObjectExtensions
     {
@@ -10,11 +10,14 @@ namespace Amanita.EditorUtils
         /// </summary>
         public static void MarkDirtyAndSave(this ScriptableObject so)
         {
+            // As editor-centric as this method is, we want this in the core assembly so that other classes can
+            // call it without needing to create an editor assembly dependency. Given how Amanita's core
+            // editor one depends on Amanita's core runtime one... yeah.
             EditorUtility.SetDirty(so);
 
-            // Ensure the asset file itself is marked dirty
             string path = AssetDatabase.GetAssetPath(so);
-            if (!string.IsNullOrEmpty(path))
+            bool soIsAssetInProject = !string.IsNullOrEmpty(path) && !AssetDatabase.IsSubAsset(so);
+            if (soIsAssetInProject)
             {
                 var mainAsset = AssetDatabase.LoadMainAssetAtPath(path);
                 if (mainAsset != null)
