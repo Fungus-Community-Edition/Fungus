@@ -36,7 +36,7 @@ namespace Lorekeeper
         TextAsset,
 
         // Physics
-        PhysicMaterial,
+        PhysicsMaterial,
         PhysicsMaterial2D,
 
         Other

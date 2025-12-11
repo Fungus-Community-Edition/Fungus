@@ -76,7 +76,7 @@ namespace Amanita.VScripting
             }
 
             // Other Flowcharts
-            foreach (var otherChart in Flowchart.CachedFlowcharts.Where(fc => fc != localSource))
+            foreach (var otherChart in Flowchart.CachedFlowcharts.Where(fc => !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)
                 {

@@ -17,6 +17,17 @@ namespace Amanita.SaveSys.UI
             }
         }
 
+        protected virtual void CreateSaveSlot()
+        {
+            var slot = Instantiate(_viewComposerPrefab, _slotHolder);
+            slot.transform.localScale = _viewComposerPrefab.transform.localScale;
+            // ^There's a weird Unity bug where instantiated UI prefabs start out with a scale they shouldn't have, 
+            // and thus to compensate...
+            _slotUis.Add(slot);
+        }
+
+        protected IList<SaveSlotViewComposer> _slotUis = new List<SaveSlotViewComposer>();
+
         protected virtual void OnEnable()
         {
 
@@ -26,12 +37,6 @@ namespace Amanita.SaveSys.UI
         {
         }
 
-        protected virtual void CreateSaveSlot()
-        {
-            var slot = Instantiate(_viewComposerPrefab, _slotHolder);
-            _slotUis.Add(slot);
-        }
-
-        protected IList<SaveSlotViewComposer> _slotUis = new List<SaveSlotViewComposer>();
+        
     }
 }

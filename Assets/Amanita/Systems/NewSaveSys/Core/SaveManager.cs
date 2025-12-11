@@ -43,8 +43,6 @@ namespace Amanita.SaveSys
 
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
 
-        public virtual IVersionProvider VersionProvider { get; protected set; }
-
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
                         IMainStateFactory mainStateFactory)

@@ -25,7 +25,7 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void CacheComponentsOnAwake()
         {
-            Formatter = formatterSO as ITextFormatter;
+            formatter = formatterSO as ITextFormatter;
         }
 
         public virtual ITextFormatter Formatter

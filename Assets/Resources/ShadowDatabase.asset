@@ -1140,7 +1140,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 47ee60abed1514dababc02a35d8293ea, type: 3}
   - {fileID: 4900000, guid: 7b753670f06bf004cae6edc7eb1ee445, type: 3}
   - {fileID: 4900000, guid: 651a7da7f195da44696692fe51ac7552, type: 3}
-  _physicMaterials:
+  _physicsMaterials:
   - {fileID: 13400000, guid: 2150f8a2365e2df43be3dbad67a48487, type: 2}
   - {fileID: 13400000, guid: 1560575207a7b4f27bcd4ab2aeb2e3a1, type: 2}
   _physicsMaterials2D:
