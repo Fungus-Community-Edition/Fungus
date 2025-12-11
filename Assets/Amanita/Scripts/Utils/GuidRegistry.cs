@@ -101,8 +101,11 @@ namespace Amanita
             // Since this callback might fire between domain reloads, we need to be extra careful
             // about our dictionaries being built.
             Refresh();
-            Debug.Log($"[{name}]: Registering unique ID {uidHaver.UniqueId} for {uidHaver}");
-            GetOrAddNumericId(uidHaver.UniqueId);
+            if (!guids.Contains(uidHaver.UniqueId))
+            {
+                Debug.Log($"[{name}]: Registering unique ID {uidHaver.UniqueId} for {uidHaver}");
+                GetOrAddNumericId(uidHaver.UniqueId);
+            }
         }
 
         protected virtual bool StoresForType(string typeName)
