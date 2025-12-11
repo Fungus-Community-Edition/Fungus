@@ -44,7 +44,11 @@ namespace Amanita.VScripting
 
                 string prevId = uniqueId;
                 uniqueId = value;
-                VScriptSignals.UniqueGuidAssigned(prevId, this);
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssetIfDirty(this);
+                AssetDatabase.Refresh();
+#endif
             }
         }
 
@@ -302,7 +306,6 @@ namespace Amanita.VScripting
             EnsureValidUniqueId();
             EnsureValidVarIDs();
             EditorOnEnable();
-            VScriptSignals.UniqueIDHaverEnabled(this);
         }
 
         protected virtual void EnsureValidUniqueId()

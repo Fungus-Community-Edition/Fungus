@@ -1,3 +1,6 @@
+using UnityEngine;
+using DateTime = System.DateTime;
+
 namespace Amanita.SaveSys
 {
     public class DefaultMetaFactory : IMetaFactory
@@ -11,11 +14,16 @@ namespace Amanita.SaveSys
 
         public virtual ISaveMetaData CreateMeta(int slotNumber)
         {
-            var meta = new SaveMetaData
+            string saveId = System.Guid.NewGuid().ToString();
+            SaveMetaData meta = new SaveMetaData()
             {
-                SlotNumber = slotNumber,
-                ProgressMarkers = SaveSystem.S.ProgressMarkers
+                SaveID = saveId,
+                TimeStamp = DateTime.UtcNow,
+                SlotNumber = slotNumber
             };
+            meta.SlotNumber = slotNumber;
+
+            meta.TimeStamp = System.DateTime.UtcNow;
 
             meta.RegisterCurrentSceneInfo();
 

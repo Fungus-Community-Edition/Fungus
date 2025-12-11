@@ -89,7 +89,7 @@ namespace Amanita.SaveSys
             
         }
 
-        protected static string Delimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
+        protected static string Delimiter => "<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>";
 
         protected virtual Encoding Encoding => Encoding.UTF8;
         protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;

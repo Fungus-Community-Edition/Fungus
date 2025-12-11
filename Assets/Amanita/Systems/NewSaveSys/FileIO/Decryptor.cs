@@ -27,7 +27,7 @@ namespace Amanita.SaveSys
         }
 
         protected static string[] delimiterArr;
-        protected static string DelimiterText => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
+        protected static string DelimiterText => "<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>";
 
         /// <summary>
         /// What we expect the client's input to be is an object array with the 
@@ -80,7 +80,7 @@ namespace Amanita.SaveSys
                 if (!EndsWithCompletionMarker(originalBytes))
                 {
                     string errorMessage = "Decrypted bytes do not end with the expected completion marker.";
-                    throw new System.ArgumentException(errorMessage);
+                    throw new ArgumentException(errorMessage);
                 }
                 // The marker should only take up one line at the end of the plain text. Thus, the whole
                 // plain json should be everything up to the marker. And thus to extract said json, we can
@@ -162,7 +162,7 @@ namespace Amanita.SaveSys
         {
             decReq = input as BaseDecryptionRequest;
             string errorMessage;
-            System.Exception exception = null;
+            Exception exception = null;
 
             // We expect to be given an array with the raw string as the first elem, 
             // and whether it's already json or not
@@ -170,13 +170,13 @@ namespace Amanita.SaveSys
             if (input == null)
             {
                 errorMessage = "Null input given to decryptor.";
-                exception = new System.NullReferenceException(errorMessage);
+                exception = new NullReferenceException(errorMessage);
             }
 
             else if (input == null || input is not BaseDecryptionRequest)
             {
                 errorMessage = "Decryptor given wrong variety of input.";
-                exception = new System.ArgumentException(errorMessage);
+                exception = new ArgumentException(errorMessage);
             }
 
             if (exception != null)
