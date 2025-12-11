@@ -9,6 +9,8 @@ namespace Amanita.SaveSys.UI
     {
         [TextArea(3, 6)]
         [SerializeField] protected string notes = string.Empty;
+        [Space]
+        [SerializeField] protected bool acceptInvalidMeta = false;
 
         public virtual ISaveMetaData Meta
         {
@@ -30,16 +32,8 @@ namespace Amanita.SaveSys.UI
         public virtual void Refresh()
         {
             // Implement the logic to refresh the UI with the current metadata
-            if (Meta != null)
-            {
-                // Example: Update UI elements with Meta data
-                Debug.Log($"Refreshing Save Slot View: {Meta.SlotNumber} - {Meta.TimeStamp}");
-                UpdateVisuals();
-            }
-            else
-            {
-                Debug.LogWarning("Meta data is null, cannot refresh Save Slot View.");
-            }
+            Debug.Log($"Refreshing Save Slot View: {Meta.SlotNumber} - {Meta.TimeStamp}");
+            UpdateVisuals();
         }
 
         protected virtual void UpdateVisuals()

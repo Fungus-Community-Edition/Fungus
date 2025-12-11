@@ -48,6 +48,14 @@ namespace Amanita.SaveSys.UI
             }
         }
 
+        public virtual void Refresh()
+        {
+            for (int i = 0; i < _slotUis.Count; i++)
+            {
+                _slotUis[i].Refresh();
+            }
+        }
+
         protected virtual void OnSaveMetasReadOnInit(IList<ISaveMetaData> list)
         {
             #region Pass the metas to the slot uis
@@ -60,7 +68,14 @@ namespace Amanita.SaveSys.UI
                 }
                 else
                 {
-                    slot.Meta = null;
+                    // A filler meta so the slots at least display their slot numbers correctly
+                    SaveMetaData fillerMeta = new SaveMetaData()
+                    {
+                        SaveName = "Empty Slot",
+                        SlotNumber = i + 1,
+                        SaveVersion = string.Empty,
+                    };
+                    slot.Meta = fillerMeta;
                 }
             }
             #endregion

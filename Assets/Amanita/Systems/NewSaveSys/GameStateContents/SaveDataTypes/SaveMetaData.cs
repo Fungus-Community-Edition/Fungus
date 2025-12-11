@@ -29,11 +29,23 @@ namespace Amanita.SaveSys
         [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
         [SerializeField] protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
 
+        public bool IsValid
+        {
+            get
+            {
+                bool validID = !string.IsNullOrEmpty(saveID);
+                bool validVersion = !string.IsNullOrEmpty(saveVersion);
+                bool validTimeStamp = !string.IsNullOrEmpty(utcTimeStamp);
+                return validID && validVersion && validTimeStamp;
+            }
+        }
+
         public string SaveName
         {
             get { return name; }
             set { name = value; }
         }
+
         public string SaveID
         {
             get { return saveID; }
@@ -48,6 +60,7 @@ namespace Amanita.SaveSys
                 saveID = toApply;
             }
         }
+
         public virtual int SlotNumber
         {
             get { return slotNumber; }
@@ -68,13 +81,6 @@ namespace Amanita.SaveSys
             set
             {
                 string toApply = value;
-
-                if (string.IsNullOrEmpty(toApply))
-                {
-                    string errorMessage = "Cannot pass a null or empty save version to meta data.";
-                    throw new System.ArgumentException(errorMessage);
-                }
-
                 if (toApply.Length > IDAndVersionLengthCap)
                 {
                     toApply = toApply[..IDAndVersionLengthCap];
@@ -171,51 +177,31 @@ namespace Amanita.SaveSys
 
         public SaveMetaData()
         {
-            this.saveID = Guid.NewGuid().ToString();
+            this.saveID = string.Empty;
             this.timeStamp = DateTime.UtcNow;
             this.saveVersion = NullSaveVer;
-
-            MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
         }
 
         protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
 
-        protected virtual void MakeSureWeHaveSaveVersion()
+        public SaveMetaData(string saveId = null, DateTime timeStamp = default,
+            string saveVersion = "")
         {
-            if (string.IsNullOrEmpty(this.SaveVersion))
+            if (string.IsNullOrEmpty(saveId))
             {
-                SaveVersion = Application.version;
+                saveId = string.Empty;
             }
-
-            bool noValidVer = string.IsNullOrEmpty(this.SaveVersion);
-            if (noValidVer)
-            {
-                this.saveVersion = NullSaveVer;
-            }
-        }
-
-        public SaveMetaData(string saveID = null, DateTime timeStamp = default,
-            string saveVersion = "_")
-        {
-            if (string.IsNullOrEmpty(saveID))
-            {
-                this.SaveID = System.Guid.NewGuid().ToString();
-            }
-            else
-            {
-                this.SaveID = saveID;
-            }
+            this.SaveID = saveId;
 
             this.timeStamp = timeStamp;
-            
-            if (this.timeStamp == default)
+
+            if (string.IsNullOrEmpty(saveVersion))
             {
-                this.timeStamp = DateTime.UtcNow;
+                saveVersion = NullSaveVer;
             }
 
             this.saveVersion = saveVersion;
-            MakeSureWeHaveSaveVersion();
             UpdateTimeStampString();
         }
 
@@ -324,6 +310,7 @@ namespace Amanita.SaveSys
             result.UpdateTimeStampString();
             return result;
         }
+
     }
 
     // For stuff that probably all save meta data should have
@@ -337,6 +324,7 @@ namespace Amanita.SaveSys
         string SceneName { get; }
         int SceneBuildIndex { get; }
         TimeSpan Playtime { get; }
-        
+        bool IsValid { get; }
+
     }
 }
