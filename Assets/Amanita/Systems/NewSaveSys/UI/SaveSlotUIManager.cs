@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
+using System.Linq;
 
 namespace Amanita.SaveSys.UI
 {
@@ -12,7 +12,9 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void Awake()
         {
-            for (int i = 0; i < initialSlotCount; i++)
+            _slotUis = _slotHolder.GetComponentsInChildren<SaveSlotViewComposer>(true).ToList();
+            // ^For when you add slots to the holder in the editor directly
+            while (_slotUis.Count < initialSlotCount)
             {
                 CreateSaveSlot();
             }

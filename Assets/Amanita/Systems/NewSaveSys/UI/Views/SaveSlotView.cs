@@ -24,14 +24,7 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void ValidateMeta()
         {
-            if (Meta == null)
-            {
-                Debug.LogError("Meta data is null. Please assign a valid ISaveMetaData instance.");
-            }
-            else
-            {
-                Debug.Log($"Meta data is valid: {Meta.SlotNumber} - {Meta.TimeStamp}");
-            }
+            // Override in subclasses to add validation logic if needed
         }
 
         public virtual void Refresh()
