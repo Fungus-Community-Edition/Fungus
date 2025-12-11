@@ -50,7 +50,7 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void OnSaveMetasReadOnInit(IList<ISaveMetaData> list)
         {
-            // Pass the metas to the slots
+            #region Pass the metas to the slot uis
             for (int i = 0; i < _slotUis.Count; i++)
             {
                 var slot = _slotUis[i];
@@ -63,6 +63,7 @@ namespace Amanita.SaveSys.UI
                     slot.Meta = null;
                 }
             }
+            #endregion
         }
 
         protected virtual void OnDisable()
