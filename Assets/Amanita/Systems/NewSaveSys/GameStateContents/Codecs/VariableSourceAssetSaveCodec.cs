@@ -79,23 +79,23 @@ namespace Amanita.SaveSys
         {
             // TODO: Implement an init method for save codecs so that we only need to load
             // certain things once upon startup, rather than every time we encode.
-            IList<VariableSourceAsset> toEncode = null;
+            IList<VariableSourceAsset> toEncode = _cachedVsas;
+            IList<SaveData> result = new List<SaveData>();
             UnityThreadUtil.RunOnMainThread(() =>
             {
-                toEncode = Resources.LoadAll<VariableSourceAsset>("");
-            });
-            IList<SaveData> result = new List<SaveData>();
-
-            for (int i = 0; i < toEncode.Count; i++)
-            {
-                VariableSourceAsset asset = toEncode[i];
-                var data = EncodeToSave(asset);
-                if (data != null)
+                // Need the following on the main thread since the codecs might need to
+                // touch values of UnityObjs.
+                for (int i = 0; i < toEncode.Count; i++)
                 {
-                    result.Add(data);
+                    VariableSourceAsset asset = toEncode[i];
+                    var data = EncodeToSave(asset);
+                    if (data != null)
+                    {
+                        result.Add(data);
+                    }
                 }
-            }
-
+            });
+            
             onComplete?.Invoke(result);
             return result;
         }

@@ -125,7 +125,11 @@ namespace Amanita
 
         private static void EnsureShadowDbAvailable()
         {
-            shadowDb = SOUtils.EnsureSOExists<ShadowDatabase>(resourcesRootFolder, "ShadowDatabase");
+            if (shadowDb != null)
+            {
+                return;
+            }
+            shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
             if (shadowDb == null)
             {
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
