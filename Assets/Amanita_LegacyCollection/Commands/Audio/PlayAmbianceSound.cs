@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting
+namespace Amanita.VScripting.Legacy
 {
     /// <summary>
     /// Plays a once-off sound effect. Multiple sound effects can be played at the same time.
@@ -9,7 +9,7 @@ namespace Amanita.VScripting
                  "Play Ambiance Sound",
                  "Plays a background sound to be overlayed on top of the music. Only one Ambiance can be played at a time.")]
     [AddComponentMenu("")]
-    public class PlayAmbianceSound : Command
+    public class PlayAmbianceSound : LegacyAudioCommand
     {
         [Tooltip("Sound effect clip to play")]
         [SerializeField]
@@ -24,11 +24,6 @@ namespace Amanita.VScripting
         [SerializeField]
         protected bool loop;
 
-        protected virtual void DoWait()
-        {
-            Continue();
-        }
-
         #region Public members
 
         public override void OnEnter()
@@ -39,11 +34,16 @@ namespace Amanita.VScripting
                 return;
             }
 
-            var musicManager = AmanitaManager.S.MusicManager;
+            MusicManager.PlayAmbianceSound(soundClip, loop, volume);
 
-            musicManager.PlayAmbianceSound(soundClip, loop, volume);
-
-            Continue();
+            if (waitUntilFinished)
+            {
+                Invoke(nameof(Continue), soundClip.length);
+            }
+            else
+            {
+                Continue();
+            }
         }
 
         public override string GetSummary()

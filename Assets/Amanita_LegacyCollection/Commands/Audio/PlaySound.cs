@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace Amanita.VScripting.Legacy
 {
     /// <summary>
     /// Plays a once-off sound effect. Multiple sound effects can be played at the same time.
@@ -9,7 +9,7 @@ namespace Amanita.VScripting
                  "Play Sound",
                  "Plays a once-off sound effect. Multiple sound effects can be played at the same time.")]
     [AddComponentMenu("")]
-    public class PlaySound : Command
+    public class PlaySound : LegacyAudioCommand
     {
         [Tooltip("Sound effect clip to play")]
         [SerializeField] protected AudioClip soundClip;
@@ -17,14 +17,6 @@ namespace Amanita.VScripting
         [Range(0,1)]
         [Tooltip("Volume level of the sound effect")]
         [SerializeField] protected float volume = 1;
-
-        [Tooltip("Wait until the sound has finished playing before continuing execution.")]
-        [SerializeField] protected bool waitUntilFinished;
-
-        protected virtual void DoWait()
-        {
-            Continue();
-        }
 
         #region Public members
 
@@ -36,13 +28,11 @@ namespace Amanita.VScripting
                 return;
             }
 
-            var musicManager = AmanitaManager.S.MusicManager;
-
-            musicManager.PlaySound(soundClip, volume);
+            MusicManager.PlaySound(soundClip, volume);
 
             if (waitUntilFinished)
             {
-                Invoke("DoWait", soundClip.length);
+                Invoke(nameof(Continue), soundClip.length);
             }
             else
             {

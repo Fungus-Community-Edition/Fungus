@@ -178,18 +178,12 @@ namespace Amanita.VScripting
 						case Property.FireEvents:
 							iob.Value = target.fireEvents;
 							break;
-#if UNITY_2020_3_OR_NEWER
 						case Property.KeepAnimatorStateOnDisable:
 							iob.Value = target.keepAnimatorStateOnDisable;
 							break;
 						case Property.WriteDefaultValuesOnDisable:
 							iob.Value = target.writeDefaultValuesOnDisable;
 							break;
-#elif UNITY_2018_1_OR_NEWER
-						case Property.KeepAnimatorControllerStateOnDisable:
-							iob.Value = target.keepAnimatorControllerStateOnDisable;
-							break;
-#endif
 						default:
 							Debug.Log("Unsupported get or set attempted");
 							break;
@@ -235,18 +229,12 @@ namespace Amanita.VScripting
 						case Property.FireEvents:
 							target.fireEvents = iob.Value;
 							break;
-#if UNITY_2020_3_OR_NEWER
 						case Property.KeepAnimatorStateOnDisable:
 							target.keepAnimatorStateOnDisable = iob.Value;
 							break;
 						case Property.WriteDefaultValuesOnDisable:
 							target.writeDefaultValuesOnDisable = iob.Value;
 							break;
-#elif UNITY_2018_1_OR_NEWER
-						case Property.KeepAnimatorControllerStateOnDisable:
-							target.keepAnimatorControllerStateOnDisable = iob.Value;
-							break;
-#endif
 				default:
 							Debug.Log("Unsupported get or set attempted");
 							break;

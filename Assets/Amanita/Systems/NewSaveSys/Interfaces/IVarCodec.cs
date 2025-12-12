@@ -31,12 +31,12 @@ namespace Amanita.SaveSys
     public interface IVarStateApplier
     {
         bool CanHandle(IVariable variable);
-        void ApplyState(IVariable variable, object data);
+        void ApplyState(IVariable toApplyTo, object data);
     }
 
     public interface IVarStateApplier<T> : IVarStateApplier
     {
-        void ApplyState(IVariable variable, T data);
+        void ApplyState(IVariable toApplyTo, T data);
     }
 
 }

@@ -33,7 +33,7 @@ public class SaveSysSettingsWindowTests
     public void SetUp()
     {
         // Ensure SaveSystemSettings resource exists (matches the window's behavior).
-        _settingsAsset = SOUtils.GetOrCreateScriptableObject<SaveSystemSettings>(ResourcesSettingsSubPath, SettingsAssetName) as SaveSystemSettings;
+        _settingsAsset = SOUtils.EnsureSOExists<SaveSystemSettings>(ResourcesSettingsSubPath, SettingsAssetName) as SaveSystemSettings;
         AssetDatabase.Refresh();
 
         // Ensure type registries are discovered.

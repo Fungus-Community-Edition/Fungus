@@ -7,9 +7,11 @@ using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Amanita
 {
@@ -18,17 +20,6 @@ namespace Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour
     {
-#if UNITY_EDITOR
-        [UnityEditor.InitializeOnLoadMethod]
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void MaintainStatics()
-        {
-            Debug.Log("AmanitaManager: MaintainStatics called");
-            EnsureShadowDbAvailable();
-            EnsureGuidRegistriesAvailable();
-        }
-#endif
-
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
 
@@ -86,12 +77,14 @@ namespace Amanita
                 return existing;
             }
 
-            var result = SOUtils.GetOrCreateScriptableObject<GuidRegistry>("GuidRegistries", 
-                typeof(T).Name + "GuidRegistry");
+            string assetName = $"{typeof(T).Name}GuidRegistry";
+            var result = SOUtils.EnsureSOExists<GuidRegistry>(whereGuidRegistriesGo, assetName);
             result.AddTypeStoredFor<T>();
             typeToRegistryMap[typeof(T)] = result;
             return result;
         }
+
+        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
 
         private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
             new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
@@ -102,31 +95,19 @@ namespace Amanita
         {
             get
             {
-                if (_defaultTweener == null)
-                {
-                    _defaultTweener = Resources.Load<DefaultTweenAdapter>(pathToAdapter);
-#if UNITY_EDITOR
-                    if (_defaultTweener == null)
-                    {
-                        Debug.LogWarning($"No TweenAdapter found at Resources/{pathToAdapter}. Creating a new one.");
-                        _defaultTweener = TweenAdapterUtility.GetOrCreateDefaultAdapter();
-                    }
-#else
-                    if (_adapter == null)
-                    {
-                        _adapter = ScriptableObject.CreateInstance<DefaultTweenAdapter>();
-                    }
-#endif
-                }
-
+                EnsureDefaultTweenerAvailable();
                 return _defaultTweener;
             }
         }
 
-        static DefaultTweenAdapter _defaultTweener;
-        static readonly string pathToAdapter = "DefaultTweenAdapter";
+        private static void EnsureDefaultTweenerAvailable()
+        {
+            _defaultTweener = SOUtils.EnsureSOExists<DefaultTweenAdapter>(resourcesRootFolder, "DefaultTweenAdapter");
+        }
 
-        volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to the multi-thread.
+        static DefaultTweenAdapter _defaultTweener;
+
+        volatile static AmanitaManager _s;  // The keyword "volatile" is friendly to multi-threading.
         private static readonly object _ensureLock = new object();
 
         public static ShadowDatabase ShadowDB
@@ -144,17 +125,23 @@ namespace Amanita
 
         private static void EnsureShadowDbAvailable()
         {
-            shadowDb = SOUtils.GetOrCreateScriptableObject<ShadowDatabase>("", "ShadowDatabase");
+            if (shadowDb != null)
+            {
+                return;
+            }
+            shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
             if (shadowDb == null)
             {
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
             }
         }
+        private static readonly string resourcesRootFolder = ""; 
+        // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
 
         private static void EnsureGuidRegistriesAvailable()
         {
-            GetOrAddGuidRegistryFor<Flowchart>();
+            GetOrAddGuidRegistryFor<Flowchart>();//
             GetOrAddGuidRegistryFor<VariableSourceAsset>();
         }
 
@@ -257,6 +244,9 @@ namespace Amanita
                 return;
             }
             _s = this;
+
+            EnsureShadowDbAvailable();
+            EnsureGuidRegistriesAvailable();
 
             VariableRegistry = new VariableRegistry(this);
 
@@ -401,12 +391,6 @@ namespace Amanita
         /// Gets the camera manager singleton instance.
         /// </summary>
         public CameraManager CameraManager { get; private set; }
-
-        /// <summary>
-        /// Gets the music manager singleton instance.
-        /// </summary>
-        
-        public MusicManager MusicManager { get; private set; }
 
         /// <summary>
         /// Gets the event dispatcher singleton instance.

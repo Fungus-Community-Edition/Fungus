@@ -8,6 +8,7 @@ namespace Amanita.SaveSys.UI
     public class SaveMenuManager : MonoBehaviour
     {
         [SerializeField] protected CanvasGroup canvasGroup;
+        
 
         protected virtual void Awake()
         {
@@ -20,10 +21,15 @@ namespace Amanita.SaveSys.UI
                     canvasGroup = gameObject.AddComponent<CanvasGroup>();
                 }
             }
+
+            _slotUiManager = GetComponentInChildren<SaveSlotUIManager>();
         }
+
+        private SaveSlotUIManager _slotUiManager;
 
         public virtual void Open()
         {
+            _slotUiManager.Refresh();
             canvasGroup.alpha = 1f;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;

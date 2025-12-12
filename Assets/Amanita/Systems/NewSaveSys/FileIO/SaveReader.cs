@@ -123,8 +123,34 @@ namespace Amanita.SaveSys
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement IDecryptor. Reverting to default.");
             }
         }
-    
-        public virtual async Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+        
+        public virtual IList<ISaveMetaData> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType)
+        {
+            IList<ISaveMetaData> result = new List<ISaveMetaData>();
+            string folderPath = GetSaveFolderPath(dirType);
+            if (!Directory.Exists(folderPath))
+            {
+                string logMessage = $"Cannot read any meta datas from folder at path {folderPath}, because that " +
+                    $"folder does not exist.";
+                Debug.LogWarning(logMessage);
+            }
+            else
+            {
+                string[] saveFilesFound = Directory.GetFiles(folderPath, $"*.{storageSettings.FileExtension}");
+                foreach (var file in saveFilesFound)
+                {
+                    byte[] rawBytes = File.ReadAllBytes(file);
+                    decryptionRequest.RawBytes = rawBytes;
+                    decryptionRequest.WrittenAsPlainText = !ExpectEncryption;
+                    decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+                    var meta = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
+                    result.Add(meta);
+                }
+            }
+            return result;
+        }
+
+        public virtual async Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolderAsync(SaveDirectoryType dirType,
             CancellationToken cancelToken = default)
         {
             IList<ISaveMetaData> result = new List<ISaveMetaData>();
@@ -199,7 +225,9 @@ namespace Amanita.SaveSys
         Task<CompositeSaveData> ReadMainSaveDataFromDiskAsync(SaveReadRequest request,
             CancellationToken cancelToken = default);
 
-        Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType,
+        IList<ISaveMetaData> ReadAllMetaDatasFromFolder(SaveDirectoryType dirType);
+
+        Task<IList<ISaveMetaData>> ReadAllMetaDatasFromFolderAsync(SaveDirectoryType dirType,
             CancellationToken cancelToken = default);
     }
 
