@@ -20,5 +20,8 @@ namespace Amanita.SaveSys
         public static Action<IList<ISaveMetaData>> SaveMetasReadOnInit = delegate { };
 
         public static Action BaseSaveSysInstallationComplete = delegate { };
+
+        public static Action SaveMenuOpened = delegate { };
+        public static Action SaveMenuClosed = delegate { };
     }
 }

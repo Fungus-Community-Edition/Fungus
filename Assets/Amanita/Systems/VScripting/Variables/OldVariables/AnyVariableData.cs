@@ -31,7 +31,7 @@ namespace Amanita.VScripting
                 {
                     valStr = data.BoxedValue != null ? data.BoxedValue.ToString() : "null";
                 }
-                //Debug.Log($"AnyVariableData.Value called. data: {data}, type: {data?.GetType().Name}, value: {valStr}");
+
                 if (ReferenceEquals(data, null))
                 {
                     return null;
@@ -69,15 +69,15 @@ namespace Amanita.VScripting
         {
         }
 
-        public virtual void SetFor<TVarType, TContentType>()
-        {
-            SetFor(typeof(TVarType), typeof(TContentType));
-        }
-
         public virtual void OnBeforeSerialize() { }
 
         public virtual void OnAfterDeserialize()
         {
+        }
+
+        public virtual void SetFor<TVarType, TContentType>()
+        {
+            SetFor(typeof(TVarType), typeof(TContentType));
         }
 
         public virtual void SetFor(Type varType, Type contentType)

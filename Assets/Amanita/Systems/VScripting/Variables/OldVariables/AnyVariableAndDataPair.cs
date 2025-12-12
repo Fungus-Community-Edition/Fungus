@@ -6,74 +6,55 @@ namespace Amanita.VScripting
 {
     /// <summary>
     /// Pairing of an AnyVariableData and an variable reference. Internal lookup for
-    /// making the right kind of variable with the correct data in the AnyVariableData.
+    /// matching the right kind of variable with the correct data in the AnyVariableData.
     /// </summary>
     [Serializable]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
-        public virtual IVariable Variable
-        {
-            get
-            {
-                if (legacyVariable != null)
-                {
-                    return legacyVariable;
-                }
-
-                return variable;
-            }
-            set
-            {
-                bool valIsLegacyVar = value is Variable legacyVar;
-                if (valIsLegacyVar)
-                {
-                    legacyVariable = value as Variable;
-                    variable = null; // ensure only one is authoritative
-                }
-                else
-                {
-                    variable = value;
-                    legacyVariable = null;
-                }
-            }
-        }
-
-        [VariableProperty()]
-        [SerializeReference] protected IVariable variable; // The lhs variable in Set Variable (managed)
-
-        [VariableProperty()]
-        [SerializeField] protected Variable legacyVariable; // The lhs variable in Set Variable (legacy MonoBehaviour)
-
-        public AnyVariableData Data
-        {
-            get => data;
-            set { data = value; }
-        }
+        [SerializeField] protected VariableReference varRef = new VariableReference();
 
         [SerializeField] protected AnyVariableData data = new AnyVariableData();
 
-        // Helper: decide which one is authoritative
-        protected IVariable EffectiveVariable => legacyVariable != null ? legacyVariable : variable;
+        public virtual IVariable LhsVariable
+        {
+            get
+            {
+                return varRef.Variable;
+            }
+            set
+            {
+                varRef.Variable = value;
+            }
+        }
+
+        protected IVariable EffectiveVariable // The lhs variable, not the one in AnyVariableData
+        {
+            get
+            {
+                return varRef.Variable;
+            }
+        }
+
 
         public virtual void OnBeforeSerialize()
         {
+            
         }
 
         public virtual void OnAfterDeserialize()
         {
             data.OnAfterDeserialize();
 
-            var eff = EffectiveVariable;
-            if (eff != null && data.VarRef == null)
+            if (LhsVariable != null && data.VarRef == null)
             {
-                data.SetFor(VarType, eff.ContentType);
+                data.SetFor(VarType, LhsVariable.ContentType);
             }
         }
 
         public bool HasReference(Variable variable)
         {
             // Only legacy comparison makes sense for this signature
-            return ReferenceEquals(variable, this.legacyVariable) || data.HasReference(variable);
+            return ReferenceEquals(variable, LhsVariable) || data.HasReference(variable);
         }
 
 #if UNITY_EDITOR
@@ -146,5 +127,6 @@ namespace Amanita.VScripting
                 typeActions.SetFunc(eff, data, setOperator);
             }
         }
+
     }
 }
