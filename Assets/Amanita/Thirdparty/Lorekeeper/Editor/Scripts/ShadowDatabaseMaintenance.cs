@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Type = System.Type;
 
 namespace Lorekeeper.EditorCode
 {
@@ -48,11 +49,13 @@ namespace Lorekeeper.EditorCode
                             break;
                         }
                     }
-                    // Skip meta files, scene files, and empty paths
+                    // Skip meta files, scene files, empty paths, and non-files.
                     bool emptyPath = string.IsNullOrEmpty(path);
                     bool isMetaFile = path.EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase);
                     bool isSceneFile = path.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase);
-                    if (emptyPath || isMetaFile || isSceneFile)
+                    bool isFolder = AssetDatabase.IsValidFolder(path);//
+
+                    if (emptyPath || isMetaFile || isSceneFile || isFolder)
                     {
                         continue;
                     }
@@ -79,7 +82,7 @@ namespace Lorekeeper.EditorCode
                             continue;
 
                         // Explicitly skip known editor-only runtime-inaccessible types
-                        if (type == typeof(MonoScript) ||
+                        if (type == monoScriptType ||
                             type.Name == "LightingSettings" ||
                             type.Name == "LightingDataAsset" ||
                             type.Name == "NavMeshData" ||
@@ -121,6 +124,7 @@ namespace Lorekeeper.EditorCode
     
         private static LorekeeperSettings settings;
         private static LorekeeperSettingsFactory settingsFactory = new LorekeeperSettingsFactory();
+        private static readonly Type monoScriptType = typeof(MonoScript);
 
         [MenuItem("Tools/Lorekeeper/Clear Shadow Database")]
         private static void ClearDatabase()
