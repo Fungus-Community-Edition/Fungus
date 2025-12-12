@@ -49,7 +49,7 @@ namespace Amanita.SaveSys
         public string SaveID
         {
             get { return saveID; }
-            protected set
+            set
             {
                 string toApply = value;
 
