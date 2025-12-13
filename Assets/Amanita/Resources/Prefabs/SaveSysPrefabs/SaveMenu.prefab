@@ -1095,7 +1095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000023207107}
+  m_AnchoredPosition: {x: 0, y: -0.00015013629}
   m_SizeDelta: {x: 1603, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4776211799061177608
@@ -1287,6 +1287,11 @@ GameObject:
   - component: {fileID: 5003666880095628664}
   - component: {fileID: 5304501779363745784}
   - component: {fileID: 5517563102179242479}
+  - component: {fileID: 3613743313890595509}
+  - component: {fileID: 8263271778154824517}
+  - component: {fileID: 5552533710245989651}
+  - component: {fileID: 3522029998774049069}
+  - component: {fileID: 3204976415759936792}
   m_Layer: 0
   m_Name: UIActionHandler
   m_TagString: Untagged
@@ -1322,8 +1327,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1752029211725043856}
+    _selectedCommands:
+    - {fileID: 5304501779363745784}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1650,7 +1657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 400
+    x: 401
     y: 297
     width: 300
     height: 100
@@ -1662,6 +1669,7 @@ MonoBehaviour:
   eventHandler: {fileID: 5750054465503317988}
   commandList:
   - {fileID: 6685305723448108047}
+  - {fileID: 0}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1724,11 +1732,11 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 4605209097948364804
+    rid: 4605209097948364956
   references:
     version: 2
     RefIds:
-    - rid: 4605209097948364804
+    - rid: 4605209097948364956
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
@@ -1754,7 +1762,7 @@ MonoBehaviour:
     storedOwnerUidIndex: 1
     storedItemId: 1
     varRef:
-      rid: 4605209076362641482
+      rid: 4605209097948364924
     value: 0
     integerRef: {fileID: 0}
   waitUntilFinished:
@@ -1770,7 +1778,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 4605209076362641482
+    - rid: 4605209097948364924
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
@@ -1819,8 +1827,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 461
-    y: 206
+    x: 204
+    y: 152
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1941,8 +1949,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 706
-    y: 453
+    x: 714
+    y: 299
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1950,11 +1958,279 @@ MonoBehaviour:
   itemId: 14
   blockName: LoadSelectedSlot
   description: 
-  eventHandler: {fileID: 0}
-  commandList: []
+  eventHandler: {fileID: 3613743313890595509}
+  commandList:
+  - {fileID: 5552533710245989651}
+  - {fileID: 3204976415759936792}
+  - {fileID: 8263271778154824517}
+  - {fileID: 3522029998774049069}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
+--- !u!114 &3613743313890595509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10eaeba5e91be479e95d4fa48679f549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 5517563102179242479}
+  suppressBlockAutoSelect: 0
+  targetButton: {fileID: 1757423807656461387}
+--- !u!114 &8263271778154824517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62df632d9c27644fa58dc900d5988b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 23
+  indentLevel: 1
+  slotIndex:
+    storedOwnerUidIndex: 1
+    storedItemId: 1
+    varRef:
+      rid: 4605209097948364927
+    value: 0
+    integerRef: {fileID: 0}
+  loadScene:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  waitUntilFinished:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4605209097948364927
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        scope: 0
+        key: lastSlotIndex
+        itemID: 1
+        _ownerIdIndex: 1
+        value: -5
+--- !u!114 &5552533710245989651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 24
+  indentLevel: 0
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 3
+    anyVar:
+      variable:
+        rid: 4605209097948364929
+      legacyVariable: {fileID: 0}
+      data:
+        storedOwnerUidIndex: -1
+        storedItemId: 0
+        data:
+          rid: 4605209097948364930
+  compareOperator: 0
+  anyVar:
+    variable:
+      rid: -2
+    legacyVariable: {fileID: 0}
+    data:
+      storedOwnerUidIndex: -1
+      storedItemId: 0
+      data:
+        rid: -2
+  variable: {fileID: 0}
+  booleanData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 0
+    integerRef: {fileID: 0}
+  floatData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 0
+    floatRef: {fileID: 0}
+  stringData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: 
+    stringRef: {fileID: 0}
+  animatorData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
+  audioSourceData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+  gameObjectData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  materialData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    materialRef: {fileID: 0}
+  objectData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    objectRef: {fileID: 0}
+  spriteData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+  textureData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+  transformData:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {fileID: 0}
+    transformRef: {fileID: 0}
+  vector2Data:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+  vector3Data:
+    storedOwnerUidIndex: -1
+    storedItemId: 0
+    varRef:
+      rid: -2
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4605209097948364929
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        scope: 0
+        key: lastSlotIndex
+        itemID: 1
+        _ownerIdIndex: 1
+        value: -5
+    - rid: 4605209097948364930
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        storedOwnerUidIndex: -1
+        storedItemId: 0
+        varRef:
+          rid: -2
+        value: 0
+        integerRef: {fileID: 0}
+--- !u!114 &3522029998774049069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 25
+  indentLevel: 0
+--- !u!114 &3204976415759936792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 26
+  indentLevel: 1
+  duration: 1
+  targetAlpha: 1
+  waitUntilFinished: 1
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeTexture: {fileID: 0}
+  fadeTweener: {fileID: 0}
 --- !u!1 &5681273892318264295
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,8 +3112,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2124332465217931599}
   m_HandleRect: {fileID: 7491140329138315829}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.8441559
+  m_Value: 1.0000011
+  m_Size: 0.84415585
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
