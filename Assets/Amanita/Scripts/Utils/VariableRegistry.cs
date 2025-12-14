@@ -76,7 +76,8 @@ namespace Amanita.VScripting
             }
 
             // Other Flowcharts
-            foreach (var otherChart in Flowchart.CachedFlowcharts.Where(fc => !ReferenceEquals(fc, localSource)))
+            var cachedFcs = AmanitaManager.S.FlowchartsInScene;
+            foreach (var otherChart in cachedFcs.Where(fc => !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)
                 {
@@ -101,11 +102,35 @@ namespace Amanita.VScripting
             RegistryChanged?.Invoke();
         }
 
+        public IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null)
+        {
+            IReadOnlyDictionary<string, IVariable> result;
+            bool giveThemEverything = contentType == null;
+            if (giveThemEverything)
+            {
+                result = _vars;
+            }
+            else
+            {
+                if (_varsByType.TryGetValue(contentType, out var dict))
+                {
+                    // This way, we don't make a whole new dictionary if we don't have to
+                    result = dict;
+                }
+                else
+                {
+                    result = emptyDict;
+                }
+
+            }
+            return result;
+        }
+
         /// <summary>
         /// Returns variables matching any of the given content types.
         /// If null/empty, returns all.
         /// </summary>
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfTypes(Type[] contentTypes = null)
+        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(Type[] contentTypes = null)
         {
             IReadOnlyDictionary<string, IVariable> result;
             bool giveThemEverything = contentTypes == null || contentTypes.Length == 0;
@@ -113,37 +138,26 @@ namespace Amanita.VScripting
             {
                 result = _vars;
             }
+            else if (contentTypes.Length == 1)
+            {
+                return GetVarsOfType(contentTypes[0]);
+            }
             else
             {
-                if (contentTypes.Length == 1)
+                var merged = new Dictionary<string, IVariable>();
+                for (int i = 0; i < contentTypes.Length; i++)
                 {
-                    var type = contentTypes[0];
-                    if (_varsByType.TryGetValue(type, out var dict)) 
+                    var type = contentTypes[i];
+                    if (_varsByType.TryGetValue(type, out var dict))
                     {
-                        // This way, we don't make a whole new dictionary if we don't have to
-                        result = dict;
-                    }
-                    else
-                    {
-                        result = emptyDict;
-                    }
-                }
-                else
-                {
-                    var merged = new Dictionary<string, IVariable>();
-                    for (int i = 0; i < contentTypes.Length; i++)
-                    {
-                        var type = contentTypes[i];
-                        if (_varsByType.TryGetValue(type, out var dict))
+                        foreach (var kvp in dict)
                         {
-                            foreach (var kvp in dict)
-                            {
-                                merged[kvp.Key] = kvp.Value;
-                            }
+                            merged[kvp.Key] = kvp.Value;
                         }
                     }
-                    result = merged;
                 }
+                result = merged;
+                
             }
             return result;
         }

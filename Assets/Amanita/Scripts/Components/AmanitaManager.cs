@@ -229,6 +229,8 @@ namespace Amanita
             return instantiated;
         }
 
+        private readonly FlowchartRegistry fcRegistry = new FlowchartRegistry();
+
         public void Init()
         {
             if (IsFullyInitted)
@@ -246,6 +248,17 @@ namespace Amanita
                 return;
             }
             _s = this;
+
+            fcRegistry.Init();
+            RegisterFlowchartsInScene();
+            void RegisterFlowchartsInScene()
+            {
+                var flowchartsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+                foreach (var fChart in flowchartsInScene)
+                {
+                    fcRegistry.RegisterFlowchart(fChart);
+                }
+            }
 
             EnsureShadowDbAvailable();
             EnsureGuidRegistriesAvailable();
@@ -281,6 +294,8 @@ namespace Amanita
             PrepSubmodules();
 
         }
+
+        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();//
 
         public static SaveMenuManager SaveMenu { get; private set; }
 
@@ -335,6 +350,8 @@ namespace Amanita
                 CleanSelfUp();
                 void CleanSelfUp()
                 {
+                    string logMessage = "AmanitaManager instance already exists. Destroying the new one.";
+                    Debug.Log(logMessage);
                     if (!Application.isPlaying)
                     {
                         // Since DestroyImmediate doesn't call OnDestroy...
@@ -409,6 +426,8 @@ namespace Amanita
         {
             if (_s == this)
             {
+                fcRegistry.Dispose();
+
                 // Clean up anchors we created
                 if (_adapterAnchors != null)
                 {
@@ -499,6 +518,11 @@ namespace Amanita
         public VariableRegistry VariableRegistry { get; private set; }
         private void OnValidate()
         {
+            // OnValidate gets called on the prefab in response to Resources.Load(), so...
+            if (!this.gameObject.scene.IsValid())
+            {
+                return;
+            }
             // Best make sure to log errors and such when this has any screwy fields
             if (globalVariables == null)
             {
