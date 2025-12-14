@@ -263,6 +263,7 @@ namespace Amanita.VScripting
                 {
                     this.value = value;
                     storedItemId = Variable.InvalidID;
+                    VarRef = null;
                 }
 
             }

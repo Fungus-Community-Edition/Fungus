@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
+using Amanita.Myceliaudio.VScripting;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -49,14 +50,21 @@ namespace Amanita.VScripting.EditorUtils
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
             }
-
+            
             // We only want to draw the literal value when the varRef is null
             // If the var datas is meant to represent a var, its stored item id should be a valid one
             bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
             bool shouldDrawLiteral = !validStoredItemId;
             if (shouldDrawLiteral)
             {
-                EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
+                bool valChanged = EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
+
+                if (valChanged)
+                {
+                    Debug.Log("Value changed in literal field.");
+                }
+
+                literalValueProp.serializedObject.ApplyModifiedProperties();
             }
 
             Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
@@ -218,6 +226,9 @@ namespace Amanita.VScripting.EditorUtils
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
 
+                varData = varDataProp.boxedValue as VariableData;
+                // ^It's possible that the literal value changed before this point. Thus, to make sure we're working
+                // with the most accurate var data, we refetch it here.
                 varData.VarRef = chosenNow;
                 varDataProp.boxedValue = varData; 
                 // ^Despite how we got varData from varDataProp.boxedValue, 
