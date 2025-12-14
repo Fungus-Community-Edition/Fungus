@@ -8,11 +8,45 @@ namespace Amanita.VScripting
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
     public abstract class VariableData : IVariableData
     {
-        // Persistent lookup data (survives when varRef does not)
-        [SerializeField] protected int storedOwnerUidIndex = -1;
         // ^Used to find the owner of the variable (Flowchart or VariableSourceAsset)
         [SerializeField] protected byte storedItemId = 0;
         // ^Used to find the variable within its owner
+        [SerializeField] protected Flowchart owningFc;
+        [SerializeField] protected VariableSourceAsset owningVsa;
+        // ^We can't trust Unity's serialization when it comes to polymorphic references, so we store
+        // Flowchart and VSA references separately.
+        // Note that for each instance of VariableData, only one or neither of these should be set. Also,
+        // the owning fc and owning vsa are for owners of the vars (not owners for this particular VariableData).
+
+        protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
+
+        public IVariableSource VarOwner
+        {
+            get
+            {
+                owner ??= owningFc;
+                owner ??= owningVsa;
+                return owner;
+            }
+            set
+            {
+                owner = value;
+                owningFc = owner as Flowchart;
+                owningVsa = owner as VariableSourceAsset;
+            }
+        }
+
+        protected IVariableSource owner;
+
+        public virtual Flowchart OwningFc
+        {
+            get => owningFc;
+        }
+
+        public virtual VariableSourceAsset OwningVsa
+        {
+            get => owningVsa;
+        }
 
         public abstract Type ContentType { get; }
         public abstract object BoxedValue
@@ -21,8 +55,92 @@ namespace Amanita.VScripting
             set;
         }
 
-        public abstract IVariable VarRef { get; set; }
+        public virtual IVariable VarRef
+        {
+            get
+            {
+                IVariable result = null;
+                // Subclasses may have var refs for legacy stuff, and thus we need to check LegacyVarRef here
+                // (despite how we try to keep it in sync with regular varRef).
+                if (LegacyVarRef != null) // Let's not worry about stored ID. Remember, this is for legacy support.
+                {
+                    varRef = LegacyVarRef;
+                }
+                if (varRef != null && varRef.ItemId == storedItemId)
+                {
+                    result = varRef;
+                }
+                else if (VarOwner != null)
+                {
+                    // We'll need to look it up again
+                    result = FindVariableBasedOnItemId();
+                    UpdateBackingFieldsBasedOn(result);
+                }
+                return result;
+            }
+            set
+            {
+                bool alreadyAssigned = ReferenceEquals(value, varRef);
+                if (alreadyAssigned)
+                {
+                    return;
+                }
+                UpdateBackingFieldsBasedOn(value);
+            }
+        }
 
+        private IVariable FindVariableBasedOnItemId()
+        {
+            IVariable result = null;
+            if (storedItemId == Variable.InvalidID)
+            {
+                return result;
+            }
+            var foundVar = VarOwner.GetVariable(storedItemId);
+            bool foundValidVar = foundVar != null;
+            bool foundCorrectType = foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType);
+            if (foundValidVar && foundCorrectType)
+            {
+                varRef = foundVar;
+                LegacyVarRef = foundVar as Variable;
+                result = varRef;
+            }
+            else if (!foundCorrectType)
+            {
+                string errorMessage = $"VariableData: Found variable with ID {storedItemId} in Flowchart " +
+                    $"{owningFc.name}, but its type ({foundVar.ContentType.Name}) is not assignable to " +
+                    $"the expected type: {ContentType.Name}.";
+                Debug.LogError(errorMessage);
+            }
+            return result;
+        }
+
+        protected virtual void UpdateBackingFieldsBasedOn(IVariable variable)
+        {
+            if (variable == null)
+            {
+                storedItemId = Variable.InvalidID;
+                owningFc = null;
+                owningVsa = null;
+                varRef = null;
+                LegacyVarRef = null;
+                return;
+            }
+
+            bool correctType = ContentType.IsAssignableFrom(variable.ContentType);
+            if (!correctType)
+            {
+                string errorMessage = $"VariableData: Cannot assign variable of ContentType {variable.ContentType.Name} " +
+                    $"to VariableData of ContentType {ContentType.Name}.";
+                throw new InvalidCastException(errorMessage);
+            }
+            storedItemId = variable.ItemId;
+            VarOwner = variable.Owner;
+            varRef = variable;
+            LegacyVarRef = variable as Variable;
+        }
+
+        protected IVariable varRef; // This should NOT be serialized directly
         public abstract string GetDescription();
 
         public virtual IVariableData GetCopy()
@@ -34,10 +152,23 @@ namespace Amanita.VScripting
             return theCopy;
         }
 
-        public virtual void Refresh() { }
+        public virtual void Refresh()
+        {
+            if (storedItemId == Variable.InvalidID || varRef != null)
+            {
+                return;
+            }
+            FindVariableBasedOnItemId();
+        }
 
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
+            if (otherVarData is VariableData otherVarDataCasted)
+            {
+                this.VarOwner = otherVarDataCasted.VarOwner;
+                this.storedItemId = otherVarDataCasted.storedItemId;
+            }
+
             this.VarRef = otherVarData.VarRef;
         }
 
@@ -78,11 +209,6 @@ namespace Amanita.VScripting
 
     public abstract class VariableData<TValue> : VariableData
     {
-        [SerializeReference]
-        protected IVariable varRef; // Intended target reference (may be lost across reloads)
-
-        protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
-
         public static implicit operator TValue(VariableData<TValue> someData)
         {
             someData.Refresh();
@@ -107,33 +233,38 @@ namespace Amanita.VScripting
         {
             get
             {
-                if (LegacyVarRef != null)
+                // varRef should be set to the same as LegacyVarRef when appropriate, and thus we
+                // don't need to check the two separately here.
+                // Also, we are using the property VarRef here to make sure we sustain
+                // the right reference no matter at what point this Value prop is accessed.
+                bool shouldRefetchFromOwner = VarRef == null &&
+                    storedItemId != Variable.InvalidID &&
+                    VarOwner != null;
+                if (shouldRefetchFromOwner)
                 {
-                    return (TValue)LegacyVarRef.BoxedValue;
+                    VarRef = owner.GetVariable(storedItemId);
                 }
-                else if (VarRef != null)
+
+                if (VarRef != null)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
-                else
-                {
-                    return value;
-                }
+                
+                return value;
+                
             }
             set
             {
-                if (LegacyVarRef != null)
-                {
-                    LegacyVarRef.BoxedValue = value;
-                }
-                else if (VarRef != null)
+                if (VarRef != null)
                 {
                     VarRef.BoxedValue = value;
                 }
                 else
                 {
                     this.value = value;
+                    storedItemId = Variable.InvalidID;
                 }
+
             }
         }
 
@@ -141,11 +272,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                if (LegacyVarRef != null)
-                {
-                    return LegacyVarRef.BoxedValue;
-                }
-                else if (VarRef != null)
+                if (VarRef != null)
                 {
                     return VarRef.BoxedValue;
                 }
@@ -167,22 +294,19 @@ namespace Amanita.VScripting
                         $"of type {value.GetType().Name} to type {typeof(TValue).Name}");
                 }
 
-                if (LegacyVarRef != null)
-                {
-                    LegacyVarRef.BoxedValue = whatToAssign;
-                }
-                else if (VarRef != null)
+                if (VarRef != null)
                 {
                     VarRef.BoxedValue = whatToAssign;
                 }
                 else
                 {
                     this.value = (TValue)whatToAssign;
+                    storedItemId = Variable.InvalidID;
                 }
             }
         }
 
-        [SerializeReference, SerializeField] protected TValue value = default;
+        [SerializeField] protected TValue value = default;
 
         public override string GetDescription()
         {
@@ -216,201 +340,6 @@ namespace Amanita.VScripting
             this.value = otherVarData.value;
         }
 
-        public override IVariable VarRef
-        {
-            get
-            {
-                if (LegacyVarRef != null)
-                {
-                    return LegacyVarRef;
-                }
-
-                // If our var ref is for a non-UnityObj type and the owner is missing, that means
-                // that the var ref we have points to a copy of the actual var. Thus, we need to try
-                // to resolve it again.
-                if (varRef != null && varRef.OwnerIdIndex >= 0 && varRef.Owner == null)
-                {
-                    Debug.Log($"VariableData<{typeof(TValue).Name}> detected that its varRef's owner is null. " +
-                        $"Attempting to re-resolve variable reference.");
-
-                    Refresh();
-                }
-                return varRef;
-            }
-            set
-            {
-                bool alreadyAssigned = ReferenceEquals(value, varRef) || ReferenceEquals(value, LegacyVarRef);
-                if (alreadyAssigned)
-                {
-                    return;
-                }
-                // Capture persistent identity info first. Also, we assume that the var already has its owner registered.
-                CaptureMuscariIdentityInfo();
-                void CaptureMuscariIdentityInfo()
-                {
-                    Muscariable mus = value as Muscariable;
-                    if (mus == null || mus.ItemId <= Muscariable.InvalidID)
-                    {
-                        return;
-                    }
-
-                    storedItemId = mus.ItemId;
-
-                    // We're registering the owner UniqueId as an index into the appropriate GuidRegistry
-                    // so that when needed, we can find the owner even if its UniqueId string changes.
-                    // And when we find the owner, we can be sure to get the right VarRef.
-                    GuidRegistry registry = null;
-                    if (mus.Owner is Flowchart fChart)
-                    {
-                        registry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-                        storedOwnerUidIndex = registry.GetOrAddNumericId(fChart.UniqueId);
-                    }
-                    else if (mus.Owner is VariableSourceAsset vSourceAsset)
-                    {
-                        registry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-                        storedOwnerUidIndex = registry.GetOrAddNumericId(vSourceAsset.UniqueId);
-                    }
-                    
-                }
-                
-                CaptureLegacyIdentityInfo();
-                void CaptureLegacyIdentityInfo()
-                {
-                    Variable legacy = value as Variable;
-                    if (legacy == null || legacy.ItemId <= Variable.InvalidID)
-                    {
-                        return;
-                    }
-
-                    GuidRegistry registry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-                    storedItemId = legacy.ItemId;
-                    if (legacy.Owner is Flowchart legacyFc)
-                    {
-                        storedOwnerUidIndex = registry.GetOrAddNumericId(legacyFc.UniqueId);
-                    }
-                }
-
-                if (value == null)
-                {
-                    storedItemId = 0;
-                    // Keep namespaced key so we can attempt re-resolution later if possible
-                    varRef = null;
-                    LegacyVarRef = null;
-                    return;
-                }
-
-                if (this.ContentType.IsAssignableFrom(value.ContentType)) // We want to allow polymorphism
-                {
-                    if (value is UnityObj)
-                    {
-                        LegacyVarRef = (Variable)value;
-                        varRef = null;
-                    }
-                    else
-                    {
-                        LegacyVarRef = null;
-                        try
-                        {
-                            varRef = (IVariable<TValue>)value;
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError($"Failed to cast variable of type {value.GetType().Name} to IVariable<{typeof(TValue).Name}>. Exception: {e}");
-                            varRef = null;
-                        }
-                    }
-                }
-                else
-                {
-                    string errorMessage = $"This can only accept a variable type that holds content of type {ContentType.Name}.";
-                    throw new InvalidCastException(errorMessage);
-                }
-            }
-        }
-
-        public override void Refresh()
-        {
-            // We might have a live reference to a var, but it has no idea who the owner is. In such a case,
-            // that means our reference is a copy, not a pointer to the actual variable.
-            bool weHaveLiveRef = varRef != null || LegacyVarRef != null;
-            bool weKnowTheOwner = varRef != null && varRef.Owner != null &&
-                 varRef.OwnerIdIndex == storedOwnerUidIndex;
-            if (weHaveLiveRef && weKnowTheOwner)
-            {
-                // The reason we don't worry about the owner for legacy vars is that those are MonoBehaviours,
-                // which Unity will automatically re-link on domain reload. Since Muscariables are plain
-                // C# objects, we have to do the re-linking ourselves.
-                return;
-            }
-
-            bool shouldFetchInfo = varRef != null && storedOwnerUidIndex < 0;
-            if (shouldFetchInfo)
-            {
-                storedOwnerUidIndex = varRef.OwnerIdIndex;
-                storedItemId = varRef.ItemId;
-            }
-
-            bool shouldLookForRef = storedOwnerUidIndex >= 0 && storedItemId > 0;
-            if (shouldLookForRef)
-            {
-                FindVarRefFromOwner();
-            }
-
-        }
-
-        protected virtual void FindVarRefFromOwner()
-        {
-            if (storedOwnerUidIndex < 0)
-            {
-                return;
-            }
-
-            IVariableSource owner = FindOwnerUsingIndex(storedOwnerUidIndex);
-            if (owner != null)
-            {
-                // Need to reference the exact variable instance from the owner. Us getting to this point
-                // in the code suggests that the varRef we do have is a copy, not a pointer
-                // to the actual variable.
-                var foundVar = owner.GetVariable(storedItemId);
-                if (foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType))
-                {
-                    varRef = (IVariable<TValue>)foundVar;
-                }
-            }
-        }
-
-        protected virtual IVariableSource FindOwnerUsingIndex(int ownerIndex)
-        {
-            GuidRegistry flowchartRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-            var owningFlowchart = Flowchart.CachedFlowcharts.FirstOrDefault(FlowchartTiedToIndex);
-            bool FlowchartTiedToIndex(Flowchart fc)
-            {
-                return flowchartRegistry.GetNumericId(fc.UniqueId) == ownerIndex;
-            }
-
-            if (owningFlowchart != null)
-            {
-                return owningFlowchart;
-            }
-
-            AmanitaManager ammieManager = AmanitaManager.S;
-            if (ammieManager != null)
-            {
-                GuidRegistry vSourceRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-                var owningSource = ammieManager.GlobalVariableSources.FirstOrDefault(SourceTiedToIndex);
-                bool SourceTiedToIndex(VariableSourceAsset source)
-                {
-                    return vSourceRegistry.GetNumericId(source.UniqueId) == ownerIndex;
-                }
-
-                if (owningSource != null)
-                {
-                    return owningSource;
-                }
-            }
-
-            return null;
-        }
 
     }
 

@@ -8,6 +8,7 @@ namespace Amanita.VScripting
     /// Class for a single condition. A list of this is used for multiple conditions.
     /// </summary>
     [System.Serializable]
+    [ExecuteInEditMode]
     public class ConditionExpression
     {
         [SerializeField] protected CompareOperator compareOperator;
@@ -92,7 +93,7 @@ namespace Amanita.VScripting
 
             foreach (ConditionExpression condition in conditions)
             {
-                if (condition.AnyVar == null || condition.AnyVar.Variable == null)
+                if (condition.AnyVar == null || condition.AnyVar.LhsVariable == null)
                 {
                     return false;
                 }
@@ -120,7 +121,7 @@ namespace Amanita.VScripting
             StringBuilder summary = new StringBuilder("");
             for (int i = 0; i < conditions.Count; i++)
             {
-                summary.Append(conditions[i].AnyVar.Variable.Key + " " +
+                summary.Append(conditions[i].AnyVar.LhsVariable.Key + " " +
                                VariableUtil.GetCompareOperatorDescription(conditions[i].CompareOperator) + " " +
                                conditions[i].AnyVar.GetDataDescription());
 
@@ -219,15 +220,25 @@ namespace Amanita.VScripting
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
+            
+        }
+
+        protected virtual void OnEnable()
+        {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             if (variable != null)
             {
-                anyVar.Variable = variable;
+                anyVar.LhsVariable = variable;
                 // ^This should immediately update the var data
             }
 
             // just checking for anyVar != null fails here. Is any var being reintilaized somewhere?
 
-            if (anyVar != null && anyVar.Variable != null)
+            if (anyVar != null && anyVar.LhsVariable != null)
             {
                 ConditionExpression cond = new ConditionExpression(compareOperator, anyVar);
                 if (!conditions.Contains(cond))

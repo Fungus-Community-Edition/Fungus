@@ -31,7 +31,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var varRegistry = ammieManager.VariableRegistry;
-            var validVarsInScene = varRegistry.GetVarsOfTypes(allowedContentTypes);
+            var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
             
             List<IVariable> candidates = validVarsInScene.Values.ToList();
             string[] options = validVarsInScene.Keys

@@ -22,6 +22,7 @@ namespace Amanita.VScripting
     /// </summary>
     [RequireComponent(typeof(Flowchart))]
     [System.Serializable]
+    [ExecuteInEditMode]
     public abstract class Variable : MonoBehaviour, IVariable
     {
         [SerializeField] protected VariableScope scope;
@@ -197,6 +198,11 @@ namespace Amanita.VScripting
                 itemID = (byte)oldItemID;
                 oldItemID = 0;
             }
+        }
+
+        protected virtual void Awake()
+        {
+            owner ??= GetComponent<Flowchart>();
         }
 
     }

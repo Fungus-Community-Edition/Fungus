@@ -19,15 +19,18 @@ namespace Amanita.VScripting.EditorUtils
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
             VariableData varData = varDataProp.boxedValue as VariableData;
+            // ^If we play our cards right, we can indeed use this to modify the
+            // actual instance inside the serialized property. Only the non-serialized
+            // properties should get reset on reloads or otherwise after this frame.
 
             // Find the two key sub-properties
-            SerializedProperty literalValueProp, referenceVarProp;
-            string litValuePropName = "value", refPropName = "varRef";
+            SerializedProperty literalValueProp, itemIdProp;
+            string litValuePropName = "value", itemIdPropName = "storedItemId";
             literalValueProp = varDataProp.FindPropertyRelative(litValuePropName);
-            referenceVarProp = varDataProp.FindPropertyRelative(refPropName);
+            itemIdProp = varDataProp.FindPropertyRelative(itemIdPropName);
 
             // Layout: label, then value/reference side-by-side
-            Rect valueRect, popupRect, wholeFieldRect;
+            Rect valueRect, popupRect, wholeFieldRect;//
             int prevIndent;
             HandleLayout();
             void HandleLayout()
@@ -48,7 +51,9 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // We only want to draw the literal value when the varRef is null
-            bool shouldDrawLiteral = !VarRefPropHasAnythingAssigned(referenceVarProp);
+            // If the var datas is meant to represent a var, its stored item id should be a valid one
+            bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
+            bool shouldDrawLiteral = !validStoredItemId;
             if (shouldDrawLiteral)
             {
                 EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
@@ -57,7 +62,9 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
             if (localFlowchart == null)
             {
-                Debug.LogWarning($"No flowchart is open in the Flowchart window. Cannot draw variable reference field for {varDataProp.propertyPath}.");
+                string warningMessage = $"No flowchart is open in the Flowchart window. Cannot draw " +
+                    $"variable reference field for {varDataProp.propertyPath}.";
+                Debug.LogWarning(warningMessage);
                 return;
             }
 
@@ -72,86 +79,53 @@ namespace Amanita.VScripting.EditorUtils
 
             if (contentType == null)
             {
-                Debug.LogWarning($"Unable to resolve ContentType for {varData.GetType().Name}. Showing only literal <Value> option.");
+                string warningMessage = $"Could not resolve ContentType for VariableData drawer for " +
+                    $"{varDataProp.propertyPath}.";
+                Debug.LogWarning(warningMessage);
                 return;
             }
             #endregion
 
             int selectedIndex = 0;
-            IVariable selectedVariable = referenceVarProp.boxedValue as IVariable;
+            varData.VarOwner = localFlowchart; // To make sure we can get the right variable
+            IVariable selectedVariable = varData.VarRef;
 
             // Regardless of whether we are drawing the literal value or not, we need to populate the list of valid vars
             // so we know what to show in the popup.
+            var ammieManager = AmanitaManager.S;
             RegisterValidVars(); // Valid to be assigned to the VariableData we are drawing for, to be specific
             void RegisterValidVars()
             {
+                var varRegistry = ammieManager.VariableRegistry;
+                IReadOnlyDictionary<string, IVariable> validVars = varRegistry.GetVarsOfType(contentType);
+                // ^Note that the keys here mention the owners when appropriate, and thus we don't 
+                // have to set those up ourselves
                 _validVarsOrdered.Clear();
                 _labelsSeen.Clear();
                 AddOption("<Value>", null); // To let the user go with a literal val instead of a var
 
-                RegisterLocalVars();
-                void RegisterLocalVars()
+                // Add the options one by one
+                for (int i = 0; i < validVars.Count; i++)
                 {
-                    IList<IVariable> validLocalVars = localFlowchart.Variables
-                        .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
-                        .ToList();
+                    var pair = validVars.ElementAt(i);
+                    string label = pair.Key;
+                    IVariable variable = pair.Value;
+                    string varKey = variable.Key;
 
-                    for (int i = 0; i < validLocalVars.Count; i++)
+                    // Ensure uniqueness of labels
+                    if (_labelsSeen.Contains(label))
                     {
-                        var elem = validLocalVars[i];
-                        AddOption(elem.Key, elem);
-                    }
-                }
-
-                RegisterPublicVarsFromOtherFlowcharts();
-                void RegisterPublicVarsFromOtherFlowcharts()
-                {
-                    IList<Flowchart> otherFlowchartsInScene = Flowchart.CachedFlowcharts.Where
-                        ((elem) => elem != localFlowchart).ToList();
-
-                    for (int i = 0; i < otherFlowchartsInScene.Count; i++)
-                    {
-                        var otherChart = otherFlowchartsInScene[i];
-                        IList<IVariable> validVarsInOtherChart = otherChart.Variables
-                            .Where(elem => elem.ContentType.IsAssignableFrom(contentType)
-                            && elem.Scope == VariableScope.Public)
-                            .ToList();
-
-                        for (int j = 0; j < validVarsInOtherChart.Count; j++)
+                        // Try to disambiguate by adding the variable's ItemId
+                        label = $"{label} (ID:{variable.ItemId})";
+                        if (_labelsSeen.Contains(label))
                         {
-                            var elem = validVarsInOtherChart[j];
-                            string namespacedKey = $"{otherChart.gameObject.name}/{elem.Key}";
-                            // ^So we can tell which vars belong to which Flowcharts
-                            AddOption(namespacedKey, elem);
+                            Debug.LogWarning($"Variable label collision for variable {varKey} from owner  " +
+                                $"when trying to add to the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
+                            continue;
                         }
                     }
-                }
-
-                RegisterGlobalVars();
-                void RegisterGlobalVars()
-                {
-                    var ammieManager = AmanitaManager.S;
-                    if (ammieManager == null)
-                    {
-                        return;
-                    }
-
-                    var varSources = ammieManager.GlobalVariableSources;
-                    for (int i = 0; i < varSources.Count; i++)
-                    {
-                        var source = varSources[i];
-                        IList<IVariable> validVarsInSource = source.Variables
-                            .Where(elem => contentType.IsAssignableFrom(elem.ContentType))
-                            .ToList();
-                        for (int j = 0; j < validVarsInSource.Count; j++)
-                        {
-                            var elem = validVarsInSource[j];
-                            string namespacedKey = $"~{source.name}~/{elem.Key}";
-                            // ^This makes it easy for the user to organize their global vars by source asset instead
-                            // of having to sift through one long list. And of course, the tilde (~) indicates global scope.
-                            AddOption(namespacedKey, elem);
-                        }
-                    }
+                    _labelsSeen.Add(label);
+                    AddOption(label, variable);
                 }
 
                 void AddOption(string label, IVariable variable)
@@ -173,7 +147,8 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            // Find the index of the currently selected variable (if any)
+            // Find the index of the currently selected variable (if any).
+            // This will help us make sure that the popup shows the correct selection.
             FindSelectedVariableIndex();
             void FindSelectedVariableIndex()
             {
@@ -207,8 +182,8 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            DrawReferenceField();
-            void DrawReferenceField()
+            DrawPopupField();
+            void DrawPopupField()
             {
                 string[] options = _validVarsOrdered.Select(kvp => kvp.Key).ToArray();
 
@@ -218,19 +193,38 @@ namespace Amanita.VScripting.EditorUtils
                     prevSelectedIndex = 0;
                 }
 
-                if (referenceVarProp.boxedValue is IVariable existing && existing != null)
+                if (!shouldDrawLiteral)
                 {
-                    // Keep popup full-width if a reference is already chosen
                     popupRect = wholeFieldRect;
+                    // ^In this case, we need to make the popup take up the full width so we can see
+                    // the selected var's label properly.
                 }
 
                 selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
+            }
 
+            UpdateItemIdPropBasedOnSelection();
+            void UpdateItemIdPropBasedOnSelection()
+            {
                 var varsOrderedArray = _validVarsOrdered.Values.ToArray();
                 IVariable chosenNow = varsOrderedArray[selectedIndex];
+                bool choseLiteralValue = chosenNow == null;
+                if (choseLiteralValue)
+                {
+                    itemIdProp.intValue = Variable.InvalidID;
+                }
+                else
+                {
+                    itemIdProp.intValue = chosenNow.ItemId;
+                }
 
-                // IMPORTANT: call the overload that triggers VariableData.VarRef setter
-                referenceVarProp.AssignVarRef(varData, chosenNow, varData.ContentType);
+                varData.VarRef = chosenNow;
+                varDataProp.boxedValue = varData; 
+                // ^Despite how we got varData from varDataProp.boxedValue, 
+                // we need to set it back to ensure changes are registered.
+                varDataProp.serializedObject.ApplyModifiedProperties();
+                
+                EditorUtility.SetDirty(varDataProp.serializedObject.targetObject);
             }
 
             EditorGUI.indentLevel = prevIndent;

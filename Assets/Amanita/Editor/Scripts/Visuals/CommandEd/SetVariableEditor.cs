@@ -5,7 +5,6 @@ using Amanita.VScripting.Commands;
 
 namespace Amanita.VScripting.EditorUtils
 {
-
     [CustomEditor (typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor
     {
