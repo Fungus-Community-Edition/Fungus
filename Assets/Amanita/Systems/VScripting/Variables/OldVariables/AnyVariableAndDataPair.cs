@@ -27,6 +27,7 @@ namespace Amanita.VScripting
             set
             {
                 varRef.Variable = value;
+                legacyVariable = value as Variable;
             }
         }
 

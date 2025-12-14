@@ -23,9 +23,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 lhsVarRefProp = holdsVarAndDataPair.FindPropertyRelative("varRef");
                 EditorGUI.PropertyField(position, lhsVarRefProp, label);
+                lhsVarRefProp.serializedObject.ApplyModifiedProperties();
             }
             IVariable currentLeftHandSideVar = ReadIVariable(lhsVarRefProp);
 
+            AnyVariableAndDataPair pairInstance = holdsVarAndDataPair.boxedValue as AnyVariableAndDataPair;
             position.y += EditorGUIUtility.singleLineHeight;
 
             HandleInnerDataField();
@@ -49,10 +51,12 @@ namespace Amanita.VScripting.EditorUtils
                     if (lhsVarChanged && validAnyVarData && currentLeftHandSideVar != null)
                     {
                         _prevLeftHandSideVar = currentLeftHandSideVar;
+                        pairInstance.LhsVariable = currentLeftHandSideVar;
                     }
                 }
 
                 anyVarDataProp.boxedValue = anyVarData;
+                holdsVarAndDataPair.boxedValue = pairInstance;
                 holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
 
                 DrawInnerDataField();
