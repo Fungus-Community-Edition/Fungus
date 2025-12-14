@@ -13,21 +13,17 @@ namespace Amanita.VScripting
     {
         [SerializeField] protected VariableReference varRef = new VariableReference();
 
-        [VariableProperty()]
-        [SerializeField] protected Variable legacyVariable; // The lhs variable in Set Variable (legacy MonoBehaviour)
         [SerializeField] protected AnyVariableData data = new AnyVariableData();
 
         public virtual IVariable LhsVariable
         {
             get
             {
-                varRef.Variable ??= legacyVariable;
                 return varRef.Variable;
             }
             set
             {
                 varRef.Variable = value;
-                legacyVariable = value as Variable;
             }
         }
 
@@ -47,11 +43,6 @@ namespace Amanita.VScripting
 
         public virtual void OnAfterDeserialize()
         {
-            if (legacyVariable != null)
-            {
-                varRef.Variable = legacyVariable;
-            }
-
             data.OnAfterDeserialize();
 
             if (LhsVariable != null && data.VarRef == null)
@@ -63,7 +54,7 @@ namespace Amanita.VScripting
         public bool HasReference(Variable variable)
         {
             // Only legacy comparison makes sense for this signature
-            return ReferenceEquals(variable, this.legacyVariable) || data.HasReference(variable);
+            return ReferenceEquals(variable, LhsVariable) || data.HasReference(variable);
         }
 
 #if UNITY_EDITOR

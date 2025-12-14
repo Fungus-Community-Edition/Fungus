@@ -35,8 +35,8 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUILayout.PropertyField(anyVarProp, true);
 
             // Read selected variable safely (ManagedReference or ObjectReference)
-            var variableProp = anyVarProp.FindPropertyRelative("variable");
-            IVariable selectedVariable = ReadIVariable(variableProp);
+            var anyVarValue = anyVarProp.boxedValue as AnyVariableAndDataPair;
+            IVariable selectedVariable = anyVarValue.LhsVariable;
 
             // Build operators list + parallel enum list for correct mapping
             var operatorsList = new List<GUIContent>();

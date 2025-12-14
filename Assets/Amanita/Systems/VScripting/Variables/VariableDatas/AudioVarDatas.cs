@@ -18,15 +18,20 @@ namespace Amanita.VScripting
 			return AudioClipData.Value;
 		}
 
+		protected override Variable LegacyVarRef
+		{
+			get => audioClipRef;
+			set
+			{
+				audioClipRef = value as AudioClipVariable;
+				base.LegacyVarRef = value;
+			}
+		}
+
 		public AudioClipData() : base(default) { }
 
 		public AudioClipData(AudioClip startVal) : base(startVal) { }
 
-		protected override Variable LegacyVarRef
-		{
-			get => audioClipRef;
-			set => audioClipRef = value as AudioClipVariable;
-		}
 	}
 
 	/// <summary>
