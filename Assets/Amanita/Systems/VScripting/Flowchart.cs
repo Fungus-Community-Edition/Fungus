@@ -14,8 +14,6 @@ using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.SceneManagement;
-using MoonSharp.Interpreter.Tree.Statements;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -50,12 +48,15 @@ namespace Amanita.VScripting
 
         public virtual IVariable GetVariable(byte itemID)
         {
-            IVariable result = (from elem in Variables
-                                where elem.ItemId == itemID
-                                select elem).FirstOrDefault();
+            varLookupById.TryGetValue(itemID, out IVariable result);
             return result;
         }
         public const string SubstituteVariableRegexString = "{\\$.*?}";
+
+        // For more performant lookups, we cache a dictionary of vars by their id.
+        protected IDictionary<byte, IVariable> varLookupById = new Dictionary<byte, IVariable>();
+
+
 
         // What the editor utils use to decide how to render this FC's data in the 
         // FlowchartWindow and BlockInspector
@@ -382,7 +383,7 @@ namespace Amanita.VScripting
             Refresh();
 
             StringSubstituter.RegisterHandler(this);   
-
+            FlowchartSignals.FlowchartEnabled(this);
         }
 
         public virtual void Refresh()
@@ -392,8 +393,22 @@ namespace Amanita.VScripting
             
             CheckItemIds();
             CleanupComponents();
+            RefreshVarLookups();
             UpdateVersion();
         }
+
+        protected virtual void RefreshVarLookups()
+        {
+            varLookupById.Clear();
+            varLookupByName.Clear();
+            foreach (var variable in Variables)
+            {
+                varLookupById[variable.ItemId] = variable;
+                varLookupByName[variable.Key] = variable;
+            }
+        }
+
+        protected IDictionary<string, IVariable> varLookupByName = new Dictionary<string, IVariable>();
 
         protected virtual void AssertOwnership()
         {
@@ -417,12 +432,14 @@ namespace Amanita.VScripting
             }
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
+            FlowchartSignals.FlowchartDisabled(this);
         }
 
         protected virtual void OnDestroy()
         {
             VariableAdded = delegate { };
             VariableRemoved = delegate { };
+            FlowchartSignals.FlowchartDestroyed(this);
         }
 
         protected virtual void UpdateVersion()
@@ -1127,7 +1144,9 @@ namespace Amanita.VScripting
 
         Muscariable IMuscariableSource.GetVariable(string name)
         {
-            Muscariable result = muscariables.Find(elem => elem.Key == name);
+            Muscariable result = null;
+            varLookupByName.TryGetValue(name, out IVariable varFound);
+            result = varFound as Muscariable;
             return result;
         }
 
@@ -1426,6 +1445,8 @@ namespace Amanita.VScripting
             toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
             toAdd.Init();
             muscariables.Add(toAdd);
+            varLookupByName[toAdd.Key] = toAdd;
+            varLookupById[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
         }
 
@@ -1803,7 +1824,7 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
-            if (gameObject.scene.isLoaded == false)//
+            if (!gameObject.scene.IsValid())
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;

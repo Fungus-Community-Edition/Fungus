@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -15,38 +17,26 @@ namespace Amanita.VScripting.EditorUtils
 
         public override void OnGUI(Rect position, SerializedProperty holdsVarAndDataPair, GUIContent label)
         {
-            SerializedProperty leftHandSideVarProp;
+            SerializedProperty lhsVarRefProp;
             DisplayLeftHandSideVar();
             void DisplayLeftHandSideVar()
             {
-                leftHandSideVarProp = holdsVarAndDataPair.FindPropertyRelative("variable");
-                // Draw using the VariableDrawer (handles both ObjectReference and ManagedReference)
-                EditorGUI.PropertyField(position, leftHandSideVarProp, label);
+                lhsVarRefProp = holdsVarAndDataPair.FindPropertyRelative("varRef");
+                EditorGUI.PropertyField(position, lhsVarRefProp, label);
+                lhsVarRefProp.serializedObject.ApplyModifiedProperties();
             }
+            IVariable currentLeftHandSideVar = ReadIVariable(lhsVarRefProp);
 
+            AnyVariableAndDataPair pairInstance = holdsVarAndDataPair.boxedValue as AnyVariableAndDataPair;
             position.y += EditorGUIUtility.singleLineHeight;
 
             HandleInnerDataField();
             void HandleInnerDataField()
             {
-                // Read IVariable correctly based on property type
-                IVariable currentLeftHandSideVar = ReadIVariable(leftHandSideVarProp);
-
                 // Safely read AnyVariableData whether Unity reports ManagedReference or Generic.
                 SerializedProperty anyVarDataProp = holdsVarAndDataPair.FindPropertyRelative("data");
-                AnyVariableData anyVarData = null;
-                if (anyVarDataProp != null)
-                {
-                    if (anyVarDataProp.propertyType == SerializedPropertyType.ManagedReference)
-                    {
-                        anyVarData = anyVarDataProp.managedReferenceValue as AnyVariableData;
-                    }
-                    else if (anyVarDataProp.propertyType == SerializedPropertyType.Generic)
-                    {
-                        anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
-                    }
-                }
-                //
+                AnyVariableData anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
+
                 if (anyVarData != null && currentLeftHandSideVar != null)
                 {
                     var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
@@ -61,9 +51,12 @@ namespace Amanita.VScripting.EditorUtils
                     if (lhsVarChanged && validAnyVarData && currentLeftHandSideVar != null)
                     {
                         _prevLeftHandSideVar = currentLeftHandSideVar;
+                        pairInstance.LhsVariable = currentLeftHandSideVar;
                     }
                 }
 
+                anyVarDataProp.boxedValue = anyVarData;
+                holdsVarAndDataPair.boxedValue = pairInstance;
                 holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
 
                 DrawInnerDataField();
@@ -72,15 +65,7 @@ namespace Amanita.VScripting.EditorUtils
                     SerializedProperty innerDataProp = holdsVarAndDataPair.FindPropertyRelative("data.data");
                     if (currentLeftHandSideVar != null && innerDataProp != null)
                     {
-                        if (innerDataProp.propertyType == SerializedPropertyType.ManagedReference &&
-                            !string.IsNullOrEmpty(innerDataProp.managedReferenceFullTypename))
-                        {
-                            EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"), includeChildren: true);
-                        }
-                        else
-                        {
-                            EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"), includeChildren: true);
-                        }
+                        EditorGUI.PropertyField(position, innerDataProp, new GUIContent("Data"), includeChildren: true);
                     }
                     else
                     {
@@ -93,19 +78,13 @@ namespace Amanita.VScripting.EditorUtils
             holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
         }
 
-        // Read IVariable for both ObjectReference and ManagedReference fields
         private static IVariable ReadIVariable(SerializedProperty prop)
         {
-            if (prop == null) return null;
-            if (prop.propertyType == SerializedPropertyType.ManagedReference)
-            {
-                return prop.managedReferenceValue as IVariable;
-            }
-            if (prop.propertyType == SerializedPropertyType.Generic)
-            {
-                return prop.boxedValue as IVariable;
-            }
-            return prop.objectReferenceValue as IVariable;
+            // We assume that we are drawing as part of a Command's editor fields, and that
+            // thus we have a Flowchart selected. We'll use that to find the variable instance.
+            VariableReference reference = (VariableReference)prop.boxedValue;
+            reference.VarOwner = FlowchartWindow.GetFlowchart();
+            return reference.Variable;
         }
 
         private static Type GetEffectiveVarType(IVariable var)

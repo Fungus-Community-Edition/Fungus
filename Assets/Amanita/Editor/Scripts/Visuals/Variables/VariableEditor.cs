@@ -127,7 +127,7 @@ namespace Amanita.VScripting.EditorUtils
                 RegisterOtherPublicVarsToShowInDropdown();
                 void RegisterOtherPublicVarsToShowInDropdown()
                 {
-                    List<Flowchart> fcList = Flowchart.CachedFlowcharts;
+                    IReadOnlyList<Flowchart> fcList = AmanitaManager.S.FlowchartsInScene;
 
                     for (int fcListIndex = 0; fcListIndex < fcList.Count; fcListIndex++)
                     {

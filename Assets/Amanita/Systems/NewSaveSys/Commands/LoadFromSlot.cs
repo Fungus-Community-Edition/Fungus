@@ -1,16 +1,17 @@
-using UnityEngine;
 using Amanita.VScripting;
 using System.Threading.Tasks;
-using System.Collections;
+using UnityEngine;
 
 namespace Amanita.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
-        "Save to Slot",
+        "Load From Slot",
         "As it says on the tin.")]
-    public class SaveToSlot : Command
+    public class LoadFromSlot : Command
     {
         [SerializeField] protected IntegerData slotIndex = new IntegerData(0);
+        [SerializeField] protected BooleanData loadScene = new BooleanData(true);
+        [Tooltip("If you want this to be true, best make sure that this Command is on a persistent GameObject.")]
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
 
         public override void OnEnter()
@@ -18,7 +19,7 @@ namespace Amanita.SaveSys.VScripting
             bool validSlotIndex = slotIndex != null && slotIndex.Value >= SaveSystem.minSlotNumber;
             if (!validSlotIndex)
             {
-                string format = "SaveToSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
+                string format = "LoadFromSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
                 string errorMessage = string.Format(format, this.ParentBlock.BlockName,
                     this.gameObject.name, SaveSystem.minSlotNumber);
                 Debug.LogError(errorMessage);
@@ -27,10 +28,10 @@ namespace Amanita.SaveSys.VScripting
             }
             else
             {
-                Task saveTask = SaveSystem.S.SaveTo(slotIndex.Value);
+                Task loadTask = SaveSystem.S.LoadMain(slotIndex.Value, loadScene.Value);
                 if (waitUntilFinished.Value)
                 {
-                    StartCoroutine(WaitForTask(saveTask));
+                    StartCoroutine(WaitForTask(loadTask));
                 }
                 else
                 {
@@ -41,7 +42,7 @@ namespace Amanita.SaveSys.VScripting
 
         public override string GetSummary()
         {
-            string result = $"Save to Slot {slotIndex.Value}";
+            string result = $"Load from Slot {slotIndex.Value}";
             return result;
         }
     }

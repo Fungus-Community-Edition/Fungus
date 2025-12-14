@@ -21,6 +21,7 @@ namespace Amanita.SaveSys
             }
         }
 
+        public static readonly int minSlotNumber = 1;
         protected bool initted;
 
         public virtual void Init()

@@ -15,7 +15,11 @@ namespace Amanita.VScripting
         protected override Variable LegacyVarRef
         {
             get => integerRef;
-            set => integerRef = value as IntegerVariable;
+            set
+            {
+                integerRef = value as IntegerVariable;
+                base.LegacyVarRef = value;
+            }
         }
 
         public IntegerData() : base(default) { }
@@ -38,7 +42,11 @@ namespace Amanita.VScripting
         protected override Variable LegacyVarRef
         {
             get => floatRef;
-            set => floatRef = value as FloatVariable;
+            set
+            {
+                floatRef = value as FloatVariable;
+                base.LegacyVarRef = value;
+            }
         }
         public FloatData() : base(default) { }
 

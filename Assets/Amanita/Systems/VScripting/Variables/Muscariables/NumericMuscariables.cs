@@ -9,6 +9,7 @@ namespace Amanita.VScripting
     {
         public override bool IsArithmeticSupported(SetOperator op) => true;
         public override bool IsRelationalSupported => true;
+        public override bool IsComparisonSupported() => true;
 
         public override void Apply(SetOperator setOperator, T toApply)
         {
