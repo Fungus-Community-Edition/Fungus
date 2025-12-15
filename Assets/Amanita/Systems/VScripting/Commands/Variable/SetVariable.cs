@@ -17,7 +17,7 @@ namespace Amanita.VScripting.Commands
         
         [Tooltip("The type of math operation to be performed")]
         [SerializeField] protected SetOperator setOperator;
-               
+
         protected virtual void DoSetOperation()
         {
             if (anyVar.LhsVariable == null)
@@ -26,6 +26,12 @@ namespace Amanita.VScripting.Commands
             }
 
             anyVar.SetOp(setOperator);
+        }
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(anyVar.Data);
         }
 
         #region Public members
@@ -74,7 +80,8 @@ namespace Amanita.VScripting.Commands
         {
             base.RefreshVariableCache();
 
-            anyVar?.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+            anyVar ??= new AnyVariableAndDataPair();
+            anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -94,8 +101,9 @@ namespace Amanita.VScripting.Commands
             
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             // We only want this check in the editor, not at runtime
             if (variable == null || Application.isPlaying)
             {

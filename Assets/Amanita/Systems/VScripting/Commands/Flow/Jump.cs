@@ -16,6 +16,12 @@ namespace Amanita.VScripting
         [Tooltip("Name of a label in this block to jump to")]
         [SerializeField] protected StringData _targetLabel = new StringData("");
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_targetLabel);
+        }
+
         #region Public members
 
         public override void OnEnter()
@@ -70,8 +76,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("targetLabel")] public Label targetLabelOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (targetLabelOLD != null)
             {
                 _targetLabel.Value = targetLabelOLD.Key;

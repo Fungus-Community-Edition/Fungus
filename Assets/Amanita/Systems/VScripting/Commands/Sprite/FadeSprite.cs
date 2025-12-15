@@ -28,6 +28,14 @@ namespace Amanita.VScripting
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(duration);
+            variableDataCache.Add(targetColor);
+            variableDataCache.Add(waitUntilFinished);
+        }
+
         protected virtual void Awake()
         {
             ValidateTweeners(false);
@@ -90,8 +98,9 @@ namespace Amanita.VScripting
         [HideInInspector] [FormerlySerializedAs("targetColor")] public Color targetColorOLD;
         [SerializeField][FormerlySerializedAs("waitUntilFinished")] protected bool waitUntilFinishedOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (durationOLD != default)
             {
                 duration.Value = durationOLD;

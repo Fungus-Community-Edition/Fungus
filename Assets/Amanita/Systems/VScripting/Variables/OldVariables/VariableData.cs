@@ -204,6 +204,7 @@ namespace Amanita.VScripting
         void SetContentsTo(IVariableData otherVarData);
 
         IVariableData GetCopy();
+        IVariableSource VarOwner { get; set; }
 
     }
 

@@ -17,6 +17,12 @@ namespace Amanita.VScripting
         [Tooltip("Code of the language to set. e.g. ES, DE, JA")]
         [SerializeField] protected StringData _languageCode = new StringData(); 
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_languageCode);
+        }
+
         #region Public members
 
         public static string mostRecentLanguage = "";
@@ -61,8 +67,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("languageCode")] public string languageCodeOLD = "";
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (languageCodeOLD != "")
             {
                 _languageCode.Value = languageCodeOLD;

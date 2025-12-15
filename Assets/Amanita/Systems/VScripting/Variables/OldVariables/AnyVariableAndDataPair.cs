@@ -15,6 +15,19 @@ namespace Amanita.VScripting
 
         [SerializeField] protected AnyVariableData data = new AnyVariableData();
 
+
+        public AnyVariableData Data
+        {
+            get
+            {
+                return data;
+            }
+            set
+            {
+                data = value;
+            }
+        }
+
         public virtual IVariable LhsVariable
         {
             get
@@ -76,6 +89,18 @@ namespace Amanita.VScripting
             }
         }
 #endif
+
+        public IVariableSource VarOwner
+        {
+            get
+            {
+                return varRef.VarOwner;
+            }
+            set
+            {
+                varRef.VarOwner = value;
+            }
+        }
 
         public string GetDataDescription()
         {

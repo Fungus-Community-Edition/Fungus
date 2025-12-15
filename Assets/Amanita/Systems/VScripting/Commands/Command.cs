@@ -6,38 +6,11 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Amanita.VScripting
-{   
-    /// <summary>
-    /// Attribute class for Fungus commands.
-    /// </summary>
-    /// 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class CommandInfoAttribute : Attribute
-    {
-        /// <summary>
-        /// Metadata atribute for the Command class. 
-        /// </summary>
-        /// <param name="category">The category to place this command in.</param>
-        /// <param name="commandName">The display name of the command.</param>
-        /// <param name="helpText">Help information to display in the inspector.</param>
-        /// <param name="priority">If two command classes have the same name, the one with highest priority is listed. Negative priority removess the command from the list.</param>///
-        public CommandInfoAttribute(string category, string commandName, string helpText, int priority = 0)
-        {
-            this.Category = category;
-            this.CommandName = commandName;
-            this.HelpText = helpText;
-            this.Priority = priority;
-        }
-
-        public string Category { get; set; }
-        public string CommandName { get; set; }
-        public string HelpText { get; set; }
-        public int Priority { get; set; }
-    }
-
+{
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
+    [ExecuteInEditMode]
     public abstract class Command : MonoBehaviour, IVariableReference
     {
         [FormerlySerializedAs("commandId")]
@@ -48,6 +21,42 @@ namespace Amanita.VScripting
         [SerializeField] protected int indentLevel;
 
         protected string errorMessage = "";
+
+        protected virtual void OnEnable()
+        {
+            RefreshForVarDataStability();
+        }
+
+        private void RefreshForVarDataStability()
+        {
+            bool thisIsInAScene = this.gameObject.scene.IsValid();
+            if (!thisIsInAScene)
+            {
+                return;
+            }
+            RefreshVariableDataCache();
+            AssertOwnership();
+        }
+
+        /// <summary>
+        /// Helps keep VariableDatas stable during the editor and runtime.
+        /// </summary>
+        protected virtual void RefreshVariableDataCache()
+        {
+            // We expect child classes to add their VariableDatas to this list
+            variableDataCache.Clear();
+        }
+
+        protected readonly IList<IVariableData> variableDataCache = new List<IVariableData>();
+
+        private void AssertOwnership()
+        {
+            for (int i = 0; i < variableDataCache.Count; i++)
+            {
+                var currentVarData = variableDataCache[i];
+                currentVarData.VarOwner = GetFlowchart();
+            }
+        }
 
         #region Editor caches
 #if UNITY_EDITOR
@@ -69,10 +78,7 @@ namespace Amanita.VScripting
         protected virtual void RefreshVariableCache()
         {
             // Not sure why, but sometimes, this gets set to null
-            if (referencedVariables != null)
-            {
-                referencedVariables.Clear();
-            }
+            referencedVariables?.Clear();
         }
 
 #endif
@@ -261,6 +267,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void OnValidate()
         {
+            RefreshForVarDataStability();
 #if UNITY_EDITOR
             RefreshVariableCache();
 #endif

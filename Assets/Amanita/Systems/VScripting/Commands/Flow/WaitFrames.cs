@@ -16,6 +16,12 @@ namespace Amanita.VScripting
         [Tooltip("Number of frames to wait for")]
         [SerializeField] protected IntegerData frameCount = new IntegerData(1);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(frameCount);
+        }
+
         protected virtual IEnumerator WaitForFrames()
         {
             int count = frameCount.Value;
