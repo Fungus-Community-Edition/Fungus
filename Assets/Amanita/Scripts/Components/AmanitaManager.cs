@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Amanita.SaveSys.UI;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -125,7 +127,11 @@ namespace Amanita
 
         private static void EnsureShadowDbAvailable()
         {
-            shadowDb = SOUtils.EnsureSOExists<ShadowDatabase>(resourcesRootFolder, "ShadowDatabase");
+            if (shadowDb != null)
+            {
+                return;
+            }
+            shadowDb = Resources.Load<ShadowDatabase>("ShadowDatabase"); // We expect Lorekeeper to have placed it here.
             if (shadowDb == null)
             {
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
@@ -223,6 +229,8 @@ namespace Amanita
             return instantiated;
         }
 
+        private readonly FlowchartRegistry fcRegistry = new FlowchartRegistry();
+
         public void Init()
         {
             if (IsFullyInitted)
@@ -241,35 +249,21 @@ namespace Amanita
             }
             _s = this;
 
+            fcRegistry.Init();
+            RegisterFlowchartsInScene();
+            void RegisterFlowchartsInScene()
+            {
+                var flowchartsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+                foreach (var fChart in flowchartsInScene)
+                {
+                    fcRegistry.RegisterFlowchart(fChart);
+                }
+            }
+
             EnsureShadowDbAvailable();
             EnsureGuidRegistriesAvailable();
 
             VariableRegistry = new VariableRegistry(this);
-
-            EnsureCurrentFlowchartUidsAreRegistered();
-            void EnsureCurrentFlowchartUidsAreRegistered()
-            {
-                var allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                    .Where((fChart) => fChart.gameObject.scene.isLoaded);
-                // ^To make sure we're only getting the Flowcharts in the scene(s) that are loaded.
-
-                var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
-                fcGuidRegistry.Refresh();
-
-                foreach (var fChart in allFlowcharts)
-                {
-                    if (string.IsNullOrEmpty(fChart.UniqueId))
-                    {
-                        Debug.Log($"Flowchart '{fChart.name}' has empty UniqueId. Forcing reset.");
-                        fChart.ForceResetUid(); // We expect the registry itself to pick up the new GUID via signal here.
-                        continue;
-                    }
-                    else
-                    {
-                        fcGuidRegistry.GetOrAddNumericId(fChart.UniqueId);
-                    }
-                }
-            }
 
             ResetAnchors();
             void ResetAnchors()
@@ -301,6 +295,10 @@ namespace Amanita
 
         }
 
+        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();//
+
+        public static SaveMenuManager SaveMenu { get; private set; }
+
         public bool IsFullyInitted
         {
             get => (TweenManager != null && TweenManager.IsFullyInitted) &&
@@ -318,6 +316,7 @@ namespace Amanita
             AudioSystem = GetComponentInChildren<AudioSystem>();
             SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
             TweenManager = GetComponentInChildren<TweenManager>();
+            SaveMenu = GetComponentInChildren<SaveMenuManager>();
 
             InitAll();
             void InitAll()
@@ -351,6 +350,8 @@ namespace Amanita
                 CleanSelfUp();
                 void CleanSelfUp()
                 {
+                    string logMessage = "AmanitaManager instance already exists. Destroying the new one.";
+                    Debug.Log(logMessage);
                     if (!Application.isPlaying)
                     {
                         // Since DestroyImmediate doesn't call OnDestroy...
@@ -425,6 +426,8 @@ namespace Amanita
         {
             if (_s == this)
             {
+                fcRegistry.Dispose();
+
                 // Clean up anchors we created
                 if (_adapterAnchors != null)
                 {
@@ -515,6 +518,11 @@ namespace Amanita
         public VariableRegistry VariableRegistry { get; private set; }
         private void OnValidate()
         {
+            // OnValidate gets called on the prefab in response to Resources.Load(), so...
+            if (!this.gameObject.scene.IsValid())
+            {
+                return;
+            }
             // Best make sure to log errors and such when this has any screwy fields
             if (globalVariables == null)
             {

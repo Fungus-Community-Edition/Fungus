@@ -8,12 +8,13 @@ using UnityEngine.SceneManagement;
 using System.Threading;
 using Amanita.SaveSys.VScripting;
 using UnityObj = UnityEngine.Object;
+using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
     public class SaveManager : ISaveManager
     {
-        public virtual async Task Init()
+        public virtual Task Init()
         {
             EnsureSaveFolderIsThere();
             void EnsureSaveFolderIsThere()
@@ -26,10 +27,9 @@ namespace Amanita.SaveSys
                 }
             }
 
-            await ReadMetasOnDisk();
-            async Task ReadMetasOnDisk()
+            UnityThreadUtil.RunOnMainThread(() =>
             {
-                IList<ISaveMetaData> metasOnDisk = await SaveRepo.LoadAllMetasOnDisk();
+                IList<ISaveMetaData> metasOnDisk = SaveRepo.LoadAllMetasOnDisk();
                 for (int i = 0; i < metasOnDisk.Count; i++)
                 {
                     ISaveMetaData meta = metasOnDisk[i];
@@ -37,13 +37,14 @@ namespace Amanita.SaveSys
                     Registry.AddSave(dataSet);
                 }
                 SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
-            }
+            });
+
+            return Task.CompletedTask;
+
         }
         public virtual int MaxSlots { get; set; } = 100;
 
         public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
-
-        public virtual IVersionProvider VersionProvider { get; protected set; }
 
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,

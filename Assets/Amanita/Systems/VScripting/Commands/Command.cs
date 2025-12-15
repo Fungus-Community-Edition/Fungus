@@ -1,7 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
-using System;
-using System.Collections.Generic;
 
 namespace Amanita.VScripting
 {   
@@ -355,6 +357,17 @@ namespace Amanita.VScripting
         public bool HasReference(IVariable variable)
         {
             return false;
+        }
+
+        protected virtual IEnumerator WaitForTask(Task task)
+        {
+            while (!task.IsCompleted)
+            {
+                yield return null;
+            }
+
+            yield return null; // Just one more frame to ensure any follow-up actions are ready.
+            Continue();
         }
 
         #endregion

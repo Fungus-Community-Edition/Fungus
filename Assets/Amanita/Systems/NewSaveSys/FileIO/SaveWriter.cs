@@ -205,6 +205,12 @@ namespace Amanita.SaveSys
                     if (DeleteBackupsPostOverwrite && File.Exists(backupFilePath))
                     {
                         File.Delete(backupFilePath);
+
+                        string backupMetaPath = backupFilePath + ".meta";
+                        if (File.Exists(backupMetaPath))
+                        {
+                            File.Delete(backupMetaPath);
+                        }
                     }
                 }
             }

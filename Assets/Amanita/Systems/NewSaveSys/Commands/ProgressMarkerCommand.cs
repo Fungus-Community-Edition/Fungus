@@ -71,6 +71,7 @@ namespace Amanita.SaveSys.VScripting
 
         public override string GetSummary()
         {
+            string idVal = markerID.Value;
             string result = $"{action} | ID: {markerID.Value} | Order: {markerOrder.Value}";
             return result;
         }

@@ -169,5 +169,13 @@ namespace Amanita.SaveSys.UI
                 holdsViews = gameObject;
             }
         }
+
+        public virtual void Refresh()
+        {
+            for (int i = 0; i < views.Count; i++)
+            {
+                views[i].Refresh();
+            }
+        }
     }
 }

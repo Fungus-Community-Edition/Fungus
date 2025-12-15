@@ -1,8 +1,15 @@
+#define LOREKEEPER
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityObj = UnityEngine.Object;
+#if UNITY_6000_0_OR_NEWER
+using ThreeDPhysicsMaterial = UnityEngine.PhysicsMaterial;
+#else
+using ThreeDPhysicsMaterial = UnityEngine.PhysicMaterial;
+#endif
 
 namespace Lorekeeper
 {
@@ -38,11 +45,12 @@ namespace Lorekeeper
         // Data
         [SerializeField] protected List<ScriptableObject> _scriptableObjects = new List<ScriptableObject>();
         [SerializeField] protected List<TextAsset> _textAssets = new List<TextAsset>();
-        
+
         // Physics
-        [SerializeField] protected List<PhysicsMaterial> _physicMaterials = new List<PhysicsMaterial>();
+
+        [SerializeField] protected List<ThreeDPhysicsMaterial> _physicsMaterials = new List<ThreeDPhysicsMaterial>();
         [SerializeField] protected List<PhysicsMaterial2D> _physicsMaterials2D = new List<PhysicsMaterial2D>();
-        
+
         [SerializeField] protected List<UnityObj> _other = new List<UnityObj>();
 
         public virtual void Refresh()
@@ -72,7 +80,7 @@ namespace Lorekeeper
 
             _assetDictionary[AssetType.ScriptableObject] = _scriptableObjects;
             _assetDictionary[AssetType.TextAsset] = _textAssets;
-            _assetDictionary[AssetType.PhysicMaterial] = _physicMaterials;
+            _assetDictionary[AssetType.PhysicsMaterial] = _physicsMaterials;
             _assetDictionary[AssetType.PhysicsMaterial2D] = _physicsMaterials2D;
 
             _assetDictionary[AssetType.Other] = _other;
@@ -82,16 +90,22 @@ namespace Lorekeeper
         // ^We go with object here so that we can properly tie this dictionary to the serialized lists above,
         // as opposed to copies of those lists.
 
+        public virtual T GetAssetAt<T>(int index, AssetType assetType) where T : UnityObj
+        {
+            return GetAssetAt(index, assetType) as T;
+        }
+
         public virtual UnityObj GetAssetAt(int index, AssetType assetType)
         {
             RefreshAsNeeded();
-            var dictToGetFrom = _assetDictionary[assetType] as IList<UnityObj>;
-            if (index >= 0 && index < dictToGetFrom.Count)
+            IList listToGetFrom = _assetDictionary[assetType];
+            if (index >= 0 && index < listToGetFrom.Count)
             {
-                return dictToGetFrom[index];
+                return listToGetFrom[index] as UnityObj;
             }
             return null;
         }
+
 
         protected virtual void RefreshAsNeeded()
         {
@@ -108,7 +122,7 @@ namespace Lorekeeper
             var dictToGetFrom = _assetDictionary[assetType] as IList<UnityObj>;
             return dictToGetFrom.Count;
         }
-    
+
         public virtual void TryAdd(UnityObj toAdd, AssetType assetType, out bool wasAdded)
         {
             RefreshAsNeeded();
@@ -215,9 +229,9 @@ namespace Lorekeeper
             {
                 return AssetType.TextAsset;
             }
-            else if (obj is PhysicsMaterial)
+            else if (obj is ThreeDPhysicsMaterial)
             {
-                return AssetType.PhysicMaterial;
+                return AssetType.PhysicsMaterial;
             }
             else if (obj is PhysicsMaterial2D)
             {
@@ -233,24 +247,32 @@ namespace Lorekeeper
         {
             RefreshAsNeeded();
             IList<T> assets = new List<T>();
-            var dictToGetFrom = _assetDictionary[assetType];
-            foreach (var obj in dictToGetFrom)
+            IList listToGetFrom = _assetDictionary[assetType];
+            foreach (var obj in listToGetFrom)
             {
                 if (obj is T tObj)
-                {
                     assets.Add(tObj);
-                }
             }
             return assets;
         }
 
-        public virtual T GetAssetWithName<T>(string name, AssetType assetType) where T : UnityObj
+
+        public virtual T GetAssetWithName<T>(string name, AssetType assetType,
+            StringComparison stringComp = StringComparison.OrdinalIgnoreCase) where T : UnityObj
         {
             RefreshAsNeeded();
-            var dictToGetFrom = _assetDictionary[assetType];
-            foreach (var obj in dictToGetFrom)
+            IList listToGetFrom = _assetDictionary[assetType];
+            foreach (var obj in listToGetFrom)
             {
-                if (obj is T tObj && tObj.name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
+                T tObj = obj as T;
+                bool rightType = tObj != null;
+                if (!rightType)
+                {
+                    continue;
+                }
+
+                bool nameMatches = tObj.name.Equals(name, stringComp);
+                if (nameMatches)
                 {
                     return tObj;
                 }
@@ -270,6 +292,24 @@ namespace Lorekeeper
                 }
                 return totalCount;
             }
+        }
+
+        public virtual int GetIndexFor(UnityObj obj, AssetType assetType)
+        {
+            if (obj == null)
+            {
+                Debug.LogWarning("[ShadowDatabase]: Attempted to get index for null object.");
+                return -1;
+            }
+
+            RefreshAsNeeded();
+            IList listToGetFrom = _assetDictionary[assetType];
+            for (int i = 0; i < listToGetFrom.Count; i++)
+            {
+                if (ReferenceEquals(listToGetFrom[i], obj))
+                    return i;
+            }
+            return -1;
         }
     }
 
