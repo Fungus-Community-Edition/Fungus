@@ -3,21 +3,23 @@ using UnityEngine;
 namespace Amanita.VScripting.Commands
 {
     /// <summary>
-    /// Sets a Boolean, Integer, Float or String variable to a new value using a simple arithmetic operation. 
+    /// Sets a variable to a new value using a simple arithmetic operation. 
     /// The value can be a constant or reference another variable of the same type.
     /// </summary>
     [CommandInfo("Variable",
                  "Set Variable",
-                 "Sets a Boolean, Integer, Float or String variable to a new value using a simple arithmetic operation. The value can be a constant or reference another variable of the same type.")]
+                 "Sets a Muscariable (or legacy Flowchart variable) to a new value using a " +
+        "simple arithmetic operation. The value can be a constant or reference another " +
+        "variable of the same type.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
-        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
-        
+        [SerializeField] private VariableReference varToSet;
         [Tooltip("The type of math operation to be performed")]
         [SerializeField] protected SetOperator setOperator;
-               
+        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
+        
         protected virtual void DoSetOperation()
         {
             if (anyVar.LhsVariable == null)
@@ -26,6 +28,12 @@ namespace Amanita.VScripting.Commands
             }
 
             anyVar.SetOp(setOperator);
+        }
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(anyVar.Data);
         }
 
         #region Public members
@@ -44,16 +52,33 @@ namespace Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            if (anyVar.LhsVariable == null)
+            // Prefer resolving directly from the serialized reference to avoid stale cache
+            var lhsVar = anyVar.LhsVariable;
+//            if (lhsVar == null)
+//            {
+//                // Try resolving from VariableReference if cache hasn’t caught up yet
+//                // (in case AnyVariableAndDataPair not yet refreshed in this repaint)
+//#if UNITY_EDITOR
+//                anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+//                lhsVar = anyVar.LhsVariable;
+//#endif
+//            }
+
+            if (lhsVar == null)
             {
                 return "Error: Variable not selected";
             }
 
-            string description = anyVar.LhsVariable.Key;
+            string description = lhsVar.Key;
             description += " " + VariableUtil.GetSetOperatorDescription(setOperator) + " ";
             description += anyVar.GetDataDescription();
 
             return description;
+        }
+
+        protected override void AssertOwnership()
+        {
+            base.AssertOwnership();
         }
 
         public override bool HasReference(Variable variable)
@@ -74,7 +99,8 @@ namespace Amanita.VScripting.Commands
         {
             base.RefreshVariableCache();
 
-            anyVar?.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+            anyVar ??= new AnyVariableAndDataPair();
+            anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -87,15 +113,18 @@ namespace Amanita.VScripting.Commands
 
         public void OnBeforeSerialize()
         {
+            anyVar.OnBeforeSerialize();
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            
+            //anyVar.OnAfterDeserialize();
         }
 
-        protected virtual void OnEnable()
+
+        protected override void OnEnable()
         {
+            base.OnEnable();
             // We only want this check in the editor, not at runtime
             if (variable == null || Application.isPlaying)
             {

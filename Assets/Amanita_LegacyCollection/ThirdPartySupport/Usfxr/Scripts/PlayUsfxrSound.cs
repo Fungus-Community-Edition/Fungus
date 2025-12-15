@@ -24,6 +24,12 @@ using Amanita.Sfxr;
         [Tooltip("Time to wait before executing the next command")]
         [SerializeField] protected float waitDuration = 0;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_SettingsString);
+        }
+
         protected SfxrSynth _synth = new SfxrSynth();
 
         //Call this if the settings have changed
@@ -92,8 +98,9 @@ using Amanita.Sfxr;
 
         [HideInInspector] [FormerlySerializedAs("SettingsString")] public String SettingsStringOLD = "";
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (SettingsStringOLD != "")
             {
                 _SettingsString.Value = SettingsStringOLD;

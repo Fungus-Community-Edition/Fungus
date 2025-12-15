@@ -32,7 +32,10 @@ namespace Amanita.SaveSys.UI
         public virtual void Refresh()
         {
             // Implement the logic to refresh the UI with the current metadata
-            Debug.Log($"Refreshing Save Slot View: {Meta.SlotNumber} - {Meta.TimeStamp}");
+            if (Meta != null)
+            {
+                Debug.Log($"Refreshing Save Slot View: {Meta.SlotNumber} - {Meta.TimeStamp}");
+            }
             UpdateVisuals();
         }
 

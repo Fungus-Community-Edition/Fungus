@@ -18,7 +18,14 @@ namespace Amanita.VScripting
 
         [Tooltip("Set to true to enable the game object")]
         [SerializeField] protected BooleanData activeState;
-    
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_targetGameObject);
+            variableDataCache.Add(activeState);
+        }
+
         #region Public members
 
         public override void OnEnter()
@@ -59,8 +66,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;

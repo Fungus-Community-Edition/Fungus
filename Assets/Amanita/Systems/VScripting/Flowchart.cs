@@ -27,7 +27,8 @@ namespace Amanita.VScripting
     /// </summary>
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
-        IReorderableVariableSource, IReorderableMuscariableSource, IForceResetUidHandler
+        IReorderableVariableSource, IReorderableMuscariableSource,
+        IForceResetUidHandler, ISerializationCallbackReceiver
     {
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
@@ -1249,7 +1250,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// Adds an already-existing variable to the flowchart. If the variable is already registered,
         /// nothing happens. The variable's key and ID will be made unique if necessary.
-        /// If the variable is a legacy Variable, it a Muscariable version of it will
+        /// If the variable is a legacy Variable, a Muscariable version of it will
         /// be registered instead.
         /// </summary>
         public virtual void AddVariable(IVariable toAdd)
@@ -1264,7 +1265,6 @@ namespace Amanita.VScripting
             Muscariable muscari = toAdd as Muscariable;
             AddVariable(muscari);
         }
-
 
         /// <summary>
         /// Returns the variable with the specified key, or null if the key is not found.
@@ -1865,9 +1865,7 @@ namespace Amanita.VScripting
         {
             if (string.IsNullOrEmpty(uniqueId))
             {
-                Debug.Log($"Flowchart {this.name} did not have a unique ID assigned. Generating one now.");
                 UniqueId = Guid.NewGuid().ToString();
-                // ^The property triggers the signal, so...
 #if UNITY_EDITOR
                 EditorUtility.SetDirty(this);
 #endif
@@ -1921,6 +1919,16 @@ namespace Amanita.VScripting
         public bool Contains(IVariable var)
         {
             return legacyVariables.Contains(var) || muscariables.Contains(var);
+        }
+
+        public void OnBeforeSerialize()
+        {
+            
+        }
+
+        public void OnAfterDeserialize()
+        {
+            RefreshVarLookups();
         }
 
 #endif

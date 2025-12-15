@@ -24,7 +24,8 @@ namespace Amanita.VScripting.Commands
     /// </summary>
     [CommandInfo("Flow", 
                  "Send Message", 
-                 "Sends a message to either the owner Flowchart or all Flowcharts in the scene. Blocks can listen for this message using a Message Received event handler.")]
+                 "Sends a message to either the owner Flowchart or all Flowcharts in the scene." +
+        "Blocks can listen for this message using a Message Received event handler.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class SendMessage : Command
@@ -34,6 +35,12 @@ namespace Amanita.VScripting.Commands
 
         [Tooltip("Name of the message to send")]
         [SerializeField] protected StringData _message = new StringData("");
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_message);
+        }
 
         #region Public members
 
@@ -97,8 +104,9 @@ namespace Amanita.VScripting.Commands
 
         [HideInInspector] [FormerlySerializedAs("message")] public string messageOLD = "";
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (messageOLD != "")
             {
                 _message.Value = messageOLD;

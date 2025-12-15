@@ -25,6 +25,12 @@ namespace Amanita.VScripting
         [Tooltip("Image to display while loading the scene")]
         [SerializeField] protected Texture2D loadingImage;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_sceneName);
+        }
+
         #region Public members
 
         public override void OnEnter()
@@ -59,8 +65,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("sceneName")] public string sceneNameOLD = "";
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (sceneNameOLD != "")
             {
                 _sceneName.Value = sceneNameOLD;
