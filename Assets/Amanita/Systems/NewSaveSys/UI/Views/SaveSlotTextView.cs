@@ -25,7 +25,7 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void CacheComponentsOnAwake()
         {
-            Formatter = formatterSO as ITextFormatter;
+            formatter = formatterSO as ITextFormatter;
         }
 
         public virtual ITextFormatter Formatter
@@ -56,8 +56,18 @@ namespace Amanita.SaveSys.UI
         protected override void UpdateVisuals()
         {
             base.UpdateVisuals();
-            string formattedObjectAsText = formatter.FormatToText(WhatToFormat);
-            Text = $"{prefix}{formattedObjectAsText}{Postfix}";
+            string newText = Text;
+            if (Meta != null && (Meta.IsValid || acceptInvalidMeta))
+            {
+                string formattedObjectAsText = formatter.FormatToText(WhatToFormat);
+                newText = $"{prefix}{formattedObjectAsText}{Postfix}";
+            }
+            else if (!acceptInvalidMeta)
+            {
+                newText = string.Empty;
+            }
+
+            Text = newText;
         }
 
         public virtual string Text

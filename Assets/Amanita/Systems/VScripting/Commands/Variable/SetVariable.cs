@@ -20,7 +20,7 @@ namespace Amanita.VScripting.Commands
                
         protected virtual void DoSetOperation()
         {
-            if (anyVar.Variable == null)
+            if (anyVar.LhsVariable == null)
             {
                 return;
             }
@@ -44,12 +44,12 @@ namespace Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            if (anyVar.Variable == null)
+            if (anyVar.LhsVariable == null)
             {
                 return "Error: Variable not selected";
             }
 
-            string description = anyVar.Variable.Key;
+            string description = anyVar.LhsVariable.Key;
             description += " " + VariableUtil.GetSetOperatorDescription(setOperator) + " ";
             description += anyVar.GetDataDescription();
 
@@ -91,13 +91,19 @@ namespace Amanita.VScripting.Commands
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            if (variable == null)
+            
+        }
+
+        protected virtual void OnEnable()
+        {
+            // We only want this check in the editor, not at runtime
+            if (variable == null || Application.isPlaying)
             {
                 return;
             }
             else
             {
-                anyVar.Variable = variable;
+                anyVar.LhsVariable = variable;
             }
 
             variable = null;

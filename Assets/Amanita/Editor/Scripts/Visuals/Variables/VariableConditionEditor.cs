@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -68,14 +69,40 @@ namespace Amanita.VScripting.EditorUtils
 
                 EditorGUILayout.PropertyField(conditionAnyVar, new GUIContent("Variable"), true);
 
-                // Get selected variable
-                IVariable selectedVariable = conditionAnyVar.FindPropertyRelative("variable").objectReferenceValue as IVariable;
+                // Get selected variable - support both UnityEngine.Object and POCOs via [SerializeReference]
+                var varProp = conditionAnyVar.FindPropertyRelative("variable");
+                IVariable selectedVariable = null;
+
+                // UnityEngine.Object path
+                bool varIsUnityObj = varProp != null && varProp.propertyType == SerializedPropertyType.ObjectReference &&
+                    varProp.objectReferenceValue is UnityObj;
+                if (varIsUnityObj)
+                {
+                    selectedVariable = varProp.objectReferenceValue as IVariable;
+                }
+
+                // [SerializeReference] path for POCOs (e.g., Muscariable)
+                var varIsPoco = varProp != null && varProp.propertyType == SerializedPropertyType.ManagedReference;
+                if (varIsPoco)
+                {
+                    selectedVariable = varProp.managedReferenceValue as IVariable;
+                }
 
                 if (selectedVariable == null)
+                {
+                    EditorGUILayout.Separator();
                     continue;
+                }
 
-                GUIContent[] operatorsList = emptyList;
-                operatorsList = selectedVariable.IsComparisonSupported() ? compareListAll : compareListEqualOnly;
+                GUIContent[] operatorsList;
+                if (selectedVariable.IsComparisonSupported())
+                {
+                    operatorsList = compareListAll;
+                }
+                else
+                {
+                    operatorsList = compareListEqualOnly;
+                }
 
                 // Get previously selected operator
                 int selectedIndex = conditionCompare.enumValueIndex;

@@ -167,9 +167,15 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        public virtual async Task<IList<ISaveMetaData>> LoadAllMetasOnDisk()
+        public virtual async Task<IList<ISaveMetaData>> LoadAllMetasOnDiskAsync()
         {
-            IList<ISaveMetaData> metasOnDisk = await saveReader.ReadAllMetaDatasFromFolder(saveDir);
+            IList<ISaveMetaData> metasOnDisk = await saveReader.ReadAllMetaDatasFromFolderAsync(saveDir);
+            return metasOnDisk;
+        }
+
+        public virtual IList<ISaveMetaData> LoadAllMetasOnDisk()
+        {
+            IList<ISaveMetaData> metasOnDisk = saveReader.ReadAllMetaDatasFromFolder(saveDir);
             return metasOnDisk;
         }
 
@@ -181,7 +187,8 @@ namespace Amanita.SaveSys
     public interface ISaveRepository
     {
         IConfigurableSaveSlotPathResolver PathResolver { get; set; }
-        Task<IList<ISaveMetaData>> LoadAllMetasOnDisk();
+        IList<ISaveMetaData> LoadAllMetasOnDisk();
+        Task<IList<ISaveMetaData>> LoadAllMetasOnDiskAsync();
 
         /// <summary>
         /// Loads save data from file based on the input, returning said data.
