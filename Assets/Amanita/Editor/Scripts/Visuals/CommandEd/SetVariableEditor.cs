@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using Amanita.VScripting;
 using Amanita.VScripting.Commands;
 
 namespace Amanita.VScripting.EditorUtils
@@ -8,67 +9,78 @@ namespace Amanita.VScripting.EditorUtils
     [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor
     {
+        protected SerializedProperty anyVarDataPairProp;
+        protected SerializedProperty anyVarDataProp;
+        protected SerializedProperty setOperatorProp;
+        protected SerializedProperty lhsVarProp;
+
         public override void OnEnable()
         {
             base.OnEnable();
 
             anyVarDataPairProp = serializedObject.FindProperty("anyVar");
-            anyVarDataProp = serializedObject.FindProperty("anyVar.data");
-            rhsVarDataProp = serializedObject.FindProperty("anyVar.data.data");
-
+            anyVarDataProp = serializedObject.FindProperty("anyVar.data");           // AnyVariableData
             setOperatorProp = serializedObject.FindProperty("setOperator");
-            lhsVarProp = serializedObject.FindProperty("varToSet");
+            lhsVarProp = serializedObject.FindProperty("varToSet");                  // VariableReference
         }
-
-        protected SerializedProperty anyVarDataPairProp;
-        protected SerializedProperty anyVarDataProp;
-        protected SerializedProperty rhsVarDataProp;
-        protected SerializedProperty setOperatorProp;
-        protected SerializedProperty lhsVarProp;
 
         public override void DrawCommandGUI()
         {
-            setVarCommand = target as SetVariable;
+            setVarCommand = (SetVariable)target;
             flowchart = setVarCommand.GetFlowchart();
             if (flowchart == null)
             {
                 return;
             }
 
+            // Draw and ensure LHS VariableReference has an owner
             HandleLhsVarField();
+
+            // Build and draw operator selector
             DrawSetOperatorField();
+
+            // Apply chosen operator
             ApplySetOperatorChoice();
+
+            // Draw RHS value field (and ensure correct IVariableData type without boxedValue)
             HandleRhsValueField();
 
+            // Commit changes
             serializedObject.Update();
             if (serializedObject.hasModifiedProperties)
             {
                 serializedObject.ApplyModifiedProperties();
             }
-                
         }
 
         protected Flowchart flowchart;
-        SetVariable setVarCommand;
+        protected SetVariable setVarCommand;
+
+        protected IVariable selectedVariable;
+        protected int selectedOpIndex;
+        protected readonly List<GUIContent> operatorsList = new List<GUIContent>();
+        protected readonly List<SetOperator> operatorValues = new List<SetOperator>();
 
         protected virtual void HandleLhsVarField()
         {
+            // Draw the VariableReference field via its drawer (lets user pick the variable)
             EditorGUILayout.PropertyField(lhsVarProp, new GUIContent("Var to Set"));
-            lhsVarProp.serializedObject.Update();
-            var varRefForSet = lhsVarProp.boxedValue as VariableReference;
 
-            EnsureRefHasOwner();
-            void EnsureRefHasOwner()
+            // Ensure owner is set in the serialized fields (avoid touching boxedValue)
+            var owningFcProp = lhsVarProp.FindPropertyRelative("owningFc");
+            if (owningFcProp != null && owningFcProp.objectReferenceValue == null && flowchart != null)
             {
-                if (varRefForSet.VarOwner == null)
-                {
-                    varRefForSet.VarOwner = flowchart;
-                    lhsVarProp.boxedValue = varRefForSet; // To make sure it sticks
-                    lhsVarProp.serializedObject.ApplyModifiedProperties();
-                }
+                owningFcProp.objectReferenceValue = flowchart;
             }
 
-            selectedVariable = varRefForSet?.Variable;
+            // Resolve selected variable purely from serialized fields (no boxedValue)
+            var itemIdProp = lhsVarProp.FindPropertyRelative("itemId");
+            selectedVariable = null;
+            if (flowchart != null && itemIdProp != null)
+            {
+                byte itemId = (byte)itemIdProp.intValue; // Unity stores byte as int internally
+                selectedVariable = flowchart.GetVariable(itemId);
+            }
         }
 
         protected virtual void DrawSetOperatorField()
@@ -92,7 +104,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Determine current selection index
-            if (selectedVariable != null && operatorValues.Count > 0)
+            if (operatorValues.Count > 0)
             {
                 var currentOp = setVarCommand.SetOperator;
                 int idx = operatorValues.IndexOf(currentOp);
@@ -108,14 +120,9 @@ namespace Amanita.VScripting.EditorUtils
             selectedOpIndex = EditorGUILayout.Popup(operatorContent, selectedOpIndex, operatorsList.ToArray());
         }
 
-        IVariable selectedVariable;
-        int selectedOpIndex;
-        readonly List<GUIContent> operatorsList = new List<GUIContent>();
-        readonly List<SetOperator> operatorValues = new List<SetOperator>();
-
-        void TryAdd(SetOperator op)
+        protected void TryAdd(SetOperator op)
         {
-            if (selectedVariable.IsArithmeticSupported(op))
+            if (selectedVariable != null && selectedVariable.IsArithmeticSupported(op))
             {
                 operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
                 operatorValues.Add(op);
@@ -124,8 +131,10 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void ApplySetOperatorChoice()
         {
-            bool weHaveValidSetOp = selectedVariable != null && operatorValues.Count > 0
-                    && selectedOpIndex >= 0 && selectedOpIndex < operatorValues.Count;
+            bool weHaveValidSetOp = selectedVariable != null &&
+                                    operatorValues.Count > 0 &&
+                                    selectedOpIndex >= 0 &&
+                                    selectedOpIndex < operatorValues.Count;
             if (weHaveValidSetOp)
             {
                 SetOperator chosenOp = operatorValues[selectedOpIndex];
@@ -140,15 +149,43 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
-            bool needUpdateVarDataType = !anyVarData.ContentType.Equals(selectedVariable.ContentType);
-            if (needUpdateVarDataType)
+            // Ensure AnyVariableData.data (SerializeReference) is of the correct IVariableData type
+            // without touching boxedValue. We replace the managed reference when needed.
+            var innerDataRefProp = anyVarDataProp != null
+                ? anyVarDataProp.FindPropertyRelative("data") // SerializeReference IVariableData
+                : null;
+
+            if (innerDataRefProp != null)
             {
-                anyVarData.SetFor(selectedVariable.GetType(), selectedVariable.ContentType);
-                anyVarDataProp.boxedValue = anyVarData;
-                anyVarDataProp.serializedObject.ApplyModifiedProperties();
+                object current = innerDataRefProp.managedReferenceValue;
+                System.Type desiredDataType = VariableDataTypeRegistry.CreateForVar(selectedVariable.GetType())?.GetType();
+
+                if (desiredDataType != null)
+                {
+                    bool needsReplace = current == null || current.GetType() != desiredDataType;
+                    if (needsReplace)
+                    {
+                        // Create a fresh IVariableData instance of the right type
+                        object replacement = System.Activator.CreateInstance(desiredDataType);
+                        innerDataRefProp.managedReferenceValue = replacement;
+                        // After replacing the managed reference, we must re-fetch nested properties.
+                        serializedObject.ApplyModifiedProperties();
+                        serializedObject.Update();
+                    }
+                }
             }
-            EditorGUILayout.PropertyField(rhsVarDataProp, new GUIContent("Value to Apply"), true);
+
+            // Now draw the concrete inner data: anyVar.data.data
+            // Re-fetch in case we just replaced the managed reference
+            var rhsVarDataPropLocal = serializedObject.FindProperty("anyVar.data.data");
+            if (rhsVarDataPropLocal != null)
+            {
+                EditorGUILayout.PropertyField(rhsVarDataPropLocal, new GUIContent("Value to Apply"), true);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.", MessageType.Warning);
+            }
         }
     }
 }

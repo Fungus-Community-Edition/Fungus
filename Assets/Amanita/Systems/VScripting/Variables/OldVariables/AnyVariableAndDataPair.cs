@@ -11,8 +11,8 @@ namespace Amanita.VScripting
     [Serializable]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
-        [SerializeField] protected VariableReference varRef = new VariableReference();
-        [SerializeField] protected AnyVariableData data = new AnyVariableData(); // RHS
+        [SerializeField] private VariableReference varRef = new VariableReference();
+        [SerializeField] private AnyVariableData data = new AnyVariableData(); // RHS
 
         public AnyVariableData Data
         {
@@ -30,10 +30,13 @@ namespace Amanita.VScripting
         {
             get
             {
-                return varRef.Variable;
+                // Always derive from the serialized reference to avoid stale cache
+                varRef?.Refresh();
+                return varRef?.Variable;
             }
             set
             {
+                varRef ??= new VariableReference();
                 varRef.Variable = value;
             }
         }

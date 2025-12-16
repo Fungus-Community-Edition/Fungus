@@ -23,8 +23,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                varOwner ??= owningFc;
-                varOwner ??= owningVsa;
+                RefreshOwner();
                 return varOwner;
             }
             set
@@ -35,12 +34,23 @@ namespace Amanita.VScripting
             }
         }
 
+        protected virtual void RefreshOwner()
+        {
+            varOwner ??= owningFc;
+            varOwner ??= owningVsa;
+        }
+
         private IVariableSource varOwner;
+        // ^We have this for when users want to use this class with their own non-Flowchart
+        // and non-VSA variable sources. In those cases, though, the users will need to
+        // subclass this and override RefreshOwner to make sure it works properly.
+
         public IVariable Variable
         {
             get
             {
                 // Lazy loading so that things work both in the editor and at runtime
+                RefreshOwner();
                 RefreshVar();
                 return variable;
             }
@@ -63,6 +73,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
+            RefreshOwner();
             RefreshVar();
         }
 
@@ -73,8 +84,9 @@ namespace Amanita.VScripting
                 return;
             }
             variable = VarOwner.GetVariable(itemId);
+            Debug.Log($"Refreshed variable. New variable: {variable?.Key ?? "null"}");
         }
-        
+
         public T GetValue<T>()
         {
             T result = default;
