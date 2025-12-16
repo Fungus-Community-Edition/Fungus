@@ -12,9 +12,7 @@ namespace Amanita.VScripting
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
         [SerializeField] protected VariableReference varRef = new VariableReference();
-
-        [SerializeField] protected AnyVariableData data = new AnyVariableData();
-
+        [SerializeField] protected AnyVariableData data = new AnyVariableData(); // RHS
 
         public AnyVariableData Data
         {
@@ -40,30 +38,6 @@ namespace Amanita.VScripting
             }
         }
 
-        protected IVariable EffectiveVariable // The lhs variable, not the one in AnyVariableData
-        {
-            get
-            {
-                return varRef.Variable;
-            }
-        }
-
-
-        public virtual void OnBeforeSerialize()
-        {
-            
-        }
-
-        public virtual void OnAfterDeserialize()
-        {
-            data.OnAfterDeserialize();
-
-            if (LhsVariable != null && data.VarRef == null)
-            {
-                data.SetFor(VarType, LhsVariable.ContentType);
-            }
-        }
-
         public bool HasReference(Variable variable)
         {
             // Only legacy comparison makes sense for this signature
@@ -73,7 +47,7 @@ namespace Amanita.VScripting
 #if UNITY_EDITOR
         public void RefreshVariableCacheHelper(Flowchart flowchart, ref IList<IVariable> referencedVariables)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
 
             if (eff is IVariable<string> asStringVar &&
                 asStringVar != null &&
@@ -89,18 +63,6 @@ namespace Amanita.VScripting
             }
         }
 #endif
-
-        public IVariableSource VarOwner
-        {
-            get
-            {
-                return varRef.VarOwner;
-            }
-            set
-            {
-                varRef.VarOwner = value;
-            }
-        }
 
         public string GetDataDescription()
         {
@@ -122,7 +84,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                var eff = EffectiveVariable;
+                var eff = LhsVariable;
                 if (eff == null)
                     return null;
 
@@ -132,7 +94,7 @@ namespace Amanita.VScripting
 
         public bool Compare(CompareOperator compareOperator, ref bool compareResult)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out var typeActions);
 
             if (foundActions)
@@ -145,7 +107,7 @@ namespace Amanita.VScripting
 
         public void SetOp(SetOperator setOperator)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out VariableTypeActions typeActions);
             if (foundActions)
             {
@@ -153,5 +115,14 @@ namespace Amanita.VScripting
             }
         }
 
+        public void OnBeforeSerialize()
+        {
+
+        }
+
+        public void OnAfterDeserialize()
+        {
+            varRef.Refresh();
+        }
     }
 }

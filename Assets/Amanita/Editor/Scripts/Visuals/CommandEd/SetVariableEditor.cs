@@ -5,42 +5,76 @@ using Amanita.VScripting.Commands;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    [CustomEditor (typeof(SetVariable))]
+    [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor
     {
-        protected SerializedProperty anyVarProp;
-        protected SerializedProperty setOperatorProp;
-        
         public override void OnEnable()
         {
             base.OnEnable();
 
-            anyVarProp = serializedObject.FindProperty("anyVar");
+            anyVarDataPairProp = serializedObject.FindProperty("anyVar");
+            anyVarDataProp = serializedObject.FindProperty("anyVar.data");
+            rhsVarDataProp = serializedObject.FindProperty("anyVar.data.data");
+
             setOperatorProp = serializedObject.FindProperty("setOperator");
+            lhsVarProp = serializedObject.FindProperty("varToSet");
         }
+
+        protected SerializedProperty anyVarDataPairProp;
+        protected SerializedProperty anyVarDataProp;
+        protected SerializedProperty rhsVarDataProp;
+        protected SerializedProperty setOperatorProp;
+        protected SerializedProperty lhsVarProp;
 
         public override void DrawCommandGUI()
         {
-            serializedObject.Update();
-
-            SetVariable setVarCommand = target as SetVariable;
-
-            var flowchart = setVarCommand.GetFlowchart();
+            setVarCommand = target as SetVariable;
+            flowchart = setVarCommand.GetFlowchart();
             if (flowchart == null)
             {
                 return;
             }
 
-            // Select Variable
-            EditorGUILayout.PropertyField(anyVarProp, true);
+            HandleLhsVarField();
+            DrawSetOperatorField();
+            ApplySetOperatorChoice();
+            HandleRhsValueField();
 
-            // Read selected variable safely (ManagedReference or ObjectReference)
-            var anyVarValue = anyVarProp.boxedValue as AnyVariableAndDataPair;
-            IVariable selectedVariable = anyVarValue.LhsVariable;
+            serializedObject.Update();
+            if (serializedObject.hasModifiedProperties)
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
+                
+        }
 
-            // Build operators list + parallel enum list for correct mapping
-            var operatorsList = new List<GUIContent>();
-            var operatorValues = new List<SetOperator>();
+        protected Flowchart flowchart;
+        SetVariable setVarCommand;
+
+        protected virtual void HandleLhsVarField()
+        {
+            EditorGUILayout.PropertyField(lhsVarProp, new GUIContent("Var to Set"));
+            lhsVarProp.serializedObject.Update();
+            var varRefForSet = lhsVarProp.boxedValue as VariableReference;
+
+            EnsureRefHasOwner();
+            void EnsureRefHasOwner()
+            {
+                if (varRefForSet.VarOwner == null)
+                {
+                    varRefForSet.VarOwner = flowchart;
+                    lhsVarProp.boxedValue = varRefForSet; // To make sure it sticks
+                    lhsVarProp.serializedObject.ApplyModifiedProperties();
+                }
+            }
+
+            selectedVariable = varRefForSet?.Variable;
+        }
+
+        protected virtual void DrawSetOperatorField()
+        {
+            operatorsList.Clear();
+            operatorValues.Clear();
 
             if (selectedVariable != null)
             {
@@ -53,52 +87,68 @@ namespace Amanita.VScripting.EditorUtils
             }
             else
             {
-                operatorsList.Add(VariableConditionEditor.None);
-            }
-
-            void TryAdd(SetOperator op)
-            {
-                if (selectedVariable.IsArithmeticSupported(op))
-                {
-                    operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
-                    operatorValues.Add(op);
-                }
+                EditorGUILayout.HelpBox("Select a variable to see available operations.", MessageType.Info);
+                return;
             }
 
             // Determine current selection index
-            int selectedIndex;
             if (selectedVariable != null && operatorValues.Count > 0)
             {
                 var currentOp = setVarCommand.SetOperator;
                 int idx = operatorValues.IndexOf(currentOp);
-                selectedIndex = idx >= 0 ? idx : 0;
+                selectedOpIndex = idx >= 0 ? idx : 0;
             }
             else
             {
-                selectedIndex = 0;
+                selectedOpIndex = 0;
             }
 
             // Show popup
             GUIContent operatorContent = new GUIContent("Operation", "Arithmetic operator to use");
-            selectedIndex = EditorGUILayout.Popup(operatorContent, selectedIndex, operatorsList.ToArray());
-
-            // Apply selection back to enum
-            if (selectedVariable != null && operatorValues.Count > 0 && selectedIndex >= 0 && selectedIndex < operatorValues.Count)
-            {
-                setOperatorProp.enumValueIndex = (int)operatorValues[selectedIndex];
-            }
-
-            serializedObject.ApplyModifiedProperties();
+            selectedOpIndex = EditorGUILayout.Popup(operatorContent, selectedOpIndex, operatorsList.ToArray());
         }
 
-        private static IVariable ReadIVariable(SerializedProperty prop)
+        IVariable selectedVariable;
+        int selectedOpIndex;
+        readonly List<GUIContent> operatorsList = new List<GUIContent>();
+        readonly List<SetOperator> operatorValues = new List<SetOperator>();
+
+        void TryAdd(SetOperator op)
         {
-            if (prop == null) return null;
-            if (prop.propertyType == SerializedPropertyType.ManagedReference)
+            if (selectedVariable.IsArithmeticSupported(op))
             {
-                return prop.managedReferenceValue as IVariable;
+                operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
+                operatorValues.Add(op);
             }
-            return prop.objectReferenceValue as IVariable;
+        }
+
+        protected virtual void ApplySetOperatorChoice()
+        {
+            bool weHaveValidSetOp = selectedVariable != null && operatorValues.Count > 0
+                    && selectedOpIndex >= 0 && selectedOpIndex < operatorValues.Count;
+            if (weHaveValidSetOp)
+            {
+                SetOperator chosenOp = operatorValues[selectedOpIndex];
+                setOperatorProp.enumValueIndex = (int)chosenOp;
+            }
+        }
+
+        protected virtual void HandleRhsValueField()
+        {
+            if (selectedVariable == null)
+            {
+                return;
+            }
+
+            var anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
+            bool needUpdateVarDataType = !anyVarData.ContentType.Equals(selectedVariable.ContentType);
+            if (needUpdateVarDataType)
+            {
+                anyVarData.SetFor(selectedVariable.GetType(), selectedVariable.ContentType);
+                anyVarDataProp.boxedValue = anyVarData;
+                anyVarDataProp.serializedObject.ApplyModifiedProperties();
+            }
+            EditorGUILayout.PropertyField(rhsVarDataProp, new GUIContent("Value to Apply"), true);
         }
     }
 }

@@ -27,7 +27,8 @@ namespace Amanita.VScripting
     /// </summary>
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
-        IReorderableVariableSource, IReorderableMuscariableSource, IForceResetUidHandler
+        IReorderableVariableSource, IReorderableMuscariableSource,
+        IForceResetUidHandler, ISerializationCallbackReceiver
     {
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
@@ -1921,6 +1922,16 @@ namespace Amanita.VScripting
         public bool Contains(IVariable var)
         {
             return legacyVariables.Contains(var) || muscariables.Contains(var);
+        }
+
+        public void OnBeforeSerialize()
+        {
+            
+        }
+
+        public void OnAfterDeserialize()
+        {
+            RefreshVarLookups();
         }
 
 #endif

@@ -16,10 +16,9 @@ namespace Amanita.VScripting
     /// string var substitution.
     /// </summary>
     [Serializable]
-    public partial class AnyVariableData : VariableData, ISerializationCallbackReceiver
+    public partial class AnyVariableData : VariableData
     {
-        [SerializeReference] // Allows polymorphic serialization of IVariableData
-        protected IVariableData data; 
+        [SerializeReference] protected IVariableData data; 
         // ^Represents the actual data being held, which can change dynamically
 
         public override baseObj BoxedValue
@@ -66,12 +65,6 @@ namespace Amanita.VScripting
         }
 
         public virtual void Init()
-        {
-        }
-
-        public virtual void OnBeforeSerialize() { }
-
-        public virtual void OnAfterDeserialize()
         {
         }
 

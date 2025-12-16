@@ -4,16 +4,20 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
+using UnityEngine.UIElements;
 using Type = System.Type;
-using Amanita.Myceliaudio.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
     // For the fields that can accept either a variable or a literal value
     [CustomPropertyDrawer(typeof(VariableData), true)]
-    public class VariableDataDrawer<T> : PropertyDrawer
+    public class VariableDataDrawer : PropertyDrawer
     {
+        // Note that each subclass of PropertyDrawer is treated as a singleton of sorts by Unity's
+        // internals. Thus, best avoid giving these instance members that can hold state between calls.
+        // Unless that state is immutable or reset at the start of each OnGUI call.
+
         protected readonly DefaultEditorAssetResolver _assetResolver = new DefaultEditorAssetResolver();
 
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
@@ -24,20 +28,18 @@ namespace Amanita.VScripting.EditorUtils
             // actual instance inside the serialized property. Only the non-serialized
             // properties should get reset on reloads or otherwise after this frame.
 
-            // Find the two key sub-properties
             SerializedProperty literalValueProp, itemIdProp;
             string litValuePropName = "value", itemIdPropName = "storedItemId";
             literalValueProp = varDataProp.FindPropertyRelative(litValuePropName);
             itemIdProp = varDataProp.FindPropertyRelative(itemIdPropName);
 
-            // Layout: label, then value/reference side-by-side
-            Rect valueRect, popupRect, wholeFieldRect;//
+            Rect wholeFieldRect, valueRect, popupRect;
             int prevIndent;
             HandleLayout();
             void HandleLayout()
             {
+                // Label, then value/reference side-by-side
                 int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
-                const int popupGap = 5; // <- Between the value/ref field and the little button for the popup
                 wholeFieldRect = EditorGUI.PrefixLabel(position, label);
                 valueRect = wholeFieldRect;
                 int spaceForPopup = popupWidth + popupGap;
@@ -50,12 +52,17 @@ namespace Amanita.VScripting.EditorUtils
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
             }
-            
+
             // We only want to draw the literal value when the varRef is null
             // If the var datas is meant to represent a var, its stored item id should be a valid one
             bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
             bool shouldDrawLiteral = !validStoredItemId;
             if (shouldDrawLiteral)
+            {
+                DrawLiteralValueProp(literalValueProp);
+            }
+
+            void DrawLiteralValueProp(SerializedProperty literalValueProp)
             {
                 bool valChanged = EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
 
@@ -100,6 +107,8 @@ namespace Amanita.VScripting.EditorUtils
 
             // Regardless of whether we are drawing the literal value or not, we need to populate the list of valid vars
             // so we know what to show in the popup.
+            Dictionary<string, IVariable> _validVarsOrdered = new Dictionary<string, IVariable>();
+            HashSet<string> _labelsSeen = new HashSet<string>();
             var ammieManager = AmanitaManager.S;
             RegisterValidVars(); // Valid to be assigned to the VariableData we are drawing for, to be specific
             void RegisterValidVars()
@@ -242,61 +251,12 @@ namespace Amanita.VScripting.EditorUtils
             EditorGUI.EndProperty();
         }
 
-        protected UnityObj _variableSourceContext;
+        private static readonly int popupGap = 5; // <- Between the value/ref field and the little button for the popup
 
-        protected virtual bool VarRefPropHasAnythingAssigned(SerializedProperty varRefProp)
-        {
-            bool result = false;
-
-            switch (varRefProp.propertyType)
-            {
-                case SerializedPropertyType.ObjectReference:
-                    result = varRefProp.objectReferenceValue != null;
-                    break;
-                case SerializedPropertyType.Generic:
-                case SerializedPropertyType.ManagedReference:
-                    result = varRefProp.managedReferenceValue != null;
-                    break;
-
-                default:
-                    Debug.LogError($"[VarRefPropHasAnythingAssigned] Did not account for var ref prop being of serialized property type {varRefProp.propertyType}");
-                    break;
-            }
-
-            return result;
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            var referenceProp = property.FindPropertyRelative("varRef");
-            if (referenceProp != null && referenceProp.propertyType == SerializedPropertyType.ManagedReference)
-            {
-                return EditorGUI.GetPropertyHeight(referenceProp, true);
-            }
-            return EditorGUIUtility.singleLineHeight;
-        }
-
-        protected readonly Dictionary<string, IVariable> _validVarsOrdered = new Dictionary<string, IVariable>();
-        protected readonly HashSet<string> _labelsSeen = new HashSet<string>();
     }
 
-    [CustomPropertyDrawer(typeof(BooleanData))]
-    public class BooleanDataDrawer : VariableDataDrawer<BooleanVariable>
-    { }
-
-    [CustomPropertyDrawer(typeof(IntegerData))]
-    public class IntegerDataDrawer : VariableDataDrawer<IntegerVariable>
-    { }
-
-    [CustomPropertyDrawer(typeof(FloatData))]
-    public class FloatDataDrawer : VariableDataDrawer<FloatVariable>
-    { }
-
-    [CustomPropertyDrawer(typeof(StringData))]
-    public class StringDataDrawer : VariableDataDrawer<StringVariable>
-    { }
-
-    [CustomPropertyDrawer(typeof(StringDataMulti))]
-    public class StringDataMultiDrawer : VariableDataDrawer<StringVariable>
-    { }
+    [CustomPropertyDrawer(typeof(AnyVariableData), true)]
+    public class AnyVariableDataDrawer : VariableDataDrawer
+    {
+    }
 }

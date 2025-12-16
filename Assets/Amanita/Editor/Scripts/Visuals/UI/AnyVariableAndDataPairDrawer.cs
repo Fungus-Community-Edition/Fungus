@@ -1,8 +1,6 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
-using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {

@@ -49,12 +49,17 @@ namespace Amanita.VScripting
 
         protected readonly IList<IVariableData> variableDataCache = new List<IVariableData>();
 
-        private void AssertOwnership()
+        protected virtual void AssertOwnership()
         {
+            Flowchart fChart = GetFlowchart();
             for (int i = 0; i < variableDataCache.Count; i++)
             {
                 var currentVarData = variableDataCache[i];
-                currentVarData.VarOwner = GetFlowchart();
+
+                // We only want to assert ownership if there is no owner already set.
+                // We want to allow the variable datas to have other owners so
+                // that we can have them refer said other owners' vars if needed.
+                currentVarData.VarOwner ??= fChart;
             }
         }
 

@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Reflection;
+using Type = System.Type;
 
 namespace Amanita.VScripting.Commands
 {
@@ -8,16 +10,18 @@ namespace Amanita.VScripting.Commands
     /// </summary>
     [CommandInfo("Variable",
                  "Set Variable",
-                 "Sets a Boolean, Integer, Float or String variable to a new value using a simple arithmetic operation. The value can be a constant or reference another variable of the same type.")]
+                 "Sets a Boolean, Integer, Float or String variable to a new value using a " +
+        "simple arithmetic operation. The value can be a constant or reference another " +
+        "variable of the same type.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
-        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
-        
+        [SerializeField] private VariableReference varToSet;
         [Tooltip("The type of math operation to be performed")]
         [SerializeField] protected SetOperator setOperator;
-
+        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
+        
         protected virtual void DoSetOperation()
         {
             if (anyVar.LhsVariable == null)
@@ -31,7 +35,7 @@ namespace Amanita.VScripting.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(anyVar.Data);
+            //variableDataCache.Add(valueToApply);
         }
 
         #region Public members
@@ -50,9 +54,11 @@ namespace Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            if (anyVar.LhsVariable == null)
+            var lhsVar = anyVar.LhsVariable;
+            if (lhsVar == null)
             {
                 return "Error: Variable not selected";
+
             }
 
             string description = anyVar.LhsVariable.Key;
@@ -60,6 +66,11 @@ namespace Amanita.VScripting.Commands
             description += anyVar.GetDataDescription();
 
             return description;
+        }
+
+        protected override void AssertOwnership()
+        {
+            base.AssertOwnership();
         }
 
         public override bool HasReference(Variable variable)
@@ -94,12 +105,14 @@ namespace Amanita.VScripting.Commands
 
         public void OnBeforeSerialize()
         {
+            anyVar.OnBeforeSerialize();
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            
+            //anyVar.OnAfterDeserialize();
         }
+
 
         protected override void OnEnable()
         {
