@@ -3,6 +3,11 @@ using Type = System.Type;
 
 namespace Amanita.VScripting
 {
+    /// <summary>
+    /// A reference to a variable belonging to a variable source (Flowchart or VariableSourceAsset).
+    /// If you want this to work with a source that is not derived from either of those,
+    /// you will need to subclass this.
+    /// </summary>
     [System.Serializable]
     public class VariableReference
     {
@@ -13,6 +18,11 @@ namespace Amanita.VScripting
         [SerializeField] private VariableSourceAsset owningVsa;
         // ^We use these two so that we can have an easier time fetching the right variable
         // through the Variable property. Especially necessary for the editor.
+
+        public virtual byte VarItemId
+        {
+            get { return itemId; }
+        }
 
         /// <summary>
         /// The owner of the var this is meant to reference. Changing this will
@@ -36,6 +46,9 @@ namespace Amanita.VScripting
 
         protected virtual void RefreshOwner()
         {
+            // This func is one of the things that subclasses will need to override to 
+            // make sure they work with non-FC and non-VSA owners.
+            varOwner = null;
             varOwner ??= owningFc;
             varOwner ??= owningVsa;
         }
@@ -45,47 +58,44 @@ namespace Amanita.VScripting
         // and non-VSA variable sources. In those cases, though, the users will need to
         // subclass this and override RefreshOwner to make sure it works properly.
 
+        /// <summary>
+        /// Setter sets not just the variable, but also the owner and itemId to match.
+        /// </summary>
         public IVariable Variable
         {
             get
             {
-                // Lazy loading so that things work both in the editor and at runtime
+                // We want this calculated purely based on the stored id as well as the 
+                // owner referenced
                 RefreshOwner();
-                RefreshVar();
-                return variable;
+                IVariable result = null;
+                if (VarOwner != null)
+                {
+                    result = VarOwner.GetVariable(itemId);
+                }
+                return result;
             }
             set
             {
                 if (value == null)
                 {
                     itemId = Muscariable.InvalidID;
+                    VarOwner = null;
                 }
                 else
                 {
                     itemId = value.ItemId;
                     VarOwner = value.Owner;
                 }
-                variable = value;
             }
         }
 
-        private IVariable variable;
 
         public virtual void Refresh()
         {
             RefreshOwner();
-            RefreshVar();
         }
 
-        private void RefreshVar()
-        {
-            if (varOwner == null)
-            {
-                return;
-            }
-            variable = VarOwner.GetVariable(itemId);
-            Debug.Log($"Refreshed variable. New variable: {variable?.Key ?? "null"}");
-        }
 
         public T GetValue<T>()
         {

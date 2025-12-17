@@ -1271,12 +1271,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4157960967785349307}
   - component: {fileID: 1507031660960170913}
-  - component: {fileID: 4123734902507335759}
-  - component: {fileID: 6886168824060774167}
-  - component: {fileID: 8596137520388234537}
-  - component: {fileID: 1503650512130542623}
-  - component: {fileID: 4245799343010956000}
-  - component: {fileID: 4587686835030577088}
   - component: {fileID: 8425603792361900093}
   - component: {fileID: 5750054465503317988}
   - component: {fileID: 2674689422536112357}
@@ -1308,8 +1302,8 @@ Transform:
   m_GameObject: {fileID: 5491679531932821053}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.000061035156, z: -227.66798}
-  m_LocalScale: {x: 2.529644, y: 2.529644, z: 2.529644}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8457296293203617356}
@@ -1328,9 +1322,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 1752029211725043856}
+    - {fileID: 5517563102179242479}
     _selectedCommands:
-    - {fileID: 5304501779363745784}
+    - {fileID: 8263271778154824517}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1375,274 +1369,6 @@ MonoBehaviour:
         itemID: 1
         _ownerIdIndex: 1
         value: -5
---- !u!114 &4123734902507335759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodeRect:
-    serializedVersion: 2
-    x: 156
-    y: 296
-    width: 300
-    height: 100
-  tint: {r: 1, g: 1, b: 1, a: 1}
-  useCustomTint: 0
-  itemId: 11
-  blockName: OpenSaveMenu
-  description: 
-  eventHandler: {fileID: 6886168824060774167}
-  commandList:
-  - {fileID: 8596137520388234537}
-  includeInSaves: 1
-  loadPriority: 0
-  suppressAllAutoSelections: 0
---- !u!114 &6886168824060774167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10eaeba5e91be479e95d4fa48679f549, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentBlock: {fileID: 4123734902507335759}
-  suppressBlockAutoSelect: 0
-  targetButton: {fileID: 0}
---- !u!114 &8596137520388234537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95d9ff288f3904c05ada7ac9c9a075bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 1
-  indentLevel: 0
-  description: 
-  delay: 0
-  invokeType: 0
-  staticEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
-        m_MethodName: set_interactable
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4604311602930444535}
-        m_TargetAssemblyTypeName: Amanita.SaveSys.UI.SaveMenuManager, Amanita.Core
-        m_MethodName: Open
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  booleanParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  booleanEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  integerParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    integerRef: {fileID: 0}
-  integerEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  floatParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    floatRef: {fileID: 0}
-  floatEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stringParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 
-    stringRef: {fileID: 0}
-  stringEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
---- !u!114 &1503650512130542623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodeRect:
-    serializedVersion: 2
-    x: 156
-    y: 409
-    width: 300
-    height: 100
-  tint: {r: 1, g: 1, b: 1, a: 1}
-  useCustomTint: 0
-  itemId: 4
-  blockName: CloseSaveMenu
-  description: 
-  eventHandler: {fileID: 4587686835030577088}
-  commandList:
-  - {fileID: 4245799343010956000}
-  includeInSaves: 1
-  loadPriority: 0
-  suppressAllAutoSelections: 0
---- !u!114 &4245799343010956000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95d9ff288f3904c05ada7ac9c9a075bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 3
-  indentLevel: 0
-  description: 
-  delay: 0
-  invokeType: 0
-  staticEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
-        m_MethodName: set_interactable
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 4604311602930444535}
-        m_TargetAssemblyTypeName: Amanita.SaveSys.UI.SaveMenuManager, Amanita.Core
-        m_MethodName: Close
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  booleanParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  booleanEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  integerParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    integerRef: {fileID: 0}
-  integerEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  floatParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 0
-    floatRef: {fileID: 0}
-  floatEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stringParameter:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
-    value: 
-    stringRef: {fileID: 0}
-  stringEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
---- !u!114 &4587686835030577088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5491679531932821053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10eaeba5e91be479e95d4fa48679f549, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentBlock: {fileID: 1503650512130542623}
-  suppressBlockAutoSelect: 0
-  targetButton: {fileID: 0}
 --- !u!114 &8425603792361900093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1669,7 +1395,6 @@ MonoBehaviour:
   eventHandler: {fileID: 5750054465503317988}
   commandList:
   - {fileID: 6685305723448108047}
-  - {fileID: 0}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1732,11 +1457,11 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 4605209097948364956
+    rid: 4605209196090622774
   references:
     version: 2
     RefIds:
-    - rid: 4605209097948364956
+    - rid: 4605209196090622774
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
@@ -1759,33 +1484,18 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 0
   slotIndex:
-    storedOwnerUidIndex: 1
     storedItemId: 1
-    varRef:
-      rid: 4605209097948364924
+    owningFc: {fileID: 1507031660960170913}
+    owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 4605209097948364924
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        _ownerIdIndex: 1
-        value: -5
 --- !u!114 &8806205604095629028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1802,17 +1512,11 @@ MonoBehaviour:
   indentLevel: 0
   logType: 0
   logMessage:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 'Responding to save slot selected. New index: {$lastSlotIndex}'
     stringRef: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1752029211725043856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1890,10 +1594,9 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   booleanParameter:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -1901,40 +1604,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   integerParameter:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   integerEvent:
     m_PersistentCalls:
       m_Calls: []
   floatParameter:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   floatEvent:
     m_PersistentCalls:
       m_Calls: []
   stringParameter:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   stringEvent:
     m_PersistentCalls:
       m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &5517563102179242479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1997,41 +1692,25 @@ MonoBehaviour:
   itemId: 23
   indentLevel: 1
   slotIndex:
-    storedOwnerUidIndex: 1
     storedItemId: 1
-    varRef:
-      rid: 4605209097948364927
+    owningFc: {fileID: 1507031660960170913}
+    owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   loadScene:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitUntilFinished:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 4605209097948364927
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        _ownerIdIndex: 1
-        value: -5
 --- !u!114 &5552533710245989651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2050,129 +1729,118 @@ MonoBehaviour:
   conditions:
   - compareOperator: 3
     anyVar:
-      variable:
-        rid: 4605209097948364929
-      legacyVariable: {fileID: 0}
+      varRef:
+        itemId: 1
+        owningFc: {fileID: 1507031660960170913}
+        owningVsa: {fileID: 0}
       data:
-        storedOwnerUidIndex: -1
         storedItemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
         data:
           rid: 4605209097948364930
   compareOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
       storedItemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
       data:
         rid: -2
   variable: {fileID: 0}
   booleanData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   floatData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   stringData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   animatorData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
   audioSourceData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
   gameObjectData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   materialData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
   objectData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
   spriteData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
   textureData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
   transformData:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
   vector2Data:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
   vector3Data:
-    storedOwnerUidIndex: -1
     storedItemId: 0
-    varRef:
-      rid: -2
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
   references:
@@ -2180,21 +1848,12 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 4605209097948364929
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        _ownerIdIndex: 1
-        value: -5
     - rid: 4605209097948364930
       type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
-        storedOwnerUidIndex: -1
         storedItemId: 0
-        varRef:
-          rid: -2
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
 --- !u!114 &3522029998774049069
@@ -2386,6 +2045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 40504156873977944}
+  startOpen: 0
 --- !u!225 &40504156873977944
 CanvasGroup:
   m_ObjectHideFlags: 0

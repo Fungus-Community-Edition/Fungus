@@ -59,6 +59,11 @@ namespace Amanita.VScripting
                 // We only want to assert ownership if there is no owner already set.
                 // We want to allow the variable datas to have other owners so
                 // that we can have them refer said other owners' vars if needed.
+                if (currentVarData.VarRef != null)
+                {
+                    currentVarData.VarOwner ??= currentVarData.VarRef.Owner;
+                    // ^For when the var assigned belongs to another Flowchart or something.
+                }
                 currentVarData.VarOwner ??= fChart;
             }
         }
@@ -268,7 +273,9 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Called by unity when script is loaded or its data changed by editor
+        /// Called by unity when script is loaded or its data changed by editor. Yes, this includes
+        /// stuff like serializedObject.ApplyModifiedProperties(), which is why this func can get called
+        /// before an editor func is done executing.
         /// </summary>
         public virtual void OnValidate()
         {

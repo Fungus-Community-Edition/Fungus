@@ -30,7 +30,7 @@ namespace Amanita.VScripting
 
         public override void Refresh()
         {
-            varRef ??= collectionRef;
+            backingVarRef.Variable ??= collectionRef;
         }
 
         public override IVariable VarRef
@@ -38,17 +38,17 @@ namespace Amanita.VScripting
             get
             {
                 // Prefer the protected serialized varRef (it may be a VariablePointer<T>), but fall back to the old derived objectRef.
-                return varRef ?? collectionRef;
+                return backingVarRef.Variable ?? collectionRef;
             }
             set
             {
-                if (value == null) { varRef = null; collectionRef = null; return; }
+                if (value == null) { backingVarRef.Variable = null; collectionRef = null; return; }
 
                 // Accept any variable whose ContentType is assignable to UnityObj (polymorphism allowed).
                 if (this.ContentType.IsAssignableFrom(value.ContentType))
                 {
                     // Keep the protected varRef consistent with whatever is passed in (covers VariablePointer<T> cases).
-                    varRef = value;
+                    backingVarRef.Variable = value;
 
                     collectionRef = value as CollectionVariable;
                 }

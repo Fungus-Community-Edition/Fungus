@@ -56,6 +56,9 @@ namespace Amanita.VScripting
                 foreach (var toRegister in localSource.Variables)
                 {
                     Register(toRegister.Key, toRegister);
+                    // For the sake of the editor code, we'll rehydrate the owners here
+                    // and wherever else we register variables.
+                    toRegister.Owner = localSource;
                 }
             }
 
@@ -83,6 +86,7 @@ namespace Amanita.VScripting
                 {
                     string key = $"{otherChart.gameObject.name}/{toRegister.Key}";
                     Register(key, toRegister);
+                    toRegister.Owner = otherChart;
                 }
             }
 
@@ -94,6 +98,7 @@ namespace Amanita.VScripting
                 {
                     string key = $"~{source.name}~/{toRegister.Key}";
                     Register(key, toRegister);
+                    toRegister.Owner = source;
                 }
             }
 

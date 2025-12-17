@@ -28,10 +28,11 @@ namespace Amanita.VScripting.EditorUtils
             // actual instance inside the serialized property. Only the non-serialized
             // properties should get reset on reloads or otherwise after this frame.
 
-            SerializedProperty literalValueProp, itemIdProp;
-            string litValuePropName = "value", itemIdPropName = "storedItemId";
+            SerializedProperty literalValueProp, backingVarRefProp, itemIdProp;
+            string litValuePropName = "value", backingVarRefPropName = "backingVarRef", itemIdPropName = "itemId";
             literalValueProp = varDataProp.FindPropertyRelative(litValuePropName);
-            itemIdProp = varDataProp.FindPropertyRelative(itemIdPropName);
+            backingVarRefProp = varDataProp.FindPropertyRelative(backingVarRefPropName);
+            itemIdProp = backingVarRefProp.FindPropertyRelative(itemIdPropName);
 
             Rect wholeFieldRect, valueRect, popupRect;
             int prevIndent;
@@ -220,12 +221,43 @@ namespace Amanita.VScripting.EditorUtils
                 selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
             }
 
+            var varsOrderedArray = _validVarsOrdered.Values.ToArray();
+            IVariable chosenNow = varsOrderedArray[selectedIndex];
+            bool choseLiteralValue = chosenNow == null;
+            bool choseDiffVar = !choseLiteralValue && itemIdProp.intValue != chosenNow.ItemId;
+
+            if (choseDiffVar)
+            {
+                Debug.Log($"VariableDataDrawer: Variable selection changed to {chosenNow.Key} for " +
+                    $"{varDataProp.propertyPath}.");
+            }
+
+            UpdateOwner();
+            void UpdateOwner()
+            {
+                Flowchart owningFc = null;
+                VariableSourceAsset owningVsa = null;
+                if (chosenNow != null)
+                {
+                    owningFc = chosenNow.Owner as Flowchart;
+                    owningVsa = chosenNow.Owner as VariableSourceAsset;
+                }
+                else
+                {
+                    owningFc = localFlowchart; 
+                    // ^We don't want to null the owning FC of a var data set to work with a literal
+                }
+
+                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
+                owningFcProp.objectReferenceValue = owningFc;
+
+                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("owningVsa");
+                owningVsaProp.objectReferenceValue = owningVsa;
+            }
+
             UpdateItemIdPropBasedOnSelection();
             void UpdateItemIdPropBasedOnSelection()
             {
-                var varsOrderedArray = _validVarsOrdered.Values.ToArray();
-                IVariable chosenNow = varsOrderedArray[selectedIndex];
-                bool choseLiteralValue = chosenNow == null;
                 if (choseLiteralValue)
                 {
                     itemIdProp.intValue = Variable.InvalidID;
@@ -235,16 +267,16 @@ namespace Amanita.VScripting.EditorUtils
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
 
+                backingVarRefProp.serializedObject.ApplyModifiedProperties();
                 varData = varDataProp.boxedValue as VariableData;
-                // ^It's possible that the literal value changed before this point. Thus, to make sure we're working
-                // with the most accurate var data, we refetch it here.
-                varData.VarRef = chosenNow;
-                varDataProp.boxedValue = varData; 
-                // ^Despite how we got varData from varDataProp.boxedValue, 
-                // we need to set it back to ensure changes are registered.
+                varData.Refresh();
+                varDataProp.boxedValue = varData;
                 varDataProp.serializedObject.ApplyModifiedProperties();
-                
-                EditorUtility.SetDirty(varDataProp.serializedObject.targetObject);
+            }
+
+            if (choseDiffVar)
+            {
+                varDataProp.serializedObject.ApplyModifiedProperties();
             }
 
             EditorGUI.indentLevel = prevIndent;
