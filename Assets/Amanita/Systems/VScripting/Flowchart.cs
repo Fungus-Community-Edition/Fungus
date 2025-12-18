@@ -1866,9 +1866,7 @@ namespace Amanita.VScripting
         {
             if (string.IsNullOrEmpty(uniqueId))
             {
-                Debug.Log($"Flowchart {this.name} did not have a unique ID assigned. Generating one now.");
                 UniqueId = Guid.NewGuid().ToString();
-                // ^The property triggers the signal, so...
 #if UNITY_EDITOR
                 EditorUtility.SetDirty(this);
 #endif

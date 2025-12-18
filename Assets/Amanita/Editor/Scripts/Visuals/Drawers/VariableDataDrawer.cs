@@ -23,11 +23,31 @@ namespace Amanita.VScripting.EditorUtils
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
-            var varData = varDataProp.boxedValue as VariableData;
+
+            var varDataObj = varDataProp.boxedValue;
+            if (varDataObj == null)
+            {
+                // If the managed reference has not been initialized yet, bail out safely
+                EditorGUI.EndProperty();
+                return;
+            }
+            var varData = varDataObj as VariableData;
+            if (varData == null)
+            {
+                // Unexpected type; bail out to avoid downstream NREs
+                EditorGUI.EndProperty();
+                return;
+            }
 
             // Sub-properties
             var literalValueProp = varDataProp.FindPropertyRelative("value");
             var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
+            if (backingVarRefProp == null)
+            {
+                // Missing backing reference; cannot proceed safely
+                EditorGUI.EndProperty();
+                return;
+            }
             var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
             // Layout
@@ -74,21 +94,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            // Resolve Content Type
-            Type contentType = null;
-            var varType = varData.GetType();
-            var attr = varType.GetCustomAttribute<VariableDataAttribute>();
-            if (attr != null)
-            {
-                contentType = attr.ContentType;
-            }
-            else
-            {
-                warningMessage = $"VariableDataDrawer: No VariableDataAttribute found on " +
-                    $"VariableData type {varType}. Cannot resolve ContentType for {varDataProp.propertyPath}.";
-                Debug.LogWarning(warningMessage);
-            }
-
+            Type contentType = varData.ContentType;
             if (contentType == null)
             {
                 warningMessage = $"Could not resolve ContentType for VariableData drawer " +
@@ -99,10 +105,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            // IMPORTANT: Do NOT force VarOwner here. Let VariableReference own its owner state (Flowchart or VSA).
-            // varData.VarOwner = localFlowchart; // removed
-
-            // Get currently selected variable via VariableData.VarRef (which delegates to backing VariableReference)
             IVariable selectedVariable = varData.VarRef;
 
             // Build options
