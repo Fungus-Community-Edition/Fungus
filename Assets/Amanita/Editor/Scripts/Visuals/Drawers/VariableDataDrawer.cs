@@ -23,28 +23,22 @@ namespace Amanita.VScripting.EditorUtils
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
-            VariableData varData = varDataProp.boxedValue as VariableData;
-            // ^If we play our cards right, we can indeed use this to modify the
-            // actual instance inside the serialized property. Only the non-serialized
-            // properties should get reset on reloads or otherwise after this frame.
+            var varData = varDataProp.boxedValue as VariableData;
 
-            SerializedProperty literalValueProp, backingVarRefProp, itemIdProp;
-            string litValuePropName = "value", backingVarRefPropName = "backingVarRef", itemIdPropName = "itemId";
-            literalValueProp = varDataProp.FindPropertyRelative(litValuePropName);
-            backingVarRefProp = varDataProp.FindPropertyRelative(backingVarRefPropName);
-            itemIdProp = backingVarRefProp.FindPropertyRelative(itemIdPropName);
+            // Sub-properties
+            var literalValueProp = varDataProp.FindPropertyRelative("value");
+            var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
+            var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
+            // Layout
             Rect wholeFieldRect, valueRect, popupRect;
             int prevIndent;
             HandleLayout();
             void HandleLayout()
             {
-                // Label, then value/reference side-by-side
-                int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
                 wholeFieldRect = EditorGUI.PrefixLabel(position, label);
                 valueRect = wholeFieldRect;
-                int spaceForPopup = popupWidth + popupGap;
-                valueRect.width = Mathf.Max(0, wholeFieldRect.width - spaceForPopup);
+                valueRect.width = Mathf.Max(0, wholeFieldRect.width - SpaceForPopup);
                 // ^We want to make sure that the rect for the value field leaves enough space for the popup
                 popupRect = wholeFieldRect;
                 popupRect.x += valueRect.width + popupGap;
@@ -60,85 +54,83 @@ namespace Amanita.VScripting.EditorUtils
             bool shouldDrawLiteral = !validStoredItemId;
             if (shouldDrawLiteral)
             {
-                DrawLiteralValueProp(literalValueProp);
-            }
-
-            void DrawLiteralValueProp(SerializedProperty literalValueProp)
-            {
                 bool valChanged = EditorGUI.PropertyField(valueRect, literalValueProp, GUIContent.none);
-
                 if (valChanged)
                 {
-                    Debug.Log("Value changed in literal field.");
+                    literalValueProp.serializedObject.ApplyModifiedProperties();
                 }
-
-                literalValueProp.serializedObject.ApplyModifiedProperties();
             }
 
+            // Flowchart is useful for listing vars, but do not force owner to it
             Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
+            string warningMessage;
             if (localFlowchart == null)
             {
-                string warningMessage = $"No flowchart is open in the Flowchart window. Cannot draw " +
-                    $"variable reference field for {varDataProp.propertyPath}.";
+                warningMessage = $"No flowchart is open in the Flowchart window. Cannot draw variable " +
+                    $"reference field for {varDataProp.propertyPath}.";
                 Debug.LogWarning(warningMessage);
+                EditorGUI.indentLevel = prevIndent;
+                EditorGUI.EndProperty();
                 return;
             }
 
-            #region Resolve Content Type
-            Type contentType = GetContentType();
-            Type GetContentType()
+            // Resolve Content Type
+            Type contentType = null;
+            var varType = varData.GetType();
+            var attr = varType.GetCustomAttribute<VariableDataAttribute>();
+            if (attr != null)
             {
-                var dataAttr = varData.GetType().GetCustomAttribute<VariableDataAttribute>();
-                Type result = dataAttr != null ? dataAttr.ContentType : varData.ContentType;
-                return result;
+                contentType = attr.ContentType;
+            }
+            else
+            {
+                warningMessage = $"VariableDataDrawer: No VariableDataAttribute found on " +
+                    $"VariableData type {varType}. Cannot resolve ContentType for {varDataProp.propertyPath}.";
+                Debug.LogWarning(warningMessage);
             }
 
             if (contentType == null)
             {
-                string warningMessage = $"Could not resolve ContentType for VariableData drawer for " +
-                    $"{varDataProp.propertyPath}.";
+                warningMessage = $"Could not resolve ContentType for VariableData drawer " +
+                    $"for {varDataProp.propertyPath}.";
                 Debug.LogWarning(warningMessage);
+                EditorGUI.indentLevel = prevIndent;
+                EditorGUI.EndProperty();
                 return;
             }
-            #endregion
 
-            int selectedIndex = 0;
-            varData.VarOwner = localFlowchart; // To make sure we can get the right variable
+            // IMPORTANT: Do NOT force VarOwner here. Let VariableReference own its owner state (Flowchart or VSA).
+            // varData.VarOwner = localFlowchart; // removed
+
+            // Get currently selected variable via VariableData.VarRef (which delegates to backing VariableReference)
             IVariable selectedVariable = varData.VarRef;
 
-            // Regardless of whether we are drawing the literal value or not, we need to populate the list of valid vars
-            // so we know what to show in the popup.
-            Dictionary<string, IVariable> _validVarsOrdered = new Dictionary<string, IVariable>();
-            HashSet<string> _labelsSeen = new HashSet<string>();
+            // Build options
             var ammieManager = AmanitaManager.S;
-            RegisterValidVars(); // Valid to be assigned to the VariableData we are drawing for, to be specific
+            var _validVarsOrdered = new Dictionary<string, IVariable>();
+            var _labelsSeen = new HashSet<string>();
+            RegisterValidVars();
             void RegisterValidVars()
             {
-                var varRegistry = ammieManager.VariableRegistry;
-                IReadOnlyDictionary<string, IVariable> validVars = varRegistry.GetVarsOfType(contentType);
-                // ^Note that the keys here mention the owners when appropriate, and thus we don't 
-                // have to set those up ourselves
+                var validVars = ammieManager.VariableRegistry.GetVarsOfType(contentType);
                 _validVarsOrdered.Clear();
                 _labelsSeen.Clear();
-                AddOption("<Value>", null); // To let the user go with a literal val instead of a var
+                AddOption("<Value>", null);
 
-                // Add the options one by one
                 for (int i = 0; i < validVars.Count; i++)
                 {
                     var pair = validVars.ElementAt(i);
                     string label = pair.Key;
-                    IVariable variable = pair.Value;
-                    string varKey = variable.Key;
+                    var variable = pair.Value;
 
-                    // Ensure uniqueness of labels
                     if (_labelsSeen.Contains(label))
                     {
-                        // Try to disambiguate by adding the variable's ItemId
                         label = $"{label} (ID:{variable.ItemId})";
                         if (_labelsSeen.Contains(label))
                         {
-                            Debug.LogWarning($"Variable label collision for variable {varKey} from owner  " +
-                                $"when trying to add to the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
+                            warningMessage = $"Variable label collision could not be resolved for variable {variable.Key} " +
+                                $"when adding to dropdown for {varDataProp.propertyPath}. Skipping duplicate.";
+                            Debug.LogWarning(warningMessage);
                             continue;
                         }
                     }
@@ -150,11 +142,11 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     if (_validVarsOrdered.ContainsKey(label))
                     {
-                        Debug.LogWarning($"Variable key collision when trying to add variable {label} to " +
-                            $"the dropdown for {varDataProp.propertyPath}. Skipping duplicate.");
+                        warningMessage = $"VariableDataDrawer: Variable key collision when adding {label} to " +
+                            $"dropdown for {varDataProp.propertyPath}. Skipping duplicate.";
+                        Debug.LogWarning(warningMessage);
                         return;
                     }
-
                     _validVarsOrdered.Add(label, variable);
                 }
             }
@@ -162,65 +154,55 @@ namespace Amanita.VScripting.EditorUtils
             bool noVarsFound = _validVarsOrdered.Count == 0;
             if (!shouldDrawLiteral && noVarsFound)
             {
+                EditorGUI.indentLevel = prevIndent;
+                EditorGUI.EndProperty();
                 return;
             }
 
-            // Find the index of the currently selected variable (if any).
-            // This will help us make sure that the popup shows the correct selection.
-            FindSelectedVariableIndex();
-            void FindSelectedVariableIndex()
+            // Find selected index
+            int selectedIndex = FindSelectedIndex();
+            int FindSelectedIndex()
             {
+                int idx = 0;
                 if (selectedVariable != null)
                 {
-                    int foundIndex = 0;
                     foreach (var kvp in _validVarsOrdered)
                     {
-                        if (kvp.Value == null)
-                        {
-                            foundIndex++;
-                            continue;
-                        }
-
-                        // It's possible that the VariableData is referencing a variable that's a copy of the one
-                        // on the Flowchart (e.g. if the Flowchart was duplicated). Thus, we compare by certain fields.
                         var orderedVar = kvp.Value;
-                        bool sameKey = selectedVariable.Key == orderedVar.Key;
-                        bool sameContentType = selectedVariable.ContentType.Equals(orderedVar.ContentType);
-                        bool sameOwner = ReferenceEquals(selectedVariable.Owner, orderedVar.Owner) ||
-                            selectedVariable.Owner == null; // It's possible that the copy's owner was nulled, and thus...
-                        bool isSameVar = orderedVar != null && sameKey && sameContentType && sameOwner;
-                        if (isSameVar)
+                        bool isSelected = false;
+                        if (selectedVariable == null && orderedVar == null)
                         {
-                            selectedIndex = foundIndex;
-                            selectedVariable = kvp.Value; // To keep the exact instance from the Flowchart.
-                            break;
+                            isSelected = true;
                         }
-                        foundIndex++;
+                        else if (selectedVariable != null && orderedVar != null)
+                        {
+                            bool sameKey = selectedVariable.Key == orderedVar.Key;
+                            bool sameContentType = selectedVariable.ContentType.Equals(orderedVar.ContentType);
+                            bool sameOwner = ReferenceEquals(selectedVariable.Owner, orderedVar.Owner)
+                                || selectedVariable.Owner == null;
+                            if (sameKey && sameContentType && sameOwner)
+                            {
+                                isSelected = true;
+                            }
+                        }
+                        if (isSelected)
+                        {
+                            return idx;
+                        }
+                        idx++;
                     }
                 }
+                return idx;
             }
+            
+            // Draw popup
+            string[] options = _validVarsOrdered.Select(kvp => kvp.Key).ToArray();
+            int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
+            if (prevSelectedIndex < 0) prevSelectedIndex = 0;
+            if (!shouldDrawLiteral) popupRect = wholeFieldRect;
+            selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
 
-            DrawPopupField();
-            void DrawPopupField()
-            {
-                string[] options = _validVarsOrdered.Select(kvp => kvp.Key).ToArray();
-
-                int prevSelectedIndex = Mathf.Clamp(selectedIndex, 0, options.Length - 1);
-                if (prevSelectedIndex < 0)
-                {
-                    prevSelectedIndex = 0;
-                }
-
-                if (!shouldDrawLiteral)
-                {
-                    popupRect = wholeFieldRect;
-                    // ^In this case, we need to make the popup take up the full width so we can see
-                    // the selected var's label properly.
-                }
-
-                selectedIndex = EditorGUI.Popup(popupRect, prevSelectedIndex, options);
-            }
-
+            // Apply selection by writing VariableReference owner + id, preserving VSA owners
             var varsOrderedArray = _validVarsOrdered.Values.ToArray();
             IVariable chosenNow = varsOrderedArray[selectedIndex];
             bool choseLiteralValue = chosenNow == null;
@@ -228,62 +210,44 @@ namespace Amanita.VScripting.EditorUtils
 
             if (choseDiffVar)
             {
-                Debug.Log($"VariableDataDrawer: Variable selection changed to {chosenNow.Key} for " +
-                    $"{varDataProp.propertyPath}.");
+                Debug.Log($"VariableDataDrawer: Variable selection changed to {chosenNow.Key}" +
+                    $"for {varDataProp.propertyPath}.");
             }
 
-            UpdateOwner();
-            void UpdateOwner()
+            // Update owner fields on backing varRef
+            SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
+            SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("owningVsa");
+
+            if (choseLiteralValue)
             {
-                Flowchart owningFc = null;
-                VariableSourceAsset owningVsa = null;
-                if (chosenNow != null)
-                {
-                    owningFc = chosenNow.Owner as Flowchart;
-                    owningVsa = chosenNow.Owner as VariableSourceAsset;
-                }
-                else
-                {
-                    owningFc = localFlowchart; 
-                    // ^We don't want to null the owning FC of a var data set to work with a literal
-                }
-
-                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
-                owningFcProp.objectReferenceValue = owningFc;
-
-                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("owningVsa");
-                owningVsaProp.objectReferenceValue = owningVsa;
+                // Leave Flowchart owner to current local flowchart to keep context; clear VSA owner
+                owningFcProp.objectReferenceValue = localFlowchart;
+                owningVsaProp.objectReferenceValue = null;
+                itemIdProp.intValue = Variable.InvalidID;
             }
-
-            UpdateItemIdPropBasedOnSelection();
-            void UpdateItemIdPropBasedOnSelection()
+            else
             {
-                if (choseLiteralValue)
-                {
-                    itemIdProp.intValue = Variable.InvalidID;
-                }
-                else
-                {
-                    itemIdProp.intValue = chosenNow.ItemId;
-                }
+                var vOwner = chosenNow.Owner;
+                var fChart = vOwner as Flowchart;
+                var vsa = vOwner as VariableSourceAsset;
 
-                backingVarRefProp.serializedObject.ApplyModifiedProperties();
-                varData = varDataProp.boxedValue as VariableData;
-                varData.Refresh();
-                varDataProp.boxedValue = varData;
-                varDataProp.serializedObject.ApplyModifiedProperties();
+                owningFcProp.objectReferenceValue = fChart;
+                owningVsaProp.objectReferenceValue = vsa;
+                itemIdProp.intValue = chosenNow.ItemId;
             }
 
-            if (choseDiffVar)
-            {
-                varDataProp.serializedObject.ApplyModifiedProperties();
-            }
+            // Refresh the runtime view from the backing reference (no owner overwrite)
+            varData = varDataProp.boxedValue as VariableData;
+            varData.Refresh();
+            varDataProp.boxedValue = varData;
 
             EditorGUI.indentLevel = prevIndent;
             EditorGUI.EndProperty();
         }
 
+        private static readonly int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight); // <- Width of the little button for the popup
         private static readonly int popupGap = 5; // <- Between the value/ref field and the little button for the popup
+        private static int SpaceForPopup => popupWidth + popupGap;
 
     }
 
