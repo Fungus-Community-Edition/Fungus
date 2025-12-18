@@ -44,10 +44,11 @@ namespace Amanita.VScripting
         protected virtual void RefreshVariableDataCache()
         {
             // We expect child classes to add their VariableDatas to this list
+            variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
             variableDataCache.Clear();
         }
 
-        protected readonly IList<IVariableData> variableDataCache = new List<IVariableData>();
+        protected IList<IVariableData> variableDataCache = new List<IVariableData>();
 
         protected virtual void AssertOwnership()
         {
