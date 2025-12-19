@@ -48,15 +48,40 @@ namespace Amanita.VScripting
                     return;
                 }
 
-                bool appropriateType = ContentType.IsAssignableFrom(value.ContentType);
-                if (!appropriateType)
+                if (value == null) // We want to treat null-assignments as switching to literal mode
                 {
-                    string errorMessage = $"VariableData: Cannot assign variable of ContentType {value.ContentType.Name} " +
-                        $"to VariableData of ContentType {ContentType.Name}.";
+                    backingVarRef.Variable = null;
+                    return;
+                }
+
+                bool validType = CanHoldAsVar(value);
+                if (!validType)
+                {
+                    string errorMessage = $"VariableData: Cannot hold {value} as a variable. I am working with a" +
+                        $"ContentType of {ContentType.Name}.";
                     throw new InvalidCastException(errorMessage);
                 }
                 backingVarRef.Variable = value;
             }
+        }
+
+        /// <summary>
+        /// If this is false, this is representing a literal value.
+        /// </summary>
+        public virtual bool RepresentingVar => VarRef != null;
+
+        private bool CanHoldAsVar(IVariable variable)
+        {
+            bool result;
+            if (variable == null)
+            {
+                result = ContentType.IsClass;
+            }
+            else
+            {
+                 result = CanHoldAsValue(variable.BoxedValue);
+            }
+            return result;
         }
 
         protected virtual void UpdateBackingFieldsBasedOn(IVariable variable)
@@ -69,7 +94,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            bool correctType = ContentType.IsAssignableFrom(variable.ContentType);
+            bool correctType = CanHoldAsVar(variable);
             if (!correctType)
             {
                 string errorMessage = $"VariableData: Cannot assign variable of ContentType {variable.ContentType.Name} " +
@@ -100,7 +125,6 @@ namespace Amanita.VScripting
             if (otherVarData is VariableData otherVarDataCasted)
             {
                 this.VarOwner = otherVarDataCasted.VarOwner;
-
             }
 
             this.VarRef = otherVarData.VarRef;
@@ -169,7 +193,7 @@ namespace Amanita.VScripting
             get
             {
                 backingVarRef.Refresh();
-                if (VarRef != null)
+                if (RepresentingVar)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
@@ -179,7 +203,7 @@ namespace Amanita.VScripting
             }
             set
             {
-                if (VarRef != null)
+                if (RepresentingVar)
                 {
                     VarRef.BoxedValue = value;
                 }
@@ -195,7 +219,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                if (VarRef != null)
+                if (RepresentingVar)
                 {
                     return VarRef.BoxedValue;
                 }
@@ -207,24 +231,24 @@ namespace Amanita.VScripting
             set
             {
                 object whatToAssign = null;
-                try
+                bool canBeAssigned = CanHoldAsValue(value);
+                if (!canBeAssigned)
                 {
-                    whatToAssign = (TValue)value;
-                }
-                catch
-                {
-                    Debug.LogWarning($"VariableData of value type {typeof(TValue).Name} could not box value " +
-                        $"of type {value.GetType().Name} to type {typeof(TValue).Name}");
+                    string errorMessage = $"VariableData of value type {typeof(TValue).Name} cannot hold " +
+                        $"a value of type {value.GetType().Name}. Assignment aborted.";
+                    throw new InvalidCastException(errorMessage);
                 }
 
-                if (VarRef != null)
+                whatToAssign = (TValue)value;
+
+                if (RepresentingVar)
                 {
                     VarRef.BoxedValue = whatToAssign;
                 }
                 else
                 {
                     this.value = (TValue)whatToAssign;
-                    backingVarRef.Variable = null;
+                    VarRef = null;
                 }
             }
         }
@@ -235,11 +259,11 @@ namespace Amanita.VScripting
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (VarRef == null && value != null)
+            if (!RepresentingVar && value != null)
             {
                 result = value.ToString();
             }
-            else if (VarRef != null)
+            else if (RepresentingVar)
             {
                 result = VarRef.Key;
             }
@@ -262,7 +286,6 @@ namespace Amanita.VScripting
             this.VarRef = otherVarData.VarRef;
             this.value = otherVarData.value;
         }
-
     }
 
 }

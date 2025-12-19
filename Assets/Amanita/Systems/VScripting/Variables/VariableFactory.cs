@@ -54,7 +54,6 @@ namespace Amanita.VScripting
         }
         public static Muscariable CreateByContentType(Type contentType, IVariable toMakeCopyOf = null)
         {
-
             Muscariable result = null;
             Type muscariType = VariableTypeRegistry.MuscariTypeFor(contentType);
 

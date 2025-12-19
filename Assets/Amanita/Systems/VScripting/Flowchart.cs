@@ -1163,6 +1163,11 @@ namespace Amanita.VScripting
             return AddVariable(toAdd.ToMuscariable());
         }
 
+        /// <summary>
+        /// Adds an already-existing Muscariable to the Flowchart, getting it integrated as something
+        /// owned by said Flowchart. If the variable is already registered,
+        /// it will not be added again.
+        /// </summary>
         public Muscariable AddVariable(Muscariable toAdd)
         {
             Muscariable result = null;
