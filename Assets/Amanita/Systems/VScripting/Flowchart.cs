@@ -1250,7 +1250,7 @@ namespace Amanita.VScripting
         /// <summary>
         /// Adds an already-existing variable to the flowchart. If the variable is already registered,
         /// nothing happens. The variable's key and ID will be made unique if necessary.
-        /// If the variable is a legacy Variable, it a Muscariable version of it will
+        /// If the variable is a legacy Variable, a Muscariable version of it will
         /// be registered instead.
         /// </summary>
         public virtual void AddVariable(IVariable toAdd)
@@ -1265,7 +1265,6 @@ namespace Amanita.VScripting
             Muscariable muscari = toAdd as Muscariable;
             AddVariable(muscari);
         }
-
 
         /// <summary>
         /// Returns the variable with the specified key, or null if the key is not found.
