@@ -87,6 +87,9 @@ namespace Amanita.SaveSys
 
                 await SaveRepo.SaveAsync(newSet, token);
             }
+
+            string logMessage = $"Save Manager: Saved to slot {slotNum}.";
+            Debug.Log(logMessage);
         }
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
@@ -123,16 +126,22 @@ namespace Amanita.SaveSys
                 return null;
             }
 
-            if (!Registry.HasMainSaveInSlot(slotNum))
+            var saveSet = Registry.GetSave(slotNum);
+            ISaveMetaData meta = Registry.GetSaveMeta(slotNum);
+            CompositeSaveData mainData = Registry.GetMainSave(slotNum) as CompositeSaveData;
+            bool loadedMainData = mainData != null;
+            if (!loadedMainData)
             {
-                string errorMessage = $"Cannot load main in slot {slotNum}. No main data is assigned to it.";
-                Debug.LogWarning(errorMessage);
-                return null;
+                // That means we didn't load any main data for that slot yet. This is the time
+                // to do so, given how on startup, we only load the metas.
+                mainData = await SaveRepo.LoadMainSaveAsync(slotNum, token);
+                saveSet.MainState = mainData;
+                Registry.AddSave(saveSet);
+                string logMessage = $"Save Manager: Loaded main save data for slot {slotNum} into registry.";
+                Debug.Log(logMessage);
             }
 
             Scene sceneToLoad = default;
-            CompositeSaveData mainData = (CompositeSaveData)Registry.GetMainSave(slotNum);
-            ISaveMetaData meta = Registry.GetSaveMeta(slotNum);
 
             await PrepBeforeLoad();
             async Task PrepBeforeLoad()

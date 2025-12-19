@@ -18,8 +18,18 @@ namespace Amanita.SaveSys
     {
         public virtual bool CanHandle(IVariable variable) => variable is IVariable<AudioClip>;
 
-        public virtual bool CanHandle(string typeName) => 
-            supportedVarTypes.Any(supported => supported.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+        public virtual bool CanHandle(string typeName)
+        {
+            bool result = TypeNameFitsWhatWeSupport(typeName);
+            return result;
+        }
+
+        private static bool TypeNameFitsWhatWeSupport(string typeName)
+        {
+            bool result = supportedVarTypes.Any(supported => supported.Name.Equals(typeName,
+                StringComparison.OrdinalIgnoreCase));
+            return result;
+        }
 
         protected static Type[] supportedVarTypes = new Type[]
         {
@@ -29,9 +39,10 @@ namespace Amanita.SaveSys
 
         public virtual bool CanHandle(VariableSaveData saveData)
         {
-            return supportedVarTypes.Any(supported => supported.Name.Equals(saveData.TypeName, StringComparison.OrdinalIgnoreCase));
+            bool result = TypeNameFitsWhatWeSupport(saveData.VarTypeName);
+            return result;
         }
-
+        
         public virtual string EncodeToString(IVariable variable)
         {
             if (variable is not IVariable<AudioClip> audioClipVar)

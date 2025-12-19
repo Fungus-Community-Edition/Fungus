@@ -224,12 +224,18 @@ namespace Amanita
 
             // Resources.Load may call Awake on the prefab's script in some Unity versions,
             // so we null-check again after instantiation.
-            AmanitaManager instantiated = Instantiate(prefab);
+            AmanitaManager instantiated;
+#if UNITY_EDITOR
+            instantiated = PrefabUtility.InstantiatePrefab(prefab) as AmanitaManager;
+#else
+            instantiated = Instantiate(prefab);
+#endif
+
             instantiated.gameObject.name = prefab.name; // We don't want "Clone" in the name
             return instantiated;
         }
 
-        private readonly FlowchartRegistry fcRegistry = new FlowchartRegistry();
+        private FlowchartRegistry fcRegistry = new FlowchartRegistry();
 
         public void Init()
         {
@@ -519,10 +525,11 @@ namespace Amanita
         private void OnValidate()
         {
             // OnValidate gets called on the prefab in response to Resources.Load(), so...
-            if (!this.gameObject.scene.IsValid())
+            if (!this.gameObject.scene.IsValid() || (S != null && S != this))
             {
                 return;
             }
+            S = this;
             // Best make sure to log errors and such when this has any screwy fields
             if (globalVariables == null)
             {
@@ -541,6 +548,8 @@ namespace Amanita
         {
             if (VariableRegistry == null)
             {
+                fcRegistry ??= new FlowchartRegistry();
+                fcRegistry.Init(); // Since the VariableRegistry relies on this being ready
                 VariableRegistry = new VariableRegistry(this);
                 var selected = Selection.activeGameObject;
                 Flowchart currentFc = null;

@@ -228,7 +228,9 @@ namespace Amanita
 			IGeneralTweenAdapter<float> tweenAdapter = null)
 		{
 			tweenAdapter ??= AmanitaManager.DefaultTweener;
-			if (Mathf.Approximately(fadeDuration, 0))
+			bool finishInstantly = Mathf.Approximately(fadeDuration, 0);
+			bool alreadyAtTarget = Mathf.Approximately(fadeAlpha, targetAlpha);
+			if (finishInstantly || alreadyAtTarget)
 			{
 				fadeAlpha = targetAlpha;
 				onComplete?.Invoke();

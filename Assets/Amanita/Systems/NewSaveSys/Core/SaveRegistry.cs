@@ -162,8 +162,8 @@ namespace Amanita.SaveSys
 
         public virtual bool HasMainSaveInSlot(int slotNumber)
         {
-            return HasSaveInSlot(slotNumber) && 
-                _savePairs[slotNumber].MainState != null;
+            var mainState = _savePairs[slotNumber].MainState;
+            return HasSaveInSlot(slotNumber) && mainState != null;
         }
 
         public virtual bool HasSavesInAll(IEnumerable<int> slotsToConsider)

@@ -1,12 +1,9 @@
 using Amanita.EditorUtils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Type = System.Type;
-using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -256,5 +253,19 @@ namespace Amanita.VScripting.EditorUtils
     [CustomPropertyDrawer(typeof(AnyVariableData), true)]
     public class AnyVariableDataDrawer : VariableDataDrawer
     {
+        public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
+        {
+            var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("data");
+            if (typedUnderlyingDataProp == null)
+            {
+                EditorGUI.BeginProperty(position, label, varDataProp);
+                EditorGUI.HelpBox(position, $"Could not find 'data' property for AnyVariableData drawer " +
+                    $"for {varDataProp.propertyPath}.", MessageType.Warning);
+                EditorGUI.EndProperty();
+                return;
+            }
+
+            base.OnGUI(position, typedUnderlyingDataProp, label);
+        }
     }
 }
