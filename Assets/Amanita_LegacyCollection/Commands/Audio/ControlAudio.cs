@@ -52,6 +52,12 @@ namespace Amanita.VScripting
         [Tooltip("Wait until this command has finished before executing the next command.")]
         [SerializeField] protected bool waitUntilFinished = false;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_audioSource);
+        }
+
         protected virtual void Awake()
         {
             tweenArgs.Target = _audioSource;
@@ -373,8 +379,9 @@ namespace Amanita.VScripting
 
         [HideInInspector][FormerlySerializedAs("audioSource")] public AudioSource audioSourceOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (audioSourceOLD != null)
             {
                 _audioSource.Value = audioSourceOLD;

@@ -4,41 +4,16 @@ using UnityEngine;
 
 namespace Amanita.VScripting
 {
-    /// <summary>
-    /// Class for a single condition. A list of this is used for multiple conditions.
-    /// </summary>
-    [System.Serializable]
-    [ExecuteInEditMode]
-    public class ConditionExpression
-    {
-        [SerializeField] protected CompareOperator compareOperator;
-        [SerializeField] protected AnyVariableAndDataPair anyVar;
-
-        public virtual AnyVariableAndDataPair AnyVar { get { return anyVar; } }
-        public virtual CompareOperator CompareOperator { get { return compareOperator; } }
-
-        public ConditionExpression()
-        {
-        }
-
-        public ConditionExpression(CompareOperator op, AnyVariableAndDataPair variablePair)
-        {
-            compareOperator = op;
-            anyVar = variablePair;
-        }
-    }
-
     public abstract class VariableCondition : Condition, ISerializationCallbackReceiver
     {
         public enum AnyOrAll
         {
-            AnyOf_OR,//Use as a chain of ORs
-            AllOf_AND,//Use as a chain of ANDs
+            AnyOf_OR, //Use as a chain of ORs
+            AllOf_AND, //Use as a chain of ANDs
         }
 
         [Tooltip("Selecting AnyOf will result in true if at least one of the conditions is true. Selecting AllOF will result in true only when all the conditions are true.")]
         [SerializeField] protected AnyOrAll anyOrAllConditions;
-
         [SerializeField] protected List<ConditionExpression> conditions = new List<ConditionExpression>();
 
         /// <summary>
@@ -138,8 +113,6 @@ namespace Amanita.VScripting
             return anyVar.HasReference(variable);
         }
 
-
-
         #region Editor caches
 #if UNITY_EDITOR
         protected override void RefreshVariableCache()
@@ -157,7 +130,7 @@ namespace Amanita.VScripting
 #endif
         #endregion Editor caches
 
-        #region backwards compat
+        #region Backwards compat
 
         [HideInInspector]
         [SerializeField] protected CompareOperator compareOperator;
@@ -223,8 +196,9 @@ namespace Amanita.VScripting
             
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (Application.isPlaying)
             {
                 return;

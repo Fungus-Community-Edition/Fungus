@@ -10,6 +10,9 @@ namespace Amanita.VScripting.EditorUtils
     [CustomEditor (typeof(Command), true)]
     public class CommandEditor : Editor 
     {
+        // Note that unlike PropertyDrawers, Editor subclasses each work with
+        // their own instance of the inspected property. Thus, it's fine
+        // to have instance variables here.
         #region statics
         public static bool SelectedCommandDataStale { get; set; }
 

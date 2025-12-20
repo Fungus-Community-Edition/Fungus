@@ -1,6 +1,5 @@
 // Asset save hook
 using Amanita.VScripting;
-using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +14,6 @@ namespace Amanita.EditorUtils
         // Even if the below is grayed out, don't worry; Unity uses reflection to find and call this method.
         static string[] OnWillSaveAssets(string[] paths)
         {
-            Debug.Log("OnWillSaveAssets hook triggered.");
             foreach (string path in paths)
             {
                 var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);

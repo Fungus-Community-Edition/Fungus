@@ -20,7 +20,14 @@ namespace Amanita.VScripting
         [SerializeField] protected BooleanData _visible = new BooleanData(false);
 
         [Tooltip("Affect the visibility of child sprites")]
-        [SerializeField] protected bool affectChildren = true;
+        [SerializeField] protected BooleanData _affectChildren = new BooleanData(true);
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_visible);
+            variableDataCache.Add(_affectChildren);
+        }
 
         protected virtual void SetSpriteAlpha(SpriteRenderer renderer, bool visible)
         {
@@ -35,7 +42,7 @@ namespace Amanita.VScripting
         {
             if (spriteRenderer != null)
             {
-                if (affectChildren)
+                if (_affectChildren)
                 {
                     var spriteRenderers = spriteRenderer.gameObject.GetComponentsInChildren<SpriteRenderer>();
                     for (int i = 0; i < spriteRenderers.Length; i++)
@@ -79,8 +86,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("visible")] public bool visibleOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (visibleOLD != default(bool))
             {
                 _visible.Value = visibleOLD;

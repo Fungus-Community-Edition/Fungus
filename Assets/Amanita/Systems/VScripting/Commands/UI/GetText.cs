@@ -14,11 +14,17 @@ namespace Amanita.VScripting
     public class GetText : Command 
     {
         [Tooltip("Text object to get text value from")]
-        [SerializeField] protected GameObject targetTextObject;
-        
+        [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
+
         [Tooltip("String variable to store the text value in")]
         [VariableProperty(typeof(StringVariable))]
         [SerializeField] protected StringVariable stringVariable;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(targetTextObject);
+        }
 
         #region Public members
 
@@ -53,7 +59,7 @@ namespace Amanita.VScripting
                 return "Error: No variable selected";
             }
             
-            return targetTextObject.name + " : " + stringVariable.name;
+            return targetTextObject.Value.name + " : " + stringVariable.name;
         }
         
         public override Color GetButtonColor()
@@ -71,15 +77,16 @@ namespace Amanita.VScripting
 
         #region Backwards compatibility
 
-        // Backwards compatibility with Fungus v2.1.2
+        // Backwards compatibility with Fungus 3.x
         [HideInInspector]
-        [FormerlySerializedAs("textObject")]
-        public Text _textObjectObsolete;
-        protected virtual void OnEnable()
+        [FormerlySerializedAs("targetTextObject")]
+        public GameObject targetTextObjectOLD;
+        protected override void OnEnable()
         {
-            if (_textObjectObsolete != null)
+            base.OnEnable();
+            if (targetTextObjectOLD != null)
             {
-                targetTextObject = _textObjectObsolete.gameObject;
+                targetTextObject.Value = targetTextObjectOLD.gameObject;
             }
         }
 

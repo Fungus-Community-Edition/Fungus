@@ -36,9 +36,14 @@ namespace Amanita.VScripting
         {
             get
             {
+                backingVarRef.Refresh();
                 string result;
                 if (VarRef != null)
                 {
+                    if (VarRef.BoxedValue is not string)
+                    {
+                        Debug.LogError($"StringData: Variable reference does not contain a string value.");
+                    }
                     result = (string)VarRef.BoxedValue;
                 }
                 else

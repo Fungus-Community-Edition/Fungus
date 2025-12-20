@@ -22,6 +22,14 @@ namespace Amanita.VScripting
         [Tooltip("The integer value to set the parameter to")]
         [SerializeField] protected IntegerData value;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_animator);
+            variableDataCache.Add(_parameterName);
+            variableDataCache.Add(value);
+        }
+
         #region Public members
 
         public override void OnEnter()
@@ -64,8 +72,9 @@ namespace Amanita.VScripting
         [HideInInspector] [FormerlySerializedAs("animator")] public Animator animatorOLD;
         [HideInInspector] [FormerlySerializedAs("parameterName")] public string parameterNameOLD = "";
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (animatorOLD != null)
             {
                 _animator.Value = animatorOLD;

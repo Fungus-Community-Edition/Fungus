@@ -72,8 +72,32 @@ namespace Amanita.SaveSys.VScripting
         public override string GetSummary()
         {
             string idVal = markerID.Value;
-            string result = $"{action} | ID: {markerID.Value} | Order: {markerOrder.Value}";
+            string result = $"{action} | ID: {idVal} | Order: {markerOrder.Value}";
             return result;
+        }
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(markerID);
+            variableDataCache.Add(markerOrder);
+        }
+
+        protected override void AssertOwnership()
+        {
+            // Overridden only for testing purposes.
+            Flowchart fChart = GetFlowchart();
+            for (int i = 0; i < variableDataCache.Count; i++)
+            {
+                var currentVarData = variableDataCache[i] as VariableData;
+                //currentVarData.Refresh();
+                if (currentVarData.VarOwner == null)
+                {
+                    Debug.Log($"ProgressMarkerCommand: Setting VarOwner of {currentVarData} at index {i} to {fChart}");
+                    currentVarData.VarOwner = fChart;
+                }
+                
+            }
         }
     }
 }
