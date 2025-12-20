@@ -22,6 +22,12 @@ namespace Amanita.DialogueSys.Commands
         [Tooltip("Block to execute when the timer expires")]
         [SerializeField] protected Block targetBlock;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_duration);
+        }
+
         #region Public members
 
         public override void OnEnter()
@@ -77,8 +83,9 @@ namespace Amanita.DialogueSys.Commands
 
         [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (durationOLD != default(float))
             {
                 _duration.Value = durationOLD;

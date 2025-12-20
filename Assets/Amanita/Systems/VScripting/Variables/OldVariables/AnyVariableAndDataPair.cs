@@ -11,43 +11,33 @@ namespace Amanita.VScripting
     [Serializable]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
-        [SerializeField] protected VariableReference varRef = new VariableReference();
+        [SerializeField] private VariableReference varRef = new VariableReference();
+        [SerializeField] private AnyVariableData data = new AnyVariableData(); // RHS
 
-        [SerializeField] protected AnyVariableData data = new AnyVariableData();
+        public AnyVariableData Data
+        {
+            get
+            {
+                return data;
+            }
+            set
+            {
+                data = value;
+            }
+        }
 
         public virtual IVariable LhsVariable
         {
             get
             {
-                return varRef.Variable;
+                // Always derive from the serialized reference to avoid stale cache
+                varRef?.Refresh();
+                return varRef?.Variable;
             }
             set
             {
+                varRef ??= new VariableReference();
                 varRef.Variable = value;
-            }
-        }
-
-        protected IVariable EffectiveVariable // The lhs variable, not the one in AnyVariableData
-        {
-            get
-            {
-                return varRef.Variable;
-            }
-        }
-
-
-        public virtual void OnBeforeSerialize()
-        {
-            
-        }
-
-        public virtual void OnAfterDeserialize()
-        {
-            data.OnAfterDeserialize();
-
-            if (LhsVariable != null && data.VarRef == null)
-            {
-                data.SetFor(VarType, LhsVariable.ContentType);
             }
         }
 
@@ -60,7 +50,7 @@ namespace Amanita.VScripting
 #if UNITY_EDITOR
         public void RefreshVariableCacheHelper(Flowchart flowchart, ref IList<IVariable> referencedVariables)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
 
             if (eff is IVariable<string> asStringVar &&
                 asStringVar != null &&
@@ -97,7 +87,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                var eff = EffectiveVariable;
+                var eff = LhsVariable;
                 if (eff == null)
                     return null;
 
@@ -107,7 +97,7 @@ namespace Amanita.VScripting
 
         public bool Compare(CompareOperator compareOperator, ref bool compareResult)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out var typeActions);
 
             if (foundActions)
@@ -120,7 +110,7 @@ namespace Amanita.VScripting
 
         public void SetOp(SetOperator setOperator)
         {
-            var eff = EffectiveVariable;
+            var eff = LhsVariable;
             bool foundActions = TryGetTypeActionsFor(VarType, out VariableTypeActions typeActions);
             if (foundActions)
             {
@@ -128,5 +118,14 @@ namespace Amanita.VScripting
             }
         }
 
+        public void OnBeforeSerialize()
+        {
+
+        }
+
+        public void OnAfterDeserialize()
+        {
+            varRef.Refresh();
+        }
     }
 }
