@@ -16,6 +16,12 @@ namespace Amanita.VScripting
         [Tooltip("Duration to wait for")]
         [SerializeField] protected FloatData _duration = new FloatData(1);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_duration);
+        }
+
         protected virtual void OnWaitComplete()
         {
             Continue();
@@ -58,8 +64,9 @@ namespace Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("duration")] public float durationOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (durationOLD != default(float))
             {
                 _duration.Value = durationOLD;

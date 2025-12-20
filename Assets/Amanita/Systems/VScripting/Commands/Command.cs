@@ -6,38 +6,11 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Amanita.VScripting
-{   
-    /// <summary>
-    /// Attribute class for Fungus commands.
-    /// </summary>
-    /// 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class CommandInfoAttribute : Attribute
-    {
-        /// <summary>
-        /// Metadata atribute for the Command class. 
-        /// </summary>
-        /// <param name="category">The category to place this command in.</param>
-        /// <param name="commandName">The display name of the command.</param>
-        /// <param name="helpText">Help information to display in the inspector.</param>
-        /// <param name="priority">If two command classes have the same name, the one with highest priority is listed. Negative priority removess the command from the list.</param>///
-        public CommandInfoAttribute(string category, string commandName, string helpText, int priority = 0)
-        {
-            this.Category = category;
-            this.CommandName = commandName;
-            this.HelpText = helpText;
-            this.Priority = priority;
-        }
-
-        public string Category { get; set; }
-        public string CommandName { get; set; }
-        public string HelpText { get; set; }
-        public int Priority { get; set; }
-    }
-
+{
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
+    [ExecuteInEditMode]
     public abstract class Command : MonoBehaviour, IVariableReference
     {
         [FormerlySerializedAs("commandId")]
@@ -48,6 +21,53 @@ namespace Amanita.VScripting
         [SerializeField] protected int indentLevel;
 
         protected string errorMessage = "";
+
+        protected virtual void OnEnable()
+        {
+            RefreshForVarDataStability();
+        }
+
+        private void RefreshForVarDataStability()
+        {
+            bool thisIsInAScene = this.gameObject.scene.IsValid();
+            if (!thisIsInAScene)
+            {
+                return;
+            }
+            RefreshVariableDataCache();
+            AssertOwnership();
+        }
+
+        /// <summary>
+        /// Helps keep VariableDatas stable during the editor and runtime.
+        /// </summary>
+        protected virtual void RefreshVariableDataCache()
+        {
+            // We expect child classes to add their VariableDatas to this list
+            variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
+            variableDataCache.Clear();
+        }
+
+        protected IList<IVariableData> variableDataCache = new List<IVariableData>();
+
+        protected virtual void AssertOwnership()
+        {
+            Flowchart fChart = GetFlowchart();
+            for (int i = 0; i < variableDataCache.Count; i++)
+            {
+                var currentVarData = variableDataCache[i];
+
+                // We only want to assert ownership if there is no owner already set.
+                // We want to allow the variable datas to have other owners so
+                // that we can have them refer said other owners' vars if needed.
+                if (currentVarData.VarRef != null)
+                {
+                    currentVarData.VarOwner ??= currentVarData.VarRef.Owner;
+                    // ^For when the var assigned belongs to another Flowchart or something.
+                }
+                currentVarData.VarOwner ??= fChart;
+            }
+        }
 
         #region Editor caches
 #if UNITY_EDITOR
@@ -69,10 +89,7 @@ namespace Amanita.VScripting
         protected virtual void RefreshVariableCache()
         {
             // Not sure why, but sometimes, this gets set to null
-            if (referencedVariables != null)
-            {
-                referencedVariables.Clear();
-            }
+            referencedVariables?.Clear();
         }
 
 #endif
@@ -257,10 +274,13 @@ namespace Amanita.VScripting
         }
 
         /// <summary>
-        /// Called by unity when script is loaded or its data changed by editor
+        /// Called by unity when script is loaded or its data changed by editor. Yes, this includes
+        /// stuff like serializedObject.ApplyModifiedProperties(), which is why this func can get called
+        /// before an editor func is done executing.
         /// </summary>
         public virtual void OnValidate()
         {
+            RefreshForVarDataStability();
 #if UNITY_EDITOR
             RefreshVariableCache();
 #endif

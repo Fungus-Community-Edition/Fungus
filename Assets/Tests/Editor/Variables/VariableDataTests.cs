@@ -50,21 +50,22 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void VarRef_Propagation_BothDirections()
         {
-            var fd = new FloatData();
+            var fData = new FloatData();
             var varObj = VariableFactory.Create<float>(2f);
+            flowchart.AddVariable(varObj);
 
             // Wire up variable as reference
-            fd.VarRef = varObj;
+            fData.VarRef = varObj;
 
             // var -> data
-            Assert.AreEqual(2f, fd.Value);
+            Assert.AreEqual(2f, fData.Value);
 
             // mutate variable, verify data sees change
             varObj.Value = 5f;
-            Assert.AreEqual(5f, fd.Value);
+            Assert.AreEqual(5f, fData.Value);
 
             // mutate data, verify variable updated
-            fd.Value = 7f;
+            fData.Value = 7f;
             Assert.AreEqual(7f, varObj.Value);
         }
 
@@ -81,6 +82,7 @@ namespace VScriptingTests.VariableOperations
 
             // create a Muscariable of the appropriate content type and assign as VarRef
             var musc = VariableFactory.CreateByContentType(data.ContentType, null);
+            flowchart.AddVariable(musc); // To make sure that the Flowchart recognizes it
             musc.BoxedValue = varValue;
             data.VarRef = musc;
 
@@ -105,7 +107,8 @@ namespace VScriptingTests.VariableOperations
         };
 
         [TestCaseSource(nameof(VarDataCases))]
-        public void SetContentsTo_And_GetCopy_CreateIndependentCopies(Type dataType, object initialLiteral, object varValue, object backLiteral, Type mismatchContentType)
+        public void SetContentsTo_And_GetCopy_CreateIndependentCopies(Type dataType, object initialLiteral,
+            object varValue, object backLiteral, Type mismatchContentType)
         {
             var original = Activator.CreateInstance(dataType) as VariableData;
             Assert.IsNotNull(original);
@@ -132,15 +135,25 @@ namespace VScriptingTests.VariableOperations
         }
 
         [TestCaseSource(nameof(VarDataCases))]
-        public void VarRef_TypeMismatch_ThrowsInvalidCastException(Type dataType, object initialLiteral, object varValue, object backLiteral, Type mismatchContentType)
+        public void VarRef_TypeMismatch_ThrowsInvalidCastException(Type dataType, object initialLiteral,
+            object varValue, object backLiteral, Type mismatchContentType)
         {
             var data = Activator.CreateInstance(dataType) as VariableData;
             Assert.IsNotNull(data);
 
             // create a muscariable with a different content type
             var mismatchMusc = VariableFactory.CreateByContentType(mismatchContentType, null);
+            flowchart.AddVariable(mismatchMusc);
+            mismatchMusc.ItemId = 34;
             // set a default value (not important)
-            mismatchMusc.BoxedValue = mismatchContentType.IsValueType ? Activator.CreateInstance(mismatchContentType) : null;
+            if (mismatchContentType.IsValueType)
+            {
+                mismatchMusc.BoxedValue = Activator.CreateInstance(mismatchContentType);
+            }
+            else
+            {
+                mismatchMusc.BoxedValue = null;
+            }
 
             Assert.Throws<InvalidCastException>(() => data.VarRef = mismatchMusc);
         }

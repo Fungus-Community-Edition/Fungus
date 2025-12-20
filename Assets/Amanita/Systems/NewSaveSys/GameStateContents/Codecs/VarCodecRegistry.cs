@@ -96,13 +96,22 @@ namespace Amanita.SaveSys
         }
 
         public static IVarCodec GetCodec(IVariable variable)
-            => codecs.Find(s => s.CanHandle(variable));
+        {
+            var result = codecs.Find(toCheck => toCheck.CanHandle(variable));
+            return result;
+        }
 
         public static IVarCodec GetCodec(VariableSaveData saveData)
-            => codecs.Find(s => s.CanHandle(saveData));
+        {
+            var result = codecs.Find(toCheck => toCheck.CanHandle(saveData));
+            return result;
+        }
 
         public static IVarCodec GetCodec(string typeName)
-            => codecs.Find(s => s.CanHandle(typeName));
+        {
+            var result = codecs.Find(toCheck => toCheck.CanHandle(typeName));
+            return result;
+        }
 
     }
 }

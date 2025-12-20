@@ -35,7 +35,7 @@ namespace Amanita.SaveSys
                 IVarCodec forThisVar = VarCodecRegistry.GetCodec(varSaveData);
                 if (forThisVar == null)
                 {
-                    Debug.LogWarning($"No codec found for variable type: {varSaveData.GetType().Name}");
+                    Debug.LogWarning($"No codec found for variable type: {varSaveData.VarTypeName}");
                     continue;
                 }
 
