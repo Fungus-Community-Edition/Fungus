@@ -1,6 +1,5 @@
 // Asset save hook
 using Amanita.VScripting;
-using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
