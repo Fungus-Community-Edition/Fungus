@@ -1,12 +1,9 @@
 using Amanita.EditorUtils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Type = System.Type;
-using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
