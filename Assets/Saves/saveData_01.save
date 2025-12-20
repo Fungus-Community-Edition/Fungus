@@ -1,9 +1,9 @@
 ﻿{
     "name": "",
-    "saveID": "aa2c70b3-e88b-4e1c-8c50-1dc6f90a6a72",
+    "saveID": "e3408f03-2848-4538-ac2a-2c5d0989d0a6",
     "slotNumber": 1,
     "saveVersion": "1.0",
-    "utcTimeStamp": "2025-12-12T10:06:39.2688861Z",
+    "utcTimeStamp": "2025-12-20T18:07:37.2376188Z",
     "sceneName": "newSaveSystemDemoScene",
     "sceneBuildIndex": 0,
     "timeSpanString": "00:00:00",
@@ -26,7 +26,7 @@
                     "varTypeName": "StringMuscariable",
                     "itemID": 3,
                     "key": "firstMarkerID",
-                    "value": "firstas"
+                    "value": "first"
                 },
                 {
                     "varTypeName": "ColorMuscariable",
@@ -51,8 +51,8 @@
                 {
                     "blockName": "Init",
                     "itemId": 21,
-                    "activeCommandId": 2,
-                    "activeCommandIndex": 2
+                    "activeCommandId": 5,
+                    "activeCommandIndex": 3
                 }
             ],
             "$type": "Amanita.SaveSys.FlowchartSaveData"
