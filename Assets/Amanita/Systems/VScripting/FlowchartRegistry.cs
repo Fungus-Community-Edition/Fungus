@@ -15,7 +15,9 @@ namespace Amanita.VScripting
 
         public virtual void Init()
         {
+            ToggleSubs(false);
             ToggleSubs(true);
+            IsDisposed = false;
         }
 
         protected virtual void ToggleSubs(bool on)
@@ -60,8 +62,12 @@ namespace Amanita.VScripting
 
         public virtual void Dispose()
         {
+            if (IsDisposed) return;
             ToggleSubs(false);
             Clear();
+            IsDisposed = true;
         }
+
+        public virtual bool IsDisposed { get; private set; }
     }
 }

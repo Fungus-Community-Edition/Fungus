@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 namespace Amanita.VScripting
 {
@@ -14,7 +13,7 @@ namespace Amanita.VScripting
     public class SetText : Command, ILocalizable 
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]
-        [SerializeField] protected GameObject targetTextObject;
+        [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
         
         [Tooltip("String value to assign to the text object")]
         [FormerlySerializedAs("stringData")]
@@ -22,6 +21,13 @@ namespace Amanita.VScripting
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
         [SerializeField] protected string description;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(targetTextObject);
+            variableDataCache.Add(text);
+        }
 
         #region Public members
 
@@ -51,7 +57,7 @@ namespace Amanita.VScripting
         {
             if (targetTextObject != null)
             {
-                return targetTextObject.name + " : " + text.Value;
+                return targetTextObject.Value.name + " : " + text.Value;
             }
             
             return "Error: No text object selected";
@@ -111,13 +117,14 @@ namespace Amanita.VScripting
 
         // Backwards compatibility with Fungus v2.1.2
         [HideInInspector]
-        [FormerlySerializedAs("textObject")]
-        public Text _textObjectObsolete;
-        protected virtual void OnEnable()
+        [FormerlySerializedAs("targetTextObject")]
+        public GameObject _textObjectObsolete;
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (_textObjectObsolete != null)
             {
-                targetTextObject = _textObjectObsolete.gameObject;
+                targetTextObject.Value = _textObjectObsolete.gameObject;
             }
         }
 

@@ -8,44 +8,23 @@ namespace Amanita.VScripting
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
     public abstract class VariableData : IVariableData
     {
-        // ^Used to find the owner of the variable (Flowchart or VariableSourceAsset)
-        [SerializeField] protected byte storedItemId = 0;
-        // ^Used to find the variable within its owner
-        [SerializeField] protected Flowchart owningFc;
-        [SerializeField] protected VariableSourceAsset owningVsa;
-        // ^We can't trust Unity's serialization when it comes to polymorphic references, so we store
-        // Flowchart and VSA references separately.
-        // Note that for each instance of VariableData, only one or neither of these should be set. Also,
-        // the owning fc and owning vsa are for owners of the vars (not owners for this particular VariableData).
-
-        protected virtual Variable LegacyVarRef { get; set; } // For backward compatibility
+        [SerializeField] protected VariableReference backingVarRef = new VariableReference();
+        protected virtual Variable LegacyVarRef
+        {
+            get => backingVarRef.Variable as Variable;
+            set => backingVarRef.Variable = value;
+        }
 
         public IVariableSource VarOwner
         {
             get
             {
-                owner ??= owningFc;
-                owner ??= owningVsa;
-                return owner;
+                return backingVarRef.VarOwner;
             }
             set
             {
-                owner = value;
-                owningFc = owner as Flowchart;
-                owningVsa = owner as VariableSourceAsset;
+                backingVarRef.VarOwner = value;
             }
-        }
-
-        protected IVariableSource owner;
-
-        public virtual Flowchart OwningFc
-        {
-            get => owningFc;
-        }
-
-        public virtual VariableSourceAsset OwningVsa
-        {
-            get => owningVsa;
         }
 
         public abstract Type ContentType { get; }
@@ -59,58 +38,48 @@ namespace Amanita.VScripting
         {
             get
             {
-                IVariable result = null;
-                // Subclasses may have var refs for legacy stuff, and thus we need to check LegacyVarRef here
-                // (despite how we try to keep it in sync with regular varRef).
-                if (LegacyVarRef != null) // Let's not worry about stored ID. Remember, this is for legacy support.
-                {
-                    varRef = LegacyVarRef;
-                }
-                if (varRef != null && varRef.ItemId == storedItemId)
-                {
-                    result = varRef;
-                }
-                else if (VarOwner != null)
-                {
-                    // We'll need to look it up again
-                    result = FindVariableBasedOnItemId();
-                    UpdateBackingFieldsBasedOn(result);
-                }
-                return result;
+                return backingVarRef.Variable;
             }
             set
             {
-                bool alreadyAssigned = ReferenceEquals(value, varRef);
+                bool alreadyAssigned = ReferenceEquals(value, backingVarRef.Variable);
                 if (alreadyAssigned)
                 {
                     return;
                 }
-                UpdateBackingFieldsBasedOn(value);
+
+                if (value == null) // We want to treat null-assignments as switching to literal mode
+                {
+                    backingVarRef.Variable = null;
+                    return;
+                }
+
+                bool validType = CanHoldAsVar(value);
+                if (!validType)
+                {
+                    string errorMessage = $"VariableData: Cannot hold {value} as a variable. I am working with a" +
+                        $"ContentType of {ContentType.Name}.";
+                    throw new InvalidCastException(errorMessage);
+                }
+                backingVarRef.Variable = value;
             }
         }
 
-        private IVariable FindVariableBasedOnItemId()
+        /// <summary>
+        /// If this is false, this is representing a literal value.
+        /// </summary>
+        public virtual bool RepresentingVar => VarRef != null;
+
+        private bool CanHoldAsVar(IVariable variable)
         {
-            IVariable result = null;
-            if (storedItemId == Variable.InvalidID)
+            bool result;
+            if (variable == null)
             {
-                return result;
+                result = ContentType.IsClass;
             }
-            var foundVar = VarOwner.GetVariable(storedItemId);
-            bool foundValidVar = foundVar != null;
-            bool foundCorrectType = foundVar != null && ContentType.IsAssignableFrom(foundVar.ContentType);
-            if (foundValidVar && foundCorrectType)
+            else
             {
-                varRef = foundVar;
-                LegacyVarRef = foundVar as Variable;
-                result = varRef;
-            }
-            else if (!foundCorrectType)
-            {
-                string errorMessage = $"VariableData: Found variable with ID {storedItemId} in Flowchart " +
-                    $"{owningFc.name}, but its type ({foundVar.ContentType.Name}) is not assignable to " +
-                    $"the expected type: {ContentType.Name}.";
-                Debug.LogError(errorMessage);
+                 result = CanHoldAsValue(variable.BoxedValue);
             }
             return result;
         }
@@ -119,28 +88,22 @@ namespace Amanita.VScripting
         {
             if (variable == null)
             {
-                storedItemId = Variable.InvalidID;
-                owningFc = null;
-                owningVsa = null;
-                varRef = null;
+                backingVarRef.VarOwner = null;
+                backingVarRef.Variable = null;
                 LegacyVarRef = null;
                 return;
             }
 
-            bool correctType = ContentType.IsAssignableFrom(variable.ContentType);
+            bool correctType = CanHoldAsVar(variable);
             if (!correctType)
             {
                 string errorMessage = $"VariableData: Cannot assign variable of ContentType {variable.ContentType.Name} " +
                     $"to VariableData of ContentType {ContentType.Name}.";
                 throw new InvalidCastException(errorMessage);
             }
-            storedItemId = variable.ItemId;
-            VarOwner = variable.Owner;
-            varRef = variable;
-            LegacyVarRef = variable as Variable;
+            VarRef = variable;
         }
 
-        protected IVariable varRef; // This should NOT be serialized directly
         public abstract string GetDescription();
 
         public virtual IVariableData GetCopy()
@@ -154,11 +117,7 @@ namespace Amanita.VScripting
 
         public virtual void Refresh()
         {
-            if (storedItemId == Variable.InvalidID || varRef != null)
-            {
-                return;
-            }
-            FindVariableBasedOnItemId();
+            backingVarRef.Refresh();
         }
 
         public virtual void SetContentsTo(IVariableData otherVarData)
@@ -166,7 +125,6 @@ namespace Amanita.VScripting
             if (otherVarData is VariableData otherVarDataCasted)
             {
                 this.VarOwner = otherVarDataCasted.VarOwner;
-                this.storedItemId = otherVarDataCasted.storedItemId;
             }
 
             this.VarRef = otherVarData.VarRef;
@@ -204,6 +162,7 @@ namespace Amanita.VScripting
         void SetContentsTo(IVariableData otherVarData);
 
         IVariableData GetCopy();
+        IVariableSource VarOwner { get; set; }
 
     }
 
@@ -233,19 +192,8 @@ namespace Amanita.VScripting
         {
             get
             {
-                // varRef should be set to the same as LegacyVarRef when appropriate, and thus we
-                // don't need to check the two separately here.
-                // Also, we are using the property VarRef here to make sure we sustain
-                // the right reference no matter at what point this Value prop is accessed.
-                bool shouldRefetchFromOwner = VarRef == null &&
-                    storedItemId != Variable.InvalidID &&
-                    VarOwner != null;
-                if (shouldRefetchFromOwner)
-                {
-                    VarRef = owner.GetVariable(storedItemId);
-                }
-
-                if (VarRef != null)
+                backingVarRef.Refresh();
+                if (RepresentingVar)
                 {
                     return (TValue)VarRef.BoxedValue;
                 }
@@ -255,17 +203,15 @@ namespace Amanita.VScripting
             }
             set
             {
-                if (VarRef != null)
+                if (RepresentingVar)
                 {
                     VarRef.BoxedValue = value;
                 }
                 else
                 {
                     this.value = value;
-                    storedItemId = Variable.InvalidID;
                     VarRef = null;
                 }
-
             }
         }
 
@@ -273,7 +219,7 @@ namespace Amanita.VScripting
         {
             get
             {
-                if (VarRef != null)
+                if (RepresentingVar)
                 {
                     return VarRef.BoxedValue;
                 }
@@ -285,24 +231,24 @@ namespace Amanita.VScripting
             set
             {
                 object whatToAssign = null;
-                try
+                bool canBeAssigned = CanHoldAsValue(value);
+                if (!canBeAssigned)
                 {
-                    whatToAssign = (TValue)value;
-                }
-                catch
-                {
-                    Debug.LogWarning($"VariableData of value type {typeof(TValue).Name} could not box value " +
-                        $"of type {value.GetType().Name} to type {typeof(TValue).Name}");
+                    string errorMessage = $"VariableData of value type {typeof(TValue).Name} cannot hold " +
+                        $"a value of type {value.GetType().Name}. Assignment aborted.";
+                    throw new InvalidCastException(errorMessage);
                 }
 
-                if (VarRef != null)
+                whatToAssign = (TValue)value;
+
+                if (RepresentingVar)
                 {
                     VarRef.BoxedValue = whatToAssign;
                 }
                 else
                 {
                     this.value = (TValue)whatToAssign;
-                    storedItemId = Variable.InvalidID;
+                    VarRef = null;
                 }
             }
         }
@@ -313,11 +259,11 @@ namespace Amanita.VScripting
         {
             string result = "null"; // <- This is valid for reference types
 
-            if (VarRef == null && value != null)
+            if (!RepresentingVar && value != null)
             {
                 result = value.ToString();
             }
-            else if (VarRef != null)
+            else if (RepresentingVar)
             {
                 result = VarRef.Key;
             }
@@ -340,8 +286,6 @@ namespace Amanita.VScripting
             this.VarRef = otherVarData.VarRef;
             this.value = otherVarData.value;
         }
-
-
     }
 
 }

@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 namespace Amanita.VScripting.Commands
 {
     /// <summary>
-    /// Assert on 2 Fungus variable values.
+    /// Assert on 2 Amanita variable values.
     /// </summary>
     [CommandInfo("Scripting",
                  "Assert",

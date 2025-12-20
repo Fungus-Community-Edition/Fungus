@@ -32,11 +32,20 @@ namespace Amanita.VScripting
         [Tooltip("Local rotation of newly spawned object.")]
         [SerializeField] protected Vector3Data _spawnRotation;
 
-
-
         [Tooltip("Optional variable to store the GameObject that was just created.")]
         [SerializeField]
         protected GameObjectData _newlySpawnedObject;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_sourceObject);
+            variableDataCache.Add(_parentTransform);
+            variableDataCache.Add(_spawnAtSelf);
+            variableDataCache.Add(_spawnPosition);
+            variableDataCache.Add(_spawnRotation);
+            variableDataCache.Add(_newlySpawnedObject);
+        }
 
         #region Public members
 
@@ -110,8 +119,9 @@ namespace Amanita.VScripting
         [HideInInspector] [FormerlySerializedAs("spawnPosition")] public Vector3 spawnPositionOLD;
         [HideInInspector] [FormerlySerializedAs("spawnRotation")] public Vector3 spawnRotationOLD;
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             if (sourceObjectOLD != null)
             {
                 _sourceObject.Value = sourceObjectOLD;

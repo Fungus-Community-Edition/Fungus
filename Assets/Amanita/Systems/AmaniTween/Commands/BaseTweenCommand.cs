@@ -19,13 +19,13 @@ namespace Amanita.Tweening
         [SerializeField] protected TweenRelativity _relativity = TweenRelativity.Absolute;
 
         [Tooltip("Number of times to repeat the tween, -1 is infinite.")]
-        [SerializeField] protected int repeats = 0;
+        [SerializeField] protected IntegerData repeats = new IntegerData(0);
 
         [Tooltip("Stop any previously LeanTweens on this object before adding this one. Warning; expensive.")]
-        [SerializeField] protected bool stopPreviousTweens = false;
+        [SerializeField] protected BooleanData stopPreviousTweens = new BooleanData(false);
 
         [Tooltip("Wait until the tween has finished before executing the next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         protected virtual void Awake()
         {
@@ -33,6 +33,15 @@ namespace Amanita.Tweening
         }
 
         protected abstract void ValidateTweener();
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(_duration);
+            variableDataCache.Add(repeats);
+            variableDataCache.Add(stopPreviousTweens);
+            variableDataCache.Add(waitUntilFinished);
+        }
 
         public override void OnEnter()
         {
