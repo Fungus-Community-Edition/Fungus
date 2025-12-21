@@ -301,7 +301,7 @@ namespace Amanita
 
         }
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();//
+        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();
 
         public static SaveMenuManager SaveMenu { get; private set; }
 

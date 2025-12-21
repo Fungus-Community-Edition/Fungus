@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Amanita.SaveSys.VScripting;
+using Amanita.Utils;
+using Amanita.VScripting;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Linq;
 using UnityEngine.SceneManagement;
-using System.Threading;
-using Amanita.SaveSys.VScripting;
 using UnityObj = UnityEngine.Object;
-using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
@@ -55,6 +56,35 @@ namespace Amanita.SaveSys
             this.Loader = loader;
             this.MetaFactory = metaFactory;
             this.MainStateFactory = mainStateFactory;
+
+            BeforeSceneLoadAsync = StopAllExecutingFlowchartBlocks;
+
+            static async Task StopAllExecutingFlowchartBlocks()
+            {
+                var flowcharts = AmanitaManager.S.FlowchartsInScene;
+                for (int i = 0; i < flowcharts.Count; i++)
+                {
+                    var fc = flowcharts[i];
+                    if (fc == null)
+                    {
+                        continue;
+                    }
+                    // We only want to stop this flowchart's executing blocks if it is NOT set 
+                    // to persist across scenes. Otherwise, stopping its blocks here would
+                    // interrupt any ongoing logic that is meant to continue.
+                    bool isPersistent = fc.gameObject.scene.name == "DontDestroyOnLoad";
+                    if (isPersistent || !fc.HasExecutingBlocks())
+                    {
+                        continue;
+                    }
+
+                    // If any blocks are executing, stop them so the next scene can start its Init
+                    Debug.Log($"Stopping all executing blocks in Flowchart named {fc.name} with " +
+                        $"GUID {fc.UniqueId} before loading save.");
+                    fc.StopAllBlocks();
+                }
+                await Task.CompletedTask;
+            }
         }
 
         public virtual ISaveRepository SaveRepo { get; set; }

@@ -1286,6 +1286,7 @@ GameObject:
   - component: {fileID: 5552533710245989651}
   - component: {fileID: 3522029998774049069}
   - component: {fileID: 3204976415759936792}
+  - component: {fileID: 2378518837195172376}
   m_Layer: 0
   m_Name: UIActionHandler
   m_TagString: Untagged
@@ -1457,11 +1458,11 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 4605209196090622774
+    rid: 4605209289598697618
   references:
     version: 2
     RefIds:
-    - rid: 4605209196090622774
+    - rid: 4605209289598697618
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
@@ -1484,15 +1485,17 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 0
   slotIndex:
-    storedItemId: 1
-    owningFc: {fileID: 1507031660960170913}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   waitUntilFinished:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -1512,9 +1515,10 @@ MonoBehaviour:
   indentLevel: 0
   logType: 0
   logMessage:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 'Responding to save slot selected. New index: {$lastSlotIndex}'
     stringRef: {fileID: 0}
 --- !u!114 &1752029211725043856
@@ -1594,9 +1598,10 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   booleanParameter:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -1604,27 +1609,30 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   integerParameter:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   integerEvent:
     m_PersistentCalls:
       m_Calls: []
   floatParameter:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   floatEvent:
     m_PersistentCalls:
       m_Calls: []
   stringParameter:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   stringEvent:
@@ -1657,6 +1665,7 @@ MonoBehaviour:
   commandList:
   - {fileID: 5552533710245989651}
   - {fileID: 3204976415759936792}
+  - {fileID: 2378518837195172376}
   - {fileID: 8263271778154824517}
   - {fileID: 3522029998774049069}
   includeInSaves: 1
@@ -1692,22 +1701,25 @@ MonoBehaviour:
   itemId: 23
   indentLevel: 1
   slotIndex:
-    storedItemId: 1
-    owningFc: {fileID: 1507031660960170913}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   loadScene:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitUntilFinished:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -1734,9 +1746,10 @@ MonoBehaviour:
         owningFc: {fileID: 1507031660960170913}
         owningVsa: {fileID: 0}
       data:
-        storedItemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 0}
+          owningVsa: {fileID: 0}
         data:
           rid: 4605209097948364930
   compareOperator: 0
@@ -1746,101 +1759,117 @@ MonoBehaviour:
       owningFc: {fileID: 0}
       owningVsa: {fileID: 0}
     data:
-      storedItemId: 0
-      owningFc: {fileID: 0}
-      owningVsa: {fileID: 0}
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
   variable: {fileID: 0}
   booleanData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
   floatData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   stringData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   animatorData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
   audioSourceData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
   gameObjectData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   materialData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
   objectData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
   spriteData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
   textureData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
   transformData:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
   vector2Data:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
   vector3Data:
-    storedItemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
   references:
@@ -1851,9 +1880,10 @@ MonoBehaviour:
     - rid: 4605209097948364930
       type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
-        storedItemId: 0
-        owningFc: {fileID: 0}
-        owningVsa: {fileID: 0}
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 0}
+          owningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
 --- !u!114 &3522029998774049069
@@ -1890,6 +1920,21 @@ MonoBehaviour:
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   fadeTweener: {fileID: 0}
+--- !u!114 &2378518837195172376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415ba253dda00fd4981c454be833c723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 27
+  indentLevel: 1
+  state: 2
 --- !u!1 &5681273892318264295
 GameObject:
   m_ObjectHideFlags: 0
