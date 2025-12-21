@@ -33,6 +33,7 @@ namespace Amanita.SaveSys
                 throw new ArgumentNullException(nameof(mainData), "Main Save data cannot be null.");
             }
 
+            Debug.Log($"About to load scene named: {sceneToLoad.name}");
             await HandleSceneLoading(sceneToLoad);
             async Task HandleSceneLoading(Scene scene)
             {

@@ -146,26 +146,26 @@ namespace Amanita.SaveSys
             await PrepBeforeLoad();
             async Task PrepBeforeLoad()
             {
-                Scene sceneToLoad = DecideSceneToLoad();
+                sceneToLoad = DecideSceneToLoad();
                 Scene DecideSceneToLoad()
                 {
-                    Scene sceneToLoad = SceneManager.GetSceneByName(meta.SceneName);
-                    if (!sceneToLoad.IsValid())
+                    Scene result = SceneManager.GetSceneByName(meta.SceneName);
+                    Debug.Log($"Scene found by name: {result.name}, valid: {result.IsValid()}");
+                    if (!result.IsValid())
                     {
-                        sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
+                        result = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
 
-                    bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
+                    bool shouldLoadScene = loadScene && result.IsValid();
                     if (!shouldLoadScene)
                     {
-                        sceneToLoad = SaveSysConstants.DoNotLoad;
+                        result = SaveSysConstants.DoNotLoad;
                     }
-                    return sceneToLoad;
+                    return result;
                 }
 
                 Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
                 await beforeSceneLoadHandlerTask;
-
             }
 
             bool shouldStopHere = ValidateScene(sceneToLoad) == false;
@@ -180,13 +180,17 @@ namespace Amanita.SaveSys
                         return false;
                     }
                 }
+                else
+                {
+                    Debug.Log("Not loading scene as per request.");
+                }
 
                 return true;
             }
 
             if (shouldStopHere)
             {
-                return null;
+                return mainData;
             }
 
             await Loader.LoadMain(mainData, sceneToLoad);

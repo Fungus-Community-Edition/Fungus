@@ -316,6 +316,7 @@ namespace Amanita
         private void PrepSubmodules()
         {
             // We assume that these are each on separate GameObjects (for the sake of easier testing)
+            this.gameObject.GetOrAddComponent<AmanitaState>();
             CameraManager = GetComponentInChildren<CameraManager>();
             EventDispatcher = GetComponentInChildren<EventDispatcher>();
             NarrativeLog = GetComponentInChildren<NarrativeLog>();

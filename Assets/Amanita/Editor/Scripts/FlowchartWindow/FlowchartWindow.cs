@@ -273,16 +273,7 @@ namespace Amanita.VScripting.EditorUtils
             EnsureThereIsAmanitaState();
             static void EnsureThereIsAmanitaState()
             {
-                if (amanitaState == null)
-                {
-                    amanitaState = GameObject.FindFirstObjectByType<AmanitaState>();
-                    if (amanitaState == null)
-                    {
-                        GameObject stateHolder = new GameObject("_AmanitaState");
-                        stateHolder.hideFlags = HideFlags.HideInHierarchy;
-                        amanitaState = stateHolder.AddComponent<AmanitaState>();
-                    }
-                }
+                amanitaState = AmanitaManager.S.gameObject.GetOrAddComponent<AmanitaState>();
             }
 
             amanitaState.Refresh();
