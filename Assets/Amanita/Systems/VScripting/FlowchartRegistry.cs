@@ -1,4 +1,3 @@
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -22,7 +21,7 @@ namespace Amanita.VScripting
 
         protected virtual void ToggleSubs(bool on)
         {
-            if (on)
+            if (on)//
             {
                 FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
                 FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;

@@ -166,8 +166,6 @@ namespace Amanita.VScripting
         }
         #endregion
 
-        protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
-
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
@@ -199,12 +197,15 @@ namespace Amanita.VScripting
 
         protected virtual void Start()
         {
-            if (Application.IsPlaying(this))
+            if (Application.IsPlaying(this) && !started)
             {
+                started = true;
                 AmanitaManager.EnsureExists();
                 StartCoroutine(HandleGameStartedBlocks());
             }
         }
+
+        private bool started;
 
         // There must be an Event System in the scene for Say and Menu input to work.
         // This method will automatically instantiate one if none exists.
@@ -374,9 +375,9 @@ namespace Amanita.VScripting
                 return;
             }
 
+            var cachedFlowcharts = AmanitaManager.S.FlowchartsInScene;
             if (!cachedFlowcharts.Contains(this))
             {
-                cachedFlowcharts.Add(this);
                 SceneManager.activeSceneChanged -= OnActiveSceneChanged; // Just in case.
                 SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
@@ -425,7 +426,8 @@ namespace Amanita.VScripting
 
         protected virtual void OnDisable()
         {
-            cachedFlowcharts.Remove(this);
+            StopAllBlocks();
+            StopAllCoroutines();
             if (!AlwaysKeepGuid)
             {
                 GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
@@ -627,11 +629,6 @@ namespace Amanita.VScripting
         }
 
         #region Public members
-
-        /// <summary>
-        /// Cached list of flowchart objects in the scene for fast lookup.
-        /// </summary>
-        public static List<Flowchart> CachedFlowcharts { get { return cachedFlowcharts; } }
 
         #region Flowchart UI State
         /// <summary>
@@ -1909,7 +1906,6 @@ namespace Amanita.VScripting
 
         public static void ResetStaticsForTest()
         {
-            cachedFlowcharts.Clear();
             eventSystemPresent = false;
         }
 
@@ -1918,7 +1914,6 @@ namespace Amanita.VScripting
         {
             GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             fcReg.RemoveGuid(this.UniqueId);
-            cachedFlowcharts.Remove(this);
         }
 
         public bool Contains(IVariable var)
