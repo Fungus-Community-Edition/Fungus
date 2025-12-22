@@ -301,7 +301,15 @@ namespace Amanita
 
         }
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();
+        public IReadOnlyList<Flowchart> FlowchartsInScene
+        {
+            get
+            {
+                fcRegistry ??= new FlowchartRegistry();
+                var result = fcRegistry.GetFlowcharts();
+                return result;
+            }
+        }
 
         public static SaveMenuManager SaveMenu { get; private set; }
 
