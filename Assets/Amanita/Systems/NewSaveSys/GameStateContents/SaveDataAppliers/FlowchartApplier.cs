@@ -7,6 +7,7 @@ using Amanita.Utils;
 using System;
 using Amanita.VScripting;
 using UnityEngine.SceneManagement;
+using Amanita.VScripting.EventHandlers;
 
 namespace Amanita.SaveSys
 {
@@ -116,8 +117,23 @@ namespace Amanita.SaveSys
 
             void ApplyStuff()
             {
+                RemoveGameStartedEventHandlers();
                 ApplyVarStates();
                 ApplyBlockStates();
+            }
+
+            void RemoveGameStartedEventHandlers()
+            {
+                // Remember: Flowcharts should only get a chance to call their Start methods _after_
+                // all the appliers (including this one) have done their thing.
+                // Thus, this is a safe time to remove any GameStarted event handlers,
+                // making sure they don’t get triggered prematurely.
+                var gameStartedBlocks = flowchart.GetComponents<Block>()
+                    .Where(blockEl => blockEl._EventHandler is GameStarted);
+                foreach (var blockEl in gameStartedBlocks)
+                {
+                    blockEl._EventHandler = null;
+                }
             }
 
             void ApplyVarStates()

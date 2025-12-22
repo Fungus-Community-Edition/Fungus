@@ -81,7 +81,8 @@ namespace VScriptingTests.FlowchartLifecycle
             yield return null;
 
             // Assert
-            Assert.IsTrue(Flowchart.CachedFlowcharts.Contains(testFc), "Flowchart should be present in CachedFlowcharts after OnEnable.");
+            var flowcharts = AmanitaManager.S.FlowchartsInScene;
+            Assert.IsTrue(flowcharts.Contains(testFc), "Flowchart should be present in CachedFlowcharts after OnEnable.");
 
         }
 
