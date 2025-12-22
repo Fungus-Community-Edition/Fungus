@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Amanita.SaveSys.VScripting;
+using Amanita.Utils;
+using Amanita.VScripting;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Linq;
 using UnityEngine.SceneManagement;
-using System.Threading;
-using Amanita.SaveSys.VScripting;
 using UnityObj = UnityEngine.Object;
-using Amanita.Utils;
 
 namespace Amanita.SaveSys
 {
@@ -55,6 +56,35 @@ namespace Amanita.SaveSys
             this.Loader = loader;
             this.MetaFactory = metaFactory;
             this.MainStateFactory = mainStateFactory;
+
+            BeforeSceneLoadAsync = StopAllExecutingFlowchartBlocks;
+
+            static async Task StopAllExecutingFlowchartBlocks()
+            {
+                var flowcharts = AmanitaManager.S.FlowchartsInScene;
+                for (int i = 0; i < flowcharts.Count; i++)
+                {
+                    var fc = flowcharts[i];
+                    if (fc == null)
+                    {
+                        continue;
+                    }
+                    // We only want to stop this flowchart's executing blocks if it is NOT set 
+                    // to persist across scenes. Otherwise, stopping its blocks here would
+                    // interrupt any ongoing logic that is meant to continue.
+                    bool isPersistent = fc.gameObject.scene.name == "DontDestroyOnLoad";
+                    if (isPersistent || !fc.HasExecutingBlocks())
+                    {
+                        continue;
+                    }
+
+                    // If any blocks are executing, stop them so the next scene can start its Init
+                    Debug.Log($"Stopping all executing blocks in Flowchart named {fc.name} with " +
+                        $"GUID {fc.UniqueId} before loading save.");
+                    fc.StopAllBlocks();
+                }
+                await Task.CompletedTask;
+            }
         }
 
         public virtual ISaveRepository SaveRepo { get; set; }
@@ -146,26 +176,26 @@ namespace Amanita.SaveSys
             await PrepBeforeLoad();
             async Task PrepBeforeLoad()
             {
-                Scene sceneToLoad = DecideSceneToLoad();
+                sceneToLoad = DecideSceneToLoad();
                 Scene DecideSceneToLoad()
                 {
-                    Scene sceneToLoad = SceneManager.GetSceneByName(meta.SceneName);
-                    if (!sceneToLoad.IsValid())
+                    Scene result = SceneManager.GetSceneByName(meta.SceneName);
+                    Debug.Log($"Scene found by name: {result.name}, valid: {result.IsValid()}");
+                    if (!result.IsValid())
                     {
-                        sceneToLoad = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
+                        result = SceneManager.GetSceneByBuildIndex(meta.SceneBuildIndex);
                     }
 
-                    bool shouldLoadScene = loadScene && sceneToLoad.IsValid();
+                    bool shouldLoadScene = loadScene && result.IsValid();
                     if (!shouldLoadScene)
                     {
-                        sceneToLoad = SaveSysConstants.DoNotLoad;
+                        result = SaveSysConstants.DoNotLoad;
                     }
-                    return sceneToLoad;
+                    return result;
                 }
 
                 Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
                 await beforeSceneLoadHandlerTask;
-
             }
 
             bool shouldStopHere = ValidateScene(sceneToLoad) == false;
@@ -180,13 +210,17 @@ namespace Amanita.SaveSys
                         return false;
                     }
                 }
+                else
+                {
+                    Debug.Log("Not loading scene as per request.");
+                }
 
                 return true;
             }
 
             if (shouldStopHere)
             {
-                return null;
+                return mainData;
             }
 
             await Loader.LoadMain(mainData, sceneToLoad);
