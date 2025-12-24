@@ -1,72 +1,130 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using UnityEngine;
+using UnityObj = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Amanita.VScripting
 {
     /// <summary>
-    /// Can be used as a replacement for Flowchart.CachedFlowcharts.
+    /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
     /// </summary>
-    public class FlowchartRegistry : IDisposable
+    public static class FlowchartRegistry
     {
-        // Keys are the guids of the flowcharts
-        private readonly IDictionary<string, Flowchart> flowchartLookup = new Dictionary<string, Flowchart>();
-
-        public virtual void Init()
+        static FlowchartRegistry()
         {
-            ToggleSubs(false);
-            ToggleSubs(true);
-            IsDisposed = false;
+            EnsureInitialized();
         }
 
-        protected virtual void ToggleSubs(bool on)
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod()]
+        private static void OnEditorLoad()
         {
-            if (on)//
+            Debug.Log("FlowchartRegistry initializing on editor load.");
+            EnsureInitialized();
+        }
+#endif
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void OnRuntimeLoad()
+        {
+            EnsureInitialized();
+        }
+
+        private static void EnsureInitialized()
+        {
+            if (isInitialized)
             {
-                FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
-                FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+                return;
             }
-            else
+
+            SubscribeToSignals();
+            CaptureExistingFlowcharts();
+            isInitialized = true;
+        }
+
+        private static bool isInitialized;
+
+        private static void SubscribeToSignals()
+        {
+            FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
+            FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
+
+            FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
+            FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+        }
+
+        private static void CaptureExistingFlowcharts()
+        {
+            Flowchart[] existingFlowcharts = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+            for (int i = 0; i < existingFlowcharts.Length; i++)
             {
-                FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
-                FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
+                RegisterFlowchart(existingFlowcharts[i]);
             }
         }
 
-        public void RegisterFlowchart(Flowchart flowchart)
+        public static void RegisterFlowchart(Flowchart flowchart)
         {
-            flowchartLookup[flowchart.UniqueId] = flowchart;
+            if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
+            {
+                return;
+            }
+
+            lock (syncLock)
+            {
+                flowchartLookup[flowchart.UniqueId] = flowchart;
+            }
         }
 
-        public void UnregisterFlowchart(Flowchart flowchart)
+        private static readonly object syncLock = new object();
+        private static readonly Dictionary<string, Flowchart> flowchartLookup =
+            new Dictionary<string, Flowchart>(StringComparer.Ordinal);
+
+        public static void UnregisterFlowchart(Flowchart flowchart)
         {
-            flowchartLookup.Remove(flowchart.UniqueId);
+            if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
+            {
+                return;
+            }
+
+            lock (syncLock)
+            {
+                flowchartLookup.Remove(flowchart.UniqueId);
+            }
         }
 
-        public IReadOnlyList<Flowchart> GetFlowcharts()
+        public static IReadOnlyList<Flowchart> GetFlowcharts()
         {
-            return flowchartLookup.Values.ToList();
+            lock (syncLock)
+            {
+                return flowchartLookup.Values.ToList();
+            }
         }
 
-        public virtual Flowchart GetFChartWith(string guid)
+        public static Flowchart GetFChartWith(string guid)
         {
-            flowchartLookup.TryGetValue(guid, out Flowchart flowchart);
-            return flowchart;
+            if (string.IsNullOrEmpty(guid))
+            {
+                return null;
+            }
+
+            lock (syncLock)
+            {
+                flowchartLookup.TryGetValue(guid, out Flowchart flowchart);
+                return flowchart;
+            }
         }
 
-        public virtual void Clear()
+        public static void Clear()
         {
-            flowchartLookup.Clear();
+            lock (syncLock)
+            {
+                flowchartLookup.Clear();
+            }
         }
-
-        public virtual void Dispose()
-        {
-            if (IsDisposed) return;
-            ToggleSubs(false);
-            Clear();
-            IsDisposed = true;
-        }
-
-        public virtual bool IsDisposed { get; private set; }
     }
 }

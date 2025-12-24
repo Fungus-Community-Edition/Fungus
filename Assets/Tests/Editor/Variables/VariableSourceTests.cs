@@ -59,8 +59,11 @@ namespace VScriptingTests.VariableOperations
 
             foreach (UnityObj obj in toDestroy)
             {
-                if (obj != null)
+                if (obj != null && obj != AmanitaManager.S.gameObject)
                 {
+                    // Why avoid destroying the AmanitaManager singleton here?
+                    // Because we need to keep it intact so that this suite's tests work
+                    // right when being run as part of a suite, not just individually.
                     UnityObj.DestroyImmediate(obj);
                 }
             }
@@ -69,6 +72,7 @@ namespace VScriptingTests.VariableOperations
             manager = null;
             fcHolder = null;
             flowchart = null;
+
         }
 
         [Test]

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
@@ -21,50 +19,27 @@ namespace Amanita.VScripting.EditorUtils
         protected IVariable _currentVariable;
         protected VisualTreeAsset _template;
 
+        protected virtual IRowVisualTemplateProvider TemplateProvider => RowVisualTemplateProviderRegistry.Current;
+
         /// <summary>
         /// Centralized entry for resolving a handler’s template from cache or resources.
         /// </summary>
         protected virtual VisualTreeAsset GetOrResolveTemplate(Type handlerType)
         {
-            var key = TemplateKeyFor(handlerType);
-
-            if (LoggedMissingOnce.Contains(handlerType))
+            if (handlerType == null)
             {
+                Debug.LogError($"{GetType().Name} received a null handlerType when resolving templates.");
                 return null;
             }
 
-            if (!_templateCache.TryGetValue(key, out var visTreeAsset) || visTreeAsset == null)
+            if (TemplateProvider == null)
             {
-                var attr = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
-                if (attr == null)
-                {
-                    Debug.LogError($"{handlerType.Name} is missing RowVisualHandlerAttribute.");
-                    return null;
-                }
-
-                visTreeAsset = Resources.Load<VisualTreeAsset>(attr.PathToTemplate);
-
-                if (visTreeAsset == null)
-                {
-                    string errorMessage = string.Format(missingTemplateFormat, handlerType.Name, attr.PathToTemplate);
-                    Debug.LogError(errorMessage);
-                    LoggedMissingOnce.Add(handlerType);
-                    return null;
-                }
-
-                _templateCache[key] = visTreeAsset;
+                Debug.LogError("RowVisualHandler cannot resolve templates because no provider is registered.");
+                return null;
             }
 
-            return _templateCache[key];
+            return TemplateProvider.GetTemplate(handlerType);
         }
-        public static IList<Type> LoggedMissingOnce = new List<Type>();
-
-        protected static readonly Dictionary<string, VisualTreeAsset> _templateCache =
-            new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
-        
-        protected static string TemplateKeyFor(Type handlerType) => handlerType.AssemblyQualifiedName;
-        protected static readonly string missingTemplateFormat =
-            "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
 
         public virtual void Refresh()
         {
@@ -134,7 +109,7 @@ namespace Amanita.VScripting.EditorUtils
         
         protected virtual void ApplyVarFieldsToOurControls()
         {
-            if (_currentVariable == null)//
+            if (_currentVariable == null)
             {
                 Debug.LogWarning($"[RowVisualHandler] BindFields called but _currentVariable is null " +
                     $"for handler={GetType().FullName}");
@@ -242,7 +217,6 @@ namespace Amanita.VScripting.EditorUtils
             ValueFieldChanged(newValue);
         }
         public event Action<object> ValueFieldChanged = delegate { };
-        // ^The value may or may not be a UnityObj, hence using the original base object type here
 
         public virtual IVariable Variable
         {
@@ -328,7 +302,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        // For those derived classes that have their values as UnityObjects
         protected EditorObjectField unityObjField;
 
         protected override void ToggleValueChangeSubs(bool on)

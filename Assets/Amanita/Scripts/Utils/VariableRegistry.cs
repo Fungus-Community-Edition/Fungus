@@ -90,6 +90,10 @@ namespace Amanita.VScripting
             {
                 foreach (var toRegister in otherChart.Variables)
                 {
+                    if (toRegister == null)
+                    {
+                        continue;
+                    }
                     string key = $"{otherChart.gameObject.name}/{toRegister.Key}";
                     Register(key, toRegister);
                     bool isLegacyVariable = toRegister is Variable;

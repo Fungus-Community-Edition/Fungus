@@ -156,6 +156,7 @@ namespace Amanita
             // Fast path
             if (_s != null)
             {
+                _s.Init();
                 return _s;
             }
 
@@ -164,6 +165,7 @@ namespace Amanita
                 // Double-check after taking the lock
                 if (_s != null)
                 {
+                    _s.Init();
                     return _s;
                 }
 
@@ -188,7 +190,7 @@ namespace Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !UnityEditor.EditorUtility.IsPersistent(elem.gameObject) && 
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && 
                         elem != newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
@@ -235,8 +237,6 @@ namespace Amanita
             return instantiated;
         }
 
-        private FlowchartRegistry fcRegistry = new FlowchartRegistry();
-
         public void Init()
         {
             if (IsFullyInitted)
@@ -254,17 +254,6 @@ namespace Amanita
                 return;
             }
             _s = this;
-
-            fcRegistry.Init();
-            RegisterFlowchartsInScene();
-            void RegisterFlowchartsInScene()
-            {
-                var flowchartsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-                foreach (var fChart in flowchartsInScene)
-                {
-                    fcRegistry.RegisterFlowchart(fChart);
-                }
-            }
 
             EnsureShadowDbAvailable();
             EnsureGuidRegistriesAvailable();
@@ -305,8 +294,7 @@ namespace Amanita
         {
             get
             {
-                fcRegistry ??= new FlowchartRegistry();
-                var result = fcRegistry.GetFlowcharts();
+                var result = FlowchartRegistry.GetFlowcharts();
                 return result;
             }
         }
@@ -441,8 +429,6 @@ namespace Amanita
         {
             if (_s == this)
             {
-                fcRegistry.Dispose();
-
                 // Clean up anchors we created
                 if (_adapterAnchors != null)
                 {
@@ -557,8 +543,6 @@ namespace Amanita
         {
             if (VariableRegistry == null)
             {
-                fcRegistry ??= new FlowchartRegistry();
-                fcRegistry.Init(); // Since the VariableRegistry relies on this being ready
                 VariableRegistry = new VariableRegistry(this);
                 var selected = Selection.activeGameObject;
                 Flowchart currentFc = null;

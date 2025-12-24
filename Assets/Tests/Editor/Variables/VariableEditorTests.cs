@@ -7,6 +7,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
+using Amanita;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -16,7 +17,8 @@ namespace VScriptingTests.VariableOperations
         public void SetUp()
         {
             Flowchart.ResetStaticsForTest();
-            
+            ammieManager = AmanitaManager.EnsureExists();
+
             _firstFcHolder = new GameObject("Flowchart_A");
             _secondFcHolder = new GameObject("Flowchart_B");
             _firstFc = _firstFcHolder.AddComponent<Flowchart>();
@@ -25,8 +27,10 @@ namespace VScriptingTests.VariableOperations
             _toDestroy = new List<UnityObject>();
             _toDestroy.Add(_firstFcHolder);
             _toDestroy.Add(_secondFcHolder);
+            _toDestroy.Add(ammieManager.gameObject);
         }
 
+        protected AmanitaManager ammieManager;
         protected GameObject _firstFcHolder;
         protected GameObject _secondFcHolder;
         protected Flowchart _firstFc;
