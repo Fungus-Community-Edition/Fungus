@@ -1,0 +1,145 @@
+﻿{
+    "name": "",
+    "saveID": "31cc2ed2-cd8d-4a09-baaa-d64bf3b17b52",
+    "slotNumber": 2,
+    "saveVersion": "1.0",
+    "utcTimeStamp": "2025-12-24T20:38:36.9710190Z",
+    "sceneName": "newSaveSystemDemoScene",
+    "sceneBuildIndex": 0,
+    "timeSpanString": "00:00:00",
+    "progressMarkers": {
+        "$content": [],
+        "$type": "System.Collections.Generic.List`1[[Amanita.SaveSys.ProgressMarker, Amanita.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+    },
+    "$type": "Amanita.SaveSys.SaveMetaData"
+}
+
+<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>
+
+{
+    "items": [
+        {
+            "uniqueId": "2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea",
+            "flowchartName": "Main",
+            "savedVars": [
+                {
+                    "varTypeName": "StringMuscariable",
+                    "itemID": 3,
+                    "key": "firstMarkerID",
+                    "value": "first"
+                },
+                {
+                    "varTypeName": "ColorMuscariable",
+                    "itemID": 4,
+                    "key": "someColor",
+                    "value": "{\"r\":0.3832769,\"g\":0.7802354,\"b\":0.8207547,\"a\":0.0}"
+                },
+                {
+                    "varTypeName": "VectorTwoMuscariable",
+                    "itemID": 5,
+                    "key": "vecTwoVar",
+                    "value": "{\"x\":0.0,\"y\":0.0}"
+                },
+                {
+                    "varTypeName": "VectorThreeMuscariable",
+                    "itemID": 6,
+                    "key": "vecThreeVar",
+                    "value": "{\"x\":0.0,\"y\":0.0,\"z\":0.0}"
+                },
+                {
+                    "varTypeName": "FloatMuscariable",
+                    "itemID": 7,
+                    "key": "Var",
+                    "value": "1.234"
+                }
+            ],
+            "savedBlocks": [
+                {
+                    "blockName": "Init",
+                    "itemId": 21,
+                    "activeCommandId": 3,
+                    "activeCommandIndex": 6
+                }
+            ],
+            "$type": "Amanita.SaveSys.FlowchartSaveData"
+        },
+        {
+            "playAudioArgs": {
+                "OneShot": false,
+                "_introClip": null,
+                "_mainClip": null,
+                "_trackGroup": "Null",
+                "_track": 0,
+                "_loop": false,
+                "_mainClipName": "",
+                "_loopStartPoint": 0.0,
+                "_loopEndPoint": 0.0
+            },
+            "volumeSettings": {
+                "master": 50.0,
+                "bgMusic": 100.0,
+                "soundFX": 100.0,
+                "voice": 100.0
+            },
+            "bgmIndexes": {
+                "$content": [
+                    {
+                        "Key": 0,
+                        "Value": -1
+                    }
+                ],
+                "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+            },
+            "$type": "Amanita.SaveSys.MyceliaudioSaveData"
+        },
+        {
+            "uniqueId": "801a1e4d-5cb4-43b5-87d2-4e5c3ab66329",
+            "savedVars": [],
+            "$type": "Amanita.SaveSys.VariableSourceAssetSaveData"
+        },
+        {
+            "uniqueId": "0d4feeae-7e82-42a5-b48d-108dfbab7778",
+            "savedVars": [
+                {
+                    "varTypeName": "StringMuscariable",
+                    "itemID": 6,
+                    "key": "Naruto",
+                    "value": "Believe it! esytg"
+                },
+                {
+                    "varTypeName": "FloatMuscariable",
+                    "itemID": 5,
+                    "key": "pi",
+                    "value": "3.14159"
+                },
+                {
+                    "varTypeName": "StringMuscariable",
+                    "itemID": 1,
+                    "key": "One Piece",
+                    "value": "I will become the\nPirate King!"
+                },
+                {
+                    "varTypeName": "StringMuscariable",
+                    "itemID": 2,
+                    "key": "Bleach",
+                    "value": "Throwing away victory for the sake of manners is a cookie mistake. Captains don't have the time to waste on that kind of thing.\n\nDon't waste your time trying to play the good guy. No matter what debts you may owe, from the instant you find yourself on the battleground, both sides are evil."
+                },
+                {
+                    "varTypeName": "IntMuscariable",
+                    "itemID": 3,
+                    "key": "meaningOfLife",
+                    "value": "24"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "itemID": 4,
+                    "key": "cuteBgm",
+                    "value": "{\"lorekeeperIndex\":5,\"clipName\":\"A Small Adventure\"}"
+                }
+            ],
+            "$type": "Amanita.SaveSys.VariableSourceAssetSaveData"
+        }
+    ],
+    "$type": "Amanita.SaveSys.CompositeSaveData"
+}
+<!-- Amanita Save Sys: Save Completed! -->

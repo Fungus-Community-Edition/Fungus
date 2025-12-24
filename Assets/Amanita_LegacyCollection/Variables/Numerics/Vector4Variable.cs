@@ -5,8 +5,6 @@ namespace Amanita.VScripting
     /// <summary>
     /// Vector4 variable type.
     /// </summary>
-    [VariableInfo("Numeric/Structured", "Vector4", typeof(Vector4))]
-    [AddComponentMenu("")]
     [System.Serializable]
     public class Vector4Variable : VariableBase<Vector4>
     {

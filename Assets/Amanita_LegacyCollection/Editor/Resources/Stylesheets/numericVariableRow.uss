@@ -1,0 +1,38 @@
+.numericField
+{
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+	-unity-text-align: middle-left;
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	background-color: var(--dark-mode-text-bg-color);
+	border-color: var(--dark-mode-text-color);
+	border-radius: 2px;
+}
+
+.numericField > #unity-text-input
+{
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+	-unity-text-align: middle-left;
+	width: 100%;
+	height: 100%;
+	padding: 0px 0px 0px 2px;
+	margin: 0px;
+	background-color: rgb(20, 20, 20);
+	font-size: 16px;
+}
+
+.numericField > Label
+{
+	-unity-text-align: middle-left;
+	font-size: 18px;
+}
+
+.varRowTypeLabel
+{
+	background-color: #005A9C;
+	font-size: 18px;
+}

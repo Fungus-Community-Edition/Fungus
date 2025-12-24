@@ -5,10 +5,9 @@ namespace Amanita.VScripting
     /// <summary>
     /// Matrix4x4 variable type.
     /// </summary>
-    [VariableInfo("Numeric/Structured", "Matrix4x4", typeof(Matrix4x4), IsPreviewedOnly = true)]
     [AddComponentMenu("")]
     [System.Serializable]
-    public class Matrix4x4Variable : VariableBase<UnityEngine.Matrix4x4>
+    public class Matrix4x4Variable : VariableBase<Matrix4x4>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)
         {
