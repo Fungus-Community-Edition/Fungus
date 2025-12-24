@@ -1,5 +1,6 @@
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -9,14 +10,10 @@ namespace Amanita.VScripting.EditorUtils
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/ColorVariableRow")]
     public class ColorVariableRow : RowVisualHandler<Color>
     {
-        // Note: when randomly generated, the preview field is white even when the generated color
-        // isn't. This is because the color field control in UIToolkit
-        // doesn't support SetValueWithoutNotify for Color type.
-
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            colorValueField = valueField as ColorField;
+            colorValueField = ValueField as ColorField;
 
             if (colorValueField == null)
             {
@@ -27,9 +24,39 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         protected ColorField colorValueField;
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (colorValueField == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                colorValueField.RegisterValueChangedCallback(OnColorFieldChanged);
+            }
+            else
+            {
+                colorValueField.UnregisterValueChangedCallback(OnColorFieldChanged);
+            }
+        }
+
+        protected virtual void OnColorFieldChanged(ChangeEvent<Color> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
+        }
+
         protected override void ApplyVarValueToValueField()
         {
+            if (colorValueField == null || _currentVariable == null)
+            {
+                return;
+            }
+
             colorValueField.SetValueWithoutNotify((Color)_currentVariable.BoxedValue);
+            colorValueField.MarkDirtyRepaint();
         }
     }
 

@@ -8,39 +8,50 @@ namespace Amanita.VScripting.EditorUtils
 {
     public sealed class CachedRowVisualTemplateProvider : IRowVisualTemplateProvider
     {
-        private readonly Dictionary<string, VisualTreeAsset> _templateCache;
-        private readonly HashSet<Type> _loggedMissingHandlers;
-
-        private const string MissingTemplateFormat =
-            "Template for {0} not found at '{1}'.\nPlease update the path in the RowVisualHandlerAttribute of the former.";
-
         public CachedRowVisualTemplateProvider()
         {
             _templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
             _loggedMissingHandlers = new HashSet<Type>();
         }
 
+        private readonly Dictionary<string, VisualTreeAsset> _templateCache;
+        private readonly HashSet<Type> _loggedMissingHandlers; // For unit-testing purposes
+
         public VisualTreeAsset GetTemplate(Type handlerType)
         {
-            if (handlerType == null)
-            {
-                Debug.LogError("CachedRowVisualTemplateProvider needs a non-null handlerType.");
-                return null;
-            }
-
-            if (_loggedMissingHandlers.Contains(handlerType))
+            string logMessage, cacheKey;
+            if (!IsValid(handlerType))
             {
                 return null;
             }
-
-            string cacheKey = handlerType.AssemblyQualifiedName;
-            if (string.IsNullOrEmpty(cacheKey))
+            bool IsValid(Type handlerType)
             {
-                Debug.LogError("CachedRowVisualTemplateProvider could not compute a cache key for handlerType.");
-                return null;
+                bool result = true;
+
+                if (handlerType == null)
+                {
+                    logMessage = "CachedRowVisualTemplateProvider received a null handlerType when resolving templates.";
+                    Debug.LogError(logMessage);
+                    result = false;
+                }
+                else if (_loggedMissingHandlers.Contains(handlerType))
+                {
+                    result = false;
+                }
+
+                cacheKey = handlerType.AssemblyQualifiedName;
+                if (string.IsNullOrEmpty(cacheKey))
+                {
+                    logMessage = "CachedRowVisualTemplateProvider could not compute a cache key for handlerType.";
+                    Debug.LogError(logMessage);
+                    result = false;
+                }
+
+                return result;
             }
 
-            if (_templateCache.TryGetValue(cacheKey, out VisualTreeAsset cachedAsset) && cachedAsset != null)
+            bool assetReady = _templateCache.TryGetValue(cacheKey, out VisualTreeAsset cachedAsset);
+            if (assetReady && cachedAsset != null)
             {
                 return cachedAsset;
             }
@@ -54,18 +65,14 @@ namespace Amanita.VScripting.EditorUtils
             return resolvedAsset;
         }
 
-        public void ClearCache()
-        {
-            _templateCache.Clear();
-            _loggedMissingHandlers.Clear();
-        }
-
         private VisualTreeAsset ResolveTemplate(Type handlerType)
         {
             RowVisualHandlerAttribute attribute = handlerType.GetCustomAttribute<RowVisualHandlerAttribute>();
+            string logMessage;
             if (attribute == null)
             {
-                Debug.LogError($"{handlerType.Name} is missing RowVisualHandlerAttribute.");
+                logMessage = $"{handlerType.Name} is missing RowVisualHandlerAttribute.";
+                Debug.LogError(logMessage);
                 _loggedMissingHandlers.Add(handlerType);
                 return null;
             }
@@ -74,18 +81,26 @@ namespace Amanita.VScripting.EditorUtils
 
             if (visualTreeAsset == null)
             {
-                Debug.LogError(string.Format(
-                    MissingTemplateFormat,
-                    handlerType.Name,
-                    attribute.PathToTemplate));
+                logMessage = string.Format(MissingTemplateFormat, handlerType.Name,
+                    attribute.PathToTemplate);
+                Debug.LogError(logMessage);
                 _loggedMissingHandlers.Add(handlerType);
                 return null;
             }
 
             return visualTreeAsset;
         }
-    }
 
+        private const string MissingTemplateFormat =
+                "Template for {0} not found at '{1}'.\nPlease update the path in the " +
+            "RowVisualHandlerAttribute of the former.";
+
+        public void ClearCache()
+        {
+            _templateCache.Clear();
+            _loggedMissingHandlers.Clear();
+        }
+    }
     public interface IRowVisualTemplateProvider
     {
         VisualTreeAsset GetTemplate(Type handlerType);

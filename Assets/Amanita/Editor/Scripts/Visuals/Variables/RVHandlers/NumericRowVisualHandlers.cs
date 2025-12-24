@@ -8,7 +8,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            numericField = valueField as TextValueField<T>;
+            numericField = ValueField as TextValueField<T>;
             
             if (numericField == null)
             {
@@ -84,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector2Field = valueField as Vector2Field;
+            vector2Field = ValueField as Vector2Field;
             if (vector2Field == null)
             {
                 Debug.LogError($"VectorTwoRowVisualHandler could not find a Vector2Field named in the UXML template. Check your UXML.");
@@ -110,7 +110,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector3Field = valueField as Vector3Field;
+            vector3Field = ValueField as Vector3Field;
             if (vector3Field == null)
             {
                 Debug.LogError($"VectorThreeRowVisualHandler could not find a Vector3Field named in the UXML template. Check your UXML.");

@@ -12,70 +12,110 @@ namespace Amanita.VScripting.EditorUtils
         {
             _isDisposed = false;
             _currentVariable = toDisplay;
-            _template = GetOrResolveTemplate(GetType());
+            _template = TemplateProvider.GetTemplate(GetType());
         }
 
         protected bool _isDisposed;
         protected IVariable _currentVariable;
         protected VisualTreeAsset _template;
-
         protected virtual IRowVisualTemplateProvider TemplateProvider => RowVisualTemplateProviderRegistry.Current;
-
-        /// <summary>
-        /// Centralized entry for resolving a handler’s template from cache or resources.
-        /// </summary>
-        protected virtual VisualTreeAsset GetOrResolveTemplate(Type handlerType)
-        {
-            if (handlerType == null)
-            {
-                Debug.LogError($"{GetType().Name} received a null handlerType when resolving templates.");
-                return null;
-            }
-
-            if (TemplateProvider == null)
-            {
-                Debug.LogError("RowVisualHandler cannot resolve templates because no provider is registered.");
-                return null;
-            }
-
-            return TemplateProvider.GetTemplate(handlerType);
-        }
 
         public virtual void Refresh()
         {
             ToggleSubs(false);
             EnsureVisualsAreReady();
             ApplyVarFieldsToOurControls();
-            MarkForRepainting();
-            void MarkForRepainting()
-            {
-                _keyField.MarkDirtyRepaint();
-                _scopeField.MarkDirtyRepaint();
-                RowRoot?.MarkDirtyRepaint();
-            }
+            RowRoot?.MarkDirtyRepaint();
+            KeyField?.MarkDirtyRepaint();
+            ScopeField?.MarkDirtyRepaint();
             ToggleSubs(true);
         }
+
+        #region Subscriptions
+        protected virtual void ToggleSubs(bool on)
+        {
+            ToggleButtonClickSubs(on);
+            ToggleValueChangeSubs(on);
+        }
+
+        protected virtual void ToggleButtonClickSubs(bool on)
+        {
+            if (RemoveButton == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                RemoveButton.clicked += OnRemoveButtonClicked;
+            }
+            else
+            {
+                RemoveButton.clicked -= OnRemoveButtonClicked;
+            }
+        }
+
+        protected virtual void OnRemoveButtonClicked()
+        {
+            RemoveButtonClicked(this);
+        }
+
+        public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
+
+        protected virtual void ToggleValueChangeSubs(bool on)
+        {
+            if (VisualSynchronizer == null)
+            {
+                Debug.LogWarning("RowVisualHandler cannot synchronize because no visual synchronizer is registered.");
+                return;
+            }
+
+            bool shouldConsiderDisconnect = !on || _currentVariable == null || KeyField == null || ScopeField == null;
+            if (shouldConsiderDisconnect)
+            {
+                if (_syncSession != null)
+                {
+                    VisualSynchronizer.Disconnect(_syncSession);
+                    _syncSession = null;
+                }
+                return;
+            }
+
+            RowSyncContext context = new RowSyncContext(
+                _currentVariable,
+                KeyField,
+                ScopeField,
+                field => KeyFieldChanged(field),
+                scope => ScopeFieldChanged(scope),
+                ApplyVarValueToValueField);
+
+            _syncSession = VisualSynchronizer.Connect(context);
+        }
+
+        private IRowSyncSession _syncSession;
+        protected virtual IRowVisualSynchronizer VisualSynchronizer => RowVisualSynchronizerRegistry.Current;
+
+        public event Action<TextField> KeyFieldChanged = delegate { };
+        public event Action<VariableScope> ScopeFieldChanged = delegate { };
+        public event Action<object> ValueFieldChanged = delegate { };
+
+        protected virtual void TriggerValueFieldChanged(object newValue)
+        {
+            ValueFieldChanged(newValue);
+        }
+        #endregion
 
         protected virtual void EnsureVisualsAreReady()
         {
             if (RowRoot == null && _template != null)
             {
                 RegisterVisualElements();
-                SetRootName();
-                void SetRootName()
+                if (RowRoot != null)
                 {
-                    // For easier identification in the debug window
-                    if (_currentVariable != null)
-                    {
-                        string typeName = _currentVariable.ContentType.Name;
-                        RowRoot.name = $"{typeName}_Row";
-                    }
-                    else
-                    {
-                        RowRoot.name = "EmptyRow";
-                    }
+                    RowRoot.name = _currentVariable != null
+                        ? $"{_currentVariable.ContentType.Name}_Row"
+                        : "EmptyRow";
                 }
-                
             }
         }
 
@@ -89,141 +129,76 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            RowRoot = _template.CloneTree();
+            RowVisualElements builtElements = VisualElementBuilder.Build(_template);
+            bool failedToBuild = builtElements == null || builtElements.Root == null;
+            if (failedToBuild)
+            {
+                Debug.LogWarning($"{GetType().Name}: Failed to build visuals from template.");
+                return;
+            }
 
-            _keyField = RowRoot.Q<TextField>("KeyInput");
-            _keyField.isDelayed = true; // So that changes only register on enter or focus loss
-            _keyField.multiline = false;
-
-            _valueFieldHolder = RowRoot.Q<VisualElement>("ValueFieldHolder");
-            valueField = (IBindable)RowRoot.Q("ValueField");
-            _scopeField = RowRoot.Q<EnumField>("Scope");
-            _removeButton = RowRoot.Q<Button>("RemoveButton");
+            ApplyVisualElements(builtElements);
         }
 
-        protected TextField _keyField;
-        protected VisualElement _valueFieldHolder;
-        protected IBindable valueField;
-        protected EnumField _scopeField;
-        protected Button _removeButton;
-        
+        protected virtual IRowVisualElementBuilder VisualElementBuilder => RowVisualElementBuilderRegistry.Current;
+
+        protected virtual void ApplyVisualElements(RowVisualElements elements)
+        {
+            _visualElements = elements;
+            RowRoot = elements.Root;
+        }
+
+        #region Visual Elements Accessors
+        protected RowVisualElements VisualElements => _visualElements;
+        private RowVisualElements _visualElements;
+        protected TextField KeyField => VisualElements?.KeyField;
+        protected VisualElement ValueFieldHolder => VisualElements?.ValueFieldHolder;
+        protected IBindable ValueField => VisualElements?.ValueField;
+        protected EnumField ScopeField => VisualElements?.ScopeField;
+        protected Button RemoveButton => VisualElements?.RemoveButton;
+        #endregion
+
         protected virtual void ApplyVarFieldsToOurControls()
         {
             if (_currentVariable == null)
             {
                 Debug.LogWarning($"[RowVisualHandler] BindFields called but _currentVariable is null " +
-                    $"for handler={GetType().FullName}");
+                    $"for handler = {GetType().FullName}");
                 return;
             }
 
-            // Rather than rely on UITK's auto-binding, we are going to manually
-            // set field values for all variables (be they in FCs or VarSourceAssets).
-            // This way, not only will we no longer need MuscariableHolders, but we can also avoid
-            // some of the serialization pitfalls UITK binding has.
-            _keyField.SetValueWithoutNotify(_currentVariable.Key);
-            _scopeField.SetValueWithoutNotify(_currentVariable.Scope);
-            ApplyVarValueToValueField(); 
+            if (VisualBinder == null)
+            {
+                Debug.LogWarning("RowVisualHandler cannot bind because no visual binder is registered.");
+                return;
+            }
+
+            RowBindingContext context = new RowBindingContext(_currentVariable, _visualElements,
+                ApplyVarValueToValueField);
+            VisualBinder.Bind(context);
         }
 
-        /// <summary>
-        /// This base implementation only works with ObjectFields. If the value is not a
-        /// UnityObject, override this method in your derived class.
-        /// </summary>
+        protected virtual IRowVisualBinder VisualBinder => RowVisualBinderRegistry.Current;
+
         protected virtual void ApplyVarValueToValueField()
         {
-            // This can vary based on the type of value this is representing, hence
-            // the need to allow overrides.
-            if (valueField is EditorObjectField objField)
+            if (ValueField is EditorObjectField objField)
             {
                 objField.SetValueWithoutNotify(_currentVariable.BoxedValue as UnityObj);
                 objField.MarkDirtyRepaint();
             }
         }
 
-        protected virtual void ToggleSubs(bool on)
-        {
-            ToggleButtonClickSubs(on);
-            ToggleValueChangeSubs(on);
-        }
-
-        protected virtual void ToggleButtonClickSubs(bool on)
-        {
-            if (_removeButton == null)
-            {
-                return;
-            }
-
-            if (on)
-            {
-                _removeButton.clicked += OnRemoveButtonClicked;
-            }
-            else
-            {
-                _removeButton.clicked -= OnRemoveButtonClicked;
-            }
-        }
-
-        protected virtual void OnRemoveButtonClicked()
-        {
-            RemoveButtonClicked(this);
-        }
-        public event Action<IRowVisualHandler> RemoveButtonClicked = delegate { };
-
-        protected virtual void ToggleValueChangeSubs(bool on)
-        {
-            if (on)
-            {
-                if (_currentVariable is Muscariable muscari)
-                {
-                    muscari.OnValueChanged += OnVarValueChanged;
-                }
-                _keyField.RegisterValueChangedCallback(OnKeyFieldChanged);
-                _scopeField.RegisterValueChangedCallback(OnScopeValueChanged);
-            }
-            else
-            {
-                if (_currentVariable is Muscariable muscari)
-                {
-                    muscari.OnValueChanged -= OnVarValueChanged;
-                }
-                _keyField.UnregisterValueChangedCallback(OnKeyFieldChanged);
-                _scopeField.UnregisterValueChangedCallback(OnScopeValueChanged);
-            }
-        }
-
-        /// <summary>
-        /// For when the var's value is changed outside the editor field (e.g. via script).
-        /// </summary>
-        protected virtual void OnVarValueChanged(Muscariable varWithValChanged)
-        {
-            ApplyVarValueToValueField();
-        }
-
-        protected virtual void OnKeyFieldChanged(ChangeEvent<string> evt)
-        {
-            KeyFieldChanged(_keyField);
-        }
-        public event Action<TextField> KeyFieldChanged = delegate { };
-
-        protected virtual void OnScopeValueChanged(ChangeEvent<Enum> evt)
-        {
-            VariableScope newVal = (VariableScope)evt.newValue;
-            ScopeFieldChanged(newVal);
-        }
-        public event Action<VariableScope> ScopeFieldChanged = delegate { };
-
-        protected virtual void TriggerValueFieldChanged(object newValue)
-        {
-            ValueFieldChanged(newValue);
-        }
-        public event Action<object> ValueFieldChanged = delegate { };
-
         public virtual IVariable Variable
         {
             get => _currentVariable;
             set
             {
-                if (_currentVariable == value) return;
+                if (_currentVariable == value)
+                {
+                    return;
+                }
+
                 _currentVariable = value;
                 Refresh();
             }
@@ -231,10 +206,17 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Dispose()
         {
-            if (_isDisposed) return;
+            if (_isDisposed)
+            {
+                return;
+            }
+
             _isDisposed = true;
             Reset();
             RemoveButtonClicked = delegate { };
+            KeyFieldChanged = delegate { };
+            ScopeFieldChanged = delegate { };
+            ValueFieldChanged = delegate { };
         }
 
         public virtual void Reset()
@@ -246,19 +228,19 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void Hide()
         {
-            if (RowRoot == null) return;
-            RowRoot.RemoveFromHierarchy();
+            RowRoot?.RemoveFromHierarchy();
         }
 
         protected virtual void NullOutVars()
         {
             _currentVariable = null;
             RowRoot = null;
+            _visualElements = null;
+            _syncSession = null;
         }
 
         public virtual VisualTreeAsset Template => _template;
         public abstract Type VarContentType { get; }
-
     }
 
     public interface IRowVisualHandler : IDisposable, IVarRowEventSignaler
@@ -269,14 +251,6 @@ namespace Amanita.VScripting.EditorUtils
         VisualTreeAsset Template { get; }
         Type VarContentType { get; }
         void Refresh();
-    }
-
-    public interface IVarRowEventSignaler
-    {
-        event Action<IRowVisualHandler> RemoveButtonClicked;
-        event Action<TextField> KeyFieldChanged;
-        event Action<VariableScope> ScopeFieldChanged;
-        event Action<object> ValueFieldChanged;
     }
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
@@ -294,8 +268,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             base.RegisterVisualElements();
 
-            // For those classes that simply need to hook up a UnityObj type to a single ObjectField
-            unityObjField = valueField as EditorObjectField;
+            unityObjField = ValueField as EditorObjectField;
             if (unityObjField != null)
             {
                 unityObjField.objectType = typeof(TVarContentType);
@@ -311,6 +284,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
+
             if (on)
             {
                 unityObjField.RegisterValueChangedCallback(OnObjectFieldChanged);
@@ -326,12 +300,16 @@ namespace Amanita.VScripting.EditorUtils
             TriggerValueFieldChanged(evt.newValue);
         }
 
+        protected override void NullOutVars()
+        {
+            base.NullOutVars();
+            unityObjField = null;
+        }
     }
 
     [RowVisualHandler("Hidden", typeof(object), "Generic",
         "UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
-
     }
 }
