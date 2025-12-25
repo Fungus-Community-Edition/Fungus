@@ -8,7 +8,7 @@ namespace Amanita.VScripting.EditorUtils
         contentType: typeof(Color),
         typeDisplayName: "Color",
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/ColorVariableRow")]
-    public class ColorVariableRow : RowVisualHandler<Color>
+    public class ColorRowVisualHandler : RowVisualHandler<Color>
     {
         protected override void RegisterVisualElements()
         {
@@ -64,7 +64,7 @@ namespace Amanita.VScripting.EditorUtils
         contentType: typeof(Texture),
         typeDisplayName: "Texture",
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/TextureVariableRow")]
-    public class TextureVariableRow : RowVisualHandler<Texture>
+    public class TextureRowVisualHandler : RowVisualHandler<Texture>
     {
 
     }
@@ -73,7 +73,7 @@ namespace Amanita.VScripting.EditorUtils
         contentType: typeof(Material),
         typeDisplayName: "Material",
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/MaterialVariableRow")]
-    public class MaterialVariableRow : RowVisualHandler<Material>
+    public class MaterialRowVisualHandler : RowVisualHandler<Material>
     {
 
     }
@@ -82,7 +82,7 @@ namespace Amanita.VScripting.EditorUtils
         contentType: typeof(Sprite),
         typeDisplayName: "Sprite",
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/SpriteVariableRow")]
-    public class SpriteVariableRow : RowVisualHandler<Sprite>
+    public class SpriteRowVisualHandler : RowVisualHandler<Sprite>
     {
 
     }
@@ -91,7 +91,7 @@ namespace Amanita.VScripting.EditorUtils
         contentType: typeof(Animator),
         typeDisplayName: "Animator",
         pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/AnimatorVariableRow")]
-    public class AnimatorVariableRow : RowVisualHandler<Animator>
+    public class AnimatorRowVisualHandler : RowVisualHandler<Animator>
     {
 
     }

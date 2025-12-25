@@ -255,14 +255,12 @@ namespace Amanita.VScripting.EditorUtils
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
     {
-        protected readonly Type _varContentType;
+        public override Type VarContentType => varContentType;
+        protected static readonly Type varContentType = typeof(TVarContentType);
 
         protected RowVisualHandler()
         {
-            _varContentType = typeof(TVarContentType);
         }
-
-        public override Type VarContentType => _varContentType;
 
         protected override void RegisterVisualElements()
         {
@@ -271,7 +269,7 @@ namespace Amanita.VScripting.EditorUtils
             unityObjField = ValueField as EditorObjectField;
             if (unityObjField != null)
             {
-                unityObjField.objectType = typeof(TVarContentType);
+                unityObjField.objectType = varContentType;
             }
         }
 

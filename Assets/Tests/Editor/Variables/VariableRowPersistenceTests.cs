@@ -14,6 +14,7 @@ using UnityEngine.TestTools;
 using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
+using System.Linq;
 
 namespace VScriptingTests.VariableRows
 {
@@ -186,6 +187,7 @@ namespace VScriptingTests.VariableRows
         private static readonly IReadOnlyDictionary<Type, Action<VisualElement, object>> valueAppliers =
             new Dictionary<Type, Action<VisualElement, object>>
             {
+                #region Numerics
                 {
                     typeof(float),
                     (element, boxed) =>
@@ -198,18 +200,7 @@ namespace VScriptingTests.VariableRows
                         floatField.value = (float)boxed;
                     }
                 },
-                {
-                    typeof(Color),
-                    (element, boxed) =>
-                    {
-                        if (element is not INotifyValueChanged<Color> colorField)
-                        {
-                            throw new InvalidOperationException("ValueField is not a color field.");
-                        }
-
-                        colorField.value = (Color)boxed;
-                    }
-                },
+                
                 {
                     typeof(int),
                     (element, boxed) =>
@@ -220,18 +211,6 @@ namespace VScriptingTests.VariableRows
                         }
 
                         intField.value = (int)boxed;
-                    }
-                },
-                {
-                    typeof(string),
-                    (element, boxed) =>
-                    {
-                        if (element is not INotifyValueChanged<string> stringField)
-                        {
-                            throw new InvalidOperationException("ValueField is not a string field.");
-                        }
-
-                        stringField.value = (string)boxed;
                     }
                 },
                 {
@@ -256,28 +235,31 @@ namespace VScriptingTests.VariableRows
                         vector3Field.value = (Vector3)boxed;
                     }
                 },
+                #endregion
+
+                #region Graphics
                 {
-                    typeof(AudioClip),
+                    typeof(string),
                     (element, boxed) =>
                     {
-                        ObjectField objField = element as ObjectField;
-                        if (objField == null || objField.objectType != typeof(AudioClip))
+                        if (element is not INotifyValueChanged<string> stringField)
                         {
-                            throw new InvalidOperationException("ValueField is not an AudioClip field.");
+                            throw new InvalidOperationException("ValueField is not a string field.");
                         }
-                        objField.value = (AudioClip)boxed;
+
+                        stringField.value = (string)boxed;
                     }
                 },
                 {
-                    typeof(AudioMixer),
+                    typeof(Color),
                     (element, boxed) =>
                     {
-                        ObjectField objField = element as ObjectField;
-                        if (objField == null || objField.objectType != typeof(AudioMixer))
+                        if (element is not INotifyValueChanged<Color> colorField)
                         {
-                            throw new InvalidOperationException("ValueField is not an AudioMixer field.");
+                            throw new InvalidOperationException("ValueField is not a color field.");
                         }
-                        objField.value = (AudioMixer)boxed;
+
+                        colorField.value = (Color)boxed;
                     }
                 },
                 {
@@ -327,7 +309,98 @@ namespace VScriptingTests.VariableRows
                         }
                         objField.value = (Animator)boxed;
                     }
+                },
+                #endregion
+
+                #region Audio
+                {
+                    typeof(AudioClip),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(AudioClip))
+                        {
+                            throw new InvalidOperationException("ValueField is not an AudioClip field.");
+                        }
+                        objField.value = (AudioClip)boxed;
+                    }
+                },
+                {
+                    typeof(AudioSource),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(AudioSource))
+                        {
+                            throw new InvalidOperationException("ValueField is not an AudioSource field.");
+                        }
+                        objField.value = (AudioSource)boxed;
+                    }
+                },
+                {
+                    typeof(AudioMixer),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(AudioMixer))
+                        {
+                            throw new InvalidOperationException("ValueField is not an AudioMixer field.");
+                        }
+                        objField.value = (AudioMixer)boxed;
+                    }
+                },
+                #endregion
+
+                #region Physics
+                {
+                    typeof(Collider),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(Collider))
+                        {
+                            throw new InvalidOperationException("ValueField is not a Collider field.");
+                        }
+                        objField.value = (Collider)boxed;
+                    }
+                },
+                {
+                    typeof(Rigidbody),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(Rigidbody))
+                        {
+                            throw new InvalidOperationException("ValueField is not a Rigidbody field.");
+                        }
+                        objField.value = (Rigidbody)boxed;
+                    }
+                },
+                {
+                    typeof(Collider2D),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(Collider2D))
+                        {
+                            throw new InvalidOperationException("ValueField is not a Collider2D field.");
+                        }
+                        objField.value = (Collider2D)boxed;
+                    }
+                },
+                {
+                    typeof(Rigidbody2D),
+                    (element, boxed) =>
+                    {
+                        ObjectField objField = element as ObjectField;
+                        if (objField == null || objField.objectType != typeof(Rigidbody2D))
+                        {
+                            throw new InvalidOperationException("ValueField is not a Rigidbody2D field.");
+                        }
+                        objField.value = (Rigidbody2D)boxed;
+                    }
                 }
+                #endregion
             };
 
         private static void ApplyValueThroughUi(VariableRow row, object newValue, Type contentType)
@@ -349,30 +422,47 @@ namespace VScriptingTests.VariableRows
         {
             return new Dictionary<Type, Type>
             {
+                #region Numeric
                 { typeof(float), typeof(FloatRowVisualHandler) },
-                { typeof(Color), typeof(ColorVariableRow) },
+                { typeof(Color), typeof(ColorRowVisualHandler) },
                 { typeof(int), typeof(IntRowVisualHandler) },
-                { typeof(string), typeof(StringRowVisualHandler) },
                 { typeof(Vector2), typeof(VectorTwoRowVisualHandler) },
                 { typeof(Vector3), typeof(VectorThreeRowVisualHandler) },
-                { typeof(object), typeof(DefaultRowVisualHandler) },
+                #endregion
+
+                #region Audio
                 { typeof(AudioClip), typeof(AudioClipRowVisualHandler) },
-                //{ typeof(AudioMixer), typeof(AudioMixerRowVisualHandler) }, // Not implemented yet
-                { typeof(Texture), typeof(TextureVariableRow) },
-                { typeof(Material), typeof(MaterialVariableRow) },
-                { typeof(Sprite), typeof(SpriteVariableRow) },
-                { typeof(Animator), typeof(AnimatorVariableRow) },
+                { typeof(AudioSource), typeof(AudioSourceRowVisualHandler) },
+                { typeof(AudioMixer), typeof(AudioMixerRowVisualHandler) },
+                #endregion
+
+                #region Graphics
+                { typeof(string), typeof(StringRowVisualHandler) },
+                { typeof(Texture), typeof(TextureRowVisualHandler) },
+                { typeof(Material), typeof(MaterialRowVisualHandler) },
+                { typeof(Sprite), typeof(SpriteRowVisualHandler) },
+                { typeof(Animator), typeof(AnimatorRowVisualHandler) },
+                #endregion
+
+                #region Physics
+                { typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
+                { typeof(Collider), typeof(ColliderThreeDRowVisualHandler) },
+                { typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
+                { typeof(Collider2D), typeof(ColliderTwoDRowVisualHandler) },
+                #endregion
+
+                #region Etc
+                #endregion
 
             };
         }
 
         private static IEnumerable<VariableRowTestCase> VariableRowCases()
         {
-            yield return new VariableRowTestCase(
-                "ColorVariable",
-                fc => fc.AddNewMuscariable<Color, ColorMuscariable>("ColorVar", Color.red),
-                new Color(0.1f, 0.4f, 0.9f, 0.5f));
+            ShadowDatabase db = AmanitaManager.ShadowDB; // We will need this for some cases
+            var gameObjects = db.GetAssetsOfType<GameObject>(AssetType.Prefab);
 
+            #region Numeric
             yield return new VariableRowTestCase(
                 "FloatVariable",
                 fc => fc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", 1f),
@@ -384,11 +474,6 @@ namespace VScriptingTests.VariableRows
                 42);
 
             yield return new VariableRowTestCase(
-                "StringVariable",
-                fc => fc.AddNewMuscariable<string, StringMuscariable>("StringVar", "Hello"),
-                "World");
-
-            yield return new VariableRowTestCase(
                 "VectorTwoVariable",
                 fc => fc.AddNewMuscariable<Vector2, VectorTwoMuscariable>("Vector2Var", new Vector2(1, 2)),
                 new Vector2(3, 4));
@@ -397,17 +482,18 @@ namespace VScriptingTests.VariableRows
                 "VectorThreeVariable",
                 fc => fc.AddNewMuscariable<Vector3, VectorThreeMuscariable>("Vector3Var", new Vector3(1, 2, 3)),
                 new Vector3(4, 5, 6));
+            #endregion
 
-            // Use ShadowDatabase to find an AudioClip
-            ShadowDatabase db = AmanitaManager.ShadowDB;
-            var audioClips = db.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
-            AudioClip testClip = audioClips.Count > 0 ? 
-                audioClips[0] : 
-                null;
+            #region Graphics
             yield return new VariableRowTestCase(
-                "AudioClipVariable",
-                fc => fc.AddNewMuscariable<AudioClip, AudioClipMuscariable>("AudioClipVar", testClip),
-                testClip);
+                "StringVariable",
+                fc => fc.AddNewMuscariable<string, StringMuscariable>("StringVar", "Hello"),
+                "World");
+
+            yield return new VariableRowTestCase(
+                "ColorVariable",
+                fc => fc.AddNewMuscariable<Color, ColorMuscariable>("ColorVar", Color.red),
+                new Color(0.1f, 0.4f, 0.9f, 0.5f));
 
             var sprites = db.GetAssetsOfType<Sprite>(AssetType.Sprite);
             Sprite testSprite = sprites.Count > 0 ?
@@ -444,6 +530,62 @@ namespace VScriptingTests.VariableRows
                 "AnimatorVariable",
                 fc => fc.AddNewMuscariable<Animator, AnimatorMuscariable>("AnimatorVar", testAnimator),
                 testAnimator);
+            #endregion
+
+            #region Audio
+            var audioClips = db.GetAssetsOfType<AudioClip>(AssetType.AudioClip);
+            AudioClip testClip = audioClips.Count > 0 ? 
+                audioClips[0] : 
+                null;
+            yield return new VariableRowTestCase(
+                "AudioClipVariable",
+                fc => fc.AddNewMuscariable<AudioClip, AudioClipMuscariable>("AudioClipVar", testClip),
+                testClip);
+
+            var audioSources = gameObjects.Select((elem) => elem.GetComponent<AudioSource>())
+                .Where((elem) => elem != null)
+                .ToArray();
+            AudioSource testSource = audioSources.Any() ?
+                audioSources.First().GetComponent<AudioSource>() :
+                null;
+            yield return new VariableRowTestCase(
+                "AudioSourceVariable",
+                fc => fc.AddNewMuscariable<AudioSource, AudioSourceMuscariable>("AudioSourceVar", testSource),
+                testSource);
+
+            var audioMixers = db.GetAssetsOfType<AudioMixer>(AssetType.AudioMixer);
+            AudioMixer testMixer = audioMixers.Count > 0 ?
+                audioMixers[0] :
+                null;
+            yield return new VariableRowTestCase(
+                "AudioMixerVariable",
+                fc => fc.AddNewMuscariable<AudioMixer, AudioMixerMuscariable>("AudioMixerVar", testMixer),
+                testMixer);
+            #endregion
+
+            #region Physics
+            var rigidbodies = gameObjects.Where((elem) => elem.GetComponent<Rigidbody>() != null)
+                .Select((elem) => elem.GetComponent<Rigidbody>())
+                .ToArray();
+            Rigidbody testRigidbody = rigidbodies.Length > 0 ?
+                rigidbodies[0] :
+                null;
+            yield return new VariableRowTestCase(
+                "RigidbodyVariable",
+                fc => fc.AddNewMuscariable<Rigidbody, RigidbodyThreeDMuscariable>("RigidbodyVar", testRigidbody),
+                testRigidbody);
+            var colliders = gameObjects.Where((elem) => elem.GetComponent<Collider>() != null)
+                .Select((elem) => elem.GetComponent<Collider>())
+                .ToArray();
+            Collider testCollider = colliders.Length > 0 ?
+                colliders[0] :
+                null;
+            yield return new VariableRowTestCase(
+                "ColliderVariable",
+                fc => fc.AddNewMuscariable<Collider, ColliderThreeDMuscariable>("ColliderVar", testCollider),
+                testCollider);
+            #endregion
+
 
 
         }
@@ -498,7 +640,7 @@ namespace VScriptingTests.VariableRows
 
             private static IBindable CreateValueField(Type handlerType)
             {
-                if (handlerType == typeof(ColorVariableRow))
+                if (handlerType == typeof(ColorRowVisualHandler))
                 {
                     return new ColorField();
                 }
