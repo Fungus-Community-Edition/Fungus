@@ -10,7 +10,6 @@ using Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
 using Amanita;
 using UitkLabel = UnityEngine.UIElements.Label;
-using Amanita.EditorUtils;
 using UnityEngine.TestTools;
 using System.Collections;
 
@@ -30,11 +29,12 @@ namespace VScriptingTests.VariableRows
 
         private IRowVisualTemplateProvider _originalTemplateProvider;
         private IRowVisualElementBuilder _originalElementBuilder;
-        private TestTemplateProvider _testTemplateProvider;
 
         private class TestHostWindow : EditorWindow { }
 
         private TestHostWindow _uiHost;
+        private VisualElement _uiRoot;
+        private Button _addButton;
 
         [SetUp]
         public void SetUp()
@@ -47,9 +47,7 @@ namespace VScriptingTests.VariableRows
             _originalTemplateProvider = RowVisualTemplateProviderRegistry.Current;
             _originalElementBuilder = RowVisualElementBuilderRegistry.Current;
 
-            _testTemplateProvider = new TestTemplateProvider();
-            RowVisualTemplateProviderRegistry.Current = _testTemplateProvider;
-            RowVisualElementBuilderRegistry.Current = new TestRowVisualElementBuilder();
+            //RowVisualElementBuilderRegistry.Current = new TestRowVisualElementBuilder();
 
             _amanitaManager = AmanitaManager.EnsureExists();
             _objectsToDestroy.Add(_amanitaManager.gameObject);
@@ -64,7 +62,6 @@ namespace VScriptingTests.VariableRows
             _uiHost.rootVisualElement.Add(_uiRoot);
             _uiHost.ShowAuxWindow();
             _uiHost.rootVisualElement.schedule.Execute(() => { }).ExecuteLater(0);
-            
         }
 
         private void InitializeVariableUi()
@@ -106,11 +103,7 @@ namespace VScriptingTests.VariableRows
                 VariableSource = _flowchart,
                 VariableListView = _variableListView
             });
-
         }
-
-        private VisualElement _uiRoot;
-        private Button _addButton;
 
         [TearDown]
         public void TearDown()
@@ -121,7 +114,6 @@ namespace VScriptingTests.VariableRows
 
             RowVisualTemplateProviderRegistry.Current = _originalTemplateProvider;
             RowVisualElementBuilderRegistry.Current = _originalElementBuilder;
-            _testTemplateProvider?.Dispose();
 
             for (int i = _objectsToDestroy.Count - 1; i >= 0; i--)
             {
@@ -133,18 +125,18 @@ namespace VScriptingTests.VariableRows
 
             _objectsToDestroy.Clear();
             Undo.ClearAll();
+            _uiHost.Close();
         }
 
         [UnityTest]
-        public IEnumerator ChangingColorVariableThroughRow_PersistsAndSupportsUndoRedo()
+        public IEnumerator VariableRowChange_PersistsAndSupportsUndoRedo(
+            [ValueSource(nameof(VariableRowCases))] VariableRowTestCase testCase)
         {
-            var variable = _flowchart.AddNewMuscariable<Color, ColorMuscariable>("ColorVar", Color.red);
-            var targetValue = new Color(0.1f, 0.4f, 0.9f, 0.5f);
-
-            yield return AssertValueChangePersists(variable, targetValue);
+            var variable = testCase.CreateVariable(_flowchart);
+            yield return AssertValueChangePersists(variable, testCase.TargetValue);
         }
 
-        private IEnumerator AssertValueChangePersists<T>(Muscariable<T> variable, T newValue)
+        private IEnumerator AssertValueChangePersists(IVariable variable, object newValue)
         {
             yield return null;
             Assert.NotNull(variable, "Variable creation failed.");
@@ -152,17 +144,17 @@ namespace VScriptingTests.VariableRows
             VariableRow row = GetRowFor(variable);
             Assert.NotNull(row, "Variable row could not be materialized.");
 
-            T originalValue = variable.Value;
+            object originalValue = variable.BoxedValue;
 
             ApplyValueThroughUi(row, newValue);
             yield return null;
-            Assert.AreEqual(newValue, variable.Value, "Value change was not applied.");
+            Assert.AreEqual(newValue, variable.BoxedValue, "Value change was not applied.");
 
             Undo.PerformUndo();
-            Assert.AreEqual(originalValue, variable.Value, "Undo did not restore the original value.");
+            Assert.AreEqual(originalValue, variable.BoxedValue, "Undo did not restore the original value.");
 
             Undo.PerformRedo();
-            Assert.AreEqual(newValue, variable.Value, "Redo did not reapply the edited value.");
+            Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
         }
 
         private VariableRow GetRowFor(IVariable variable)
@@ -189,9 +181,7 @@ namespace VScriptingTests.VariableRows
             return -1;
         }
 
-        
-
-        private static void ApplyValueThroughUi<T>(VariableRow row, T newValue)
+        private static void ApplyValueThroughUi(VariableRow row, object newValue)
         {
             VisualElement valueElement = row.RootElement?.Q("ValueField");
             Assert.NotNull(valueElement, "Variable row is missing a ValueField element.");
@@ -199,8 +189,6 @@ namespace VScriptingTests.VariableRows
             if (valueElement is INotifyValueChanged<float> floatField && newValue is float floatValue)
             {
                 floatField.value = floatValue;
-                // Use reflection to trigger the SetValueFieldChanged method since some fields may have custom change events
-                AmanitaEditorSignals.ValueFieldChanged(row, floatValue);
                 return;
             }
 
@@ -210,7 +198,19 @@ namespace VScriptingTests.VariableRows
                 return;
             }
 
-            Assert.Fail($"Unsupported value field type '{valueElement.GetType().Name}' for value '{typeof(T).Name}'.");
+            if (valueElement is INotifyValueChanged<int> intField && newValue is int intValue)
+            {
+                intField.value = intValue;
+                return;
+            }
+
+            if (valueElement is INotifyValueChanged<string> stringField && newValue is string stringValue)
+            {
+                stringField.value = stringValue;
+                return;
+            }
+
+            Assert.Fail($"Unsupported value field type '{valueElement.GetType().Name}' for value '{newValue?.GetType().Name ?? "null"}'.");
         }
 
         private IDictionary<Type, Type> BuildHandlerLookup()
@@ -219,48 +219,50 @@ namespace VScriptingTests.VariableRows
             {
                 { typeof(float), typeof(FloatRowVisualHandler) },
                 { typeof(Color), typeof(ColorVariableRow) },
+                { typeof(int), typeof(IntRowVisualHandler) },
+                { typeof(string), typeof(StringRowVisualHandler) },
                 { typeof(object), typeof(DefaultRowVisualHandler) }
             };
         }
 
-        [UnityTest]
-        public IEnumerator ChangingFloatVariableThroughRow_PersistsAndSupportsUndoRedo()
+        private static IEnumerable<VariableRowTestCase> VariableRowCases()
         {
-            var variable = _flowchart.AddNewMuscariable<float, FloatMuscariable>("FloatVar", 1f);
-            var targetValue = 12.5f;
+            yield return new VariableRowTestCase(
+                "ColorVariable",
+                fc => fc.AddNewMuscariable<Color, ColorMuscariable>("ColorVar", Color.red),
+                new Color(0.1f, 0.4f, 0.9f, 0.5f));
 
-            yield return AssertValueChangePersists(variable, targetValue);
+            yield return new VariableRowTestCase(
+                "FloatVariable",
+                fc => fc.AddNewMuscariable<float, FloatMuscariable>("FloatVar", 1f),
+                12.5f);
+
+            yield return new VariableRowTestCase(
+                "IntVariable",
+                fc => fc.AddNewMuscariable<int, IntMuscariable>("IntVar", 10),
+                42);
+
+            yield return new VariableRowTestCase(
+                "StringVariable",
+                fc => fc.AddNewMuscariable<string, StringMuscariable>("StringVar", "Hello"),
+                "World");
+
+
         }
 
-        private sealed class TestTemplateProvider : IRowVisualTemplateProvider, IDisposable
+        public sealed class VariableRowTestCase
         {
-            private readonly List<VisualTreeAsset> _allocated = new List<VisualTreeAsset>();
-
-            public VisualTreeAsset GetTemplate(Type handlerType)
+            public VariableRowTestCase(string name, Func<Flowchart, IVariable> createVariable, object targetValue)
             {
-                var asset = ScriptableObject.CreateInstance<HandlerAwareVisualTreeAsset>();
-                asset.HandlerType = handlerType;
-                _allocated.Add(asset);
-                return asset;
+                Name = name;
+                CreateVariable = createVariable;
+                TargetValue = targetValue;
             }
 
-            public void ClearCache()
-            {
-                Dispose();
-            }
-
-            public void Dispose()
-            {
-                foreach (var asset in _allocated)
-                {
-                    if (asset != null)
-                    {
-                        UnityObject.DestroyImmediate(asset);
-                    }
-                }
-
-                _allocated.Clear();
-            }
+            public string Name { get; }
+            public Func<Flowchart, IVariable> CreateVariable { get; }
+            public object TargetValue { get; }
+            public override string ToString() => Name;
         }
 
         private sealed class HandlerAwareVisualTreeAsset : VisualTreeAsset
