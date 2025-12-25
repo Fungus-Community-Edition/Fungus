@@ -85,6 +85,7 @@ namespace Amanita.VScripting.EditorUtils
                 _currentVariable,
                 KeyField,
                 ScopeField,
+                ValueField as VisualElement,
                 field => KeyFieldChanged(field),
                 scope => ScopeFieldChanged(scope),
                 ApplyVarValueToValueField);
@@ -152,7 +153,6 @@ namespace Amanita.VScripting.EditorUtils
         protected RowVisualElements VisualElements => _visualElements;
         private RowVisualElements _visualElements;
         protected TextField KeyField => VisualElements?.KeyField;
-        protected VisualElement ValueFieldHolder => VisualElements?.ValueFieldHolder;
         protected IBindable ValueField => VisualElements?.ValueField;
         protected EnumField ScopeField => VisualElements?.ScopeField;
         protected Button RemoveButton => VisualElements?.RemoveButton;

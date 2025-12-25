@@ -3,6 +3,9 @@ using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// Synchronizes the visual elements of a Variable Row with the underlying variable data model.
+    /// </summary>
     public interface IRowVisualSynchronizer
     {
         IRowSyncSession Connect(RowSyncContext context);
@@ -20,6 +23,7 @@ namespace Amanita.VScripting.EditorUtils
             IVariable variable,
             TextField keyField,
             EnumField scopeField,
+            VisualElement valueField,
             Action<TextField> keyFieldChanged,
             Action<VariableScope> scopeFieldChanged,
             Action applyValueFromModel)
@@ -27,6 +31,7 @@ namespace Amanita.VScripting.EditorUtils
             Variable = variable;
             KeyField = keyField;
             ScopeField = scopeField;
+            ValueField = valueField;
             KeyFieldChanged = keyFieldChanged;
             ScopeFieldChanged = scopeFieldChanged;
             ApplyValueFromModel = applyValueFromModel;
@@ -35,6 +40,7 @@ namespace Amanita.VScripting.EditorUtils
         public IVariable Variable { get; }
         public TextField KeyField { get; }
         public EnumField ScopeField { get; }
+        public VisualElement ValueField { get; }
         public Action<TextField> KeyFieldChanged { get; }
         public Action<VariableScope> ScopeFieldChanged { get; }
         public Action ApplyValueFromModel { get; }

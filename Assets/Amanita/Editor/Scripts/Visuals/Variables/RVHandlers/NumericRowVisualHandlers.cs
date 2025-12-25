@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -99,6 +100,29 @@ namespace Amanita.VScripting.EditorUtils
             vector2Field.SetValueWithoutNotify((Vector2)_currentVariable.BoxedValue);
             vector2Field.MarkDirtyRepaint();
         }
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (vector2Field == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                vector2Field.RegisterValueChangedCallback(OnVector2FieldChanged);
+            }
+            else
+            {
+                vector2Field.UnregisterValueChangedCallback(OnVector2FieldChanged);
+            }
+        }
+
+        private void OnVector2FieldChanged(ChangeEvent<Vector2> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
+        }
     }
 
     [RowVisualHandler(menuName: "Numeric",
@@ -124,6 +148,28 @@ namespace Amanita.VScripting.EditorUtils
         {
             vector3Field.SetValueWithoutNotify((Vector3)_currentVariable.BoxedValue);
             vector3Field.MarkDirtyRepaint();
+        }
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (vector3Field == null)
+            {
+                return;
+            }
+            if (on)
+            {
+                vector3Field.RegisterValueChangedCallback(OnVector3FieldChanged);
+            }
+            else
+            {
+                vector3Field.UnregisterValueChangedCallback(OnVector3FieldChanged);
+            }
+        }
+
+        private void OnVector3FieldChanged(ChangeEvent<Vector3> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
         }
     }
 
