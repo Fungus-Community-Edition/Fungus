@@ -268,14 +268,13 @@ namespace Amanita.VScripting.EditorUtils
 
         public static Flowchart GetFlowchart()
         {
-            // Using a temp hidden object to track the active Flowchart across 
-            // serialization / deserialization when playing the game in the editor.
-            EnsureThereIsAmanitaState();
-            static void EnsureThereIsAmanitaState()
+            if (AmanitaManager.S == null)
             {
-                amanitaState = AmanitaManager.S.gameObject.GetOrAddComponent<AmanitaState>();
+                return null;
             }
 
+            amanitaState = AmanitaManager.S.gameObject.GetOrAddComponent<AmanitaState>();
+            
             GameObject oldAmmieStateGo = GameObject.Find("_AmanitaState");
             if (oldAmmieStateGo != null && oldAmmieStateGo != AmanitaManager.S.gameObject)
             {
@@ -394,13 +393,20 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void OnEditorUpdate()
         {
+            if (AmanitaManager.S == null)
+            {
+                return;
+            }
+
             if (Flowchart == null)
             {
                 Flowchart = GetFlowchart();
             }
 
             foreach (var comp in _components)
+            {
                 comp.OnEditorUpdate();
+            }
 
             if (Application.isPlaying)
             {

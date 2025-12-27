@@ -23,7 +23,7 @@ namespace VScriptingTests.VariableOperations
         {
             LogAssert.ignoreFailingMessages = true;
             FakeHandlerWithBadPath.SuppressTemplateErrorsForTests = true;
-            RowVisualHandler.LoggedMissingOnce.Clear();
+            
             PrepFlowchart();
             PrepUIElements();
             DoPreTestAssumptions();
