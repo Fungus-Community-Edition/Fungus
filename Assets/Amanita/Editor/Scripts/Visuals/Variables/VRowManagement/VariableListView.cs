@@ -398,7 +398,11 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void HandleUndoRedoPerformed()
         {
-            AcquireFlowchartIfLost();
+            if (!AcquireFlowchartIfLost())
+            {
+                return;
+            }
+
             SyncFromFlowchart();
             UpdateCount();
         }

@@ -30,15 +30,6 @@ namespace Amanita.VScripting
         IReorderableVariableSource, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver
     {
-#if UNITY_EDITOR
-        [InitializeOnLoadMethod]
-        public static void InitOnLoad()
-        {
-            AmanitaManager.EnsureExists();
-            Debug.Log($"Flowchart InitOnLoad method executed");
-        }
-#endif
-
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
         /// </summary>
@@ -180,7 +171,7 @@ namespace Amanita.VScripting
             
         protected virtual void Awake()
         {
-            if (gameObject.scene.isLoaded == false)
+            if (!this.IsInTheScene)
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
@@ -197,15 +188,12 @@ namespace Amanita.VScripting
 
         protected virtual void Start()
         {
-            if (Application.IsPlaying(this) && !started)
+            if (Application.IsPlaying(this))
             {
-                started = true;
                 AmanitaManager.EnsureExists();
                 StartCoroutine(HandleGameStartedBlocks());
             }
         }
-
-        private bool started;
 
         // There must be an Event System in the scene for Say and Menu input to work.
         // This method will automatically instantiate one if none exists.
@@ -369,12 +357,13 @@ namespace Amanita.VScripting
 
         protected virtual void OnEnable()
         {
-            if (!gameObject.scene.IsValid())
+            if (!this.IsInTheScene)
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
             }
 
+            AmanitaManager.EnsureExists();
             var cachedFlowcharts = AmanitaManager.S.FlowchartsInScene;
             if (!cachedFlowcharts.Contains(this))
             {
@@ -387,6 +376,8 @@ namespace Amanita.VScripting
             StringSubstituter.RegisterHandler(this);   
             FlowchartSignals.FlowchartEnabled(this);
         }
+
+        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
         public virtual void Refresh()
         {
@@ -1826,7 +1817,7 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
-            if (!gameObject.scene.IsValid())
+            if (!this.IsInTheScene)
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;

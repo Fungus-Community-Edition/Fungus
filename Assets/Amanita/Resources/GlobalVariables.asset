@@ -73,7 +73,7 @@ MonoBehaviour:
         key: cuteBgm
         itemID: 4
         _ownerIdIndex: 1
-        value: {fileID: 8300000, guid: 9bd3e580fabb87c40bc7f2c257537cc6, type: 3}
+        value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
     - rid: 7903258335965610044
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:

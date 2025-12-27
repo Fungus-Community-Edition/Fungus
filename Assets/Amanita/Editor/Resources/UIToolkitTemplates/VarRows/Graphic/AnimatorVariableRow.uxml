@@ -6,7 +6,7 @@
         <engine:Label text="Animator" name="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder">
-            <editor:ColorField value="#00FFFFFF" binding-path="value" name="ValueField" />
+            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="value" />
         </engine:VisualElement>
         <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
