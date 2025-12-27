@@ -6,7 +6,9 @@
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
         "Amanita.Core",
-        "Amanita.Core.Editor"
+        "Amanita.Core.Editor",
+        "Lorekeeper",
+        "AmanitaLegacyCollection"
     ],
     "includePlatforms": [
         "Editor"

@@ -12,7 +12,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            textValueField = valueField as TextField;
+            textValueField = ValueField as TextField;
 
             if (textValueField == null)
             {
