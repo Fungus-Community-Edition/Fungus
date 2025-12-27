@@ -13,36 +13,36 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            Vector4Field = ValueField as Vector4Field;
-            if (Vector4Field == null)
+            vector4Field = ValueField as Vector4Field;
+            if (vector4Field == null)
             {
                 Debug.LogError($"VectorThreeRowVisualHandler could not find a Vector4Field named in the UXML template. Check your UXML.");
                 return;
             }
         }
 
-        protected Vector4Field Vector4Field;
+        protected Vector4Field vector4Field;
 
         protected override void ApplyVarValueToValueField()
         {
-            Vector4Field.SetValueWithoutNotify((Vector4)_currentVariable.BoxedValue);
-            Vector4Field.MarkDirtyRepaint();
+            vector4Field.SetValueWithoutNotify((Vector4)_currentVariable.BoxedValue);
+            vector4Field.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (Vector4Field == null)
+            if (vector4Field == null)
             {
                 return;
             }
             if (on)
             {
-                Vector4Field.RegisterValueChangedCallback(OnVector4FieldChanged);
+                vector4Field.RegisterValueChangedCallback(OnVector4FieldChanged);
             }
             else
             {
-                Vector4Field.UnregisterValueChangedCallback(OnVector4FieldChanged);
+                vector4Field.UnregisterValueChangedCallback(OnVector4FieldChanged);
             }
         }
 
@@ -57,42 +57,47 @@ namespace Amanita.VScripting.EditorUtils
         typeDisplayName: "MatrixFourByFour",
         pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/MatrixFourByFourVariableRow")]
     public class MatrixFourByFourVisualHandler : RowVisualHandler<Matrix4x4>
-    {         
+    {
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            Matrix4x4Field = ValueField as Matrix4x4Field;
-            if (Matrix4x4Field == null)
+            fieldController.Init(this.RowRoot);
+            if (!fieldController.IsValid)
             {
-                Debug.LogError($"MatrixFourByFourRowVisualHandler could not find a Matrix4x4Field named in the UXML template. Check your UXML.");
+                Debug.LogError($"MatrixFourByFourRowVisualHandler could not find a Matrix4x4Field " +
+                    $"named in the UXML template. Check your UXML.");
                 return;
             }
         }
-        protected Matrix4x4Field Matrix4x4Field;
+
+        private MatrixFourByFourFieldController fieldController = new MatrixFourByFourFieldController();
+
         protected override void ApplyVarValueToValueField()
         {
-            Matrix4x4Field.SetValueWithoutNotify((Matrix4x4)_currentVariable.BoxedValue);
-            Matrix4x4Field.MarkDirtyRepaint();
+            fieldController.SetValueWithoutNotify((Matrix4x4)_currentVariable.BoxedValue);
+            fieldController.MarkDirtyRepaint();
         }
+
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (Matrix4x4Field == null)
+            if (fieldController == null)
             {
                 return;
             }
             if (on)
             {
-                Matrix4x4Field.RegisterValueChangedCallback(OnMatrix4x4FieldChanged);
+                fieldController.ValueChanged += OnFieldChanged;
             }
             else
             {
-                Matrix4x4Field.UnregisterValueChangedCallback(OnMatrix4x4FieldChanged);
+                fieldController.ValueChanged -= OnFieldChanged;
             }
         }
-        private void OnMatrix4x4FieldChanged(ChangeEvent<Matrix4x4> evt)
+
+        private void OnFieldChanged(Matrix4x4 prev, Matrix4x4 current)
         {
-            TriggerValueFieldChanged(evt.newValue);
+            TriggerValueFieldChanged(current);
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿:root 
 {
-	--vector3-axis-label-width: 15px;
-	--vector3-input-field-width: 28%;
+	--vector-axis-label-width: 15px;
+	--vector-input-field-width: 28%;
 }
 
 #VarRowRoot
@@ -82,9 +82,9 @@
 /* All mini‑labels inside Vector3Field */
 #ValueField .unity-base-field__label 
 {
-	flex: 0 0 var(--vector3-axis-label-width); /* variable width: no grow, no shrink */
+	flex: 0 0 var(--vector-axis-label-width); /* variable width: no grow, no shrink */
 	min-width: 0; /* override baked-in min-width */
-	max-width: var(--vector3-axis-label-width);
+	max-width: var(--vector-axis-label-width);
 	color: rgb(230, 230, 230);
 }
 
@@ -99,7 +99,7 @@
 /* unity-x-input, unity-y-input, unity-z-input */
 #ValueField .unity-composite-field__input .unity-composite-field__field 
 {
-	width: var(--vector3-input-field-width);
+	width: var(--vector-input-field-width);
 	margin: 0px;
 	padding-right: 10px;
 }
