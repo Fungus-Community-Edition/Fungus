@@ -1,0 +1,29 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Amanita_LegacyCollection/Editor/Resources/Stylesheets/matrixFourByFourFieldStyle.uss?fileID=7433441132597879392&amp;guid=c4404a195d8417340953b6f760d5f65f&amp;type=3#matrixFourByFourFieldStyle" />
+    <ui:Foldout text="Matrix" value="true">
+        <ui:VisualElement name="FirstRow" class="rowField">
+            <ui:FloatField value="0" name="R0C0" class="floatValueField" />
+            <ui:FloatField value="0" name="R0C1" class="floatValueField" />
+            <ui:FloatField value="0" name="R0C2" class="floatValueField" />
+            <ui:FloatField value="0" name="R0C3" class="floatValueField" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SecondRow" class="rowField">
+            <ui:FloatField value="0" name="R1C0" class="floatValueField" />
+            <ui:FloatField value="0" name="R1C1" class="floatValueField" />
+            <ui:FloatField value="0" name="R1C2" class="floatValueField" />
+            <ui:FloatField value="0" name="R1C3" class="floatValueField" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ThirdRow" class="rowField">
+            <ui:FloatField value="0" name="R2C0" class="floatValueField" />
+            <ui:FloatField value="0" name="R2C1" class="floatValueField" />
+            <ui:FloatField value="0" name="R2C2" class="floatValueField" />
+            <ui:FloatField value="0" name="R2C3" class="floatValueField" />
+        </ui:VisualElement>
+        <ui:VisualElement name="FourthRow" class="rowField">
+            <ui:FloatField value="0" name="R3C0" class="floatValueField" />
+            <ui:FloatField value="0" name="R3C1" class="floatValueField" />
+            <ui:FloatField value="0" name="R3C2" class="floatValueField" />
+            <ui:FloatField value="0" name="R3C3" class="floatValueField" />
+        </ui:VisualElement>
+    </ui:Foldout>
+</ui:UXML>

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            numericField = valueField as TextValueField<T>;
+            numericField = ValueField as TextValueField<T>;
             
             if (numericField == null)
             {
@@ -84,7 +85,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector2Field = valueField as Vector2Field;
+            vector2Field = ValueField as Vector2Field;
             if (vector2Field == null)
             {
                 Debug.LogError($"VectorTwoRowVisualHandler could not find a Vector2Field named in the UXML template. Check your UXML.");
@@ -99,6 +100,29 @@ namespace Amanita.VScripting.EditorUtils
             vector2Field.SetValueWithoutNotify((Vector2)_currentVariable.BoxedValue);
             vector2Field.MarkDirtyRepaint();
         }
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (vector2Field == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                vector2Field.RegisterValueChangedCallback(OnVector2FieldChanged);
+            }
+            else
+            {
+                vector2Field.UnregisterValueChangedCallback(OnVector2FieldChanged);
+            }
+        }
+
+        private void OnVector2FieldChanged(ChangeEvent<Vector2> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
+        }
     }
 
     [RowVisualHandler(menuName: "Numeric",
@@ -110,7 +134,7 @@ namespace Amanita.VScripting.EditorUtils
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector3Field = valueField as Vector3Field;
+            vector3Field = ValueField as Vector3Field;
             if (vector3Field == null)
             {
                 Debug.LogError($"VectorThreeRowVisualHandler could not find a Vector3Field named in the UXML template. Check your UXML.");
@@ -124,6 +148,28 @@ namespace Amanita.VScripting.EditorUtils
         {
             vector3Field.SetValueWithoutNotify((Vector3)_currentVariable.BoxedValue);
             vector3Field.MarkDirtyRepaint();
+        }
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (vector3Field == null)
+            {
+                return;
+            }
+            if (on)
+            {
+                vector3Field.RegisterValueChangedCallback(OnVector3FieldChanged);
+            }
+            else
+            {
+                vector3Field.UnregisterValueChangedCallback(OnVector3FieldChanged);
+            }
+        }
+
+        private void OnVector3FieldChanged(ChangeEvent<Vector3> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
         }
     }
 

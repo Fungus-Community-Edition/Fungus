@@ -18,11 +18,11 @@ namespace Amanita.EditorUtils
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
         }
 
+
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
             EnsureDefaultTweenAdapter();
-
 
             EnsureSaveStorageSettings();
             EnsureDefaultEncryptor();
