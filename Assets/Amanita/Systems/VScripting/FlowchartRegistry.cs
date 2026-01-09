@@ -34,9 +34,9 @@ namespace Amanita.VScripting
             EnsureInitialized();
         }
 
-        private static void EnsureInitialized()
+        public static void EnsureInitialized(bool forceReinitialize = false)
         {
-            if (isInitialized)
+            if (isInitialized && !forceReinitialize)
             {
                 return;
             }
@@ -59,6 +59,7 @@ namespace Amanita.VScripting
 
         private static void CaptureExistingFlowcharts()
         {
+            flowchartLookup.Clear();
             Flowchart[] existingFlowcharts = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include,
                 FindObjectsSortMode.None);
             for (int i = 0; i < existingFlowcharts.Length; i++)
@@ -67,7 +68,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public static void RegisterFlowchart(Flowchart flowchart)
+        private static void RegisterFlowchart(Flowchart flowchart)
         {
             if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
             {
@@ -84,7 +85,7 @@ namespace Amanita.VScripting
         private static readonly Dictionary<string, Flowchart> flowchartLookup =
             new Dictionary<string, Flowchart>(StringComparer.Ordinal);
 
-        public static void UnregisterFlowchart(Flowchart flowchart)
+        private static void UnregisterFlowchart(Flowchart flowchart)
         {
             if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
             {
