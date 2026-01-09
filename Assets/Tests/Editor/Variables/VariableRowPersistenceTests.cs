@@ -15,10 +15,11 @@ using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {
-    [TestFixture]
     public class VariableRowPersistenceTests
     {
         private Flowchart _flowchart;
@@ -49,8 +50,6 @@ namespace VScriptingTests.VariableRows
 
             _originalTemplateProvider = RowVisualTemplateProviderRegistry.Current;
             _originalElementBuilder = RowVisualElementBuilderRegistry.Current;
-
-            //RowVisualElementBuilderRegistry.Current = new TestRowVisualElementBuilder();
 
             _amanitaManager = AmanitaManager.EnsureExists();
             _objectsToDestroy.Add(_amanitaManager.gameObject);
