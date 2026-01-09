@@ -29,7 +29,8 @@ namespace Amanita.SaveSys
         {
             if (!toCreateFrom.IncludeInSaves)
             {
-                Debug.LogWarning($"Flowchart {toCreateFrom.name} is set to not be included in saves. Thus, it shall not be encoded.");
+                Debug.LogWarning($"VariableSourceAsset {toCreateFrom.name} is set to not be " +
+                    $"included in saves. Thus, it shall not be encoded.");
                 return null;
             }
 
