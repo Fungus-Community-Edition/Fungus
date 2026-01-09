@@ -15,7 +15,11 @@ namespace Lorekeeper
 {
     public class ShadowDatabase : ScriptableObject
     {
+        [Tooltip("Whether or not the prefabs list should only contain top-level game objects.")]
+        [SerializeField] private bool topLevelGameObjectsOnly = true;
+
         // Audio
+        [Header("Assets")]
         [SerializeField] protected List<AudioClip> _audioClips = new List<AudioClip>();
         [SerializeField] protected List<AudioMixer> _audioMixers = new List<AudioMixer>();
 
@@ -126,6 +130,24 @@ namespace Lorekeeper
         public virtual void TryAdd(UnityObj toAdd, AssetType assetType, out bool wasAdded)
         {
             RefreshAsNeeded();
+
+            #region Filtering Checks
+            GameObject goAsset = toAdd as GameObject;
+            if (goAsset != null && topLevelGameObjectsOnly)
+            {
+                if (goAsset.transform.parent == null)
+                {
+                    // It's a top-level GameObject prefab, meaning we can proceed.
+                }
+                else
+                {
+                    // It's part of a scene, so we don't want to add it.
+                    wasAdded = false;
+                    return;
+                }
+            }
+            #endregion
+
             wasAdded = false;
             var listToAddTo = _assetDictionary[assetType];
             // Let's check by reference, since two assets with the same name can exist.
