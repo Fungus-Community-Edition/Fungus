@@ -48,8 +48,6 @@ namespace Amanita.VScripting
         // For more performant lookups, we cache a dictionary of vars by their id.
         protected IDictionary<byte, IVariable> varLookupById = new Dictionary<byte, IVariable>();
 
-
-
         // What the editor utils use to decide how to render this FC's data in the 
         // FlowchartWindow and BlockInspector
         public virtual FlowchartUIModel UIModel
@@ -190,7 +188,6 @@ namespace Amanita.VScripting
         {
             if (Application.IsPlaying(this))
             {
-                AmanitaManager.EnsureExists();
                 StartCoroutine(HandleGameStartedBlocks());
             }
         }
@@ -393,15 +390,11 @@ namespace Amanita.VScripting
         protected virtual void RefreshVarLookups()
         {
             varLookupById.Clear();
-            varLookupByName.Clear();
             foreach (var variable in Variables)
             {
                 varLookupById[variable.ItemId] = variable;
-                varLookupByName[variable.Key] = variable;
             }
         }
-
-        protected IDictionary<string, IVariable> varLookupByName = new Dictionary<string, IVariable>();
 
         protected virtual void AssertOwnership()
         {
@@ -1125,17 +1118,28 @@ namespace Amanita.VScripting
             {
                 var elem = legacyVariables[i];
                 if (!seen.Contains(elem))
+                {
                     ordered.Add(elem);
+                }
             }
             if (ordered.Count == legacyVariables.Count)
+            {
                 legacyVariables = ordered;
+            }
         }
 
-        Muscariable IMuscariableSource.GetVariable(string name)
+        Muscariable IMuscariableSource.GetVariable(string name, StringComparison comparisonType = StringComparison.Ordinal)
         {
             Muscariable result = null;
-            varLookupByName.TryGetValue(name, out IVariable varFound);
-            result = varFound as Muscariable;
+            for (int i = 0; i < muscariables.Count; i++)
+            {
+                var currentVar = muscariables[i];
+                if (currentVar.Key.Equals(name, comparisonType))
+                {
+                    result = currentVar;
+                    break;
+                }
+            }
             return result;
         }
 
@@ -1178,9 +1182,13 @@ namespace Amanita.VScripting
             var variable = GetVariable<TVarType>(key);
 
             if (variable != null)
+            {
                 variable.Value = value;
+            }
             else
+            {
                 LetUserKnowVarDoesntExist(key);
+            }
         }
 
 
@@ -1266,7 +1274,7 @@ namespace Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable("MyBool") as BooleanVariable;
         /// boolVar.Value = false;
         /// </summary>
-        public IVariable GetVariable(string key)
+        public IVariable GetVariable(string key, StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = muscariables.Where(v => v.Key == key).FirstOrDefault();
             result ??= legacyVariables.Where(v => v.Key == key).FirstOrDefault();
@@ -1438,7 +1446,6 @@ namespace Amanita.VScripting
             toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
             toAdd.Init();
             muscariables.Add(toAdd);
-            varLookupByName[toAdd.Key] = toAdd;
             varLookupById[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
         }
@@ -1496,7 +1503,6 @@ namespace Amanita.VScripting
             legacyVariables.Insert(index, whatToInsert);
             VariableAdded(whatToInsert);
         }
-
 
         #endregion
 
@@ -1823,6 +1829,8 @@ namespace Amanita.VScripting
                 return;
             }
 
+            AmanitaManager.EnsureExists();
+
             legacyVariables.RemoveAll((elem) => elem == null);
             muscariables.RemoveAll((elem) => elem == null);
 
@@ -1865,18 +1873,6 @@ namespace Amanita.VScripting
             }
         }
         
-        public virtual bool IsTestOnly
-        {
-            get
-            {
-                return !alwaysKeepGuid;
-            }
-            set
-            {
-                alwaysKeepGuid = !value;
-            }
-        }
-
         public virtual bool AlwaysKeepGuid
         {
             get
@@ -1919,7 +1915,6 @@ namespace Amanita.VScripting
 
         public void OnAfterDeserialize()
         {
-            RefreshVarLookups();
         }
 
 #endif

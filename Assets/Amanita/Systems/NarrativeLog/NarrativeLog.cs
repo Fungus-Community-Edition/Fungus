@@ -25,8 +25,10 @@ namespace Amanita.DialogueSys
     /// <summary>
     /// Controls dialog history
     /// </summary>
-    public class NarrativeLog : MonoBehaviour
+    public class NarrativeLog : MonoBehaviour, IAmanitaManagerSubmodule
     {
+        [SerializeField] private int orderIndex = 0;
+        public int OrderIndex => orderIndex;
         /// <summary>
         /// NarrativeAdded signal. Sent when a line is added.
         /// </summary>

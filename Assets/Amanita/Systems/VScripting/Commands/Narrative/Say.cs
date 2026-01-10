@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
+using UnityEngine.Serialization;
 
 namespace Amanita.DialogueSys.VScripting
 {
@@ -52,7 +53,8 @@ namespace Amanita.DialogueSys.VScripting
         //add wait for vo that overrides stopvo
 
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. All story text will now display using this Say Dialog.")]
-        [SerializeField] protected SayDialog setSayDialog;
+        
+        [SerializeField] protected GameObjectData setSayDialog;
 
         protected int executionCount;
 
@@ -75,6 +77,19 @@ namespace Amanita.DialogueSys.VScripting
 
         public override void OnEnter()
         {
+            #region Input Validation
+            if (setSayDialog != null && setSayDialog.Value != null)
+            {
+                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                {
+                    Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
+                        $"Say Dialog input.", this);
+                    Continue();
+                    return;
+                }
+            }
+            #endregion
+
             if (!showAlways && executionCount >= showCount)
             {
                 Continue();
@@ -86,12 +101,12 @@ namespace Amanita.DialogueSys.VScripting
             // Override the active say dialog if needed
             if (character != null && character.SetSayDialog != null)
             {
-                SayDialog.ActiveSayDialog = character.SetSayDialog;
+                SayDialogManager.S.MainSayDialog = character.SetSayDialog;
             }
 
             if (setSayDialog != null)
             {
-                SayDialog.ActiveSayDialog = setSayDialog;
+                SayDialogManager.S.MainSayDialog = setSayDialog.GetComponent<SayDialog>();
             }
 
             var sayDialog = SayDialog.GetSayDialog();
@@ -164,6 +179,21 @@ namespace Amanita.DialogueSys.VScripting
         }
 
         #endregion
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (oldSetSayDialog != null)
+            {
+                setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
+                oldSetSayDialog = null;
+            }
+        }
+
+        [SerializeField]
+        [HideInInspector]
+        [FormerlySerializedAs("setSayDialog")]
+        protected SayDialog oldSetSayDialog;
 
         #region ILocalizable implementation
 

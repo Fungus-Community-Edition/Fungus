@@ -9,8 +9,10 @@ using Amanita.FSExt;
 
 namespace Amanita.Myceliaudio
 {
-    public class AudioSystem : MonoBehaviour, IAudioPlayer<IPlayAudioContext>
+    public class AudioSystem : MonoBehaviour, IAudioPlayer<IPlayAudioContext>, IAmanitaManagerSubmodule
     {
+        [SerializeField] private int orderIndex = 0;
+        public int OrderIndex => orderIndex;
         public static AudioSystem S
         {
             get => _s;
@@ -19,7 +21,9 @@ namespace Amanita.Myceliaudio
 
         public virtual void Init()
         {
-            if (IsFullyInitted)
+            if (IsFullyInitted || 
+                this.gameObject.scene == default || 
+                this.gameObject.scene.name == AmanitaManager.S.name)
             {
                 return;
             }

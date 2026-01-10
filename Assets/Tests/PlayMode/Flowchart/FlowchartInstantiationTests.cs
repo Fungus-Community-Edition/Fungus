@@ -35,7 +35,7 @@ namespace VScriptingTests.FlowchartLifecycle
             fcHolder = new GameObject("TestFlowchart_InstantiationTestHolder");
             toDestroyOnTearDown.Add(fcHolder);
             testFc = fcHolder.AddComponent<Flowchart>();
-            testFc.IsTestOnly = true;
+            testFc.AlwaysKeepGuid = false;
             Block blockAdded = testFc.CreateBlock(new Vector2(0, 0));
             TestGameStarted testGameStarted = fcHolder.AddComponent<TestGameStarted>();
             blockAdded._EventHandler = testGameStarted;

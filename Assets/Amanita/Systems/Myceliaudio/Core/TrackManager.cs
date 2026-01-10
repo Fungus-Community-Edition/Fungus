@@ -12,6 +12,12 @@ namespace Amanita.Myceliaudio
 
         public virtual void Init(TrackGroup trackGroup)
         {
+            if (this.gameObject.scene == default)
+            {
+                Debug.LogWarning("TrackManager.Init called on a prefab or otherwise non-scene" +
+                    "object. Initialization aborted.");
+                return;
+            }
             this.trackHolder = this.gameObject;
             this.Group = trackGroup;
             this.Anchor = _anchor; // To get volumes adjusted properly
@@ -41,6 +47,11 @@ namespace Amanita.Myceliaudio
                 {
                     if (child.gameObject == trackHolder)
                     {
+                        continue;
+                    }
+                    if (Application.isPlaying)
+                    {
+                        Destroy(child.gameObject);
                         continue;
                     }
                     DestroyImmediate(child.gameObject);

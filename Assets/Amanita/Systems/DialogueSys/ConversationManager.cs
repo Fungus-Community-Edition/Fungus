@@ -113,7 +113,7 @@ namespace Amanita.DialogueSys
             }
 
             sayDialog.SetActive(true);
-            SayDialog.ActiveSayDialog = sayDialog;
+            SayDialogManager.S.MainSayDialog = sayDialog;
 
             return sayDialog;
         }

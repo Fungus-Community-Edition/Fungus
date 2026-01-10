@@ -66,14 +66,14 @@ namespace Amanita.DialogueSys
 		[Tooltip("The character UI object")]
 		[SerializeField] protected Image characterImage;
 		public virtual Image CharacterImage { get { return characterImage; } }
-	
+
 		[Tooltip("Adjust width of story text when Character Image is displayed (to avoid overlapping)")]
 		[SerializeField] protected bool fitTextWithImage = true;
 
 		[Tooltip("Close any other open Say Dialogs when this one is active")]
 		[SerializeField] protected bool closeOtherDialogs;
 
-		protected float startStoryTextWidth; 
+		protected float startStoryTextWidth;
 		protected float startStoryTextInset;
 
 		protected WriterAudio writerAudio;
@@ -109,7 +109,7 @@ namespace Amanita.DialogueSys
 		{
 			activeSayDialogs.Remove(this);
 		}
-			
+
 		protected virtual Writer GetWriter()
 		{
 			if (writer != null)
@@ -132,13 +132,13 @@ namespace Amanita.DialogueSys
 			{
 				return canvasGroup;
 			}
-			
+
 			canvasGroup = GetComponent<CanvasGroup>();
 			if (canvasGroup == null)
 			{
 				canvasGroup = gameObject.AddComponent<CanvasGroup>();
 			}
-			
+
 			return canvasGroup;
 		}
 
@@ -148,13 +148,13 @@ namespace Amanita.DialogueSys
 			{
 				return writerAudio;
 			}
-			
+
 			writerAudio = GetComponent<WriterAudio>();
 			if (writerAudio == null)
 			{
 				writerAudio = gameObject.AddComponent<WriterAudio>();
 			}
-			
+
 			return writerAudio;
 		}
 
@@ -167,7 +167,7 @@ namespace Amanita.DialogueSys
 			GraphicRaycaster raycaster = GetComponent<GraphicRaycaster>();
 			if (raycaster == null)
 			{
-				gameObject.AddComponent<GraphicRaycaster>();    
+				gameObject.AddComponent<GraphicRaycaster>();
 			}
 
 			// It's possible that SetCharacterImage() has already been called from the
@@ -179,7 +179,7 @@ namespace Amanita.DialogueSys
 				SetCharacterName("", Color.white);
 			}
 			if (currentCharacterImage == null)
-			{                
+			{
 				// Character image is hidden by default.
 				SetCharacterImage(null);
 			}
@@ -191,7 +191,7 @@ namespace Amanita.DialogueSys
 
 			if (continueButton != null)
 			{
-				continueButton.gameObject.SetActive( GetWriter().IsWaitingForInput );
+				continueButton.gameObject.SetActive(GetWriter().IsWaitingForInput);
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace Amanita.DialogueSys
 				canvasGroup.alpha = alpha;
 
 				if (alpha <= 0f)
-				{                   
+				{
 					// Deactivate dialog object once invisible
 					gameObject.SetActive(false);
 				}
@@ -392,7 +392,7 @@ namespace Amanita.DialogueSys
 					// Use game object name as default
 					characterName = character.GetObjectName();
 				}
-					
+
 				SetCharacterName(characterName, character.NameColor);
 			}
 		}
@@ -419,34 +419,34 @@ namespace Amanita.DialogueSys
 
 				if (startStoryTextWidth != 0)
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
+						startStoryTextInset,
 						startStoryTextWidth);
 				}
 			}
 
 			// Adjust story text box to not overlap image rect
-			if (fitTextWithImage && 
+			if (fitTextWithImage &&
 				StoryText != null &&
 				characterImage.gameObject.activeSelf)
 			{
 				if (Mathf.Approximately(startStoryTextWidth, 0f))
 				{
 					startStoryTextWidth = StoryTextRectTrans.rect.width;
-					startStoryTextInset = StoryTextRectTrans.offsetMin.x; 
+					startStoryTextInset = StoryTextRectTrans.offsetMin.x;
 				}
 
 				// Clamp story text to left or right depending on relative position of the character image
 				if (StoryTextRectTrans.position.x < characterImage.rectTransform.position.x)
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
+						startStoryTextInset,
 						startStoryTextWidth - characterImage.rectTransform.rect.width);
 				}
 				else
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right,
+						startStoryTextInset,
 						startStoryTextWidth - characterImage.rectTransform.rect.width);
 				}
 			}
@@ -540,7 +540,7 @@ namespace Amanita.DialogueSys
 		/// <summary>
 		/// Tell the Say Dialog to fade out once writing and player input have finished.
 		/// </summary>
-		public virtual bool FadeWhenDone { get {return fadeWhenDone; } set { fadeWhenDone = value; } }
+		public virtual bool FadeWhenDone { get { return fadeWhenDone; } set { fadeWhenDone = value; } }
 
 		/// <summary>
 		/// Stop the Say Dialog while its writing text.
@@ -563,5 +563,15 @@ namespace Amanita.DialogueSys
 		}
 
 		#endregion
+
+		protected virtual void OnEnable()
+		{
+			DialogueSysSignals.SayDialogEnabled(this);
+		}
+
+		protected virtual void OnDisable()
+		{
+			DialogueSysSignals.SayDialogDisabled(this);
+		}
 	}
 }

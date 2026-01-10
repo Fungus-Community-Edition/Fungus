@@ -469,7 +469,7 @@ namespace Amanita.Lua
         /// </summary>
         public virtual void SetSayDialog(SayDialog sayDialog)
         {
-            SayDialog.ActiveSayDialog = sayDialog;
+            SayDialogManager.S.MainSayDialog = sayDialog;
         }
         /// <summary>
         /// Returns the current say dialog.
