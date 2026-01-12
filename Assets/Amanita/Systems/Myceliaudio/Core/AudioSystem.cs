@@ -7,6 +7,10 @@ using System.Linq;
 using UnityEngine;
 using Amanita.FSExt;
 
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
+
 namespace Amanita.Myceliaudio
 {
     public class AudioSystem : MonoBehaviour, IAudioPlayer<IPlayAudioContext>, IAmanitaManagerSubmodule
@@ -23,10 +27,19 @@ namespace Amanita.Myceliaudio
         {
             if (IsFullyInitted || 
                 this.gameObject.scene == default || 
-                this.gameObject.scene.name == AmanitaManager.S.name)
+                this.gameObject.scene.name == AmanitaManager.S.name ||
+                !Application.IsPlaying(this))
             {
                 return;
             }
+
+#if UNITY_EDITOR
+            bool inPrefabMode = PrefabStageUtility.GetCurrentPrefabStage() != null;
+            if (inPrefabMode)
+            {
+                return;
+            }
+#endif
 
             if (_s != null && _s != this)
             {

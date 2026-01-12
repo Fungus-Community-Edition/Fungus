@@ -115,7 +115,8 @@ namespace Amanita.DialogueSys
 
         public static SayDialogManager S
         {
-            get; set;
+            get => s;
+            set => s = value;
         }
         private static SayDialogManager s;
         [SerializeField] private Transform holdsSayDialogs;

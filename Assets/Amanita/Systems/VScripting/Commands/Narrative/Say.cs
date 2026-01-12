@@ -104,7 +104,7 @@ namespace Amanita.DialogueSys.VScripting
                 SayDialogManager.S.MainSayDialog = character.SetSayDialog;
             }
 
-            if (setSayDialog != null)
+            if (setSayDialog != null && setSayDialog.Value != null)
             {
                 SayDialogManager.S.MainSayDialog = setSayDialog.GetComponent<SayDialog>();
             }
@@ -225,5 +225,18 @@ namespace Amanita.DialogueSys.VScripting
         }
 
         #endregion
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            if (setSayDialog != null && setSayDialog.Value != null)
+            {
+                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                {
+                    Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
+                        $"Say Dialog input. That input is the GameObject {setSayDialog.Value.name}");
+                }
+            }
+        }
     }
 }
