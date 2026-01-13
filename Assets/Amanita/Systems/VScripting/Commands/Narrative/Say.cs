@@ -97,21 +97,62 @@ namespace Amanita.DialogueSys.VScripting
             }
 
             executionCount++;
+            SayDialog prevMain = SDManager.MainSayDialog;
 
-            // Override the active say dialog if needed
-            if (character != null && character.SetSayDialog != null)
+            OverrideActiveSayDialogAsNeeded();
+            void OverrideActiveSayDialogAsNeeded()
             {
-                SayDialogManager.S.MainSayDialog = character.SetSayDialog;
+                bool shouldGoWithCharacterSetDialog = character != null && character.SetSayDialog != null;
+                
+                if (shouldGoWithCharacterSetDialog)
+                {
+                    var charaDialog = character.SetSayDialog;
+                    bool itIsPrefab = charaDialog.gameObject.scene == default;
+                    var prevMain = SDManager.MainSayDialog;
+                    if (itIsPrefab)
+                    {
+                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(character.SetSayDialog);
+                    }
+                    else
+                    {
+                        SDManager.MainSayDialog = charaDialog;
+                    }
+
+                }
+
+                bool shouldGoWithCommandSetDialog = setSayDialog != null && setSayDialog.Value != null;
+                // ^Higher priority than the character's set dialog
+                if (shouldGoWithCommandSetDialog)
+                {
+                    var dialogComp = setSayDialog.GetComponent<SayDialog>();
+                    bool itIsPrefab = dialogComp.gameObject.scene == default;
+                    if (itIsPrefab)
+                    {
+                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(dialogComp);
+                    }
+                    else
+                    {
+                        SDManager.MainSayDialog = dialogComp;
+                    }
+                }
             }
 
-            if (setSayDialog != null && setSayDialog.Value != null)
+            HidePrevMainDialogIfChanged();
+            void HidePrevMainDialogIfChanged()
             {
-                SayDialogManager.S.MainSayDialog = setSayDialog.GetComponent<SayDialog>();
+                var currMain = SDManager.MainSayDialog;
+                if (prevMain != currMain)
+                {
+                    prevMain.gameObject.SetActive(false);
+                }
             }
+            
+            var sayDialog = SDManager.MainSayDialog;
 
-            var sayDialog = SayDialog.GetSayDialog();
             if (sayDialog == null)
             {
+                string errorMessage = "No Say Dialog found to display text.";
+                Debug.LogError(errorMessage, this);
                 Continue();
                 return;
             }
@@ -143,6 +184,13 @@ namespace Amanita.DialogueSys.VScripting
             });
         }
 
+        protected virtual void DecideSayDialogToUse(out bool success)
+        {
+            success = false;
+        }
+
+        private SayDialogManager SDManager => SayDialogManager.S;
+
         public override string GetSummary()
         {
             string namePrefix = "";
@@ -169,7 +217,7 @@ namespace Amanita.DialogueSys.VScripting
 
         public override void OnStopExecuting()
         {
-            var sayDialog = SayDialog.GetSayDialog();
+            var sayDialog = SDManager.MainSayDialog;
             if (sayDialog == null)
             {
                 return;

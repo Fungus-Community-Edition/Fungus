@@ -1,7 +1,6 @@
 using UnityEngine;
 using Amanita.DialogueSys;
 using UnityEngine.Serialization;
-using System.Runtime.Serialization;
 
 namespace Amanita.VScripting.Commands.Legacy
 {

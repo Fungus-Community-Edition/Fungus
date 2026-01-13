@@ -84,7 +84,7 @@ namespace Amanita.DialogueSys
         {
             if (writerState == WriterState.End)
             {
-                var sd = SayDialog.GetSayDialog();
+                var sd = SDManager.MainSayDialog;
 
                 if (sd != null)
                 {
@@ -97,6 +97,8 @@ namespace Amanita.DialogueSys
                 }
             }
         }
+
+        private SayDialogManager SDManager => SayDialogManager.S;
 
         #region Public Methods
 

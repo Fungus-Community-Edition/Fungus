@@ -91,23 +91,15 @@ namespace Amanita.DialogueSys
 
 		protected StringSubstituter stringSubstituter = new StringSubstituter();
 
-		// Cache active Say Dialogs to avoid expensive scene search
-		protected static List<SayDialog> activeSayDialogs = new List<SayDialog>();
 
 		protected virtual void Awake()
 		{
-			if (!activeSayDialogs.Contains(this))
-			{
-				activeSayDialogs.Add(this);
-			}
-
 			nameTextAdapter.InitFromGameObject(nameText != null ? nameText.gameObject : nameTextGO);
 			storyTextAdapter.InitFromGameObject(storyText != null ? storyText.gameObject : storyTextGO);
 		}
 
 		protected virtual void OnDestroy()
 		{
-			activeSayDialogs.Remove(this);
 		}
 
 		protected virtual Writer GetWriter()
@@ -240,48 +232,6 @@ namespace Amanita.DialogueSys
 		#region Public members
 
 		public Character SpeakingCharacter { get { return speakingCharacter; } }
-
-		/// <summary>
-		/// Currently active Say Dialog used to display Say text
-		/// </summary>
-		public static SayDialog ActiveSayDialog { get; set; }
-
-		/// <summary>
-		/// Returns a SayDialog by searching for one in the scene or creating one if none exists.
-		/// </summary>
-		public static SayDialog GetSayDialog()
-		{
-			if (ActiveSayDialog == null)
-			{
-				SayDialog sd = null;
-
-				// Use first active Say Dialog in the scene (if any)
-				if (activeSayDialogs.Count > 0)
-				{
-					sd = activeSayDialogs[0];
-				}
-
-				if (sd != null)
-				{
-					ActiveSayDialog = sd;
-				}
-
-				if (ActiveSayDialog == null)
-				{
-					// Auto spawn a say dialog object from the prefab
-					GameObject prefab = Resources.Load<GameObject>("Prefabs/SayDialog");
-					if (prefab != null)
-					{
-						GameObject go = Instantiate(prefab) as GameObject;
-						go.SetActive(false);
-						go.name = "SayDialog";
-						ActiveSayDialog = go.GetComponent<SayDialog>();
-					}
-				}
-			}
-
-			return ActiveSayDialog;
-		}
 
 		/// <summary>
 		/// Stops all active portrait tweens.
@@ -506,12 +456,12 @@ namespace Amanita.DialogueSys
 
 			if (closeOtherDialogs)
 			{
-				for (int i = 0; i < activeSayDialogs.Count; i++)
+				var activeSayDialogs = SayDialogManager.S.ActiveSayDialogs;
+				foreach (var dialog in activeSayDialogs)
 				{
-					var sd = activeSayDialogs[i];
-					if (sd.gameObject != gameObject)
+					if (dialog != this)
 					{
-						sd.SetActive(false);
+						dialog.SetActive(false);
 					}
 				}
 			}

@@ -476,8 +476,10 @@ namespace Amanita.Lua
         /// </summary>
         public virtual SayDialog GetSayDialog ()
         {
-            return SayDialog.GetSayDialog();
+            return SDManager.MainSayDialog;
         }
+
+        private SayDialogManager SDManager => SayDialogManager.S;
 
         /// <summary>
         /// Sync the active menu dialog with what Lua things the MenuDialog should be

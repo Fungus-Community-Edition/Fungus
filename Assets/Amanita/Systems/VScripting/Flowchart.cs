@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
-using UnityObj = UnityEngine.Object;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
