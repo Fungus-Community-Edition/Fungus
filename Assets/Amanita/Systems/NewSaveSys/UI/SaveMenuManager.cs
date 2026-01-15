@@ -5,11 +5,24 @@ namespace Amanita.SaveSys.UI
     /// <summary>
     /// Manages UI aspects of the save menu as a whole.
     /// </summary>
-    public class SaveMenuManager : MonoBehaviour
+    public class SaveMenuManager : MonoBehaviour, IAmanitaManagerSubmodule
     {
+        [SerializeField] private int orderIndex = 0;
+        public int OrderIndex => orderIndex;
         [SerializeField] protected CanvasGroup canvasGroup;
         [Tooltip("If true, the menu will start open.")]
         [SerializeField] protected bool startOpen = false;
+
+        public void Init()
+        {
+            if (IsFullyInitted)
+            {
+                return;
+            }
+            IsFullyInitted = true;
+        }
+
+        public bool IsFullyInitted { get; protected set; } = false;
 
         protected virtual void Awake()
         {

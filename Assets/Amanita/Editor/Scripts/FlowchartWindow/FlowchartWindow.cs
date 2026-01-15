@@ -184,7 +184,6 @@ namespace Amanita.VScripting.EditorUtils
         [MenuItem("Tools/Amanita/Flowchart Window")]
         static void Init()
         {
-            AmanitaManager.EnsureExists();
             GetWindow(typeof(FlowchartWindow), false, "Flowchart");
         }
 
@@ -248,8 +247,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             ListenForEvents();
-
-            AmanitaManager.EnsureExists();
         }
 
         protected GridRenderer _gridRenderer;

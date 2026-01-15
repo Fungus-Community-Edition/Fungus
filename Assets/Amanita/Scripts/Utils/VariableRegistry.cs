@@ -86,7 +86,7 @@ namespace Amanita.VScripting
 
             // Other Flowcharts
             var cachedFcs = AmanitaManager.S.FlowchartsInScene;
-            foreach (var otherChart in cachedFcs.Where(fc => !ReferenceEquals(fc, localSource)))
+            foreach (var otherChart in cachedFcs.Where(fc => fc != null && !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)
                 {

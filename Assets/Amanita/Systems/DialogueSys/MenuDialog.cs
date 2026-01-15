@@ -206,14 +206,16 @@ namespace Amanita.DialogueSys
 		/// </summary>
 		public virtual void HideSayDialog()
 		{
-			var sayDialog = SayDialog.GetSayDialog();
+			var sayDialog = SDManager.MainSayDialog;
 			if (sayDialog != null)
 			{
 				sayDialog.FadeWhenDone = true;
 			}
 		}
 
-		protected IEnumerator CallBlock(Block block)
+		private SayDialogManager SDManager => SayDialogManager.S;
+
+        protected IEnumerator CallBlock(Block block)
 		{
 			yield return new WaitForEndOfFrame();
 			block.StartExecution();

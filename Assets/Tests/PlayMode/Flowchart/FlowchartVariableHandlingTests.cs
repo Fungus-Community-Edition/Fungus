@@ -39,7 +39,7 @@ namespace VScriptingTests.FlowchartLifecycle
             AmanitaManager.S.Init();
             fChartHolder = new GameObject("Flowchart_VariableHandlingTestHolder");
             fChart = fChartHolder.AddComponent<Flowchart>();
-            fChart.IsTestOnly = true;
+            fChart.AlwaysKeepGuid = false;
             toDestroyInTearDown.Add(fChartHolder);
         }
 

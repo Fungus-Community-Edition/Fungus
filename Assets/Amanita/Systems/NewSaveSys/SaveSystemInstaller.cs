@@ -8,8 +8,10 @@ namespace Amanita.SaveSys
     /// <summary>
     /// Injects the save system's dependencies.
     /// </summary>
-    public class SaveSystemInstaller : MonoBehaviour
+    public class SaveSystemInstaller : MonoBehaviour, IAmanitaManagerSubmodule
     {
+        [SerializeField] protected int orderIndex = 0;
+        public int OrderIndex => orderIndex;
         // Other modules that want to inject their own dependencies (say, for an RPG) should
         // do so in Start. This installer will handle all the initialization for the SaveSystem Singleton,
         // not just giving it its initial dependencies.

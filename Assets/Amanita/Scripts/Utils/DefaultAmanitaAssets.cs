@@ -1,6 +1,5 @@
 using Amanita.SaveSys;
 using Amanita.Tweening;
-using UnityEngine;
 
 namespace Amanita
 {

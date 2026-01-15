@@ -190,9 +190,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Master Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e9b9007675259034880ec489e67f728d, type: 2}
-  m_sharedMaterial: {fileID: 1438411608988232385, guid: e9b9007675259034880ec489e67f728d,
-    type: 2}
+  m_fontAsset: {fileID: 0}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
