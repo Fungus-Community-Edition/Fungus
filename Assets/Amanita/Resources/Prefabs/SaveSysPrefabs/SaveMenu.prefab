@@ -1468,11 +1468,11 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 4605209293432029266
+    rid: 3459003350962668323
   references:
     version: 2
     RefIds:
-    - rid: 4605209293432029266
+    - rid: 3459003350962668323
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
@@ -2185,6 +2185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e2fa0887f9a75429c9152a40fe43dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  orderIndex: 0
   canvasGroup: {fileID: 40504156873977944}
   startOpen: 0
 --- !u!225 &40504156873977944

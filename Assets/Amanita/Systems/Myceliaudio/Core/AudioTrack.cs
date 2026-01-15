@@ -4,39 +4,33 @@ using UnityEngine;
 namespace Amanita.Myceliaudio
 {
     /// <summary>
-    /// Helper class for that also kind of wraps Unity's built-in AudioSource component
+    /// Helper class for that also kind of wraps Unity's built-in AudioSource component.
     /// </summary>
-    public class AudioTrack : IAudioTrack
+    public class AudioTrack : MonoBehaviour, IAudioTrack
     {
+        [SerializeField] protected int _id;
+
         public virtual int ID
         {
             get { return _id; }
             set
             {
-                if (_id != value)
-                {
-                    _id = value;
-                    GameObject.name = $"Track_{ID:D3}";
-                }
+                _id = value;
+                gameObject.name = $"Track_{ID:D3}";
             }
         }
 
-        protected int _id;
-
-        public virtual void Init(GameObject parent)
+        public virtual void Init()
         {
-            GameObject = new GameObject($"Track_{ID:D3}");
-            GameObject.transform.SetParent(parent.transform, false);
-
             SetUpAudioSource();
         }
 
-        public GameObject GameObject { get; protected set; } // Might help with custom tweens
+        public GameObject GameObject => this.gameObject; // Might help with custom tweens
 
         protected virtual void SetUpAudioSource()
         {
-            _playsIntros = GameObject.AddComponent<AudioSource>();
-            _playsMains = GameObject.AddComponent<AudioSource>();
+            _playsIntros = gameObject.AddComponent<AudioSource>();
+            _playsMains = gameObject.AddComponent<AudioSource>();
             _playsIntros.playOnAwake = _playsMains.playOnAwake = false;
             _playsIntros.volume = _playsMains.volume = RealVolumeNormalized;
 
@@ -132,16 +126,14 @@ namespace Amanita.Myceliaudio
             Stop();
             LoopStartPoint = args.LoopStartPoint / 1000.0;
             LoopEndPoint = args.LoopEndPoint / 1000.0;
-
             _playsMains.loop = args.Loop;
             _playsMains.clip = args.MainClip;
-
             BaseMainClip = args.MainClip;
 
             if (args.Loop)
             {
                 _playOnLoop = PlayOnLoopCoroutine(args);
-                AudioSys.StartCoroutine(_playOnLoop);
+                StartCoroutine(_playOnLoop);
             }
             else
             {
@@ -250,7 +242,7 @@ namespace Amanita.Myceliaudio
         {
             if (_playOnLoop != null)
             {
-                AudioSys.StopCoroutine(_playOnLoop);
+                StopCoroutine(_playOnLoop);
                 _playOnLoop = null;
             }
 
@@ -331,12 +323,20 @@ namespace Amanita.Myceliaudio
 
         public virtual bool IsLoopingMain
         {
-            get { return _playsMains.loop; }
+            get => _playsMains.loop;
         }
 
-        public virtual double LoopStartPoint { get; protected set; }
-        public virtual double LoopEndPoint { get; protected set; }
+        public virtual double LoopStartPoint { get; private set; }
+        public virtual double LoopEndPoint { get; private set; }
+        public virtual AudioClip BaseMainClip { get; private set; }
 
-        public virtual AudioClip BaseMainClip { get; protected set; }
+        protected virtual void OnValidate()
+        {
+            // Keep the name in sync with the ID
+            this.ID = _id;
+        }
+
+
+
     }
 }

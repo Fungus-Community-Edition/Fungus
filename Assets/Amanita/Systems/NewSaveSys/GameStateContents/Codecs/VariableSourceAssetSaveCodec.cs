@@ -15,7 +15,7 @@ namespace Amanita.SaveSys
     {
         public virtual void PreInstallInit()
         {
-            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
+            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("");
         }
 
         protected IList<VariableSourceAsset> _cachedVsas;

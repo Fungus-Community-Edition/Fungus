@@ -278,7 +278,7 @@ namespace Amanita.VScripting
         /// stuff like serializedObject.ApplyModifiedProperties(), which is why this func can get called
         /// before an editor func is done executing.
         /// </summary>
-        public virtual void OnValidate()
+        protected virtual void OnValidate()
         {
             RefreshForVarDataStability();
 #if UNITY_EDITOR

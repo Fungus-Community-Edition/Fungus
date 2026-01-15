@@ -135,13 +135,13 @@ namespace Amanita.VScripting
         [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
-        public Muscariable GetVariable(string name)
+        public Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
             {
                 Muscariable var = variables[i];
-                if (var.Key == name)
+                if (var.Key.Equals(name, strCompare))
                 {
                     return var;
                 }
@@ -482,7 +482,7 @@ namespace Amanita.VScripting
 
     public interface IMuscariableSource : IVariableSource<Muscariable>
     {
-        Muscariable GetVariable(string name);
+        Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal);
         Muscariable AddNewVariableOfContentType(Type contentType, string key);
     }
 

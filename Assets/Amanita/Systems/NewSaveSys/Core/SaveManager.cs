@@ -1,6 +1,5 @@
 ﻿using Amanita.SaveSys.VScripting;
 using Amanita.Utils;
-using Amanita.VScripting;
 using System;
 using System.Collections.Generic;
 using System.IO;

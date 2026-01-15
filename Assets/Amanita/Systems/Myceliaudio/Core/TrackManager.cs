@@ -1,7 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 
 namespace Amanita.Myceliaudio
 {
@@ -12,15 +12,22 @@ namespace Amanita.Myceliaudio
 
         public virtual void Init(TrackGroup trackGroup)
         {
+            if (this.gameObject.scene == default)
+            {
+                Debug.LogWarning("TrackManager.Init called on a prefab or otherwise non-scene" +
+                    "object. Initialization aborted.");
+                return;
+            }
+
             this.trackHolder = this.gameObject;
             this.Group = trackGroup;
             this.Anchor = _anchor; // To get volumes adjusted properly
             if (this.Group == TrackGroup.Master)
             {
+                // We want the master to only be the anchor for the others, not have its own tracks
                 return;
             }
             SetUpInitialTracks();
-            
         }
 
         protected GameObject trackHolder;
@@ -32,23 +39,19 @@ namespace Amanita.Myceliaudio
 
         protected virtual void SetUpInitialTracks()
         {
-            CleanupForTheEditor();
-            void CleanupForTheEditor()
+            // Find the tracks that are already children of this object
+            FindAndRegisterExistingTracks();
+            void FindAndRegisterExistingTracks()
             {
-                Transform[] children = trackHolder.GetComponentsInChildren<Transform>();
-                trackHolder.transform.DetachChildren();
-                foreach (Transform child in children)
+                IList<AudioTrack> existingTracks = GetComponentsInChildren<AudioTrack>();
+                for (int i = 0; i < existingTracks.Count; i++)
                 {
-                    if (child.gameObject == trackHolder)
-                    {
-                        continue;
-                    }
-                    DestroyImmediate(child.gameObject);
+                    AudioTrack track = existingTracks[i];
+                    track.Anchor = this;
+                    tracks[track.ID] = track;
+                    _defaultFadeTweens.Add(track, null);
                 }
             }
-
-            tracks.Clear(); 
-            _defaultFadeTweens.Clear();
 
             for (int i = 0; i < initTrackCount; i++)
             {
@@ -62,9 +65,11 @@ namespace Amanita.Myceliaudio
         {
             if (!tracks.ContainsKey(id))
             {
-                AudioTrack newTrack = new AudioTrack();
-                newTrack.Init(trackHolder);
+                GameObject trackGO = new GameObject($"Track_{id:D3}");
+                trackGO.transform.SetParent(trackHolder.transform, false);
+                AudioTrack newTrack = trackGO.AddComponent<AudioTrack>();
                 newTrack.ID = id;
+                newTrack.Init();
                 newTrack.Anchor = this;
                 tracks[id] = newTrack;
                 _defaultFadeTweens.Add(newTrack, null);
@@ -295,6 +300,7 @@ namespace Amanita.Myceliaudio
         {
             var trackInvolved = GetTrackEnsured(track);
             trackInvolved.Unpause();
+
         }
 
         public virtual bool IsLoopingMain(int track)

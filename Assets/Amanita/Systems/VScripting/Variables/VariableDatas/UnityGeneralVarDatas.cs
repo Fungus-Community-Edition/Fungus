@@ -22,6 +22,27 @@ namespace Amanita.VScripting
             get => gameObjectRef;
             set => gameObjectRef = value as GameObjectVariable;
         }
+
+        public virtual T GetComponent<T>()
+        {
+            GameObject go = this.Value;
+            if (go != null)
+            {
+                return go.GetComponent<T>();
+            }
+            return default;
+        }
+
+        public virtual bool TryGetComponent<T>(out T result)
+        {
+            result = default;
+            GameObject go = this.Value;
+            if (go != null)
+            {
+                return go.TryGetComponent<T>(out result);
+            }
+            return false;
+        }
     }
 
     /// <summary>
