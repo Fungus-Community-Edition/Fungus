@@ -1731,7 +1731,7 @@ namespace Amanita.VScripting
 
         public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
         {
-            Regex r = new Regex(Flowchart.SubstituteVariableRegexString);
+            Regex r = new Regex(SubstituteVariableRegexString);
 
             // Match the regular expression pattern against a text string.
             var results = r.Matches(str);
@@ -1822,43 +1822,53 @@ namespace Amanita.VScripting
 
         private void OnValidate()
         {
-            if (!this.IsInTheScene)
+            if (!this.IsInTheScene || Application.isPlaying)
             {
                 // Don't do anything if this isn't even in the scene yet
                 return;
             }
 
-            AmanitaManager.EnsureExists();
-
-            legacyVariables.RemoveAll((elem) => elem == null);
-            muscariables.RemoveAll((elem) => elem == null);
-
-            uiModel ??= new FlowchartUIModel();
-            if (uiModel.Owner == null)
+            EditorApplication.delayCall += () =>
             {
-                uiModel.Owner = this.gameObject;
-            }
+                if (this == null) // Object may have been destroyed
 
-            Refresh();
-
-            EnsureBlocksHaveAValidSize();
-            void EnsureBlocksHaveAValidSize()
-            {
-                IList<Block> blocks = GetComponents<Block>();
-                for (int i = 0; i < blocks.Count; i++)
                 {
-                    var currentBlock = blocks[i];
-                    Rect nodeRect = currentBlock._NodeRect;
-                    if (nodeRect.size.Equals(Vector2.zero))
+                    return;
+                }
+
+                AmanitaManager.EnsureExists();
+
+                legacyVariables.RemoveAll((elem) => elem == null);
+                muscariables.RemoveAll((elem) => elem == null);
+
+                uiModel ??= new FlowchartUIModel();
+                if (uiModel.Owner == null)
+                {
+                    uiModel.Owner = this.gameObject;
+                }
+
+                Refresh();
+
+                EnsureBlocksHaveAValidSize();
+                void EnsureBlocksHaveAValidSize()
+                {
+                    IList<Block> blocks = GetComponents<Block>();
+                    for (int i = 0; i < blocks.Count; i++)
                     {
-                        string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
-                        Debug.LogWarning(logMessage);
-                        Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
-                        currentBlock._NodeRect = fixedRect;
+                        var currentBlock = blocks[i];
+                        Rect nodeRect = currentBlock._NodeRect;
+                        if (nodeRect.size.Equals(Vector2.zero))
+                        {
+                            string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
+                            Debug.LogWarning(logMessage);
+                            Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
+                            currentBlock._NodeRect = fixedRect;
+                        }
                     }
                 }
-            }
 
+            };
+            
         }
 
         protected virtual void AssertUniqueID()

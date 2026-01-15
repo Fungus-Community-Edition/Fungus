@@ -519,4 +519,5 @@ MonoBehaviour:
   _physicsMaterials: []
   _physicsMaterials2D:
   - {fileID: 6200000, guid: 5a05bfcb10e8c0e4da63ebcc23179ef4, type: 2}
-  _other: []
+  _other:
+  - {fileID: 6475696996188705980, guid: f28b009cf1c55204298cbc222b1d2b59, type: 2}

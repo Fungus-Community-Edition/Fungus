@@ -639,6 +639,7 @@ MonoBehaviour:
   forceRichText: 1
   instantComplete: 1
   doReadAheadText: 1
+  shakerSO: {fileID: 0}
 --- !u!114 &243104473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -988,7 +989,6 @@ GameObject:
   - component: {fileID: 771014103}
   - component: {fileID: 771014104}
   - component: {fileID: 771014226}
-  - component: {fileID: 771014225}
   - component: {fileID: 771014224}
   - component: {fileID: 771014106}
   - component: {fileID: 771014217}
@@ -1118,25 +1118,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: -300.5118, y: 281.6982}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 274
-  zoom: 0.97
-  scrollViewRect:
-    serializedVersion: 2
-    x: -1118.1486
-    y: -610.735
-    width: 3324.2026
-    height: 2227.3506
-  selectedBlocks:
-  - {fileID: 771014122}
-  selectedCommands: []
-  variables:
+  legacyVariables:
   - {fileID: 771014103}
   - {fileID: 771014234}
   - {fileID: 771014233}
+  muscariables: []
   description: 'This is a simple Choose Your Own Adventure
 
     style game with minimal
@@ -1150,8 +1152,18 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
+  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  alwaysKeepGuid: 1
+  nextValidVarID: 4
+  uniqueId: 51e6dd19-f04f-4a1b-8779-e46f6e8dc163
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &771014101
 Transform:
   m_ObjectHideFlags: 0
@@ -1194,6 +1206,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014178}
   - {fileID: 771014105}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014103
 MonoBehaviour:
@@ -1209,6 +1223,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: lamp_on
+  itemID: 1
+  oldItemID: 0
   value: 0
 --- !u!114 &771014104
 MonoBehaviour:
@@ -1236,7 +1252,7 @@ MonoBehaviour:
   eventHandler: {fileID: 771014165}
   commandList:
   - {fileID: 771014226}
-  - {fileID: 771014225}
+  - {fileID: 0}
   - {fileID: 771014232}
   - {fileID: 771014167}
   - {fileID: 771014166}
@@ -1244,6 +1260,8 @@ MonoBehaviour:
   - {fileID: 771014224}
   - {fileID: 771014161}
   - {fileID: 771014160}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014105
 MonoBehaviour:
@@ -1262,8 +1280,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014106}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014106
@@ -1297,6 +1319,8 @@ MonoBehaviour:
   - {fileID: 771014112}
   - {fileID: 771014108}
   - {fileID: 771014107}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014107
 MonoBehaviour:
@@ -1317,10 +1341,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014119}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014108
@@ -1342,10 +1376,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014109}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014109
@@ -1375,6 +1419,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014111}
   - {fileID: 771014110}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014110
 MonoBehaviour:
@@ -1393,8 +1439,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014106}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014111
@@ -1426,7 +1476,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014112
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1446,10 +1503,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014113}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014113
@@ -1479,6 +1546,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014115}
   - {fileID: 771014114}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014114
 MonoBehaviour:
@@ -1497,8 +1566,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014106}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014115
@@ -1541,7 +1614,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014116
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1561,10 +1641,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014117}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014117
@@ -1594,6 +1684,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014179}
   - {fileID: 771014159}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014118
 MonoBehaviour:
@@ -1614,10 +1706,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014120}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014119
@@ -1650,6 +1752,8 @@ MonoBehaviour:
   - {fileID: 771014194}
   - {fileID: 771014189}
   - {fileID: 771014118}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014120
 MonoBehaviour:
@@ -1678,6 +1782,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014188}
   - {fileID: 771014121}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014121
 MonoBehaviour:
@@ -1696,8 +1802,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014122
@@ -1734,6 +1844,8 @@ MonoBehaviour:
   - {fileID: 771014125}
   - {fileID: 771014124}
   - {fileID: 771014123}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014123
 MonoBehaviour:
@@ -1754,10 +1866,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014203}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014124
@@ -1779,10 +1901,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014141}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014125
@@ -1818,10 +1950,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014207}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014127
@@ -1857,10 +1999,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014210}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014129
@@ -1881,261 +2033,142 @@ MonoBehaviour:
   conditions:
   - compareOperator: 0
     anyVar:
-      variable: {fileID: 771014103}
+      varRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
-        animatorData:
-          animatorRef: {fileID: 0}
-          animatorVal: {fileID: 0}
-        audioSourceData:
-          audioSourceRef: {fileID: 0}
-          audioSourceVal: {fileID: 0}
-        booleanData:
-          booleanRef: {fileID: 0}
-          booleanVal: 0
-        collectionData:
-          collectionRef: {fileID: 0}
-          collectionVal: {fileID: 0}
-        collider2DData:
-          collider2DRef: {fileID: 0}
-          collider2DVal: {fileID: 0}
-        colliderData:
-          colliderRef: {fileID: 0}
-          colliderVal: {fileID: 0}
-        colorData:
-          colorRef: {fileID: 0}
-          colorVal: {r: 0, g: 0, b: 0, a: 0}
-        floatData:
-          floatRef: {fileID: 0}
-          floatVal: 0
-        gameObjectData:
-          gameObjectRef: {fileID: 0}
-          gameObjectVal: {fileID: 0}
-        integerData:
-          integerRef: {fileID: 0}
-          integerVal: 0
-        materialData:
-          materialRef: {fileID: 0}
-          materialVal: {fileID: 0}
-        matrix4x4Data:
-          matrix4x4Ref: {fileID: 0}
-          matrix4x4Val:
-            e00: 0
-            e01: 0
-            e02: 0
-            e03: 0
-            e10: 0
-            e11: 0
-            e12: 0
-            e13: 0
-            e20: 0
-            e21: 0
-            e22: 0
-            e23: 0
-            e30: 0
-            e31: 0
-            e32: 0
-            e33: 0
-        objectData:
-          objectRef: {fileID: 0}
-          objectVal: {fileID: 0}
-        quaternionData:
-          quaternionRef: {fileID: 0}
-          quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-        rigidbody2DData:
-          rigidbody2DRef: {fileID: 0}
-          rigidbody2DVal: {fileID: 0}
-        rigidbodyData:
-          rigidbodyRef: {fileID: 0}
-          rigidbodyVal: {fileID: 0}
-        spriteData:
-          spriteRef: {fileID: 0}
-          spriteVal: {fileID: 0}
-        stringData:
-          stringRef: {fileID: 0}
-          stringVal: 
-        textureData:
-          textureRef: {fileID: 0}
-          textureVal: {fileID: 0}
-        transformData:
-          transformRef: {fileID: 0}
-          transformVal: {fileID: 0}
-        vector2Data:
-          vector2Ref: {fileID: 0}
-          vector2Val: {x: 0, y: 0}
-        vector3Data:
-          vector3Ref: {fileID: 0}
-          vector3Val: {x: 0, y: 0, z: 0}
-        vector4Data:
-          vector4Ref: {fileID: 0}
-          vector4Val: {x: 0, y: 0, z: 0, w: 0}
-        audioClipData:
-          audioClipRef: {fileID: 0}
-          audioClipVal: {fileID: 0}
-        audioMixerGroupData:
-          audioMixerGroupRef: {fileID: 0}
-          audioMixerGroupVal: {fileID: 0}
-        audioMixerSnapshotData:
-          audioMixerSnapshotRef: {fileID: 0}
-          audioMixerSnapshotVal: {fileID: 0}
-        audioMixerData:
-          audioMixerRef: {fileID: 0}
-          audioMixerVal: {fileID: 0}
-        characterData:
-          characterRef: {fileID: 0}
-          characterVal: {fileID: 0}
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 0}
+          owningVsa: {fileID: 0}
+        data:
+          rid: -2
   compareOperator: 0
   anyVar:
-    variable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 0
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
-      audioClipData:
-        audioClipRef: {fileID: 0}
-        audioClipVal: {fileID: 0}
-      audioMixerGroupData:
-        audioMixerGroupRef: {fileID: 0}
-        audioMixerGroupVal: {fileID: 0}
-      audioMixerSnapshotData:
-        audioMixerSnapshotRef: {fileID: 0}
-        audioMixerSnapshotVal: {fileID: 0}
-      audioMixerData:
-        audioMixerRef: {fileID: 0}
-        audioMixerVal: {fileID: 0}
-      characterData:
-        characterRef: {fileID: 0}
-        characterVal: {fileID: 0}
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      data:
+        rid: -2
   variable: {fileID: 0}
   booleanData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     integerRef: {fileID: 0}
-    integerVal: 0
   floatData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     floatRef: {fileID: 0}
-    floatVal: 0
   stringData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   animatorData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
   audioSourceData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
   colorData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
   materialData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
   objectData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
   spriteData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
   textureData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
   transformData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
     transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
   vector2Data:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
   vector3Data:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &771014130
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2155,10 +2188,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014148}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014131
@@ -2180,10 +2223,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014132}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014132
@@ -2213,6 +2266,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014134}
   - {fileID: 771014133}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014133
 MonoBehaviour:
@@ -2231,8 +2286,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014141}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014134
@@ -2262,7 +2321,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014135
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2282,10 +2348,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014144}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014136
@@ -2314,7 +2390,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014137
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2388,7 +2471,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014138
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2415,7 +2505,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014139
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2435,10 +2532,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014140}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014140
@@ -2468,6 +2575,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014143}
   - {fileID: 771014142}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014141
 MonoBehaviour:
@@ -2498,6 +2607,8 @@ MonoBehaviour:
   - {fileID: 771014138}
   - {fileID: 771014131}
   - {fileID: 771014135}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014142
 MonoBehaviour:
@@ -2516,8 +2627,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014144}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014143
@@ -2561,7 +2676,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014144
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2592,6 +2714,8 @@ MonoBehaviour:
   - {fileID: 771014145}
   - {fileID: 771014139}
   - {fileID: 771014130}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014145
 MonoBehaviour:
@@ -2612,10 +2736,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014146}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014146
@@ -2645,6 +2779,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014172}
   - {fileID: 771014147}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014147
 MonoBehaviour:
@@ -2663,8 +2799,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014144}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014148
@@ -2696,6 +2836,8 @@ MonoBehaviour:
   - {fileID: 771014164}
   - {fileID: 771014156}
   - {fileID: 771014149}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014149
 MonoBehaviour:
@@ -2716,10 +2858,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014151}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014150
@@ -2741,10 +2893,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014231}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014151
@@ -2775,6 +2937,8 @@ MonoBehaviour:
   - {fileID: 771014162}
   - {fileID: 771014152}
   - {fileID: 771014150}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014152
 MonoBehaviour:
@@ -2795,10 +2959,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014153}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014153
@@ -2828,6 +3002,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014155}
   - {fileID: 771014154}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014154
 MonoBehaviour:
@@ -2846,8 +3022,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014148}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014155
@@ -2892,7 +3072,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014156
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2912,10 +3099,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014157}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014157
@@ -2945,6 +3142,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014163}
   - {fileID: 771014158}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014158
 MonoBehaviour:
@@ -2963,8 +3162,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014231}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014159
@@ -2984,8 +3187,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014106}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014160
@@ -3007,10 +3214,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014102}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014161
@@ -3032,10 +3249,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014168}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014162
@@ -3091,7 +3318,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014163
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3148,7 +3382,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014164
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3175,7 +3416,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014165
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3220,7 +3468,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 79
   indentLevel: 0
-  sayDialog: {fileID: 676616171}
+  sayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 243104467}
+    gameObjectRef: {fileID: 0}
+  oldSayDialog: {fileID: 0}
 --- !u!114 &771014168
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3248,6 +3503,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014170}
   - {fileID: 771014169}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014169
 MonoBehaviour:
@@ -3266,8 +3523,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014106}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014170
@@ -3307,7 +3568,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014171
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3384,7 +3652,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014172
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3419,7 +3694,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014173
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3446,7 +3728,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014174
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3475,7 +3764,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014178
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3502,7 +3798,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014179
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3545,7 +3848,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014180
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3565,10 +3875,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014181}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014181
@@ -3598,6 +3918,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014184}
   - {fileID: 771014182}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014182
 MonoBehaviour:
@@ -3616,8 +3938,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014184
@@ -3655,7 +3981,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014185
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3682,7 +4015,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014188
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3754,7 +4094,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014189
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3774,10 +4121,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014190}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014190
@@ -3807,6 +4164,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014193}
   - {fileID: 771014191}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014191
 MonoBehaviour:
@@ -3825,8 +4184,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014192
@@ -3860,7 +4223,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014193
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3904,7 +4274,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014194
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3924,10 +4301,20 @@ MonoBehaviour:
   targetBlock: {fileID: 771014195}
   hideIfVisited: 1
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &771014195
@@ -3957,6 +4344,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014197}
   - {fileID: 771014196}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014196
 MonoBehaviour:
@@ -3975,8 +4364,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014119}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014197
@@ -4005,7 +4398,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014198
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4032,7 +4432,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014200
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4075,7 +4482,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014201
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4093,8 +4507,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014202
@@ -4123,7 +4541,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014203
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4151,6 +4576,8 @@ MonoBehaviour:
   commandList:
   - {fileID: 771014202}
   - {fileID: 771014201}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014204
 MonoBehaviour:
@@ -4182,7 +4609,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014205
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4197,159 +4631,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 44
   indentLevel: 0
-  anyVar:
-    variable: {fileID: 771014103}
-    data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 0
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 0
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
-      audioClipData:
-        audioClipRef: {fileID: 0}
-        audioClipVal: {fileID: 0}
-      audioMixerGroupData:
-        audioMixerGroupRef: {fileID: 0}
-        audioMixerGroupVal: {fileID: 0}
-      audioMixerSnapshotData:
-        audioMixerSnapshotRef: {fileID: 0}
-        audioMixerSnapshotVal: {fileID: 0}
-      audioMixerData:
-        audioMixerRef: {fileID: 0}
-        audioMixerVal: {fileID: 0}
-      characterData:
-        characterRef: {fileID: 0}
-        characterVal: {fileID: 0}
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
   setOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 771014100}
+        owningVsa: {fileID: 0}
+      data:
+        rid: -2
   variable: {fileID: 0}
-  booleanData:
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  integerData:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
-  animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
-  audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
-  colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
-  gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
-  objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
-  spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
-  textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
-  transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
-  vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
-  vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &771014206
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4367,8 +4671,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014207
@@ -4399,6 +4707,8 @@ MonoBehaviour:
   - {fileID: 771014205}
   - {fileID: 771014204}
   - {fileID: 771014206}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014208
 MonoBehaviour:
@@ -4414,159 +4724,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 42
   indentLevel: 0
-  anyVar:
-    variable: {fileID: 771014103}
-    data:
-      animatorData:
-        animatorRef: {fileID: 0}
-        animatorVal: {fileID: 0}
-      audioSourceData:
-        audioSourceRef: {fileID: 0}
-        audioSourceVal: {fileID: 0}
-      booleanData:
-        booleanRef: {fileID: 0}
-        booleanVal: 1
-      collectionData:
-        collectionRef: {fileID: 0}
-        collectionVal: {fileID: 0}
-      collider2DData:
-        collider2DRef: {fileID: 0}
-        collider2DVal: {fileID: 0}
-      colliderData:
-        colliderRef: {fileID: 0}
-        colliderVal: {fileID: 0}
-      colorData:
-        colorRef: {fileID: 0}
-        colorVal: {r: 0, g: 0, b: 0, a: 0}
-      floatData:
-        floatRef: {fileID: 0}
-        floatVal: 0
-      gameObjectData:
-        gameObjectRef: {fileID: 0}
-        gameObjectVal: {fileID: 0}
-      integerData:
-        integerRef: {fileID: 0}
-        integerVal: 0
-      materialData:
-        materialRef: {fileID: 0}
-        materialVal: {fileID: 0}
-      matrix4x4Data:
-        matrix4x4Ref: {fileID: 0}
-        matrix4x4Val:
-          e00: 0
-          e01: 0
-          e02: 0
-          e03: 0
-          e10: 0
-          e11: 0
-          e12: 0
-          e13: 0
-          e20: 0
-          e21: 0
-          e22: 0
-          e23: 0
-          e30: 0
-          e31: 0
-          e32: 0
-          e33: 0
-      objectData:
-        objectRef: {fileID: 0}
-        objectVal: {fileID: 0}
-      quaternionData:
-        quaternionRef: {fileID: 0}
-        quaternionVal: {x: 0, y: 0, z: 0, w: 0}
-      rigidbody2DData:
-        rigidbody2DRef: {fileID: 0}
-        rigidbody2DVal: {fileID: 0}
-      rigidbodyData:
-        rigidbodyRef: {fileID: 0}
-        rigidbodyVal: {fileID: 0}
-      spriteData:
-        spriteRef: {fileID: 0}
-        spriteVal: {fileID: 0}
-      stringData:
-        stringRef: {fileID: 0}
-        stringVal: 
-      textureData:
-        textureRef: {fileID: 0}
-        textureVal: {fileID: 0}
-      transformData:
-        transformRef: {fileID: 0}
-        transformVal: {fileID: 0}
-      vector2Data:
-        vector2Ref: {fileID: 0}
-        vector2Val: {x: 0, y: 0}
-      vector3Data:
-        vector3Ref: {fileID: 0}
-        vector3Val: {x: 0, y: 0, z: 0}
-      vector4Data:
-        vector4Ref: {fileID: 0}
-        vector4Val: {x: 0, y: 0, z: 0, w: 0}
-      audioClipData:
-        audioClipRef: {fileID: 0}
-        audioClipVal: {fileID: 0}
-      audioMixerGroupData:
-        audioMixerGroupRef: {fileID: 0}
-        audioMixerGroupVal: {fileID: 0}
-      audioMixerSnapshotData:
-        audioMixerSnapshotRef: {fileID: 0}
-        audioMixerSnapshotVal: {fileID: 0}
-      audioMixerData:
-        audioMixerRef: {fileID: 0}
-        audioMixerVal: {fileID: 0}
-      characterData:
-        characterRef: {fileID: 0}
-        characterVal: {fileID: 0}
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
   setOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 771014100}
+        owningVsa: {fileID: 0}
+      data:
+        rid: -2
   variable: {fileID: 0}
-  booleanData:
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  integerData:
-    integerRef: {fileID: 0}
-    integerVal: 0
-  floatData:
-    floatRef: {fileID: 0}
-    floatVal: 0
-  stringData:
-    stringRef: {fileID: 0}
-    stringVal: 
-  animatorData:
-    animatorRef: {fileID: 0}
-    animatorVal: {fileID: 0}
-  audioSourceData:
-    audioSourceRef: {fileID: 0}
-    audioSourceVal: {fileID: 0}
-  colorData:
-    colorRef: {fileID: 0}
-    colorVal: {r: 0, g: 0, b: 0, a: 0}
-  gameObjectData:
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  materialData:
-    materialRef: {fileID: 0}
-    materialVal: {fileID: 0}
-  objectData:
-    objectRef: {fileID: 0}
-    objectVal: {fileID: 0}
-  rigidbody2DData:
-    rigidbody2DRef: {fileID: 0}
-    rigidbody2DVal: {fileID: 0}
-  spriteData:
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
-  textureData:
-    textureRef: {fileID: 0}
-    textureVal: {fileID: 0}
-  transformData:
-    transformRef: {fileID: 0}
-    transformVal: {fileID: 0}
-  vector2Data:
-    vector2Ref: {fileID: 0}
-    vector2Val: {x: 0, y: 0}
-  vector3Data:
-    vector3Ref: {fileID: 0}
-    vector3Val: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &771014209
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4584,8 +4764,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014122}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014210
@@ -4616,6 +4800,8 @@ MonoBehaviour:
   - {fileID: 771014208}
   - {fileID: 771014200}
   - {fileID: 771014209}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014213
 MonoBehaviour:
@@ -4644,7 +4830,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014217
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4673,7 +4866,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014224
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4705,25 +4905,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
---- !u!114 &771014225
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 771014099}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1902400ccc99b45d69ad01cb86b57d0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 1
-  indentLevel: 0
-  musicClip: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
-  atTime: 0
-  loop: 1
-  fadeDuration: 1
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014226
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4736,7 +4925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437f9a4e3dbc647f9bdce95308418bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 0
+  itemId: 110
   indentLevel: 0
   duration: 0.5
   fadeOut: 1
@@ -4745,10 +4934,10 @@ MonoBehaviour:
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   targetCamera: {fileID: 0}
-  fadeTweenType: 4
-  orthoSizeTweenType: 4
-  posTweenType: 4
-  rotTweenType: 4
+  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
 --- !u!114 &771014228
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4766,8 +4955,12 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 771014104}
   startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
     stringRef: {fileID: 0}
-    stringVal: 
   startIndex: 0
   callMode: 0
 --- !u!114 &771014229
@@ -4812,7 +5005,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &771014231
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4841,6 +5041,8 @@ MonoBehaviour:
   - {fileID: 771014230}
   - {fileID: 771014229}
   - {fileID: 771014228}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &771014232
 MonoBehaviour:
@@ -4860,33 +5062,76 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       integerRef: {fileID: 771014233}
-      integerVal: 0
-    clip:
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
       audioClipRef: {fileID: 771014234}
-      audioClipVal: {fileID: 0}
     loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 771014100}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 771014100}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
 --- !u!114 &771014233
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4898,10 +5143,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgmTrack
+  itemID: 3
+  oldItemID: 0
   value: 0
 --- !u!114 &771014234
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -4913,6 +5160,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgm
+  itemID: 2
+  oldItemID: 0
   value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
 --- !u!114 &942879775 stripped
 MonoBehaviour:

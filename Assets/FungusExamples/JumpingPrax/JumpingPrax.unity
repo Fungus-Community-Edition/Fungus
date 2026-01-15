@@ -144,7 +144,6 @@ GameObject:
   - component: {fileID: 16019623}
   - component: {fileID: 16019626}
   - component: {fileID: 16019650}
-  - component: {fileID: 16019649}
   - component: {fileID: 16019647}
   - component: {fileID: 16019646}
   - component: {fileID: 16019645}
@@ -196,6 +195,7 @@ MonoBehaviour:
   legacyVariables:
   - {fileID: 16019654}
   - {fileID: 16019653}
+  muscariables: []
   description: 'This scene shows how to control a Unity animation
 
     using trigger
@@ -213,8 +213,12 @@ MonoBehaviour:
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
+  alwaysKeepGuid: 1
   nextValidVarID: 3
   uniqueId: 3e653513-d8b5-47a9-853f-e1bd59b3bb79
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &16019624
 Transform:
   m_ObjectHideFlags: 0
@@ -247,20 +251,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 16019626}
   startLabel:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 
-    stringRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &16019626
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -286,7 +284,7 @@ MonoBehaviour:
   description: 
   eventHandler: {fileID: 16019651}
   commandList:
-  - {fileID: 16019649}
+  - {fileID: 0}
   - {fileID: 16019652}
   - {fileID: 16019650}
   - {fileID: 16019647}
@@ -326,7 +324,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &16019628
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -342,37 +347,29 @@ MonoBehaviour:
   itemId: 7
   indentLevel: 0
   _animator:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: {fileID: 0}
-    animatorRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
   _parameterName:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 
-    stringRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
   value:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 0
-    booleanRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
     booleanVal: 0
   animatorOLD: {fileID: 0}
   parameterNameOLD: 
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &16019642
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -399,7 +396,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &16019643
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -415,37 +419,29 @@ MonoBehaviour:
   itemId: 5
   indentLevel: 0
   _animator:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: {fileID: 0}
-    animatorRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
   _parameterName:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 
-    stringRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
   value:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 0
-    booleanRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
     booleanVal: 1
   animatorOLD: {fileID: 0}
   parameterNameOLD: 
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &16019645
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -472,7 +468,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &16019646
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -520,25 +523,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
---- !u!114 &16019649
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16019622}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1902400ccc99b45d69ad01cb86b57d0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 1
-  indentLevel: 0
-  musicClip: {fileID: 8300000, guid: 1fafd5646150a7e4481f8d47f9ee2fe6, type: 3}
-  atTime: 0
-  loop: 1
-  fadeDuration: 1
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &16019650
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -551,7 +543,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437f9a4e3dbc647f9bdce95308418bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 0
+  itemId: 12
   indentLevel: 0
   duration: 1
   fadeOut: 1
@@ -597,96 +589,73 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
-      valObj:
-        rid: -2
-      varRef:
-        rid: 4382208363762811839
-      valOfType: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       integerRef: {fileID: 16019653}
     introClip:
-      valObj:
-        rid: -2
-      varRef:
-        rid: -2
-      valOfType: {fileID: 0}
-      audioClipRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
     mainClip:
-      valObj:
-        rid: -2
-      varRef:
-        rid: 4382208363762811840
-      valOfType: {fileID: 0}
-      audioClipRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
     loop:
-      valObj:
-        rid: -2
-      varRef:
-        rid: -2
-      valOfType: 0
-      booleanRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
-      valObj:
-        rid: -2
-      varRef:
-        rid: -2
-      valOfType: 0
-      floatRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
     loopEndPoint:
-      valObj:
-        rid: -2
-      varRef:
-        rid: -2
-      valOfType: 0
-      floatRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
     oneShot:
-      valObj:
-        rid: -2
-      varRef:
-        rid: -2
-      valOfType: 0
-      booleanRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 0
-    booleanRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
     booleanVal: 1
   useConfigSO:
-    valObj:
-      rid: -2
-    varRef:
-      rid: -2
-    valOfType: 0
-    booleanRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 16019623}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 4382208363762811839
-      type: {class: 'VariablePointer`1[[System.Int32, mscorlib]]', ns: Amanita.VScripting,
-        asm: Amanita}
-      data:
-        _component: {fileID: 16019653}
-    - rid: 4382208363762811840
-      type: {class: 'VariablePointer`1[[UnityEngine.AudioClip, UnityEngine.AudioModule]]',
-        ns: Amanita.VScripting, asm: Amanita}
-      data:
-        _component: {fileID: 16019654}
 --- !u!114 &16019653
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -702,6 +671,7 @@ MonoBehaviour:
   scope: 0
   key: bgmTrack
   itemID: 2
+  oldItemID: 0
   value: 2
 --- !u!114 &16019654
 MonoBehaviour:
@@ -718,6 +688,7 @@ MonoBehaviour:
   scope: 0
   key: bgm
   itemID: 1
+  oldItemID: 0
   value: {fileID: 8300000, guid: 1fafd5646150a7e4481f8d47f9ee2fe6, type: 3}
 --- !u!1 &38131365
 GameObject:
@@ -1754,60 +1725,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &1344360975 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4469286571874459662, guid: a717114cba7201448ae3154bfb3fb737,
-    type: 3}
-  m_PrefabInstance: {fileID: 2120475824}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1344360986
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344360975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 2
-  key: saveNameSuffix
-  itemID: 7
-  value: 
---- !u!114 &1344360987
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344360975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 2
-  key: saveNamePrefix
-  itemID: 6
-  value: 
---- !u!114 &1344360988
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344360975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 2
-  key: saveName
-  itemID: 5
-  value: Slot
 --- !u!1 &1371766534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2940,19 +2857,7 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1730926212}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4469286571874459662, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1344360988}
-    - targetCorrespondingSourceObject: {fileID: 4469286571874459662, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1344360987}
-    - targetCorrespondingSourceObject: {fileID: 4469286571874459662, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1344360986}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

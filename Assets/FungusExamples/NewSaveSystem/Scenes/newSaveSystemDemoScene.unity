@@ -93,7 +93,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: f28b009cf1c55204298cbc222b1d2b59,
+    type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -376,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: John
   nameColor: {r: 0.25882354, g: 0.25490198, b: 0.2627451, a: 1}
-  soundEffect: {fileID: 8300000, guid: 3f244b0ea8fc90446baebef62dfd285b, type: 3}
+  soundEffect: {fileID: 0}
   portraits:
   - {fileID: 21300000, guid: 061fcd6caac25954287291fffde7cd2c, type: 3}
   - {fileID: 21300000, guid: e8a9122c4dc10b14da3b625e1f2634c9, type: 3}
@@ -1336,7 +1337,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: Sherlock
   nameColor: {r: 0.25882354, g: 0.25490198, b: 0.2627451, a: 1}
-  soundEffect: {fileID: 8300000, guid: 0eb825d5775aa234280e50db9a33cffe, type: 3}
+  soundEffect: {fileID: 0}
   portraits:
   - {fileID: 21300000, guid: 8f5b5b110e73a414eb229eeead86200f, type: 3}
   - {fileID: 21300000, guid: 65cda1e3dd1ec8c4bb828adc5bb06c7d, type: 3}
