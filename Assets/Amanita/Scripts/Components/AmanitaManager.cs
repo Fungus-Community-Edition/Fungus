@@ -154,6 +154,7 @@ namespace Amanita
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
+        [MenuItem("Tools/Atelier Mycelia/Amanita/Ensure Amanita Manager", priority = 0)]
         public static AmanitaManager EnsureExists()
         {
             // Fast path
@@ -312,32 +313,7 @@ namespace Amanita
 
         private SaveMenuManager _saveMenuInstance;
 
-        public static SaveMenuManager SaveMenu 
-        { 
-            get
-            {
-                if (S == null)
-                {
-                    Debug.LogError("AmanitaManager.S is null. Cannot access SaveMenu.");
-                    return null;
-                }
-                
-                // Lazy instantiation on first access
-                if (S._saveMenuInstance == null)
-                {
-                    S.InstantiateSaveMenuIfNeeded();
-                }
-                
-                return S._saveMenuInstance;
-            }
-            private set
-            {
-                if (S != null)
-                {
-                    S._saveMenuInstance = value;
-                }
-            }
-        }
+        public static SaveMenuManager SaveMenuManager { get; private set; }
 
         public bool IsFullyInitted
         {
@@ -361,13 +337,8 @@ namespace Amanita
                 AudioSystem = GetComponentInChildren<AudioSystem>();
                 SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
                 TweenManager = GetComponentInChildren<TweenManager>();
+                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
                 
-                // Check if SaveMenu already exists in hierarchy (for backwards compatibility)
-                SaveMenuManager existingMenu = GetComponentInChildren<SaveMenuManager>();
-                if (existingMenu != null)
-                {
-                    _saveMenuInstance = existingMenu;
-                }
             }
 
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();

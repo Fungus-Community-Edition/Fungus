@@ -5,13 +5,15 @@ namespace Amanita.SaveSys.UI
     /// <summary>
     /// Manages UI aspects of the save menu as a whole.
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     public class SaveMenuManager : MonoBehaviour, IAmanitaManagerSubmodule
     {
         [SerializeField] private int orderIndex = 0;
-        public int OrderIndex => orderIndex;
         [SerializeField] protected CanvasGroup canvasGroup;
         [Tooltip("If true, the menu will start open.")]
         [SerializeField] protected bool startOpen = false;
+
+        public int OrderIndex => orderIndex;
 
         public void Init()
         {
@@ -26,16 +28,6 @@ namespace Amanita.SaveSys.UI
 
         protected virtual void Awake()
         {
-            if (canvasGroup == null)
-            {
-                canvasGroup = GetComponent<CanvasGroup>();
-                bool stillNothing = canvasGroup == null;
-                if (stillNothing)
-                {
-                    canvasGroup = gameObject.AddComponent<CanvasGroup>();
-                }
-            }
-
             _slotUiManager = GetComponentInChildren<SaveSlotUIManager>();
             if (startOpen)
             {
@@ -43,6 +35,7 @@ namespace Amanita.SaveSys.UI
             }
             else
             {
+                isOpen = true;
                 Close();
             }
         }
@@ -94,7 +87,7 @@ namespace Amanita.SaveSys.UI
         {
             if (canvasGroup == null)
             {
-                canvasGroup = GetComponent<CanvasGroup>();
+                canvasGroup = gameObject.GetOrAddComponent<CanvasGroup>();
             }
         }
     }

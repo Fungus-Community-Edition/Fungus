@@ -43,7 +43,7 @@ namespace Amanita.SaveSys.UI.VScripting
             Continue();
         }
 
-        private static SaveMenuManager Menu => AmanitaManager.SaveMenu;
+        private static SaveMenuManager Menu => AmanitaManager.SaveMenuManager;
 
         public override string GetSummary()
         {
