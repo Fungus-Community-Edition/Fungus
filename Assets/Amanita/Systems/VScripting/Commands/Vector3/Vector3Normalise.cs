@@ -14,6 +14,13 @@ namespace Amanita.VScripting
         [SerializeField]
         protected Vector3Data vec3In, vec3Out;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(vec3In);
+            variableDataCache.Add(vec3Out);
+        }
+
         public override void OnEnter()
         {
             vec3Out.Value = vec3In.Value.normalized;

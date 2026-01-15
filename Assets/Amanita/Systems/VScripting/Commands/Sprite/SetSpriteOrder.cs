@@ -18,6 +18,12 @@ namespace Amanita.VScripting.Commands
         [Tooltip("The order in layer value to set on the target sprites")]
         [SerializeField] protected IntegerData orderInLayer;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(orderInLayer);
+        }
+
         #region Public members
 
         public override void OnEnter()
