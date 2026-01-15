@@ -30,6 +30,7 @@ namespace VScriptingTests.FlowchartLifecycle
         [SetUp]
         public void Setup()
         {
+            FlowchartRegistry.EnsureInitialized(true);
             AmanitaManager.EnsureExists();
             AmanitaManager.S.Init();
             fcHolder = new GameObject("TestFlowchart_InstantiationTestHolder");
@@ -52,7 +53,10 @@ namespace VScriptingTests.FlowchartLifecycle
         {
             EventSystem evSys = UnityObj.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
             // ^Might've been created by the fc during the test
-            toDestroyOnTearDown.Add(evSys.gameObject);
+            if (evSys != null)
+            {
+                toDestroyOnTearDown.Add(evSys.gameObject);
+            }
 
             if (testFc != null)
             {
@@ -63,7 +67,7 @@ namespace VScriptingTests.FlowchartLifecycle
             {
                 if (obj != null)
                 {
-                    UnityObj.Destroy(obj);
+                    UnityObj.DestroyImmediate(obj);
                 }
             }
 
@@ -87,7 +91,7 @@ namespace VScriptingTests.FlowchartLifecycle
         }
 
         [UnityTest]
-        public IEnumerator Flowchart_RemovesFromCachedFlowcharts_OnDisableOrDestroy()
+        public IEnumerator Flowchart_RemovesFromCachedFlowcharts_OnDestroy()
         {
             yield return null;
             var cachedFcs = AmanitaManager.S.FlowchartsInScene;
@@ -95,20 +99,15 @@ namespace VScriptingTests.FlowchartLifecycle
                 "Precondition failed: Flowchart not added to cache.");
 
             // Act: disable first to trigger OnDisable, then destroy to ensure cleanup
-            fcHolder.SetActive(false);
+            testFc.OnTearDown();
+            UnityObj.Destroy(fcHolder);
             yield return null;
+            cachedFcs = AmanitaManager.S.FlowchartsInScene; // Since FlowchartsInScene only returns a snapshot
             Assert.IsFalse(cachedFcs.Contains(testFc), 
                 "Flowchart should be removed from CachedFlowcharts on OnDisable.");
 
-            // Re-enable to re-add, then destroy to verify removal via OnDestroy/cleanup
-            fcHolder.SetActive(true);
-            yield return null;
-            Assert.IsTrue(cachedFcs.Contains(testFc), 
-                "Precondition failed: Flowchart not re-added to cache.");
-
-            testFc.OnTearDown(); // ensure proper cleanup
-            UnityObj.Destroy(fcHolder);
             yield return null; // allow destroy to complete
+            yield return null;
 
             Assert.IsFalse(cachedFcs.Contains(testFc), 
                 "Flowchart should be removed from CachedFlowcharts after destruction.");

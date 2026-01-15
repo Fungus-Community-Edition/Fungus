@@ -24,14 +24,16 @@ namespace Amanita.VScripting
         private static void OnEditorLoad()
         {
             Debug.Log("FlowchartRegistry initializing on editor load.");
-            EnsureInitialized();
+            EnsureInitialized(true);
         }
 #endif
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnRuntimeLoad()
         {
-            EnsureInitialized();
+            // Note: RuntimeInitializeLoadType.BeforeSceneLoad makes this execute once per app launch,
+            // right before the first scene is loaded. Not right before just any scene is loaded.
+            EnsureInitialized(true);
         }
 
         public static void EnsureInitialized(bool forceReinitialize = false)
@@ -41,20 +43,27 @@ namespace Amanita.VScripting
                 return;
             }
 
-            SubscribeToSignals();
+            ToggleSubs(false);
+            ToggleSubs(true);
             CaptureExistingFlowcharts();
             isInitialized = true;
         }
 
         private static bool isInitialized;
 
-        private static void SubscribeToSignals()
+        private static void ToggleSubs(bool on)
         {
-            FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
-            FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
-
-            FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
-            FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+            if (on)
+            {
+                FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
+                FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+            }
+            else
+            {
+                FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
+                FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
+            }
+            
         }
 
         private static void CaptureExistingFlowcharts()
@@ -77,6 +86,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
+                Debug.Log($"Registering Flowchart {flowchart.name} into registry");
                 flowchartLookup[flowchart.UniqueId] = flowchart;
             }
         }
@@ -94,6 +104,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
+                Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
                 flowchartLookup.Remove(flowchart.UniqueId);
             }
         }
