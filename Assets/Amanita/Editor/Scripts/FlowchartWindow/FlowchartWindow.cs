@@ -267,6 +267,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (AmanitaManager.S == null)
             {
+                Debug.LogWarning($"AmanitaManager.S is null. Cannot get Flowchart.");
                 return null;
             }
 
@@ -281,7 +282,12 @@ namespace Amanita.VScripting.EditorUtils
 
             amanitaState.Refresh();
 
-            return amanitaState.SelectedFlowchart;
+            Flowchart result = amanitaState.SelectedFlowchart;
+            if (result == null)
+            {
+                result = amanitaState.LastSelectedFlowchart;
+            }
+            return result;
         }
 
         protected static AmanitaState amanitaState;

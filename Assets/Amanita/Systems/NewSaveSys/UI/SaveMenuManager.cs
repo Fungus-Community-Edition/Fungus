@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.SaveSys.UI
@@ -29,20 +30,29 @@ namespace Amanita.SaveSys.UI
         protected virtual void Awake()
         {
             _slotUiManager = GetComponentInChildren<SaveSlotUIManager>();
+            OpenLogic = DefaultOpenLogic;
+            CloseLogic = DefaultCloseLogic;
+
             if (startOpen)
             {
-                Open();
+                Open(null);
             }
             else
             {
                 isOpen = true;
-                Close();
+                Close(null);
             }
         }
 
         private SaveSlotUIManager _slotUiManager;
 
-        public virtual void Open()
+        /// <summary>
+        /// Clients (not necessarily subclasses) should override this when they want to decide what this does when
+        /// asked to open.
+        /// </summary>
+        public Action<object> OpenLogic;
+
+        private void DefaultOpenLogic(object args)
         {
             if (isOpen)
             {
@@ -58,7 +68,13 @@ namespace Amanita.SaveSys.UI
 
         private bool isOpen;
 
-        public virtual void Close()
+        /// <summary>
+        /// Clients (not necessarily subclasses) should override this when they want to decide what this does when
+        /// asked to close.
+        /// </summary>
+        public Action<object> CloseLogic;
+
+        private void DefaultCloseLogic(object args)
         {
             if (!isOpen)
             {
@@ -71,16 +87,36 @@ namespace Amanita.SaveSys.UI
             SaveSysSignals.SaveMenuClosed();
         }
 
+        public virtual void Open(object args)
+        {
+            OpenLogic(args);
+        }
+
+        public virtual void Close(object args)
+        {
+            CloseLogic(args);
+        }
+
         public virtual void Toggle()
         {
             if (isOpen)
             {
-                Close();
+                Close(null);
             }
             else
             {
-                Open();
+                Open(null);
             }
+        }
+
+        public virtual void Open()
+        {
+            Open(null);
+        }
+
+        public virtual void Close()
+        {
+            Close(null);
         }
 
         protected virtual void OnValidate()
