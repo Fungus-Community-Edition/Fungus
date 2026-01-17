@@ -63,7 +63,6 @@ namespace Amanita.VScripting
                 FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
                 FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
             }
-            
         }
 
         private static void CaptureExistingFlowcharts()
