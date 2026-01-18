@@ -19,6 +19,13 @@ namespace Amanita.VScripting.Commands.Legacy
         [HideInInspector] [FormerlySerializedAs("sayDialog")]
         [SerializeField] protected SayDialog oldSayDialog;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(sayDialog);
+        }
+
+
         protected override void OnEnable()
         {
             base.OnEnable();

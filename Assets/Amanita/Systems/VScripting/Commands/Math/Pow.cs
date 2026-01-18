@@ -18,6 +18,14 @@ namespace Amanita.VScripting
         [SerializeField]
         protected FloatData outValue;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(baseValue);
+            variableDataCache.Add(exponentValue);
+            variableDataCache.Add(outValue);
+        }
+
         public override void OnEnter()
         {
             outValue.Value = Mathf.Pow(baseValue.Value, exponentValue.Value);

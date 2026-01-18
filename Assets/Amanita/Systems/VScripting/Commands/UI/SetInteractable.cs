@@ -18,6 +18,12 @@ namespace Amanita.VScripting
         [Tooltip("Controls if the selectable UI object be interactable or not")]
         [SerializeField] protected BooleanData interactableState = new BooleanData(true);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(interactableState);
+        }
+
         #region Public members
 
         public override void OnEnter()

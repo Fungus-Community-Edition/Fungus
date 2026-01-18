@@ -11,6 +11,13 @@ namespace Amanita.VScripting
         [SerializeField] protected GameObjectData inputFieldHolder;
         [SerializeField] protected StringData text;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(inputFieldHolder);
+            variableDataCache.Add(text);
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();

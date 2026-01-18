@@ -19,6 +19,12 @@ namespace Amanita.VScripting
 
         protected BaseVariableProperty.GetSet getOrSet = BaseVariableProperty.GetSet.Set;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(value);
+        }
+
         #region Public members
 
         public override void OnEnter() 
