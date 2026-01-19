@@ -43,6 +43,13 @@ namespace Amanita.VScripting
         [VariableProperty(typeof(FloatVariable), typeof(BooleanVariable), typeof(IntegerVariable))]
         protected Variable outValue;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(keyCodeName);
+            variableDataCache.Add(keyCodeNameNegative);
+        }
+
         public override void OnEnter()
         {
             FillOutValue(0);

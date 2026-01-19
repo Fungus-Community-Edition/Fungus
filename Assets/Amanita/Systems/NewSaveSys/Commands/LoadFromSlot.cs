@@ -14,6 +14,14 @@ namespace Amanita.SaveSys.VScripting
         [Tooltip("If you want this to be true, best make sure that this Command is on a persistent GameObject.")]
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(slotIndex);
+            variableDataCache.Add(loadScene);
+            variableDataCache.Add(waitUntilFinished);
+        }
+
         public override void OnEnter()
         {
             bool validSlotIndex = slotIndex != null && slotIndex.Value >= SaveSystem.minSlotNumber;

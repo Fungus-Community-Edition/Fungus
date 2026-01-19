@@ -501,8 +501,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f51d5d43c9aa1f74f9f074ab44db7b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstClip: {fileID: 8300000, guid: d99959378cd1aed49b9d406020adc820, type: 3}
-  secondClip: {fileID: 8300000, guid: a5b41984cbdf6b9448bffa75bdeb8d77, type: 3}
+  firstClip: {fileID: 0}
+  secondClip: {fileID: 0}
   volChangeInterval: 5
   fadeChangeInterval: 0.5
   raiseMusicVol: {fileID: 0}
@@ -957,12 +957,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 6
   blockName: Init
   description: 
   eventHandler: {fileID: 1470413094}
   commandList:
   - {fileID: 1470413102}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1470413096
 MonoBehaviour:
@@ -976,25 +978,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: 196.09074, y: 170.22723}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 240
-  zoom: 0.8800001
-  scrollViewRect:
-    serializedVersion: 2
-    x: -343
-    y: -340
-    width: 1114
-    height: 859
-  selectedBlocks:
-  - {fileID: 1470413105}
-  selectedCommands:
-  - {fileID: 1470413101}
-  variables:
+  legacyVariables:
   - {fileID: 1470413103}
   - {fileID: 1470413106}
+  muscariables: []
   description: 
   stepPause: 0
   colorCommands: 1
@@ -1003,8 +1006,18 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
+  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  alwaysKeepGuid: 1
+  nextValidVarID: 3
+  uniqueId: 4357d60a-0fd7-42d0-8a87-83f349f37566
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &1470413097
 Transform:
   m_ObjectHideFlags: 0
@@ -1061,6 +1074,8 @@ MonoBehaviour:
   eventHandler: {fileID: 1470413098}
   commandList:
   - {fileID: 1470413100}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1470413100
 MonoBehaviour:
@@ -1080,27 +1095,70 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       integerRef: {fileID: 1470413106}
-      integerVal: 0
-    clip:
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
       audioClipRef: {fileID: 1470413103}
-      audioClipVal: {fileID: 0}
     loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 1
   useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
@@ -1121,8 +1179,12 @@ MonoBehaviour:
   stopMode: 1
   trackGroup: 2
   track:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     integerRef: {fileID: 1470413106}
-    integerVal: 0
 --- !u!114 &1470413102
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1141,27 +1203,70 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       integerRef: {fileID: 1470413106}
-      integerVal: 0
-    clip:
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
       audioClipRef: {fileID: 1470413103}
-      audioClipVal: {fileID: 0}
     loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
@@ -1179,6 +1284,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgm
+  itemID: 1
+  oldItemID: 0
   value: {fileID: 8300000, guid: eb2cfabb9985f2f489e93a8e2b7db129, type: 3}
 --- !u!114 &1470413104
 MonoBehaviour:
@@ -1221,6 +1328,8 @@ MonoBehaviour:
   eventHandler: {fileID: 1470413104}
   commandList:
   - {fileID: 1470413101}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1470413106
 MonoBehaviour:
@@ -1236,6 +1345,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgmTrack
+  itemID: 2
+  oldItemID: 0
   value: 0
 --- !u!1 &1484781003
 GameObject:
@@ -1296,9 +1407,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e9b9007675259034880ec489e67f728d, type: 2}
-  m_sharedMaterial: {fileID: 1438411608988232385, guid: e9b9007675259034880ec489e67f728d,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1433,9 +1543,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Stop
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e9b9007675259034880ec489e67f728d, type: 2}
-  m_sharedMaterial: {fileID: 1438411608988232385, guid: e9b9007675259034880ec489e67f728d,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

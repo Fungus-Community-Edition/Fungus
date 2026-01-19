@@ -19,7 +19,10 @@ namespace Amanita.Utils
             if (S == null)
             {
                 S = this;
-                DontDestroyOnLoad(gameObject);
+                if (gameObject.transform.parent == null)
+                {
+                    DontDestroyOnLoad(gameObject);
+                }
             }
             else
             {

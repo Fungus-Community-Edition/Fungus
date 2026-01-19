@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using Amanita;
 using Amanita.VScripting;
 using UnityEditor;
 using UnityEditor.SceneManagement;

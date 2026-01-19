@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Type = System.Type;
 
 namespace Amanita.VScripting
 {

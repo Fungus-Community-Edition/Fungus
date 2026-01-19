@@ -104,7 +104,8 @@ namespace Amanita
         public virtual PortraitState State { get { return portaitState; } }
 
         /// <summary>
-        /// Sets the active Say dialog with a reference to a Say Dialog object in the scene. This Say Dialog will be used whenever the character speaks.
+        /// Sets the active Say dialog with a reference to a Say Dialog object or a prefab. 
+        /// This Say Dialog will be used whenever the character speaks.
         /// </summary>
         public virtual SayDialog SetSayDialog { get { return setSayDialog; } }
 

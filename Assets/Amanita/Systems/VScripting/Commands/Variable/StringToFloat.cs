@@ -11,6 +11,13 @@ namespace Amanita.VScripting
         [SerializeField] [VariableProperty(typeof(FloatVariable))]
         protected FloatVariable output;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(input);
+        }
+
+
         public override void OnEnter()
         {
             base.OnEnter();

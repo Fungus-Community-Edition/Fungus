@@ -29,6 +29,14 @@ namespace Amanita.VScripting
         [SerializeField]
         protected FloatData outValue;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(inLHSValue);
+            variableDataCache.Add(inRHSValue);
+            variableDataCache.Add(outValue);
+        }
+
         public override void OnEnter()
         {
             switch (function)

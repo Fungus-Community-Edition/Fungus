@@ -14,9 +14,15 @@ namespace Amanita.VScripting
         [SerializeField]
         protected Vector3Data vec3;
 
-
         [SerializeField]
         protected Vector2Data vec2;
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(vec3);
+            variableDataCache.Add(vec2);
+        }
 
         public override void OnEnter()
         {

@@ -16,9 +16,10 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnEnable()
         {
             if (EraseOrphanedInstance()) // Check for an orphaned editor instance
+            {
                 return;
+            }
 
-            AmanitaManager.EnsureExists();
             addTexture = AmanitaEditorResources.AddSmall;
             _manager?.Dispose();
         }

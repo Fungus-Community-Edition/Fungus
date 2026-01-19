@@ -24,6 +24,7 @@ namespace Amanita
     {
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
+        [SerializeField] private SaveMenuManager saveMenuPrefab;
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
@@ -147,21 +148,18 @@ namespace Amanita
             GetOrAddGuidRegistryFor<VariableSourceAsset>();
         }
 
+        public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
+
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
+        [MenuItem("Tools/Atelier Mycelia/Amanita/Ensure Amanita Manager", priority = 0)]
         public static AmanitaManager EnsureExists()
         {
             // Fast path
-            if (_s != null)
-            {
-                _s.Init();
-                return _s;
-            }
-
             lock (_ensureLock)
-            {
+            { 
                 // Double-check after taking the lock
                 if (_s != null)
                 {
@@ -224,8 +222,6 @@ namespace Amanita
                 return null;
             }
 
-            // Resources.Load may call Awake on the prefab's script in some Unity versions,
-            // so we null-check again after instantiation.
             AmanitaManager instantiated;
 #if UNITY_EDITOR
             instantiated = PrefabUtility.InstantiatePrefab(prefab) as AmanitaManager;
@@ -239,7 +235,9 @@ namespace Amanita
 
         public void Init()
         {
-            if (IsFullyInitted)
+            if (IsFullyInitted || 
+                this.gameObject.scene == default ||
+                this.gameObject.scene.name == this.name) // <- This can happen when we're in prefab mode
             {
                 return;
             }
@@ -286,20 +284,36 @@ namespace Amanita
 
             // So GetOrCreateAnchorFor can parent anchors.
             EnsureTweenAnchorHolder();
+            
+            // Don't instantiate SaveMenu during Init - let it be lazy-loaded when first accessed
+            
             PrepSubmodules();
-
         }
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene
+        private void InstantiateSaveMenuIfNeeded()
         {
-            get
+            if (_saveMenuInstance != null)
             {
-                var result = FlowchartRegistry.GetFlowcharts();
-                return result;
+                return;
+            }
+
+            if (saveMenuPrefab == null)
+            {
+                Debug.LogWarning("SaveMenuManager prefab reference is missing on AmanitaManager.");
+                return;
+            }
+
+            _saveMenuInstance = Instantiate(saveMenuPrefab, this.transform);
+
+            if (_saveMenuInstance != null)
+            {
+                _saveMenuInstance.gameObject.name = saveMenuPrefab.name;
             }
         }
 
-        public static SaveMenuManager SaveMenu { get; private set; }
+        private SaveMenuManager _saveMenuInstance;
+
+        public static SaveMenuManager SaveMenuManager { get; private set; }
 
         public bool IsFullyInitted
         {
@@ -312,24 +326,28 @@ namespace Amanita
         private void PrepSubmodules()
         {
             // We assume that these are each on separate GameObjects (for the sake of easier testing)
-            FlowchartRegistry.EnsureInitialized(true);
-            this.gameObject.GetOrAddComponent<AmanitaState>();
-            CameraManager = GetComponentInChildren<CameraManager>();
-            EventDispatcher = GetComponentInChildren<EventDispatcher>();
-            NarrativeLog = GetComponentInChildren<NarrativeLog>();
-            AudioSystem = GetComponentInChildren<AudioSystem>();
-            SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
-            TweenManager = GetComponentInChildren<TweenManager>();
-            SaveMenu = GetComponentInChildren<SaveMenuManager>();
-
-            InitAll();
-            void InitAll()
+            FetchSubmodules();
+            void FetchSubmodules()
             {
-                // The order here matters
-                TweenManager.Init();
-                NarrativeLog.Init();
-                AudioSystem.Init();
-                SaveSysInstaller.Init();
+                FlowchartRegistry.EnsureInitialized(true);
+                this.gameObject.GetOrAddComponent<AmanitaState>();
+                CameraManager = GetComponentInChildren<CameraManager>();
+                EventDispatcher = GetComponentInChildren<EventDispatcher>();
+                NarrativeLog = GetComponentInChildren<NarrativeLog>();
+                AudioSystem = GetComponentInChildren<AudioSystem>();
+                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
+                TweenManager = GetComponentInChildren<TweenManager>();
+                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
+                
+            }
+
+            List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
+            // Lower order index, earlier execution
+            submodules.Sort((first, second) => first.OrderIndex.CompareTo(second.OrderIndex));
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var module = submodules[i];
+                module.Init();
             }
         }
 
@@ -375,12 +393,12 @@ namespace Amanita
             }
             
             _s = this;
-            if (Application.isPlaying)
+            Init();
+
+            if (Application.IsPlaying(this))
             {
                 DontDestroyOnLoad(gameObject);
             }
-
-            Init();
         }
 
         private SaveSystemInstaller SaveSysInstaller { get; set; }
@@ -430,6 +448,11 @@ namespace Amanita
         {
             if (_s == this)
             {
+                _s = null;
+                SaveSystem.S = null;
+                AudioSystem.S = null;
+                TweenManager.S = null;
+
                 // Clean up anchors we created
                 if (_adapterAnchors != null)
                 {
@@ -449,9 +472,7 @@ namespace Amanita
                     _adapterAnchors.Clear();
                 }
 
-                _s = null;
-
-                SaveSystem.S = null;
+                
             }
         }
 

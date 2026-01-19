@@ -184,7 +184,6 @@ namespace Amanita.VScripting.EditorUtils
         [MenuItem("Tools/Amanita/Flowchart Window")]
         static void Init()
         {
-            AmanitaManager.EnsureExists();
             GetWindow(typeof(FlowchartWindow), false, "Flowchart");
         }
 
@@ -247,9 +246,7 @@ namespace Amanita.VScripting.EditorUtils
                     comp.Initialize(this);
             }
 
-            ListenForEvents();
-
-            AmanitaManager.EnsureExists();
+            ToggleSubs(true);
         }
 
         protected GridRenderer _gridRenderer;
@@ -270,6 +267,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (AmanitaManager.S == null)
             {
+                Debug.LogWarning($"AmanitaManager.S is null. Cannot get Flowchart.");
                 return null;
             }
 
@@ -282,9 +280,12 @@ namespace Amanita.VScripting.EditorUtils
                 Object.DestroyImmediate(oldAmmieStateGo);
             }
 
-            amanitaState.Refresh();
-
-            return amanitaState.SelectedFlowchart;
+            Flowchart result = amanitaState.SelectedFlowchart;
+            if (result == null)
+            {
+                result = amanitaState.LastSelectedFlowchart;
+            }
+            return result;
         }
 
         protected static AmanitaState amanitaState;
@@ -305,13 +306,29 @@ namespace Amanita.VScripting.EditorUtils
 
         protected SearchPanel searchPanel;
 
-        protected virtual void ListenForEvents()
+        protected virtual void ToggleSubs(bool on)
         {
-            EditorApplication.update += OnEditorUpdate;
-            Undo.undoRedoPerformed += Undo_ForceRepaint;
-            EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-            ListenForUiToolkitEvents();
-            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            if (on)
+            {
+                EditorApplication.update += OnEditorUpdate;
+                Undo.undoRedoPerformed += Undo_ForceRepaint;
+                EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
+                ListenForUiToolkitEvents();
+                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            }
+            else
+            {
+                EditorApplication.update -= OnEditorUpdate;
+                Undo.undoRedoPerformed -= Undo_ForceRepaint;
+                EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
+                UnregisterUiToolkitCallbacks();
+                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+            }
+        }
+
+        private void OnSelectionChanged()
+        {
+            GetFlowchart();
         }
 
         protected virtual void OnEmptySpaceClicked()
@@ -333,7 +350,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnDisable()
         {
             Clipboard?.Dispose();
-            UnregisterCallbacks();
+            ToggleSubs(false);
             CleanUpSearchPanel();
 
             for (int i = 0; i < _components.Count; i++)
@@ -342,15 +359,6 @@ namespace Amanita.VScripting.EditorUtils
                 componentEl.Dispose();
             }
             _components.Clear();
-        }
-
-        protected virtual void UnregisterCallbacks()
-        {
-            EditorApplication.update -= OnEditorUpdate;
-            Undo.undoRedoPerformed -= Undo_ForceRepaint;
-            EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
-            UnregisterUiToolkitCallbacks();
-            FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
         }
 
         protected virtual void UnregisterUiToolkitCallbacks()

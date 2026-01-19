@@ -1,9 +1,9 @@
 ﻿{
     "name": "",
-    "saveID": "e3025e03-9d62-44e1-b0f5-b1d2ad1fbcc9",
+    "saveID": "7958da5d-8a52-4f10-85ff-0ac993ded059",
     "slotNumber": 1,
     "saveVersion": "1.0",
-    "utcTimeStamp": "2025-12-21T20:02:31.3623954Z",
+    "utcTimeStamp": "2026-01-17T13:14:33.3705598Z",
     "sceneName": "newSaveSystemDemoScene",
     "sceneBuildIndex": 0,
     "timeSpanString": "00:00:00",
@@ -32,19 +32,25 @@
                     "varTypeName": "ColorMuscariable",
                     "itemID": 4,
                     "key": "someColor",
-                    "value": "{\"r\":0.0,\"g\":0.0,\"b\":0.0,\"a\":0.0}"
+                    "value": "{\"r\":0.2,\"g\":0.7647059,\"b\":0.2618993,\"a\":0.0}"
                 },
                 {
                     "varTypeName": "VectorTwoMuscariable",
                     "itemID": 5,
                     "key": "vecTwoVar",
-                    "value": "{\"x\":0.0,\"y\":0.0}"
+                    "value": "{\"x\":5.0,\"y\":0.0}"
                 },
                 {
                     "varTypeName": "VectorThreeMuscariable",
                     "itemID": 6,
                     "key": "vecThreeVar",
-                    "value": "{\"x\":0.0,\"y\":0.0,\"z\":0.0}"
+                    "value": "{\"x\":0.0,\"y\":123.0,\"z\":0.0}"
+                },
+                {
+                    "varTypeName": "FloatMuscariable",
+                    "itemID": 7,
+                    "key": "Var",
+                    "value": "1.234"
                 }
             ],
             "savedBlocks": [
@@ -128,7 +134,7 @@
                     "varTypeName": "AudioClipMuscariable",
                     "itemID": 4,
                     "key": "cuteBgm",
-                    "value": "{\"lorekeeperIndex\":5,\"clipName\":\"A Small Adventure\"}"
+                    "value": "{\"lorekeeperIndex\":51,\"clipName\":\"CKZ_-_09_-_Youre_Not_Real_wav\"}"
                 }
             ],
             "$type": "Amanita.SaveSys.VariableSourceAssetSaveData"

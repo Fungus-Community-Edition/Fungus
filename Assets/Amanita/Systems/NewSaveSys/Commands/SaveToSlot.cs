@@ -1,7 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
 using System.Threading.Tasks;
-using System.Collections;
 
 namespace Amanita.SaveSys.VScripting
 {
@@ -12,6 +11,13 @@ namespace Amanita.SaveSys.VScripting
     {
         [SerializeField] protected IntegerData slotIndex = new IntegerData(0);
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(slotIndex);
+            variableDataCache.Add(waitUntilFinished);
+        }
 
         public override void OnEnter()
         {
