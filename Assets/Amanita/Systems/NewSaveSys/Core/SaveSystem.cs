@@ -51,6 +51,11 @@ namespace Amanita.SaveSys
             saveManager.Init();
         }
 
+        public bool DoesSaveExist(int slotNum)
+        {
+            return SaveManager.SlotExists(slotNum);
+        }
+
         // We expect an instance of this to be attached to the AmanitaManager singleton
         public static SaveSystem S
         {

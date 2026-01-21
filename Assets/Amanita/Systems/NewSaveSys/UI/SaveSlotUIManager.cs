@@ -6,12 +6,14 @@ namespace Amanita.SaveSys.UI
 {
     public class SaveSlotUIManager : MonoBehaviour
     {
-        [SerializeField] protected SaveSlotViewComposer _viewComposerPrefab;
-        [SerializeField] protected Transform _slotHolder;
+        [SerializeField] private SaveSlotViewComposer _viewComposerPrefab;
+        [SerializeField] private Transform _slotHolder;
         [SerializeField] private int initialSlotCount = 10;
 
         protected virtual void Awake()
         {
+            // We're going to avoid using Singletons for this one; users may want separate menus
+            // for saving and loading, each with their own slot UI manager.
             _slotUis = _slotHolder.GetComponentsInChildren<SaveSlotViewComposer>(true).ToList();
             // ^For when you add slots to the holder in the editor directly
             while (_slotUis.Count < initialSlotCount)
@@ -19,6 +21,8 @@ namespace Amanita.SaveSys.UI
                 CreateSaveSlot();
             }
         }
+
+        protected IList<SaveSlotViewComposer> _slotUis = new List<SaveSlotViewComposer>();
 
         protected virtual void CreateSaveSlot()
         {
@@ -28,8 +32,6 @@ namespace Amanita.SaveSys.UI
             // and thus to compensate...
             _slotUis.Add(slot);
         }
-
-        protected IList<SaveSlotViewComposer> _slotUis = new List<SaveSlotViewComposer>();
 
         protected virtual void OnEnable()
         {
@@ -61,22 +63,29 @@ namespace Amanita.SaveSys.UI
             #region Pass the metas to the slot uis
             for (int i = 0; i < _slotUis.Count; i++)
             {
-                var slot = _slotUis[i];
-                if (i < metas.Count)
+                ISaveMetaData metaToAssign;
+                DecideMetaToAssign();
+                void DecideMetaToAssign()
                 {
-                    slot.Meta = metas[i];
-                }
-                else
-                {
-                    // A filler meta so the slots at least display their slot numbers correctly
-                    SaveMetaData fillerMeta = new SaveMetaData()
+                    if (i < metas.Count)
                     {
-                        SaveName = "Empty Slot",
-                        SlotNumber = i + 1,
-                        SaveVersion = string.Empty,
-                    };
-                    slot.Meta = fillerMeta;
+                        metaToAssign = metas[i];
+                    }
+                    else
+                    {
+                        ISaveMetaData fillerMeta = new SaveMetaData()
+                        {
+                            SaveName = "Empty Slot",
+                            SlotNumber = i + 1, // +1 because slot numbers are 1-based
+                            SaveVersion = string.Empty,
+                        };
+                        // ^This is so the slots at least display their slot numbers correctly
+                        metaToAssign = fillerMeta;
+                    }
                 }
+
+                var slot = _slotUis[i];
+                slot.Meta = metaToAssign;
             }
             #endregion
         }
@@ -85,5 +94,11 @@ namespace Amanita.SaveSys.UI
         {
             ToggleSubs(false);
         }
+
+#if UNITY_EDITOR
+        // For debug and testing purposes
+        public IList<SaveSlotViewComposer> SlotUIs => new List<SaveSlotViewComposer>(_slotUis);
+
+#endif
     }
 }
