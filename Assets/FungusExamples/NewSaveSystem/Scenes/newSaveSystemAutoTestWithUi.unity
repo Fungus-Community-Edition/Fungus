@@ -2511,7 +2511,7 @@ MonoBehaviour:
           owningFc: {fileID: 0}
           owningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 8107162619758773178
   compareOperator: 0
   anyVar:
     varRef:
@@ -2637,6 +2637,16 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 8107162619758773178
+      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &1620115441
 MonoBehaviour:
   m_ObjectHideFlags: 0
