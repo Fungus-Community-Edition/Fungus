@@ -75,7 +75,7 @@ namespace Amanita.SaveSys.UI
                     {
                         ISaveMetaData fillerMeta = new SaveMetaData()
                         {
-                            SaveName = "Empty Slot",
+                            SaveName = "",
                             SlotNumber = i + 1, // +1 because slot numbers are 1-based
                             SaveVersion = string.Empty,
                         };

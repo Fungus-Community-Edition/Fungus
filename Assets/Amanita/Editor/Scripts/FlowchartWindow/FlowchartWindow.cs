@@ -43,13 +43,13 @@ namespace Amanita.VScripting.EditorUtils
                                  wereExecuting = new List<Block>(),
                                  workspace = new List<Block>();
 
-            public bool isChangeDetected { get; set; }
+            public bool IsChangeDetected { get; set; }
 
             protected float lastFade;
 
             public virtual void ProcessAllBlocks(IList<Block> blocks)
             {
-                isChangeDetected = false;
+                IsChangeDetected = false;
                 workspace.Clear();
                 //cache these once as they can end up being called thousands of times per frame otherwise
                 var curRealTime = Time.realtimeSinceStartup;
@@ -72,7 +72,7 @@ namespace Amanita.VScripting.EditorUtils
                     wereExecuting.AddRange(areExecuting);
                     areExecuting.Clear();
                     areExecuting.AddRange(workspace);
-                    isChangeDetected = true;
+                    IsChangeDetected = true;
                     lastFade = fadeTimer;
                 }
             }
@@ -97,7 +97,7 @@ namespace Amanita.VScripting.EditorUtils
                 areExecuting.Clear();
                 wereExecuting.Clear();
                 workspace.Clear();
-                isChangeDetected = true;
+                IsChangeDetected = true;
                 lastFade = 0;
             }
         }
@@ -419,7 +419,7 @@ namespace Amanita.VScripting.EditorUtils
             if (Application.isPlaying)
             {
                 executingBlocks.ProcessAllBlocks(Blocks);
-                if (executingBlocks.isChangeDetected || executingBlocks.IsAnimFadeoutNeed())
+                if (executingBlocks.IsChangeDetected || executingBlocks.IsAnimFadeoutNeed())
                     Repaint();
             }
         }

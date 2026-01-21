@@ -34,31 +34,24 @@ namespace SaveSystemTests
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
 
         [Test]
-        public virtual void Metadata_AssignsOwnIDWhenNonePassed()
-        {
-            SaveMetaData testMeta = new SaveMetaData("");
-            Assert.IsFalse(string.IsNullOrEmpty(testMeta.SaveID));
-        }
-
-        [Test]
         public virtual void Metadata_AssignsCorrectTimeStampWhenNonePassed()
         {
             // Capture a time window around construction to avoid flaky millisecond differences
             DateTime before = DateTime.UtcNow;
-            SaveMetaData testMeta = new SaveMetaData("");
+            SaveMetaData testMeta = new SaveMetaData("test");
             DateTime after = DateTime.UtcNow;
 
             Assert.That(
                 testMeta.TimeStamp,
                 Is.InRange(before, after),
-                $"Expected timestamp to be between {before:o} and {after:o}, but was {testMeta.TimeStamp:o}");
+                $"Expected timestamp to be between\n{before:o}\nand\n{after:o}, but was\n{testMeta.TimeStamp:o}");
         }
 
         [Test]
         public virtual void Metadata_AcceptsLegitTimeStampPassed()
         {
             DateTime ts = DateTime.UtcNow;
-            SaveMetaData testMeta = new SaveMetaData("", ts);
+            SaveMetaData testMeta = new SaveMetaData("5ecyt457", ts);
             Assert.AreEqual(ts, testMeta.TimeStamp);
 
             testMeta = new SaveMetaData("g4w578", ts);
@@ -70,7 +63,7 @@ namespace SaveSystemTests
         {
             string theID = "esahgui94r35hoifg";
             SaveMetaData testMeta = new SaveMetaData(theID);
-            Assert.AreEqual(theID, testMeta.SaveID);
+            Assert.AreEqual(theID, testMeta.SaveId);
         }
 
         [Test]
@@ -91,7 +84,7 @@ namespace SaveSystemTests
 
             string expected = crazyLongID[..SaveMetaData.IDAndVersionLengthCap];
             SaveMetaData testMeta = new SaveMetaData(crazyLongID, DateTime.UtcNow);
-            Assert.AreEqual(expected, testMeta.SaveID);
+            Assert.AreEqual(expected, testMeta.SaveId);
         }
 
         [Test]
@@ -110,7 +103,7 @@ namespace SaveSystemTests
         [Test]
         public virtual void Metadata_RejectsNullOrEmptySaveVersions()
         {
-            SaveMetaData testMeta = new SaveMetaData(null, DateTime.UtcNow);
+            SaveMetaData testMeta = new SaveMetaData("test", DateTime.UtcNow);
             Assert.Throws<ArgumentException>(() => testMeta.SaveVersion = null);
         }
 

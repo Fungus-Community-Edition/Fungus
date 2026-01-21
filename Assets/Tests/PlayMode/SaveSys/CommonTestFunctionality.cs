@@ -489,6 +489,7 @@ namespace SaveSystemTests
         {
             testOnlyVarSourceAssets.Add(testVsa);
             testVsa.UniqueId = $"FakeTestVsaID_{testOnlyVarSourceAssets.Count}";
+            testVsa.AlwaysKeepGuid = false;
         }
 
         protected virtual void UnregisterTestOnlyUids()
