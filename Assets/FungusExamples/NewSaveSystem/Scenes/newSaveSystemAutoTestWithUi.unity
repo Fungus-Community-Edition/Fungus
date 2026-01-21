@@ -1350,6 +1350,9 @@ GameObject:
   - component: {fileID: 1620115437}
   - component: {fileID: 1620115440}
   - component: {fileID: 1620115441}
+  - component: {fileID: 1620115443}
+  - component: {fileID: 1620115444}
+  - component: {fileID: 1620115442}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1415,8 +1418,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 203
-    y: 348
+    x: 221
+    y: 206
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1445,6 +1448,7 @@ MonoBehaviour:
   - {fileID: 1620115437}
   - {fileID: 1620115416}
   - {fileID: 1620115440}
+  - {fileID: 1620115444}
   - {fileID: 1620115441}
   - {fileID: 1620115425}
   - {fileID: 1620115419}
@@ -1471,9 +1475,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 1620115403}
+    - {fileID: 1620115443}
     _selectedCommands:
-    - {fileID: 1620115440}
+    - {fileID: 1620115442}
     <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1644,8 +1648,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -1679,8 +1683,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -1714,8 +1718,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -1748,8 +1752,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -1861,8 +1865,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -1896,8 +1900,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -2149,8 +2153,8 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
+  fadeWhenDone: 0
+  waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
   setSayDialog:
@@ -2644,7 +2648,7 @@ MonoBehaviour:
           itemId: 0
           owningFc: {fileID: 1620115404}
           owningVsa: {fileID: 0}
-        value: 0
+        value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
 --- !u!114 &1620115441
@@ -2661,6 +2665,89 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
+--- !u!114 &1620115442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9281f1b7fe0854296225dbeb00e851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 36
+  indentLevel: 0
+  action: 1
+  markerID:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: second
+    stringRef: {fileID: 0}
+  markerOrder:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+--- !u!114 &1620115443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 706.3398
+    y: 337.0905
+    width: 300
+    height: 100
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 34
+  blockName: AfterFirstLoad
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115442}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 35
+  indentLevel: 1
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115443}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 0
 --- !u!1 &1622107285
 GameObject:
   m_ObjectHideFlags: 0
