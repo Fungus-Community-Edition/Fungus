@@ -92,12 +92,12 @@ namespace Amanita.SaveSys
         public virtual IMetaFactory MetaFactory { get; set; }
         public SaveDirectoryType SaveDirType { get; set; } = SaveDirectoryType.DataPath;
 
-        public virtual async Task SaveTo(int slotNum, CancellationToken token = default)
+        public virtual async Task SaveToSlotAsync(int slotNum, CancellationToken token = default)
         {
-            await SaveTo(slotNum, "", token);
+            await SaveToSlotAsync(slotNum, "", token);
         }
 
-        public virtual async Task SaveTo(int slotNum, string saveName, CancellationToken token = default)
+        public virtual async Task SaveToSlotAsync(int slotNum, string saveName, CancellationToken token = default)
         {
             if (!Validate(slotNum, registerAndWriteOp))
             {
@@ -147,7 +147,7 @@ namespace Amanita.SaveSys
         /// Loads the main save data from the specified slot, getting its state applied to the game.
         /// If loadScene is true, this will load the scene specified in the save metadata.
         /// </summary>
-        public virtual async Task<CompositeSaveData> LoadMain(int slotNum,
+        public virtual async Task<CompositeSaveData> LoadMainAsync(int slotNum,
             bool loadScene = true, CancellationToken token = default)
         {
             if (!Validate(slotNum, loadOp))
@@ -293,7 +293,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public virtual async Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
+        public virtual async Task<ISaveMetaData> LoadMetaAsync(int slotNum, CancellationToken token = default)
         {
             if (!Validate(slotNum, loadOp))
             {

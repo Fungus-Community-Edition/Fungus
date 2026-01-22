@@ -93,8 +93,20 @@ namespace SaveSystemTests
 
             for (int i = 0; i < slotUis.Count; i++)
             {
-                var expected = i < shorterList.Count ? shorterList[i] : null;
-                Assert.AreEqual(expected, slotUis[i].Meta, $"Slot {i} meta mismatch after shorter list dispatch.");
+                // The ui manager assigns a filler meta to slots that don't have any save files
+                // associated with them.
+                SaveMetaData fillerMeta = new SaveMetaData()
+                {
+                    SaveName = "",
+                    SlotNumber = i + 1, // +1 because slot numbers are 1-based
+                    SaveVersion = string.Empty,
+                };
+                SaveMetaData expected = i < shorterList.Count ? 
+                    (SaveMetaData)shorterList[i] : 
+                    fillerMeta;
+                var actual = slotUis[i].Meta;
+                bool success = expected.Equals(actual);
+                Assert.IsTrue(success, $"Slot {i} meta mismatch after shorter list dispatch.");
             }
         }
     }

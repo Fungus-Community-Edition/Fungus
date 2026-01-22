@@ -33,7 +33,7 @@ namespace Amanita.VScripting.EditorUtils
             if (Application.isPlaying)
             {
                 _execTracker.ProcessAllBlocks(_window.Blocks);
-                if (_execTracker.isChangeDetected || _execTracker.IsAnimFadeoutNeed())
+                if (_execTracker.IsChangeDetected || _execTracker.IsAnimFadeoutNeed())
                     _window.Repaint();
             }
             else
