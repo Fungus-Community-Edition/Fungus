@@ -26,7 +26,7 @@ namespace Amanita.SaveSys
         [SerializeField] protected string utcTimeStamp = string.Empty;
         [SerializeField] protected string sceneName = string.Empty;
         [SerializeField] protected int sceneBuildIndex = -1;
-        [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
+        [SerializeField] protected string playtimeStamp = TimeSpan.Zero.ToString();
         [SerializeField] protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
 
         public bool IsValid
@@ -81,13 +81,14 @@ namespace Amanita.SaveSys
             set
             {
                 string toApply = value;
-                if (toApply.Length > IDAndVersionLengthCap)
+                if (toApply != null && toApply.Length > IDAndVersionLengthCap)
                 {
                     toApply = toApply[..IDAndVersionLengthCap];
                 }
                 saveVersion = toApply;
             }
         }
+
         public string UTCTimeStamp
         {
             get { return utcTimeStamp; }
@@ -114,7 +115,7 @@ namespace Amanita.SaveSys
             set
             {
                 playtime = value;
-                timeSpanString = playtime.ToString();
+                playtimeStamp = playtime.ToString();
             }
         }
         protected TimeSpan playtime = TimeSpan.Zero;
@@ -169,6 +170,7 @@ namespace Amanita.SaveSys
         {
             utcTimeStamp = timeStamp.ToString(iso8601Format);
         }
+
         protected virtual void UpdateTimeStamp()
         {
             utcTimeStamp = DateTime.UtcNow.ToString(iso8601Format);
@@ -177,31 +179,28 @@ namespace Amanita.SaveSys
 
         public SaveMetaData()
         {
-            this.saveID = string.Empty;
+            this.SaveID = Guid.NewGuid().ToString();
             this.timeStamp = DateTime.UtcNow;
-            this.saveVersion = NullSaveVer;
+            this.saveVersion = DefaultSaveVer;
             UpdateTimeStampString();
         }
 
-        protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
+        private string DefaultSaveVer { get { return SaveSysConstants.DefaultSaveVer; } }
 
         public SaveMetaData(string saveId = null, DateTime timeStamp = default,
-            string saveVersion = "")
+            string saveVersion = "") : this()
         {
-            if (string.IsNullOrEmpty(saveId))
-            {
-                saveId = string.Empty;
-            }
             this.SaveID = saveId;
+            
+            if (timeStamp == default)
+            {
+                timeStamp = DateTime.UtcNow;
+            }
 
             this.timeStamp = timeStamp;
 
-            if (string.IsNullOrEmpty(saveVersion))
-            {
-                saveVersion = NullSaveVer;
-            }
-
-            this.saveVersion = saveVersion;
+            this.SaveVersion = saveVersion;
+            
             UpdateTimeStampString();
         }
 
@@ -218,7 +217,7 @@ namespace Amanita.SaveSys
             this.utcTimeStamp = other.utcTimeStamp;
             this.sceneName = other.sceneName;
             this.sceneBuildIndex = other.sceneBuildIndex;
-            this.timeSpanString = other.timeSpanString;
+            this.playtimeStamp = other.playtimeStamp;
             this.playtime = other.playtime;
             this.progressMarkers = new List<ProgressMarker>(other.progressMarkers);
             UpdateTimeStampStructure();
@@ -235,13 +234,13 @@ namespace Amanita.SaveSys
 
         protected virtual void UpdatePlaytimeStructure()
         {
-            if (TimeSpan.TryParse(timeSpanString, out var parsedTimeSpan))
+            if (TimeSpan.TryParse(playtimeStamp, out var parsedTimeSpan))
             {
                 playtime = parsedTimeSpan;
             }
             else
             {
-                string errorMessage = $"Failed to parse time span string: {timeSpanString}. " +
+                string errorMessage = $"Failed to parse time span string: {playtimeStamp}. " +
                     "Setting playtime to zero.";
                 playtime = TimeSpan.Zero;
                 throw new FormatException(errorMessage);
