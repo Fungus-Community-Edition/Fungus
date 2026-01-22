@@ -21,11 +21,6 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Amanita/SaveSys/DefaultDecryptor", order = 1)]
     public class Decryptor : ScriptableObject, IDecryptor
     {
-        protected virtual void OnEnable()
-        {
-            delimiterArr = new string[] { DelimiterText };
-        }
-
         protected static string[] delimiterArr = new string[] { SaveDiskAccessor.ReadWriteDelimiter };
         protected static string DelimiterText => SaveDiskAccessor.ReadWriteDelimiter;
 

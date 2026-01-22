@@ -60,36 +60,36 @@ namespace Amanita.SaveSys
                 }
             }
 
-                SaveDataSet dataSet = inputRequest.SaveDataSet;
-                string completionMarker = inputRequest.CompletionMarker;
-                string fullJson = GetFullTextToEncrypt();
-                string GetFullTextToEncrypt()
+            SaveDataSet dataSet = inputRequest.SaveDataSet;
+            string completionMarker = inputRequest.CompletionMarker;
+            string fullJson = GetFullTextToEncrypt();
+            string GetFullTextToEncrypt()
+            {
+                lock (Serializer)
                 {
-                    lock (Serializer)
-                    {
-                        string metaJson = Serializer.ToJson(dataSet.Meta, true);
-                        string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
+                    string metaJson = Serializer.ToJson(dataSet.Meta, true);
+                    string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
 
-                        string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
-                        return fullJson;
-                    }
+                    string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
+                    return fullJson;
                 }
+            }
 
-                byte[] endResult = EncryptToBytes(fullJson);
-                byte[] EncryptToBytes(string textToEncrypt)
-                {
-                    byte key = 0xAA;
-                    byte[] result = Encoding.GetBytes(fullJson)
-                        .Select(b => (byte)(b ^ key))
-                        .ToArray();
-                    return result;
-                }
+            byte[] endResult = EncryptToBytes(fullJson);
+            byte[] EncryptToBytes(string textToEncrypt)
+            {
+                byte key = 0xAA;
+                byte[] result = Encoding.GetBytes(fullJson)
+                    .Select(b => (byte)(b ^ key))
+                    .ToArray();
+                return result;
+            }
 
-                return endResult;
+            return endResult;
             
         }
 
-        protected static string Delimiter => "<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>";
+        protected static string Delimiter => SaveDiskAccessor.ReadWriteDelimiter;
 
         protected virtual Encoding Encoding => Encoding.UTF8;
         protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
