@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Amanita.FSExt;
 using UnityEditor;
+using System.Threading.Tasks;
 
 namespace SaveSystemTests
 {
@@ -112,9 +113,14 @@ namespace SaveSystemTests
             // Act: decode and apply to assets (applier finds by AssetId via Resources)
 
             // Apply A then B
-            yield return _applier.Apply(firstVsaSaveData).AsIEnumerator();
-            yield return _applier.Apply(secondVsaSaveData).AsIEnumerator();
-
+            bool completed = false;
+            _applier.Apply(firstVsaSaveData, () => completed = true);
+            while (!completed)
+                yield return null;
+            completed = false;
+            _applier.Apply(secondVsaSaveData, () => completed = true);
+            while (!completed)
+                yield return null;
             // Assert values restored to saved ones
             string firstStringVarValue = GetVarValue<string>(firstVsa, "playerName");
             Assert.AreEqual("Shiitake", firstStringVarValue);
@@ -185,7 +191,8 @@ namespace SaveSystemTests
             SetVarValue(firstVsa, "playerLevel", -1);
 
             // Act
-            yield return _applier.Apply(data).AsIEnumerator();
+            _applier.Apply(data, null);
+            yield return null;
 
             // Assert: values still applied via name fallback
             Assert.AreEqual("FallbackName", GetVarValue<string>(firstVsa, "playerName"));
@@ -210,7 +217,10 @@ namespace SaveSystemTests
                 $"No VariableSourceAsset with AssetId {bogus.UniqueId} was found to apply save data to.");
 
             // Act
-            yield return _applier.Apply(bogus).AsIEnumerator();
+            bool completed = false;
+            _applier.Apply(bogus, () => completed = true);
+            while (!completed)
+                yield return null;
 
             // Assert unchanged
             Assert.AreEqual(originalName, GetVarValue<string>(firstVsa, "playerName"));
@@ -241,7 +251,10 @@ namespace SaveSystemTests
             }
 
             // Act
-            yield return _applier.Apply(data).AsIEnumerator();
+            bool completed = false;
+            _applier.Apply(data, () => completed = true);
+            while (!completed)
+                yield return null;
 
             // Assert: value is not changed
             Assert.AreEqual("Unchanged", GetVarValue<string>(firstVsa, "playerName"));
@@ -263,7 +276,10 @@ namespace SaveSystemTests
 
             // Act
             var list = new List<SaveData> { dataA, dataB };
-            yield return _applier.ApplyRange(list).AsIEnumerator();
+            bool completed = false;
+            _applier.ApplyRange(list, () => completed = true);
+            while (!completed)
+                yield return null;
 
             // Assert
             Assert.AreEqual("RangeName", GetVarValue<string>(firstVsa, "playerName"));

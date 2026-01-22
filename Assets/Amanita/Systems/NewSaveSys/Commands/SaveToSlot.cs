@@ -105,7 +105,7 @@ namespace Amanita.SaveSys.VScripting
             }
             else
             {
-                Task saveTask = SaveSystem.S.SaveTo(slotIndexToGoWith);
+                Task saveTask = SaveSystem.S.SaveToSlotAsync(slotIndexToGoWith);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(saveTask));

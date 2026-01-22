@@ -26,6 +26,8 @@ namespace Amanita.SaveSys
             }
 
             SaveMetaData meta = new SaveMetaData(saveId, timeStamp, version, slotNumber);
+            SaveSystem saveSys = SaveSystem.S;
+            meta.ProgressMarkers = saveSys.ProgressMarkers;
             RegisterCurrentSceneInfo(meta);
 
             return meta;
