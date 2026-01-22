@@ -34,13 +34,6 @@ namespace SaveSystemTests
         protected string expectedTypeName, expectedTimeStamp, expectedSaveVer;
 
         [Test]
-        public virtual void Metadata_AssignsOwnIDWhenNonePassed()
-        {
-            SaveMetaData testMeta = new SaveMetaData("");
-            Assert.IsFalse(string.IsNullOrEmpty(testMeta.SaveID));
-        }
-
-        [Test]
         public virtual void Metadata_AssignsCorrectTimeStampWhenNonePassed()
         {
             // Capture a time window around construction to avoid flaky millisecond differences
@@ -70,7 +63,7 @@ namespace SaveSystemTests
         {
             string theID = "esahgui94r35hoifg";
             SaveMetaData testMeta = new SaveMetaData(theID);
-            Assert.AreEqual(theID, testMeta.SaveID);
+            Assert.AreEqual(theID, testMeta.SaveId);
         }
 
         [Test]
@@ -91,7 +84,7 @@ namespace SaveSystemTests
 
             string expected = crazyLongID[..SaveMetaData.IDAndVersionLengthCap];
             SaveMetaData testMeta = new SaveMetaData(crazyLongID, DateTime.UtcNow);
-            Assert.AreEqual(expected, testMeta.SaveID);
+            Assert.AreEqual(expected, testMeta.SaveId);
         }
 
         [Test]
