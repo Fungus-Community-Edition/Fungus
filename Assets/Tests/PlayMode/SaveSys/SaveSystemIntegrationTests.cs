@@ -61,10 +61,10 @@ namespace SaveSystemTests
 
             // Save
             var saveDataSet = new SaveDataSet(meta, mainState);
-            await saveSystem.SaveTo(slot);
+            await saveSystem.SaveToSlotAsync(slot);
 
             // Load
-            var loadedMain = await saveSystem.LoadMain(slot, loadScene: false);
+            var loadedMain = await saveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: loadedMain should be a CompositeSaveData and contain FlowchartSaveData
             Assert.IsInstanceOf<CompositeSaveData>(loadedMain, "Loaded main state is not CompositeSaveData.");
@@ -90,13 +90,13 @@ namespace SaveSystemTests
             stringVar.Value = origVal;
 
             int slot = 10;
-            await saveSystem.SaveTo(slot);
+            await saveSystem.SaveToSlotAsync(slot);
 
             // Change the variable to something else to ensure load will restore it
             stringVar.Value = "ChangedValue";
 
             // Load
-            CompositeSaveData loadedMain = await saveSystem.LoadMain(slot, loadScene: false);
+            CompositeSaveData loadedMain = await saveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: variable value should be restored
             Assert.AreEqual(origVal, stringVar.Value, "Flowchart variable was not restored after load.");
@@ -142,10 +142,10 @@ namespace SaveSystemTests
 
             // Save a slot to persist Progress Markers into Meta
             int slot = 21;
-            await saveSystem.SaveTo(slot);
+            await saveSystem.SaveToSlotAsync(slot);
 
             // Act: load the same slot (expect Save Loaded event handlers to fire)
-            await saveSystem.LoadMain(slot, loadScene: false);
+            await saveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: order should be by lowest referenced marker order -> B(1), AC(min(10,5)=5), A(10)
             string[] expected = { "Block_B", "Block_AC", "Block_A" };
@@ -173,7 +173,7 @@ namespace SaveSystemTests
             int slot = 22;
 
             // Act: save and then load meta
-            await saveSystem.SaveTo(slot);
+            await saveSystem.SaveToSlotAsync(slot);
             var loadedMeta = await saveSystem.LoadMeta(slot);
 
             // Assert
@@ -331,8 +331,8 @@ namespace SaveSystemTests
             string firstSlotName = "FirstSlotMetaName";
             string secondSlotName = "SecondSlotMetaName";
 
-            await concreteManager.SaveTo(firstSlot, firstSlotName);
-            await concreteManager.SaveTo(secondSlot, secondSlotName);
+            await concreteManager.SaveToSlotAsync(firstSlot, firstSlotName);
+            await concreteManager.SaveToSlotAsync(secondSlot, secondSlotName);
 
             RegisterThoseForCleanup();
             void RegisterThoseForCleanup()
@@ -405,10 +405,10 @@ namespace SaveSystemTests
             var concreteManager = (SaveManager)saveManager;
 
             int slot = 42;
-            await concreteManager.SaveTo(slot, "UniqueMeta");
+            await concreteManager.SaveToSlotAsync(slot, "UniqueMeta");
 
             // Make a second save overwrite (simulate updated meta)
-            await concreteManager.SaveTo(slot, "UniqueMeta_Updated");
+            await concreteManager.SaveToSlotAsync(slot, "UniqueMeta_Updated");
 
             string pathToSlot = concreteManager.SaveRepo.GetPathTo(slot);
             saveFilePathsForCleanup.Add(pathToSlot);
@@ -450,8 +450,8 @@ namespace SaveSystemTests
 
             int firstSlot = 43;
             int secondSlot = 44;
-            await concreteManager.SaveTo(firstSlot, "InstanceCheckA");
-            await concreteManager.SaveTo(secondSlot, "InstanceCheckB");
+            await concreteManager.SaveToSlotAsync(firstSlot, "InstanceCheckA");
+            await concreteManager.SaveToSlotAsync(secondSlot, "InstanceCheckB");
 
             RegisterThoseForCleanup();
             void RegisterThoseForCleanup()
@@ -623,8 +623,8 @@ namespace SaveSystemTests
             }
             public int Order => 0;
             public bool CanApply(SaveData saveData) => false;
-            public Task ApplyRange(IList<SaveData> datas) => Task.CompletedTask;
-            public Task Apply(SaveData saveData) => Task.CompletedTask;
+            public void ApplyRange(IList<SaveData> datas, System.Action onComplete) => onComplete?.Invoke();
+            public void Apply(SaveData saveData, System.Action onComplete) => onComplete?.Invoke();
         }
     }
 }

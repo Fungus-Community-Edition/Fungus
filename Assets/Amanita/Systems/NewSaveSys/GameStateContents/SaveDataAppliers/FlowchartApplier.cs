@@ -59,7 +59,7 @@ namespace Amanita.SaveSys
             }
         }
 
-        public override Task Apply(FlowchartSaveData saveData)
+        public override void Apply(FlowchartSaveData saveData)
         {
             Flowchart flowchart = null;
 
@@ -112,8 +112,6 @@ namespace Amanita.SaveSys
                     countdown.Wait();
                 }
             }
-
-            return Task.CompletedTask;
 
             void ApplyStuff()
             {
@@ -243,9 +241,10 @@ namespace Amanita.SaveSys
                     select flowchart).FirstOrDefault();
         }
 
-        public override Task Apply(SaveData saveData)
+        public override void Apply(SaveData saveData, System.Action onComplete)
         {
-            return Apply(saveData as FlowchartSaveData);
+            Apply(saveData as FlowchartSaveData);
+            onComplete?.Invoke();
         }
     }
 }

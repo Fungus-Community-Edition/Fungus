@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,8 +22,8 @@ namespace Amanita.SaveSys
         /// </summary>
         bool CanApply(SaveData saveData);
 
-        Task ApplyRange(IList<SaveData> datas);
-        Task Apply(SaveData saveData);
+        void Apply(SaveData saveData, Action onComplete);
+        void ApplyRange(IList<SaveData> datas, Action onComplete);
 
     }
 
@@ -46,19 +47,21 @@ namespace Amanita.SaveSys
             return false;
         }
 
-        public virtual async Task ApplyRange(IList<SaveData> datas)
+        public virtual void ApplyRangeAsync(IList<SaveData> datas, System.Action onComplete)
         {
             foreach (SaveData data in datas)
             {
                 if (CanApply(data))
                 {
-                    await Apply(data);
+                    Apply(data, null);
                 }
             }
-
+            onComplete?.Invoke();
         }
 
-        public abstract Task Apply(SaveData saveData);
+        public abstract void Apply(SaveData saveData, Action onComplete);
+
+        public abstract void ApplyRange(IList<SaveData> datas, Action onComplete);
     }
 
     /// <summary>
@@ -67,7 +70,19 @@ namespace Amanita.SaveSys
     public abstract class SaveDataApplier<TSaveData> : SaveDataApplier
     where TSaveData : SaveData
     {
-        public abstract Task Apply(TSaveData saveData);
+        public override void ApplyRange(IList<SaveData> datas, Action onComplete)
+        {
+            for (int i = 0; i < datas.Count; i++)
+            {
+                if (datas[i] is TSaveData typedData)
+                {
+                    Apply(typedData);
+                }
+            }
+            onComplete?.Invoke();
+        }
+
+        public abstract void Apply(TSaveData saveData);
         
         public override bool CanApply(SaveData saveData)
         {

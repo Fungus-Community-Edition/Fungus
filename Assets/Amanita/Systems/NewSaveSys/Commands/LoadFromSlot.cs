@@ -36,7 +36,7 @@ namespace Amanita.SaveSys.VScripting
             }
             else
             {
-                Task loadTask = SaveSystem.S.LoadMain(slotIndex.Value, loadScene.Value);
+                Task loadTask = SaveSystem.S.LoadMainAsync(slotIndex.Value, loadScene.Value);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(loadTask));

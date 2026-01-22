@@ -53,7 +53,7 @@ namespace SaveSystemTests
             readReq.SlotNumber = slot;
             string expectedPath = saveReader.GetSavePath(readReq);
 
-            await manager.SaveTo(slot).ConfigureAwait(false);
+            await manager.SaveToSlotAsync(slot).ConfigureAwait(false);
 
             Assert.IsTrue(File.Exists(expectedPath), $"Save at slot {slot} does not exist.");
         }
@@ -67,7 +67,7 @@ namespace SaveSystemTests
             {
                 LogAssert.Expect(LogType.Warning,
                     "Cannot register or write a save with a negative slot number.");
-                var task = manager.SaveTo(slot);
+                var task = manager.SaveToSlotAsync(slot);
                 yield return new WaitUntil(() => task.IsCompleted);
             }
         }
@@ -128,7 +128,7 @@ namespace SaveSystemTests
             {
                 LogAssert.Expect(LogType.Warning,
                     "Cannot load a save with a negative slot number.");
-                var task = manager.LoadMain(slot);
+                var task = manager.LoadMainAsync(slot);
                 yield return new WaitUntil(() => task.IsCompleted);
             }
         }
@@ -147,7 +147,7 @@ namespace SaveSystemTests
             Vector2 expectedTwoD = twoDPosVar.Value;
             string expectedString = stringVar.Value;
 
-            await manager.SaveTo(slot);
+            await manager.SaveToSlotAsync(slot);
             MutateGameState(); // So that after loading, we can check if the correct state was restored.
             void MutateGameState()
             {
@@ -160,7 +160,7 @@ namespace SaveSystemTests
                 stringVar.Value = "Changed string";
             }
 
-            CompositeSaveData mainState = await manager.LoadMain(slot, loadScene: false);
+            CompositeSaveData mainState = await manager.LoadMainAsync(slot, loadScene: false);
             Assert.IsNotNull(mainState, $"Main save data is null after loading slot {slot}.");
 
             var flowchartSaves = mainState.GetMulti<FlowchartSaveData>();
@@ -216,7 +216,7 @@ namespace SaveSystemTests
             foreach (int slot in testSlotNums)
             {
                 ApplyExpected();
-                var saveTask = manager.SaveTo(slot);
+                var saveTask = manager.SaveToSlotAsync(slot);
                 yield return new WaitUntil(() => saveTask.IsCompleted);
 
                 var mainState = manager.GetMainFrom(slot);
@@ -280,7 +280,7 @@ namespace SaveSystemTests
         protected async Task WriteToSlotsAsync()
         {
             foreach (int slot in testSlotNums)
-                await manager.SaveTo(slot);
+                await manager.SaveToSlotAsync(slot);
         }
 
         protected override int CommonSetupDelay => 250;
