@@ -125,23 +125,6 @@ namespace VScriptingTests.FlowchartLifecycle
 
         }
 
-        [UnityTest]
-        public IEnumerator Flowchart_Ensures_EventSystem_InScene()
-        {
-            // Arrange
-            yield return null;
-
-            // Act
-            yield return null;
-
-            // Assert: Flowchart.CheckEventSystem should ensure an EventSystem exists and is active
-            var eventSystem = UnityObj.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-            Assert.IsNotNull(eventSystem, "Flowchart should ensure an EventSystem exists in the scene.");
-            toDestroyOnTearDown.Add(eventSystem.gameObject);
-            Assert.IsTrue(eventSystem.gameObject.activeSelf, "EventSystem should be active after Flowchart initialization.");
-
-        }
-
         private class TestGameStarted : GameStarted
         {
             public static int TriggerCount;

@@ -5,6 +5,10 @@ namespace Amanita
 {
     public static class SOUtils
     {
+        /// <summary>
+        /// Ensures that a ScriptableObject of type T exists at the specified Resources subfolder 
+        /// path with the given asset name.
+        /// </summary>
         public static T EnsureSOExists<T>(string resourcesSubfolderPath, string assetName)
             where T : ScriptableObject
         {
@@ -13,6 +17,9 @@ namespace Amanita
             return result;
         }
 
+        /// <summary>
+        /// Gets or creates a ScriptableObject of the specified type at the given Resources subfolder path
+        /// </summary>
         public static ScriptableObject GetOrCreateScriptableObject(System.Type soType, string resourcesSubfolderPath,
             string assetName)
         {

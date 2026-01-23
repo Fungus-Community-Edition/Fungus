@@ -195,11 +195,6 @@ namespace Amanita.VScripting
         // This method will automatically instantiate one if none exists.
         protected virtual void CheckEventSystem()
         {
-            if (eventSystemPresent)
-            {
-                return;
-            }
-            
             EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
             if (eventSystem == null)
             {
@@ -219,7 +214,6 @@ namespace Amanita.VScripting
             }
 
             eventSystem.gameObject.SetActive(true);
-            eventSystemPresent = true;
         }
 
         protected virtual IEnumerator HandleGameStartedBlocks()
@@ -348,7 +342,7 @@ namespace Amanita.VScripting
         protected void OnActiveSceneChanged(Scene prevScene, Scene currentScene)
         {
             // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
-            eventSystemPresent = false;
+            
         }
 
         protected virtual void OnEnable()
