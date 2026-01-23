@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Amanita.SaveSys
 {
     [SaveSysDisplayName("Progress Marker Applier (Amanita Default)")]
@@ -13,9 +16,16 @@ namespace Amanita.SaveSys
         {
             SaveSystem saveSys = SaveSystem.S;
             var marker = saveData.Marker;
-            saveSys.ClearProgressMarkers();
             saveSys.EnsureMarkerRegistered(marker.Id, marker.Order);
         }
+
+        public override void ApplyRange(IList<SaveData> datas, Action onComplete)
+        {
+            SaveSys.ClearProgressMarkers();
+            base.ApplyRange(datas, onComplete);
+        }
+
+        private SaveSystem SaveSys => SaveSystem.S;
 
     }
 }

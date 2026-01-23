@@ -34,6 +34,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 // Safely read AnyVariableData whether Unity reports ManagedReference or Generic.
                 var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
+                if (effectiveVarType == null)
+                {
+                    EditorGUI.LabelField(position, "Must select a variable before setting data.");
+                    return;
+                }
                 anyVarData.SetFor(effectiveVarType, currentLeftHandSideVar.ContentType);
 
                 HandleLhsVarChanges();

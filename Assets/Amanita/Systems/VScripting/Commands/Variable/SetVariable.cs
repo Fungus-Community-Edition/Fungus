@@ -15,11 +15,11 @@ namespace Amanita.VScripting.Commands
     [ExecuteInEditMode]
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
-        [SerializeField] private VariableReference varToSet;
         [Tooltip("The type of math operation to be performed")]
         [SerializeField] protected SetOperator setOperator;
         [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
-        
+        // ^Contains both the LHS variable reference and the RHS data
+
         protected virtual void DoSetOperation()
         {
             if (anyVar.LhsVariable == null)
@@ -52,33 +52,17 @@ namespace Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            // Prefer resolving directly from the serialized reference to avoid stale cache
             var lhsVar = anyVar.LhsVariable;
-//            if (lhsVar == null)
-//            {
-//                // Try resolving from VariableReference if cache hasn’t caught up yet
-//                // (in case AnyVariableAndDataPair not yet refreshed in this repaint)
-//#if UNITY_EDITOR
-//                anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
-//                lhsVar = anyVar.LhsVariable;
-//#endif
-//            }
-
             if (lhsVar == null)
             {
                 return "Error: Variable not selected";
             }
 
-            string description = lhsVar.Key;
-            description += " " + VariableUtil.GetSetOperatorDescription(setOperator) + " ";
-            description += anyVar.GetDataDescription();
+            string setOperatorDesc = VariableUtil.GetSetOperatorDescription(setOperator);
+            string dataDesc = anyVar.GetDataDescription();
+            string description = $"{lhsVar.Key} {setOperatorDesc} {dataDesc}";
 
             return description;
-        }
-
-        protected override void AssertOwnership()
-        {
-            base.AssertOwnership();
         }
 
         public override bool HasReference(Variable variable)

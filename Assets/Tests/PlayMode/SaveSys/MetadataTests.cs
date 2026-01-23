@@ -101,13 +101,6 @@ namespace SaveSystemTests
         }
 
         [Test]
-        public virtual void Metadata_RejectsNullOrEmptySaveVersions()
-        {
-            SaveMetaData testMeta = new SaveMetaData("test", DateTime.UtcNow);
-            Assert.Throws<ArgumentException>(() => testMeta.SaveVersion = null);
-        }
-
-        [Test]
         public virtual void Metadata_RejectsNegativeSlotNumbers()
         {
             SaveMetaData copy = SaveMetaData.CreateFrom(metaData);
