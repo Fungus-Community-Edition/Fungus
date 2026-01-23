@@ -32,6 +32,7 @@ namespace SaveSystemTests
             saveManager = saveSystem.SaveManager;
             metaFactory = saveSystem.MetaFactory;
             mainStateFactory = saveSystem.MainStateFactory;
+            ApplyResolvers();
             // Ensure clean state for Progress Markers between tests
             saveSystem.ClearProgressMarkers();
             RecordOrderCommand.ClearLog();
@@ -511,14 +512,12 @@ namespace SaveSystemTests
             handler.ParentBlock = block;
             block._EventHandler = handler;
 
-            // Create StringVariables for marker IDs and assign into handler.markerIDs via reflection
+            // Create StringMuscariables for marker IDs and assign into handler.markerIDs via reflection
             var vars = new List<IVariable<string>>();
             foreach (var id in markerIds)
             {
-                var stringVar = flow.gameObject.AddComponent<StringVariable>();
-                stringVar.Key = UniqueKeyGenerator.GetUniqueKeyFor($"PM_{id}", (IList<IVariable>)flow.Variables);
-                stringVar.Value = id;
-                flow.AddVariable(stringVar);
+                string varKey = UniqueKeyGenerator.GetUniqueKeyFor($"PM_{id}", (IList<IVariable>)flow.Variables);
+                var stringVar = flow.AddNewMuscariable<string, StringMuscariable>(varKey, id);
                 vars.Add(stringVar);
             }
 

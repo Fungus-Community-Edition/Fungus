@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -17,6 +16,7 @@ namespace Amanita.SaveSys
         /// Lower order means it will execute sooner.
         /// </summary>
         int Order { get; }
+
         /// <summary>
         /// Checks if this applier can apply the given SaveData.
         /// </summary>
@@ -37,7 +37,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual void PreInstallInit()
         {
-
+            // Nothing by default
         }
 
         public virtual int Order => order;
@@ -45,18 +45,6 @@ namespace Amanita.SaveSys
         public virtual bool CanApply(SaveData saveData)
         {
             return false;
-        }
-
-        public virtual void ApplyRangeAsync(IList<SaveData> datas, System.Action onComplete)
-        {
-            foreach (SaveData data in datas)
-            {
-                if (CanApply(data))
-                {
-                    Apply(data, null);
-                }
-            }
-            onComplete?.Invoke();
         }
 
         public abstract void Apply(SaveData saveData, Action onComplete);
