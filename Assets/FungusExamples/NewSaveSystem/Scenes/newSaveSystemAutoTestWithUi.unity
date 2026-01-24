@@ -1353,6 +1353,7 @@ GameObject:
   - component: {fileID: 1620115443}
   - component: {fileID: 1620115444}
   - component: {fileID: 1620115442}
+  - component: {fileID: 1620115445}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1475,9 +1476,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 1620115443}
+    - {fileID: 1620115427}
     _selectedCommands:
-    - {fileID: 1620115442}
+    - {fileID: 1620115445}
     <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -2212,6 +2213,7 @@ MonoBehaviour:
   - {fileID: 1620115431}
   - {fileID: 1620115432}
   - {fileID: 1620115428}
+  - {fileID: 1620115445}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -2748,6 +2750,51 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
+--- !u!114 &1620115445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 37
+  indentLevel: 0
+  varToSet:
+    itemId: 9
+    owningFc: {fileID: 1620115404}
+    owningVsa: {fileID: 0}
+  setOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        rid: 8107162689613857313
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 8107162689613857313
+      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!1 &1622107285
 GameObject:
   m_ObjectHideFlags: 0
