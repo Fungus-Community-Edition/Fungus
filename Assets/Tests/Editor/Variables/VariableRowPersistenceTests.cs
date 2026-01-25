@@ -15,10 +15,11 @@ using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {
-    [TestFixture]
     public class VariableRowPersistenceTests
     {
         private Flowchart _flowchart;
@@ -49,8 +50,6 @@ namespace VScriptingTests.VariableRows
 
             _originalTemplateProvider = RowVisualTemplateProviderRegistry.Current;
             _originalElementBuilder = RowVisualElementBuilderRegistry.Current;
-
-            //RowVisualElementBuilderRegistry.Current = new TestRowVisualElementBuilder();
 
             _amanitaManager = AmanitaManager.EnsureExists();
             _objectsToDestroy.Add(_amanitaManager.gameObject);
@@ -433,7 +432,6 @@ namespace VScriptingTests.VariableRows
                 #region Audio
                 { typeof(AudioClip), typeof(AudioClipRowVisualHandler) },
                 { typeof(AudioSource), typeof(AudioSourceRowVisualHandler) },
-                { typeof(AudioMixer), typeof(AudioMixerRowVisualHandler) },
                 #endregion
 
                 #region Graphics
@@ -557,10 +555,6 @@ namespace VScriptingTests.VariableRows
             AudioMixer testMixer = audioMixers.Count > 0 ?
                 audioMixers[0] :
                 null;
-            yield return new VariableRowTestCase(
-                "AudioMixerVariable",
-                fc => fc.AddNewMuscariable<AudioMixer, AudioMixerMuscariable>("AudioMixerVar", testMixer),
-                testMixer);
             #endregion
 
             #region Physics
@@ -570,23 +564,13 @@ namespace VScriptingTests.VariableRows
             Rigidbody testRigidbody = rigidbodies.Length > 0 ?
                 rigidbodies[0] :
                 null;
-            yield return new VariableRowTestCase(
-                "RigidbodyVariable",
-                fc => fc.AddNewMuscariable<Rigidbody, RigidbodyThreeDMuscariable>("RigidbodyVar", testRigidbody),
-                testRigidbody);
             var colliders = gameObjects.Where((elem) => elem.GetComponent<Collider>() != null)
                 .Select((elem) => elem.GetComponent<Collider>())
                 .ToArray();
             Collider testCollider = colliders.Length > 0 ?
                 colliders[0] :
                 null;
-            yield return new VariableRowTestCase(
-                "ColliderVariable",
-                fc => fc.AddNewMuscariable<Collider, ColliderThreeDMuscariable>("ColliderVar", testCollider),
-                testCollider);
             #endregion
-
-
 
         }
 

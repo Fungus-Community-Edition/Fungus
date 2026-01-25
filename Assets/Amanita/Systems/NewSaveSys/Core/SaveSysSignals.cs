@@ -23,5 +23,6 @@ namespace Amanita.SaveSys
 
         public static Action SaveMenuOpened = delegate { };
         public static Action SaveMenuClosed = delegate { };
+
     }
 }

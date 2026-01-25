@@ -12,6 +12,12 @@ namespace Amanita.VScripting
         [SerializeField] protected GameObjectData hasTextField;
         [SerializeField] [VariableProperty(typeof(FloatVariable))] protected FloatVariable output;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(hasTextField);
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();

@@ -5,7 +5,6 @@ using UnityEngine;
 using FullSerializer;
 using Amanita.FSExt;
 using Lorekeeper;
-using UnityObj = UnityEngine.Object;
 
 namespace Amanita.SaveSys
 {

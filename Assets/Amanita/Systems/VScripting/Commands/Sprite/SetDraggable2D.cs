@@ -17,6 +17,12 @@ namespace Amanita.VScripting
         [Tooltip("Set to true to enable the component")]
         [SerializeField] protected BooleanData activeState;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(activeState);
+        }
+
         #region Public members
 
         public override void OnEnter() 

@@ -73,6 +73,12 @@ namespace Lorekeeper.EditorCode
                     {
                         if (asset == null)
                             continue;
+                        GameObject assetAsGo = asset as GameObject;
+                        if (assetAsGo != null && assetAsGo.transform.parent != null)
+                        {
+                            // Skip child GameObjects in prefab assets
+                            continue;
+                        }
 
                         var type = asset.GetType();
                         bool isEditorOnly = type.Namespace != null && type.Namespace.StartsWith("UnityEditor");

@@ -42,6 +42,7 @@ namespace SaveSystemTests
 
             metaData = new SaveMetaData
             {
+                SaveId = "TestSave001",
                 TimeStamp = DateTime.UtcNow,
                 SaveVersion = "1.0.0",
                 Playtime = expectedPlaytime,
@@ -97,7 +98,7 @@ namespace SaveSystemTests
             testFormatter.FormatString = formatInTextForm;
             playtimeView.Formatter = testFormatter;
 
-            string playtimeStr = Playtime.ToString(formatInTextForm, false);
+            string playtimeStr = testFormatter.FormatPlaytime(Playtime);
             string expectedText = $"{playtimeView.Prefix}{playtimeStr}{playtimeView.Postfix}";
             Assert.AreEqual(expectedText, playtimeView.Text);
         }

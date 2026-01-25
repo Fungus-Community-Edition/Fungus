@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Generic;
 using Amanita.VScripting;
@@ -21,13 +20,13 @@ namespace Amanita.SaveSys
 
         protected IList<VariableSourceAsset> variableSourceAssets;
 
-        public override Task Apply(VariableSourceAssetSaveData saveData)
+        public override void Apply(VariableSourceAssetSaveData saveData)
         {
             VariableSourceAsset toApplyTo = variableSourceAssets.Where((elem) => elem.UniqueId == saveData.UniqueId).FirstOrDefault();
             if (toApplyTo == null)
             {
                 Debug.LogWarning($"No VariableSourceAsset with AssetId {saveData.UniqueId} was found to apply save data to.");
-                return Task.CompletedTask;
+                return;
             }
 
             foreach (VariableSaveData varSaveData in saveData.SavedVars)
@@ -51,12 +50,12 @@ namespace Amanita.SaveSys
                 forThisVar.ApplyState(varEl, varSaveData);
             }
 
-            return Task.CompletedTask;
         }
 
-        public override Task Apply(SaveData saveData)
+        public override void Apply(SaveData saveData, System.Action onComplete)
         {
-            return Apply(saveData as VariableSourceAssetSaveData);
+            Apply(saveData as VariableSourceAssetSaveData);
+            onComplete?.Invoke();
         }
     }
 }

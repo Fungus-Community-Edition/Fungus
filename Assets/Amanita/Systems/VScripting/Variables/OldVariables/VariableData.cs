@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting
 {

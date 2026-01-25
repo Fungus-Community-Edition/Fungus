@@ -24,41 +24,50 @@ namespace Amanita.VScripting
         private static void OnEditorLoad()
         {
             Debug.Log("FlowchartRegistry initializing on editor load.");
-            EnsureInitialized();
+            EnsureInitialized(true);
         }
 #endif
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnRuntimeLoad()
         {
-            EnsureInitialized();
+            // Note: RuntimeInitializeLoadType.BeforeSceneLoad makes this execute once per app launch,
+            // right before the first scene is loaded. Not right before just any scene is loaded.
+            EnsureInitialized(true);
         }
 
-        private static void EnsureInitialized()
+        public static void EnsureInitialized(bool forceReinitialize = false)
         {
-            if (isInitialized)
+            if (isInitialized && !forceReinitialize)
             {
                 return;
             }
 
-            SubscribeToSignals();
+            ToggleSubs(false);
+            ToggleSubs(true);
             CaptureExistingFlowcharts();
             isInitialized = true;
         }
 
         private static bool isInitialized;
 
-        private static void SubscribeToSignals()
+        private static void ToggleSubs(bool on)
         {
-            FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
-            FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
-
-            FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
-            FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+            if (on)
+            {
+                FlowchartSignals.FlowchartEnabled += RegisterFlowchart;
+                FlowchartSignals.FlowchartDestroyed += UnregisterFlowchart;
+            }
+            else
+            {
+                FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
+                FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
+            }
         }
 
         private static void CaptureExistingFlowcharts()
         {
+            flowchartLookup.Clear();
             Flowchart[] existingFlowcharts = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include,
                 FindObjectsSortMode.None);
             for (int i = 0; i < existingFlowcharts.Length; i++)
@@ -67,7 +76,7 @@ namespace Amanita.VScripting
             }
         }
 
-        public static void RegisterFlowchart(Flowchart flowchart)
+        private static void RegisterFlowchart(Flowchart flowchart)
         {
             if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
             {
@@ -76,6 +85,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
+                //Debug.Log($"Registering Flowchart {flowchart.name} into registry");
                 flowchartLookup[flowchart.UniqueId] = flowchart;
             }
         }
@@ -84,7 +94,7 @@ namespace Amanita.VScripting
         private static readonly Dictionary<string, Flowchart> flowchartLookup =
             new Dictionary<string, Flowchart>(StringComparer.Ordinal);
 
-        public static void UnregisterFlowchart(Flowchart flowchart)
+        private static void UnregisterFlowchart(Flowchart flowchart)
         {
             if (flowchart == null || string.IsNullOrEmpty(flowchart.UniqueId))
             {
@@ -93,6 +103,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
+                //Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
                 flowchartLookup.Remove(flowchart.UniqueId);
             }
         }

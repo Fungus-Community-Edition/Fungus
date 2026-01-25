@@ -117,7 +117,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2074430884284038955}
-  - component: {fileID: 3275089015837847617}
   m_Layer: 0
   m_Name: collection
   m_TagString: Untagged
@@ -140,19 +139,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 925070430802974285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3275089015837847617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282095820723025708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 221f0f261cfcb8a40b9f79cbc51a9148, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  collection: 
 --- !u!1 &6022724394185640971
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,28 +233,17 @@ GameObject:
   - component: {fileID: 4189454128208650146}
   - component: {fileID: 8805465614666017928}
   - component: {fileID: 1828932151346816536}
-  - component: {fileID: 2261075828735507188}
-  - component: {fileID: 1915452925065349797}
-  - component: {fileID: 8564456835187278824}
-  - component: {fileID: 5320067926591112170}
-  - component: {fileID: 1088802534794066026}
   - component: {fileID: 1163417951521406283}
-  - component: {fileID: 1399893782281646933}
   - component: {fileID: 6548361248272980334}
   - component: {fileID: 2914983618718069288}
   - component: {fileID: 8530409915774343380}
   - component: {fileID: 6493889262705578041}
-  - component: {fileID: 4330878505238992354}
-  - component: {fileID: 4554336283830311097}
-  - component: {fileID: 8554547299414943669}
-  - component: {fileID: 9136408301822124161}
   - component: {fileID: 5885514780426982157}
   - component: {fileID: 2995839933451271312}
   - component: {fileID: 4665366542711170054}
   - component: {fileID: 3931316057658757917}
   - component: {fileID: 3004060541595052673}
   - component: {fileID: 4142613776352639886}
-  - component: {fileID: 6392830767839531587}
   - component: {fileID: 2828743190546237084}
   - component: {fileID: 3327474395627392665}
   - component: {fileID: 7802713421411451191}
@@ -277,28 +252,21 @@ GameObject:
   - component: {fileID: 2539901819628314990}
   - component: {fileID: 8990060518578950280}
   - component: {fileID: 670469608650659671}
-  - component: {fileID: 3690031635381408902}
   - component: {fileID: 6522387938227322495}
   - component: {fileID: 8891110708966318686}
   - component: {fileID: 9192236150366343817}
   - component: {fileID: 4353931720465701167}
   - component: {fileID: 2354223933289237011}
   - component: {fileID: 8144354804674754853}
-  - component: {fileID: 6180029680994114498}
-  - component: {fileID: 2941452226900196301}
   - component: {fileID: 8444328666427257387}
   - component: {fileID: 7453874730336948705}
   - component: {fileID: 3116736742800406239}
   - component: {fileID: 8379622082962960298}
   - component: {fileID: 1249734079670282884}
   - component: {fileID: 2994228629059441923}
-  - component: {fileID: 8870837996179087681}
-  - component: {fileID: 2104670434258827023}
-  - component: {fileID: 5311998211497219652}
   - component: {fileID: 5632239392483222896}
   - component: {fileID: 2861589987192766990}
   - component: {fileID: 1658843741158537153}
-  - component: {fileID: 3850217272920484952}
   - component: {fileID: 7445773590752646648}
   - component: {fileID: 4642638504608297107}
   - component: {fileID: 5515409587438433481}
@@ -397,17 +365,17 @@ MonoBehaviour:
   - {fileID: 8990060518578950280}
   - {fileID: 1828932151346816536}
   - {fileID: 670469608650659671}
-  - {fileID: 2261075828735507188}
-  - {fileID: 3690031635381408902}
-  - {fileID: 1915452925065349797}
-  - {fileID: 6180029680994114498}
-  - {fileID: 8564456835187278824}
-  - {fileID: 2941452226900196301}
-  - {fileID: 5320067926591112170}
-  - {fileID: 1088802534794066026}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 1163417951521406283}
   - {fileID: 8444328666427257387}
-  - {fileID: 1399893782281646933}
+  - {fileID: 0}
   - {fileID: 6548361248272980334}
   - {fileID: 7453874730336948705}
   - {fileID: 2914983618718069288}
@@ -416,14 +384,14 @@ MonoBehaviour:
   - {fileID: 8379622082962960298}
   - {fileID: 6493889262705578041}
   - {fileID: 1249734079670282884}
-  - {fileID: 4330878505238992354}
+  - {fileID: 0}
   - {fileID: 2994228629059441923}
-  - {fileID: 4554336283830311097}
-  - {fileID: 8870837996179087681}
-  - {fileID: 8554547299414943669}
-  - {fileID: 2104670434258827023}
-  - {fileID: 9136408301822124161}
-  - {fileID: 5311998211497219652}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 5885514780426982157}
   - {fileID: 5632239392483222896}
   - {fileID: 2995839933451271312}
@@ -436,8 +404,8 @@ MonoBehaviour:
   - {fileID: 4642638504608297107}
   - {fileID: 4142613776352639886}
   - {fileID: 7445773590752646648}
-  - {fileID: 6392830767839531587}
-  - {fileID: 3850217272920484952}
+  - {fileID: 0}
+  - {fileID: 0}
   muscariables: []
   description: 
   stepPause: 0
@@ -510,89 +478,6 @@ MonoBehaviour:
   itemID: 5
   oldItemID: 0
   value: 0
---- !u!114 &2261075828735507188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4511d925e22af8c4a85a568153258f84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var3
-  itemID: 7
-  oldItemID: 0
-  value: {fileID: 0}
---- !u!114 &1915452925065349797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3f274bcd518c0647b0d9ce7c8f3ab84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var4
-  itemID: 9
-  oldItemID: 0
-  value: {fileID: 0}
---- !u!114 &8564456835187278824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0057f41f38d80eb42994d709097bab6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var5
-  itemID: 11
-  oldItemID: 0
-  value: {fileID: 0}
---- !u!114 &5320067926591112170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 303f39102fa585240b75ba39909c0420, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var6
-  itemID: 13
-  oldItemID: 0
---- !u!114 &1088802534794066026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab82206607c7ce145899c6dded6ed656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var7
-  itemID: 14
-  oldItemID: 0
 --- !u!114 &1163417951521406283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -610,22 +495,6 @@ MonoBehaviour:
   itemID: 15
   oldItemID: 0
   value: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &1399893782281646933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1697e3d2923d7a04992d32e821365308, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var9
-  itemID: 17
-  oldItemID: 0
 --- !u!114 &6548361248272980334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,90 +561,6 @@ MonoBehaviour:
   scope: 0
   key: Var13
   itemID: 24
-  oldItemID: 0
-  value: {fileID: 0}
---- !u!114 &4330878505238992354
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92a3ae3fceb40f24db63f0e4085f39cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var14
-  itemID: 26
-  oldItemID: 0
-  value:
-    e00: 0
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 0
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 0
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 0
---- !u!114 &4554336283830311097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0d1ebdecfe2cb147bc3558abb25d154, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var16
-  itemID: 28
-  oldItemID: 0
-  value: {x: 0, y: 0, z: 0, w: 1}
---- !u!114 &8554547299414943669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5571f032eb722324fac0fc908bc370bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var17
-  itemID: 30
-  oldItemID: 0
-  value: {fileID: 0}
---- !u!114 &9136408301822124161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22ca3b0d4747cfa40806a3521c5f29cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var18
-  itemID: 32
   oldItemID: 0
   value: {fileID: 0}
 --- !u!114 &5885514780426982157
@@ -880,23 +665,6 @@ MonoBehaviour:
   itemID: 44
   oldItemID: 0
   value: {x: 0, y: 0, z: 0}
---- !u!114 &6392830767839531587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 516fbed763cd80c44835637e64a1da18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var25
-  itemID: 46
-  oldItemID: 0
-  value: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &2828743190546237084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -981,16 +749,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1012,20 +787,15 @@ MonoBehaviour:
   itemId: 2
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 4189454128208650146}
   b: {fileID: 2997842933218785534}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!95 &7316821857205532760
 Animator:
   serializedVersion: 7
@@ -1196,23 +966,6 @@ MonoBehaviour:
   itemID: 6
   oldItemID: 0
   value: 1
---- !u!114 &3690031635381408902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4511d925e22af8c4a85a568153258f84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var3Comp
-  itemID: 8
-  oldItemID: 0
-  value: {fileID: 3275089015837847617}
 --- !u!114 &6522387938227322495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1227,16 +980,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1258,20 +1018,15 @@ MonoBehaviour:
   itemId: 4
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 8805465614666017928}
   b: {fileID: 8990060518578950280}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &9192236150366343817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1286,16 +1041,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1317,20 +1079,15 @@ MonoBehaviour:
   itemId: 6
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 1828932151346816536}
   b: {fileID: 670469608650659671}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &2354223933289237011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1345,16 +1102,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1376,54 +1140,15 @@ MonoBehaviour:
   itemId: 8
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 2261075828735507188}
-  b: {fileID: 3690031635381408902}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
---- !u!114 &6180029680994114498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3f274bcd518c0647b0d9ce7c8f3ab84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var4Comp
-  itemID: 10
-  oldItemID: 0
-  value: {fileID: 5611524016588629208}
---- !u!114 &2941452226900196301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0057f41f38d80eb42994d709097bab6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var5Comp
-  itemID: 12
-  oldItemID: 0
-  value: {fileID: 4066486324188773877}
 --- !u!114 &8444328666427257387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1526,57 +1251,6 @@ MonoBehaviour:
   itemID: 27
   oldItemID: 0
   value: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
---- !u!114 &8870837996179087681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0d1ebdecfe2cb147bc3558abb25d154, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var16Comp
-  itemID: 29
-  oldItemID: 0
-  value: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
---- !u!114 &2104670434258827023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5571f032eb722324fac0fc908bc370bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var17Comp
-  itemID: 31
-  oldItemID: 0
-  value: {fileID: 4238428531384644721}
---- !u!114 &5311998211497219652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22ca3b0d4747cfa40806a3521c5f29cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var18Comp
-  itemID: 33
-  oldItemID: 0
-  value: {fileID: 349025186641041854}
 --- !u!114 &5632239392483222896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1628,23 +1302,6 @@ MonoBehaviour:
   itemID: 39
   oldItemID: 0
   value: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
---- !u!114 &3850217272920484952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6381672355547430666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 516fbed763cd80c44835637e64a1da18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scope: 0
-  key: Var25Comp
-  itemID: 47
-  oldItemID: 0
-  value: {x: 1, y: 2, z: 3, w: 4}
 --- !u!114 &7445773590752646648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1710,16 +1367,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1741,20 +1405,15 @@ MonoBehaviour:
   itemId: 10
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 1915452925065349797}
-  b: {fileID: 6180029680994114498}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &228044566174188518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1769,16 +1428,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1800,20 +1466,15 @@ MonoBehaviour:
   itemId: 12
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 8564456835187278824}
-  b: {fileID: 2941452226900196301}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &2890738806112199048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1828,16 +1489,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 13
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1859,20 +1527,15 @@ MonoBehaviour:
   itemId: 14
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 1163417951521406283}
   b: {fileID: 8444328666427257387}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1949074941412235246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1887,16 +1550,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 15
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1918,20 +1588,15 @@ MonoBehaviour:
   itemId: 16
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 6548361248272980334}
   b: {fileID: 7453874730336948705}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &7517226242339437583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1946,16 +1611,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 17
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -1977,20 +1649,15 @@ MonoBehaviour:
   itemId: 18
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 2914983618718069288}
   b: {fileID: 3116736742800406239}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &2086741297537307650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2005,16 +1672,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 19
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2036,20 +1710,15 @@ MonoBehaviour:
   itemId: 20
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 8530409915774343380}
   b: {fileID: 8379622082962960298}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &3698941547575487838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2064,16 +1733,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 21
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2095,20 +1771,15 @@ MonoBehaviour:
   itemId: 22
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 6493889262705578041}
   b: {fileID: 1249734079670282884}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &5970937822181193779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2123,16 +1794,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 23
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2154,20 +1832,15 @@ MonoBehaviour:
   itemId: 24
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 4554336283830311097}
-  b: {fileID: 8870837996179087681}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &3670972813357082933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2182,16 +1855,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 25
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2213,20 +1893,15 @@ MonoBehaviour:
   itemId: 26
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 8554547299414943669}
-  b: {fileID: 2104670434258827023}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &4682479787947274061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2241,16 +1916,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 27
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2272,20 +1954,15 @@ MonoBehaviour:
   itemId: 28
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 9136408301822124161}
-  b: {fileID: 5311998211497219652}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &4596413317429807857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2300,16 +1977,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 29
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2331,20 +2015,15 @@ MonoBehaviour:
   itemId: 30
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 5885514780426982157}
   b: {fileID: 5632239392483222896}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &3133829767128170705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2359,16 +2038,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 31
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2390,20 +2076,15 @@ MonoBehaviour:
   itemId: 32
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 2995839933451271312}
   b: {fileID: 2861589987192766990}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &4968249184442825332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2418,16 +2099,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2449,20 +2137,15 @@ MonoBehaviour:
   itemId: 34
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 4665366542711170054}
   b: {fileID: 1658843741158537153}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &4449145138446997486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2477,16 +2160,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 35
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2508,20 +2198,15 @@ MonoBehaviour:
   itemId: 36
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 3931316057658757917}
   b: {fileID: 5515409587438433481}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &4443065927879269325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2536,16 +2221,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 37
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2567,20 +2259,15 @@ MonoBehaviour:
   itemId: 38
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 3004060541595052673}
   b: {fileID: 4642638504608297107}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &8233974089136438695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2595,16 +2282,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 39
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2626,20 +2320,15 @@ MonoBehaviour:
   itemId: 40
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   a: {fileID: 4142613776352639886}
   b: {fileID: 7445773590752646648}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &3495293335381451495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2654,16 +2343,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 41
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 0
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 0
   variable: {fileID: 0}
   references:
     version: 2
@@ -2685,20 +2381,15 @@ MonoBehaviour:
   itemId: 42
   indentLevel: 0
   message:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  a: {fileID: 6392830767839531587}
-  b: {fileID: 3850217272920484952}
+  a: {fileID: 0}
+  b: {fileID: 0}
   method: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!1 &6906713865859834375
 GameObject:
   m_ObjectHideFlags: 0

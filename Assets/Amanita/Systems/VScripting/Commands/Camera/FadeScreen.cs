@@ -102,7 +102,7 @@ namespace Amanita.VScripting
 
         #endregion
 
-        public override void OnValidate()
+        protected override void OnValidate()
         {
             base.OnValidate();
             ValidateTweeners();

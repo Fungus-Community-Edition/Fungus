@@ -69,6 +69,15 @@ namespace Amanita.VScripting
         [Tooltip("List of methods to call. Supports methods with one string parameter.")]
         [SerializeField] protected StringEvent stringEvent = new StringEvent();
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(booleanParameter);
+            variableDataCache.Add(integerParameter);
+            variableDataCache.Add(floatParameter);
+            variableDataCache.Add(stringParameter);
+        }
+
         protected virtual void DoInvoke()
         {
             switch (invokeType)

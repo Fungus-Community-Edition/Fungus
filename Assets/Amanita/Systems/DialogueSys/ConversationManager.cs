@@ -109,11 +109,11 @@ namespace Amanita.DialogueSys
 
             if (sayDialog == null)
             {
-                sayDialog = SayDialog.GetSayDialog();
+                sayDialog = SayDialogManager.S.MainSayDialog;
             }
 
             sayDialog.SetActive(true);
-            SayDialog.ActiveSayDialog = sayDialog;
+            SayDialogManager.S.MainSayDialog = sayDialog;
 
             return sayDialog;
         }

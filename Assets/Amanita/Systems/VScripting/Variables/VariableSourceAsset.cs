@@ -17,9 +17,10 @@ namespace Amanita.VScripting
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler
     {
-        [SerializeField] protected bool includeInSaves = true;
-        [SerializeField, HideInInspector] protected string uniqueId = string.Empty;
-        [SerializeReference] protected List<Muscariable> variables = new List<Muscariable>();
+        [SerializeField] private bool includeInSaves = true;
+        [SerializeField, HideInInspector] private string uniqueId = string.Empty;
+        [SerializeField] private bool alwaysKeepGuid = true;
+        [SerializeReference] private List<Muscariable> variables = new List<Muscariable>();
 
         public virtual void ForceResetUid()
         {
@@ -50,6 +51,16 @@ namespace Amanita.VScripting
                 AssetDatabase.Refresh();
 #endif
             }
+        }
+
+        /// <summary>
+        /// If false, this VariableSourceAsset's UniqueId may be removed from the relevant GuidRegistry
+        /// when the asset is disabled. If true, the UniqueId will be kept in the registry.
+        /// </summary>
+        public virtual bool AlwaysKeepGuid
+        {
+            get => alwaysKeepGuid;
+            set => alwaysKeepGuid = value;
         }
 
         // Always return a list, even if the backing field was deserialized as null.
@@ -135,13 +146,13 @@ namespace Amanita.VScripting
         [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
-        public Muscariable GetVariable(string name)
+        public Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
             {
                 Muscariable var = variables[i];
-                if (var.Key == name)
+                if (var.Key.Equals(name, strCompare))
                 {
                     return var;
                 }
@@ -306,6 +317,7 @@ namespace Amanita.VScripting
             EnsureValidUniqueId();
             EnsureValidVarIDs();
             EditorOnEnable();
+            VsaSignals.VsaEnabled(this);
         }
 
         protected virtual void EnsureValidUniqueId()
@@ -404,6 +416,12 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             EditorOnDisable();
+            if (!AlwaysKeepGuid)
+            {
+                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
+                fcReg.RemoveGuid(this.UniqueId);
+            }
+            VsaSignals.VsaDisabled(this);
         }
 
         protected virtual void EditorOnDisable()
@@ -482,7 +500,7 @@ namespace Amanita.VScripting
 
     public interface IMuscariableSource : IVariableSource<Muscariable>
     {
-        Muscariable GetVariable(string name);
+        Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal);
         Muscariable AddNewVariableOfContentType(Type contentType, string key);
     }
 
