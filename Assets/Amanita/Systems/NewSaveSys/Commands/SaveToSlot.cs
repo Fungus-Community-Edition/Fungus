@@ -129,7 +129,16 @@ namespace Amanita.SaveSys.VScripting
             // Let's not concern ourselves with whether we're using the selected slot or not.
             // That can dynamically change during runtime, so let's just go with the specified
             // index set here in the editor.
-            string result = $"Save to Slot {slotIndex.Value}";
+            string result;
+            if (saveToSelected.Value)
+            {
+                result = "Save to Selected Slot";
+            }
+            else
+            {
+                result = $"Save to Slot {slotIndex.Value}";
+            }
+            
             if (delayBeforeSave > 0)
             {
                 result += $" after {delayBeforeSave.Value} seconds";

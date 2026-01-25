@@ -1326,17 +1326,9 @@ GameObject:
   - component: {fileID: 1620115414}
   - component: {fileID: 1620115417}
   - component: {fileID: 1620115416}
-  - component: {fileID: 1620115415}
-  - component: {fileID: 1620115419}
   - component: {fileID: 1620115425}
-  - component: {fileID: 1620115424}
-  - component: {fileID: 1620115423}
-  - component: {fileID: 1620115422}
-  - component: {fileID: 1620115421}
-  - component: {fileID: 1620115420}
   - component: {fileID: 1620115427}
   - component: {fileID: 1620115426}
-  - component: {fileID: 1620115428}
   - component: {fileID: 1620115429}
   - component: {fileID: 1620115430}
   - component: {fileID: 1620115431}
@@ -1353,7 +1345,40 @@ GameObject:
   - component: {fileID: 1620115443}
   - component: {fileID: 1620115444}
   - component: {fileID: 1620115442}
-  - component: {fileID: 1620115445}
+  - component: {fileID: 1620115446}
+  - component: {fileID: 1620115447}
+  - component: {fileID: 1620115448}
+  - component: {fileID: 1620115451}
+  - component: {fileID: 1620115450}
+  - component: {fileID: 1620115449}
+  - component: {fileID: 1620115453}
+  - component: {fileID: 1620115452}
+  - component: {fileID: 1620115454}
+  - component: {fileID: 1620115457}
+  - component: {fileID: 1620115455}
+  - component: {fileID: 1620115456}
+  - component: {fileID: 1620115462}
+  - component: {fileID: 1620115459}
+  - component: {fileID: 1620115461}
+  - component: {fileID: 1620115460}
+  - component: {fileID: 1620115463}
+  - component: {fileID: 1620115458}
+  - component: {fileID: 1620115465}
+  - component: {fileID: 1620115464}
+  - component: {fileID: 1620115467}
+  - component: {fileID: 1620115466}
+  - component: {fileID: 1620115469}
+  - component: {fileID: 1620115470}
+  - component: {fileID: 1620115471}
+  - component: {fileID: 1620115468}
+  - component: {fileID: 1620115473}
+  - component: {fileID: 1620115474}
+  - component: {fileID: 1620115475}
+  - component: {fileID: 1620115472}
+  - component: {fileID: 1620115479}
+  - component: {fileID: 1620115478}
+  - component: {fileID: 1620115477}
+  - component: {fileID: 1620115476}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1452,13 +1477,7 @@ MonoBehaviour:
   - {fileID: 1620115444}
   - {fileID: 1620115441}
   - {fileID: 1620115425}
-  - {fileID: 1620115419}
-  - {fileID: 1620115415}
-  - {fileID: 1620115424}
-  - {fileID: 1620115423}
-  - {fileID: 1620115422}
-  - {fileID: 1620115421}
-  - {fileID: 1620115420}
+  - {fileID: 1620115446}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1476,7 +1495,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 1620115427}
+    - {fileID: 1620115473}
     _selectedCommands: []
     <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -1499,6 +1518,9 @@ MonoBehaviour:
   - rid: 7903257792018382959
   - rid: 4605209356947947849
   - rid: 8107162614221504726
+  - rid: 8107162708717338949
+  - rid: 8107162708717339082
+  - rid: 8107162709333639348
   description: Desc here loaaa
   stepPause: 0
   colorCommands: 1
@@ -1514,7 +1536,7 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  nextValidVarID: 10
+  nextValidVarID: 13
   uniqueId: 2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea
   references:
     version: 2
@@ -1525,7 +1547,7 @@ MonoBehaviour:
         scope: 0
         key: firstMarkerID
         itemID: 3
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: first
     - rid: 846271704159223899
       type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1533,7 +1555,7 @@ MonoBehaviour:
         scope: 0
         key: someColor
         itemID: 4
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
     - rid: 4605209356947947849
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1541,7 +1563,7 @@ MonoBehaviour:
         scope: 0
         key: Var
         itemID: 7
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 1.234
     - rid: 7903257792018382921
       type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1549,7 +1571,7 @@ MonoBehaviour:
         scope: 0
         key: vecTwoVar
         itemID: 5
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {x: 5, y: 24}
     - rid: 7903257792018382959
       type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1557,7 +1579,7 @@ MonoBehaviour:
         scope: 0
         key: vecThreeVar
         itemID: 6
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {x: 0, y: 123, z: 0}
     - rid: 8107162614221504726
       type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1565,8 +1587,32 @@ MonoBehaviour:
         scope: 0
         key: afterFirstLoad
         itemID: 9
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 0
+    - rid: 8107162708717338949
+      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        scope: 0
+        key: timesLoaded
+        itemID: 10
+        _ownerIdIndex: -1
+        value: 0
+    - rid: 8107162708717339082
+      type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        scope: 0
+        key: secondLoad
+        itemID: 11
+        _ownerIdIndex: -1
+        value: 0
+    - rid: 8107162709333639348
+      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        scope: 0
+        key: secondMarkerId
+        itemID: 12
+        _ownerIdIndex: -1
+        value: secondsss
 --- !u!4 &1620115405
 Transform:
   m_ObjectHideFlags: 0
@@ -1800,40 +1846,6 @@ MonoBehaviour:
           owningVsa: {fileID: 0}
         value: {r: 0.38327694, g: 0.78023535, b: 0.8207547, a: 0}
         colorRef: {fileID: 0}
---- !u!114 &1620115415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 10
-  indentLevel: 0
-  storyText: You can also exit the Save Menu by clicking the Back button.
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1904,220 +1916,6 @@ MonoBehaviour:
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
---- !u!114 &1620115419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 11
-  indentLevel: 0
-  setOperator: 0
-  anyVar:
-    varRef:
-      itemId: 6
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningFc: {fileID: 1620115404}
-        owningVsa: {fileID: 0}
-      data:
-        rid: 7903257792018382965
-  variable: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 7903257792018382965
-      type: {class: Vector3Data, ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningFc: {fileID: 1620115404}
-          owningVsa: {fileID: 0}
-        value: {x: 76.54, y: 32.1, z: -19.87}
-        vector3Ref: {fileID: 0}
---- !u!114 &1620115420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 17
-  indentLevel: 0
-  storyText: Alright, that should be enough textboxes. Mess around as you like from
-    here on.
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
---- !u!114 &1620115421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 16
-  indentLevel: 0
-  storyText: Also, I look nothing like the Sherlock from Dai Gyakuten Saiban!
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
---- !u!114 &1620115422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 15
-  indentLevel: 0
-  storyText: Or use an asset someone else made. Doesn't hurt to save yourself some
-    work!
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
---- !u!114 &1620115423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 14
-  indentLevel: 0
-  storyText: 'If you want a save menu with the slots having screenshots (a la Ren''Py),
-    you may need to do a little extra scripting. '
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
---- !u!114 &1620115424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 13
-  indentLevel: 0
-  storyText: If you know how to handle the built-in Unity UI system, you can easily
-    change the Save Menu to fit your needs, graphically.
-  description: 
-  character: {fileID: 1495643923}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2132,8 +1930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 12
   indentLevel: 0
-  storyText: It applies the appropriate action to the selected slot, if there is
-    any. Look at the blocks in the UIActionHandler flowchart to see how it's done.
+  storyText: About to load the game. {w=1.0}
   description: 
   character: {fileID: 1495643923}
   portrait: {fileID: 0}
@@ -2167,11 +1964,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentBlock: {fileID: 1620115427}
   suppressBlockAutoSelect: 0
-  markerIDs:
-  - itemId: 3
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
-  respondToAny: 0
+  markerIDs: []
+  respondToAny: 1
 --- !u!114 &1620115427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2186,46 +1980,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 414
-    y: 334
+    x: 208
+    y: 376
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 18
-  blockName: OnSaveLoaded
+  blockName: FadeInScreen
   description: 
   eventHandler: {fileID: 1620115426}
   commandList:
   - {fileID: 1620115431}
   - {fileID: 1620115432}
-  - {fileID: 1620115428}
-  - {fileID: 1620115445}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
---- !u!114 &1620115428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620115399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d65d551a201c94bc79950076ff3eaf2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 19
-  indentLevel: 0
-  sayDialog:
-    backingVarRef:
-      itemId: 0
-      owningFc: {fileID: 1620115404}
-      owningVsa: {fileID: 0}
-    value: {fileID: 1090503853}
-    gameObjectRef: {fileID: 0}
-  oldSayDialog: {fileID: 0}
 --- !u!114 &1620115429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2671,7 +2441,7 @@ MonoBehaviour:
   action: 1
   markerID:
     backingVarRef:
-      itemId: 0
+      itemId: 12
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
     value: second
@@ -2697,8 +2467,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 706.3398
-    y: 337.0905
+    x: 425.33978
+    y: 203.09052
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2709,6 +2479,22 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 1620115442}
+  - {fileID: 1620115447}
+  - {fileID: 1620115448}
+  - {fileID: 1620115451}
+  - {fileID: 1620115450}
+  - {fileID: 1620115457}
+  - {fileID: 1620115453}
+  - {fileID: 1620115456}
+  - {fileID: 1620115454}
+  - {fileID: 1620115449}
+  - {fileID: 1620115455}
+  - {fileID: 1620115463}
+  - {fileID: 1620115462}
+  - {fileID: 1620115460}
+  - {fileID: 1620115459}
+  - {fileID: 1620115452}
+  - {fileID: 1620115458}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -2737,7 +2523,59 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
---- !u!114 &1620115445
+--- !u!114 &1620115446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62df632d9c27644fa58dc900d5988b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 38
+  indentLevel: 0
+  slotIndex:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+  loadFromSelected:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  loadScene:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  delayBeforeLoad:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+--- !u!114 &1620115447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2749,7 +2587,943 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 37
+  itemId: 39
+  indentLevel: 0
+  setOperator: 2
+  anyVar:
+    varRef:
+      itemId: 10
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        rid: 8107162708717338950
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 8107162708717338950
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        integerRef: {fileID: 0}
+--- !u!114 &1620115448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 40
+  indentLevel: 0
+  storyText: This should show up after the first load, in a separate block. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 43
+  indentLevel: 0
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+  durationOLD: 0
+--- !u!114 &1620115450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415ba253dda00fd4981c454be833c723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 42
+  indentLevel: 0
+  state: 1
+--- !u!114 &1620115451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 41
+  indentLevel: 0
+  storyText: Opening the Save Menu. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 45
+  indentLevel: 0
+  storyText: Starting second load. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4f92d4f369519140a340471ac936d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 44
+  indentLevel: 0
+  _slotIndex:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+--- !u!114 &1620115454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4f92d4f369519140a340471ac936d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 46
+  indentLevel: 0
+  _slotIndex:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 2
+    integerRef: {fileID: 0}
+--- !u!114 &1620115455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b06f015cf28e95479fa6f436782adf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 48
+  indentLevel: 0
+  slotIndex:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 2
+    integerRef: {fileID: 0}
+  saveToSelected:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  delayBeforeSave:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 2
+    floatRef: {fileID: 0}
+--- !u!114 &1620115456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 49
+  indentLevel: 0
+  storyText: Now selecting, and then after the next textbox has enough text, saving
+    to another slot. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 47
+  indentLevel: 0
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+  durationOLD: 0
+--- !u!114 &1620115458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a62df632d9c27644fa58dc900d5988b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 55
+  indentLevel: 0
+  slotIndex:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+  loadFromSelected:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  loadScene:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  delayBeforeLoad:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 2
+    floatRef: {fileID: 0}
+--- !u!114 &1620115459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 51
+  indentLevel: 0
+--- !u!114 &1620115460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 53
+  indentLevel: 1
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115461}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 0
+--- !u!114 &1620115461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 646.3398
+    y: 209.09052
+    width: 300
+    height: 100
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 52
+  blockName: AfterSecondLoad
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115465}
+  - {fileID: 1620115464}
+  - {fileID: 1620115467}
+  - {fileID: 1620115466}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 50
+  indentLevel: 0
+  anyOrAllConditions: 0
+  conditions:
+  - compareOperator: 0
+    anyVar:
+      varRef:
+        itemId: 11
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 0}
+          owningVsa: {fileID: 0}
+        data:
+          rid: 8107162709096399019
+  compareOperator: 0
+  anyVar:
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      data:
+        rid: -2
+  variable: {fileID: 0}
+  booleanData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  integerData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+  floatData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
+  stringData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  animatorData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    animatorRef: {fileID: 0}
+  audioSourceData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioSourceRef: {fileID: 0}
+  colorData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {r: 0, g: 0, b: 0, a: 0}
+    colorRef: {fileID: 0}
+  gameObjectData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  materialData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    materialRef: {fileID: 0}
+  objectData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    objectRef: {fileID: 0}
+  spriteData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+  textureData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    textureRef: {fileID: 0}
+  transformData:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    transformRef: {fileID: 0}
+  vector2Data:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {x: 0, y: 0}
+    vector2Ref: {fileID: 0}
+  vector3Data:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 8107162709096399019
+      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+--- !u!114 &1620115463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 54
+  indentLevel: 0
+  storyText: This textbox should show up after the first and second loads. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 57
+  indentLevel: 0
+  setOperator: 2
+  anyVar:
+    varRef:
+      itemId: 10
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        rid: 8107162709333639216
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 8107162709333639216
+      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        integerRef: {fileID: 0}
+--- !u!114 &1620115465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 56
+  indentLevel: 0
+  setOperator: 0
+  anyVar:
+    varRef:
+      itemId: 11
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        rid: 8107162709333639214
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 8107162709333639214
+      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+--- !u!114 &1620115466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 59
+  indentLevel: 0
+  storyText: Thus concludes the integration test of the save system and the UI meant
+    to work with it. {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 58
+  indentLevel: 0
+  storyText: This should show upAnd this should show up after the second load only!
+    {w=1.0}
+  description: 
+  character: {fileID: 1495643923}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 0
+  waitForClick: 0
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+--- !u!114 &1620115468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 62
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: Retained Say dialog!
+    stringRef: {fileID: 0}
+--- !u!114 &1620115469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 26.339783
+    y: 388.0905
+    width: 300
+    height: 100
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 60
+  blockName: RetainSayDialog
+  description: 
+  eventHandler: {fileID: 1620115471}
+  commandList:
+  - {fileID: 1620115470}
+  - {fileID: 1620115468}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d65d551a201c94bc79950076ff3eaf2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 61
+  indentLevel: 0
+  sayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: {fileID: 1090503853}
+    gameObjectRef: {fileID: 0}
+  oldSayDialog: {fileID: 0}
+--- !u!114 &1620115471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8205b045e6f9e7441b269f626e19923a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 1620115469}
+  suppressBlockAutoSelect: 0
+  markerIDs: []
+  respondToAny: 1
+--- !u!114 &1620115472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 65
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: Set first load flag!
+    stringRef: {fileID: 0}
+--- !u!114 &1620115473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 392.33978
+    y: 373.0905
+    width: 300
+    height: 100
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 63
+  blockName: SetFirstLoadFlag
+  description: 
+  eventHandler: {fileID: 1620115475}
+  commandList:
+  - {fileID: 1620115474}
+  - {fileID: 1620115472}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 64
   indentLevel: 0
   setOperator: 0
   anyVar:
@@ -2763,12 +3537,12 @@ MonoBehaviour:
         owningFc: {fileID: 1620115404}
         owningVsa: {fileID: 0}
       data:
-        rid: 8107162689613857313
+        rid: 8107162709333639347
   variable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 8107162689613857313
+    - rid: 8107162709333639347
       type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         backingVarRef:
@@ -2778,6 +3552,137 @@ MonoBehaviour:
         value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
+--- !u!114 &1620115475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8205b045e6f9e7441b269f626e19923a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 1620115473}
+  suppressBlockAutoSelect: 0
+  markerIDs:
+  - itemId: 3
+    owningFc: {fileID: 1620115404}
+    owningVsa: {fileID: 0}
+  respondToAny: 0
+--- !u!114 &1620115476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8205b045e6f9e7441b269f626e19923a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 1620115479}
+  suppressBlockAutoSelect: 0
+  markerIDs:
+  - itemId: 12
+    owningFc: {fileID: 1620115404}
+    owningVsa: {fileID: 0}
+  respondToAny: 0
+--- !u!114 &1620115477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 68
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    value: Set first load flag!
+    stringRef: {fileID: 0}
+--- !u!114 &1620115478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 67
+  indentLevel: 0
+  setOperator: 0
+  anyVar:
+    varRef:
+      itemId: 9
+      owningFc: {fileID: 1620115404}
+      owningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      data:
+        rid: 1000
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningFc: {fileID: 1620115404}
+          owningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+--- !u!114 &1620115479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 716.3398
+    y: 455.0905
+    width: 300
+    height: 100
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 63
+  blockName: SetSecondLoadFlag
+  description: 
+  eventHandler: {fileID: 1620115476}
+  commandList:
+  - {fileID: 1620115478}
+  - {fileID: 1620115477}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
 --- !u!1 &1622107285
 GameObject:
   m_ObjectHideFlags: 0
@@ -3414,6 +4319,16 @@ PrefabInstance:
       propertyPath: slotIndex.backingVarRef.owningFc
       value: 
       objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: delayBeforeLoad.backingVarRef.owningFc
+      value: 
+      objectReference: {fileID: 1789447538}
+    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: loadFromSelected.backingVarRef.owningFc
+      value: 
+      objectReference: {fileID: 1789447538}
     - target: {fileID: 2915399098723150847, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3442,7 +4357,7 @@ PrefabInstance:
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: saveSlotIndex
-      value: 8107162613787656552
+      value: 8107162709153547175
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -3461,6 +4376,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
+      propertyPath: 'managedReferences[8107162709153547175]'
+      value: Amanita.Core Amanita.VScripting.IntMuscariable
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
       propertyPath: managedReferences[3050194087370293303].key
       value: lastSlotIndex
       objectReference: {fileID: 0}
@@ -3472,6 +4392,11 @@ PrefabInstance:
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: managedReferences[8107162613787656552].key
+      value: lastSlotIndex
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[8107162709153547175].key
       value: lastSlotIndex
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
@@ -3506,6 +4431,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
+      propertyPath: managedReferences[8107162709153547175].scope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[8107162709153547175].value
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
       propertyPath: managedReferences[3050194087370293303].itemID
       value: 1
       objectReference: {fileID: 0}
@@ -3517,6 +4452,11 @@ PrefabInstance:
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: managedReferences[8107162613787656552].itemID
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[8107162709153547175].itemID
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
@@ -3533,6 +4473,11 @@ PrefabInstance:
         type: 3}
       propertyPath: managedReferences[8107162613787656552]._ownerIdIndex
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[8107162709153547175]._ownerIdIndex
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3506124658064910297, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -3678,6 +4623,16 @@ PrefabInstance:
         type: 3}
       propertyPath: uiModel._selectedBlocks.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[4605209293432029257]._ownerIdIndex
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
+        type: 3}
+      propertyPath: managedReferences[7903257890697773170]._ownerIdIndex
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5112014327275012662, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}

@@ -6,48 +6,39 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class ConnectionGatherer : IConnectionGatherer
     {
+        private const float BlockNamePadding = 10f;
+        private List<Block> connectedBlocks = new List<Block>();
+
         public virtual IList<ConnectionInfo> GatherConnections(DrawBlockContext drawCtx)
         {
-            FlowchartContext fcContext = drawCtx.FlowchartCtx;
+            var fcContext = drawCtx.FlowchartCtx;
             var fc = fcContext.Flowchart;
             var viewRect = drawCtx.ViewRect;
             var result = new List<ConnectionInfo>();
 
-            // 1. collect valid blocks
-            var blocks = fcContext.AllBlocks
-                .Where(elem => elem != null)
-                .ToList();
-
-            foreach (var blockEl in blocks)
+            foreach (var blockEl in fcContext.AllBlocks.Where(b => b != null))
             {
-                bool blockIsSelected = (fc.SelectedBlock == blockEl);
-                var fromBase = blockEl._NodeRect;
-                var validCommands = blockEl.CommandList.Where(elem => elem != null);
+                bool blockIsSelected = fc.SelectedBlock == blockEl;
+                Rect fromRect = CalculateWindowRect(blockEl, drawCtx, fc);
 
-                // 2. for each command, resolve connected blocks
-                foreach (var commandEl in validCommands)
+                foreach (var commandEl in blockEl.CommandList.Where(cmd => cmd != null))
                 {
                     bool cmdIsSelected = fc.SelectedCommands.Contains(commandEl);
                     bool shouldHighlight = commandEl.IsExecuting || (blockIsSelected && cmdIsSelected);
+
                     connectedBlocks.Clear();
                     commandEl.GetConnectedBlocks(ref connectedBlocks);
 
                     foreach (var dest in connectedBlocks)
                     {
-                        // We only want to consider blocks that are NOT:
-                        // 1. null
-                        // 2. the same one as the source
-                        // 3. in a different Flowchart
                         if (dest == null || dest == blockEl || dest.GetFlowchart() != fc)
                             continue;
 
-                        // 3. adjust for pan/zoom
-                        var fromScrolled = ScrollRect(fromBase, fc);
-                        var toScrolled = ScrollRect(dest._NodeRect, fc);
-
-                        // 4. cull by view
-                        if (OverlapsViewport(fromScrolled, toScrolled, viewRect))
-                            result.Add(new ConnectionInfo(fromScrolled, toScrolled, shouldHighlight));
+                        Rect toRect = CalculateWindowRect(dest, drawCtx, fc);
+                        if (OverlapsViewport(fromRect, toRect, viewRect))
+                        {
+                            result.Add(new ConnectionInfo(fromRect, toRect, shouldHighlight));
+                        }
                     }
                 }
             }
@@ -55,17 +46,25 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
-        // Keeping things all in one list for performance reasons
-        protected List<Block> connectedBlocks = new List<Block>();
-
-        static Rect ScrollRect(Rect r, Flowchart fc)
+        private static Rect CalculateWindowRect(Block block, DrawBlockContext drawCtx, Flowchart fc)
         {
-            r.x += fc.ScrollPos.x;
-            r.y += fc.ScrollPos.y;
-            return r;
+            Rect modelRect = block._NodeRect;
+            GUIStyle nodeStyle = drawCtx.NodeStyle ?? GUI.skin.label;
+            Vector2 textSize = nodeStyle.CalcSize(new GUIContent(block.BlockName));
+
+            modelRect.width = Mathf.Clamp(textSize.x + BlockNamePadding, drawCtx.BlockMinWidth, drawCtx.BlockMaxWidth);
+            modelRect.height = drawCtx.DefaultBlockHeight;
+
+            if (drawCtx.UseGridSnap)
+                modelRect = modelRect.SnapPosition(drawCtx.GridObjectSnap);
+
+            if (fc != null)
+                modelRect.position += fc.ScrollPos;
+
+            return modelRect;
         }
 
-        static bool OverlapsViewport(Rect a, Rect b, Rect view)
+        private static bool OverlapsViewport(Rect a, Rect b, Rect view)
         {
             var bound = Rect.MinMaxRect(
                 Mathf.Min(a.xMin, b.xMin),
@@ -78,7 +77,6 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             connectedBlocks.Clear();
-            connectedBlocks = null;
         }
     }
 }
