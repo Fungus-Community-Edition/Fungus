@@ -1420,7 +1420,7 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: 221
-    y: 206
+    y: 205
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1477,8 +1477,7 @@ MonoBehaviour:
   uiModel:
     _selectedBlocks:
     - {fileID: 1620115427}
-    _selectedCommands:
-    - {fileID: 1620115445}
+    _selectedCommands: []
     <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1551,7 +1550,7 @@ MonoBehaviour:
         key: vecTwoVar
         itemID: 5
         _ownerIdIndex: 0
-        value: {x: 5, y: 0}
+        value: {x: 5, y: 24}
     - rid: 7903257792018382959
       type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
@@ -1597,10 +1596,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 4
   indentLevel: 0
-  varToSet:
-    itemId: 5
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -1779,10 +1774,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  varToSet:
-    itemId: 4
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -1927,10 +1918,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 0
-  varToSet:
-    itemId: 6
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -2764,15 +2751,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 37
   indentLevel: 0
-  varToSet:
-    itemId: 9
-    owningFc: {fileID: 1620115404}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
-      itemId: 0
-      owningFc: {fileID: 0}
+      itemId: 9
+      owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
     data:
       backingVarRef:
