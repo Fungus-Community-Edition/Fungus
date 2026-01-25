@@ -51,6 +51,14 @@ namespace Amanita.DialogueSys
         [Tooltip("Color to apply to the text.")]
         [SerializeField] protected ColorData setColor = new ColorData(Color.white);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(text);
+            variableDataCache.Add(setAlpha);
+            variableDataCache.Add(setColor);
+        }
+
         protected Writer GetWriter()
         {
             var writer = textObject.GetComponent<Writer>();

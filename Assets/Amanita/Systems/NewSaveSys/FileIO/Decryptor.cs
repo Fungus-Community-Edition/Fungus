@@ -21,13 +21,8 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Amanita/SaveSys/DefaultDecryptor", order = 1)]
     public class Decryptor : ScriptableObject, IDecryptor
     {
-        protected virtual void OnEnable()
-        {
-            delimiterArr = new string[] { DelimiterText };
-        }
-
-        protected static string[] delimiterArr;
-        protected static string DelimiterText => "<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>";
+        protected static string[] delimiterArr = new string[] { SaveDiskAccessor.ReadWriteDelimiter };
+        protected static string DelimiterText => SaveDiskAccessor.ReadWriteDelimiter;
 
         /// <summary>
         /// What we expect the client's input to be is an object array with the 
@@ -105,17 +100,17 @@ namespace Amanita.SaveSys
             void ValidateSplit()
             {
                 string errorMessage = string.Empty;
-                if (splitIntoJsons.Count < 2)
+                if (splitIntoJsons.Count != 2)
                 {
-                    errorMessage = "Invalid json passed.";
+                    errorMessage = "Invalid json passed. Expected exactly one delimiter separating metadata and main state.";
                     throw new ArgumentException(errorMessage);
                 }
 
-                string firstSplit = splitIntoJsons[0], secondSplit = splitIntoJsons[1];
-                System.Object firstElem = new System.Object(), secondElem = new System.Object();
-                bool validMeta = JsonHelpers.TryFromJsonOverwrite(firstSplit, ref firstElem);
-                bool validMain = JsonHelpers.TryFromJsonOverwrite(secondSplit, ref secondElem);
-
+                string metaDataRead = splitIntoJsons[0], mainDataRead = splitIntoJsons[1];
+                SaveMetaData metaObj = new SaveMetaData();
+                CompositeSaveData saveDataObj = new CompositeSaveData();
+                bool validMeta = JsonHelpers.TryFromJsonOverwrite(metaDataRead, ref metaObj);
+                bool validMain = JsonHelpers.TryFromJsonOverwrite(mainDataRead, ref saveDataObj);
                 errorMessage = string.Empty;
                 if (!validMeta)
                 {

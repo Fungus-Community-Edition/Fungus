@@ -5,7 +5,6 @@ using System.Threading;
 using UnityEngine;
 using Amanita.VScripting;
 using Amanita.FSExt;
-using FullSerializer;
 
 namespace Amanita.SaveSys
 {
@@ -144,10 +143,9 @@ namespace Amanita.SaveSys
 
         public override FlowchartSaveData Decode(string rawText)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
-            lock (serializer)
+            lock (Serializer)
             {
-                FlowchartSaveData result = serializer.FromJson<FlowchartSaveData>(rawText);
+                FlowchartSaveData result = Serializer.FromJson<FlowchartSaveData>(rawText);
                 return result;
             }
         }

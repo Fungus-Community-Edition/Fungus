@@ -1,4 +1,3 @@
-using Amanita.EditorUtils;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -14,8 +13,6 @@ namespace Amanita.VScripting.EditorUtils
         // Note that each subclass of PropertyDrawer is treated as a singleton of sorts by Unity's
         // internals. Thus, best avoid giving these instance members that can hold state between calls.
         // Unless that state is immutable or reset at the start of each OnGUI call.
-
-        protected readonly DefaultEditorAssetResolver _assetResolver = new DefaultEditorAssetResolver();
 
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
@@ -250,6 +247,8 @@ namespace Amanita.VScripting.EditorUtils
 
             EditorGUI.indentLevel = prevIndent;
             EditorGUI.EndProperty();
+
+            varDataProp.serializedObject.ApplyModifiedProperties();
         }
 
         private static readonly int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight); // <- Width of the little button for the popup

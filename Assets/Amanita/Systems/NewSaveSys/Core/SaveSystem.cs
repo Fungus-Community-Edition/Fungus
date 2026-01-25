@@ -51,6 +51,11 @@ namespace Amanita.SaveSys
             saveManager.Init();
         }
 
+        public bool DoesSaveExist(int slotNum)
+        {
+            return SaveManager.SlotExists(slotNum);
+        }
+
         // We expect an instance of this to be attached to the AmanitaManager singleton
         public static SaveSystem S
         {
@@ -261,20 +266,20 @@ namespace Amanita.SaveSys
         #endregion
 
         #region Save/Load/Delete Operations
-        public virtual Task SaveTo(int slotNum)
+        public virtual Task SaveToSlotAsync(int slotNum)
         {
-            return saveManager.SaveTo(slotNum);
+            return saveManager.SaveToSlotAsync(slotNum);
         }
 
-        public virtual Task<CompositeSaveData> LoadMain(int slotNum, bool loadScene = true,
+        public virtual Task<CompositeSaveData> LoadMainAsync(int slotNum, bool loadScene = true,
             CancellationToken token = default)
         {
-            return saveManager.LoadMain(slotNum, loadScene, token);
+            return saveManager.LoadMainAsync(slotNum, loadScene, token);
         }
 
         public virtual Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
         {
-            return saveManager.LoadMeta(slotNum, token);
+            return saveManager.LoadMetaAsync(slotNum, token);
         }
 
         public virtual void DeleteSave(int slotNum)
@@ -396,6 +401,15 @@ namespace Amanita.SaveSys
         public IEnumerable<ProgressMarker> GetOrderedMarkers()
         {
             return markerManager.GetOrderedMarkers();
+        }
+
+        public virtual void EnsureMultiMarkersRegistered(IList<ProgressMarker> markers)
+        {
+            for (int i = 0; i < markers.Count; i++)
+            {
+                string id = markers[i].Id;
+                EnsureMarkerRegistered(id, markers[i].Order);
+            }
         }
 
         public virtual void EnsureMarkerRegistered(string id, int order = 0)

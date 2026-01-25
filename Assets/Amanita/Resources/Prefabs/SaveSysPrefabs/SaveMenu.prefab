@@ -1326,7 +1326,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 5517563102179242479}
     _selectedCommands:
-    - {fileID: 550333160154067643}
+    - {fileID: 8263271778154824517}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1358,7 +1358,7 @@ MonoBehaviour:
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
-  alwaysKeepGuid: 1
+  alwaysKeepGuid: 0
   nextValidVarID: 3
   uniqueId: ddc5552f-57d9-4abd-9de8-db704265f780
   references:
@@ -1370,7 +1370,7 @@ MonoBehaviour:
         scope: 0
         key: loadSfx
         itemID: 2
-        _ownerIdIndex: 1
+        _ownerIdIndex: -1
         value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
     - rid: 7903257890697773170
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1378,7 +1378,7 @@ MonoBehaviour:
         scope: 0
         key: lastSlotIndex
         itemID: 1
-        _ownerIdIndex: 1
+        _ownerIdIndex: -1
         value: -5
 --- !u!114 &8425603792361900093
 MonoBehaviour:
@@ -1394,8 +1394,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 401
-    y: 297
+    x: 379
+    y: 155
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1438,8 +1438,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 400
-    y: 409
+    x: 618
+    y: 265
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -1468,18 +1468,12 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 3459003350962668323
+    rid: -2
   references:
     version: 2
     RefIds:
-    - rid: 3459003350962668323
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        _ownerIdIndex: 1
-        value: -5
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &6685305723448108047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1501,6 +1495,14 @@ MonoBehaviour:
       owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+  saveToSelected:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   waitUntilFinished:
     backingVarRef:
       itemId: 0
@@ -1509,6 +1511,13 @@ MonoBehaviour:
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  delayBeforeSave:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
 --- !u!114 &8806205604095629028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1662,8 +1671,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 714
-    y: 299
+    x: 405
+    y: 235
     width: 300
     height: 100
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2914,7 +2923,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2124332465217931599}
   m_HandleRect: {fileID: 7491140329138315829}
   m_Direction: 2
-  m_Value: 1.0000011
+  m_Value: 1.0000015
   m_Size: 0.84415585
   m_NumberOfSteps: 0
   m_OnValueChanged:

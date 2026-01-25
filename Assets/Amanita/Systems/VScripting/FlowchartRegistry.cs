@@ -63,7 +63,6 @@ namespace Amanita.VScripting
                 FlowchartSignals.FlowchartEnabled -= RegisterFlowchart;
                 FlowchartSignals.FlowchartDestroyed -= UnregisterFlowchart;
             }
-            
         }
 
         private static void CaptureExistingFlowcharts()
@@ -86,7 +85,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
-                Debug.Log($"Registering Flowchart {flowchart.name} into registry");
+                //Debug.Log($"Registering Flowchart {flowchart.name} into registry");
                 flowchartLookup[flowchart.UniqueId] = flowchart;
             }
         }
@@ -104,7 +103,7 @@ namespace Amanita.VScripting
 
             lock (syncLock)
             {
-                Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
+                //Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
                 flowchartLookup.Remove(flowchart.UniqueId);
             }
         }
