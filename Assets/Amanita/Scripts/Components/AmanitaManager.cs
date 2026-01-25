@@ -10,6 +10,11 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Amanita.SaveSys.UI;
+using UnityEngine.EventSystems;
+
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem.UI;
+#endif
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -255,6 +260,17 @@ namespace Amanita
 
             EnsureShadowDbAvailable();
             EnsureGuidRegistriesAvailable();
+            EnsureEventSystemInScene();
+            void EnsureEventSystemInScene()
+            {
+                var existing = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+                if (existing == null)
+                {
+                    var esGo = new GameObject("EventSystem");
+                    esGo.AddComponent<EventSystem>();
+                    esGo.AddComponent<InputSystemUIInputModule>();
+                }
+            }
 
             VariableRegistry = new VariableRegistry(this);
 
@@ -284,34 +300,8 @@ namespace Amanita
 
             // So GetOrCreateAnchorFor can parent anchors.
             EnsureTweenAnchorHolder();
-            
-            // Don't instantiate SaveMenu during Init - let it be lazy-loaded when first accessed
-            
             PrepSubmodules();
         }
-
-        private void InstantiateSaveMenuIfNeeded()
-        {
-            if (_saveMenuInstance != null)
-            {
-                return;
-            }
-
-            if (saveMenuPrefab == null)
-            {
-                Debug.LogWarning("SaveMenuManager prefab reference is missing on AmanitaManager.");
-                return;
-            }
-
-            _saveMenuInstance = Instantiate(saveMenuPrefab, this.transform);
-
-            if (_saveMenuInstance != null)
-            {
-                _saveMenuInstance.gameObject.name = saveMenuPrefab.name;
-            }
-        }
-
-        private SaveMenuManager _saveMenuInstance;
 
         public static SaveMenuManager SaveMenuManager { get; private set; }
 

@@ -160,10 +160,97 @@ namespace Amanita.VScripting.EditorUtils
             {
                 VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
             }
-
         }
 
         protected bool subsActive = false;
+
+        protected bool HasLiveVariableSourceReference()
+        {
+            if (variableSource == null)
+            {
+                return false;
+            }
+
+            if (variableSource is UnityObj unityObj)
+            {
+                return unityObj != null;
+            }
+
+            return true;
+        }
+
+        protected void EnsureVariableSource(IVariableSource ownerCandidate)
+        {
+            if (_isDisposed || HasLiveVariableSourceReference())
+            {
+                return;
+            }
+
+            if (TryRebindTo(ownerCandidate))
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            var flowchartFromWindow = FlowchartWindow.GetFlowchart();
+            TryRebindTo(flowchartFromWindow);
+#endif
+        }
+
+        protected bool TryRebindTo(IVariableSource candidate)
+        {
+            if (candidate is not IReorderableVariableSource reorderable)
+            {
+                return false;
+            }
+
+            return TryRebindTo(reorderable);
+        }
+
+        protected bool TryRebindTo(IReorderableVariableSource newSource)
+        {
+            if (newSource == null || _isDisposed)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(variableSource, newSource) && HasLiveVariableSourceReference())
+            {
+                return true;
+            }
+
+            ToggleSubs(false);
+            variableSource = newSource;
+            ToggleSubs(true);
+            Refresh();
+            return HasLiveVariableSourceReference();
+        }
+
+        protected UnityObj ResolveRecordTarget(IVariable variable)
+        {
+            if (variable == null)
+            {
+                return null;
+            }
+
+            UnityObj direct = variable as UnityObj;
+            if (direct != null)
+            {
+                return direct;
+            }
+
+            if (variable.Owner is UnityObj ownerObj && ownerObj != null)
+            {
+                return ownerObj;
+            }
+
+            if (variableSource is UnityObj sourceObj && sourceObj != null)
+            {
+                return sourceObj;
+            }
+
+            return null;
+        }
         #endregion
 
         #region Variable Event Handlers
@@ -187,17 +274,13 @@ namespace Amanita.VScripting.EditorUtils
             var owner = varInvolved.Owner;
             owner.RemoveVariable(varInvolved);
 
-            UnityObj legacyVar = varInvolved as UnityObj;
-            if (legacyVar != null)
+            if (varInvolved is UnityObj legacyVar && legacyVar != null)
             {
                 Debug.Log($"Removing legacy variable asset: {varInvolved.Key}");
                 UnityObj.DestroyImmediate(legacyVar);
             }
-
         }
 
-        // We assume that the key field is set to be delayed, and thus we won't be responding
-        // to every keystroke
         protected virtual void OnKeyFieldChanged(VariableRow rowInvolved, string newKey)
         {
             if (!WeAreManaging(rowInvolved))
@@ -212,30 +295,58 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected virtual bool WeAreManaging(VariableRow row) => row.VarToRepresent.Owner == variableSource;
-        // ^We need this because it's possible for multiple VariableRowManagers to be active at once.
-        // For example, when the Flowchart window is active and one Inspector is working
-        // with a VariableSourceAsset that also has its own VariableRowManager.
+        protected virtual bool WeAreManaging(VariableRow row)
+        {
+            if (row == null || row.VarToRepresent == null)
+            {
+                return false;
+            }
+
+            IVariable variable = row.VarToRepresent;
+            IVariableSource owner = variable.Owner;
+
+            if (!HasLiveVariableSourceReference())
+            {
+                EnsureVariableSource(owner);
+            }
+
+            if (owner == null && HasLiveVariableSourceReference())
+            {
+                variable.Owner = variableSource;
+                owner = variableSource;
+            }
+
+            return owner != null && variableSource != null && ReferenceEquals(owner, variableSource);
+        }
 
         protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
         {
-            // We use this to make sure that things happen in the right order. Record first, apply change
-            // to var, then save any assets if needed.
-            string varType = variable.GetType().Name;
+            if (variable == null || applyChange == null)
+            {
+                return;
+            }
 
-            UnityObj toRecord = variable as UnityObj;
+            EnsureVariableSource(variable.Owner);
+
+            string varType = variable.GetType().Name;
+            UnityObj toRecord = ResolveRecordTarget(variable);
             if (toRecord == null)
-                toRecord = variableSource as UnityObj;
+            {
+                Debug.LogError($"VariableRowManager could not resolve a UnityEngine.Object to record for {varType} {description}.");
+                return;
+            }
 
             Undo.RecordObject(toRecord, $"Change to {varType} {description}");
 
             applyChange(variable);
 
+            if (!HasLiveVariableSourceReference())
+            {
+                EnsureVariableSource(variable.Owner);
+            }
+
             if (variableSource is ScriptableObject so)
             {
-                // ^The reason we don't do this check for Flowcharts is because apparently, 
-                // Unity's serialization system automatically handles marking them dirty.
-                // Not so for ScriptableObjects, though.
                 so.MarkDirtyAndSave();
             }
         }
@@ -253,7 +364,7 @@ namespace Amanita.VScripting.EditorUtils
                 RecordAndApplyChange(theVar, "Scope", (varToChange) => varToChange.Scope = scope);
             }
         }
-
+        
         protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
         {
             if (!WeAreManaging(row))
@@ -271,9 +382,6 @@ namespace Amanita.VScripting.EditorUtils
         #endregion
 
         #region Refresh APIs
-        /// <summary>
-        /// Full rebuild: just repopulates the itemsSource list on the ListView.
-        /// </summary>
         public void Refresh()
         {
             if (_isDisposed || variableSource == null || _listView == null)
@@ -301,7 +409,6 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void ReleaseRowsFromList()
         {
-            // With virtualization, clearing variables triggers unbind & release logic
             _listView?.Clear();
         }
 

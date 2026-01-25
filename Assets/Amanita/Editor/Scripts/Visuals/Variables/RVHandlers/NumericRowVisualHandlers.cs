@@ -73,7 +73,47 @@ namespace Amanita.VScripting.EditorUtils
         pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/BoolVariableRow")]
     public class BoolRowVisualHandler : RowVisualHandler<bool>
     {
-        
+        protected override void RegisterVisualElements()
+        {
+            base.RegisterVisualElements();
+            toggleField = ValueField as Toggle;
+            if (toggleField == null)
+            {
+                Debug.LogError($"BoolRowVisualHandler could not find a Toggle named in the UXML template. Check your UXML.");
+                return;
+            }
+        }
+
+        protected Toggle toggleField;
+
+        protected override void ApplyVarValueToValueField()
+        {
+            toggleField.SetValueWithoutNotify((bool)_currentVariable.BoxedValue);
+            toggleField.MarkDirtyRepaint();
+        }
+
+        protected override void ToggleValueChangeSubs(bool on)
+        {
+            base.ToggleValueChangeSubs(on);
+            if (toggleField == null)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                toggleField.RegisterValueChangedCallback(OnToggleFieldChanged);
+            }
+            else
+            {
+                toggleField.UnregisterValueChangedCallback(OnToggleFieldChanged);
+            }
+        }
+
+        private void OnToggleFieldChanged(ChangeEvent<bool> evt)
+        {
+            TriggerValueFieldChanged(evt.newValue);
+        }
     }
 
     [RowVisualHandler(menuName: "Numeric",
