@@ -296,7 +296,13 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                Undo.RecordObject(varSourceObj, "Add Variable");
+                string typeName = info.ContentType.Name;
+                if (typeName.Equals("Single"))
+                {
+                    typeName = "Float";
+                }
+
+                Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
                 curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             }
         }
