@@ -41,12 +41,13 @@ namespace Amanita.EditorUtils
             bool consumed = false;
             // ^With things as they are now, we'll always want this to be false. This way,
             // the other handlers can do their thing.
-
+            var selection = flowchartCtx.Selection;
+            var interaction = flowchartCtx.Interaction;
             if (IsLeftMouseButton(inputEvent))
             {
-                bool atMostOneBlockSelected = flowchartCtx.SelectedBlockCount <= 1;
-                var blockHit = flowchartCtx.BlockHitInLastMouseDown;
-                bool hitNonSelectedBlock = blockHit != null && !flowchartCtx.Flowchart.SelectedBlocks.Contains(blockHit);
+                bool atMostOneBlockSelected = selection.BlockCount <= 1;
+                var blockHit = interaction.BlockHitInLastMouseDown;
+                bool hitNonSelectedBlock = blockHit != null && !selection.Blocks.Contains(blockHit);
                 bool multiSelect = IsMultiSelect(inputEvent);
                 if ((atMostOneBlockSelected || hitNonSelectedBlock) && !multiSelect)
                 {
@@ -56,13 +57,12 @@ namespace Amanita.EditorUtils
                     flowchartCtx.Flowchart.ClearSelectedBlocks();
                 }
 
-
-                if (flowchartCtx.WeHitBlockInLastMouseDown)
+                if (interaction.WeHitBlockInLastMouseDown)
                 {
                     // Record for Undo
                     Undo.RecordObject(flowchartCtx.Flowchart, recordSelectedObject);
 
-                    bool alreadySelected = flowchartCtx.SelectedBlocks.Contains(blockHit);
+                    bool alreadySelected = selection.Blocks.Contains(blockHit);
                     if (alreadySelected && multiSelect)
                     {
                         flowchartCtx.Flowchart.DeselectBlockNoCheck(blockHit);

@@ -436,7 +436,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Blocks = FcSelected.GetComponents<Block>();
             }
-            FlowchartCtx.AllBlocks = Blocks;
+            FlowchartCtx.Document.AllBlocks = Blocks;
             filterStale = true;
             UpdateFilteredBlocks();
         }

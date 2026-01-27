@@ -140,7 +140,7 @@ namespace Amanita.EditorUtils
 
         protected virtual IEnumerable<Block> EnumerateBlocks(FlowchartContext ctx)
         {
-            var blocks = ctx.AllBlocks;
+            var blocks = ctx.Document.AllBlocks;
             if (blocks != null && blocks.Count > 0)
             {
                 return blocks;

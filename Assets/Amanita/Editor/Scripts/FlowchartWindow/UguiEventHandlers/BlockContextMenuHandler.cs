@@ -39,9 +39,10 @@ namespace Amanita.VScripting.EditorUtils
 
             // ← Prefer the pre‐populated hit if you set it in a test
             Block hitBlock = flowchartCtx.BlockHitInLastMouseDown;
+            var document = flowchartCtx.Document;
             if (hitBlock == null)
             {
-                hitBlock = flowchartCtx.TopmostBlockOverlapping(mousePos); // Fallback
+                hitBlock = document.TopmostBlockOverlapping(mousePos); // Fallback
                 
                 if (fc.SelectedBlockCount == 0)
                 {
@@ -88,7 +89,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void CopyBlocks(FlowchartContext flowchartCtx)
         {
-            IList<Block> selectedBlocks = flowchartCtx.SelectedBlocks;
+            var selection = flowchartCtx.Selection;
+            IList<Block> selectedBlocks = selection.Blocks;
             _host.Clipboard.Copy(selectedBlocks);
             FlowchartWindowSignals.BlocksCopied(selectedBlocks);
         }
@@ -101,7 +103,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void DeleteBlocks(FlowchartContext flowchartCtx)
         {
-            IList<Block> selectedBlocks = flowchartCtx.SelectedBlocks;
+            var selection = flowchartCtx.Selection;
+            IList<Block> selectedBlocks = selection.Blocks;
             FcWindowEditing windowEditing = _host.GetComponent<FcWindowEditing>();
             windowEditing?.QueueToDelete(selectedBlocks);
             flowchartCtx.ForceRepaintCount++;

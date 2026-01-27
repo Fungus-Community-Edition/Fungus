@@ -14,37 +14,13 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Dispose()
         {
-            BlockDragOngoing = SelectionBoxDragOngoing = DragUndoRecorded = false;
+            SelectionBoxDragOngoing = DragUndoRecorded = false;
             StartDragPosition = StartSelectionBoxPosition = default;
             ForceRepaintCount = 0;
             BlockHitInLastMouseDown = RootBlockToDrag = null;
             Position = SelectionBox = default;
             QueuedForDeletion.Clear();
-            AllBlocks = null;
             Flowchart = null;
-        }
-
-        public IList<Block> SelectedBlocks
-        {
-            get { return Selection.Blocks; }
-            set
-            {
-                if (Flowchart == null)
-                {
-                    return;
-                }
-
-                Flowchart.SelectedBlocks = value;
-            }
-        }
-
-        public int SelectedBlockCount => Selection.BlockCount;
-        public int SelectedCommandCount => Selection.CommandCount;
-
-        public virtual bool BlockDragOngoing
-        {
-            get { return Interaction.BlockDragOngoing; }
-            set { Interaction.BlockDragOngoing = value; }
         }
 
         public virtual bool SelectionBoxDragOngoing
@@ -115,17 +91,6 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public virtual IFlowchartHost FcHost { get; set; }
-
-        public virtual IList<Block> AllBlocks
-        {
-            get { return Document.AllBlocks; }
-            set { Document.AllBlocks = value; }
-        }
-
-        public Block TopmostBlockOverlapping(Vector2 mousePosition)
-        {
-            return Document.TopmostBlockOverlapping(mousePosition);
-        }
 
         public IList<Block> QueuedForDeletion
         {

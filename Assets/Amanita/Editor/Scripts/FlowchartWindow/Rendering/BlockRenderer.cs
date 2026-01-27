@@ -31,7 +31,8 @@ namespace Amanita.VScripting.EditorUtils
             var fc = drawCtx.FlowchartCtx.Flowchart;
             var viewRect = drawCtx.ViewRect;
 
-            foreach (var block in drawCtx.FlowchartCtx.AllBlocks)
+            var document = drawCtx.FlowchartCtx.Document;
+            foreach (var block in document.AllBlocks)
             {
                 // size in model-space
                 var content = new GUIContent(block.BlockName);
@@ -220,7 +221,7 @@ namespace Amanita.VScripting.EditorUtils
         public virtual GUIStyle BlockSearchPopupNormalStyle { get; set; }
         public virtual GUIStyle BlockSearchPopupSelectedStyle { get; set; }
         public virtual BlockGraphics Graphics { get; set; }
-        public virtual IList<Block> AllBlocks { get { return FlowchartCtx.AllBlocks; } }
+        public virtual IList<Block> AllBlocks { get { return FlowchartCtx.Document.AllBlocks; } }
         public virtual Rect ViewRect { get; set; }
         public Rect CurrentBlockWindowRect { get; set; }
 

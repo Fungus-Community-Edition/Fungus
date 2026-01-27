@@ -16,9 +16,10 @@ namespace VScriptingTests.FCWindowOperations.Integration
         /// </summary>
         void PrePassHitTest(Event e)
         {
+            var document = ctx.Document;
             if (e.type == EventType.MouseDown)
             {
-                ctx.BlockHitInLastMouseDown = ctx.TopmostBlockOverlapping(e.mousePosition);
+                ctx.BlockHitInLastMouseDown = document.TopmostBlockOverlapping(e.mousePosition);
             }
             // clear any old marquee state
             if (e.type == EventType.MouseDown)
@@ -122,7 +123,8 @@ namespace VScriptingTests.FCWindowOperations.Integration
             toSelect = blocks[1];
             SimulateSingleBlockSelection(toSelect);
 
-            bool success = ctx.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+            var selection = ctx.Selection;
+            bool success = selection.BlockCount == 1 && flowchart.SelectedBlock == toSelect;
             string errorMessage = "Selecting a non-selected block should change the selection to only that block";
             Assert.IsTrue(success, errorMessage);
         }
