@@ -45,7 +45,6 @@ namespace VScriptingTests.FCWindowOperations
             {
                 Flowchart = flowchart,
                 Position = initPosition,
-                SelectionBox = noSelectionBox,
             };
 
             PrepEvents();
@@ -145,7 +144,8 @@ namespace VScriptingTests.FCWindowOperations
         public virtual void MouseDown_UnselectedBlock_NoDragBlockSet()
         {
             handler.Handle(mouseDownEvent, fcContext);
-            bool success = fcContext.RootBlockToDrag == null;
+            var interaction = fcContext.Interaction;
+            bool success = interaction.RootBlockToDrag == null;
             Assert.IsTrue(success, "Drag Block was set after MouseDown on unselected Block");
         }
 
@@ -155,7 +155,8 @@ namespace VScriptingTests.FCWindowOperations
             SelectBlock(blockIndex);
             //mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
             Block blockHit = blocksInFlowchart[blockIndex];
-            fcContext.BlockHitInLastMouseDown = blockHit;
+            var interaction = fcContext.Interaction;
+            interaction.BlockHitInLastMouseDown = blockHit;
             bool consumed = handler.Handle(mouseDownEvent, fcContext);
             Assert.IsTrue(consumed, $"Block #{blockIndex} should consume MouseDown");
         }
@@ -182,7 +183,8 @@ namespace VScriptingTests.FCWindowOperations
             // Arrange
             SelectBlock(blockIndex);
             mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
-            fcContext.RootBlockToDrag = blocksInFlowchart[blockIndex];
+            var interaction = fcContext.Interaction;
+            interaction.RootBlockToDrag = blocksInFlowchart[blockIndex];
 
             // Act
             bool consumed = handler.Handle(mouseDragEvent, fcContext);
@@ -209,7 +211,8 @@ namespace VScriptingTests.FCWindowOperations
         {
             flowchart.AddRangeToSelection(blocksInFlowchart);
             Block firstBlock = blocksInFlowchart[0];
-            fcContext.RootBlockToDrag = firstBlock;
+            var interaction = fcContext.Interaction;
+            interaction.RootBlockToDrag = firstBlock;
 
             Vector2 expectedMovement = mouseDragEvent.delta / flowchart.Zoom;
 
@@ -261,7 +264,8 @@ namespace VScriptingTests.FCWindowOperations
             Block toDrag = blocksInFlowchart[blockIndex];
             mouseDragEvent.mousePosition = MousePositionFor(blockIndex);
             flowchart.AddToSelection(toDrag);
-            fcContext.RootBlockToDrag = toDrag;
+            var interaction = fcContext.Interaction;
+            interaction.RootBlockToDrag = toDrag;
             handler.Handle(mouseDragEvent, fcContext);
         }
 
@@ -271,7 +275,8 @@ namespace VScriptingTests.FCWindowOperations
             SimulateDraggingBlockAtIndex(blockIndex);
             handler.Handle(mouseUpEvent, fcContext);
             string assertErrorMessage = $"Block #{blockIndex} was not cleared after being dragged and released";
-            Assert.IsNull(fcContext.RootBlockToDrag, assertErrorMessage);
+            var interaction = fcContext.Interaction;
+            Assert.IsNull(interaction.RootBlockToDrag, assertErrorMessage);
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
@@ -279,7 +284,8 @@ namespace VScriptingTests.FCWindowOperations
         {
             SelectBlock(blockIndex);
             Block blockHit = blocksInFlowchart[blockIndex];
-            fcContext.BlockHitInLastMouseDown = blockHit;
+            var interaction = fcContext.Interaction;
+            interaction.BlockHitInLastMouseDown = blockHit;
 
             bool consumed = handler.Handle(mouseDownEvent, fcContext);
 

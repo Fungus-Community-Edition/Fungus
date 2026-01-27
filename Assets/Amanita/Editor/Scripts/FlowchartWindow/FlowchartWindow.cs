@@ -120,7 +120,7 @@ namespace Amanita.VScripting.EditorUtils
                     return Rect.zero;
                 }
 
-                return FlowchartCtx.SelectionBox;
+                return FlowchartCtx.Interaction.SelectionBox;
             }
         }
         protected List<Block> mouseDownSelectionState = new List<Block>();
@@ -162,7 +162,10 @@ namespace Amanita.VScripting.EditorUtils
             get
             {
                 if (toolbarSearchTextFieldStyle == null)
-                    toolbarSearchTextFieldStyle = GUI.skin.FindStyle("ToolbarSearchTextField");
+                {
+                    toolbarSearchTextFieldStyle = GUI.skin?.FindStyle("ToolbarSearchTextField")
+                        ?? EditorStyles.toolbarTextField;
+                }
 
                 return toolbarSearchTextFieldStyle;
             }
@@ -175,7 +178,10 @@ namespace Amanita.VScripting.EditorUtils
             get
             {
                 if (toolbarSearchCancelButtonStyle == null)
-                    toolbarSearchCancelButtonStyle = GUI.skin.FindStyle("ToolbarSeachCancelButton");
+                {
+                    toolbarSearchCancelButtonStyle = GUI.skin?.FindStyle("ToolbarSeachCancelButton")
+                        ?? EditorStyles.toolbarButton;
+                }
 
                 return toolbarSearchCancelButtonStyle;
             }
@@ -436,7 +442,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Blocks = FcSelected.GetComponents<Block>();
             }
-            FlowchartCtx.AllBlocks = Blocks;
+            FlowchartCtx.Document.AllBlocks = Blocks;
             filterStale = true;
             UpdateFilteredBlocks();
         }
@@ -444,11 +450,21 @@ namespace Amanita.VScripting.EditorUtils
         public IList<Block> Blocks { get; protected set; } = new Block[0];
         protected IList<Block> filteredBlocks = new List<Block>();
         protected bool filterStale = true;
+        protected string cachedSearchString = string.Empty;
 
         protected void UpdateFilteredBlocks()
         {
-            // Recompute the filtered list and block.FilterState in one call
-            filteredBlocks = FilterUtils.FilterBlocks(Blocks, SearchString);
+            // Recompute the filtered list and block.FilterState in one call.
+            // Only do this if the filter is stale or the search string has changed.
+            // Otherwise, we end up doing this every frame while typing in the search box,
+            // panning the screen, etc. Looots of garbage.
+            bool outOfDateSearchString = !string.Equals(SearchString, cachedSearchString, StringComparison.Ordinal);
+            if (filterStale || outOfDateSearchString)
+            {
+                cachedSearchString = SearchString;
+                filteredBlocks = FilterUtils.FilterBlocks(Blocks, cachedSearchString);
+                filterStale = false;
+            }
 
             // Keep popup-selection index in range
             int max = Mathf.Max(filteredBlocks.Count - 1, 0);
@@ -602,158 +618,25 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void OnGUI()
         {
             UpdateContexts();
-            void UpdateContexts()
-            {
-                FlowchartCtx.FcHost = this;
-                FlowchartCtx.Flowchart = Flowchart;
-                FlowchartCtx.Position = position;
 
-                DrawGridCtx.GridLineSpacingSize = 120;
-                DrawGridCtx.GridLineColor = GridLineColor;
-
-                DrawBlockCtx.FlowchartCtx = FlowchartCtx;
-                DrawBlockCtx.DefaultBlockHeight = 40;
-                DrawBlockCtx.BlockMinWidth = 60;
-                DrawBlockCtx.BlockMaxWidth = 240;
-                _nodeStyleProvider.ProvideStylesTo(DrawBlockCtx);
-                DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
-            }
-
-            Flowchart = GetFlowchart();
-            Repaint();
-            
-            bool triedButFailedToGetFc = Flowchart == null;
-            if (triedButFailedToGetFc)
+            if (Flowchart == null)
             {
-                DrawNoFlowchartMessage();
-                return;
-            }
-            void DrawNoFlowchartMessage()
-            {
-                GUILayout.Label("No Flowchart in the scene is selected");
-            }
-
-            DrawToolbarAndSearch(Event.current);
-            void DrawToolbarAndSearch(Event guiEvent)
-            {
-                switch (guiEvent.type)
+                Flowchart = GetFlowchart();
+                if (Flowchart == null)
                 {
-                    case EventType.MouseDown:
-                        // Clear search filter focus
-                        if (!searchRect.Contains(guiEvent.mousePosition) && !popupRect.Contains(guiEvent.mousePosition))
-                        {
-                            CloseBlockPopup();
-                        }
-
-                        if (guiEvent.button == 0 && searchRect.Contains(guiEvent.mousePosition))
-                        {
-                            blockPopupSelection = 0;
-                            popupScroll = Vector2.zero;
-                        }
-
-                        rightClickDown = -Vector2.one;
-                        break;
-
-                    case EventType.KeyDown:
-                        // This lets you change the selected block through the arrow keys,
-                        // deselect everything through the Escape key, and... still trying to
-                        // figure out how the Return key factors into all of this
-                        if (GUI.GetNameOfFocusedControl() == SearchFieldName)
-                        {
-                            var centerBlock = false;
-                            var selectBlock = false;
-                            var closePopup = false;
-                            var useEvent = false;
-
-                            switch (guiEvent.keyCode)
-                            {
-                                case KeyCode.DownArrow:
-                                    ++blockPopupSelection;
-                                    centerBlock = true;
-                                    useEvent = true;
-                                    break;
-
-                                case KeyCode.UpArrow:
-                                    --blockPopupSelection;
-                                    centerBlock = true;
-                                    useEvent = true;
-                                    break;
-
-                                case KeyCode.Return:
-                                    centerBlock = true;
-                                    selectBlock = true;
-                                    closePopup = true;
-                                    useEvent = true;
-                                    break;
-
-                                case KeyCode.Escape:
-                                    closePopup = true;
-                                    useEvent = true;
-                                    break;
-                            }
-
-                            blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, filteredBlocks.Count - 1);
-
-                            if (centerBlock && filteredBlocks.Count > 0)
-                            {
-                                var block = filteredBlocks[blockPopupSelection];
-                                CenterBlock(block);
-
-                                if (selectBlock)
-                                {
-                                    SelectBlock(block);
-                                }
-                            }
-
-                            if (closePopup)
-                            {
-                                CloseBlockPopup();
-                            }
-
-                            if (useEvent)
-                            {
-                                guiEvent.Use();
-                            }
-                        }
-                        else if (guiEvent.keyCode == KeyCode.Escape)
-                        {
-                            DeselectAll();
-                            guiEvent.Use();
-                        }
-                        else if (guiEvent.control && !wasControl)
-                        {
-                            StartControlSelection();
-                            Repaint();
-                            wasControl = true;
-                        }
-                        break;
-                    case EventType.KeyUp:
-                        if (!guiEvent.control && wasControl)
-                        {
-                            wasControl = false;
-                            EndControlSelection();
-                            Repaint();
-                        }
-                        break;
+                    DrawNoFlowchartMessage();
+                    return;
                 }
             }
 
+            DrawToolbarAndSearch(Event.current);
             UpdateFilteredBlocks();
 
             foreach (var comp in _components)
                 comp.OnGUI(DrawBlockCtx, FlowchartCtx);
 
             DrawSelectionBox();
-            void DrawSelectionBox()
-            {
-                // After your _inputProcessor.Process(...) and your DrawFlowchartView(...)…
-                bool thereIsBoxToDraw = SelectionBox.size != Vector2.zero;
-                if (thereIsBoxToDraw && this.IsBeingRepainted)
-                {
-                    GUI.Box(SelectionBox, "", GUI.skin.FindStyle("SelectionRect"));
-                }
-            }
-
+            
             // Draw toolbar, search popup, and variables window
             //  need try catch here as we are now invalidating the drawer if the target flowchart
             //      has changed which makes unity GUILayouts upset and this function appears to 
@@ -762,9 +645,10 @@ namespace Amanita.VScripting.EditorUtils
             {
                 DrawOverlay(Event.current);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Debug.Log("Failed to draw overlay in some way");
+                Debug.LogException(ex);
+                GUIUtility.ExitGUI();
             }
 
             // Handle events for custom GUI
@@ -775,8 +659,142 @@ namespace Amanita.VScripting.EditorUtils
                 // Redraw on next frame to get crisp refresh rate
                 Repaint();
             }
+        }
 
-            GUIUtility.ExitGUI();
+        private void UpdateContexts()
+        {
+            FlowchartCtx.FcHost = this;
+            FlowchartCtx.Flowchart = Flowchart;
+            FlowchartCtx.Position = position;
+
+            DrawGridCtx.GridLineSpacingSize = 120;
+            DrawGridCtx.GridLineColor = GridLineColor;
+
+            DrawBlockCtx.FlowchartCtx = FlowchartCtx;
+            DrawBlockCtx.DefaultBlockHeight = 40;
+            DrawBlockCtx.BlockMinWidth = 60;
+            DrawBlockCtx.BlockMaxWidth = 240;
+            _nodeStyleProvider.ProvideStylesTo(DrawBlockCtx);
+            DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
+        }
+
+        void DrawNoFlowchartMessage()
+        {
+            GUILayout.Label("No Flowchart in the scene is selected");
+        }
+
+        void DrawToolbarAndSearch(Event guiEvent)
+        {
+            switch (guiEvent.type)
+            {
+                case EventType.MouseDown:
+                    // Clear search filter focus
+                    if (!searchRect.Contains(guiEvent.mousePosition) && !popupRect.Contains(guiEvent.mousePosition))
+                    {
+                        CloseBlockPopup();
+                    }
+
+                    if (guiEvent.button == 0 && searchRect.Contains(guiEvent.mousePosition))
+                    {
+                        blockPopupSelection = 0;
+                        popupScroll = Vector2.zero;
+                    }
+
+                    rightClickDown = -Vector2.one;
+                    break;
+
+                case EventType.KeyDown:
+                    // This lets you change the selected block through the arrow keys,
+                    // deselect everything through the Escape key, and... still trying to
+                    // figure out how the Return key factors into all of this
+                    if (GUI.GetNameOfFocusedControl() == SearchFieldName)
+                    {
+                        var centerBlock = false;
+                        var selectBlock = false;
+                        var closePopup = false;
+                        var useEvent = false;
+
+                        switch (guiEvent.keyCode)
+                        {
+                            case KeyCode.DownArrow:
+                                ++blockPopupSelection;
+                                centerBlock = true;
+                                useEvent = true;
+                                break;
+
+                            case KeyCode.UpArrow:
+                                --blockPopupSelection;
+                                centerBlock = true;
+                                useEvent = true;
+                                break;
+
+                            case KeyCode.Return:
+                                centerBlock = true;
+                                selectBlock = true;
+                                closePopup = true;
+                                useEvent = true;
+                                break;
+
+                            case KeyCode.Escape:
+                                closePopup = true;
+                                useEvent = true;
+                                break;
+                        }
+
+                        blockPopupSelection = Mathf.Clamp(blockPopupSelection, 0, filteredBlocks.Count - 1);
+
+                        if (centerBlock && filteredBlocks.Count > 0)
+                        {
+                            var block = filteredBlocks[blockPopupSelection];
+                            CenterBlock(block);
+
+                            if (selectBlock)
+                            {
+                                SelectBlock(block);
+                            }
+                        }
+
+                        if (closePopup)
+                        {
+                            CloseBlockPopup();
+                        }
+
+                        if (useEvent)
+                        {
+                            guiEvent.Use();
+                        }
+                    }
+                    else if (guiEvent.keyCode == KeyCode.Escape)
+                    {
+                        DeselectAll();
+                        guiEvent.Use();
+                    }
+                    else if (guiEvent.control && !wasControl)
+                    {
+                        StartControlSelection();
+                        Repaint();
+                        wasControl = true;
+                    }
+                    break;
+                case EventType.KeyUp:
+                    if (!guiEvent.control && wasControl)
+                    {
+                        wasControl = false;
+                        EndControlSelection();
+                        Repaint();
+                    }
+                    break;
+            }
+        }
+
+        void DrawSelectionBox()
+        {
+            // After your _inputProcessor.Process(...) and your DrawFlowchartView(...)…
+            bool thereIsBoxToDraw = SelectionBox.size != Vector2.zero;
+            if (thereIsBoxToDraw && this.IsBeingRepainted)
+            {
+                GUI.Box(SelectionBox, "", GUI.skin.FindStyle("SelectionRect"));
+            }
         }
 
         public virtual VisualElement RootVisualElement { get { return rootVisualElement; } }
@@ -791,6 +809,10 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void DrawOverlay(Event guiEvent)
         {
+            if (Flowchart == null)
+            {
+                return;
+            }
             DrawMainToolbarGroup();
             void DrawMainToolbarGroup()
             {
@@ -838,7 +860,7 @@ namespace Amanita.VScripting.EditorUtils
 
                         GUILayout.Space(2);
 
-                        if (Flowchart.Description.Length > 0)
+                        if (!string.IsNullOrEmpty(Flowchart.Description))
                         {
                             GUILayout.Label(Flowchart.Description, EditorStyles.helpBox);
                         }

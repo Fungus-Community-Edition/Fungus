@@ -272,11 +272,25 @@ namespace Amanita.VScripting.EditorUtils
 
             IVariable varInvolved = row.VarToRepresent;
             var owner = varInvolved.Owner;
+
+            PrepUndoRecordForOwner();
+            void PrepUndoRecordForOwner()
+            {
+                if (owner is UnityObj ownerObj && ownerObj != null)
+                {
+                    string typeName = varInvolved.GetType().Name;
+                    if (typeName.Equals("Single"))
+                    {
+                        typeName = "Float";
+                    }
+                    Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
+                }
+            }
+            
             owner.RemoveVariable(varInvolved);
 
             if (varInvolved is UnityObj legacyVar && legacyVar != null)
             {
-                Debug.Log($"Removing legacy variable asset: {varInvolved.Key}");
                 UnityObj.DestroyImmediate(legacyVar);
             }
         }

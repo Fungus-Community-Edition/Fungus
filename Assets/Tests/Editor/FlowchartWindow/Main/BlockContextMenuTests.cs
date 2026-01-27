@@ -161,7 +161,8 @@ namespace VScriptingTests.FCWindowOperations
                 bool justOneEntry = entryCount == 1;
                 Assert.IsTrue(justOneEntry, $"Clipboard should have only 1 entry. Instead it has {entryCount}.");
 
-                Block blockExpected = ctx.TopmostBlockOverlapping(rightClickBlock.mousePosition);
+                var document = ctx.Document;
+                Block blockExpected = document.TopmostBlockOverlapping(rightClickBlock.mousePosition);
                 bool entryIsForTheRightBlock = clipboard.HasEntryFor(blockExpected);
                 Assert.IsTrue(entryIsForTheRightBlock, "Clipboard does not have an entry for the right Block");
             }

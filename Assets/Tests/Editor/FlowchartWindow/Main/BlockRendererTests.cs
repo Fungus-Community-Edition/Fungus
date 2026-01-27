@@ -68,8 +68,10 @@ namespace VScriptingTests.FCWindowOperations
                 Flowchart = fc,
                 Position = new Rect(0, 0, 100, 100),  // window size in screen‐space
                 FcHost = _host,
-                AllBlocks = new List<Block> { _insideBlock, _outsideBlock }
             };
+
+            _flowchartCtx.Document.AllBlocks.Add(_insideBlock);
+            _flowchartCtx.Document.AllBlocks.Add(_outsideBlock);
 
             // 4) Prepare DrawBlockContext
             _drawCtx = new DrawBlockContext

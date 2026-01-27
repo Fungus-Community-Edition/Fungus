@@ -52,8 +52,8 @@ namespace Amanita.VScripting.EditorUtils
             // same “world ? screen” rect you used for zoom
             viewRect = _window.CalcFlowchartWindowViewRect();
             var curTime = Time.realtimeSinceStartup;
-
-            foreach (var block in flowchartContext.AllBlocks)
+            var document = flowchartContext.Document;
+            foreach (var block in document.AllBlocks)
             {
                 float alpha = (block.ExecutingIconTimer - curTime)
                             / AmanitaConstants.ExecutingIconFadeTime;

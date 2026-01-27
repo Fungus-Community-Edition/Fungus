@@ -56,20 +56,21 @@ namespace VScriptingTests.FCWindowOperations
         {
             down.mousePosition = new Vector2(0, 0);
             bool consumed = handler.Handle(down, ctx);
-
+            var interaction = ctx.Interaction;
             Assert.IsTrue(consumed);
-            Assert.AreNotEqual(default, ctx.SelectionBox);
-            Assert.AreEqual(down.mousePosition, ctx.StartSelectionBoxPosition);
+            Assert.AreNotEqual(default, interaction.SelectionBox);
+            Assert.AreEqual(down.mousePosition, interaction.StartSelectionBoxPosition);
         }
 
         [Test]
         public void MouseDown_OnBlock_DoesNothing()
         {
             down.mousePosition = initNodePositions[1];
-            ctx.BlockHitInLastMouseDown = blocks[0];
+            var interaction = ctx.Interaction;
+            interaction.BlockHitInLastMouseDown = blocks[0];
             Assert.IsFalse(handler.Handle(down, ctx), "Down event gets consumed by handler");
 
-            bool thereIsNoSelectionBox = ctx.SelectionBox == default;
+            bool thereIsNoSelectionBox = interaction.SelectionBox == default;
             Assert.IsTrue(thereIsNoSelectionBox, "Just mouse down creates a valid selection box. It shouldn't.");
         }
 
@@ -80,7 +81,7 @@ namespace VScriptingTests.FCWindowOperations
             Vector2 endPos = new Vector2(30, 40);
             SimulateMakingSelectionBox(startPos, endPos);
 
-            var rect = ctx.SelectionBox;
+            var rect = ctx.Interaction.SelectionBox;
             Assert.AreEqual(startPos, rect.position);
             // ^Since the position of a rect is meant to be equal to that of its bottom left corner by default
 
