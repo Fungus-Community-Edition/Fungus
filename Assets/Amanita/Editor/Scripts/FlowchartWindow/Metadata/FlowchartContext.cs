@@ -14,60 +14,17 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void Dispose()
         {
-            SelectionBoxDragOngoing = DragUndoRecorded = false;
-            StartDragPosition = StartSelectionBoxPosition = default;
+            // 
+            Interaction.Dispose();
+            Document.Dispose();
+            Selection.Dispose();
             ForceRepaintCount = 0;
-            BlockHitInLastMouseDown = RootBlockToDrag = null;
-            Position = SelectionBox = default;
+            Position = default;
             QueuedForDeletion.Clear();
             Flowchart = null;
         }
 
-        public virtual bool SelectionBoxDragOngoing
-        {
-            get { return Interaction.SelectionBoxDragOngoing; }
-            set { Interaction.SelectionBoxDragOngoing = value; }
-        }
-
-        public virtual bool DragUndoRecorded
-        {
-            get { return Interaction.DragUndoRecorded; }
-            set { Interaction.DragUndoRecorded = value; }
-        }
-
-        public Vector2 StartDragPosition
-        {
-            get { return Interaction.StartDragPosition; }
-            set { Interaction.StartDragPosition = value; }
-        }
-
-        public virtual bool WeHitBlockInLastMouseDown => Interaction.WeHitBlockInLastMouseDown;
-
-        public virtual Block BlockHitInLastMouseDown
-        {
-            get { return Interaction.BlockHitInLastMouseDown; }
-            set { Interaction.BlockHitInLastMouseDown = value; }
-        }
-
         public int ForceRepaintCount { get; set; }
-
-        public virtual Vector2 StartSelectionBoxPosition
-        {
-            get { return Interaction.StartSelectionBoxPosition; }
-            set { Interaction.StartSelectionBoxPosition = value; }
-        }
-
-        public virtual bool HasDraggedSelected
-        {
-            get { return Interaction.HasDraggedSelected; }
-            set { Interaction.HasDraggedSelected = value; }
-        }
-
-        public virtual Block RootBlockToDrag
-        {
-            get { return Interaction.RootBlockToDrag; }
-            set { Interaction.RootBlockToDrag = value; }
-        }
 
         private Flowchart flowchart;
 
@@ -83,13 +40,6 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public virtual Rect Position { get; set; }
-
-        public virtual Rect SelectionBox
-        {
-            get { return Interaction.SelectionBox; }
-            set { Interaction.SelectionBox = value; }
-        }
-
         public virtual IFlowchartHost FcHost { get; set; }
 
         public IList<Block> QueuedForDeletion

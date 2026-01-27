@@ -83,9 +83,10 @@ namespace Amanita.EditorUtils
         protected virtual bool OnMouseReleased(Event inputEvent, FlowchartContext ctx)
         {
             var fc = ctx.Flowchart;
-            var blockHit = ctx.BlockHitInLastMouseDown;
+            var interaction = ctx.Interaction;
+            var blockHit = interaction.BlockHitInLastMouseDown;
             bool hitEmpty = blockHit == null;
-            bool hasDragRect = ctx.SelectionBox.size != Vector2.zero;
+            bool hasDragRect = interaction.SelectionBox.size != Vector2.zero;
 
             if (hitEmpty && !hasDragRect && !IsMultiSelect(inputEvent))
             {

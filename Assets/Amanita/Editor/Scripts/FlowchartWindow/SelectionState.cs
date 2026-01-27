@@ -7,7 +7,7 @@ namespace Amanita.VScripting.EditorUtils
     /// Encapsulates Flowchart selection operations so callers don't have
     /// to reach into Flowchart directly for every query or mutation.
     /// </summary>
-    public class SelectionState
+    public class SelectionState : IDisposable
     {
         private static readonly IList<Block> EmptyBlocks = Array.Empty<Block>();
 
@@ -110,6 +110,13 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Flowchart.AddToSelection(block);
             }
+        }
+
+        public void Dispose()
+        {
+            ClearBlocks();
+            ClearCommands();
+            Flowchart = null;
         }
     }
 }

@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class FlowchartDocument
+    public class FlowchartDocument : IDisposable
     {
         public Flowchart Flowchart { get; set; }
 
@@ -74,6 +75,12 @@ namespace Amanita.VScripting.EditorUtils
 
             float zoom = Mathf.Approximately(Flowchart.Zoom, 0f) ? 1f : Flowchart.Zoom;
             return mousePosition / zoom;
+        }
+
+        public virtual void Dispose()
+        {
+            Flowchart = null;
+            _allBlocks.Clear();
         }
     }
 }

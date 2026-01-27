@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
@@ -6,7 +7,7 @@ namespace Amanita.VScripting.EditorUtils
     /// Captures transient interaction state such as hit-testing,
     /// drag bookkeeping, and marquee selection metrics.
     /// </summary>
-    public class InteractionState
+    public class InteractionState : IDisposable
     {
         public bool BlockDragOngoing { get; set; }
         public bool SelectionBoxDragOngoing { get; set; }
@@ -43,6 +44,14 @@ namespace Amanita.VScripting.EditorUtils
         public void ResetHitState()
         {
             BlockHitInLastMouseDown = null;
+        }
+
+        public virtual void Dispose()
+        {
+            ResetDragState();
+            ResetSelectionBox();
+            ResetHitState();
+            RootBlockToDrag = null;
         }
     }
 }

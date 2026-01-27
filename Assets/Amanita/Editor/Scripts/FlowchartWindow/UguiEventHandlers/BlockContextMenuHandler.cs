@@ -38,7 +38,8 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart fc = flowchartCtx.Flowchart;
 
             // ← Prefer the pre‐populated hit if you set it in a test
-            Block hitBlock = flowchartCtx.BlockHitInLastMouseDown;
+            var interaction = flowchartCtx.Interaction;
+            Block hitBlock = interaction.BlockHitInLastMouseDown;
             var document = flowchartCtx.Document;
             if (hitBlock == null)
             {
