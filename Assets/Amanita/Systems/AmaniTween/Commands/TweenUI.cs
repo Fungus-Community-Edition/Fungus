@@ -25,6 +25,13 @@ namespace Amanita.VScripting.Commands
             ValidateTweeners();
         }
 
+        protected override void RefreshVariableCache()
+        {
+            base.RefreshVariableCache();
+            variableDataCache.Add(waitUntilFinished);
+            variableDataCache.Add(duration);
+        }
+
         protected abstract void ValidateTweeners();
 
         protected virtual void ApplyTween()

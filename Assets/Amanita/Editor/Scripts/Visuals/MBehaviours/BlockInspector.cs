@@ -204,7 +204,7 @@ namespace Amanita.VScripting.EditorUtils
                 GUI.color = Color.white;
             }
 
-            Repaint();
+            //Repaint();
         }
 
         protected Vector2 commandScrollPos;

@@ -22,7 +22,9 @@ namespace Amanita.VScripting.EditorUtils
                 new SingleSelectionHandler(),
                 new BoxSelectionHandler(),
                 new BlockDragHandler(),
-                new PanZoomHandler(),
+                //new PanZoomHandler(),
+                new PanHandler(),
+                new ZoomHandler(),
                 new BlockContextMenuHandler(window, new GenericMenuFactory())
             );
 

@@ -20,6 +20,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public bool Handle(Event evt, FlowchartContext ctx)
         {
+            var selection = ctx.Selection;
             bool correctInput = evt.type == EventType.KeyDown && evt.keyCode == Key;
             if (!correctInput)
                 return false;
@@ -27,7 +28,7 @@ namespace Amanita.VScripting.EditorUtils
             if (!_focusChecker.CheckFocus(ctx))
                 return false;
 
-            var selected = ctx.SelectedBlocks;
+            var selected = selection.Blocks;
             if (selected == null || selected.Count == 0)
                 return false;
 
@@ -41,7 +42,8 @@ namespace Amanita.VScripting.EditorUtils
     {
         public void Execute(FlowchartContext ctx)
         {
-            var selected = ctx.SelectedBlocks;
+            var selection = ctx.Selection;
+            var selected = selection.Blocks;
             if (selected == null || selected.Count == 0)
                 return;
 

@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace Amanita.VScripting
@@ -8,9 +10,11 @@ namespace Amanita.VScripting
     /// so that the same Flowchart can be displayed while editing & playing.
     /// </summary>
     [AddComponentMenu("")]
+    [ExecuteInEditMode]
     public class AmanitaState : MonoBehaviour
     {
         [SerializeField] protected Flowchart selectedFlowchart;
+        [SerializeField] protected Flowchart lastSelectedFc;
 
         #region Public members
 
@@ -23,18 +27,56 @@ namespace Amanita.VScripting
             set { selectedFlowchart = value; }
         }
 
+        public virtual Flowchart LastSelectedFlowchart
+        {
+            get { return lastSelectedFc; }
+            set { lastSelectedFc = value; }
+        }
+
         #endregion
+
+#if UNITY_EDITOR
+        protected virtual void OnEnable()
+        {
+            ToggleSubs(false);
+            ToggleSubs(true);
+        }
+
+        protected virtual void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                Selection.selectionChanged += Refresh;
+            }
+            else
+            {
+                Selection.selectionChanged -= Refresh;
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            ToggleSubs(false);
+        }
 
         public virtual void Refresh()
         {
-            if (Selection.activeGameObject != null)
+            GameObject activeGo = Selection.activeGameObject;
+            if (activeGo != null)
             {
-                Flowchart fcFound = Selection.activeGameObject.GetComponent<Flowchart>();
-                if (fcFound != null || selectedFlowchart == null)
+                activeGo.TryGetComponent(out Flowchart fcFound);
+                if (fcFound != null && fcFound != selectedFlowchart)
                 {
+                    if (selectedFlowchart != null)
+                    {
+                        lastSelectedFc = selectedFlowchart;
+                    }
                     selectedFlowchart = fcFound;
                 }
             }
+
         }
+#endif
+
     }
 }

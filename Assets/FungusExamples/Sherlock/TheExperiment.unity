@@ -795,7 +795,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: SHERLOCK
   nameColor: {r: 0.25882354, g: 0.25490198, b: 0.2627451, a: 1}
-  soundEffect: {fileID: 8300000, guid: 0eb825d5775aa234280e50db9a33cffe, type: 3}
+  soundEffect: {fileID: 0}
   portraits:
   - {fileID: 21300000, guid: 8f5b5b110e73a414eb229eeead86200f, type: 3}
   - {fileID: 21300000, guid: 65cda1e3dd1ec8c4bb828adc5bb06c7d, type: 3}
@@ -4696,19 +4696,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555371}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555292
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4728,27 +4723,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555294
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4768,27 +4758,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4844,6 +4829,7 @@ MonoBehaviour:
   saveBlocks: 1
   saveVariables: 1
   loadPriority: 0
+  alwaysKeepGuid: 1
   nextValidVarID: 12
   uniqueId: 1945e111-fae6-4ac0-973e-d5983c6ed023
   references:
@@ -4890,7 +4876,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555298
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5002,7 +4995,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555301
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5022,27 +5022,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555362}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555302
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5097,19 +5092,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555304}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555304
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5162,27 +5152,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555308}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555306
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5209,7 +5194,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555307
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5300,27 +5292,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555302}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555310
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5340,27 +5327,22 @@ MonoBehaviour:
   targetBlock: {fileID: 1390555312}
   hideIfVisited: 0
   interactable:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555311
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5387,7 +5369,14 @@ MonoBehaviour:
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555312
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5469,7 +5458,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555314
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5496,7 +5492,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555315
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5523,7 +5526,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555316
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5550,7 +5560,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555317
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5577,7 +5594,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555318
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5644,7 +5668,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555321
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5671,7 +5702,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555322
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5698,7 +5736,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555323
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5725,7 +5770,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555324
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5753,7 +5805,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555325
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5795,7 +5854,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555327
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5822,7 +5888,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555328
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5849,7 +5922,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555329
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5876,7 +5956,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555330
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5903,7 +5990,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555331
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5930,7 +6024,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555332
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5957,7 +6058,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555333
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -5985,7 +6093,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555334
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6012,7 +6127,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555335
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6030,19 +6152,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555298}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555336
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6060,19 +6177,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555440}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555337
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6149,24 +6261,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6174,11 +6286,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555340
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6195,24 +6302,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1789234734}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6220,11 +6327,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555341
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6491,7 +6593,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555351
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6638,7 +6747,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555356
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6685,24 +6801,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6710,11 +6826,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555358
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6729,16 +6840,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 92
   indentLevel: 0
+  varToSet:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+  setOperator: 2
   anyVar:
-    variable:
-      rid: -2
-    legacyVariable: {fileID: 0}
+    varRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     data:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 1390555295}
+        owningVsa: {fileID: 0}
       data:
         rid: -2
-  setOperator: 2
   variable: {fileID: 0}
   references:
     version: 2
@@ -6761,24 +6879,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6786,11 +6904,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555360
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6806,18 +6919,13 @@ MonoBehaviour:
   itemId: 83
   indentLevel: 0
   _duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   durationOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555361
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -6834,24 +6942,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6859,11 +6967,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555362
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7005,7 +7108,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555367
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7052,7 +7162,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555370
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7404,7 +7521,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1390555382
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7541,24 +7665,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -7566,11 +7690,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555387
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7587,24 +7706,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -7612,11 +7731,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555388
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7633,24 +7747,24 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   targetColor:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -7658,11 +7772,6 @@ MonoBehaviour:
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
   waitUntilFinishedOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555393
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7679,20 +7788,22 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 884427801}
   _visible:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  affectChildren: 1
+  _affectChildren:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   visibleOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555394
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7709,20 +7820,22 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 31336594}
   _visible:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  affectChildren: 1
+  _affectChildren:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   visibleOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555395
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7739,20 +7852,22 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1612042692}
   _visible:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  affectChildren: 1
+  _affectChildren:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   visibleOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555396
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7768,7 +7883,7 @@ MonoBehaviour:
   scope: 0
   key: CouragePoints
   itemID: 1
-  oldItemID: 1
+  oldItemID: 0
   value: 0
 --- !u!114 &1390555440
 MonoBehaviour:
@@ -7817,7 +7932,7 @@ MonoBehaviour:
   scope: 0
   key: bgm
   itemID: 2
-  oldItemID: 2
+  oldItemID: 0
   value: {fileID: 8300000, guid: f3c866bbc4639e7409c30c71736d84a6, type: 3}
 --- !u!114 &1390555442
 MonoBehaviour:
@@ -7837,83 +7952,73 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       integerRef: {fileID: 1390555443}
     introClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     mainClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: 7903258361656246325
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     loop:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     loopEndPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     oneShot:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 1
   useConfigSO:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 7903258361656246325
-      type: {class: 'VariablePointer`1[[UnityEngine.AudioClip, UnityEngine.AudioModule]]',
-        ns: Amanita.VScripting, asm: Amanita.Core}
-      data:
-        _component: {fileID: 1390555441}
 --- !u!114 &1390555443
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -7929,7 +8034,7 @@ MonoBehaviour:
   scope: 0
   key: bgmTrack
   itemID: 3
-  oldItemID: 3
+  oldItemID: 0
   value: 0
 --- !u!114 &1390555444
 MonoBehaviour:
@@ -7949,78 +8054,73 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       integerRef: {fileID: 1390555443}
     introClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     mainClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     loop:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     loopEndPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     oneShot:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555445
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8036,7 +8136,7 @@ MonoBehaviour:
   scope: 0
   key: fadeInDur
   itemID: 9
-  oldItemID: 9
+  oldItemID: 0
   value: 234
 --- !u!114 &1390555446
 MonoBehaviour:
@@ -8054,40 +8154,35 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 1390555443}
   targetVol:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   fadeTween: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555447
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8103,7 +8198,7 @@ MonoBehaviour:
   scope: 0
   key: sfxTrack
   itemID: 8
-  oldItemID: 8
+  oldItemID: 0
   value: 0
 --- !u!114 &1390555448
 MonoBehaviour:
@@ -8120,7 +8215,7 @@ MonoBehaviour:
   scope: 0
   key: pourLiquid
   itemID: 7
-  oldItemID: 7
+  oldItemID: 0
   value: {fileID: 8300000, guid: e513fc9af808b8c438338e58bc17a700, type: 3}
 --- !u!114 &1390555449
 MonoBehaviour:
@@ -8140,78 +8235,73 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 3
     track:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       integerRef: {fileID: 1390555447}
     introClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     mainClip:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: {fileID: 0}
       audioClipRef: {fileID: 0}
     loop:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
     loopStartPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     loopEndPoint:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       floatRef: {fileID: 0}
     oneShot:
-      storedOwnerUidIndex: -1
-      storedItemId: 0
-      varRef:
-        rid: -2
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
       value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
   skipIfAlreadyPlaying:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   useConfigSO:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555450
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8227,7 +8317,7 @@ MonoBehaviour:
   scope: 0
   key: fadeOutDur
   itemID: 6
-  oldItemID: 6
+  oldItemID: 0
   value: 5
 --- !u!114 &1390555451
 MonoBehaviour:
@@ -8244,7 +8334,7 @@ MonoBehaviour:
   scope: 0
   key: fullVol
   itemID: 5
-  oldItemID: 5
+  oldItemID: 0
   value: 100
 --- !u!114 &1390555452
 MonoBehaviour:
@@ -8261,7 +8351,7 @@ MonoBehaviour:
   scope: 0
   key: silent
   itemID: 4
-  oldItemID: 4
+  oldItemID: 0
   value: 0
 --- !u!114 &1390555456
 MonoBehaviour:
@@ -8278,18 +8368,13 @@ MonoBehaviour:
   itemId: 113
   indentLevel: 0
   _duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1390555295}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   durationOLD: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555459
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8307,19 +8392,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555460
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8337,19 +8417,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555461
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8367,17 +8442,12 @@ MonoBehaviour:
   stopMode: 2
   trackGroup: 2
   track:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555462
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8394,40 +8464,35 @@ MonoBehaviour:
   indentLevel: 0
   trackGroup: 2
   track:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 1390555443}
   targetVol:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
   duration:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     floatRef: {fileID: 0}
   waitUntilFinished:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   fadeTween: {fileID: 11400000, guid: c5699375f7036b1429244e4d7f57df81, type: 2}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1390555463
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -8475,19 +8540,14 @@ MonoBehaviour:
   targetFlowchart: {fileID: 0}
   targetBlock: {fileID: 1390555463}
   startLabel:
-    storedOwnerUidIndex: -1
-    storedItemId: 0
-    varRef:
-      rid: -2
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!1 &1403072068
 GameObject:
   m_ObjectHideFlags: 0
@@ -9349,7 +9409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: JOHN
   nameColor: {r: 0.25882354, g: 0.25490198, b: 0.2627451, a: 1}
-  soundEffect: {fileID: 8300000, guid: 3f244b0ea8fc90446baebef62dfd285b, type: 3}
+  soundEffect: {fileID: 0}
   portraits:
   - {fileID: 21300000, guid: 061fcd6caac25954287291fffde7cd2c, type: 3}
   - {fileID: 21300000, guid: e8a9122c4dc10b14da3b625e1f2634c9, type: 3}

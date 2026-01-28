@@ -1,7 +1,9 @@
+using Amanita.UI;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Type = System.Type;
+using UnityEngine.EventSystems;
 
 namespace Amanita.SaveSys.UI
 {
@@ -53,8 +55,11 @@ namespace Amanita.SaveSys.UI
             {
                 button = gameObject.GetOrAddComponent<Button>();
             }
+            pointerEvents = gameObject.GetOrAddComponent<UIPointerEvents>();
             EnsureViews();
         }
+
+        private UIPointerEvents pointerEvents;
 
         protected virtual void EnsureViews()
         {
@@ -142,6 +147,16 @@ namespace Amanita.SaveSys.UI
             SaveSysSignals.SaveSlotSelected?.Invoke(SlotNumber);
         }
 
+        public virtual void Select()
+        {
+            button.Select();
+        }
+
+        public virtual void Deselect()
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
         public virtual int SlotNumber
         {
             get
@@ -152,7 +167,7 @@ namespace Amanita.SaveSys.UI
                 }
                 else
                 {
-                    return transform.GetSiblingIndex() + 1; // We don't want 0 to be a valid slot number.
+                    return transform.GetSiblingIndex() + 1; // The valid slot nums are 1-based
                 }
             }
         }
@@ -177,5 +192,13 @@ namespace Amanita.SaveSys.UI
                 views[i].Refresh();
             }
         }
+
+        // Debug/testing only
+#if UNITY_EDITOR
+        public void TriggerClick()
+        {
+            button.onClick.Invoke();
+        }
+#endif
     }
 }

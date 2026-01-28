@@ -16,13 +16,15 @@ namespace VScriptingTests.FCWindowOperations.Integration
         /// </summary>
         void PrePassHitTest(Event e)
         {
+            var document = ctx.Document;
             if (e.type == EventType.MouseDown)
             {
-                ctx.BlockHitInLastMouseDown = ctx.TopmostBlockOverlapping(e.mousePosition);
+                var interaction = ctx.Interaction;
+                interaction.BlockHitInLastMouseDown = document.TopmostBlockOverlapping(e.mousePosition);
             }
             // clear any old marquee state
             if (e.type == EventType.MouseDown)
-                ctx.SelectionBox = Rect.zero;
+                ctx.Interaction.SelectionBox = Rect.zero;
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
@@ -122,7 +124,8 @@ namespace VScriptingTests.FCWindowOperations.Integration
             toSelect = blocks[1];
             SimulateSingleBlockSelection(toSelect);
 
-            bool success = ctx.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+            var selection = ctx.Selection;
+            bool success = selection.BlockCount == 1 && flowchart.SelectedBlock == toSelect;
             string errorMessage = "Selecting a non-selected block should change the selection to only that block";
             Assert.IsTrue(success, errorMessage);
         }
@@ -240,7 +243,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             Block toSelect = blocks[blockIndex];
             SimulateSingleBlockSelection(toSelect);
-            bool success = ctx.SelectionBox.size == Vector2.zero;
+            bool success = ctx.Interaction.SelectionBox.size == Vector2.zero;
             string errorMessage = "After selecting a block, mouse up should've reset the selection box";
             Assert.IsTrue(success, errorMessage);
         }
@@ -288,7 +291,8 @@ namespace VScriptingTests.FCWindowOperations.Integration
             SimulateSingleBlockSelection(blocks[2]);
 
             var e = new Event { type = EventType.MouseUp, button = 0, control = true };
-            ctx.BlockHitInLastMouseDown = null;
+            var interaction = ctx.Interaction;
+            interaction.BlockHitInLastMouseDown = null;
             pipeline.Process(e, ctx);
 
             Assert.That(flowchart.SelectedBlocks, Is.EquivalentTo(new[] { blocks[2] }));

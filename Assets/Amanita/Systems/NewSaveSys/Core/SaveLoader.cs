@@ -68,7 +68,13 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    await applierEl.ApplyRange(compatible);
+                    bool completed = false;
+                    applierEl.ApplyRange(compatible, () => completed = true);
+
+                    while (!completed)
+                    {
+                        await Task.Yield();
+                    }
                 }
             }
         

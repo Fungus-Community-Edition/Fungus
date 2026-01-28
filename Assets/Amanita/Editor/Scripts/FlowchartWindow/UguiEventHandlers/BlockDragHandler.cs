@@ -16,26 +16,24 @@ namespace Amanita.VScripting.EditorUtils
             Validate(mouseEvent);
             Validate(flowchartCtx);
 
-            // Note: We only want to react to the mouse movement while the left mouse button
-            // is pressed (and while alt is NOT pressed). Checking for that here keeps us
-            // from having to check in our OnMouse funcs
             bool weWantToReact = IsLeftMouseButton(mouseEvent) && !mouseEvent.alt;
 
-            if (weWantToReact)
-            {
-                switch (mouseEvent.type)
-                {
-                    case EventType.MouseDown: return OnMouseDown(mouseEvent, flowchartCtx);
-                    case EventType.MouseDrag: return OnMouseDrag(mouseEvent, flowchartCtx);
-                    case EventType.MouseUp: return OnMouseButtonReleased(mouseEvent, flowchartCtx);
-                    default: return false;
-                }
-            }
-            else
+            if (!weWantToReact)
             {
                 return false;
             }
 
+            switch (mouseEvent.type)
+            {
+                case EventType.MouseDown:
+                    return OnMouseDown(mouseEvent, flowchartCtx);
+                case EventType.MouseDrag:
+                    return OnMouseDrag(mouseEvent, flowchartCtx);
+                case EventType.MouseUp:
+                    return OnMouseButtonReleased(mouseEvent, flowchartCtx);
+                default:
+                    return false;
+            }
         }
 
         protected virtual void Validate(Event mouseEvent)
@@ -56,94 +54,95 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        protected virtual bool OnMouseDown(Event mouseEvent, FlowchartContext flowchartCtx)
+        protected virtual bool OnMouseDown(Event mouseEvent, FlowchartContext ctx)
         {
-            bool consumed = false;
+            var flowchart = ctx.Flowchart;
+            var interaction = ctx.Interaction;
 
-            if (flowchartCtx.WeHitBlockInLastMouseDown)
+            if (flowchart == null || !interaction.WeHitBlockInLastMouseDown)
             {
-                Vector2 mousePosInWindowSpace = (mouseEvent.mousePosition / flowchartCtx.Flowchart.Zoom);
-                flowchartCtx.StartDragPosition = mousePosInWindowSpace - flowchartCtx.Flowchart.ScrollPos;
-
-                var blockHit = flowchartCtx.BlockHitInLastMouseDown; 
-                if (blockHit == null)
-                {
-                    string errorMessage = "Last selected mouse down registered as hitting block, yet there is none under the cursor.";
-                    throw new System.InvalidOperationException(errorMessage);
-                }
-
-                flowchartCtx.RootBlockToDrag = blockHit;
-                flowchartCtx.DragUndoRecorded = false;
-                flowchartCtx.HasDraggedSelected = false;
-                mouseEvent.Use();
-                consumed = true;
-                
+                return false;
             }
-            
-            return consumed;
+
+            Vector2 mousePosInWindowSpace = ctx.Document.ToWindowSpace(mouseEvent.mousePosition);
+            interaction.StartDragPosition = mousePosInWindowSpace - flowchart.ScrollPos;
+
+            var blockHit = interaction.BlockHitInLastMouseDown;
+            if (blockHit == null)
+            {
+                throw new InvalidOperationException("Hit metadata indicated a block, but none was found.");
+            }
+
+            interaction.RootBlockToDrag = blockHit;
+            interaction.DragUndoRecorded = false;
+            interaction.HasDraggedSelected = false;
+
+            mouseEvent.Use();
+            return true;
         }
 
         public readonly string startBlockDragGroupName = "Block Drag";
 
         protected virtual bool IsLeftMouseButton(Event currentMouseEvent) => currentMouseEvent.button == 0;
 
-        protected virtual bool OnMouseDrag(Event mouseEvent, FlowchartContext flowchartCtx)
+        protected virtual bool OnMouseDrag(Event mouseEvent, FlowchartContext ctx)
         {
-            bool consumed = false;
+            var flowchart = ctx.Flowchart;
+            var interaction = ctx.Interaction;
 
-            if (flowchartCtx.RootBlockToDrag != null)
+            if (flowchart == null || interaction.RootBlockToDrag == null)
             {
-                bool atTheStartOfADrag = !flowchartCtx.DragUndoRecorded;
-                if (atTheStartOfADrag)
-                {
-                    var blocks = flowchartCtx.SelectedBlocks.Cast<UnityEngine.Object>().ToArray();
-                    Undo.RegisterCompleteObjectUndo(blocks, startBlockDragGroupName);
-
-                    flowchartCtx.DragUndoRecorded = true;
-                    flowchartCtx.BlockDragOngoing = true;
-                }
-
-                MoveAllSelectedBlocks();
-                void MoveAllSelectedBlocks()
-                {
-                    foreach (var elem in flowchartCtx.SelectedBlocks)
-                    {
-                        var elemRect = elem._NodeRect;
-                        Vector2 movementSinceLastHandling = mouseEvent.delta;
-                        elemRect.position += movementSinceLastHandling / flowchartCtx.Flowchart.Zoom;
-                        elem._NodeRect = elemRect;
-                    }
-                }
-
-                flowchartCtx.HasDraggedSelected = true;
-                mouseEvent.Use();
-                consumed = true;
+                return false;
             }
 
-            return consumed;
-        }
-
-        protected virtual bool OnMouseButtonReleased(Event mouseEvent, FlowchartContext flowchartCtx)
-        {
-            // End drag: finalize positions & optional grid‐snap
-            bool consumed = false;
-
-            if (flowchartCtx.RootBlockToDrag != null)
+            var selection = ctx.Selection.Blocks;
+            bool atTheStartOfADrag = !interaction.DragUndoRecorded;
+            if (atTheStartOfADrag)
             {
-                if (AmanitaEditorPreferences.useGridSnap)
+                var undoTargets = selection.Cast<UnityEngine.Object>().ToArray();
+                if (undoTargets.Length > 0)
                 {
-                    flowchartCtx.SnapBlocksToGrid();
+                    Undo.RegisterCompleteObjectUndo(undoTargets, startBlockDragGroupName);
                 }
-                flowchartCtx.RootBlockToDrag = null;
-                flowchartCtx.HasDraggedSelected = false;
-                flowchartCtx.DragUndoRecorded = false;
-                flowchartCtx.BlockDragOngoing = false;
-                mouseEvent.Use();
-                consumed = true;
+
+                interaction.DragUndoRecorded = true;
+                interaction.BlockDragOngoing = true;
             }
 
-            return consumed;
+            foreach (var block in selection)
+            {
+                if (block == null)
+                {
+                    continue;
+                }
+
+                Rect rect = block._NodeRect;
+                rect.position += mouseEvent.delta / flowchart.Zoom;
+                block._NodeRect = rect;
+            }
+
+            interaction.HasDraggedSelected = true;
+            mouseEvent.Use();
+            return true;
         }
 
+        protected virtual bool OnMouseButtonReleased(Event mouseEvent, FlowchartContext ctx)
+        {
+            var interaction = ctx.Interaction;
+
+            if (interaction.RootBlockToDrag == null)
+            {
+                return false;
+            }
+
+            if (AmanitaEditorPreferences.useGridSnap)
+            {
+                ctx.SnapBlocksToGrid();
+            }
+
+            interaction.ResetDragState();
+            mouseEvent.Use();
+            return true;
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Type = System.Type;
 
 namespace Amanita.VScripting
 {
@@ -56,10 +55,12 @@ namespace Amanita.VScripting
             }
         }
 
+        /// <summary>
+        /// Refreshes the owner variable source. Subclasses should override this if they
+        /// want to support variable sources other than Flowchart or VariableSourceAsset.
+        /// </summary>
         protected virtual void RefreshOwner()
         {
-            // This func is one of the things that subclasses will need to override to 
-            // make sure they work with non-FC and non-VSA owners.
             varOwner = null;
             varOwner ??= owningFc;
             varOwner ??= owningVsa;

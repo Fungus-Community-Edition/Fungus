@@ -34,13 +34,15 @@ namespace VScriptingTests.FCWindowOperations.Integration
         /// </summary>
         void PrePassHitTest(Event e)
         {
+            var interaction = ctx.Interaction;
+            var document = ctx.Document;
             if (e.type == EventType.MouseDown)
             {
-                ctx.BlockHitInLastMouseDown = ctx.TopmostBlockOverlapping(e.mousePosition);
+                interaction.BlockHitInLastMouseDown = document.TopmostBlockOverlapping(e.mousePosition);
                 // reset marquee on down
-                ctx.SelectionBox = Rect.zero;
-                ctx.SelectionBoxDragOngoing = false;
-                ctx.BlockDragOngoing = false;
+                interaction.SelectionBox = Rect.zero;
+                interaction.SelectionBoxDragOngoing = false;
+                interaction.BlockDragOngoing = false;
             }
         }
 
@@ -57,10 +59,11 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Assert.IsTrue(downConsumed, "Should consume MouseDown on selected block");
 
             // block should now be selected and drag able to begin
-            
-            bool blockWasSelected = flowchart.SelectedBlocks.Contains(targetBlock);
+            var selection = ctx.Selection;
+            bool blockWasSelected = selection.Blocks.Contains(targetBlock);
             Assert.IsTrue(blockWasSelected, "Intended block was not selected");
-            Assert.AreEqual(targetBlock, ctx.BlockHitInLastMouseDown,
+            var interaction = ctx.Interaction;
+            Assert.AreEqual(targetBlock, interaction.BlockHitInLastMouseDown,
                 "Intended block wasn't the last one hit in mouse down");
 
             // 2) MouseDrag moves the block
@@ -84,10 +87,8 @@ namespace VScriptingTests.FCWindowOperations.Integration
             bool upConsumed = pipeline.Process(mouseButtonReleased, ctx);
             Assert.IsTrue(upConsumed, "MouseUp should be consumed to end drag");
 
-
-
             // After up, no BlockDragOngoing and DragBlock == null
-            Assert.IsFalse(ctx.BlockDragOngoing, "DragOngoing should be cleared");
+            Assert.IsFalse(interaction.BlockDragOngoing, "DragOngoing should be cleared");
         }
 
         static IEnumerable<int> BlockIndices()
@@ -113,8 +114,9 @@ namespace VScriptingTests.FCWindowOperations.Integration
 
             // Deselect for this test
             flowchart.ClearSelectedBlocks();
-            ctx.BlockHitInLastMouseDown = targetBlock;
-            ctx.RootBlockToDrag = null;
+            var interaction = ctx.Interaction;
+            interaction.BlockHitInLastMouseDown = targetBlock;
+            interaction.RootBlockToDrag = null;
 
             // Now mouseDrag: no block selected so no drag
             mouseDrag.mousePosition = initBlockPos;

@@ -241,7 +241,7 @@ namespace SaveSystemTests
             flowchart = testScene.GetComponentInChildren<Flowchart>(true);
             if (flowchart == null)
                 throw new Exception("Flowchart component not found in test scene prefab.");
-            flowchart.IsTestOnly = true;
+            flowchart.AlwaysKeepGuid = false;
             flowchart.gameObject.SetActive(true);
 
             // Variables
@@ -433,8 +433,12 @@ namespace SaveSystemTests
         {
             foreach (var obj in toDestroyInTearDown)
             {
-                if (obj != null)
+                if (obj != null && obj is not ScriptableObject)
                     UnityObj.DestroyImmediate(obj);
+                else if (obj is ScriptableObject)
+                    UnityObj.Destroy(obj); 
+                    // ^These are in-memory ones; it should be fine to use regular Destroy,
+                    // allowing their OnDisabled methods to trigger and do other cleanup.
             }
 
             toDestroyInTearDown.Clear();
@@ -489,6 +493,7 @@ namespace SaveSystemTests
         {
             testOnlyVarSourceAssets.Add(testVsa);
             testVsa.UniqueId = $"FakeTestVsaID_{testOnlyVarSourceAssets.Count}";
+            testVsa.AlwaysKeepGuid = false;
         }
 
         protected virtual void UnregisterTestOnlyUids()

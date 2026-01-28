@@ -23,6 +23,15 @@ namespace Amanita.VScripting
         [Tooltip("Start time of animation")]
         [SerializeField] protected FloatData time = new FloatData(0f);
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(animator);
+            variableDataCache.Add(stateName);
+            variableDataCache.Add(layer);
+            variableDataCache.Add(time);
+        }
+
         #region Public members
 
         public override void OnEnter()

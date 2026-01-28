@@ -21,6 +21,12 @@ namespace Amanita.VScripting
         [Tooltip("Set to true to enable the collider components")]
         [SerializeField] protected BooleanData activeState;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(activeState);
+        }
+
         protected virtual void SetColliderActive(GameObject go)
         {
             if (go != null)     

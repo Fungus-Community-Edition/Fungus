@@ -111,7 +111,7 @@ namespace Amanita.VScripting.EditorUtils
                 Vector2 midPoint = GetPointOnCurve(pointA, controlA, controlB, pointB, arrowT);
                 Vector2 aheadPoint = GetPointOnCurve(pointA, controlA, controlB, pointB, arrowT + 0.1f);
 
-                Vector2 travelDir = (aheadPoint - midPoint).normalized;
+                Vector2 travelDir = (midPoint - aheadPoint).normalized;
                 // perpendicular (swap sign if it flips wrong)
                 Vector2 perp = new Vector2(-travelDir.y, travelDir.x);
 

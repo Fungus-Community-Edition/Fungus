@@ -73,4 +73,5 @@ crashlytics-build.properties
 .vscode/*
 
 /[Aa]ssets/Plugins/Demigiant*
+/[Aa]ssets/Plugins/CodeStage*
 /[Aa]ssets/Resources/DOTweenSettings.*

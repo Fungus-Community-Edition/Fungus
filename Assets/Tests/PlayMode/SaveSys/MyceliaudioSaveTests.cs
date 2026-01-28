@@ -51,8 +51,8 @@ namespace SaveSystemTests
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
 
-            Task applyTask = audioApplier.ApplyRange(new[] { saveData });
-            yield return WaitFor(applyTask);
+            audioApplier.ApplyRange(new[] { saveData }, null);
+            yield return null;
 
             AudioClip clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             Assert.IsTrue(clipPlaying == playAudioArgsSO.MainClip,
@@ -68,8 +68,8 @@ namespace SaveSystemTests
             yield return quickWait;
 
             var save = mycelSaveCodec.EncodeToSave(AudioSystem.S);
-            var apply = audioApplier.ApplyRange(new[] { save });
-            yield return WaitFor(apply);
+            audioApplier.ApplyRange(new[] { save }, null);
+            yield return null;
 
             Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
                 "No BGM should be playing after applying a save captured with no playback.");
@@ -90,8 +90,8 @@ namespace SaveSystemTests
 
             save.AddBgmIndex(0, -1); // Corrupt index; name should still resolve.
 
-            var apply = audioApplier.ApplyRange(new[] { save });
-            yield return WaitFor(apply);
+            audioApplier.ApplyRange(new[] { save }, null);
+            yield return null;
 
             var clipPlaying = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
             Assert.IsNotNull(clipPlaying, "Clip should be playing via name fallback.");
@@ -122,8 +122,8 @@ namespace SaveSystemTests
             LogAssert.Expect(LogType.Warning,
                 $"[MyceliaudioApplier]: Could not find audio clip with name: {fakeClip.name}. Cannot play BGM upon application.");
 
-            var apply = audioApplier.ApplyRange(new[] { save });
-            yield return WaitFor(apply);
+            audioApplier.ApplyRange(new[] { save }, null);
+            yield return null;
 
             Assert.IsFalse(AudioSys.GetIsPlaying(TrackGroup.BGMusic, 0),
                 "Playback should not start when clip cannot be resolved.");
@@ -165,12 +165,12 @@ namespace SaveSystemTests
             AudioSys.StopPlaying(TrackGroup.BGMusic, 0);
             yield return quickWait;
 
-            var apply1 = audioApplier.ApplyRange(new[] { save });
-            yield return WaitFor(apply1);
+            audioApplier.ApplyRange(new[] { save }, null);
+            yield return null;
             var firstClip = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
 
-            var apply2 = audioApplier.ApplyRange(new[] { save });
-            yield return WaitFor(apply2);
+            audioApplier.ApplyRange(new[] { save }, null);
+            yield return null;
             var secondClip = AudioSys.GetClipPlayingAt(TrackGroup.BGMusic, 0);
 
             Assert.IsNotNull(firstClip);

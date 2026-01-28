@@ -17,6 +17,12 @@ namespace Amanita.VScripting
         [Tooltip("Boolean value to set the toggle state to.")]
         [SerializeField] protected BooleanData value;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(value);
+        }
+
         #region Public members
 
         public override void OnEnter() 

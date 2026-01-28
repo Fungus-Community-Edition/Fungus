@@ -21,6 +21,13 @@ namespace Amanita.VScripting
         [Tooltip("Maximum value for random range")]
         [SerializeField] protected IntegerData maxValue;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(minValue);
+            variableDataCache.Add(maxValue);
+        }
+
         #region Public members
 
         public override void OnEnter()

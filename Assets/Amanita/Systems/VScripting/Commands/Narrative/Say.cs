@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
+using UnityEngine.Serialization;
 
 namespace Amanita.DialogueSys.VScripting
 {
@@ -52,7 +53,8 @@ namespace Amanita.DialogueSys.VScripting
         //add wait for vo that overrides stopvo
 
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. All story text will now display using this Say Dialog.")]
-        [SerializeField] protected SayDialog setSayDialog;
+        
+        [SerializeField] protected GameObjectData setSayDialog;
 
         protected int executionCount;
 
@@ -75,6 +77,19 @@ namespace Amanita.DialogueSys.VScripting
 
         public override void OnEnter()
         {
+            #region Input Validation
+            if (setSayDialog != null && setSayDialog.Value != null)
+            {
+                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                {
+                    Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
+                        $"Say Dialog input.", this);
+                    Continue();
+                    return;
+                }
+            }
+            #endregion
+
             if (!showAlways && executionCount >= showCount)
             {
                 Continue();
@@ -82,21 +97,62 @@ namespace Amanita.DialogueSys.VScripting
             }
 
             executionCount++;
+            SayDialog prevMain = SDManager.MainSayDialog;
 
-            // Override the active say dialog if needed
-            if (character != null && character.SetSayDialog != null)
+            OverrideActiveSayDialogAsNeeded();
+            void OverrideActiveSayDialogAsNeeded()
             {
-                SayDialog.ActiveSayDialog = character.SetSayDialog;
+                bool shouldGoWithCharacterSetDialog = character != null && character.SetSayDialog != null;
+                
+                if (shouldGoWithCharacterSetDialog)
+                {
+                    var charaDialog = character.SetSayDialog;
+                    bool itIsPrefab = charaDialog.gameObject.scene == default;
+                    var prevMain = SDManager.MainSayDialog;
+                    if (itIsPrefab)
+                    {
+                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(character.SetSayDialog);
+                    }
+                    else
+                    {
+                        SDManager.MainSayDialog = charaDialog;
+                    }
+
+                }
+
+                bool shouldGoWithCommandSetDialog = setSayDialog != null && setSayDialog.Value != null;
+                // ^Higher priority than the character's set dialog
+                if (shouldGoWithCommandSetDialog)
+                {
+                    var dialogComp = setSayDialog.GetComponent<SayDialog>();
+                    bool itIsPrefab = dialogComp.gameObject.scene == default;
+                    if (itIsPrefab)
+                    {
+                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(dialogComp);
+                    }
+                    else
+                    {
+                        SDManager.MainSayDialog = dialogComp;
+                    }
+                }
             }
 
-            if (setSayDialog != null)
+            HidePrevMainDialogIfChanged();
+            void HidePrevMainDialogIfChanged()
             {
-                SayDialog.ActiveSayDialog = setSayDialog;
+                var currMain = SDManager.MainSayDialog;
+                if (prevMain != currMain)
+                {
+                    prevMain.gameObject.SetActive(false);
+                }
             }
+            
+            var sayDialog = SDManager.MainSayDialog;
 
-            var sayDialog = SayDialog.GetSayDialog();
             if (sayDialog == null)
             {
+                string errorMessage = "No Say Dialog found to display text.";
+                Debug.LogError(errorMessage, this);
                 Continue();
                 return;
             }
@@ -128,6 +184,13 @@ namespace Amanita.DialogueSys.VScripting
             });
         }
 
+        protected virtual void DecideSayDialogToUse(out bool success)
+        {
+            success = false;
+        }
+
+        private SayDialogManager SDManager => SayDialogManager.S;
+
         public override string GetSummary()
         {
             string namePrefix = "";
@@ -154,7 +217,7 @@ namespace Amanita.DialogueSys.VScripting
 
         public override void OnStopExecuting()
         {
-            var sayDialog = SayDialog.GetSayDialog();
+            var sayDialog = SDManager.MainSayDialog;
             if (sayDialog == null)
             {
                 return;
@@ -164,6 +227,21 @@ namespace Amanita.DialogueSys.VScripting
         }
 
         #endregion
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (oldSetSayDialog != null)
+            {
+                setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
+                oldSetSayDialog = null;
+            }
+        }
+
+        [SerializeField]
+        [HideInInspector]
+        [FormerlySerializedAs("setSayDialog")]
+        protected SayDialog oldSetSayDialog;
 
         #region ILocalizable implementation
 
@@ -195,5 +273,18 @@ namespace Amanita.DialogueSys.VScripting
         }
 
         #endregion
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            if (setSayDialog != null && setSayDialog.Value != null)
+            {
+                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                {
+                    Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
+                        $"Say Dialog input. That input is the GameObject {setSayDialog.Value.name}");
+                }
+            }
+        }
     }
 }

@@ -10360,7 +10360,6 @@ GameObject:
   - component: {fileID: 1815667984}
   - component: {fileID: 1815667983}
   - component: {fileID: 1815667985}
-  - component: {fileID: 1815667986}
   - component: {fileID: 1815667990}
   - component: {fileID: 1815667992}
   - component: {fileID: 1815667991}
@@ -10393,7 +10392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentBlock: {fileID: 1815667974}
   suppressBlockAutoSelect: 0
-  waitForFrames: 0
+  waitForFrames: 1
 --- !u!114 &1815667974
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10414,14 +10413,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 24
   blockName: Intro
   description: 
   eventHandler: {fileID: 1815667973}
   commandList:
   - {fileID: 1815667993}
   - {fileID: 1815667994}
-  - {fileID: 1815667986}
+  - {fileID: 0}
   - {fileID: 1815667995}
   - {fileID: 1815667981}
   - {fileID: 1815667979}
@@ -10437,6 +10436,8 @@ MonoBehaviour:
   - {fileID: 1815667989}
   - {fileID: 1815667991}
   - {fileID: 1815667988}
+  includeInSaves: 1
+  loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1815667976
 MonoBehaviour:
@@ -10450,23 +10451,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiModel:
+    _selectedBlocks: []
+    _selectedCommands: []
+    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
+    <VariablesExpanded>k__BackingField: 0
+    <Zoom>k__BackingField: 1
+    <BlockViewHeight>k__BackingField: 400
+    <ScrollViewRect>k__BackingField:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    <SelectedCommandsStale>k__BackingField: 0
   version: 1
-  scrollPos: {x: -106.13765, y: 228.59302}
-  variablesScrollPos: {x: 0, y: 0}
-  variablesExpanded: 1
-  blockViewHeight: 637
-  zoom: 1
-  scrollViewRect:
-    serializedVersion: 2
-    x: -350
-    y: -350
-    width: 1241.8625
-    height: 939.1903
-  selectedBlocks: []
-  selectedCommands: []
-  variables:
+  legacyVariables:
   - {fileID: 1815667997}
   - {fileID: 1815667996}
+  muscariables: []
   description: 'This scene shows how to create simple parallax scrolling effects
 
     using
@@ -10478,8 +10482,18 @@ MonoBehaviour:
   localizationId: 
   showLineNumbers: 0
   hideCommands: []
-  luaEnvironment: {fileID: 0}
+  _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
+  includeInSaves: 1
+  saveBlocks: 1
+  saveVariables: 1
+  loadPriority: 0
+  alwaysKeepGuid: 1
+  nextValidVarID: 3
+  uniqueId: ec6a1a70-35bd-4ce8-b475-38a0dea64e3d
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &1815667977
 Transform:
   m_ObjectHideFlags: 0
@@ -10513,9 +10527,9 @@ MonoBehaviour:
   targetView: {fileID: 199039254}
   waitUntilFinished: 0
   targetCamera: {fileID: 0}
-  orthoSizeTweenType: 4
-  posTweenType: 4
-  rotTweenType: 4
+  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
 --- !u!114 &1815667979
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10537,10 +10551,10 @@ MonoBehaviour:
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
   targetCamera: {fileID: 0}
-  fadeTweenType: 4
-  orthoSizeTweenType: 4
-  posTweenType: 4
-  rotTweenType: 4
+  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
 --- !u!114 &1815667980
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10556,15 +10570,32 @@ MonoBehaviour:
   itemId: 4
   indentLevel: 0
   spriteRenderer: {fileID: 1128059641}
-  _duration:
+  duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 1
-  _targetColor:
+  targetColor:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 1}
-  waitUntilFinished: 0
+  waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  waitUntilFinishedOLD: 0
 --- !u!114 &1815667981
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10581,9 +10612,21 @@ MonoBehaviour:
   indentLevel: 0
   spriteRenderer: {fileID: 1128059641}
   _visible:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
-  affectChildren: 1
+  _affectChildren:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   visibleOLD: 0
 --- !u!114 &1815667982
 MonoBehaviour:
@@ -10600,8 +10643,12 @@ MonoBehaviour:
   itemId: 6
   indentLevel: 0
   _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 4
   durationOLD: 0
 --- !u!114 &1815667983
 MonoBehaviour:
@@ -10622,7 +10669,7 @@ MonoBehaviour:
   waitUntilFinished: 1
   fadeColor: {r: 1, g: 1, b: 1, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1815667984
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10642,7 +10689,7 @@ MonoBehaviour:
   waitUntilFinished: 0
   fadeColor: {r: 1, g: 1, b: 1, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1815667985
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10658,27 +10705,13 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 0
   _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   durationOLD: 0
---- !u!114 &1815667986
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815667972}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1902400ccc99b45d69ad01cb86b57d0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 14
-  indentLevel: 0
-  musicClip: {fileID: 8300000, guid: d858bb0968ae746b0a6801434b848b69, type: 3}
-  atTime: 0
-  loop: 1
-  fadeDuration: 1
 --- !u!114 &1815667987
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10705,7 +10738,14 @@ MonoBehaviour:
   waitForClick: 1
   stopVoiceover: 1
   waitForVO: 0
-  setSayDialog: {fileID: 0}
+  setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
 --- !u!114 &1815667988
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10725,10 +10765,20 @@ MonoBehaviour:
   targetBlock: {fileID: 1815667974}
   hideIfVisited: 0
   interactable:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 1
   setMenuDialog: {fileID: 0}
   hideThisOption:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
 --- !u!114 &1815667989
@@ -10746,8 +10796,12 @@ MonoBehaviour:
   itemId: 20
   indentLevel: 0
   _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 2
   durationOLD: 0
 --- !u!114 &1815667990
 MonoBehaviour:
@@ -10767,9 +10821,9 @@ MonoBehaviour:
   targetView: {fileID: 1304529666}
   waitUntilFinished: 0
   targetCamera: {fileID: 0}
-  orthoSizeTweenType: 4
-  posTweenType: 4
-  rotTweenType: 4
+  orthoSizeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  posTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  rotTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
 --- !u!114 &1815667991
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10785,15 +10839,32 @@ MonoBehaviour:
   itemId: 17
   indentLevel: 0
   spriteRenderer: {fileID: 1128059641}
-  _duration:
+  duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 3
-  _targetColor:
+  targetColor:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
-    colorVal: {r: 1, g: 1, b: 1, a: 0}
-  waitUntilFinished: 1
+  waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  fadeTweener: {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
   durationOLD: 0
   targetColorOLD: {r: 0, g: 0, b: 0, a: 0}
+  waitUntilFinishedOLD: 0
 --- !u!114 &1815667992
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10809,8 +10880,12 @@ MonoBehaviour:
   itemId: 16
   indentLevel: 0
   _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 0.5
   durationOLD: 0
 --- !u!114 &1815667993
 MonoBehaviour:
@@ -10831,7 +10906,7 @@ MonoBehaviour:
   waitUntilFinished: 1
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeTexture: {fileID: 0}
-  fadeTweenType: 4
+  fadeTweener: {fileID: 0}
 --- !u!114 &1815667994
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -10847,8 +10922,12 @@ MonoBehaviour:
   itemId: 22
   indentLevel: 0
   _duration:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1815667976}
+      owningVsa: {fileID: 0}
+    value: 1
     floatRef: {fileID: 0}
-    floatVal: 1
   durationOLD: 0
 --- !u!114 &1815667995
 MonoBehaviour:
@@ -10868,27 +10947,70 @@ MonoBehaviour:
   mainPlayConfig:
     trackGroup: 2
     track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       integerRef: {fileID: 1815667996}
-      integerVal: 0
-    clip:
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
       audioClipRef: {fileID: 1815667997}
-      audioClipVal: {fileID: 0}
     loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 1
     loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       floatRef: {fileID: 0}
-      floatVal: 0
     oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
       booleanRef: {fileID: 0}
       booleanVal: 0
   skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 1
   useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
@@ -10906,6 +11028,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgmTrack
+  itemID: 2
+  oldItemID: 0
   value: 0
 --- !u!114 &1815667997
 MonoBehaviour:
@@ -10921,6 +11045,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: bgm
+  itemID: 1
+  oldItemID: 0
   value: {fileID: 8300000, guid: 8597ca609ff938443a409bcfa81d55c5, type: 3}
 --- !u!4 &1832829438
 Transform:

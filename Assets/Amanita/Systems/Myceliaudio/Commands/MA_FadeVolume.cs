@@ -131,7 +131,7 @@ namespace Amanita.Myceliaudio.VScripting
             waitUntilFinished ??= new BooleanData(false);
         }
 
-        public override void OnValidate()
+        protected override void OnValidate()
         {
             base.OnValidate();
             ValidateTweens();
