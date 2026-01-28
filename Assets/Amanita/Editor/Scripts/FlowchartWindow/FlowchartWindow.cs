@@ -337,7 +337,7 @@ namespace Amanita.VScripting.EditorUtils
             GetFlowchart();
         }
 
-        protected virtual void OnEmptySpaceClicked()
+        protected virtual void OnEmptySpaceClicked(Vector2 position)
         {
             UpdateBlockCollection();
         }

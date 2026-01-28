@@ -73,7 +73,7 @@ namespace Amanita.VScripting.EditorUtils
             ShowBlockInspector(block);
         }
 
-        protected virtual void OnEmptySpaceClicked()
+        protected virtual void OnEmptySpaceClicked(Vector2 pos)
         {
             _lastShownBlock = null;
             SelectBlockAndShowInspector(null);

@@ -1,0 +1,227 @@
+using System;
+using System.Collections.Generic;
+using Amanita.EditorUtils;
+using Amanita.VScripting;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Amanita.VScripting.EditorUtils
+{
+    /// <summary>
+    /// UITK-based grid renderer that redraws only when flowchart context changes,
+    /// using FlowchartWindowSignals instead of the per-frame IMGUI loop.
+    /// </summary>
+    public sealed class GridRendererUitk : VisualElement, IFlowchartWindowModule,  IDisposable,
+        IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder,
+        IFlowchartChangeResponder
+    {
+        private readonly FlowchartContext flowchartContext;
+        private readonly DrawGridContext drawGridContext;
+        private Vector2 cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+        private float cachedZoom = float.NaN;
+        private Rect cachedContentRect = Rect.zero;
+        private Block lastSelectedBlock;
+        private bool isDisposed;
+
+        public GridRendererUitk(FlowchartContext context, DrawGridContext gridContext)
+        {
+            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            drawGridContext = gridContext ?? throw new ArgumentNullException(nameof(gridContext));
+
+            pickingMode = PickingMode.Ignore;
+            style.flexGrow = 1f;
+
+            ToggleSubs(true);
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                RegisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
+                RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                generateVisualContent += OnGenerateVisualContent;
+            }
+            else
+            {
+                UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                UnregisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
+                UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                generateVisualContent -= OnGenerateVisualContent;
+            }
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent evt)
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        private void QueueContextAwareRepaint(bool force)
+        {
+            if (force)
+            {
+                MarkDirtyRepaint();
+                return;
+            }
+
+            Flowchart flowchart = flowchartContext.Flowchart;
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            bool scrollChanged = !Mathf.Approximately(flowchart.ScrollPos.x, cachedScrollPosition.x)
+                || !Mathf.Approximately(flowchart.ScrollPos.y, cachedScrollPosition.y);
+
+            bool zoomChanged = !Mathf.Approximately(flowchart.Zoom, cachedZoom);
+
+            bool sizeChanged = !Mathf.Approximately(contentRect.width, cachedContentRect.width)
+                || !Mathf.Approximately(contentRect.height, cachedContentRect.height);
+
+            if (scrollChanged || zoomChanged || sizeChanged)
+            {
+                MarkDirtyRepaint();
+            }
+        }
+
+        private void OnDetachedFromPanel(DetachFromPanelEvent evt)
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            isDisposed = true;
+
+            ToggleSubs(false);
+        }
+
+        private void OnGenerateVisualContent(MeshGenerationContext mgc)
+        {
+            Flowchart flowchart = flowchartContext.Flowchart;
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            Rect rect = contentRect;
+            if (rect.width <= 0f || rect.height <= 0f)
+            {
+                return;
+            }
+
+            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ?
+                1f :
+                flowchart.Zoom;
+            float spacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
+                ? 1f
+                : drawGridContext.GridLineSpacingSize;
+
+            float viewWidth = rect.width / zoom;
+            float viewHeight = rect.height / zoom;
+
+            IList<float> verticalLines = GridUtils.GetVerticalLinePositions(
+                flowchart.ScrollPos.x,
+                viewWidth,
+                spacing);
+
+            IList<float> horizontalLines = GridUtils.GetHorizontalLinePositions(
+                flowchart.ScrollPos.y,
+                viewHeight,
+                spacing);
+
+            Painter2D painter = mgc.painter2D;
+            painter.lineWidth = 1f;
+            painter.strokeColor = drawGridContext.GridLineColor;
+            painter.fillColor = Color.clear;
+
+            DrawVerticalLines(painter, verticalLines, rect.height, zoom);
+            DrawHorizontalLines(painter, horizontalLines, rect.width, zoom);
+
+            cachedScrollPosition = flowchart.ScrollPos;
+            cachedZoom = zoom;
+            cachedContentRect = rect;
+        }
+
+        private static void DrawVerticalLines(Painter2D painter, IList<float> xPositions, float viewHeight, float zoom)
+        {
+            for (int i = 0; i < xPositions.Count; i++)
+            {
+                float x = xPositions[i] * zoom;
+                painter.BeginPath();
+                painter.MoveTo(new Vector2(x, 0f));
+                painter.LineTo(new Vector2(x, viewHeight));
+                painter.Stroke();
+            }
+        }
+
+        private static void DrawHorizontalLines(Painter2D painter, IList<float> yPositions, float viewWidth, float zoom)
+        {
+            for (int i = 0; i < yPositions.Count; i++)
+            {
+                float y = yPositions[i] * zoom;
+                painter.BeginPath();
+                painter.MoveTo(new Vector2(0f, y));
+                painter.LineTo(new Vector2(viewWidth, y));
+                painter.Stroke();
+            }
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            bool widthChanged = !Mathf.Approximately(evt.newRect.width, evt.oldRect.width);
+            bool heightChanged = !Mathf.Approximately(evt.newRect.height, evt.oldRect.height);
+
+            if (widthChanged || heightChanged)
+            {
+                cachedContentRect = evt.newRect;
+                QueueContextAwareRepaint(true);
+            }
+        }
+
+        public void RefreshNow()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnScrollWheelMoved()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnWindowPanned()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnBlockSelected(Block block)
+        {
+            if (ReferenceEquals(block, lastSelectedBlock))
+            {
+                return;
+            }
+
+            lastSelectedBlock = block;
+            QueueContextAwareRepaint(false);
+        }
+
+        public void OnFlowchartChanged(Flowchart previous, Flowchart next)
+        {
+            lastSelectedBlock = next != null ? next.SelectedBlock : null;
+            cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            cachedZoom = float.NaN;
+            QueueContextAwareRepaint(true);
+        }
+
+        public void Initialize(FlowchartWindowUitk window)
+        {
+            
+        }
+    }
+}

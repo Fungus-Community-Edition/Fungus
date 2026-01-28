@@ -90,7 +90,7 @@ namespace Amanita.EditorUtils
 
             if (hitEmpty && !hasDragRect && !IsMultiSelect(inputEvent))
             {
-                FlowchartWindowSignals.EmptySpaceClicked();
+                FlowchartWindowSignals.EmptySpaceClicked(default);
             }
             else if (!hitEmpty)  // only when a real block was clicked
             {
