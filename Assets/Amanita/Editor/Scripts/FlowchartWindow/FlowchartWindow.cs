@@ -162,7 +162,10 @@ namespace Amanita.VScripting.EditorUtils
             get
             {
                 if (toolbarSearchTextFieldStyle == null)
-                    toolbarSearchTextFieldStyle = GUI.skin.FindStyle("ToolbarSearchTextField");
+                {
+                    toolbarSearchTextFieldStyle = GUI.skin?.FindStyle("ToolbarSearchTextField")
+                        ?? EditorStyles.toolbarTextField;
+                }
 
                 return toolbarSearchTextFieldStyle;
             }
@@ -175,7 +178,10 @@ namespace Amanita.VScripting.EditorUtils
             get
             {
                 if (toolbarSearchCancelButtonStyle == null)
-                    toolbarSearchCancelButtonStyle = GUI.skin.FindStyle("ToolbarSeachCancelButton");
+                {
+                    toolbarSearchCancelButtonStyle = GUI.skin?.FindStyle("ToolbarSeachCancelButton")
+                        ?? EditorStyles.toolbarButton;
+                }
 
                 return toolbarSearchCancelButtonStyle;
             }
@@ -639,9 +645,10 @@ namespace Amanita.VScripting.EditorUtils
             {
                 DrawOverlay(Event.current);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Debug.Log("Failed to draw overlay in some way");
+                Debug.LogException(ex);
+                GUIUtility.ExitGUI();
             }
 
             // Handle events for custom GUI
@@ -652,8 +659,6 @@ namespace Amanita.VScripting.EditorUtils
                 // Redraw on next frame to get crisp refresh rate
                 Repaint();
             }
-
-            GUIUtility.ExitGUI();
         }
 
         private void UpdateContexts()
@@ -804,6 +809,10 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void DrawOverlay(Event guiEvent)
         {
+            if (Flowchart == null)
+            {
+                return;
+            }
             DrawMainToolbarGroup();
             void DrawMainToolbarGroup()
             {
@@ -851,7 +860,7 @@ namespace Amanita.VScripting.EditorUtils
 
                         GUILayout.Space(2);
 
-                        if (Flowchart.Description.Length > 0)
+                        if (!string.IsNullOrEmpty(Flowchart.Description))
                         {
                             GUILayout.Label(Flowchart.Description, EditorStyles.helpBox);
                         }
