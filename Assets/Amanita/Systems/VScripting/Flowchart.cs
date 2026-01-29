@@ -42,21 +42,11 @@ namespace Amanita.VScripting
             varLookupById.TryGetValue(itemID, out IVariable result);
             return result;
         }
+        
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
         // For more performant lookups, we cache a dictionary of vars by their id.
         protected IDictionary<byte, IVariable> varLookupById = new Dictionary<byte, IVariable>();
-
-        // What the editor utils use to decide how to render this FC's data in the 
-        // FlowchartWindow and BlockInspector
-        public virtual FlowchartUIModel UIModel
-        {
-            get { return uiModel; }
-        }
-
-        [HideInInspector]
-        [SerializeField]
-        protected FlowchartUIModel uiModel = new FlowchartUIModel();
 
         [HideInInspector]
         [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
@@ -68,10 +58,27 @@ namespace Amanita.VScripting
         [HideInInspector]
         [SerializeReference] protected List<Muscariable> muscariables = new List<Muscariable>();
 
+#if UNITY_EDITOR
+
+        // Locking this under #if UNITY_EDITOR to avoid unnecessary serialization in builds
+
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
         [FormerlySerializedAs("description")]
         [SerializeField] protected string description = "";
+
+        /// <summary>
+        /// What the editor utils should use to decide how to render this FC's data in the 
+        /// FlowchartWindow and BlockInspector.
+        /// </summary>
+        public virtual FlowchartUIModel UIModel
+        {
+            get { return uiModel; }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        protected FlowchartUIModel uiModel = new FlowchartUIModel();
 
         [Range(0f, 5f)]
         [Tooltip("Adds a pause after each execution step to make it easier to visualise program flow. Editor only, has no effect in platform builds.")]
@@ -86,15 +93,16 @@ namespace Amanita.VScripting
         [Tooltip("Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.")]
         [SerializeField] protected bool saveSelection = true;
 
-        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
-        [FormerlySerializedAs("localizationId")]
-        [SerializeField] protected string localizationId = "";
-
         [Tooltip("Display line numbers in the command list in the Block inspector.")]
         [SerializeField] protected bool showLineNumbers = false;
 
         [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
         [SerializeField] protected List<string> hideCommands = new List<string>();
+#endif
+
+        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
+        [FormerlySerializedAs("localizationId")]
+        [SerializeField] protected string localizationId = "";
 
         [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
         [FormerlySerializedAs("luaEnvironment")]
@@ -104,6 +112,7 @@ namespace Amanita.VScripting
         [FormerlySerializedAs("_luaBindingName")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
+        #region Save Sys Involvement
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool includeInSaves = true;
 
@@ -115,17 +124,9 @@ namespace Amanita.VScripting
 
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
         [SerializeField] protected int loadPriority = 0;
+        #endregion
 
         [SerializeField] private bool alwaysKeepGuid = true;
-
-        /// <summary>
-        /// Scroll position of Flowchart editor window.
-        /// </summary>
-        public virtual Vector2 ScrollPos
-        {
-            get => uiModel.ScrollPos;
-            set => uiModel.ScrollPos = value;
-        }
 
         public virtual bool IncludeInSaves
         {
@@ -146,7 +147,6 @@ namespace Amanita.VScripting
             set { saveVariables = value; }
         }
         
-
         public virtual int LoadPriority
         {
             get { return loadPriority; }
@@ -157,15 +157,7 @@ namespace Amanita.VScripting
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
-
-#if UNITY_EDITOR
-        public bool SelectedCommandsStale
-        {
-            get => UIModel.SelectedCommandsStale;
-            set => UIModel.SelectedCommandsStale = value;
-        }
-#endif
-            
+   
         protected virtual void Awake()
         {
             if (!this.IsInTheScene)
@@ -174,8 +166,19 @@ namespace Amanita.VScripting
                 return;
             }
 
+            legacyVariables ??= new List<Variable>();
+            if (legacyVariables.Count == 0)
+            {
+                var found = GetComponents<Variable>();
+                legacyVariables.AddRange(found);
+            }
+
+            _blocks = GetComponents<Block>().ToList();
+            _commands = GetComponents<Command>().ToList();
+
+#if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
-            CheckEventSystem();
+#endif
 
             if (Application.IsPlaying(this))
             {
@@ -183,37 +186,15 @@ namespace Amanita.VScripting
             }
         }
 
+        [SerializeField] private IList<Block> _blocks;
+        [SerializeField] private IList<Command> _commands;
+
         protected virtual void Start()
         {
             if (Application.IsPlaying(this))
             {
                 StartCoroutine(HandleGameStartedBlocks());
             }
-        }
-
-        // There must be an Event System in the scene for Say and Menu input to work.
-        // This method will automatically instantiate one if none exists.
-        protected virtual void CheckEventSystem()
-        {
-            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-            if (eventSystem == null)
-            {
-                // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
-                if (prefab != null)
-                {
-                    GameObject holder = Instantiate(prefab);
-                    eventSystem = holder.GetComponent<EventSystem>();
-                    holder.name = "EventSystem";
-                }
-                else
-                {
-                    string errorMessage = "Event System prefab for Amanita not found.";
-                    throw new MissingFieldException(errorMessage);
-                }
-            }
-
-            eventSystem.gameObject.SetActive(true);
         }
 
         protected virtual IEnumerator HandleGameStartedBlocks()
@@ -447,16 +428,6 @@ namespace Amanita.VScripting
             version = AmanitaConstants.CurrentVersion;
         }
 
-        public virtual void RemoveFromSelection(Command command)
-        {
-            uiModel.RemoveFromSelection(command);
-        }
-
-        public virtual void RemoveFromSelection(Block block)
-        {
-            uiModel.RemoveFromSelection(block);
-        }
-
         protected virtual void CheckItemIds()
         {
             // Make sure item ids are unique and monotonically increasing.
@@ -607,32 +578,22 @@ namespace Amanita.VScripting
 
         #region Public members
 
-        #region Flowchart UI State
-        /// <summary>
-        /// Scroll position of Flowchart variables window.
-        /// </summary>
-        public virtual Vector2 VariablesScrollPos
+#if UNITY_EDITOR
+        #region Flowchart UI State and Methods
+
+        public bool SelectedCommandsStale
         {
-            get => uiModel.VariablesScrollPos;
-            set => uiModel.VariablesScrollPos = value;
+            get => UIModel.SelectedCommandsStale;
+            set => UIModel.SelectedCommandsStale = value;
         }
 
         /// <summary>
-        /// Whether or not to show the variables pane.
+        /// Scroll position of Flowchart editor window.
         /// </summary>
-        public virtual bool VariablesExpanded
+        public virtual Vector2 ScrollPos
         {
-            get => uiModel.VariablesExpanded;
-            set => uiModel.VariablesExpanded = value;
-        }
-
-        /// <summary>
-        /// Height of command block view in inspector.
-        /// </summary>
-        public virtual float BlockViewHeight
-        {
-            get => uiModel.BlockViewHeight;
-            set => uiModel.BlockViewHeight = value;
+            get => uiModel.ScrollPos;
+            set => uiModel.ScrollPos = value;
         }
 
         public virtual float Zoom
@@ -683,7 +644,173 @@ namespace Amanita.VScripting
         {
             get { return uiModel.BlockCount; }
         }
+
+        public void UpdateSelectedCache()
+        {
+            SelectedBlocks.Clear();
+            var res = gameObject.GetComponents<Block>();
+            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
+        }
+
+        public void ReverseUpdateSelectedCache()
+        {
+            for (int i = 0; i < SelectedBlockCount; i++)
+            {
+                if (SelectedBlocks[i] != null)
+                {
+                    SelectedBlocks[i].IsSelected = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clears the list of selected blocks.
+        /// </summary>
+        public virtual void ClearSelectedBlocks()
+        {
+            IList<Block> blocksToSignal = SelectedBlocks;
+            UIModel.ClearSelectedBlocks();
+            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
+        }
+
+        public virtual void AddRangeToSelection(IList<Block> toSelect)
+        {
+            UIModel.AddRangeToSelection(toSelect);
+        }
+
+        /// <summary>
+        /// Adds a block to the list of selected blocks.
+        /// </summary>
+        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
+
+        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+
+        /// <summary>
+        /// Set the block objects to be hidden or visible depending on the hideComponents property.
+        /// </summary>
+        public virtual void UpdateHideFlags()
+        {
+            if (hideComponents)
+            {
+                var blocks = GetComponents<Block>();
+                for (int i = 0; i < blocks.Length; i++)
+                {
+                    var block = blocks[i];
+                    block.hideFlags = HideFlags.HideInInspector;
+                    if (block.gameObject != gameObject)
+                    {
+                        block.hideFlags = HideFlags.HideInHierarchy;
+                    }
+                }
+
+                var commands = GetComponents<Command>();
+                for (int i = 0; i < commands.Length; i++)
+                {
+                    var command = commands[i];
+                    command.hideFlags = HideFlags.HideInInspector;
+                }
+
+                var eventHandlers = GetComponents<AmanitaEventHandler>();
+                for (int i = 0; i < eventHandlers.Length; i++)
+                {
+                    var eventHandler = eventHandlers[i];
+                    eventHandler.hideFlags = HideFlags.HideInInspector;
+                }
+            }
+            else
+            {
+                var monoBehaviours = GetComponents<MonoBehaviour>();
+                for (int i = 0; i < monoBehaviours.Length; i++)
+                {
+                    var monoBehaviour = monoBehaviours[i];
+                    if (monoBehaviour == null)
+                    {
+                        continue;
+                    }
+                    monoBehaviour.hideFlags = HideFlags.None;
+                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
+        /// </summary>
+        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
+        {
+            for (int i = 0; i < hideCommands.Count; i++)
+            {
+                // Match on category or command name (case insensitive)
+                var key = hideCommands[i];
+                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Clears the list of selected commands.
+        /// </summary>
+        public virtual void ClearSelectedCommands()
+        {
+            UIModel.ClearSelectedCommands();
+#if UNITY_EDITOR
+            SelectedCommandsStale = true;
+#endif
+        }
+
+        /// <summary>
+        /// Adds a command to the list of selected commands.
+        /// </summary>
+        public virtual void AddSelectedCommand(Command command)
+        {
+            if (!uiModel.Contains(command))
+            {
+                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
+                // like SelectedCommands.Add, we call the ui model's method specifically for registering
+                // Commands.
+                UIModel.AddToSelection(command);
+#if UNITY_EDITOR
+                SelectedCommandsStale = true;
+#endif
+                SelectedCommandAdded(command);
+            }
+        }
+
+        /// <summary>
+        /// For when added through AddSelectedCommand (as opposed to just setting 
+        /// the SelectedCommands property or such)
+        /// </summary>
+        public event Action<Command> SelectedCommandAdded = delegate { };
+
         #endregion
+#endif
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Slow down execution in the editor to make it easier to visualise program flow.
+        /// </summary>
+        public virtual float StepPause { get { return stepPause; } }
+
+        /// <summary>
+        /// Use command color when displaying the command list in the inspector.
+        /// </summary>
+        public virtual bool ColorCommands { get { return colorCommands; } }
+
+        /// <summary>
+        /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
+        /// </summary>
+        public virtual bool SaveSelection { get { return saveSelection; } }
+
+        /// <summary>
+        /// Display line numbers in the command list in the Block inspector.
+        /// </summary>
+        public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
+
+#endif
 
         public virtual IReadOnlyList<IVariable> Variables
         {
@@ -705,29 +832,9 @@ namespace Amanita.VScripting
         public virtual string Description { get { return description; } }
 
         /// <summary>
-        /// Slow down execution in the editor to make it easier to visualise program flow.
-        /// </summary>
-        public virtual float StepPause { get { return stepPause; } }
-
-        /// <summary>
-        /// Use command color when displaying the command list in the inspector.
-        /// </summary>
-        public virtual bool ColorCommands { get { return colorCommands; } }
-
-        /// <summary>
-        /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
-        /// </summary>
-        public virtual bool SaveSelection { get { return saveSelection; } }
-
-        /// <summary>
         /// Unique identifier for identifying this flowchart in localized string keys.
         /// </summary>
         public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
-        /// Display line numbers in the command list in the Block inspector.
-        /// </summary>
-        public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
 
         /// <summary>
         /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
@@ -786,47 +893,15 @@ namespace Amanita.VScripting
 
         #region Block-Handling
 
-
-        public void UpdateSelectedCache()
-        {
-            SelectedBlocks.Clear();
-            var res = gameObject.GetComponents<Block>();
-            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
-        }
-
-        public void ReverseUpdateSelectedCache()
-        {
-            for (int i = 0; i < SelectedBlockCount; i++)
-            {
-                if (SelectedBlocks[i] != null)
-                {
-                    SelectedBlocks[i].IsSelected = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clears the list of selected blocks.
-        /// </summary>
-        public virtual void ClearSelectedBlocks()
-        {
-            IList<Block> blocksToSignal = SelectedBlocks;
-            UIModel.ClearSelectedBlocks();
-            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
-        }
-
-        public virtual void AddRangeToSelection(IList<Block> toSelect)
-        {
-            UIModel.AddRangeToSelection(toSelect);
-        }
-
         /// <summary>
         /// Create a new block node which you can then add commands to.
         /// </summary>
         public virtual Block CreateBlock(Vector2 position)
         {
             Block created = CreateBlockComponent(gameObject);
+#if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
+#endif
             created.BlockName = GetUniqueBlockKey(created.BlockName, created);
             created.ItemId = NextItemId();
             BlockSignals.BlockCreated(created);
@@ -852,10 +927,9 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            var blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
+            for (int i = 0; i < _blocks.Count; i++)
             {
-                var block = blocks[i];
+                var block = _blocks[i];
                 if (block.BlockName == blockName)
                 {
                     return block;
@@ -1028,15 +1102,6 @@ namespace Amanita.VScripting
                 }
             }
         }
-
-        /// <summary>
-        /// Adds a block to the list of selected blocks.
-        /// </summary>
-        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
-
-        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
-
-        public virtual bool Contains(Block block) => UIModel.Contains(block);
 
         #endregion
 
@@ -1406,7 +1471,6 @@ namespace Amanita.VScripting
             return publicVariables;
         }
 
-
         /// <summary>
         /// Creates and returns a new Muscariable of the specified type, with this
         /// as the parent Flowchart.
@@ -1499,111 +1563,6 @@ namespace Amanita.VScripting
 
         #endregion
 
-        /// <summary>
-        /// Set the block objects to be hidden or visible depending on the hideComponents property.
-        /// </summary>
-        public virtual void UpdateHideFlags()
-        {
-            if (hideComponents)
-            {
-                var blocks = GetComponents<Block>();
-                for (int i = 0; i < blocks.Length; i++)
-                {
-                    var block = blocks[i];
-                    block.hideFlags = HideFlags.HideInInspector;
-                    if (block.gameObject != gameObject)
-                    {
-                        block.hideFlags = HideFlags.HideInHierarchy;
-                    }
-                }
-
-                var commands = GetComponents<Command>();
-                for (int i = 0; i < commands.Length; i++)
-                {
-                    var command = commands[i];
-                    command.hideFlags = HideFlags.HideInInspector;
-                }
-
-                var eventHandlers = GetComponents<AmanitaEventHandler>();
-                for (int i = 0; i < eventHandlers.Length; i++)
-                {
-                    var eventHandler = eventHandlers[i];
-                    eventHandler.hideFlags = HideFlags.HideInInspector;
-                }
-            }
-            else
-            {
-                var monoBehaviours = GetComponents<MonoBehaviour>();
-                for (int i = 0; i < monoBehaviours.Length; i++)
-                {
-                    var monoBehaviour = monoBehaviours[i];
-                    if (monoBehaviour == null)
-                    {
-                        continue;
-                    }
-                    monoBehaviour.hideFlags = HideFlags.None;
-                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
-                }
-            }
-        }
-
-        #region Command-Handling
-
-        /// <summary>
-        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
-        /// </summary>
-        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
-        {
-            for (int i = 0; i < hideCommands.Count; i++)
-            {
-                // Match on category or command name (case insensitive)
-                var key = hideCommands[i];
-                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Clears the list of selected commands.
-        /// </summary>
-        public virtual void ClearSelectedCommands()
-        {
-            UIModel.ClearSelectedCommands();
-#if UNITY_EDITOR
-            SelectedCommandsStale = true;
-#endif
-        }
-
-        /// <summary>
-        /// Adds a command to the list of selected commands.
-        /// </summary>
-        public virtual void AddSelectedCommand(Command command)
-        {
-            if (!uiModel.Contains(command))
-            {
-                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
-                // like SelectedCommands.Add, we call the ui model's method specifically for registering
-                // Commands.
-                UIModel.AddToSelection(command); 
-#if UNITY_EDITOR
-                SelectedCommandsStale = true;
-#endif
-                SelectedCommandAdded(command);
-            }
-        }
-
-        /// <summary>
-        /// For when added through AddSelectedCommand (as opposed to just setting 
-        /// the SelectedCommands property or such)
-        /// </summary>
-        public event Action<Command> SelectedCommandAdded = delegate { };
-        public virtual bool Contains(Command command) => UIModel.Contains(command);
-
-        #endregion
 
         /// <summary>
         /// Reset the commands and variables in the Flowchart.
@@ -1814,6 +1773,7 @@ namespace Amanita.VScripting
             }
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if (!this.IsInTheScene || Application.isPlaying)
@@ -1864,6 +1824,7 @@ namespace Amanita.VScripting
             };
             
         }
+#endif
 
         protected virtual void AssertUniqueID()
         {
@@ -1894,17 +1855,22 @@ namespace Amanita.VScripting
             Debug.LogWarning(warningMessage);
         }
 
+
+#if UNITY_EDITOR
+
         public static void ResetStaticsForTest()
         {
             eventSystemPresent = false;
         }
 
-#if UNITY_EDITOR
+
         public virtual void OnTearDown()
         {
             GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             fcReg.RemoveGuid(this.UniqueId);
         }
+
+#endif
 
         public bool Contains(IVariable var)
         {
@@ -1913,13 +1879,12 @@ namespace Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-            
+
         }
 
         public void OnAfterDeserialize()
         {
         }
 
-#endif
     }
 }

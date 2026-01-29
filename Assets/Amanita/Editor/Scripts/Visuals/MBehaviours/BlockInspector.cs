@@ -105,7 +105,8 @@ namespace Amanita.VScripting.EditorUtils
             DrawBaseBlockGUIInScrollView();
             void DrawBaseBlockGUIInScrollView()
             {
-                blockScrollPos = GUILayout.BeginScrollView(blockScrollPos, GUILayout.Height(flowchart.BlockViewHeight));
+                var uiModel = flowchart.UIModel;
+                blockScrollPos = GUILayout.BeginScrollView(blockScrollPos, GUILayout.Height(uiModel.BlockViewHeight));
                 activeBlockEditor.DrawBlockName(flowchart);
                 activeBlockEditor.DrawBlockGUI(flowchart);
                 GUILayout.EndScrollView();
@@ -188,7 +189,8 @@ namespace Amanita.VScripting.EditorUtils
             DrawResizeBar();
             void DrawResizeBar()
             {
-                Vector2 resizeRectPos = new Vector2(0, flowchart.BlockViewHeight);
+                var uiModel = flowchart.UIModel;
+                Vector2 resizeRectPos = new Vector2(0, uiModel.BlockViewHeight);
                 Vector2 resizeRectSize = new Vector2(EditorGUIUtility.currentViewWidth, 4f);
                 Rect resizeRect = new Rect(resizeRectPos, resizeRectSize);
 
@@ -211,7 +213,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void ResizeScrollView(Flowchart flowchart)
         {
-            Vector2 cursorChangePos = new Vector2(0, flowchart.BlockViewHeight + 1);
+            var uiModel = flowchart.UIModel;
+            Vector2 cursorChangePos = new Vector2(0, uiModel.BlockViewHeight + 1);
             Vector2 cursorChangeSize = new Vector2(EditorGUIUtility.currentViewWidth, 4f);
             Rect cursorChangeRect = new Rect(cursorChangePos, cursorChangeSize);
 
@@ -228,7 +231,7 @@ namespace Amanita.VScripting.EditorUtils
             if (resize && Event.current.type == EventType.Repaint)
             {
                 Undo.RecordObject(flowchart, "Resize view");
-                flowchart.BlockViewHeight = Event.current.mousePosition.y;
+                uiModel.BlockViewHeight = Event.current.mousePosition.y;
             }
             
             ClampBlockViewHeight(flowchart);
@@ -268,10 +271,11 @@ namespace Amanita.VScripting.EditorUtils
             if (clamp)
             {
                 // Make sure block view is always clamped to visible area
-                float height = flowchart.BlockViewHeight;
+                var uiModel = flowchart.UIModel;
+                float height = uiModel.BlockViewHeight;
                 height = Mathf.Max(200, height);
                 height = Mathf.Min(windowHeight - 200,height);
-                flowchart.BlockViewHeight = height;
+                uiModel.BlockViewHeight = height;
             }
             
             if (Event.current.type == EventType.Repaint)
