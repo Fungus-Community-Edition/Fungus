@@ -28,17 +28,20 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (isDisposed || flowchartContext.Flowchart == null)
             {
+                Debug.LogWarning("PanHandlerUitk is disposed or Flowchart is null.");
                 return;
             }
 
             if (direction.sqrMagnitude <= Mathf.Epsilon)
             {
+                Debug.Log("Direction too small.");
                 return;
             }
 
             Flowchart flowchart = flowchartContext.Flowchart;
             if (flowchart == null)
             {
+                Debug.LogWarning("No Flowchart found.");
                 return;
             }
 

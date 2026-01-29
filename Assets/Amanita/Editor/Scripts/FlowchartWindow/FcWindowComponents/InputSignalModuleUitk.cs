@@ -105,7 +105,7 @@ namespace Amanita.VScripting.EditorUtils
             Vector2 movementSinceLastFrame = guiEvent.mousePosition - activePanAnchor.Value;
             if (movementSinceLastFrame.sqrMagnitude > Mathf.Epsilon)
             {
-                Debug.Log("Panning with movement: " + movementSinceLastFrame);
+                Debug.Log("Panning");
                 FlowchartWindowSignals.ScrollWheelDragged(movementSinceLastFrame);
                 FlowchartWindowSignals.WindowPanned();
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -37,6 +38,7 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
                 FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved += _moduleDispatcher.NotifyScrollWheelMoved;
+                FlowchartWindowSignals.ScrollWheelDragged += _moduleDispatcher.NotifyScrollWheelDragged;
                 FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
                 FlowchartWindowSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
@@ -53,6 +55,7 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
                 FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved -= _moduleDispatcher.NotifyScrollWheelMoved;
+                FlowchartWindowSignals.ScrollWheelDragged -= _moduleDispatcher.NotifyScrollWheelDragged;
                 FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
                 FlowchartWindowSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
@@ -90,6 +93,14 @@ namespace Amanita.VScripting.EditorUtils
             _moduleDispatcher.ClearModules();
             VisualElement root = rootVisualElement;
 
+            // If ammy state is missing, we cannot proceed. Show a label and return.
+            if (_ammyState == null)
+            {
+                PrepErrorLabel(root);
+                PrepRefreshButton(root);
+                return;
+            }
+
             PrepFcContext();
             void PrepFcContext()
             {
@@ -105,27 +116,79 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _gridRenderer = new GridRendererUitk(_fcContext, _drawGridSettings);
                 _panHandler = new PanHandlerUitk(_fcContext);
+                _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
+                //_moduleDispatcher.AddModule(_blockRenderer);
             }
 
             AttachUiElements();
             void AttachUiElements()
             {
                 root.Add(_gridRenderer);
+                //root.Add(_blockRenderer);
             }
 
             // TODO: register ui elements in instance fields for further manipulation
             _gridRenderer.RefreshNow();
         }
 
+        private UitkLabel _errorLabel;
+        private Button _refreshButton;
+
         private AmanitaState _ammyState;
-        private Block _lastSelectedBlock;
-        private Command _lastSelectedCommand;
         private GridRendererUitk _gridRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
+        private BlockRendererUitk _blockRenderer;
+
+        void PrepErrorLabel(VisualElement root)
+        {
+            _errorLabel = new UitkLabel("No Flowcharts found in the scene. ");
+            _errorLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _errorLabel.style.fontSize = 48;
+            _errorLabel.style.color = Color.yellow;
+            // ^ The existence of Flowcharts implies that of AmanitaState.
+            root.Add(_errorLabel);
+        }
+
+        void PrepRefreshButton(VisualElement root)
+        {
+            _refreshButton = new Button(OnRefreshButtonClicked);
+            _refreshButton.text = "Refresh";
+            _refreshButton.style.alignSelf = Align.Center;
+            Vector2 buttonSize = new Vector2(200, 50);
+            _refreshButton.style.width = buttonSize.x;
+            _refreshButton.style.height = buttonSize.y;
+            _refreshButton.style.fontSize = 24;
+            root.Add(_refreshButton);
+        }
+
+        void OnRefreshButtonClicked()
+        {
+            _ammyState = FindFirstObjectByType<AmanitaState>();
+            if (_ammyState != null)
+            {
+                Debug.Log("Flowchart found on refresh.");
+                RemoveErrorScreenControls();
+                CreateGUI();
+            }
+            else
+            {
+                Debug.LogWarning("Flowchart still not found on refresh.");
+            }
+            
+        }
+
+        void RemoveErrorScreenControls()
+        {
+            VisualElement root = rootVisualElement;
+            root.Remove(_errorLabel);
+            root.Remove(_refreshButton);
+            _errorLabel = null;
+            _refreshButton = null;
+        }
 
         private readonly DrawGridContext _drawGridSettings = new DrawGridContext
         {
