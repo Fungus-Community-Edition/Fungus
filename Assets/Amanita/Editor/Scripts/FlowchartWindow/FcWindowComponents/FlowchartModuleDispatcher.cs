@@ -24,6 +24,7 @@ namespace Amanita.VScripting.EditorUtils
             RegisterResponder<IRightClickResponder>(module);
             RegisterResponder<IDoubleClickResponder>(module);
             RegisterResponder<IScrollWheelMoveResponder>(module);
+            RegisterResponder<IScrollWheelDragResponder>(module);
             RegisterResponder<IEmptySpaceClickResponder>(module);
             RegisterResponder<IFlowchartChangeResponder>(module);
             RegisterResponder<IBlocksCopiedResponder>(module);
@@ -41,6 +42,7 @@ namespace Amanita.VScripting.EditorUtils
             UnregisterResponder<IRightClickResponder>(module);
             UnregisterResponder<IDoubleClickResponder>(module);
             UnregisterResponder<IScrollWheelMoveResponder>(module);
+            UnregisterResponder<IScrollWheelDragResponder>(module);
             UnregisterResponder<IEmptySpaceClickResponder>(module);
             UnregisterResponder<IFlowchartChangeResponder>(module);
             UnregisterResponder<IBlocksCopiedResponder>(module);
@@ -75,6 +77,9 @@ namespace Amanita.VScripting.EditorUtils
 
         public void NotifyScrollWheelMoved() =>
             Broadcast<IScrollWheelMoveResponder>(res => res.OnScrollWheelMoved());
+
+        public void NotifyScrollWheelDragged(Vector2 direction) =>
+            Broadcast<IScrollWheelDragResponder>(res => res.OnScrollWheelDragged(direction));
 
         public void NotifyEmptySpaceClicked(Vector2 position) =>
             Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(position));

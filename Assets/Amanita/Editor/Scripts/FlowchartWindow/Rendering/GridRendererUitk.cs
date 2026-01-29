@@ -23,6 +23,9 @@ namespace Amanita.VScripting.EditorUtils
         private Block lastSelectedBlock;
         private bool isDisposed;
 
+        private static readonly float SpacingScaleAtMinZoom = 0.5f;
+        private const float DefaultZoomLevel = 1f;
+
         public GridRendererUitk(FlowchartContext context, DrawGridContext gridContext)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
@@ -87,7 +90,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnDetachedFromPanel(DetachFromPanelEvent evt)
         {
-            Dispose();
+            // No action needed on detach for now.
         }
 
         public void Dispose()
@@ -104,11 +107,18 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)
         {
-            Flowchart flowchart = flowchartContext.Flowchart;
-            if (flowchart == null)
+            // Even when there's no Flowchart, we still want to generate the grid.
+            float zoom = 1f;
+            if (flowchartContext.Flowchart != null)
             {
-                return;
+                zoom = Mathf.Approximately(flowchartContext.Flowchart.Zoom, 0f)
+                    ? 1f
+                    : flowchartContext.Flowchart.Zoom;
             }
+
+            Vector2 scrollPos = flowchartContext.Flowchart != null
+                ? flowchartContext.Flowchart.ScrollPos
+                : Vector2.zero;
 
             Rect rect = contentRect;
             if (rect.width <= 0f || rect.height <= 0f)
@@ -116,23 +126,18 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ?
-                1f :
-                flowchart.Zoom;
-            float spacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
-                ? 1f
-                : drawGridContext.GridLineSpacingSize;
+            float spacing = CalculateAdaptiveSpacing(zoom);
 
             float viewWidth = rect.width / zoom;
             float viewHeight = rect.height / zoom;
 
             IList<float> verticalLines = GridUtils.GetVerticalLinePositions(
-                flowchart.ScrollPos.x,
+                scrollPos.x,
                 viewWidth,
                 spacing);
 
             IList<float> horizontalLines = GridUtils.GetHorizontalLinePositions(
-                flowchart.ScrollPos.y,
+                scrollPos.y,
                 viewHeight,
                 spacing);
 
@@ -144,7 +149,7 @@ namespace Amanita.VScripting.EditorUtils
             DrawVerticalLines(painter, verticalLines, rect.height, zoom);
             DrawHorizontalLines(painter, horizontalLines, rect.width, zoom);
 
-            cachedScrollPosition = flowchart.ScrollPos;
+            cachedScrollPosition = scrollPos;
             cachedZoom = zoom;
             cachedContentRect = rect;
         }
@@ -222,6 +227,19 @@ namespace Amanita.VScripting.EditorUtils
         public void Initialize(FlowchartWindowUitk window)
         {
             
+        }
+
+        private float CalculateAdaptiveSpacing(float currentZoom)
+        {
+            float baseSpacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
+                ? 1f
+                : drawGridContext.GridLineSpacingSize;
+
+            float minZoom = FlowchartWindow.MinZoomValue;
+            float normalized = Mathf.Clamp01(Mathf.InverseLerp(minZoom, DefaultZoomLevel, currentZoom));
+            float spacingMultiplier = Mathf.Lerp(SpacingScaleAtMinZoom, 1f, normalized);
+
+            return baseSpacing * spacingMultiplier;
         }
     }
 }

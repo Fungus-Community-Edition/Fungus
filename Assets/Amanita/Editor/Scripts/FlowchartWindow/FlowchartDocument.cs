@@ -6,7 +6,24 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartDocument : IDisposable
     {
-        public Flowchart Flowchart { get; set; }
+        public Flowchart Flowchart
+        {
+            get { return _flowchart; }
+            set
+            {
+                _flowchart = value;
+                if (_flowchart == null)
+                {
+                    _allBlocks.Clear();
+                }
+                else
+                {
+                    AllBlocks = _flowchart.GetComponents<Block>();
+                }
+            }
+        }
+        
+        private Flowchart _flowchart;
 
         public IList<Block> AllBlocks
         {

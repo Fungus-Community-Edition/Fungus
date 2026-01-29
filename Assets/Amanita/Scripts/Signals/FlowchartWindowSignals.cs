@@ -6,11 +6,24 @@ namespace Amanita.VScripting
 {
     public static class FlowchartWindowSignals
     {
+        /// <summary>
+        /// Invoked when the user left-clicks inside the flowchart window just once.
+        /// </summary>
         public static Action<Vector2> LeftClicked = delegate { };
         public static Action<Vector2> RightClicked = delegate { };
+
+        /// <summary>
+        /// Invoked when the user double-left-clicks inside the flowchart window.
+        /// </summary>
         public static Action<Vector2> DoubleClicked = delegate { };
 
         public static Action ScrollWheelMoved = delegate { };
+
+        /// <summary>
+        /// Invoked when the user drags the scroll wheel inside the flowchart window. The argument
+        /// passed is the mouse movement since the last event.
+        /// </summary>
+        public static Action<Vector2> ScrollWheelDragged = delegate { };
 
         public static Action<Vector2> EmptySpaceClicked = delegate { };
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };
@@ -40,6 +53,11 @@ namespace Amanita.VScripting
     public interface IScrollWheelMoveResponder
     {
         void OnScrollWheelMoved();
+    }
+
+    public interface IScrollWheelDragResponder
+    {
+        void OnScrollWheelDragged(Vector2 direction);
     }
 
     public interface IEmptySpaceClickResponder

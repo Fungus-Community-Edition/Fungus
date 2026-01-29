@@ -26,7 +26,7 @@ namespace VScriptingTests.FCWindowOperations
             _host = new GameObject("FlowchartHost_ForCommandEditorTests");
             _flowchart = _host.AddComponent<Flowchart>();
             _block = _host.AddComponent<Block>();
-            _flowchart.BlockViewHeight = 250f;
+            _flowchart.UIModel.BlockViewHeight = 250f;
         }
 
         protected GameObject _host;
