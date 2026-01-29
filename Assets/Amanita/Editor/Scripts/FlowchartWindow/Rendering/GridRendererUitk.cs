@@ -87,7 +87,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnDetachedFromPanel(DetachFromPanelEvent evt)
         {
-            Dispose();
+            // No action needed on detach for now.
         }
 
         public void Dispose()
@@ -104,11 +104,18 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)
         {
-            Flowchart flowchart = flowchartContext.Flowchart;
-            if (flowchart == null)
+            // Even when there's no Flowchart, we still want to generate the grid.
+            float zoom = 1f;
+            if (flowchartContext.Flowchart != null)
             {
-                return;
+                zoom = Mathf.Approximately(flowchartContext.Flowchart.Zoom, 0f)
+                    ? 1f
+                    : flowchartContext.Flowchart.Zoom;
             }
+
+            Vector2 scrollPos = flowchartContext.Flowchart != null
+                ? flowchartContext.Flowchart.ScrollPos
+                : Vector2.zero;
 
             Rect rect = contentRect;
             if (rect.width <= 0f || rect.height <= 0f)
@@ -116,9 +123,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ?
-                1f :
-                flowchart.Zoom;
             float spacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
                 ? 1f
                 : drawGridContext.GridLineSpacingSize;
@@ -127,12 +131,12 @@ namespace Amanita.VScripting.EditorUtils
             float viewHeight = rect.height / zoom;
 
             IList<float> verticalLines = GridUtils.GetVerticalLinePositions(
-                flowchart.ScrollPos.x,
+                scrollPos.x,
                 viewWidth,
                 spacing);
 
             IList<float> horizontalLines = GridUtils.GetHorizontalLinePositions(
-                flowchart.ScrollPos.y,
+                scrollPos.y,
                 viewHeight,
                 spacing);
 
@@ -144,7 +148,7 @@ namespace Amanita.VScripting.EditorUtils
             DrawVerticalLines(painter, verticalLines, rect.height, zoom);
             DrawHorizontalLines(painter, horizontalLines, rect.width, zoom);
 
-            cachedScrollPosition = flowchart.ScrollPos;
+            cachedScrollPosition = scrollPos;
             cachedZoom = zoom;
             cachedContentRect = rect;
         }

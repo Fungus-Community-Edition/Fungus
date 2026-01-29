@@ -74,8 +74,14 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnDisable()
         {
+            Debug.Log("FlowchartWindowUitk OnDisable");
             ToggleSubs(false);
-            _fcContext.Dispose();
+        }
+
+        private void OnDestroy()
+        {
+            _moduleDispatcher.ClearModules();
+            _fcContext?.Dispose();
             _fcContext = null;
         }
         
@@ -98,8 +104,10 @@ namespace Amanita.VScripting.EditorUtils
             void PrepSubmodules()
             {
                 _gridRenderer = new GridRendererUitk(_fcContext, _drawGridSettings);
+                _panHandler = new PanHandlerUitk(_fcContext);
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
+                _moduleDispatcher.AddModule(_panHandler);
             }
 
             AttachUiElements();
@@ -116,6 +124,8 @@ namespace Amanita.VScripting.EditorUtils
         private Block _lastSelectedBlock;
         private Command _lastSelectedCommand;
         private GridRendererUitk _gridRenderer;
+        private PanHandlerUitk _panHandler;
+        private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
 
         private readonly DrawGridContext _drawGridSettings = new DrawGridContext
         {
@@ -127,8 +137,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnGUI()
         {
-            // This method is called for rendering and handling GUI events.
-            // Add your GUI code here.
+            _inputDetector.OnGUI(Event.current);
         }
     }
 
