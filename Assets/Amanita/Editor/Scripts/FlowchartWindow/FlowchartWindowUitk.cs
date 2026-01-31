@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -75,13 +76,23 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnSelectedFlowchartChanged(Flowchart flowchart)
         {
-            if (flowchart == null)
+            if (_fcContext == null)
             {
-                flowchart = FindFirstObjectByType<Flowchart>();
+                return;
             }
 
-            _fcContext.Flowchart = flowchart;
-            _gridRenderer.RefreshNow();
+            Flowchart resolved = flowchart == null ? FindFirstObjectByType<Flowchart>() : flowchart;
+            Flowchart previous = _fcContext.Flowchart;
+
+            if (ReferenceEquals(previous, resolved))
+            {
+                return;
+            }
+
+            _fcContext.Flowchart = resolved;
+            UpdateBlockCollection();
+            _gridRenderer?.RefreshNow();
+            FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
         private void OnDisable()
@@ -99,6 +110,7 @@ namespace Amanita.VScripting.EditorUtils
             _scrollPosResetter = null;
             _blockRenderer?.Dispose();
             _blockRenderer = null;
+            _selectionSync = null;
             _fcNameLabel?.RemoveFromHierarchy();
             _fcNameLabel = null;
         }
@@ -140,11 +152,13 @@ namespace Amanita.VScripting.EditorUtils
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
+                _selectionSync = new FcWindowSelectionSyncUitk(_fcContext);
                 
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_blockRenderer);
+                _moduleDispatcher.AddModule(_selectionSync);
             }
 
             AttachUiElements();
@@ -159,6 +173,8 @@ namespace Amanita.VScripting.EditorUtils
             _gridRenderer.RefreshNow();
             _blockRenderer.Initialize(this);
             _scrollPosResetter.Initialize(this);
+            _selectionSync.Initialize(this);
+            FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
         private UitkLabel _errorLabel;
@@ -169,6 +185,7 @@ namespace Amanita.VScripting.EditorUtils
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockRendererUitk _blockRenderer;
+        private FcWindowSelectionSyncUitk _selectionSync;
 
         void PrepFcNameLabel()
         {
@@ -240,6 +257,26 @@ namespace Amanita.VScripting.EditorUtils
             _refreshButton = null;
         }
 
+        internal void UpdateBlockCollection()
+        {
+            if (_fcContext == null)
+            {
+                return;
+            }
+
+            Flowchart flowchart = _fcContext.Flowchart;
+            if (flowchart == null)
+            {
+                _fcContext.Document.AllBlocks = Array.Empty<Block>();
+            }
+            else
+            {
+                _fcContext.Document.AllBlocks = flowchart.GetComponents<Block>();
+            }
+
+            _blockRenderer?.RefreshBlocks();
+        }
+
         private readonly DrawGridContext _drawGridSettings = new DrawGridContext
         {
             GridLineSpacingSize = 50f,
@@ -279,8 +316,14 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             RemoveErrorScreenControls();
+            Flowchart previous = _fcContext.Flowchart;
             _fcContext.Flowchart = fallback;
+            UpdateBlockCollection();
             _gridRenderer?.RefreshNow();
+            if (!ReferenceEquals(previous, fallback))
+            {
+                FlowchartWindowSignals.ChangedFlowchart(previous, fallback);
+            }
         }
 
         private void ShowMissingFlowchartUi()

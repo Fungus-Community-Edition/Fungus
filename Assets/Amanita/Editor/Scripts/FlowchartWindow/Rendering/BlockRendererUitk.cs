@@ -307,46 +307,89 @@ namespace Amanita.VScripting.EditorUtils
 
             button.text = SafeBlockName(block);
 
-            Vector2 textSize = button.MeasureTextSize(
-                button.text,
-                float.NaN,
-                MeasureMode.Undefined,
-                float.NaN,
-                MeasureMode.Undefined);
-
-            float width = Mathf.Clamp(textSize.x + PaddingX * 2f, MinWidth, MaxWidth) * zoom;
-            float height = Mathf.Max(DefaultHeight, textSize.y + PaddingY) * zoom;
-
-            button.style.width = width;
-            button.style.height = height;
-            button.style.fontSize = Mathf.RoundToInt(BaseFontSize * zoom);
-
-            BlockGraphics graphics = graphicsGenerator.GenerateFor(block);
-            Color tint = graphics.tint;
-            button.style.backgroundColor = new StyleColor(tint);
-            button.style.color = new StyleColor(ChooseTextColor(tint));
-            button.style.borderLeftColor = button.style.borderRightColor =
-                button.style.borderTopColor = button.style.borderBottomColor =
-                    new StyleColor(new Color(0f, 0f, 0f, 0.4f));
-
-            bool isSelected = block.IsSelected && !block.IsControlSelected;
-            button.EnableInClassList(SelectedClass, isSelected);
-            if (isSelected)
+            UpdateSize();
+            void UpdateSize()
             {
-                button.style.borderLeftColor = button.style.borderRightColor =
-                    button.style.borderTopColor = button.style.borderBottomColor = Color.white;
-                button.style.unityFontStyleAndWeight = FontStyle.Bold;
+                Vector2 unrestrictedSize = button.MeasureTextSize(
+                    button.text,
+                    float.NaN,
+                    MeasureMode.Undefined,
+                    float.NaN,
+                    MeasureMode.Undefined);
+
+                float totalPaddingX = PaddingX * 2f;
+                float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
+                float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, minTextWidth);
+
+                Vector2 wrappedSize = button.MeasureTextSize(
+                    button.text,
+                    textWidthConstraint,
+                    MeasureMode.AtMost,
+                    float.NaN,
+                    MeasureMode.Undefined);
+
+                float width = unclampedWidth * zoom;
+                float height = Mathf.Max(DefaultHeight, wrappedSize.y + PaddingY) * zoom;
+
+                button.style.width = width;
+                button.style.height = height;
             }
-            else
+
+            bool isSelected;
+            UpdateColors();
+            void UpdateColors()
             {
-                button.style.unityFontStyleAndWeight = FontStyle.Normal;
+                BlockGraphics graphics = graphicsGenerator.GenerateFor(block);
+                Color tint = graphics.tint;
+                button.style.backgroundColor = new StyleColor(tint);
+                button.style.color = new StyleColor(ChooseTextColor(tint));
+                button.style.borderLeftColor = button.style.borderRightColor =
+                    button.style.borderTopColor = button.style.borderBottomColor =
+                        new StyleColor(new Color(0f, 0f, 0f, 0.4f));
+
+                isSelected = block.IsSelected && !block.IsControlSelected;
+                button.EnableInClassList(SelectedClass, isSelected);
+                if (isSelected)
+                {
+                    button.style.borderLeftColor = button.style.borderRightColor =
+                        button.style.borderTopColor = button.style.borderBottomColor = Color.white;
+                }
+            }
+
+            UpdateFont();
+            void UpdateFont()
+            {
+                button.style.fontSize = Mathf.RoundToInt(BaseFontSize * zoom);
+
+                if (isSelected)
+                {
+                    button.style.unityFontStyleAndWeight = FontStyle.Bold;
+                }
+                else
+                {
+                    button.style.unityFontStyleAndWeight = FontStyle.Normal;
+                }
             }
         }
+
+        private static readonly float minTextWidth = 1f;
 
         private static string SafeBlockName(Block block)
         {
-            return string.IsNullOrEmpty(block?.BlockName) ? "(Unnamed Block)" : block.BlockName;
+            string result = "New Block";
+            if (block != null)
+            {
+                result = block.BlockName;
+                if (result.Length > maxBlockNameLength)
+                {
+                    result = result[..maxBlockNameLength];
+                }
+            }
+
+            return result;
         }
+
+        private static readonly int maxBlockNameLength = 50;
 
         private static Color ChooseTextColor(Color background)
         {
