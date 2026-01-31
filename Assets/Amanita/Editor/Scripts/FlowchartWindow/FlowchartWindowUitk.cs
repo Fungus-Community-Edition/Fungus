@@ -23,13 +23,13 @@ namespace Amanita.VScripting.EditorUtils
 
         private static readonly Vector2 fcWindowMinSize = new Vector2(800, 500);
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             _ammyState = FindFirstObjectByType<AmanitaState>();
             ToggleSubs(true);
         }
 
-        private void ToggleSubs(bool on)
+        protected virtual void ToggleSubs(bool on)
         {
             if (on)
             {
@@ -95,13 +95,13 @@ namespace Amanita.VScripting.EditorUtils
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             Debug.Log("FlowchartWindowUitk OnDisable");
             ToggleSubs(false);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
