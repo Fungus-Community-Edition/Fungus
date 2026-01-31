@@ -220,6 +220,7 @@ namespace Amanita.VScripting.EditorUtils
 
             isDisposed = true;
             ClearAll();
+            this.RemoveFromHierarchy();
         }
 
         private void ClearAll()

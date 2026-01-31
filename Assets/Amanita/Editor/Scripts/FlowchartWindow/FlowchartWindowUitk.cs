@@ -95,6 +95,10 @@ namespace Amanita.VScripting.EditorUtils
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
+            _scrollPosResetter?.Dispose();
+            _scrollPosResetter = null;
+            _blockRenderer?.Dispose();
+            _blockRenderer = null;
             _fcNameLabel?.RemoveFromHierarchy();
             _fcNameLabel = null;
         }
@@ -135,6 +139,8 @@ namespace Amanita.VScripting.EditorUtils
                 _gridRenderer = new GridRendererUitk(_fcContext, _drawGridSettings);
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
+                _scrollPosResetter = new ScrollPosResetter(_fcContext);
+                
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
@@ -145,12 +151,14 @@ namespace Amanita.VScripting.EditorUtils
             void AttachUiElements()
             {
                 root.Add(_gridRenderer);
-                //root.Add(_blockRenderer);
+                root.Add(_blockRenderer);
                 root.Add(_fcNameLabel);
             }
 
             // TODO: register ui elements in instance fields for further manipulation
             _gridRenderer.RefreshNow();
+            _blockRenderer.Initialize(this);
+            _scrollPosResetter.Initialize(this);
         }
 
         private UitkLabel _errorLabel;
@@ -217,6 +225,8 @@ namespace Amanita.VScripting.EditorUtils
             
         }
 
+        private ScrollPosResetter _scrollPosResetter;
+
         void RemoveErrorScreenControls()
         {
             if (_errorLabel == null && _refreshButton == null)
@@ -241,6 +251,7 @@ namespace Amanita.VScripting.EditorUtils
         private void OnGUI()
         {
             _inputDetector.OnGUI(Event.current);
+            _scrollPosResetter.OnGUI();
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
