@@ -110,7 +110,8 @@ namespace Amanita.VScripting.EditorUtils
             _scrollPosResetter = null;
             _blockRenderer?.Dispose();
             _blockRenderer = null;
-            _selectionSync = null;
+            _selectionSyncer = null;
+            _inspectorSync = null;
             _fcNameLabel?.RemoveFromHierarchy();
             _fcNameLabel = null;
         }
@@ -152,13 +153,15 @@ namespace Amanita.VScripting.EditorUtils
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
-                _selectionSync = new FcWindowSelectionSyncUitk(_fcContext);
-                
+                _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
+                _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
+
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_blockRenderer);
-                _moduleDispatcher.AddModule(_selectionSync);
+                _moduleDispatcher.AddModule(_selectionSyncer);
+                _moduleDispatcher.AddModule(_inspectorSync);
             }
 
             AttachUiElements();
@@ -173,7 +176,8 @@ namespace Amanita.VScripting.EditorUtils
             _gridRenderer.RefreshNow();
             _blockRenderer.Initialize(this);
             _scrollPosResetter.Initialize(this);
-            _selectionSync.Initialize(this);
+            _selectionSyncer.Initialize(this);
+            _inspectorSync.Initialize(this);
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
@@ -185,7 +189,8 @@ namespace Amanita.VScripting.EditorUtils
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockRendererUitk _blockRenderer;
-        private FcWindowSelectionSyncUitk _selectionSync;
+        private FlowchartSelectionSyncerUitk _selectionSyncer;
+        private FcWindowSelectionSyncUitk _inspectorSync;
 
         void PrepFcNameLabel()
         {

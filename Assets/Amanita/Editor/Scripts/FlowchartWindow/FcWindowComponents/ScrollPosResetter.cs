@@ -5,6 +5,7 @@ namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Listens for a specific input event and resets the scroll position of the flowchart to (0,0).
+    /// Basically QOL for users who want to quickly reset their view.
     /// </summary>
     public class ScrollPosResetter : IFlowchartWindowModule
     {

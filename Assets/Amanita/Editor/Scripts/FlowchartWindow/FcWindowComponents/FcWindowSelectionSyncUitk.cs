@@ -53,23 +53,15 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (!isDisposed)
             {
-                SelectBlockAndShowInspector(block);
+                ShowInspectorForBlock(block);
             }
         }
 
         public void OnEmptySpaceClicked(Vector2 pos)
         {
-            if (isDisposed)
+            if (!isDisposed)
             {
-                return;
-            }
-
-            SelectBlockAndShowInspector(null);
-
-            Flowchart flowchart = Flowchart;
-            if (flowchart != null && Selection.activeGameObject != flowchart.gameObject)
-            {
-                Selection.activeGameObject = flowchart.gameObject;
+                ShowInspectorForBlock(null);
             }
         }
 
@@ -83,21 +75,7 @@ namespace Amanita.VScripting.EditorUtils
             skipNextEditorUpdate = true;
             SubscribeToFlowchart(next);
             lastShownBlock = next != null ? next.SelectedBlock : null;
-
-            if (next == null)
-            {
-                return;
-            }
-
-            if (lastShownBlock != null)
-            {
-                SelectBlockAndShowInspector(lastShownBlock);
-            }
-            else
-            {
-                next.ClearSelectedBlocks();
-                next.ClearSelectedCommands();
-            }
+            ShowInspectorForBlock(lastShownBlock);
         }
 
         private void OnEditorUpdate()
@@ -170,7 +148,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (!isDisposed)
             {
-                SelectBlockAndShowInspector(block);
+                ShowInspectorForBlock(block);
             }
         }
 
@@ -178,7 +156,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (!isDisposed)
             {
-                SelectBlockAndShowInspector(block);
+                ShowInspectorForBlock(block);
             }
         }
 
@@ -218,14 +196,30 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            SelectBlockAndShowInspector(selectedBlock);
+            ShowInspectorForBlock(selectedBlock);
         }
 
-        private void SelectBlockAndShowInspector(Block block)
+        private void ShowInspectorForBlock(Block block)
         {
             Flowchart flowchart = Flowchart;
             if (flowchart == null)
             {
+                return;
+            }
+
+            if (block == null)
+            {
+                if (BlockInspector != null)
+                {
+                    BlockInspector.block = null;
+                }
+
+                if (Selection.activeObject == BlockInspector)
+                {
+                    Selection.activeObject = flowchart.gameObject;
+                }
+
+                lastShownBlock = null;
                 return;
             }
 
@@ -237,17 +231,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (block != null)
-            {
-                flowchart.SelectedBlock = block;
-                ShowBlockInspector(block);
-            }
-            else
-            {
-                flowchart.ClearSelectedBlocks();
-                flowchart.ClearSelectedCommands();
-            }
-
+            ShowBlockInspector(block);
             lastShownBlock = block;
         }
 

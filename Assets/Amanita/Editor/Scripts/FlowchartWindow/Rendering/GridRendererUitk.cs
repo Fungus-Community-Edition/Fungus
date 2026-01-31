@@ -23,6 +23,9 @@ namespace Amanita.VScripting.EditorUtils
         private Block lastSelectedBlock;
         private bool isDisposed;
 
+        private static readonly float SpacingScaleAtMinZoom = 0.5f;
+        private const float DefaultZoomLevel = 1f;
+
         public GridRendererUitk(FlowchartContext context, DrawGridContext gridContext)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
@@ -123,9 +126,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            float spacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
-                ? 1f
-                : drawGridContext.GridLineSpacingSize;
+            float spacing = CalculateAdaptiveSpacing(zoom);
 
             float viewWidth = rect.width / zoom;
             float viewHeight = rect.height / zoom;
@@ -226,6 +227,19 @@ namespace Amanita.VScripting.EditorUtils
         public void Initialize(FlowchartWindowUitk window)
         {
             
+        }
+
+        private float CalculateAdaptiveSpacing(float currentZoom)
+        {
+            float baseSpacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
+                ? 1f
+                : drawGridContext.GridLineSpacingSize;
+
+            float minZoom = FlowchartWindow.MinZoomValue;
+            float normalized = Mathf.Clamp01(Mathf.InverseLerp(minZoom, DefaultZoomLevel, currentZoom));
+            float spacingMultiplier = Mathf.Lerp(SpacingScaleAtMinZoom, 1f, normalized);
+
+            return baseSpacing * spacingMultiplier;
         }
     }
 }
