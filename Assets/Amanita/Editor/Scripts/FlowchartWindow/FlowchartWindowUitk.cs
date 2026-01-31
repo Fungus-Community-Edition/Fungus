@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -46,6 +46,8 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
                 FlowchartWindowSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
+
+                EditorSceneManager.sceneOpened += OnSceneOpened;
             }
             else
             {
@@ -64,6 +66,8 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
 
+                EditorSceneManager.sceneOpened -= OnSceneOpened;
+
             }
         }
 
@@ -71,6 +75,11 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnSelectedFlowchartChanged(Flowchart flowchart)
         {
+            if (flowchart == null)
+            {
+                flowchart = FindFirstObjectByType<Flowchart>();
+            }
+
             _fcContext.Flowchart = flowchart;
             _gridRenderer.RefreshNow();
         }
@@ -86,6 +95,8 @@ namespace Amanita.VScripting.EditorUtils
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
+            _fcNameLabel?.RemoveFromHierarchy();
+            _fcNameLabel = null;
         }
         
         public void CreateGUI()
@@ -106,11 +117,18 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _fcContext = new FlowchartContext();
                 _fcContext.Flowchart = _ammyState.SelectedFlowchart;
+                if (_fcContext.Flowchart == null)
+                {
+                    _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
+                    return;
+                }
                 _fcContext.FcHost = null; // TODO: assign proper host
                 _fcContext.Position = new Rect(0, 0, position.width, position.height);
                 _fcContext.GridObjectSnap = 10f;
             }
-            
+
+            PrepFcNameLabel();
+
             PrepSubmodules();
             void PrepSubmodules()
             {
@@ -120,7 +138,7 @@ namespace Amanita.VScripting.EditorUtils
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
-                //_moduleDispatcher.AddModule(_blockRenderer);
+                _moduleDispatcher.AddModule(_blockRenderer);
             }
 
             AttachUiElements();
@@ -128,6 +146,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 root.Add(_gridRenderer);
                 //root.Add(_blockRenderer);
+                root.Add(_fcNameLabel);
             }
 
             // TODO: register ui elements in instance fields for further manipulation
@@ -142,6 +161,23 @@ namespace Amanita.VScripting.EditorUtils
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockRendererUitk _blockRenderer;
+
+        void PrepFcNameLabel()
+        {
+            string labelText = "No Flowchart Selected";
+            if (_fcContext.Flowchart != null)
+            {
+                labelText = $"Flowchart: {_fcContext.Flowchart.name}";
+            }
+            _fcNameLabel = new UitkLabel(labelText);
+            _fcNameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _fcNameLabel.style.fontSize = 24;
+            _fcNameLabel.style.marginTop = 10;
+            _fcNameLabel.style.marginLeft = 10;
+            _fcNameLabel.style.position = Position.Absolute;
+        }
+
+        private UitkLabel _fcNameLabel;
 
         void PrepErrorLabel(VisualElement root)
         {
@@ -183,6 +219,10 @@ namespace Amanita.VScripting.EditorUtils
 
         void RemoveErrorScreenControls()
         {
+            if (_errorLabel == null && _refreshButton == null)
+            {
+                return;
+            }
             VisualElement root = rootVisualElement;
             root.Remove(_errorLabel);
             root.Remove(_refreshButton);
@@ -201,6 +241,49 @@ namespace Amanita.VScripting.EditorUtils
         private void OnGUI()
         {
             _inputDetector.OnGUI(Event.current);
+        }
+
+        private void OnSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            EnsureFlowchartForScene();
+        }
+
+        private void EnsureFlowchartForScene()
+        {
+            if (_fcContext == null)
+            {
+                return; // UI not built yet; CreateGUI will initialize.
+            }
+
+            if (_fcContext.Flowchart != null)
+            {
+                return; // Still valid.
+            }
+
+            Flowchart fallback = FindFirstObjectByType<Flowchart>();
+            if (fallback == null)
+            {
+                ShowMissingFlowchartUi();
+                return;
+            }
+
+            RemoveErrorScreenControls();
+            _fcContext.Flowchart = fallback;
+            _gridRenderer?.RefreshNow();
+        }
+
+        private void ShowMissingFlowchartUi()
+        {
+            VisualElement root = rootVisualElement;
+            if (_errorLabel == null)
+            {
+                PrepErrorLabel(root);
+            }
+
+            if (_refreshButton == null)
+            {
+                PrepRefreshButton(root);
+            }
         }
     }
 

@@ -32,7 +32,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (direction.sqrMagnitude <= Mathf.Epsilon)
+            if (direction.sqrMagnitude <= minDirectionMagnitude)
             {
                 Debug.Log("Direction too small.");
                 return;
@@ -51,6 +51,8 @@ namespace Amanita.VScripting.EditorUtils
             flowchart.ScrollPos -= delta;
             FlowchartWindowSignals.WindowPanned();
         }
+
+        private static readonly float minDirectionMagnitude = 0.01f;
 
         public void Dispose()
         {
