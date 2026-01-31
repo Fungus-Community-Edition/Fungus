@@ -23,9 +23,8 @@ namespace Amanita.VScripting.EditorUtils
 
         private FlowchartWindowUitk _owner;
 
-        public void OnGUI()
+        public void OnGUI(Event cEvent)
         {
-            Event cEvent = Event.current;
             bool pressedShift = cEvent.shift;
             bool pressedRKey = cEvent.keyCode == KeyCode.R && (cEvent.type == EventType.KeyDown);
             if (pressedShift && pressedRKey)

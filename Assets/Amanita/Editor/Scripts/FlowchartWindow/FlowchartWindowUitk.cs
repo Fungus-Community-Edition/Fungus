@@ -293,7 +293,7 @@ namespace Amanita.VScripting.EditorUtils
         private void OnGUI()
         {
             _inputDetector.OnGUI(Event.current);
-            _scrollPosResetter.OnGUI();
+            _scrollPosResetter.OnGUI(Event.current);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
