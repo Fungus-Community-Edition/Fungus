@@ -356,19 +356,11 @@ namespace Amanita.VScripting.EditorUtils
                 }
             }
 
-            UpdateFont();
-            void UpdateFont()
+            UpdateFont(button, zoom);
+            void UpdateFont(Button button, float zoom)
             {
-                button.style.fontSize = Mathf.RoundToInt(BaseFontSize * zoom);
-
-                if (isSelected)
-                {
-                    button.style.unityFontStyleAndWeight = FontStyle.Bold;
-                }
-                else
-                {
-                    button.style.unityFontStyleAndWeight = FontStyle.Normal;
-                }
+                button.transform.scale = new Vector3(zoom, zoom, 1f);
+                button.style.fontSize = Mathf.RoundToInt(BaseFontSize);
             }
         }
 
