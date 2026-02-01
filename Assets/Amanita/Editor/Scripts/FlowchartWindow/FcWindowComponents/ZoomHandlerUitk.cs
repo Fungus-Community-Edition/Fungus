@@ -57,7 +57,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Vector2 scrollDelta = currentEvent.delta;
+            Vector2 scrollDelta = currentEvent.delta.normalized; // Normalized to make sure zoom step is consistent
             if (scrollDelta.sqrMagnitude <= Mathf.Epsilon)
             {
                 return;

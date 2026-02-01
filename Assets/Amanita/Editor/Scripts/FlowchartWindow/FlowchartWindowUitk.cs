@@ -13,20 +13,41 @@ namespace Amanita.VScripting.EditorUtils
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
+        private static FlowchartWindowUitk _s;
+
+        public static FlowchartWindowUitk S => _s;
+
         [MenuItem("Window/Atelier Mycelia/Experimental/FlowchartWindowUitk")]
         public static void ShowFromMenuItem()
         {
-            FlowchartWindowUitk wnd = GetWindow<FlowchartWindowUitk>();
-            wnd.titleContent = new GUIContent("FlowchartWindowUitk");
-            wnd.minSize = fcWindowMinSize;
+            EnsureConfigAssetInProject();
+            static void EnsureConfigAssetInProject()
+            {
+                _config = SOUtils.EnsureSOExists<FlowchartWindowConfig>(
+                    _configSubfolderPath,
+                    _configAssetName);
+            }
+            FlowchartWindowUitk wnd = _s != null ? 
+                _s : 
+                GetWindow<FlowchartWindowUitk>();
+            wnd.titleContent = new GUIContent(_config.FlowchartWindowTitle);
+            wnd.minSize = _config.WindowMinSize;
         }
 
-        private static readonly Vector2 fcWindowMinSize = new Vector2(800, 500);
-        private const float defaultMinZoomLevel = 0.5f;
-        private const float defaultMaxZoomLevel = 1f;
+        private static readonly string _configSubfolderPath = "Amanita/Configs";
+        private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
+
+        private static FlowchartWindowConfig _config;
 
         protected virtual void OnEnable()
         {
+            if (_s != null && _s != this)
+            {
+                Close();
+                return;
+            }
+
+            _s = this;
             _ammyState = FindFirstObjectByType<AmanitaState>();
             ToggleSubs(true);
         }
@@ -107,6 +128,11 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnDestroy()
         {
+            if (ReferenceEquals(_s, this))
+            {
+                _s = null;
+            }
+
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
@@ -174,13 +200,13 @@ namespace Amanita.VScripting.EditorUtils
             PrepSubmodules();
             void PrepSubmodules()
             {
-                _gridRenderer = new GridRendererUitk(_fcContext, _drawGridSettings);
+                _gridRenderer = new GridRendererUitk(_fcContext, _config.GridDrawConfig);
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
                 _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
                 _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
-                _zoomHandler = new ZoomHandlerUitk(_fcContext, defaultMinZoomLevel, defaultMaxZoomLevel);
+                _zoomHandler = new ZoomHandlerUitk(_fcContext, _config.MinZoom, _config.MaxZoom);
 
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
@@ -311,12 +337,6 @@ namespace Amanita.VScripting.EditorUtils
 
             _blockRenderer?.RefreshBlocks();
         }
-
-        private readonly DrawGridContext _drawGridSettings = new DrawGridContext
-        {
-            GridLineSpacingSize = 50f,
-            GridLineColor = new Color(0.5f, 0.5f, 0.5f, 0.2f)
-        };
 
         private FlowchartContext _fcContext;
 

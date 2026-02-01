@@ -92,15 +92,16 @@ namespace VScriptingTests.FlowchartWindow.Modules
 
         private sealed class TestFlowchartWindow : FlowchartWindowUitk
         {
-            private new void OnEnable()
+            // All no-ops for testing's sake
+            protected override void OnEnable()
             {
             }
 
-            private new void OnDisable()
+            protected override void OnDisable()
             {
             }
 
-            private new void OnDestroy()
+            protected override void OnDestroy()
             {
             }
         }
