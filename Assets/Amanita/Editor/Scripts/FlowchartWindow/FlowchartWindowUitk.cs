@@ -22,6 +22,8 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         private static readonly Vector2 fcWindowMinSize = new Vector2(800, 500);
+        private const float defaultMinZoomLevel = 0.5f;
+        private const float defaultMaxZoomLevel = 1f;
 
         protected virtual void OnEnable()
         {
@@ -81,7 +83,9 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Flowchart resolved = flowchart == null ? FindFirstObjectByType<Flowchart>() : flowchart;
+            Flowchart resolved = flowchart == null ? 
+                FindFirstObjectByType<Flowchart>() : 
+                flowchart;
             Flowchart previous = _fcContext.Flowchart;
 
             if (ReferenceEquals(previous, resolved))
@@ -106,13 +110,34 @@ namespace Amanita.VScripting.EditorUtils
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
+
+            DisposeSubmodules();
+            NullOutSubmodules();
+
+            _fcNameLabel?.RemoveFromHierarchy();
+            NullOutVisualElements();
+        }
+
+        void DisposeSubmodules()
+        {
             _scrollPosResetter?.Dispose();
-            _scrollPosResetter = null;
             _blockRenderer?.Dispose();
+            _zoomHandler?.Dispose();
+        }
+
+        void NullOutSubmodules()
+        {
+            _scrollPosResetter = null;
+            _gridRenderer = null;
+            _panHandler = null;
             _blockRenderer = null;
             _selectionSyncer = null;
             _inspectorSync = null;
-            _fcNameLabel?.RemoveFromHierarchy();
+            _zoomHandler = null;
+        }
+
+        void NullOutVisualElements()
+        {
             _fcNameLabel = null;
         }
         
@@ -155,6 +180,7 @@ namespace Amanita.VScripting.EditorUtils
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
                 _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
                 _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
+                _zoomHandler = new ZoomHandlerUitk(_fcContext, defaultMinZoomLevel, defaultMaxZoomLevel);
 
                 // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
@@ -162,6 +188,7 @@ namespace Amanita.VScripting.EditorUtils
                 _moduleDispatcher.AddModule(_blockRenderer);
                 _moduleDispatcher.AddModule(_selectionSyncer);
                 _moduleDispatcher.AddModule(_inspectorSync);
+                _moduleDispatcher.AddModule(_zoomHandler);
             }
 
             AttachUiElements();
@@ -174,10 +201,12 @@ namespace Amanita.VScripting.EditorUtils
 
             // TODO: register ui elements in instance fields for further manipulation
             _gridRenderer.RefreshNow();
+            _panHandler.Initialize(this);
             _blockRenderer.Initialize(this);
             _scrollPosResetter.Initialize(this);
             _selectionSyncer.Initialize(this);
             _inspectorSync.Initialize(this);
+            _zoomHandler.Initialize(this);
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
@@ -191,6 +220,7 @@ namespace Amanita.VScripting.EditorUtils
         private BlockRendererUitk _blockRenderer;
         private FlowchartSelectionSyncerUitk _selectionSyncer;
         private FcWindowSelectionSyncUitk _inspectorSync;
+        private ZoomHandlerUitk _zoomHandler;
 
         void PrepFcNameLabel()
         {
