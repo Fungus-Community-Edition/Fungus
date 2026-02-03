@@ -178,9 +178,9 @@ namespace Amanita.VScripting.EditorUtils
                 return false;
             }
 
-            for (int i = 0; i < blocks.Count; i++)
+            foreach (var block in blocks)
             {
-                if (blocks[i] == null)
+                if (block == null)
                 {
                     return true;
                 }

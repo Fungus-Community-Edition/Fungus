@@ -63,30 +63,52 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            IList<Block> present = flowchartContext.Document.AllBlocks;
+            IReadOnlyCollection<Block> present = flowchartContext.Document.AllBlocks;
             RemoveMissing(present);
 
-            for (int i = 0; i < present.Count; i++)
+            foreach (var block in present)
             {
-                var block = present[i];
                 EnsureBlockVisual(block);
             }
 
             UpdateBlockLayouts();
         }
 
-        private void RemoveMissing(IList<Block> currentBlocks)
+        private void RemoveMissing(IReadOnlyCollection<Block> currentBlocks)
         {
             using ListPool<Block>.DisposableList pooledKeysHandle = ListPool<Block>.Get(out List<Block> pooledKeys);
             pooledKeys.AddRange(blockBindings.Keys);
             for (int i = 0; i < pooledKeys.Count; i++)
             {
                 Block tracked = pooledKeys[i];
-                if (!currentBlocks.Contains(tracked))
+                if (!ContainsBlock(currentBlocks, tracked))
                 {
                     RemoveBlock(tracked);
                 }
             }
+        }
+
+        private static bool ContainsBlock(IReadOnlyCollection<Block> blocks, Block target)
+        {
+            if (blocks == null)
+            {
+                return false;
+            }
+
+            if (blocks is ICollection<Block> collection)
+            {
+                return collection.Contains(target);
+            }
+
+            foreach (var block in blocks)
+            {
+                if (ReferenceEquals(block, target))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void RemoveBlock(Block block)

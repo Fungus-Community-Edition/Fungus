@@ -251,8 +251,8 @@ namespace Amanita.VScripting.EditorUtils
                     comp.Initialize(this);
             }
 
-            EditorSelectionTracker.ActiveFlowchartChanged -= HandleActiveFlowchartChanged;
-            EditorSelectionTracker.ActiveFlowchartChanged += HandleActiveFlowchartChanged;
+            EditorSelectionTracker.SelectedFlowchartChanged -= HandleActiveFlowchartChanged;
+            EditorSelectionTracker.SelectedFlowchartChanged += HandleActiveFlowchartChanged;
 
             ToggleSubs(true);
         }
@@ -321,7 +321,7 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnDisable()
         {
-            EditorSelectionTracker.ActiveFlowchartChanged -= HandleActiveFlowchartChanged;
+            EditorSelectionTracker.SelectedFlowchartChanged -= HandleActiveFlowchartChanged;
 
             Clipboard?.Dispose();
             ToggleSubs(false);
@@ -415,7 +415,7 @@ namespace Amanita.VScripting.EditorUtils
                 Blocks = current.GetComponents<Block>();
             }
 
-            FlowchartCtx.Document.AllBlocks = Blocks;
+            FlowchartCtx.Flowchart = current;
             filterStale = true;
             UpdateFilteredBlocks();
         }

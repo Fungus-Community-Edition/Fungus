@@ -221,7 +221,10 @@ namespace Amanita.VScripting.EditorUtils
         public virtual GUIStyle BlockSearchPopupNormalStyle { get; set; }
         public virtual GUIStyle BlockSearchPopupSelectedStyle { get; set; }
         public virtual BlockGraphics Graphics { get; set; }
-        public virtual IList<Block> AllBlocks { get { return FlowchartCtx.Document.AllBlocks; } }
+        public virtual IReadOnlyCollection<Block> AllBlocks
+        {
+            get { return FlowchartCtx.Document.AllBlocks; }
+        }
         public virtual Rect ViewRect { get; set; }
         public Rect CurrentBlockWindowRect { get; set; }
 

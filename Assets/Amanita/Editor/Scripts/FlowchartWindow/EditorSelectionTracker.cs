@@ -148,7 +148,7 @@ namespace Amanita.VScripting.EditorUtils
             ClearBlockSelectionInternal();
             ClearCommandSelectionInternal();
 
-            ActiveFlowchartChanged(previous, flowchart);
+            SelectedFlowchartChanged(previous, flowchart);
         }
 
         private static void ClearBlockSelectionInternal()
@@ -187,7 +187,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public static event Action<Flowchart, Flowchart> ActiveFlowchartChanged = delegate { };
+        public static event Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
 
         private static void OnUnitySelectionChanged()
         {

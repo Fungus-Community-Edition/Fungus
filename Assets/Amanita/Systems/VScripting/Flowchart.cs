@@ -27,7 +27,7 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder
     {
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
@@ -157,7 +157,10 @@ namespace Amanita.VScripting
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
-   
+        
+        public IReadOnlyCollection<Block> Blocks => _blocks;
+        public IReadOnlyCollection<Command> Commands => (IReadOnlyCollection<Command>)_commands;
+
         protected virtual void Awake()
         {
             if (!this.IsInTheScene)
@@ -943,10 +946,16 @@ namespace Amanita.VScripting
 
         public virtual Block FindBlockByItemId(int itemId)
         {
-            var blocks = GetComponents<Block>();
-            Block result = (from blockEl in blocks
-                            where blockEl.ItemId == itemId
-                            select blockEl).FirstOrDefault();
+            Block result = null;
+
+            foreach (var blockEl in _blocks)
+            {
+                if (blockEl.ItemId == itemId)
+                {
+                    result = blockEl;
+                    break;
+                }
+            }
 
             return result;
         }

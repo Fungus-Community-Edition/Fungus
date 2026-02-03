@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using System.Collections.Generic;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -34,11 +35,10 @@ namespace Amanita.VScripting.EditorUtils
             wnd.minSize = _config.WindowMinSize;
         }
 
+        private static FlowchartWindowConfig _config;
         private static readonly string _configSubfolderPath = "Amanita/Configs";
         private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
-
-        private static FlowchartWindowConfig _config;
-
+        
         protected virtual void OnEnable()
         {
             if (_s != null && _s != this)
@@ -55,7 +55,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (on)
             {
-                EditorSelectionTracker.ActiveFlowchartChanged += OnSelectedFlowchartChanged;
+                EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
 
                 FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
@@ -74,7 +74,7 @@ namespace Amanita.VScripting.EditorUtils
             }
             else
             {
-                EditorSelectionTracker.ActiveFlowchartChanged -= OnSelectedFlowchartChanged;
+                EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
 
                 FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
@@ -107,7 +107,8 @@ namespace Amanita.VScripting.EditorUtils
                 FindFirstObjectByType<Flowchart>() :
                 current;
 
-            if (ReferenceEquals(previous, resolved))
+            bool changedToDiffFlowchart = !ReferenceEquals(previous, resolved); // Just in case.
+            if (!changedToDiffFlowchart)
             {
                 return;
             }
@@ -333,16 +334,6 @@ namespace Amanita.VScripting.EditorUtils
             if (_fcContext == null)
             {
                 return;
-            }
-
-            Flowchart flowchart = _fcContext.Flowchart;
-            if (flowchart == null)
-            {
-                _fcContext.Document.AllBlocks = Array.Empty<Block>();
-            }
-            else
-            {
-                _fcContext.Document.AllBlocks = flowchart.GetComponents<Block>();
             }
 
             _blockRenderer?.RefreshBlocks();

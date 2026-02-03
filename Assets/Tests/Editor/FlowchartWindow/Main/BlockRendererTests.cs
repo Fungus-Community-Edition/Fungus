@@ -70,9 +70,6 @@ namespace VScriptingTests.FCWindowOperations
                 FcHost = _host,
             };
 
-            _flowchartCtx.Document.AllBlocks.Add(_insideBlock);
-            _flowchartCtx.Document.AllBlocks.Add(_outsideBlock);
-
             // 4) Prepare DrawBlockContext
             _drawCtx = new DrawBlockContext
             {
