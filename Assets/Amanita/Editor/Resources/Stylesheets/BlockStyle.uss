@@ -1,0 +1,24 @@
+/* For non-selected Blocks. */
+
+:root
+{
+	--block-border-color: rgba(0, 0, 0, 0.5);
+}
+
+.flowchartBlock
+{
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	white-space: normal;
+
+	padding-left: 15px;
+	padding-right: 15px;
+
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	border-radius: 6px;
+	border-width: 3px;
+	border-color: var(--block-border-color);
+}

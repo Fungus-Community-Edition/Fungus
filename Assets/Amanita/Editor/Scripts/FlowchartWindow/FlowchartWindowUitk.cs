@@ -1,10 +1,11 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using System.Collections.Generic;
+using Collections;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -21,23 +22,24 @@ namespace Amanita.VScripting.EditorUtils
         public static void ShowFromMenuItem()
         {
             EnsureConfigAssetInProject();
-            static void EnsureConfigAssetInProject()
-            {
-                _config = SOUtils.EnsureSOExists<FlowchartWindowConfig>(
-                    _configSubfolderPath,
-                    _configAssetName);
-            }
-            FlowchartWindowUitk wnd = _s != null ? 
-                _s : 
+
+            FlowchartWindowUitk wnd = _s != null ?
+                _s :
                 GetWindow<FlowchartWindowUitk>();
-            wnd.titleContent = new GUIContent(_config.FlowchartWindowTitle);
-            wnd.minSize = _config.WindowMinSize;
+            wnd.titleContent = new GUIContent(Config.FlowchartWindowTitle);
+            wnd.minSize = Config.WindowMinSize;
         }
 
+        static void EnsureConfigAssetInProject()
+        {
+            Config = SOUtils.EnsureSOExists<FlowchartWindowConfig>(
+                _configSubfolderPath,
+                _configAssetName);
+        }
+
+        public static FlowchartWindowConfig Config { get; private set; }
         private static readonly string _configSubfolderPath = "Amanita/Configs";
         private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
-
-        private static FlowchartWindowConfig _config;
 
         protected virtual void OnEnable()
         {
@@ -48,82 +50,74 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _s = this;
-            _ammyState = FindFirstObjectByType<AmanitaState>();
+
             ToggleSubs(true);
         }
 
         protected virtual void ToggleSubs(bool on)
         {
+            _blockModuleDispatcher.ToggleSubs(on);
+            _mouseModuleDispatcher.ToggleSubs(on);
+
             if (on)
             {
-                _ammyState.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
-
-                FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
-                FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
-                FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
-                FlowchartWindowSignals.ScrollWheelMoved += _moduleDispatcher.NotifyScrollWheelMoved;
-                FlowchartWindowSignals.ScrollWheelDragged += _moduleDispatcher.NotifyScrollWheelDragged;
-                FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
+                EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.PreBlockDeletion += _moduleDispatcher.NotifyPreBlockDeletion;
-                FlowchartWindowSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
-                FlowchartWindowSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened += OnSceneOpened;
+
+                AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+                CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
             }
             else
             {
-                _ammyState.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
-
-                FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
-                FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
-                FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
-                FlowchartWindowSignals.ScrollWheelMoved -= _moduleDispatcher.NotifyScrollWheelMoved;
-                FlowchartWindowSignals.ScrollWheelDragged -= _moduleDispatcher.NotifyScrollWheelDragged;
-                FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
+                EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.PreBlockDeletion -= _moduleDispatcher.NotifyPreBlockDeletion;
-                FlowchartWindowSignals.BlockSelected -= _moduleDispatcher.NotifyBlockSelected;
-                FlowchartWindowSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
-
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
-
+                AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+                CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
             }
         }
 
+        private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
+        private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();
         private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
 
-        private void OnSelectedFlowchartChanged(Flowchart flowchart)
+        private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
             if (_fcContext == null)
             {
                 return;
             }
 
-            Flowchart resolved = flowchart == null ? 
-                FindFirstObjectByType<Flowchart>() : 
-                flowchart;
-            Flowchart previous = _fcContext.Flowchart;
+            Flowchart resolved;
+            bool currentWasRemovedWhileWeHavePrevious = current == null && previous != null;
+            if (currentWasRemovedWhileWeHavePrevious)
+            {
+                resolved = previous;
+            }
+            else
+            {
+                resolved = current == null ?
+                    FindFirstObjectByType<Flowchart>() :
+                    current;
+            }
 
-            if (ReferenceEquals(previous, resolved))
+            bool changedToDiffFlowchart = !ReferenceEquals(previous, resolved); // Just in case.
+            if (!changedToDiffFlowchart)
             {
                 return;
             }
 
             _fcContext.Flowchart = resolved;
-            UpdateBlockCollection();
-            _gridRenderer?.RefreshNow();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
         protected virtual void OnDisable()
         {
             Debug.Log("FlowchartWindowUitk OnDisable");
-            ToggleSubs(false);
         }
 
         protected virtual void OnDestroy()
@@ -133,6 +127,10 @@ namespace Amanita.VScripting.EditorUtils
                 _s = null;
             }
 
+            ToggleSubs(false);
+
+            _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
@@ -141,50 +139,64 @@ namespace Amanita.VScripting.EditorUtils
             NullOutSubmodules();
 
             _fcNameLabel?.RemoveFromHierarchy();
+            _missingOverlay?.Dispose();
+            _missingOverlay = null;
             NullOutVisualElements();
         }
 
         void DisposeSubmodules()
         {
-            _scrollPosResetter?.Dispose();
-            _blockRenderer?.Dispose();
+            _graphicsRenderer?.Dispose();
+
+            _panHandler?.Dispose();
             _zoomHandler?.Dispose();
+            _scrollPosResetter?.Dispose();
+            _boxSelectionHandler?.Dispose();
+
+            _blockClickSelectionSyncer?.Dispose();
+            _repaintTriggerer?.Dispose();
         }
 
         void NullOutSubmodules()
         {
-            _scrollPosResetter = null;
-            _gridRenderer = null;
+            _graphicsRenderer = null;
+
             _panHandler = null;
-            _blockRenderer = null;
-            _selectionSyncer = null;
-            _inspectorSync = null;
             _zoomHandler = null;
+            _scrollPosResetter = null;
+            _boxSelectionHandler = null;
+
+            _blockClickSelectionSyncer = null;
+            _repaintTriggerer = null;
+
         }
 
         void NullOutVisualElements()
         {
             _fcNameLabel = null;
         }
-        
+
         public void CreateGUI()
         {
+            _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
             VisualElement root = rootVisualElement;
 
-            // If ammy state is missing, we cannot proceed. Show a label and return.
-            if (_ammyState == null)
+            // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
+            if (ActiveFlowchart == null)
             {
-                PrepErrorLabel(root);
-                PrepRefreshButton(root);
+                MissingOverlay.Show(root);
                 return;
             }
+
+            MissingOverlay.Hide();
 
             PrepFcContext();
             void PrepFcContext()
             {
                 _fcContext = new FlowchartContext();
-                _fcContext.Flowchart = _ammyState.SelectedFlowchart;
+                _fcContext.Flowchart = ActiveFlowchart;//
                 if (_fcContext.Flowchart == null)
                 {
                     _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
@@ -196,154 +208,163 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             PrepFcNameLabel();
-
-            PrepSubmodules();
-            void PrepSubmodules()
+            void PrepFcNameLabel()
             {
-                _gridRenderer = new GridRendererUitk(_fcContext, _config.GridDrawConfig);
-                _panHandler = new PanHandlerUitk(_fcContext);
-                _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
-                _scrollPosResetter = new ScrollPosResetter(_fcContext);
-                _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
-                _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
-                _zoomHandler = new ZoomHandlerUitk(_fcContext, _config.MinZoom, _config.MaxZoom);
+                string labelText = "No Flowchart Selected";
+                if (_fcContext.Flowchart != null)
+                {
+                    labelText = $"FC: {_fcContext.Flowchart.name}";
+                }
+                _fcNameLabel = new UitkLabel(labelText);
+                _fcNameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                _fcNameLabel.style.fontSize = 24;
+                _fcNameLabel.style.marginTop = 10;
+                _fcNameLabel.style.marginLeft = 10;
+                _fcNameLabel.style.position = Position.Absolute;
+            }
 
-                // TODO: prepare other submodules
-                _moduleDispatcher.AddModule(_gridRenderer);
-                _moduleDispatcher.AddModule(_panHandler);
-                _moduleDispatcher.AddModule(_blockRenderer);
-                _moduleDispatcher.AddModule(_selectionSyncer);
-                _moduleDispatcher.AddModule(_inspectorSync);
-                _moduleDispatcher.AddModule(_zoomHandler);
+            EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
+
+            CreateModules();
+            void CreateModules()
+            {
+                #region Graphics-rendering
+                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
+                #endregion
+
+                #region Viewport-handling
+                _panHandler = new PanHandlerUitk(_fcContext);
+                _zoomHandler = new ZoomHandlerUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
+                _scrollPosResetter = new ScrollPosResetter(_fcContext);
+                _boxSelectionHandler = new SelectionBoxDragTrackerUitk(_fcContext);
+                #endregion
+
+                _blockClickSelectionSyncer = new SingleClickBlockSelector(_fcContext);
+                _repaintTriggerer = new FcWindowRepaintTriggerer();
+            }
+
+            RegisterModules();
+            void RegisterModules()
+            {
+                #region Graphics-rendering
+                RegisterModule(_graphicsRenderer);
+                #endregion
+
+                #region Viewport-handling
+                RegisterModule(_panHandler);
+                RegisterModule(_zoomHandler);
+                RegisterModule(_scrollPosResetter);
+                RegisterModule(_boxSelectionHandler);
+                #endregion
+
+                RegisterModule(_blockClickSelectionSyncer);
+                RegisterModule(_repaintTriggerer);
             }
 
             AttachUiElements();
             void AttachUiElements()
             {
-                root.Add(_gridRenderer);
-                root.Add(_blockRenderer);
+                root.Add(_graphicsRenderer);
                 root.Add(_fcNameLabel);
             }
 
-            // TODO: register ui elements in instance fields for further manipulation
-            _gridRenderer.RefreshNow();
-            _panHandler.Initialize(this);
-            _blockRenderer.Initialize(this);
-            _scrollPosResetter.Initialize(this);
-            _selectionSyncer.Initialize(this);
-            _inspectorSync.Initialize(this);
-            _zoomHandler.Initialize(this);
+            InitSubmodules();
+            void InitSubmodules()
+            {
+                #region Graphics-rendering
+                _graphicsRenderer.Initialize(this);
+                #endregion
+
+                #region Viewport-handling
+                _panHandler.Initialize(this);
+                _zoomHandler.Initialize(this);
+                _scrollPosResetter.Initialize(this);
+                _boxSelectionHandler.Initialize(this);
+                #endregion
+
+                _blockClickSelectionSyncer.Initialize(this);
+                _repaintTriggerer.Initialize(this);
+            }
+
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
-        private UitkLabel _errorLabel;
-        private Button _refreshButton;
+        private void RegisterModule(IFlowchartWindowModule module)
+        {
+            if (module == null)
+            {
+                return;
+            }
 
-        private AmanitaState _ammyState;
-        private GridRendererUitk _gridRenderer;
+            _moduleDispatcher.AddModule(module);
+            _blockModuleDispatcher.AddModule(module);
+            _mouseModuleDispatcher.AddModule(module);
+        }
+
+        private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
+        private MissingFlowchartOverlay _missingOverlay;
+        private UitkLabel _fcNameLabel, _zoomAmountLabel;
+
+        #region Submodules
+        private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        private BlockRendererUitk _blockRenderer;
-        private FlowchartSelectionSyncerUitk _selectionSyncer;
-        private FcWindowSelectionSyncUitk _inspectorSync;
+        private BlockInspectorSynchronization _blockInspectorSync;
+        private SingleClickBlockSelector _blockClickSelectionSyncer;
+        private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;
+        private SelectionBoxDragTrackerUitk _boxSelectionHandler;
+        #endregion
 
-        void PrepFcNameLabel()
+        static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk();
+        private MissingFlowchartOverlay MissingOverlay
         {
-            string labelText = "No Flowchart Selected";
-            if (_fcContext.Flowchart != null)
+            get
             {
-                labelText = $"Flowchart: {_fcContext.Flowchart.name}";
+                if (_missingOverlay == null)
+                {
+                    _missingOverlay = new MissingFlowchartOverlay(OnRefreshButtonClicked);
+                }
+
+                return _missingOverlay;
             }
-            _fcNameLabel = new UitkLabel(labelText);
-            _fcNameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            _fcNameLabel.style.fontSize = 24;
-            _fcNameLabel.style.marginTop = 10;
-            _fcNameLabel.style.marginLeft = 10;
-            _fcNameLabel.style.position = Position.Absolute;
-        }
-
-        private UitkLabel _fcNameLabel;
-
-        void PrepErrorLabel(VisualElement root)
-        {
-            _errorLabel = new UitkLabel("No Flowcharts found in the scene. ");
-            _errorLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            _errorLabel.style.fontSize = 48;
-            _errorLabel.style.color = Color.yellow;
-            // ^ The existence of Flowcharts implies that of AmanitaState.
-            root.Add(_errorLabel);
-        }
-
-        void PrepRefreshButton(VisualElement root)
-        {
-            _refreshButton = new Button(OnRefreshButtonClicked);
-            _refreshButton.text = "Refresh";
-            _refreshButton.style.alignSelf = Align.Center;
-            Vector2 buttonSize = new Vector2(200, 50);
-            _refreshButton.style.width = buttonSize.x;
-            _refreshButton.style.height = buttonSize.y;
-            _refreshButton.style.fontSize = 24;
-            root.Add(_refreshButton);
         }
 
         void OnRefreshButtonClicked()
         {
-            _ammyState = FindFirstObjectByType<AmanitaState>();
-            if (_ammyState != null)
+            Flowchart flowchart = FindFirstObjectByType<Flowchart>();
+            if (ActiveFlowchart != null)
+            {
+                flowchart = ActiveFlowchart;
+                Selection.activeGameObject = flowchart.gameObject;
+            }
+
+            if (flowchart)
             {
                 Debug.Log("Flowchart found on refresh.");
-                RemoveErrorScreenControls();
+                MissingOverlay.Hide();
                 CreateGUI();
             }
             else
             {
                 Debug.LogWarning("Flowchart still not found on refresh.");
             }
-            
+
         }
 
         private ScrollPosResetter _scrollPosResetter;
-
-        void RemoveErrorScreenControls()
-        {
-            if (_errorLabel == null && _refreshButton == null)
-            {
-                return;
-            }
-            VisualElement root = rootVisualElement;
-            root.Remove(_errorLabel);
-            root.Remove(_refreshButton);
-            _errorLabel = null;
-            _refreshButton = null;
-        }
-
-        internal void UpdateBlockCollection()
-        {
-            if (_fcContext == null)
-            {
-                return;
-            }
-
-            Flowchart flowchart = _fcContext.Flowchart;
-            if (flowchart == null)
-            {
-                _fcContext.Document.AllBlocks = Array.Empty<Block>();
-            }
-            else
-            {
-                _fcContext.Document.AllBlocks = flowchart.GetComponents<Block>();
-            }
-
-            _blockRenderer?.RefreshBlocks();
-        }
 
         private FlowchartContext _fcContext;
 
         private void OnGUI()
         {
-            _inputDetector.OnGUI(Event.current);
-            _scrollPosResetter.OnGUI(Event.current);
+            bool inValidState = _fcContext != null && _fcContext.Flowchart != null;
+            if (!inValidState)
+            {
+                return;
+            }
+            _inputDetector?.OnGUI(Event.current);
+            _scrollPosResetter?.OnGUI(Event.current);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -366,34 +387,76 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart fallback = FindFirstObjectByType<Flowchart>();
             if (fallback == null)
             {
-                ShowMissingFlowchartUi();
+                MissingOverlay.Show(rootVisualElement);
                 return;
             }
 
-            RemoveErrorScreenControls();
+            MissingOverlay.Hide();
             Flowchart previous = _fcContext.Flowchart;
             _fcContext.Flowchart = fallback;
-            UpdateBlockCollection();
-            _gridRenderer?.RefreshNow();
+            _graphicsRenderer?.RefreshNow();
             if (!ReferenceEquals(previous, fallback))
             {
                 FlowchartWindowSignals.ChangedFlowchart(previous, fallback);
             }
         }
 
-        private void ShowMissingFlowchartUi()
+        private void OnAfterAssemblyReload()
         {
-            VisualElement root = rootVisualElement;
-            if (_errorLabel == null)
+            EditorApplication.delayCall += RebuildAfterAssemblyReload;
+        }
+
+        private void RebuildAfterAssemblyReload()
+        {
+            if (this == null)
             {
-                PrepErrorLabel(root);
+                return;
             }
 
-            if (_refreshButton == null)
-            {
-                PrepRefreshButton(root);
-            }
+            rootVisualElement.Clear();
+            _blockModuleDispatcher.ClearModules();
+            _moduleDispatcher.ClearModules();
+            DisposeSubmodules();
+            NullOutSubmodules();
+
+            _fcContext?.Dispose();
+            _fcContext = null;
+
+            _missingOverlay?.Dispose();
+            _missingOverlay = null;
+            _fcNameLabel = null;
+
+            CreateGUI();
         }
     }
 
+    internal class FlowchartWindowSubManager
+    {
+        public FlowchartWindowSubManager(IList<IModuleDispatcher> moduleManagers)
+        {
+            _moduleManagers.AddRange(moduleManagers);
+        }
+
+        private readonly IList<IModuleDispatcher> _moduleManagers = new List<IModuleDispatcher>();
+
+        public void ToggleSubs(bool on)
+        {
+
+        }
+    }
+
+    internal interface IModuleDispatcher
+    {
+        void AddModule(object module);
+        void RemoveModule(object module);
+        void ClearModules();
+        void ToggleSubs(bool on);
+    }
+
+    internal interface IModuleDispatcher<T> : IModuleDispatcher
+    {
+        void AddModule(T module);
+        void RemoveModule(T module);
+
+    }
 }

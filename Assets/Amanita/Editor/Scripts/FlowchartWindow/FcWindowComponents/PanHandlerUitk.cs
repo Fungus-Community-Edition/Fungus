@@ -6,7 +6,7 @@ namespace Amanita.VScripting.EditorUtils
     /// <summary>
     /// Handles viewport panning in the UITK flowchart window by reacting to scroll-wheel drag deltas.
     /// </summary>
-    public sealed class PanHandlerUitk : IFlowchartWindowModule, IScrollWheelDragResponder
+    public sealed class PanHandlerUitk : IFlowchartWindowModule, IScrollWheelDragResponder, IRightMouseDragResponder
     {
         private FlowchartContext flowchartContext;
         private FlowchartWindowUitk owner;
@@ -26,12 +26,23 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnScrollWheelDragged(Vector2 direction)
         {
-            if (isDisposed || flowchartContext.Flowchart == null)
+            OnDragInput(direction);
+        }
+
+        private void OnDragInput(Vector2 direction)
+        {
+            Flowchart flowchart = flowchartContext.Flowchart;
+            if (isDisposed || flowchart == null)
             {
                 Debug.LogWarning("PanHandlerUitk is disposed or Flowchart is null.");
                 return;
             }
 
+            HandlePanning(direction);
+        }
+
+        private void HandlePanning(Vector2 direction)
+        {
             if (direction.sqrMagnitude <= minDirectionMagnitude)
             {
                 Debug.Log("Direction too small.");
@@ -39,20 +50,24 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             Flowchart flowchart = flowchartContext.Flowchart;
-            if (flowchart == null)
-            {
-                Debug.LogWarning("No Flowchart found.");
-                return;
-            }
-
             float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
-            Vector2 delta = direction / zoom;
+            Vector2 directionAdjusted = direction / zoom;
 
-            flowchart.ScrollPos -= delta;
+            flowchart.ScrollPos -= directionAdjusted;
             FlowchartWindowSignals.WindowPanned();
         }
 
         private static readonly float minDirectionMagnitude = 0.01f;
+
+        public void OnRightMouseDragged(Vector2 direction, Event evt)
+        {
+            if (!evt.shift)
+            {
+                return;
+            }
+
+            OnDragInput(direction);
+        }
 
         public void Dispose()
         {
@@ -65,5 +80,7 @@ namespace Amanita.VScripting.EditorUtils
             owner = null;
             flowchartContext = null;
         }
+
+        
     }
 }

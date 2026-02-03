@@ -27,7 +27,7 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder
     {
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
@@ -157,7 +157,10 @@ namespace Amanita.VScripting
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
-   
+        
+        public IReadOnlyCollection<Block> Blocks => _blocks;
+        public IReadOnlyCollection<Command> Commands => (IReadOnlyCollection<Command>)_commands;
+
         protected virtual void Awake()
         {
             if (!this.IsInTheScene)
@@ -173,7 +176,8 @@ namespace Amanita.VScripting
                 legacyVariables.AddRange(found);
             }
 
-            _blocks = GetComponents<Block>().ToList();
+            var blocksFound = GetComponents<Block>();
+            _blocks.AddRange(blocksFound);
             _commands = GetComponents<Command>().ToList();
 
 #if UNITY_EDITOR
@@ -186,8 +190,8 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeField] private IList<Block> _blocks;
-        [SerializeField] private IList<Command> _commands;
+        [SerializeField] [HideInInspector] private HashSet<Block> _blocks = new HashSet<Block>();
+        [SerializeField] [HideInInspector] private IList<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -231,6 +235,7 @@ namespace Amanita.VScripting
                 MonoBehaviour component = toRemove as MonoBehaviour;
                 Destroy(component);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
         }
 
@@ -241,6 +246,7 @@ namespace Amanita.VScripting
                 IVariable toRemove = muscariables[index];
                 muscariables.RemoveAt(index);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
         }
 
@@ -359,7 +365,38 @@ namespace Amanita.VScripting
             CleanupComponents();
             RefreshVarLookups();
             UpdateVersion();
+#if UNITY_EDITOR
+            RefreshEditorCaches();
+            UpdateHideFlags();
+#endif
         }
+
+#if UNITY_EDITOR
+        private void RefreshEditorCaches()
+        {
+            if (Application.IsPlaying(this))
+            {
+                return;
+            }
+
+            if (_blocks == null)
+            {
+                _blocks = new HashSet<Block>();
+            }
+            else
+            {
+                _blocks.Clear();
+            }
+
+            Block[] blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                _blocks.Add(blocks[i]);
+            }
+
+            _commands = GetComponents<Command>().ToList();
+        }
+#endif
 
         protected virtual void RefreshVarLookups()
         {
@@ -670,7 +707,6 @@ namespace Amanita.VScripting
         {
             IList<Block> blocksToSignal = SelectedBlocks;
             UIModel.ClearSelectedBlocks();
-            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
         }
 
         public virtual void AddRangeToSelection(IList<Block> toSelect)
@@ -692,10 +728,9 @@ namespace Amanita.VScripting
         {
             if (hideComponents)
             {
-                var blocks = GetComponents<Block>();
-                for (int i = 0; i < blocks.Length; i++)
+                var blocks = _blocks;
+                foreach (var block in blocks)
                 {
-                    var block = blocks[i];
                     block.hideFlags = HideFlags.HideInInspector;
                     if (block.gameObject != gameObject)
                     {
@@ -703,13 +738,11 @@ namespace Amanita.VScripting
                     }
                 }
 
-                var commands = GetComponents<Command>();
-                for (int i = 0; i < commands.Length; i++)
+                var commands = _commands;
+                foreach (var command in commands)
                 {
-                    var command = commands[i];
                     command.hideFlags = HideFlags.HideInInspector;
                 }
-
                 var eventHandlers = GetComponents<AmanitaEventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
@@ -896,14 +929,16 @@ namespace Amanita.VScripting
         /// <summary>
         /// Create a new block node which you can then add commands to.
         /// </summary>
-        public virtual Block CreateBlock(Vector2 position)
+        public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
+            blockName ??= AmanitaConstants.DefaultBlockName;
             Block created = CreateBlockComponent(gameObject);
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
 #endif
-            created.BlockName = GetUniqueBlockKey(created.BlockName, created);
+            created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
+            _blocks.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
         }
@@ -927,9 +962,8 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            for (int i = 0; i < _blocks.Count; i++)
+            foreach (var block in _blocks)
             {
-                var block = _blocks[i];
                 if (block.BlockName == blockName)
                 {
                     return block;
@@ -941,10 +975,16 @@ namespace Amanita.VScripting
 
         public virtual Block FindBlockByItemId(int itemId)
         {
-            var blocks = GetComponents<Block>();
-            Block result = (from blockEl in blocks
-                            where blockEl.ItemId == itemId
-                            select blockEl).FirstOrDefault();
+            Block result = null;
+
+            foreach (var blockEl in _blocks)
+            {
+                if (blockEl.ItemId == itemId)
+                {
+                    result = blockEl;
+                    break;
+                }
+            }
 
             return result;
         }
@@ -1299,6 +1339,7 @@ namespace Amanita.VScripting
 
             AddVariable(toRegister);
             VariableAdded(toRegister);
+            FlowchartSignals.VariableAdded(this, toRegister);
 
             if (createdLegacyVar)
                 return null;
@@ -1505,6 +1546,7 @@ namespace Amanita.VScripting
             muscariables.Add(toAdd);
             varLookupById[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
+            FlowchartSignals.VariableAdded(this, toAdd);
         }
 
         /// <summary>
@@ -1518,8 +1560,8 @@ namespace Amanita.VScripting
                 toRemove.ParentFlowchart = null;
                 muscariables.Remove(toRemove);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
-
         }
 
         public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType : Muscariable
@@ -1559,10 +1601,10 @@ namespace Amanita.VScripting
         {
             legacyVariables.Insert(index, whatToInsert);
             VariableAdded(whatToInsert);
+            FlowchartSignals.VariableAdded(this, whatToInsert);
         }
 
         #endregion
-
 
         /// <summary>
         /// Reset the commands and variables in the Flowchart.
@@ -1885,6 +1927,19 @@ namespace Amanita.VScripting
         public void OnAfterDeserialize()
         {
         }
+
+#if UNITY_EDITOR
+        public T AddCommand<T>(Block toAddTo) where T : Command
+        {
+            Undo.RecordObject(this, "Add Command");
+            var added = this.gameObject.AddComponent<T>();
+            EditorUtility.SetDirty(this);
+            _commands.Add(added);
+            toAddTo.CommandList.Add(added);
+            return added;
+        }
+
+#endif
 
     }
 }
