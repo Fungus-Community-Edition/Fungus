@@ -16,7 +16,8 @@ namespace Amanita.VScripting.EditorUtils
     /// Renders Flowchart blocks as UITK buttons that size themselves to their contents.
     /// </summary>
     public sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
-        IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder, IBlockSelectionResponder
+        IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
+        IBlockSelectionResponder, IPreBlockDeletionResponder
     {
         private readonly FlowchartContext flowchartContext;
         private readonly IBlockDrawerUitk drawer;
@@ -145,7 +146,7 @@ namespace Amanita.VScripting.EditorUtils
                 var capturedBlock = block;
                 void OnClick()
                 {
-                    FlowchartWindowSignals.BlockSelected(capturedBlock);
+                    BlockSignals.BlockSelected(capturedBlock);
                 }
                 button.clicked += OnClick;
 
@@ -261,6 +262,20 @@ namespace Amanita.VScripting.EditorUtils
             {
                 binding.Button.clicked -= binding.ClickHandler;
             }
+        }
+
+        public void OnPreBlockDeletion(IList<Block> blocks)
+        {
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                var blockEl = blocks[i];
+                RemoveBlock(blockEl);
+            }
+        }
+
+        public void OnPreBlockDeletion(Block block)
+        {
+            RemoveBlock(block);
         }
     }
 

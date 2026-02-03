@@ -47,22 +47,21 @@ namespace Amanita.VScripting.EditorUtils
 
             protected float lastFade;
 
-            public virtual void ProcessAllBlocks(IList<Block> blocks)
+            public virtual void ProcessAllBlocks(IReadOnlyCollection<Block> blocks)
             {
                 IsChangeDetected = false;
                 workspace.Clear();
                 //cache these once as they can end up being called thousands of times per frame otherwise
                 var curRealTime = Time.realtimeSinceStartup;
                 var fadeTimer = curRealTime + AmanitaConstants.ExecutingIconFadeTime;
-                for (int i = 0; i < blocks.Count; ++i)
+                foreach (var blockEl in blocks)
                 {
-                    var b = blocks[i];
-                    var bIsExec = b.IsExecuting();
+                    var bIsExec = blockEl.IsExecuting();
                     if (bIsExec)
                     {
-                        b.ExecutingIconTimer = fadeTimer;
-                        b.ActiveCommand.ExecutingIconTimer = fadeTimer;
-                        workspace.Add(b);
+                        blockEl.ExecutingIconTimer = fadeTimer;
+                        blockEl.ActiveCommand.ExecutingIconTimer = fadeTimer;
+                        workspace.Add(blockEl);
                     }
                 }
 
@@ -407,12 +406,7 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart current = Flowchart;
             if (current == null)
             {
-                Blocks = Array.Empty<Block>();
                 filteredBlocks.Clear();
-            }
-            else
-            {
-                Blocks = current.GetComponents<Block>();
             }
 
             FlowchartCtx.Flowchart = current;
@@ -420,7 +414,12 @@ namespace Amanita.VScripting.EditorUtils
             UpdateFilteredBlocks();
         }
 
-        public IList<Block> Blocks { get; protected set; } = new Block[0];
+        public IReadOnlyCollection<Block> Blocks
+        {
+            get => Flowchart != null ?
+                Flowchart.Blocks :
+                Array.Empty<Block>();
+        }
         protected IList<Block> filteredBlocks = new List<Block>();
         protected bool filterStale = true;
         protected string cachedSearchString = string.Empty;
@@ -854,23 +853,23 @@ namespace Amanita.VScripting.EditorUtils
             return new Rect(0, 0, this.position.width / Flowchart.Zoom, this.position.height / Flowchart.Zoom);
         }
 
-        public virtual Vector2 GetBlockCenter(IList<Block> blocks)
+        public virtual Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
         {
             if (blocks.Count == 0)
             {
                 return Vector2.zero;
             }
 
-            Vector2 min = blocks[0]._NodeRect.min;
-            Vector2 max = blocks[0]._NodeRect.max;
+            var firstBlock = blocks.First();
+            Vector2 min = firstBlock._NodeRect.min;
+            Vector2 max = firstBlock._NodeRect.max;
 
-            for (int i = 0; i < blocks.Count; ++i)
+            foreach (var blockEl in blocks)
             {
-                var block = blocks[i];
-                min.x = Mathf.Min(min.x, block._NodeRect.center.x);
-                min.y = Mathf.Min(min.y, block._NodeRect.center.y);
-                max.x = Mathf.Max(max.x, block._NodeRect.center.x);
-                max.y = Mathf.Max(max.y, block._NodeRect.center.y);
+                min.x = Mathf.Min(min.x, blockEl._NodeRect.min.x);
+                min.y = Mathf.Min(min.y, blockEl._NodeRect.min.y);
+                max.x = Mathf.Max(max.x, blockEl._NodeRect.max.x);
+                max.y = Mathf.Max(max.y, blockEl._NodeRect.max.y);
             }
 
             return (min + max) * 0.5f;

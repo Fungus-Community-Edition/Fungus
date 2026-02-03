@@ -20,10 +20,6 @@ namespace Amanita.EditorUtils
         public SearchPanel(Flowchart toSearchFor)
         {
             flowchart = toSearchFor;
-            if (flowchart != null)
-            {
-                AllBlocks = toSearchFor.GetComponents<Block>();
-            }
             Root = new VisualElement();
 
             BuildUI();
@@ -31,19 +27,13 @@ namespace Amanita.EditorUtils
         }
 
         protected Flowchart flowchart;
-        protected IList<Block> AllBlocks
+        protected IReadOnlyCollection<Block> AllBlocks
         {
-            get => _allBlocks;
-            set
-            {
-                _allBlocks.Clear();
-                if (value != null)
-                {
-                    _allBlocks.AddRange(value);
-                }
-            }
+            get => flowchart != null ?
+                flowchart.Blocks :
+                Array.Empty<Block>();
         }
-        protected IList<Block> _allBlocks = new List<Block>();
+
         public VisualElement Root { get; }
 
         protected virtual void BuildUI()
@@ -116,7 +106,6 @@ namespace Amanita.EditorUtils
             }
 
             UIToolkitLabel uitkLabel = (UIToolkitLabel)element;
-            AllBlocks = flowchart.GetComponents<Block>();
             IList<Block> blocksInResults = (IList<Block>)resultList.itemsSource;
             Block currentBlock = blocksInResults[index];
 
@@ -176,8 +165,6 @@ namespace Amanita.EditorUtils
         public virtual void Dispose()
         {
             UnregisterUiCallbacks();
-            _allBlocks.Clear();
-            _allBlocks = null;
             if (Root.parent != null)
                 Root.RemoveFromHierarchy();
         }

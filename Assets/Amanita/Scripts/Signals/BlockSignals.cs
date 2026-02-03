@@ -11,7 +11,7 @@ namespace Amanita.VScripting
     /// </summary>
     public static class BlockSignals
     {
-        #region Public members
+        #region Editor-Only Signals
         public static Action<Block, Event> BlockClicked = delegate { };
         public static Action<Block> BlockCreated = delegate { };
 
@@ -29,6 +29,19 @@ namespace Amanita.VScripting
         /// </summary>
         public static Action<IList<Block>> MultiBlocksSelected = delegate { };
 
+        /// <summary>
+        /// Sent just before a Block is deleted.
+        /// </summary>
+        public static Action<Block> PreBlockDelete = delegate { };
+
+        /// <summary>
+        /// Sent just before multiple Blocks are deleted at once.
+        /// </summary>
+        public static Action<IList<Block>> PreMultiBlockDelete = delegate { };
+
+        #endregion
+
+        #region Runtime Signals
         /// <summary>
         /// BlockStart signal. Sent when the Block starts execution.
         /// </summary>
@@ -48,6 +61,7 @@ namespace Amanita.VScripting
         {
             OnBlockEnd(block);
         }
+        #endregion
 
         /// <summary>
         /// CommandExecute signal. Sent just before a Command in a Block executes.
@@ -58,7 +72,11 @@ namespace Amanita.VScripting
         {
             OnCommandExecute(block, command, commandIndex, maxCommandIndex);
         }
-
-        #endregion
     }
+
+    public interface IBlockCreatedResponder
+    {
+        void OnBlockCreated(Block block);
+    }
+
 }

@@ -1,4 +1,3 @@
-using Amanita.VScripting;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,6 +31,9 @@ namespace Amanita.VScripting.EditorUtils
             RegisterResponder<IBlockSelectionResponder>(module);
             RegisterResponder<ICommandSelectionResponder>(module);
             RegisterResponder<IWindowPanResponder>(module);
+
+            RegisterResponder<IBlockCreatedResponder>(module);
+            RegisterResponder<IPostBlockDeletionResponder>(module);
         }
 
         public void RemoveModule(IFlowchartWindowModule module)
@@ -51,6 +53,8 @@ namespace Amanita.VScripting.EditorUtils
             UnregisterResponder<ICommandSelectionResponder>(module);
             UnregisterResponder<IWindowPanResponder>(module);
 
+            UnregisterResponder<IBlockCreatedResponder>(module);
+            UnregisterResponder<IPostBlockDeletionResponder>(module);
             module.Dispose();
         }
 
@@ -101,6 +105,21 @@ namespace Amanita.VScripting.EditorUtils
 
         public void NotifyWindowPanned() =>
             Broadcast<IWindowPanResponder>(res => res.OnWindowPanned());
+
+        public void NotifyBlockCreated(Block block) =>
+            Broadcast<IBlockCreatedResponder>(res => res.OnBlockCreated(block));
+
+        public void NotifyPreBlockDeleted(Block block) =>
+            Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(block));
+
+        public void NotifyPreMultiBlockDeleted(IList<Block> blocks) =>
+            Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocks));
+
+        public void NotifyPostBlockDeleted(Block block) =>
+            Broadcast<IPostBlockDeletionResponder>(res => res.OnPostBlockDeletion(block));
+
+        public void NotifyPostMultiBlockDeleted(IList<Block> blocks) =>
+            Broadcast<IPostBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blocks));
         #endregion
 
         private void RegisterResponder<TResponder>(IFlowchartWindowModule module)

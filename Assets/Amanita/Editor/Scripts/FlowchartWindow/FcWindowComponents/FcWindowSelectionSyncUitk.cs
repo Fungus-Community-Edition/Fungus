@@ -71,7 +71,6 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart flowchart = Flowchart;
             if (flowchart == null)
             {
-                owner.UpdateBlockCollection();
                 owner.Repaint();
                 return;
             }
@@ -84,7 +83,6 @@ namespace Amanita.VScripting.EditorUtils
 
             if (AnyNullBlocks())
             {
-                owner.UpdateBlockCollection();
                 owner.Repaint();
                 return;
             }

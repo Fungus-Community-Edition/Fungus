@@ -57,6 +57,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
 
+                BlockSignals.BlockCreated += _moduleDispatcher.NotifyBlockCreated;
+                BlockSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
+                BlockSignals.PreBlockDelete += _moduleDispatcher.NotifyPreBlockDeleted;
+                BlockSignals.PreMultiBlockDelete += _moduleDispatcher.NotifyPreMultiBlockDeleted;
+
                 FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
                 FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
@@ -65,8 +70,6 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
                 FlowchartWindowSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.PreBlockDeletion += _moduleDispatcher.NotifyPreBlockDeletion;
-                FlowchartWindowSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
                 FlowchartWindowSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
 
@@ -76,6 +79,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
 
+                BlockSignals.BlockCreated -= _moduleDispatcher.NotifyBlockCreated;
+                BlockSignals.BlockSelected -= _moduleDispatcher.NotifyBlockSelected;
+                BlockSignals.PreBlockDelete -= _moduleDispatcher.NotifyPreBlockDeleted;
+                BlockSignals.PreMultiBlockDelete -= _moduleDispatcher.NotifyPreMultiBlockDeleted;
+
                 FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
                 FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
@@ -84,8 +92,6 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
                 FlowchartWindowSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.PreBlockDeletion -= _moduleDispatcher.NotifyPreBlockDeletion;
-                FlowchartWindowSignals.BlockSelected -= _moduleDispatcher.NotifyBlockSelected;
                 FlowchartWindowSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
 
@@ -114,7 +120,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _fcContext.Flowchart = resolved;
-            UpdateBlockCollection();
             _gridRenderer?.RefreshNow();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
@@ -329,16 +334,6 @@ namespace Amanita.VScripting.EditorUtils
             _refreshButton = null;
         }
 
-        internal void UpdateBlockCollection()
-        {
-            if (_fcContext == null)
-            {
-                return;
-            }
-
-            _blockRenderer?.RefreshBlocks();
-        }
-
         private FlowchartContext _fcContext;
 
         private void OnGUI()
@@ -374,7 +369,6 @@ namespace Amanita.VScripting.EditorUtils
             RemoveErrorScreenControls();
             Flowchart previous = _fcContext.Flowchart;
             _fcContext.Flowchart = fallback;
-            UpdateBlockCollection();
             _gridRenderer?.RefreshNow();
             if (!ReferenceEquals(previous, fallback))
             {

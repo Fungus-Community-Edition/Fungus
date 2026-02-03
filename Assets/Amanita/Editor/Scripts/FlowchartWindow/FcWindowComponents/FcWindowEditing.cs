@@ -111,7 +111,7 @@ namespace Amanita.VScripting.EditorUtils
                     _window.Flowchart.DeselectBlockNoCheck(block);
 
                 // Destroy the block itself
-                FlowchartWindowSignals.PreBlockDeletion(new Block[] { block });
+                BlockSignals.PreBlockDelete(block);
                 Undo.DestroyObjectImmediate(block);
             }
 

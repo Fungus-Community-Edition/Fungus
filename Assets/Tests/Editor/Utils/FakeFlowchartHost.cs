@@ -94,7 +94,7 @@ namespace Amanita.EditorUtils
 
         protected IList<IFcWindowComponent> components = new List<IFcWindowComponent>();
 
-        public virtual Vector2 GetBlockCenter(IList<Block> blocks)
+        public virtual Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
         {
             return Vector2.zero;
         }
@@ -131,7 +131,12 @@ namespace Amanita.EditorUtils
 
         public FlowchartContext FlowchartCtx { get; protected set; } = new FlowchartContext();
 
-        public IList<Block> Blocks { get { return Flowchart.GetComponents<Block>(); } }
+        public IReadOnlyCollection<Block> Blocks
+        {
+            get => Flowchart != null ?
+                Flowchart.Blocks : 
+                Array.Empty<Block>();
+        }
 
         public Rect Position => Rect.zero;
 
