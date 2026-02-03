@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// To keep the FlowchartWindow and BlockInspector synced with the last Flowchart selected.
+    /// </summary>
     public sealed class FlowchartSelectionSyncerUitk : IFlowchartWindowModule,
         IEmptySpaceClickResponder, IFlowchartChangeResponder, IBlockSelectionResponder
     {
@@ -159,12 +162,6 @@ namespace Amanita.VScripting.EditorUtils
 
             SetFlowchartAsSelecting(next.SelectedBlock);
         }
-
-        
-
-        
-
-        
 
         private Flowchart Flowchart => flowchartContext.Flowchart;
     }

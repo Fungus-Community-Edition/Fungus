@@ -320,7 +320,6 @@ namespace Amanita
             void FetchSubmodules()
             {
                 FlowchartRegistry.EnsureInitialized(true);
-                this.gameObject.GetOrAddComponent<AmanitaState>();
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();

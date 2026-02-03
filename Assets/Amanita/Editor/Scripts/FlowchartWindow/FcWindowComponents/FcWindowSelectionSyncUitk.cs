@@ -5,13 +5,14 @@ using Amanita.VScripting;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public sealed class FcWindowSelectionSyncUitk : IFlowchartWindowModule,
-        IEmptySpaceClickResponder, IFlowchartChangeResponder, IBlockSelectionResponder
+    /// <summary>
+    /// Handles Flowchart state changes that require the UITK window to refresh its data views.
+    /// </summary>
+    public sealed class FcWindowSelectionSyncUitk : IFlowchartWindowModule, IFlowchartChangeResponder
     {
         private readonly FlowchartContext flowchartContext;
         private FlowchartWindowUitk owner;
         private Flowchart trackedFlowchart;
-        private Block lastShownBlock;
         private bool skipNextEditorUpdate;
         private int prevVarCount;
         private bool isDisposed;
@@ -23,12 +24,16 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Initialize(FlowchartWindowUitk window)
         {
-            owner = window ?? throw new ArgumentNullException(nameof(window));
+            if (window == null)
+            {
+                throw new ArgumentNullException(nameof(window));
+            }
+
+            owner = window;
+            isDisposed = false;
 
             SubscribeToFlowchart(flowchartContext.Flowchart);
-            BlockSignals.BlockCreated += OnBlockCreated;
-            BlockSignals.BlockClicked += OnBlockClicked;
-            Selection.selectionChanged += OnSelectionChanged;
+
             EditorApplication.update += OnEditorUpdate;
         }
 
@@ -40,29 +45,9 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isDisposed = true;
-            BlockSignals.BlockCreated -= OnBlockCreated;
-            BlockSignals.BlockClicked -= OnBlockClicked;
-            Selection.selectionChanged -= OnSelectionChanged;
             EditorApplication.update -= OnEditorUpdate;
             SubscribeToFlowchart(null);
             owner = null;
-            lastShownBlock = null;
-        }
-
-        public void OnBlockSelected(Block block)
-        {
-            if (!isDisposed)
-            {
-                ShowInspectorForBlock(block);
-            }
-        }
-
-        public void OnEmptySpaceClicked(Vector2 pos)
-        {
-            if (!isDisposed)
-            {
-                ShowInspectorForBlock(null);
-            }
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
@@ -74,8 +59,6 @@ namespace Amanita.VScripting.EditorUtils
 
             skipNextEditorUpdate = true;
             SubscribeToFlowchart(next);
-            lastShownBlock = next != null ? next.SelectedBlock : null;
-            ShowInspectorForBlock(lastShownBlock);
         }
 
         private void OnEditorUpdate()
@@ -144,153 +127,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void OnBlockCreated(Block block)
-        {
-            if (!isDisposed)
-            {
-                ShowInspectorForBlock(block);
-            }
-        }
-
-        private void OnBlockClicked(Block block, Event _)
-        {
-            if (!isDisposed)
-            {
-                ShowInspectorForBlock(block);
-            }
-        }
-
-        private void OnSelectionChanged()
-        {
-            if (isDisposed)
-            {
-                return;
-            }
-
-            Flowchart flowchart = Flowchart;
-            if (flowchart == null)
-            {
-                return;
-            }
-
-            GameObject selectedGo = Selection.activeGameObject;
-            if (selectedGo == null || !selectedGo.TryGetComponent(out Flowchart selectedFlowchart))
-            {
-                return;
-            }
-
-            if (!ReferenceEquals(selectedFlowchart, flowchart))
-            {
-                return;
-            }
-
-            Block selectedBlock = flowchart.SelectedBlock;
-            if (selectedBlock == null || ReferenceEquals(selectedBlock, lastShownBlock))
-            {
-                return;
-            }
-
-            bool alreadyShowing = BlockInspector != null && BlockInspector.block == selectedBlock;
-            if (alreadyShowing)
-            {
-                return;
-            }
-
-            ShowInspectorForBlock(selectedBlock);
-        }
-
-        private void ShowInspectorForBlock(Block block)
-        {
-            Flowchart flowchart = Flowchart;
-            if (flowchart == null)
-            {
-                return;
-            }
-
-            if (block == null)
-            {
-                if (BlockInspector != null)
-                {
-                    BlockInspector.block = null;
-                }
-
-                if (Selection.activeObject == BlockInspector)
-                {
-                    Selection.activeObject = flowchart.gameObject;
-                }
-
-                lastShownBlock = null;
-                return;
-            }
-
-            bool inspectorIsActive = BlockInspector != null && Selection.activeObject == BlockInspector;
-            bool inspectorAlreadyShowing = BlockInspector != null && BlockInspector.block == block;
-
-            if (inspectorIsActive && inspectorAlreadyShowing)
-            {
-                return;
-            }
-
-            ShowBlockInspector(block);
-            lastShownBlock = block;
-        }
-
-        private void ShowBlockInspector(Block block)
-        {
-            Flowchart flowchart = Flowchart;
-            if (flowchart == null || block == null)
-            {
-                return;
-            }
-
-            bool alreadyShowingThatBlock = BlockInspector != null &&
-                BlockInspector.block == block &&
-                Selection.activeObject == BlockInspector;
-
-            if (alreadyShowingThatBlock)
-            {
-                return;
-            }
-
-            EnsureBlockInspectorExists();
-
-            if (BlockInspector == null)
-            {
-                return;
-            }
-
-            bool wasAlreadyShowingThisBlock = BlockInspector.block == block;
-            if (!wasAlreadyShowingThisBlock)
-            {
-                flowchart.ClearSelectedCommands();
-            }
-
-            BlockInspector.block = block;
-
-            if (block.ActiveCommand != null)
-            {
-                flowchart.AddSelectedCommand(block.ActiveCommand);
-            }
-
-            if (Selection.activeObject != BlockInspector)
-            {
-                Selection.activeObject = BlockInspector;
-            }
-        }
-
-        private void EnsureBlockInspectorExists()
-        {
-            if (BlockInspector != null)
-            {
-                return;
-            }
-
-            BlockInspector inspector = ScriptableObject.CreateInstance<BlockInspector>();
-            inspector.hideFlags = HideFlags.DontSave;
-            EditorUtility.SetDirty(inspector);
-            BlockInspector = inspector;
-        }
-
         private void SubscribeToFlowchart(Flowchart next)
         {
             if (ReferenceEquals(trackedFlowchart, next))
@@ -300,12 +136,8 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubsOnTrackedFlowchart(false);
             trackedFlowchart = next;
-            prevVarCount = trackedFlowchart != null ? 
-                trackedFlowchart.VariableCount : 
-                0;
-
+            prevVarCount = trackedFlowchart != null ? trackedFlowchart.VariableCount : 0;
             ToggleSubsOnTrackedFlowchart(true);
-
         }
 
         private void ToggleSubsOnTrackedFlowchart(bool on)
@@ -358,11 +190,5 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         private Flowchart Flowchart => flowchartContext.Flowchart;
-
-        private static BlockInspector BlockInspector
-        {
-            get => FlowchartWindow.blockInspector;
-            set => FlowchartWindow.blockInspector = value;
-        }
     }
 }

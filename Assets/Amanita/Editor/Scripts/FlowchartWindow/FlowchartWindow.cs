@@ -102,7 +102,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public static BlockInspector blockInspector;
         protected int forceRepaintCount;
         private readonly List<IFcWindowComponent> _components = new();
 
@@ -252,6 +251,9 @@ namespace Amanita.VScripting.EditorUtils
                     comp.Initialize(this);
             }
 
+            EditorSelectionTracker.ActiveFlowchartChanged -= HandleActiveFlowchartChanged;
+            EditorSelectionTracker.ActiveFlowchartChanged += HandleActiveFlowchartChanged;
+
             ToggleSubs(true);
         }
 
@@ -271,43 +273,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public static Flowchart GetFlowchart()
         {
-            if (AmanitaManager.S == null)
-            {
-                Debug.LogWarning($"AmanitaManager.S is null. Cannot get Flowchart.");
-                return null;
-            }
-
-            amanitaState = AmanitaManager.S.gameObject.GetOrAddComponent<AmanitaState>();
-            
-            GameObject oldAmmieStateGo = GameObject.Find("_AmanitaState");
-            if (oldAmmieStateGo != null && oldAmmieStateGo != AmanitaManager.S.gameObject)
-            {
-                Debug.Log($"Destroying old AmanitaState GameObject: {oldAmmieStateGo.name}");
-                Object.DestroyImmediate(oldAmmieStateGo);
-            }
-
-            Flowchart result = amanitaState.SelectedFlowchart;
-            if (result == null)
-            {
-                result = amanitaState.LastSelectedFlowchart;
-            }
-            return result;
-        }
-
-        protected static AmanitaState amanitaState;
-
-        protected static Flowchart FcSelected
-        {
-            get
-            {
-                Flowchart result = null;
-                if (amanitaState != null)
-                {
-                    result = amanitaState.SelectedFlowchart;
-                }
-
-                return result;
-            }
+            return EditorSelectionTracker.ResolveActiveFlowchart();
         }
 
         protected SearchPanel searchPanel;
@@ -332,9 +298,9 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void OnSelectionChanged()
+        private void HandleActiveFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            GetFlowchart();
+            Flowchart = current;
         }
 
         protected virtual void OnEmptySpaceClicked(Vector2 position)
@@ -355,6 +321,8 @@ namespace Amanita.VScripting.EditorUtils
 
         protected virtual void OnDisable()
         {
+            EditorSelectionTracker.ActiveFlowchartChanged -= HandleActiveFlowchartChanged;
+
             Clipboard?.Dispose();
             ToggleSubs(false);
             CleanUpSearchPanel();
@@ -391,7 +359,6 @@ namespace Amanita.VScripting.EditorUtils
             // Force null so it can refresh context on the other side of the context
             Flowchart = null;
             _prevFlowchart = null;
-            blockInspector = null;
         }
 
         protected void Undo_ForceRepaint()
@@ -432,16 +399,22 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void UpdateBlockCollection()
         {
-            GetFlowchart();
-            if (FcSelected == null)
+            if (Flowchart == null)
             {
-                Blocks = new Block[0];
+                Flowchart = GetFlowchart();
+            }
+
+            Flowchart current = Flowchart;
+            if (current == null)
+            {
+                Blocks = Array.Empty<Block>();
                 filteredBlocks.Clear();
             }
             else
             {
-                Blocks = FcSelected.GetComponents<Block>();
+                Blocks = current.GetComponents<Block>();
             }
+
             FlowchartCtx.Document.AllBlocks = Blocks;
             filterStale = true;
             UpdateFilteredBlocks();
@@ -490,8 +463,6 @@ namespace Amanita.VScripting.EditorUtils
         protected Flowchart _flowchart;
         protected virtual void OnFlowchartChanged(Flowchart newFlowchart)
         {
-            blockInspector = null;
-
             if (_prevFlowchart != null)
             {
                 _prevFlowchart.SelectedBlock = null;

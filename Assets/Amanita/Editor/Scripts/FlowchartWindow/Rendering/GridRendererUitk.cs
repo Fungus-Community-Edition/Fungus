@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Amanita.EditorUtils;
-using Amanita.VScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 

@@ -173,7 +173,8 @@ namespace Amanita.VScripting
                 legacyVariables.AddRange(found);
             }
 
-            _blocks = GetComponents<Block>().ToList();
+            var blocksFound = GetComponents<Block>();
+            _blocks.AddRange(blocksFound);
             _commands = GetComponents<Command>().ToList();
 
 #if UNITY_EDITOR
@@ -186,8 +187,8 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeField] private IList<Block> _blocks;
-        [SerializeField] private IList<Command> _commands;
+        [SerializeField] [HideInInspector] private HashSet<Block> _blocks = new HashSet<Block>();
+        [SerializeField] [HideInInspector] private IList<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -896,14 +897,16 @@ namespace Amanita.VScripting
         /// <summary>
         /// Create a new block node which you can then add commands to.
         /// </summary>
-        public virtual Block CreateBlock(Vector2 position)
+        public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
+            blockName ??= AmanitaConstants.DefaultBlockName;
             Block created = CreateBlockComponent(gameObject);
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
 #endif
-            created.BlockName = GetUniqueBlockKey(created.BlockName, created);
+            created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
+            _blocks.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
         }
@@ -927,9 +930,8 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            for (int i = 0; i < _blocks.Count; i++)
+            foreach (var block in _blocks)
             {
-                var block = _blocks[i];
                 if (block.BlockName == blockName)
                 {
                     return block;
@@ -1885,6 +1887,19 @@ namespace Amanita.VScripting
         public void OnAfterDeserialize()
         {
         }
+
+#if UNITY_EDITOR
+        public T AddCommand<T>() where T : Command
+        {
+            UnityEditor.Undo.RecordObject(this, "Add Command");
+            var added = this.gameObject.AddComponent<T>();
+            UnityEditor.EditorUtility.SetDirty(this);
+            _commands.Add(added);
+            return added;
+        }
+
+
+#endif
 
     }
 }

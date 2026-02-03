@@ -27,8 +27,8 @@ namespace Amanita.VScripting.EditorUtils
                     _configSubfolderPath,
                     _configAssetName);
             }
-            FlowchartWindowUitk wnd = _s != null ? 
-                _s : 
+            FlowchartWindowUitk wnd = _s != null ?
+                _s :
                 GetWindow<FlowchartWindowUitk>();
             wnd.titleContent = new GUIContent(_config.FlowchartWindowTitle);
             wnd.minSize = _config.WindowMinSize;
@@ -48,7 +48,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _s = this;
-            _ammyState = FindFirstObjectByType<AmanitaState>();
             ToggleSubs(true);
         }
 
@@ -56,7 +55,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (on)
             {
-                _ammyState.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
+                EditorSelectionTracker.ActiveFlowchartChanged += OnSelectedFlowchartChanged;
 
                 FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
@@ -75,7 +74,7 @@ namespace Amanita.VScripting.EditorUtils
             }
             else
             {
-                _ammyState.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
+                EditorSelectionTracker.ActiveFlowchartChanged -= OnSelectedFlowchartChanged;
 
                 FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
@@ -97,17 +96,16 @@ namespace Amanita.VScripting.EditorUtils
 
         private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
 
-        private void OnSelectedFlowchartChanged(Flowchart flowchart)
+        private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
             if (_fcContext == null)
             {
                 return;
             }
 
-            Flowchart resolved = flowchart == null ? 
-                FindFirstObjectByType<Flowchart>() : 
-                flowchart;
-            Flowchart previous = _fcContext.Flowchart;
+            Flowchart resolved = current == null ?
+                FindFirstObjectByType<Flowchart>() :
+                current;
 
             if (ReferenceEquals(previous, resolved))
             {
@@ -166,14 +164,14 @@ namespace Amanita.VScripting.EditorUtils
         {
             _fcNameLabel = null;
         }
-        
+
         public void CreateGUI()
         {
             _moduleDispatcher.ClearModules();
             VisualElement root = rootVisualElement;
 
             // If ammy state is missing, we cannot proceed. Show a label and return.
-            if (_ammyState == null)
+            if (ActiveFlowchart == null)
             {
                 PrepErrorLabel(root);
                 PrepRefreshButton(root);
@@ -184,7 +182,7 @@ namespace Amanita.VScripting.EditorUtils
             void PrepFcContext()
             {
                 _fcContext = new FlowchartContext();
-                _fcContext.Flowchart = _ammyState.SelectedFlowchart;
+                _fcContext.Flowchart = ActiveFlowchart;
                 if (_fcContext.Flowchart == null)
                 {
                     _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
@@ -200,15 +198,20 @@ namespace Amanita.VScripting.EditorUtils
             PrepSubmodules();
             void PrepSubmodules()
             {
+                #region Graphics-rendering modules
                 _gridRenderer = new GridRendererUitk(_fcContext, _config.GridDrawConfig);
-                _panHandler = new PanHandlerUitk(_fcContext);
                 _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
+                #endregion
+
+                #region For handling the viewport
+                _panHandler = new PanHandlerUitk(_fcContext);
+                _zoomHandler = new ZoomHandlerUitk(_fcContext, _config.MinZoom, _config.MaxZoom);
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
+                #endregion
+
                 _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
                 _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
-                _zoomHandler = new ZoomHandlerUitk(_fcContext, _config.MinZoom, _config.MaxZoom);
 
-                // TODO: prepare other submodules
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_blockRenderer);
@@ -236,13 +239,14 @@ namespace Amanita.VScripting.EditorUtils
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
+        private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
         private UitkLabel _errorLabel;
         private Button _refreshButton;
 
-        private AmanitaState _ammyState;
         private GridRendererUitk _gridRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
+        private BlockInspectorSynchronization _blockInspectorSync;
         private BlockRendererUitk _blockRenderer;
         private FlowchartSelectionSyncerUitk _selectionSyncer;
         private FcWindowSelectionSyncUitk _inspectorSync;
@@ -253,7 +257,7 @@ namespace Amanita.VScripting.EditorUtils
             string labelText = "No Flowchart Selected";
             if (_fcContext.Flowchart != null)
             {
-                labelText = $"Flowchart: {_fcContext.Flowchart.name}";
+                labelText = $"FC: {_fcContext.Flowchart.name}";
             }
             _fcNameLabel = new UitkLabel(labelText);
             _fcNameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -289,8 +293,14 @@ namespace Amanita.VScripting.EditorUtils
 
         void OnRefreshButtonClicked()
         {
-            _ammyState = FindFirstObjectByType<AmanitaState>();
-            if (_ammyState != null)
+            Flowchart flowchart = FindFirstObjectByType<Flowchart>();
+            if (ActiveFlowchart != null)
+            {
+                flowchart = ActiveFlowchart;
+                Selection.activeGameObject = flowchart.gameObject;
+            }
+
+            if (flowchart)
             {
                 Debug.Log("Flowchart found on refresh.");
                 RemoveErrorScreenControls();
@@ -300,7 +310,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 Debug.LogWarning("Flowchart still not found on refresh.");
             }
-            
+
         }
 
         private ScrollPosResetter _scrollPosResetter;
