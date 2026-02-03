@@ -400,7 +400,7 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                _countDisplay.text = string.Empty;
+                _countDisplay.text = "Count: 0";
                 _countDisplay = null;
             }
         }
