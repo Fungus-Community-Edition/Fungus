@@ -64,11 +64,27 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PreBlockDelete += _moduleDispatcher.NotifyPreBlockDeleted;
                 BlockSignals.PreMultiBlockDelete += _moduleDispatcher.NotifyPreMultiBlockDeleted;
 
+                #region Mouse Input Sub
                 FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
+
+                FlowchartWindowSignals.LeftMouseUp += _moduleDispatcher.NotifyLeftMouseUp;
+                FlowchartWindowSignals.EmptySpaceLeftMouseDown += _moduleDispatcher.NotifyEmptySpaceLeftMouseDown;
+                FlowchartWindowSignals.EmptySpaceLeftMouseUp += _moduleDispatcher.NotifyEmptySpaceLeftMouseUp;
+
+                FlowchartWindowSignals.LeftMouseDragStarted += _moduleDispatcher.NotifyLeftMouseDragStarted;
+                FlowchartWindowSignals.LeftMouseDragged += _moduleDispatcher.NotifyLeftMouseDragged;
+                FlowchartWindowSignals.LeftMouseDragEnded += _moduleDispatcher.NotifyLeftMouseDragEnded;
+
+                FlowchartWindowSignals.RightMouseDragStarted += _moduleDispatcher.NotifyRightMouseDragStarted;
+                FlowchartWindowSignals.RightMouseDragged += _moduleDispatcher.NotifyRightMouseDragged;
+                FlowchartWindowSignals.RightMouseDragEnded += _moduleDispatcher.NotifyRightMouseDragEnded;
+
                 FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved += _moduleDispatcher.NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged += _moduleDispatcher.NotifyScrollWheelDragged;
+                #endregion
+
                 FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
 
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
@@ -90,11 +106,28 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PreBlockDelete -= _moduleDispatcher.NotifyPreBlockDeleted;
                 BlockSignals.PreMultiBlockDelete -= _moduleDispatcher.NotifyPreMultiBlockDeleted;
 
+                #region Mouse Input Unsub
                 FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
+
+                FlowchartWindowSignals.LeftMouseUp -= _moduleDispatcher.NotifyLeftMouseUp;
+                FlowchartWindowSignals.EmptySpaceLeftMouseDown -= _moduleDispatcher.NotifyEmptySpaceLeftMouseDown;
+                FlowchartWindowSignals.EmptySpaceLeftMouseUp -= _moduleDispatcher.NotifyEmptySpaceLeftMouseUp;
+
+                FlowchartWindowSignals.LeftMouseDragStarted -= _moduleDispatcher.NotifyLeftMouseDragStarted;
+                FlowchartWindowSignals.LeftMouseDragged -= _moduleDispatcher.NotifyLeftMouseDragged;
+                FlowchartWindowSignals.LeftMouseDragEnded -= _moduleDispatcher.NotifyLeftMouseDragEnded;
+
+                FlowchartWindowSignals.RightMouseDragStarted -= _moduleDispatcher.NotifyRightMouseDragStarted;
+                FlowchartWindowSignals.RightMouseDragged -= _moduleDispatcher.NotifyRightMouseDragged;
+                FlowchartWindowSignals.RightMouseDragEnded -= _moduleDispatcher.NotifyRightMouseDragEnded;
+
                 FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved -= _moduleDispatcher.NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged -= _moduleDispatcher.NotifyScrollWheelDragged;
+                #endregion
+
+
                 FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
 
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
@@ -161,20 +194,33 @@ namespace Amanita.VScripting.EditorUtils
 
         void DisposeSubmodules()
         {
-            _scrollPosResetter?.Dispose();
+            _gridRenderer?.Dispose();
             _blockRenderer?.Dispose();
+            _boxSelectionRenderer?.Dispose();
+
+            _panHandler?.Dispose();
             _zoomHandler?.Dispose();
+            _scrollPosResetter?.Dispose();
+            _boxSelectionHandler?.Dispose();
+
+            _blockClickSelectionSyncer?.Dispose();
+            _repaintTriggerer?.Dispose();
         }
 
         void NullOutSubmodules()
         {
-            _scrollPosResetter = null;
             _gridRenderer = null;
-            _panHandler = null;
             _blockRenderer = null;
+            _boxSelectionRenderer = null;
+
+            _panHandler = null;
+            _zoomHandler = null;
+            _scrollPosResetter = null;
+            _boxSelectionHandler = null;
+
             _blockClickSelectionSyncer = null;
             _repaintTriggerer = null;
-            _zoomHandler = null;
+
         }
 
         void NullOutVisualElements()
@@ -235,12 +281,14 @@ namespace Amanita.VScripting.EditorUtils
                 #region Graphics-rendering
                 _gridRenderer = new GridRendererUitk(_fcContext, Config.GridDrawConfig);
                 _blockRenderer = new BlockRendererUitk(_fcContext, _blockDrawer);
+                _boxSelectionRenderer = new SelectionBoxRendererUitk(_fcContext);
                 #endregion
 
                 #region Viewport-handling
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _zoomHandler = new ZoomHandlerUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
+                _boxSelectionHandler = new SelectionBoxDragTrackerUitk(_fcContext);
                 #endregion
 
                 _blockClickSelectionSyncer = new SingleClickBlockSelector(_fcContext);
@@ -253,11 +301,14 @@ namespace Amanita.VScripting.EditorUtils
                 #region Graphics-rendering
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_blockRenderer);
+                _moduleDispatcher.AddModule(_boxSelectionRenderer);
                 #endregion
 
                 #region Viewport-handling
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_zoomHandler);
+                _moduleDispatcher.AddModule(_scrollPosResetter);
+                _moduleDispatcher.AddModule(_boxSelectionHandler);
                 #endregion
 
                 _moduleDispatcher.AddModule(_blockClickSelectionSyncer);
@@ -269,19 +320,28 @@ namespace Amanita.VScripting.EditorUtils
             {
                 root.Add(_gridRenderer);
                 root.Add(_blockRenderer);
+                root.Add(_boxSelectionRenderer);
                 root.Add(_fcNameLabel);
             }
 
             InitSubmodules();
             void InitSubmodules()
             {
+                #region Graphics-rendering
                 _gridRenderer.Initialize(this);
-                _panHandler.Initialize(this);
                 _blockRenderer.Initialize(this);
+                _boxSelectionRenderer.Initialize(this);
+                #endregion
+
+                #region Viewport-handling
+                _panHandler.Initialize(this);
+                _zoomHandler.Initialize(this);
                 _scrollPosResetter.Initialize(this);
+                _boxSelectionHandler.Initialize(this);
+                #endregion
+
                 _blockClickSelectionSyncer.Initialize(this);
                 _repaintTriggerer.Initialize(this);
-                _zoomHandler.Initialize(this);
             }
             
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
@@ -300,6 +360,8 @@ namespace Amanita.VScripting.EditorUtils
         private SingleClickBlockSelector _blockClickSelectionSyncer;
         private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;
+        private SelectionBoxDragTrackerUitk _boxSelectionHandler;
+        private SelectionBoxRendererUitk _boxSelectionRenderer;
         #endregion
 
         static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk();

@@ -21,6 +21,18 @@ namespace Amanita.VScripting.EditorUtils
 
             RegisterResponder<ILeftClickResponder>(module);
             RegisterResponder<IRightClickResponder>(module);
+
+            RegisterResponder<ILeftMouseDragStartResponder>(module);
+            RegisterResponder<ILeftMouseDragResponder>(module);
+            RegisterResponder<ILeftMouseDragEndResponder>(module);
+
+            RegisterResponder<IRightMouseDragStartResponder>(module);
+            RegisterResponder<IRightMouseDragResponder>(module);
+            RegisterResponder<IRightMouseDragEndResponder>(module);
+
+            RegisterResponder<IEmptySpaceLeftMouseDownResponder>(module);
+            RegisterResponder<IEmptySpaceLeftMouseUpResponder>(module);
+
             RegisterResponder<IDoubleClickResponder>(module);
             RegisterResponder<IScrollWheelMoveResponder>(module);
             RegisterResponder<IScrollWheelDragResponder>(module);
@@ -36,6 +48,8 @@ namespace Amanita.VScripting.EditorUtils
             RegisterResponder<IPostBlockDeletionResponder>(module);
             RegisterResponder<IBlockClickResponder>(module);
 
+            RegisterResponder<ILeftMouseUpResponder>(module);
+
             RegisterResponder<IVariableAddResponder>(module);
             RegisterResponder<IVariableRemoveResponder>(module);
 
@@ -47,6 +61,18 @@ namespace Amanita.VScripting.EditorUtils
 
             UnregisterResponder<ILeftClickResponder>(module);
             UnregisterResponder<IRightClickResponder>(module);
+
+            UnregisterResponder<ILeftMouseDragStartResponder>(module);
+            UnregisterResponder<ILeftMouseDragResponder>(module);
+            UnregisterResponder<ILeftMouseDragEndResponder>(module);
+
+            UnregisterResponder<IRightMouseDragStartResponder>(module);
+            UnregisterResponder<IRightMouseDragResponder>(module);
+            UnregisterResponder<IRightMouseDragEndResponder>(module);
+
+            UnregisterResponder<IEmptySpaceLeftMouseDownResponder>(module);
+            UnregisterResponder<IEmptySpaceLeftMouseUpResponder>(module);
+
             UnregisterResponder<IDoubleClickResponder>(module);
             UnregisterResponder<IScrollWheelMoveResponder>(module);
             UnregisterResponder<IScrollWheelDragResponder>(module);
@@ -61,6 +87,8 @@ namespace Amanita.VScripting.EditorUtils
             UnregisterResponder<IBlockCreatedResponder>(module);
             UnregisterResponder<IPostBlockDeletionResponder>(module);
             UnregisterResponder<IBlockClickResponder>(module);
+
+            UnregisterResponder<ILeftMouseUpResponder>(module);
 
             UnregisterResponder<IVariableAddResponder>(module);
             UnregisterResponder<IVariableRemoveResponder>(module);
@@ -85,6 +113,24 @@ namespace Amanita.VScripting.EditorUtils
 
         public void NotifyRightClick(Vector2 position) =>
             Broadcast<IRightClickResponder>(res => res.OnRightClick(position));
+
+        public void NotifyLeftMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
+            Broadcast<ILeftMouseDragStartResponder>(res => res.OnLeftMouseDragStarted(startPosition, guiEvent));
+
+        public void NotifyLeftMouseDragged(Vector2 currentPosition, Event guiEvent) =>
+            Broadcast<ILeftMouseDragResponder>(res => res.OnLeftMouseDragged(currentPosition, guiEvent));
+
+        public void NotifyLeftMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
+            Broadcast<ILeftMouseDragEndResponder>(res => res.OnLeftMouseDragEnded(endPosition, guiEvent));
+
+        public void NotifyRightMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
+            Broadcast<IRightMouseDragStartResponder>(res => res.OnRightMouseDragStarted(startPosition, guiEvent));
+
+        public void NotifyRightMouseDragged(Vector2 currentPosition, Event guiEvent) =>
+            Broadcast<IRightMouseDragResponder>(res => res.OnRightMouseDragged(currentPosition, guiEvent));
+
+        public void NotifyRightMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
+            Broadcast<IRightMouseDragEndResponder>(res => res.OnRightMouseDragEnded(endPosition, guiEvent));
 
         public void NotifyDoubleClick(Vector2 position) =>
             Broadcast<IDoubleClickResponder>(res => res.OnDoubleClick(position));
@@ -133,6 +179,15 @@ namespace Amanita.VScripting.EditorUtils
 
         public void NotifyBlockClicked(Block block, Event evt) =>
             Broadcast<IBlockClickResponder>(res => res.OnBlockClicked(block, evt));
+
+        public void NotifyEmptySpaceLeftMouseDown(Vector2 position, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(position, evt));
+
+        public void NotifyEmptySpaceLeftMouseUp(Vector2 position, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseUpResponder>(res => res.OnEmptySpaceLeftMouseUp(position, evt));
+
+        public void NotifyLeftMouseUp(Vector2 position, Event evt) =>
+            Broadcast<ILeftMouseUpResponder>(res => res.OnLeftMouseUp(position, evt));
         #endregion
 
         private void RegisterResponder<TResponder>(IFlowchartWindowModule module)

@@ -42,6 +42,10 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (!isDisposed)
             {
+                if (_.shift || _.control || _.command)
+                {
+                    return; // Let multi-selection handler deal with it.
+                }
                 SetFlowchartAsSelecting(block);
             }
         }

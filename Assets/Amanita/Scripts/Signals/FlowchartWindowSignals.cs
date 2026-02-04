@@ -25,11 +25,23 @@ namespace Amanita.VScripting
         /// </summary>
         public static Action<Vector2> ScrollWheelDragged = delegate { };
 
+        public static Action<Vector2, Event> EmptySpaceLeftMouseDown = delegate { };
+        public static Action<Vector2, Event> EmptySpaceLeftMouseUp = delegate { };
+        public static Action<Vector2, Event> LeftMouseUp = delegate { };
+
         public static Action<Vector2> EmptySpaceClicked = delegate { };
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };
         public static Action<IList<Block>> BlocksCopied = delegate { };
         public static Action<Command> CommandSelected = delegate { };
         public static Action WindowPanned = delegate { };
+
+        public static Action<Vector2, Event> LeftMouseDragStarted = delegate { };
+        public static Action<Vector2, Event> LeftMouseDragged = delegate { };
+        public static Action<Vector2, Event> LeftMouseDragEnded = delegate { };
+
+        public static Action<Vector2, Event> RightMouseDragStarted = delegate { };
+        public static Action<Vector2, Event> RightMouseDragged = delegate { };
+        public static Action<Vector2, Event> RightMouseDragEnded = delegate { };
     }
 
     // Interfaces for subscribing to flowchart window signals
@@ -56,6 +68,21 @@ namespace Amanita.VScripting
     public interface IScrollWheelDragResponder
     {
         void OnScrollWheelDragged(Vector2 direction);
+    }
+
+    public interface IEmptySpaceLeftMouseDownResponder
+    {
+        void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt);
+    }
+
+    public interface ILeftMouseUpResponder
+    {
+        void OnLeftMouseUp(Vector2 pos, Event evt);
+    }
+
+    public interface IEmptySpaceLeftMouseUpResponder
+    {
+        void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt);
     }
 
     public interface IEmptySpaceClickResponder
@@ -99,6 +126,36 @@ namespace Amanita.VScripting
     public interface IWindowPanResponder
     {
         void OnWindowPanned();
+    }
+
+    public interface ILeftMouseDragStartResponder
+    {
+        void OnLeftMouseDragStarted(Vector2 startPos, Event evt);
+    }
+
+    public interface ILeftMouseDragResponder
+    {
+        void OnLeftMouseDragged(Vector2 direction, Event evt);
+    }
+
+    public interface ILeftMouseDragEndResponder
+    {
+        void OnLeftMouseDragEnded(Vector2 endPos, Event evt);
+    }
+
+    public interface IRightMouseDragStartResponder
+    {
+        void OnRightMouseDragStarted(Vector2 startPos, Event evt);
+    }
+
+    public interface IRightMouseDragResponder
+    {
+        void OnRightMouseDragged(Vector2 direction, Event evt);
+    }
+
+    public interface IRightMouseDragEndResponder
+    {
+        void OnRightMouseDragEnded(Vector2 endPos, Event evt);
     }
 
 }
