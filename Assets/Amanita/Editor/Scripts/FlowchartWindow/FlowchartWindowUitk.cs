@@ -179,7 +179,7 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubs(false);
 
-            _moduleDispatcher.ClearModules();//
+            _moduleDispatcher.ClearModules();// 
             _fcContext?.Dispose();
             _fcContext = null;
 
@@ -194,9 +194,7 @@ namespace Amanita.VScripting.EditorUtils
 
         void DisposeSubmodules()
         {
-            _gridRenderer?.Dispose();
-            _blockRenderer?.Dispose();
-            _boxSelectionRenderer?.Dispose();
+            _graphicsRenderer?.Dispose();
 
             _panHandler?.Dispose();
             _zoomHandler?.Dispose();
@@ -209,9 +207,7 @@ namespace Amanita.VScripting.EditorUtils
 
         void NullOutSubmodules()
         {
-            _gridRenderer = null;
-            _blockRenderer = null;
-            _boxSelectionRenderer = null;
+            _graphicsRenderer = null;
 
             _panHandler = null;
             _zoomHandler = null;
@@ -279,9 +275,7 @@ namespace Amanita.VScripting.EditorUtils
             void CreateModules()
             {
                 #region Graphics-rendering
-                _gridRenderer = new GridRendererUitk(_fcContext, Config.GridDrawConfig);
-                _blockRenderer = new BlockRendererUitk(_fcContext, _blockDrawer);
-                _boxSelectionRenderer = new SelectionBoxRendererUitk(_fcContext);
+                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
                 #endregion
 
                 #region Viewport-handling
@@ -299,9 +293,7 @@ namespace Amanita.VScripting.EditorUtils
             void RegisterModules()
             {
                 #region Graphics-rendering
-                _moduleDispatcher.AddModule(_gridRenderer);
-                _moduleDispatcher.AddModule(_blockRenderer);
-                _moduleDispatcher.AddModule(_boxSelectionRenderer);
+                _moduleDispatcher.AddModule(_graphicsRenderer);
                 #endregion
 
                 #region Viewport-handling
@@ -318,9 +310,7 @@ namespace Amanita.VScripting.EditorUtils
             AttachUiElements();
             void AttachUiElements()
             {
-                root.Add(_gridRenderer);
-                root.Add(_blockRenderer);
-                root.Add(_boxSelectionRenderer);
+                root.Add(_graphicsRenderer);
                 root.Add(_fcNameLabel);
             }
 
@@ -328,9 +318,7 @@ namespace Amanita.VScripting.EditorUtils
             void InitSubmodules()
             {
                 #region Graphics-rendering
-                _gridRenderer.Initialize(this);
-                _blockRenderer.Initialize(this);
-                _boxSelectionRenderer.Initialize(this);
+                _graphicsRenderer.Initialize(this);
                 #endregion
 
                 #region Viewport-handling
@@ -352,16 +340,14 @@ namespace Amanita.VScripting.EditorUtils
         private UitkLabel _fcNameLabel;
 
         #region Submodules
-        private GridRendererUitk _gridRenderer;
+        private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockInspectorSynchronization _blockInspectorSync;
-        private BlockRendererUitk _blockRenderer;
         private SingleClickBlockSelector _blockClickSelectionSyncer;
         private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;
         private SelectionBoxDragTrackerUitk _boxSelectionHandler;
-        private SelectionBoxRendererUitk _boxSelectionRenderer;
         #endregion
 
         static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk();
@@ -442,7 +428,7 @@ namespace Amanita.VScripting.EditorUtils
             MissingOverlay.Hide();
             Flowchart previous = _fcContext.Flowchart;
             _fcContext.Flowchart = fallback;
-            _gridRenderer?.RefreshNow();
+            _graphicsRenderer?.RefreshNow();
             if (!ReferenceEquals(previous, fallback))
             {
                 FlowchartWindowSignals.ChangedFlowchart(previous, fallback);
@@ -462,7 +448,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             rootVisualElement.Clear();
-            _moduleDispatcher.ClearModules();//
+            _moduleDispatcher.ClearModules();// 
             DisposeSubmodules();
             NullOutSubmodules();
 

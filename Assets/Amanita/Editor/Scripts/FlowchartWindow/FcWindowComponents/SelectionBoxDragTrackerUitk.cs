@@ -124,13 +124,13 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Rect zoomBox = SelectionBoxInFlowchartSpace(interaction.SelectionBox, flowchartContext.Flowchart);
-            SelectBlocksOverlappedByBox(flowchartContext, zoomBox);
+            SelectBlocksOverlappedByBox(flowchartContext, interaction.SelectionBox);
 
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;
             _shouldTrack = false;
             Debug.Log($"Box selection ended at {endPos}");
+            Debug.Log($"Zoom: {flowchartContext.Flowchart.Zoom}, ScrollPos: {flowchartContext.Flowchart.ScrollPos}");
         }
 
         /// <summary>
@@ -138,22 +138,31 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public static readonly Vector2 MinThreshold = new Vector2(2, 2);
 
-        private static Rect SelectionBoxInFlowchartSpace(Rect selectionBox, Flowchart flowchart)
-        {
-            Rect zoomBox = selectionBox;
-            zoomBox.position -= flowchart.ScrollPos * flowchart.Zoom;
-            zoomBox.position /= flowchart.Zoom;
-            zoomBox.size /= flowchart.Zoom;
-            return zoomBox;
-        }
-
-        private static void SelectBlocksOverlappedByBox(FlowchartContext ctx, Rect zoomBox)
+        private static void SelectBlocksOverlappedByBox(FlowchartContext ctx, Rect selectionBox)
         {
             ctx.Selection.ClearBlocks();
 
+            Flowchart flowchart = ctx.Flowchart;
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
+            Vector2 scrollPos = flowchart.ScrollPos;
+
             foreach (var block in EnumerateBlocks(ctx))
             {
-                if (block != null && zoomBox.Overlaps(block._NodeRect))
+                if (block == null)
+                {
+                    continue;
+                }
+
+                Rect windowSpaceRect = block._NodeRect;
+                windowSpaceRect.position = (windowSpaceRect.position + scrollPos) * zoom;
+                windowSpaceRect.size *= zoom;
+
+                if (selectionBox.Overlaps(windowSpaceRect))
                 {
                     ctx.Selection.Add(block);
                 }

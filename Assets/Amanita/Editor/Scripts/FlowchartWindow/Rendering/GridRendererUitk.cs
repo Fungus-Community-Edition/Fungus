@@ -33,6 +33,8 @@ namespace Amanita.VScripting.EditorUtils
 
             pickingMode = PickingMode.Ignore;
             style.flexGrow = 1f;
+            style.width = Length.Percent(100);
+            style.height = Length.Percent(100);
 
             ToggleSubs(true);
         }

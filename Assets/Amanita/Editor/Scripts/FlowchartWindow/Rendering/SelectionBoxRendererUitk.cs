@@ -68,9 +68,14 @@ namespace Amanita.VScripting.EditorUtils
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
         {
             Debug.Log($"Selection box renderer: Drag ended at {endPos}");
-            flowchartContext.Interaction?.ResetSelectionBox(); // In case it wasn't already reset
+            //flowchartContext.Interaction.SelectionBox = Rect.zero; // In case it wasn't cleared elsewhere
+            _ignoreSelectionBoxThisFrame = true;
             RequestRepaint();
         }
+
+        private bool _ignoreSelectionBoxThisFrame;
+        // Resetting the selection box on drag end keeps blocks from being selected,
+        // so we need to ignore rendering it for one frame instead when the dragging ends.
 
         public void OnScrollWheelMoved()
         {
@@ -113,9 +118,12 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Rect selectionBox = interaction.SelectionBox;
+            Rect selectionBox = _ignoreSelectionBoxThisFrame ?
+                                Rect.zero : 
+                                interaction.SelectionBox;
             Painter2D painter = PrepPainter(mgc);
             DrawTheBox(painter, selectionBox);
+            _ignoreSelectionBoxThisFrame = false;
         }
 
         Painter2D PrepPainter(MeshGenerationContext mgc)
