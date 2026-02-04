@@ -34,6 +34,8 @@ namespace Amanita.VScripting.EditorUtils
 
             RegisterResponder<IBlockCreatedResponder>(module);
             RegisterResponder<IPostBlockDeletionResponder>(module);
+            RegisterResponder<IBlockClickResponder>(module);
+
         }
 
         public void RemoveModule(IFlowchartWindowModule module)
@@ -55,6 +57,8 @@ namespace Amanita.VScripting.EditorUtils
 
             UnregisterResponder<IBlockCreatedResponder>(module);
             UnregisterResponder<IPostBlockDeletionResponder>(module);
+            UnregisterResponder<IBlockClickResponder>(module);
+
             module.Dispose();
         }
 
@@ -120,6 +124,9 @@ namespace Amanita.VScripting.EditorUtils
 
         public void NotifyPostMultiBlockDeleted(IList<Block> blocks) =>
             Broadcast<IPostBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blocks));
+
+        public void NotifyBlockClicked(Block block, Event evt) =>
+            Broadcast<IBlockClickResponder>(res => res.OnBlockClicked(block, evt));
         #endregion
 
         private void RegisterResponder<TResponder>(IFlowchartWindowModule module)

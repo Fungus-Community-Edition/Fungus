@@ -67,19 +67,6 @@ namespace VScriptingTests.FlowchartWindow.Modules
         }
 
         [Test]
-        public void OnEmptySpaceClicked_ClearsSelection_AndFocusesFlowchart()
-        {
-            flowchart.SelectedBlock = existingBlock;
-            Selection.activeGameObject = null;
-
-            syncer.OnEmptySpaceClicked(Vector2.zero);
-
-            Assert.That(flowchart.SelectedBlock, Is.Null);
-            Assert.That(flowchart.SelectedBlockCount, Is.EqualTo(0));
-            Assert.That(Selection.activeGameObject, Is.SameAs(flowchart.gameObject));
-        }
-
-        [Test]
         public void BlockCreatedSignal_SelectsNewBlock()
         {
             flowchart.ClearSelectedBlocks();

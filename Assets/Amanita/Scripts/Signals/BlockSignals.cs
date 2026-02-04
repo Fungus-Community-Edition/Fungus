@@ -74,6 +74,11 @@ namespace Amanita.VScripting
         }
     }
 
+    public interface IBlockClickResponder
+    {
+        void OnBlockClicked(Block block, Event evt);
+    }
+
     public interface IBlockCreatedResponder
     {
         void OnBlockCreated(Block block);

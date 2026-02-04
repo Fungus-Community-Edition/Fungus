@@ -363,7 +363,38 @@ namespace Amanita.VScripting
             CleanupComponents();
             RefreshVarLookups();
             UpdateVersion();
+#if UNITY_EDITOR
+            RefreshEditorCaches();
+            UpdateHideFlags();
+#endif
         }
+
+#if UNITY_EDITOR
+        private void RefreshEditorCaches()
+        {
+            if (Application.IsPlaying(this))
+            {
+                return;
+            }
+
+            if (_blocks == null)
+            {
+                _blocks = new HashSet<Block>();
+            }
+            else
+            {
+                _blocks.Clear();
+            }
+
+            Block[] blocks = GetComponents<Block>();
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                _blocks.Add(blocks[i]);
+            }
+
+            _commands = GetComponents<Command>().ToList();
+        }
+#endif
 
         protected virtual void RefreshVarLookups()
         {
@@ -696,10 +727,9 @@ namespace Amanita.VScripting
         {
             if (hideComponents)
             {
-                var blocks = GetComponents<Block>();
-                for (int i = 0; i < blocks.Length; i++)
+                var blocks = _blocks;
+                foreach (var block in blocks)
                 {
-                    var block = blocks[i];
                     block.hideFlags = HideFlags.HideInInspector;
                     if (block.gameObject != gameObject)
                     {
@@ -707,13 +737,11 @@ namespace Amanita.VScripting
                     }
                 }
 
-                var commands = GetComponents<Command>();
-                for (int i = 0; i < commands.Length; i++)
+                var commands = _commands;
+                foreach (var command in commands)
                 {
-                    var command = commands[i];
                     command.hideFlags = HideFlags.HideInInspector;
                 }
-
                 var eventHandlers = GetComponents<AmanitaEventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {

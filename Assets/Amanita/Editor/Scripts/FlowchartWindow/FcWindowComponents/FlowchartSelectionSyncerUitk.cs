@@ -1,6 +1,5 @@
 using System;
-using UnityEditor;
-using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -8,7 +7,7 @@ namespace Amanita.VScripting.EditorUtils
     /// To keep the FlowchartWindow and BlockInspector synced with the last Flowchart selected.
     /// </summary>
     public sealed class FlowchartSelectionSyncerUitk : IFlowchartWindowModule,
-        IEmptySpaceClickResponder, IFlowchartChangeResponder, IBlockSelectionResponder
+        IFlowchartChangeResponder, IBlockSelectionResponder
     {
         public FlowchartSelectionSyncerUitk(FlowchartContext context)
         {
@@ -52,12 +51,10 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 BlockSignals.BlockCreated += OnBlockCreated;
-                BlockSignals.BlockClicked += OnBlockClicked;
             }
             else
             {
                 BlockSignals.BlockCreated -= OnBlockCreated;
-                BlockSignals.BlockClicked -= OnBlockClicked;
             }
         }
 
@@ -98,14 +95,6 @@ namespace Amanita.VScripting.EditorUtils
             lastSelectedBlock = block;
         }
 
-        private void OnBlockClicked(Block block, Event _)
-        {
-            if (!isDisposed)
-            {
-                SetFlowchartAsSelecting(block);
-            }
-        }
-
         public void Dispose()
         {
             if (isDisposed)
@@ -126,22 +115,6 @@ namespace Amanita.VScripting.EditorUtils
             if (!isDisposed)
             {
                 SetFlowchartAsSelecting(block);
-            }
-        }
-
-        public void OnEmptySpaceClicked(Vector2 position)
-        {
-            if (isDisposed)
-            {
-                return;
-            }
-
-            SetFlowchartAsSelecting(null);
-
-            Flowchart flowchart = Flowchart;
-            if (flowchart != null && Selection.activeGameObject != flowchart.gameObject)
-            {
-                Selection.activeGameObject = flowchart.gameObject;
             }
         }
 

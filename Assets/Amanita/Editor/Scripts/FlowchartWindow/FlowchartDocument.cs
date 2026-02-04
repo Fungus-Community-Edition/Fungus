@@ -25,7 +25,7 @@ namespace Amanita.VScripting.EditorUtils
                     return EmptyBlocks;
                 }
 
-                return Flowchart.Blocks ?? EmptyBlocks;
+                return Flowchart.Blocks;
             }
         }
 
