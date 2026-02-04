@@ -34,7 +34,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt)
         {
             // We only want to start tracking when the drag starts on empty space, so...
-            Debug.Log($"Box selection tracking enabled at {pos}");
+            //Debug.Log($"Box selection tracking enabled at {pos}");
             _shouldTrack = true;
         }
 
@@ -105,7 +105,6 @@ namespace Amanita.VScripting.EditorUtils
                     topRightCorner.y);
             }
 
-            //Debug.Log($"Box selection dragged to {current}");
         }
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)

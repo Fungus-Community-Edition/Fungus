@@ -19,6 +19,7 @@ namespace Amanita.VScripting.EditorUtils
             style.position = Position.Absolute;
             style.flexGrow = 1f;
 
+            RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             generateVisualContent += OnGenerateVisualContent;
         }
 
@@ -33,6 +34,12 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isDisposed = false;
+            BringToFront();
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent _)
+        {
+            BringToFront();
         }
 
         public void Dispose()
@@ -43,6 +50,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isDisposed = true;
+            UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             generateVisualContent -= OnGenerateVisualContent;
             RemoveFromHierarchy();
         }
@@ -59,6 +67,8 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
         {
+            Debug.Log($"Selection box renderer: Drag ended at {endPos}");
+            flowchartContext.Interaction?.ResetSelectionBox(); // In case it wasn't already reset
             RequestRepaint();
         }
 
@@ -95,19 +105,34 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            if (interaction == null || !interaction.SelectionBoxDragOngoing || !interaction.HasSelectionBox)
+            bool thereIsBoxToRender = interaction != null && interaction.SelectionBoxDragOngoing && 
+                interaction.HasSelectionBox;
+            if (!thereIsBoxToRender)
             {
                 Debug.Log("No selection box to render.");
                 return;
             }
 
             Rect selectionBox = interaction.SelectionBox;
+            Painter2D painter = PrepPainter(mgc);
+            DrawTheBox(painter, selectionBox);
+        }
 
+        Painter2D PrepPainter(MeshGenerationContext mgc)
+        {
             Painter2D painter = mgc.painter2D;
             painter.lineWidth = OutlineWidth;
             painter.strokeColor = OutlineColor;
             painter.fillColor = FillColor;
+            return painter;
+        }
 
+        private const float OutlineWidth = 1f;
+        private static readonly Color OutlineColor = new Color(0.27f, 0.54f, 0.93f, 0.9f);
+        private static readonly Color FillColor = new Color(0.27f, 0.54f, 0.93f, 0.15f);
+
+        void DrawTheBox(Painter2D painter, Rect selectionBox)
+        {
             painter.BeginPath();
             painter.MoveTo(new Vector2(selectionBox.xMin, selectionBox.yMin));
             painter.LineTo(new Vector2(selectionBox.xMax, selectionBox.yMin));
@@ -118,8 +143,6 @@ namespace Amanita.VScripting.EditorUtils
             painter.Stroke();
         }
 
-        private const float OutlineWidth = 1f;
-        private static readonly Color OutlineColor = new Color(0.27f, 0.54f, 0.93f, 0.9f);
-        private static readonly Color FillColor = new Color(0.27f, 0.54f, 0.93f, 0.15f);
+        
     }
 }

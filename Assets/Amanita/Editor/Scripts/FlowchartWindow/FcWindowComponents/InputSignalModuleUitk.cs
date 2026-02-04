@@ -2,6 +2,7 @@ using Amanita.EditorUtils;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -13,41 +14,149 @@ namespace Amanita.VScripting.EditorUtils
     {
         public void Initialize(FlowchartWindowUitk window)
         {
-            
+            owner = window ?? throw new ArgumentNullException(nameof(window));
+            RegisterPointerCallbacks(true);
         }
 
-        public void OnGUI(Event guiEvent)
+        private void RegisterPointerCallbacks(bool on)
         {
-            if (isDisposed || guiEvent == null)
+            if (owner == null)
             {
                 return;
             }
 
-            switch (guiEvent.type)
+            VisualElement root = owner.rootVisualElement;
+            if (on)
             {
-                case EventType.MouseDown:
-                    HandleMouseDown(guiEvent);
-                    HandleLeftMouseDown(guiEvent);
-                    break;
-
-                case EventType.MouseUp:
-                    HandleLeftMouseUp(guiEvent);
-                    HandlePanInputRelease(guiEvent);
-                    HandleLeftDragRelease(guiEvent);
-                    HandleRightDragRelease(guiEvent);
-                    break;
-
-                case EventType.MouseDrag:
-                    HandleMouseDrag(guiEvent);
-                    break;
-
-                case EventType.ScrollWheel:
-                    HandleScrollWheel(guiEvent);
-                    break;
+                root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
+                root.RegisterCallback<PointerMoveEvent>(OnPointerMove, TrickleDown.TrickleDown);
+                root.RegisterCallback<PointerUpEvent>(OnPointerUp, TrickleDown.TrickleDown);
+                root.RegisterCallback<WheelEvent>(OnWheel, TrickleDown.TrickleDown);
+            }
+            else
+            {
+                root.UnregisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
+                root.UnregisterCallback<PointerMoveEvent>(OnPointerMove, TrickleDown.TrickleDown);
+                root.UnregisterCallback<PointerUpEvent>(OnPointerUp, TrickleDown.TrickleDown);
+                root.UnregisterCallback<WheelEvent>(OnWheel, TrickleDown.TrickleDown);
             }
         }
 
-        private bool isDisposed;
+        private void OnPointerDown(PointerDownEvent evt)
+        {
+            if (!ShouldHandleUiEvent(evt))
+            {
+                return;
+            }
+
+            MarkUitkInput();
+            Event guiEvent = ToImguiEvent(evt, EventType.MouseDown);
+
+            HandleMouseDown(guiEvent);
+            HandleLeftMouseDown(guiEvent);
+        }
+
+        private bool ShouldHandleUiEvent(EventBase evt)
+        {
+            if (isDisposed || owner == null || evt == null)
+            {
+                return false;
+            }
+
+            return evt.target != owner.rootVisualElement;
+        }
+
+        private void MarkUitkInput()
+        {
+            useUitkInput = true;
+        }
+        private bool useUitkInput;
+        // ^When true, OnGUI (an IMGUI function) will do nothing so we don't respond to input events
+        // more times per frame than intended.
+
+        /// <summary>
+        /// Converts a PointerDownEvent to an IMGUI Event. We do this to reuse existing
+        /// IMGUI-based input handling code, reducing logic-duplication.
+        /// </summary>
+        private static Event ToImguiEvent(PointerDownEvent evt, EventType type)
+        {
+            Event guiEvent = ToImguiEvent((IPointerEvent)evt, type);
+            guiEvent.clickCount = evt.clickCount;
+            return guiEvent;
+        }
+
+        private static Event ToImguiEvent(IPointerEvent evt, EventType type)
+        {
+            return new Event
+            {
+                type = type,
+                button = evt.button,
+                mousePosition = evt.position,
+                delta = evt.deltaPosition,
+                modifiers = GetModifiers(evt)
+            };
+        }
+
+        private static EventModifiers GetModifiers(IPointerEvent evt)
+        {
+            EventModifiers modifiers = EventModifiers.None;
+
+            if (evt.altKey)
+            {
+                modifiers |= EventModifiers.Alt;
+            }
+
+            if (evt.ctrlKey)
+            {
+                modifiers |= EventModifiers.Control;
+            }
+
+            if (evt.shiftKey)
+            {
+                modifiers |= EventModifiers.Shift;
+            }
+
+            if (evt.commandKey)
+            {
+                modifiers |= EventModifiers.Command;
+            }
+
+            return modifiers;
+        }
+
+        private static Event ToImguiEvent(PointerUpEvent evt, EventType type)
+        {
+            Event guiEvent = ToImguiEvent((IPointerEvent)evt, type);
+            guiEvent.clickCount = evt.clickCount;
+            return guiEvent;
+        }
+
+        private static EventModifiers GetModifiers(IMouseEvent evt)
+        {
+            EventModifiers modifiers = EventModifiers.None;
+
+            if (evt.altKey)
+            {
+                modifiers |= EventModifiers.Alt;
+            }
+
+            if (evt.ctrlKey)
+            {
+                modifiers |= EventModifiers.Control;
+            }
+
+            if (evt.shiftKey)
+            {
+                modifiers |= EventModifiers.Shift;
+            }
+
+            if (evt.commandKey)
+            {
+                modifiers |= EventModifiers.Command;
+            }
+
+            return modifiers;
+        }
 
         private void HandleMouseDown(Event guiEvent)
         {
@@ -60,7 +169,7 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 else
                 {
-                    Debug.Log("Left click detected");
+                    //Debug.Log("Left click detected");
                     FlowchartWindowSignals.LeftClicked(guiEvent.mousePosition);
                 }
             }
@@ -88,6 +197,119 @@ namespace Amanita.VScripting.EditorUtils
             {
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown(guiEvent.mousePosition, guiEvent);
             }
+        }
+
+        private bool isDisposed;
+        
+        private FlowchartWindowUitk owner;
+
+        private static bool IsImGuiPointerEvent(EventType eventType)
+        {
+            return eventType == EventType.MouseDown
+                || eventType == EventType.MouseUp
+                || eventType == EventType.MouseDrag
+                || eventType == EventType.ScrollWheel;
+        }
+
+        private void OnPointerMove(PointerMoveEvent evt)
+        {
+            if (!ShouldHandleUiEvent(evt))
+            {
+                return;
+            }
+
+            MarkUitkInput();
+            Event guiEvent = ToImguiEvent(evt, EventType.MouseDrag);
+
+            HandleLeftDrag();
+            void HandleLeftDrag()
+            {
+                if (evt.IsLeftMouseButtonPressed() && !evt.altKey)
+                {
+                    if (!isLeftDragActive)
+                    {
+                        isLeftDragActive = true;
+                        FlowchartWindowSignals.LeftMouseDragStarted(evt.position, guiEvent);
+                    }
+                    else
+                    {
+                        FlowchartWindowSignals.LeftMouseDragged(evt.deltaPosition, guiEvent);
+                    }
+                }
+            }
+
+            HandleRightDrag();
+            void HandleRightDrag()
+            {
+                if (evt.IsRightMouseButtonPressed())
+                {
+                    if (!isRightDragActive)
+                    {
+                        isRightDragActive = true;
+                        FlowchartWindowSignals.RightMouseDragStarted(evt.position, guiEvent);
+                    }
+                    else
+                    {
+                        FlowchartWindowSignals.RightMouseDragged(evt.deltaPosition, guiEvent);
+                    }
+                }
+            }
+
+            HandlePanning();
+            void HandlePanning()
+            {
+                if (activePanAnchor.HasValue && evt.IsPanInput())
+                {
+                    Vector2 movementSinceLastFrame = (Vector2)evt.position - activePanAnchor.Value;
+                    bool movedFarEnough = movementSinceLastFrame.sqrMagnitude > Mathf.Epsilon;
+                    if (movedFarEnough)
+                    {
+                        FlowchartWindowSignals.ScrollWheelDragged(movementSinceLastFrame);
+                        FlowchartWindowSignals.WindowPanned();
+                    }
+
+                    activePanAnchor = evt.position;
+                }
+            }
+        }
+
+        private void OnPointerUp(PointerUpEvent evt)
+        {
+            if (!ShouldHandleUiEvent(evt))
+            {
+                return;
+            }
+
+            MarkUitkInput();
+            Event guiEvent = ToImguiEvent(evt, EventType.MouseUp);
+
+            HandleLeftMouseUp(guiEvent);
+            HandlePanInputRelease(guiEvent);
+            HandleLeftDragRelease(guiEvent);
+            HandleRightDragRelease(guiEvent);
+        }
+
+        private void OnWheel(WheelEvent evt)
+        {
+            if (!ShouldHandleUiEvent(evt))
+            {
+                return;
+            }
+
+            MarkUitkInput();
+            var guiEvent = ToImguiEvent(evt);
+            HandleScrollWheel(guiEvent);
+        }
+
+        private static Event ToImguiEvent(WheelEvent evt)
+        {
+            return new Event
+            {
+                type = EventType.ScrollWheel,
+                mousePosition = evt.mousePosition,
+                delta = evt.delta,
+                modifiers = GetModifiers(evt)
+            };
         }
 
         private void HandleLeftMouseUp(Event guiEvent)
@@ -196,6 +418,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void HandleMouseDrag(Event guiEvent)
         {
+            //Debug.Log("Mouse drag detected");
             HandleLeftDrag();
             void HandleLeftDrag()
             {
@@ -265,8 +488,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        
-
         public void Dispose()
         {
             if (isDisposed)
@@ -278,6 +499,45 @@ namespace Amanita.VScripting.EditorUtils
             isLeftDragActive = false;
             isRightDragActive = false;
             activePanAnchor = null;
+            RegisterPointerCallbacks(false);
+            owner = null;
         }
+
+        public void OnGUI(Event guiEvent)
+        {
+            if (isDisposed || guiEvent == null)
+            {
+                return;
+            }
+
+            if (useUitkInput && IsImGuiPointerEvent(guiEvent.type))
+            {
+                return;
+            }
+
+            switch (guiEvent.type)
+            {
+                case EventType.MouseDown:
+                    HandleMouseDown(guiEvent);
+                    HandleLeftMouseDown(guiEvent);
+                    break;
+
+                case EventType.MouseUp:
+                    HandleLeftMouseUp(guiEvent);
+                    HandlePanInputRelease(guiEvent);
+                    HandleLeftDragRelease(guiEvent);
+                    HandleRightDragRelease(guiEvent);
+                    break;
+
+                case EventType.MouseDrag:
+                    HandleMouseDrag(guiEvent);
+                    break;
+
+                case EventType.ScrollWheel:
+                    HandleScrollWheel(guiEvent);
+                    break;
+            }
+        }
+
     }
 }
