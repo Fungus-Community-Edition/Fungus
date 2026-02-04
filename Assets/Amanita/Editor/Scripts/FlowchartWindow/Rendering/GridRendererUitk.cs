@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amanita.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -212,6 +213,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             lastSelectedBlock = block;
+            lastBlocksSelected.Clear();
+            lastBlocksSelected.Add(block);
             QueueContextAwareRepaint(false);
         }
 
@@ -240,5 +243,23 @@ namespace Amanita.VScripting.EditorUtils
 
             return baseSpacing * spacingMultiplier;
         }
+
+        public void OnMultiBlocksSelected(IList<Block> blocks)
+        {
+            lastSelectedBlock = null; // Since that var is for when just a single one is selected.
+            bool alreadySelectedThese = blocks.SequenceEqual(lastBlocksSelected);
+            if (alreadySelectedThese)
+            {
+                return;
+            }
+
+            lastBlocksSelected.Clear();
+            foreach (Block block in blocks)
+            {
+                lastBlocksSelected.Add(block);
+            }
+        }
+
+        private readonly IList<Block> lastBlocksSelected = new List<Block>();
     }
 }

@@ -1,4 +1,3 @@
-using Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -148,7 +147,7 @@ namespace Amanita.VScripting.EditorUtils
                 var capturedBlock = block;
                 void OnClick()
                 {
-                    BlockSignals.BlockSelected(capturedBlock);
+                    BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
                 }
                 button.clicked += OnClick;
 
@@ -230,10 +229,24 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (blockBindings.TryGetValue(block, out BlockBinding binding))
+            // Update all the blocks, since we want to make sure that the previously selected block(s) are updated too.
+            foreach (var entry in blockBindings)
             {
-                drawer.UpdateButton(binding.Button, block, CurrentZoom);
+                var blockToUpdate = entry.Key;
+                bool shouldDeselect = !ReferenceEquals(blockToUpdate, block) && blockToUpdate.IsSelected;
+                if (shouldDeselect)
+                {
+                    blockToUpdate.IsSelected = false;
+                }
+                drawer.UpdateButton(entry.Value.Button, blockToUpdate, CurrentZoom);
             }
+        }
+
+        public void OnMultiBlocksSelected(IList<Block> blocks)
+        {
+            // Reminder: this should execute when multiple blocks are selected through any of the following:
+            // - Shift+Click
+            // - Click and drag selection box
         }
 
         public void Dispose()
@@ -279,6 +292,8 @@ namespace Amanita.VScripting.EditorUtils
         {
             RemoveBlock(block);
         }
+
+        
     }
 
 }

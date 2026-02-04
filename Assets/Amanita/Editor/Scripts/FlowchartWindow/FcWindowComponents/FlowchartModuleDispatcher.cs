@@ -36,6 +36,9 @@ namespace Amanita.VScripting.EditorUtils
             RegisterResponder<IPostBlockDeletionResponder>(module);
             RegisterResponder<IBlockClickResponder>(module);
 
+            RegisterResponder<IVariableAddResponder>(module);
+            RegisterResponder<IVariableRemoveResponder>(module);
+
         }
 
         public void RemoveModule(IFlowchartWindowModule module)
@@ -58,6 +61,9 @@ namespace Amanita.VScripting.EditorUtils
             UnregisterResponder<IBlockCreatedResponder>(module);
             UnregisterResponder<IPostBlockDeletionResponder>(module);
             UnregisterResponder<IBlockClickResponder>(module);
+
+            UnregisterResponder<IVariableAddResponder>(module);
+            UnregisterResponder<IVariableRemoveResponder>(module);
 
             module.Dispose();
         }

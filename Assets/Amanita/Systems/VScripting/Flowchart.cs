@@ -235,6 +235,7 @@ namespace Amanita.VScripting
                 MonoBehaviour component = toRemove as MonoBehaviour;
                 Destroy(component);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
         }
 
@@ -245,6 +246,7 @@ namespace Amanita.VScripting
                 IVariable toRemove = muscariables[index];
                 muscariables.RemoveAt(index);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
         }
 
@@ -1338,6 +1340,7 @@ namespace Amanita.VScripting
 
             AddVariable(toRegister);
             VariableAdded(toRegister);
+            FlowchartSignals.VariableAdded(this, toRegister);
 
             if (createdLegacyVar)
                 return null;
@@ -1544,6 +1547,7 @@ namespace Amanita.VScripting
             muscariables.Add(toAdd);
             varLookupById[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
+            FlowchartSignals.VariableAdded(this, toAdd);
         }
 
         /// <summary>
@@ -1557,8 +1561,8 @@ namespace Amanita.VScripting
                 toRemove.ParentFlowchart = null;
                 muscariables.Remove(toRemove);
                 VariableRemoved(toRemove);
+                FlowchartSignals.VariableRemoved(this, toRemove);
             }
-
         }
 
         public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType : Muscariable
@@ -1598,10 +1602,10 @@ namespace Amanita.VScripting
         {
             legacyVariables.Insert(index, whatToInsert);
             VariableAdded(whatToInsert);
+            FlowchartSignals.VariableAdded(this, whatToInsert);
         }
 
         #endregion
-
 
         /// <summary>
         /// Reset the commands and variables in the Flowchart.

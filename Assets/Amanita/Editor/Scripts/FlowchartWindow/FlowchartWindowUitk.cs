@@ -1,11 +1,9 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
-using System.Collections.Generic;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -175,7 +173,7 @@ namespace Amanita.VScripting.EditorUtils
             _panHandler = null;
             _blockRenderer = null;
             _blockClickSelectionSyncer = null;
-            _inspectorSync = null;
+            _repaintTriggerer = null;
             _zoomHandler = null;
         }
 
@@ -229,32 +227,41 @@ namespace Amanita.VScripting.EditorUtils
                 _fcNameLabel.style.position = Position.Absolute;
             }
 
-            PrepSubmodules();
-            void PrepSubmodules()
+            EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
+
+            CreateModules();
+            void CreateModules()
             {
-                EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
-                #region Graphics-rendering modules
+                #region Graphics-rendering
                 _gridRenderer = new GridRendererUitk(_fcContext, Config.GridDrawConfig);
-                _blockRenderer = new BlockRendererUitk(_fcContext, new DefaultBlockDrawerUitk());
+                _blockRenderer = new BlockRendererUitk(_fcContext, _blockDrawer);
                 #endregion
 
-                #region For handling the viewport
+                #region Viewport-handling
                 _panHandler = new PanHandlerUitk(_fcContext);
                 _zoomHandler = new ZoomHandlerUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
                 #endregion
 
-                _blockClickSelectionSyncer = new BlockClickSelectionSyncerUitk(_fcContext);
-                _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
+                _blockClickSelectionSyncer = new SingleClickBlockSelector(_fcContext);
+                _repaintTriggerer = new FcWindowRepaintTriggerer();
+            }
 
+            RegisterModules();
+            void RegisterModules()
+            {
+                #region Graphics-rendering
                 _moduleDispatcher.AddModule(_gridRenderer);
                 _moduleDispatcher.AddModule(_blockRenderer);
+                #endregion
 
+                #region Viewport-handling
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_zoomHandler);
+                #endregion
 
                 _moduleDispatcher.AddModule(_blockClickSelectionSyncer);
-                _moduleDispatcher.AddModule(_inspectorSync);
+                _moduleDispatcher.AddModule(_repaintTriggerer);
             }
 
             AttachUiElements();
@@ -273,7 +280,7 @@ namespace Amanita.VScripting.EditorUtils
                 _blockRenderer.Initialize(this);
                 _scrollPosResetter.Initialize(this);
                 _blockClickSelectionSyncer.Initialize(this);
-                _inspectorSync.Initialize(this);
+                _repaintTriggerer.Initialize(this);
                 _zoomHandler.Initialize(this);
             }
             
@@ -290,11 +297,12 @@ namespace Amanita.VScripting.EditorUtils
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockInspectorSynchronization _blockInspectorSync;
         private BlockRendererUitk _blockRenderer;
-        private BlockClickSelectionSyncerUitk _blockClickSelectionSyncer;
-        private FcWindowSelectionSyncUitk _inspectorSync;
+        private SingleClickBlockSelector _blockClickSelectionSyncer;
+        private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;
         #endregion
 
+        static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk();
         private MissingFlowchartOverlay MissingOverlay
         {
             get

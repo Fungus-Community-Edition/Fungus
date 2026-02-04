@@ -39,25 +39,29 @@ namespace Amanita.VScripting.EditorUtils
                 text = SafeBlockName(block)
             };
 
-            var config = FlowchartWindowUitk.Config;
-            var baseStyleSheet = config.BlockStyleSheet;
-            // Apply that first so we can override specific properties below.
-            if (baseStyleSheet != null)
+            ApplyStyles();
+            void ApplyStyles()
             {
-                button.styleSheets.Add(baseStyleSheet);
+                var config = FlowchartWindowUitk.Config;
+                var baseStyleSheet = config.BlockStyleSheet;
+                // Apply that first so we can override specific properties below.
+                if (baseStyleSheet != null)
+                {
+                    button.styleSheets.Add(baseStyleSheet);
+                }
+
+                var selectedStyleSheet = config.SelectedBlockStyleSheet;
+                if (selectedStyleSheet != null)
+                {
+                    button.styleSheets.Add(selectedStyleSheet);
+                }
+
+                button.style.unityFontStyleAndWeight = FontStyle.Normal;
+
+                button.AddToClassList(BaseClass);
+                button.AddToClassList(SelectedClass);
+                button.EnableInClassList(SelectedClass, false);
             }
-
-            var selectedStyleSheet = config.SelectedBlockStyleSheet;
-            if (selectedStyleSheet != null)
-            {
-                button.styleSheets.Add(selectedStyleSheet);
-            }
-
-            button.style.unityFontStyleAndWeight = FontStyle.Normal;
-
-            button.AddToClassList(BaseClass);
-            button.AddToClassList(SelectedClass);
-            button.EnableInClassList(SelectedClass, false);
 
             return button;
         }

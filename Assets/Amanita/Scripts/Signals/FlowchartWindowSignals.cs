@@ -88,6 +88,7 @@ namespace Amanita.VScripting
     public interface IBlockSelectionResponder
     {
         void OnBlockSelected(Block block);
+        void OnMultiBlocksSelected(IList<Block> blocks);
     }
 
     public interface ICommandSelectionResponder

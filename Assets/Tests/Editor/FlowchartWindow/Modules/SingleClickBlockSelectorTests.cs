@@ -9,14 +9,14 @@ using UnityObj = UnityEngine.Object;
 namespace VScriptingTests.FlowchartWindow.Modules
 {
     [TestFixture]
-    public sealed class BlockClickSelectionSyncerUitkTests
+    public sealed class SingleClickBlockSelectorTests
     {
         private GameObject flowchartObject;
         private GameObject selectionObject;
         private Flowchart flowchart;
         private FlowchartContext context;
         private FlowchartWindowUitk window;
-        private BlockClickSelectionSyncerUitk syncer;
+        private SingleClickBlockSelector syncer;
         private GameObject previousSelection;
 
         [SetUp]
@@ -34,7 +34,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             context.Flowchart = flowchart;
 
             window = ScriptableObject.CreateInstance<FlowchartWindowUitk>();
-            syncer = new BlockClickSelectionSyncerUitk(context);
+            syncer = new SingleClickBlockSelector(context);
             syncer.Initialize(window);
 
             destroyOnTearDown.Add(flowchartObject);

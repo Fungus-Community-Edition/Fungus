@@ -5,12 +5,12 @@ using UnityEngine;
 namespace Amanita.VScripting.EditorUtils
 {
     /// <summary>
-    /// Handles click-driven block selection and empty space deselection.
+    /// Handles single-click-driven block selection and empty space deselection.
     /// </summary>
-    public sealed class BlockClickSelectionSyncerUitk : IFlowchartWindowModule,
+    public sealed class SingleClickBlockSelector : IFlowchartWindowModule,
         IEmptySpaceClickResponder, IBlockClickResponder, IBlockCreatedResponder
     {
-        public BlockClickSelectionSyncerUitk(FlowchartContext context)
+        public SingleClickBlockSelector(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
         }
