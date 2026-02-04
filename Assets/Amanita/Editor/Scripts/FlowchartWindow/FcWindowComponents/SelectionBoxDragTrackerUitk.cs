@@ -105,6 +105,8 @@ namespace Amanita.VScripting.EditorUtils
                     topRightCorner.y);
             }
 
+            //Debug.Log($"Selection box drag tracker: Box selection dragged to {current}");
+
         }
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)

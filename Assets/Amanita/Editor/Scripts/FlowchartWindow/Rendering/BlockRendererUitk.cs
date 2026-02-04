@@ -17,7 +17,8 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
-        IBlockSelectionResponder, IPreBlockDeletionResponder
+        IBlockSelectionResponder, IPreBlockDeletionResponder, ILeftMouseDragStartResponder,
+        ILeftMouseDragEndResponder
     {
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
@@ -293,7 +294,35 @@ namespace Amanita.VScripting.EditorUtils
             RemoveBlock(block);
         }
 
-        
+        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        {
+            #region Keep Blocks from blocking drag events
+            foreach (var entry in blockBindings)
+            {
+                var button = entry.Value.Button;
+                if (button != null)
+                {
+                    button.pickingMode = PickingMode.Ignore;
+                }
+            }
+            #endregion
+        }
+
+        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        {
+            #region Let Blocks be selectable again
+            foreach (var entry in blockBindings)
+            {
+                var button = entry.Value.Button;
+                if (button != null)
+                {
+                    button.pickingMode = PickingMode.Position;
+                }
+            }
+            #endregion
+        }
+
+
     }
 
 }

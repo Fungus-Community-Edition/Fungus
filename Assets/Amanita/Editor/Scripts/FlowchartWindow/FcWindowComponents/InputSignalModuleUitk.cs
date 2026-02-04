@@ -63,7 +63,7 @@ namespace Amanita.VScripting.EditorUtils
                 return false;
             }
 
-            return evt.target != owner.rootVisualElement;
+            return true;
         }
 
         private void MarkUitkInput()
@@ -200,7 +200,6 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         private bool isDisposed;
-        
         private FlowchartWindowUitk owner;
 
         private static bool IsImGuiPointerEvent(EventType eventType)
@@ -474,7 +473,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 activePanAnchor = guiEvent.mousePosition;
             }
-            
+
             guiEvent.Use();
         }
 
