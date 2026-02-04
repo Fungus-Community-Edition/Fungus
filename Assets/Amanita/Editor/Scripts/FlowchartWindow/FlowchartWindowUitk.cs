@@ -174,7 +174,6 @@ namespace Amanita.VScripting.EditorUtils
             _gridRenderer = null;
             _panHandler = null;
             _blockRenderer = null;
-            _selectionSyncer = null;
             _blockClickSelectionSyncer = null;
             _inspectorSync = null;
             _zoomHandler = null;
@@ -245,7 +244,6 @@ namespace Amanita.VScripting.EditorUtils
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
                 #endregion
 
-                _selectionSyncer = new FlowchartSelectionSyncerUitk(_fcContext);
                 _blockClickSelectionSyncer = new BlockClickSelectionSyncerUitk(_fcContext);
                 _inspectorSync = new FcWindowSelectionSyncUitk(_fcContext);
 
@@ -255,7 +253,6 @@ namespace Amanita.VScripting.EditorUtils
                 _moduleDispatcher.AddModule(_panHandler);
                 _moduleDispatcher.AddModule(_zoomHandler);
 
-                _moduleDispatcher.AddModule(_selectionSyncer);
                 _moduleDispatcher.AddModule(_blockClickSelectionSyncer);
                 _moduleDispatcher.AddModule(_inspectorSync);
             }
@@ -275,7 +272,6 @@ namespace Amanita.VScripting.EditorUtils
                 _panHandler.Initialize(this);
                 _blockRenderer.Initialize(this);
                 _scrollPosResetter.Initialize(this);
-                _selectionSyncer.Initialize(this);
                 _blockClickSelectionSyncer.Initialize(this);
                 _inspectorSync.Initialize(this);
                 _zoomHandler.Initialize(this);
@@ -294,7 +290,6 @@ namespace Amanita.VScripting.EditorUtils
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private BlockInspectorSynchronization _blockInspectorSync;
         private BlockRendererUitk _blockRenderer;
-        private FlowchartSelectionSyncerUitk _selectionSyncer;
         private BlockClickSelectionSyncerUitk _blockClickSelectionSyncer;
         private FcWindowSelectionSyncUitk _inspectorSync;
         private ZoomHandlerUitk _zoomHandler;

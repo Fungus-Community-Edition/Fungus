@@ -1,5 +1,4 @@
 using System;
-using Amanita.VScripting;
 using UnityEditor;
 using UnityEngine;
 

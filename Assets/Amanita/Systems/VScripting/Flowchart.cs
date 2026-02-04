@@ -1926,15 +1926,15 @@ namespace Amanita.VScripting
         }
 
 #if UNITY_EDITOR
-        public T AddCommand<T>() where T : Command
+        public T AddCommand<T>(Block toAddTo) where T : Command
         {
-            UnityEditor.Undo.RecordObject(this, "Add Command");
+            Undo.RecordObject(this, "Add Command");
             var added = this.gameObject.AddComponent<T>();
-            UnityEditor.EditorUtility.SetDirty(this);
+            EditorUtility.SetDirty(this);
             _commands.Add(added);
+            toAddTo.CommandList.Add(added);
             return added;
         }
-
 
 #endif
 

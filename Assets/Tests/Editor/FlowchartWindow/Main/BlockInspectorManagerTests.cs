@@ -71,7 +71,7 @@ namespace VScriptingTests.FlowchartWindow.Main
         public void Clear_AfterShow_FocusesFlowchartAndClearsCommands()
         {
             flowchart.ClearSelectedCommands();
-            TestCommand command = flowchart.AddCommand<TestCommand>();
+            TestCommand command = flowchart.AddCommand<TestCommand>(block);
             
             BlockInspectorManager.Show(block);
             flowchart.AddSelectedCommand(command); // Commands should only be selected when the right block is being shown
