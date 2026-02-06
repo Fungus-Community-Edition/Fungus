@@ -19,39 +19,52 @@ namespace Amanita.VScripting.EditorUtils
         {
             modules.Add(module);
 
-            RegisterResponder<ILeftClickResponder>(module);
-            RegisterResponder<IRightClickResponder>(module);
+            #region Mouse Events
+            AddResponder<ILeftClickResponder>(module);
+            AddResponder<IRightClickResponder>(module);
+            AddResponder<IDoubleClickResponder>(module);
 
-            RegisterResponder<ILeftMouseDragStartResponder>(module);
-            RegisterResponder<ILeftMouseDragResponder>(module);
-            RegisterResponder<ILeftMouseDragEndResponder>(module);
+            AddResponder<ILeftMouseDragStartResponder>(module);
+            AddResponder<ILeftMouseDragResponder>(module);
+            AddResponder<ILeftMouseDragEndResponder>(module);
+            AddResponder<ILeftMouseUpResponder>(module);
 
-            RegisterResponder<IRightMouseDragStartResponder>(module);
-            RegisterResponder<IRightMouseDragResponder>(module);
-            RegisterResponder<IRightMouseDragEndResponder>(module);
+            AddResponder<IRightMouseDragStartResponder>(module);
+            AddResponder<IRightMouseDragResponder>(module);
+            AddResponder<IRightMouseDragEndResponder>(module);
 
-            RegisterResponder<IEmptySpaceLeftMouseDownResponder>(module);
-            RegisterResponder<IEmptySpaceLeftMouseUpResponder>(module);
+            AddResponder<IEmptySpaceClickResponder>(module);
+            AddResponder<IEmptySpaceLeftMouseDownResponder>(module);
+            AddResponder<IEmptySpaceLeftMouseUpResponder>(module);
 
-            RegisterResponder<IDoubleClickResponder>(module);
-            RegisterResponder<IScrollWheelMoveResponder>(module);
-            RegisterResponder<IScrollWheelDragResponder>(module);
-            RegisterResponder<IEmptySpaceClickResponder>(module);
-            RegisterResponder<IFlowchartChangeResponder>(module);
-            RegisterResponder<IBlocksCopiedResponder>(module);
-            RegisterResponder<IPreBlockDeletionResponder>(module);
-            RegisterResponder<IBlockSelectionResponder>(module);
-            RegisterResponder<ICommandSelectionResponder>(module);
-            RegisterResponder<IWindowPanResponder>(module);
+            AddResponder<IScrollWheelMoveResponder>(module);
+            AddResponder<IScrollWheelDragResponder>(module);
 
-            RegisterResponder<IBlockCreatedResponder>(module);
-            RegisterResponder<IPostBlockDeletionResponder>(module);
-            RegisterResponder<IBlockClickResponder>(module);
+            #endregion
 
-            RegisterResponder<ILeftMouseUpResponder>(module);
+            #region Block Events
+            AddResponder<IBlockCreatedResponder>(module);
+            AddResponder<IPreBlockDeletionResponder>(module);
+            AddResponder<IPostBlockDeletionResponder>(module);
 
-            RegisterResponder<IVariableAddResponder>(module);
-            RegisterResponder<IVariableRemoveResponder>(module);
+            AddResponder<IBlockClickResponder>(module);
+            AddResponder<IBlockSelectionResponder>(module);
+            AddResponder<IMultiBlockSelectionResponder>(module);
+            AddResponder<IBlockDeselectionResponder>(module);
+            AddResponder<IMultiBlockDeselectionResponder>(module);
+
+            AddResponder<IBlocksCopiedResponder>(module);
+            
+            #endregion
+
+            AddResponder<IFlowchartChangeResponder>(module);
+            
+            AddResponder<ICommandSelectionResponder>(module);
+
+            AddResponder<IWindowPanResponder>(module);
+
+            AddResponder<IVariableAddResponder>(module);
+            AddResponder<IVariableRemoveResponder>(module);
 
         }
 
@@ -59,39 +72,51 @@ namespace Amanita.VScripting.EditorUtils
         {
             modules.Remove(module);
 
-            UnregisterResponder<ILeftClickResponder>(module);
-            UnregisterResponder<IRightClickResponder>(module);
+            #region Mouse Events
+            RemoveResponder<ILeftClickResponder>(module);
+            RemoveResponder<IRightClickResponder>(module);
+            RemoveResponder<IDoubleClickResponder>(module);
 
-            UnregisterResponder<ILeftMouseDragStartResponder>(module);
-            UnregisterResponder<ILeftMouseDragResponder>(module);
-            UnregisterResponder<ILeftMouseDragEndResponder>(module);
+            RemoveResponder<ILeftMouseDragStartResponder>(module);
+            RemoveResponder<ILeftMouseDragResponder>(module);
+            RemoveResponder<ILeftMouseDragEndResponder>(module);
+            RemoveResponder<ILeftMouseUpResponder>(module);
 
-            UnregisterResponder<IRightMouseDragStartResponder>(module);
-            UnregisterResponder<IRightMouseDragResponder>(module);
-            UnregisterResponder<IRightMouseDragEndResponder>(module);
+            RemoveResponder<IRightMouseDragStartResponder>(module);
+            RemoveResponder<IRightMouseDragResponder>(module);
+            RemoveResponder<IRightMouseDragEndResponder>(module);
 
-            UnregisterResponder<IEmptySpaceLeftMouseDownResponder>(module);
-            UnregisterResponder<IEmptySpaceLeftMouseUpResponder>(module);
+            RemoveResponder<IEmptySpaceClickResponder>(module);
+            RemoveResponder<IEmptySpaceLeftMouseDownResponder>(module);
+            RemoveResponder<IEmptySpaceLeftMouseUpResponder>(module);
 
-            UnregisterResponder<IDoubleClickResponder>(module);
-            UnregisterResponder<IScrollWheelMoveResponder>(module);
-            UnregisterResponder<IScrollWheelDragResponder>(module);
-            UnregisterResponder<IEmptySpaceClickResponder>(module);
-            UnregisterResponder<IFlowchartChangeResponder>(module);
-            UnregisterResponder<IBlocksCopiedResponder>(module);
-            UnregisterResponder<IPreBlockDeletionResponder>(module);
-            UnregisterResponder<IBlockSelectionResponder>(module);
-            UnregisterResponder<ICommandSelectionResponder>(module);
-            UnregisterResponder<IWindowPanResponder>(module);
+            RemoveResponder<IScrollWheelMoveResponder>(module);
+            RemoveResponder<IScrollWheelDragResponder>(module);
 
-            UnregisterResponder<IBlockCreatedResponder>(module);
-            UnregisterResponder<IPostBlockDeletionResponder>(module);
-            UnregisterResponder<IBlockClickResponder>(module);
+            #endregion
 
-            UnregisterResponder<ILeftMouseUpResponder>(module);
+            #region Block Events
+            RemoveResponder<IBlockCreatedResponder>(module);
+            RemoveResponder<IPreBlockDeletionResponder>(module);
+            RemoveResponder<IPostBlockDeletionResponder>(module);
 
-            UnregisterResponder<IVariableAddResponder>(module);
-            UnregisterResponder<IVariableRemoveResponder>(module);
+            RemoveResponder<IBlockClickResponder>(module);
+            RemoveResponder<IBlockSelectionResponder>(module);
+            RemoveResponder<IMultiBlockSelectionResponder>(module);
+            RemoveResponder<IBlockDeselectionResponder>(module);
+            RemoveResponder<IMultiBlockDeselectionResponder>(module);
+
+            RemoveResponder<IBlocksCopiedResponder>(module);
+            #endregion
+
+            RemoveResponder<IFlowchartChangeResponder>(module);
+
+            RemoveResponder<ICommandSelectionResponder>(module);
+
+            RemoveResponder<IWindowPanResponder>(module);
+
+            RemoveResponder<IVariableAddResponder>(module);
+            RemoveResponder<IVariableRemoveResponder>(module);
 
             module.Dispose();
         }
@@ -108,11 +133,16 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         #region Notifiers
+
+        #region Mouse Notifiers
         public void NotifyLeftClick(Vector2 position) =>
             Broadcast<ILeftClickResponder>(res => res.OnLeftClick(position));
 
         public void NotifyRightClick(Vector2 position) =>
             Broadcast<IRightClickResponder>(res => res.OnRightClick(position));
+
+        public void NotifyDoubleClick(Vector2 position) =>
+            Broadcast<IDoubleClickResponder>(res => res.OnDoubleClick(position));
 
         public void NotifyLeftMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
             Broadcast<ILeftMouseDragStartResponder>(res => res.OnLeftMouseDragStarted(startPosition, guiEvent));
@@ -123,6 +153,9 @@ namespace Amanita.VScripting.EditorUtils
         public void NotifyLeftMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
             Broadcast<ILeftMouseDragEndResponder>(res => res.OnLeftMouseDragEnded(endPosition, guiEvent));
 
+        public void NotifyLeftMouseUp(Vector2 position, Event evt) =>
+            Broadcast<ILeftMouseUpResponder>(res => res.OnLeftMouseUp(position, evt));
+
         public void NotifyRightMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
             Broadcast<IRightMouseDragStartResponder>(res => res.OnRightMouseDragStarted(startPosition, guiEvent));
 
@@ -132,36 +165,23 @@ namespace Amanita.VScripting.EditorUtils
         public void NotifyRightMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
             Broadcast<IRightMouseDragEndResponder>(res => res.OnRightMouseDragEnded(endPosition, guiEvent));
 
-        public void NotifyDoubleClick(Vector2 position) =>
-            Broadcast<IDoubleClickResponder>(res => res.OnDoubleClick(position));
+        public void NotifyEmptySpaceClicked(Vector2 position) =>
+            Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(position));
+
+        public void NotifyEmptySpaceLeftMouseDown(Vector2 position, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(position, evt));
+
+        public void NotifyEmptySpaceLeftMouseUp(Vector2 position, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseUpResponder>(res => res.OnEmptySpaceLeftMouseUp(position, evt));
 
         public void NotifyScrollWheelMoved() =>
             Broadcast<IScrollWheelMoveResponder>(res => res.OnScrollWheelMoved());
 
         public void NotifyScrollWheelDragged(Vector2 direction) =>
             Broadcast<IScrollWheelDragResponder>(res => res.OnScrollWheelDragged(direction));
+        #endregion
 
-        public void NotifyEmptySpaceClicked(Vector2 position) =>
-            Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(position));
-
-        public void NotifyFlowchartChanged(Flowchart prev, Flowchart current) =>
-            Broadcast<IFlowchartChangeResponder>(res => res.OnFlowchartChanged(prev, current));
-
-        public void NotifyBlocksCopied(IList<Block> copiedBlocks) =>
-            Broadcast<IBlocksCopiedResponder>(res => res.OnBlocksCopied(copiedBlocks));
-
-        public void NotifyPreBlockDeletion(IList<Block> blocksToDelete) =>
-            Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocksToDelete));
-
-        public void NotifyBlockSelected(Block block) =>
-            Broadcast<IBlockSelectionResponder>(res => res.OnBlockSelected(block));
-
-        public void NotifyCommandSelected(Command command) =>
-            Broadcast<ICommandSelectionResponder>(res => res.OnCommandSelected(command));
-
-        public void NotifyWindowPanned() =>
-            Broadcast<IWindowPanResponder>(res => res.OnWindowPanned());
-
+        #region Block Notifiers
         public void NotifyBlockCreated(Block block) =>
             Broadcast<IBlockCreatedResponder>(res => res.OnBlockCreated(block));
 
@@ -171,26 +191,44 @@ namespace Amanita.VScripting.EditorUtils
         public void NotifyPreMultiBlockDeleted(IList<Block> blocks) =>
             Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocks));
 
-        public void NotifyPostBlockDeleted(Block block) =>
-            Broadcast<IPostBlockDeletionResponder>(res => res.OnPostBlockDeletion(block));
+        public void NotifyPostBlockDeleted(uint blockId) =>
+            Broadcast<IPostBlockDeletionResponder>(res => res.OnPostBlockDeletion(blockId));
 
-        public void NotifyPostMultiBlockDeleted(IList<Block> blocks) =>
-            Broadcast<IPostBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blocks));
+        public void NotifyPostMultiBlockDeleted(IList<uint> blockIds) =>
+            Broadcast<IPostMultiBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blockIds));
 
         public void NotifyBlockClicked(Block block, Event evt) =>
             Broadcast<IBlockClickResponder>(res => res.OnBlockClicked(block, evt));
 
-        public void NotifyEmptySpaceLeftMouseDown(Vector2 position, Event evt) =>
-            Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(position, evt));
+        public void NotifyBlockSelected(Block block) =>
+            Broadcast<IBlockSelectionResponder>(res => res.OnBlockSelected(block));
 
-        public void NotifyEmptySpaceLeftMouseUp(Vector2 position, Event evt) =>
-            Broadcast<IEmptySpaceLeftMouseUpResponder>(res => res.OnEmptySpaceLeftMouseUp(position, evt));
+        public void NotifyMultiBlocksSelected(IList<Block> blocks) =>
+            Broadcast<IMultiBlockSelectionResponder>(res => res.OnMultiBlocksSelected(blocks));
 
-        public void NotifyLeftMouseUp(Vector2 position, Event evt) =>
-            Broadcast<ILeftMouseUpResponder>(res => res.OnLeftMouseUp(position, evt));
+        public void NotifyBlockDeselected(Block block) =>
+            Broadcast<IBlockDeselectionResponder>(res => res.OnBlockDeselected(block));
+
+        public void NotifyMultiBlocksDeselected(IList<Block> blocks) =>
+            Broadcast<IMultiBlockDeselectionResponder>(res => res.OnMultiBlocksDeselected(blocks));
+
+        public void NotifyBlocksCopied(IList<Block> copiedBlocks) =>
+            Broadcast<IBlocksCopiedResponder>(res => res.OnBlocksCopied(copiedBlocks));
+
         #endregion
 
-        private void RegisterResponder<TResponder>(IFlowchartWindowModule module)
+        public void NotifyFlowchartChanged(Flowchart prev, Flowchart current) =>
+            Broadcast<IFlowchartChangeResponder>(res => res.OnFlowchartChanged(prev, current));
+
+        public void NotifyCommandSelected(Command command) =>
+            Broadcast<ICommandSelectionResponder>(res => res.OnCommandSelected(command));
+
+        public void NotifyWindowPanned() =>
+            Broadcast<IWindowPanResponder>(res => res.OnWindowPanned());
+
+        #endregion
+
+        private void AddResponder<TResponder>(IFlowchartWindowModule module)
             where TResponder : class
         {
             if (module is not TResponder responder)
@@ -202,7 +240,7 @@ namespace Amanita.VScripting.EditorUtils
             bucket.Add(responder);
         }
 
-        private void UnregisterResponder<TResponder>(IFlowchartWindowModule module)
+        private void RemoveResponder<TResponder>(IFlowchartWindowModule module)
             where TResponder : class
         {
             if (module is not TResponder responder)

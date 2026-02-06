@@ -25,7 +25,9 @@ namespace Amanita.VScripting.EditorUtils
         public void ResetLastShownBlock()
         {
             Flowchart flowchart = Flowchart;
-            LastShownBlock = flowchart != null ? flowchart.SelectedBlock : null;
+            LastShownBlock = flowchart != null ? 
+                flowchart.SelectedBlock : 
+                null;
         }
 
         public void HandleBlockCreated(Block block)

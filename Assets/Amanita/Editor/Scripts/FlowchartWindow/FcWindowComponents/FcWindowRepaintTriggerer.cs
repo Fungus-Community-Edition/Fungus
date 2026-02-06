@@ -63,12 +63,12 @@ namespace Amanita.VScripting.EditorUtils
             owner = null;
         }
 
-        public void OnPostMultiBlockDeletion(IList<Block> blocks)
+        public void OnPostMultiBlockDeletion(IList<uint> blockIds)
         {
             TriggerRepaint();
         }
 
-        public void OnPostBlockDeletion(Block block)
+        public void OnPostBlockDeletion(uint blockId)
         {
             TriggerRepaint();
         }

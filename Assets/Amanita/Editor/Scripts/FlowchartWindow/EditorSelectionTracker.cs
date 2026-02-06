@@ -46,12 +46,13 @@ namespace Amanita.VScripting.EditorUtils
                 Selection.selectionChanged += OnUnitySelectionChanged;
 
                 BlockSignals.BlockSelected += OnBlockSelected;
-                BlockSignals.BlockRemovedFromSelection += OnBlockRemovedFromSelection;
+                BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
                 BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
 
                 FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
-                FlowchartWindowSignals.CommandSelected += OnCommandSelected;
                 FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+
+                CommandSignals.CommandSelected += OnCommandSelected;
 
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
@@ -62,12 +63,13 @@ namespace Amanita.VScripting.EditorUtils
                 Selection.selectionChanged -= OnUnitySelectionChanged;
 
                 BlockSignals.BlockSelected -= OnBlockSelected;
-                BlockSignals.BlockRemovedFromSelection -= OnBlockRemovedFromSelection;
+                BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
                 BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
 
                 FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
-                FlowchartWindowSignals.CommandSelected -= OnCommandSelected;
                 FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+
+                CommandSignals.CommandSelected -= OnCommandSelected;
 
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;

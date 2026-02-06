@@ -67,8 +67,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
         {
-            Debug.Log($"Selection box renderer: Drag ended at {endPos}");
-            //flowchartContext.Interaction.SelectionBox = Rect.zero; // In case it wasn't cleared elsewhere
+            //Debug.Log($"Selection box renderer: Drag ended at {endPos}");
             _ignoreSelectionBoxThisFrame = true;
             RequestRepaint();
         }

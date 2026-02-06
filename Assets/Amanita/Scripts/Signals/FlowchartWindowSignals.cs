@@ -31,8 +31,6 @@ namespace Amanita.VScripting
 
         public static Action<Vector2> EmptySpaceClicked = delegate { };
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };
-        public static Action<IList<Block>> BlocksCopied = delegate { };
-        public static Action<Command> CommandSelected = delegate { };
         public static Action WindowPanned = delegate { };
 
         public static Action<Vector2, Event> LeftMouseDragStarted = delegate { };
@@ -108,14 +106,17 @@ namespace Amanita.VScripting
 
     public interface IPostBlockDeletionResponder
     {
-        void OnPostMultiBlockDeletion(IList<Block> blocks);
-        void OnPostBlockDeletion(Block block);
+        void OnPostBlockDeletion(uint blockId);
+    }
+
+    public interface IPostMultiBlockDeletionResponder
+    {
+        void OnPostMultiBlockDeletion(IList<uint> blockIds);
     }
 
     public interface IBlockSelectionResponder
     {
         void OnBlockSelected(Block block);
-        void OnMultiBlocksSelected(IList<Block> blocks);
     }
 
     public interface ICommandSelectionResponder

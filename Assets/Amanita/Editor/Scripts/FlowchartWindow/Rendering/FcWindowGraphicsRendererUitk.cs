@@ -9,7 +9,8 @@ namespace Amanita.VScripting.EditorUtils
     /// Encapsulates all flowchart window graphics renderers (grid, blocks, selection box).
     /// </summary>
     public sealed class FcWindowGraphicsRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
-        IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder, IFlowchartChangeResponder,
+        IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, 
+        IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
     {
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
@@ -136,6 +137,16 @@ namespace Amanita.VScripting.EditorUtils
         {
             blockRenderer.OnLeftMouseDragEnded(endPos, evt);
             selectionBoxRenderer.OnLeftMouseDragEnded(endPos, evt);
+        }
+
+        public void OnBlockDeselected(Block block)
+        {
+            blockRenderer.OnBlockDeselected(block);
+        }
+
+        public void OnMultiBlocksDeselected(IList<Block> blocks)
+        {
+            blockRenderer.OnMultiBlocksDeselected(blocks);
         }
     }
 }

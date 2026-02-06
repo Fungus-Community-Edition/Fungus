@@ -18,7 +18,8 @@ namespace Amanita.VScripting.EditorUtils
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
         IBlockSelectionResponder, IPreBlockDeletionResponder, ILeftMouseDragStartResponder,
-        ILeftMouseDragEndResponder
+        ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
+        IMultiBlockDeselectionResponder
     {
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
@@ -165,6 +166,9 @@ namespace Amanita.VScripting.EditorUtils
             drawer.UpdateButton(binding.Button, block, CurrentZoom);
         }
 
+        /// <summary>
+        /// Based on the current scroll and zoom, update the positions and sizes of all block buttons.
+        /// </summary>
         private void UpdateBlockLayouts()
         {
             Vector2 scroll = CurrentScroll;
@@ -208,6 +212,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        #region Callbacks
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
             RefreshBlocks();
@@ -223,43 +228,42 @@ namespace Amanita.VScripting.EditorUtils
             UpdateBlockLayouts();
         }
 
-        public void OnBlockSelected(Block block)
-        {
-            if (block == null)
-            {
-                return;
-            }
-
-            // Update all the blocks, since we want to make sure that the previously selected block(s) are updated too.
-            foreach (var entry in blockBindings)
-            {
-                var blockToUpdate = entry.Key;
-                bool shouldDeselect = !ReferenceEquals(blockToUpdate, block) && blockToUpdate.IsSelected;
-                if (shouldDeselect)
-                {
-                    blockToUpdate.IsSelected = false;
-                }
-                drawer.UpdateButton(entry.Value.Button, blockToUpdate, CurrentZoom);
-            }
-        }
-
         public void OnMultiBlocksSelected(IList<Block> blocks)
         {
-            // Reminder: this should execute when multiple blocks are selected through any of the following:
-            // - Shift+Click
-            // - Click and drag selection box
+            UpdateButtonForMultiBlocks(blocks);
         }
 
-        public void Dispose()
+        private void UpdateButtonForMultiBlocks(IList<Block> blocks)
         {
-            if (isDisposed)
+            for (int i = 0; i < blocks.Count; i++)
             {
-                return;
+                UpdateButtonForBlock(blocks[i]);
             }
+        }
 
-            isDisposed = true;
-            ClearAll();
-            this.RemoveFromHierarchy();
+        private void UpdateButtonForBlock(Block block)
+        {
+            if (blockBindings.TryGetValue(block, out BlockBinding binding))
+            {
+                drawer.UpdateButton(binding.Button, block, CurrentZoom);
+            }
+        }
+
+        public void OnBlockDeselected(Block block)
+        {
+            UpdateButtonForBlock(block);
+        }
+
+        public void OnMultiBlocksDeselected(IList<Block> blocks)
+        {
+            UpdateButtonForMultiBlocks(blocks);
+        }
+
+        #endregion
+
+        public void OnBlockSelected(Block block)
+        {
+            UpdateButtonForBlock(block);
         }
 
         private void ClearAll()
@@ -322,7 +326,19 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
         }
 
+        
 
+        public void Dispose()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            isDisposed = true;
+            ClearAll();
+            this.RemoveFromHierarchy();
+        }
     }
 
 }

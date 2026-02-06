@@ -58,13 +58,24 @@ namespace Amanita.VScripting.EditorUtils
             {
                 EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
 
+                #region Block Signal Subs
                 BlockSignals.BlockCreated += _moduleDispatcher.NotifyBlockCreated;
+
                 BlockSignals.BlockClicked += _moduleDispatcher.NotifyBlockClicked;
                 BlockSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
+                BlockSignals.MultiBlocksSelected += _moduleDispatcher.NotifyMultiBlocksSelected;
+
+                BlockSignals.BlockDeselected += _moduleDispatcher.NotifyBlockDeselected;
+                BlockSignals.MultiBlocksDeselected += _moduleDispatcher.NotifyMultiBlocksDeselected;
+
                 BlockSignals.PreBlockDelete += _moduleDispatcher.NotifyPreBlockDeleted;
+                BlockSignals.PostBlockDelete += _moduleDispatcher.NotifyPostBlockDeleted;
                 BlockSignals.PreMultiBlockDelete += _moduleDispatcher.NotifyPreMultiBlockDeleted;
 
-                #region Mouse Input Sub
+                BlockSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
+                #endregion
+
+                #region Mouse Input Subs
                 FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
                 FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
 
@@ -83,28 +94,40 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved += _moduleDispatcher.NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged += _moduleDispatcher.NotifyScrollWheelDragged;
-                #endregion
 
                 FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
+                #endregion
 
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
+                
+                
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened += OnSceneOpened;
 
                 AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+                CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
             }
             else
             {
                 EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
 
+                #region Block Signal Unsubs
                 BlockSignals.BlockCreated -= _moduleDispatcher.NotifyBlockCreated;
+
                 BlockSignals.BlockClicked -= _moduleDispatcher.NotifyBlockClicked;
                 BlockSignals.BlockSelected -= _moduleDispatcher.NotifyBlockSelected;
+                BlockSignals.MultiBlocksSelected -= _moduleDispatcher.NotifyMultiBlocksSelected;
+
+                BlockSignals.BlockDeselected -= _moduleDispatcher.NotifyBlockDeselected;
+                BlockSignals.MultiBlocksDeselected -= _moduleDispatcher.NotifyMultiBlocksDeselected;
+
                 BlockSignals.PreBlockDelete -= _moduleDispatcher.NotifyPreBlockDeleted;
+                BlockSignals.PostBlockDelete -= _moduleDispatcher.NotifyPostBlockDeleted;
                 BlockSignals.PreMultiBlockDelete -= _moduleDispatcher.NotifyPreMultiBlockDeleted;
+
+                BlockSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
+                #endregion
 
                 #region Mouse Input Unsub
                 FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
@@ -125,20 +148,19 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
                 FlowchartWindowSignals.ScrollWheelMoved -= _moduleDispatcher.NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged -= _moduleDispatcher.NotifyScrollWheelDragged;
-                #endregion
-
 
                 FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
+                #endregion
 
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
-                FlowchartWindowSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
+                
+                
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
 
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
-
+                CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
             }
         }
 
@@ -337,7 +359,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
         private MissingFlowchartOverlay _missingOverlay;
-        private UitkLabel _fcNameLabel;
+        private UitkLabel _fcNameLabel, _zoomAmountLabel;
 
         #region Submodules
         private FcWindowGraphicsRendererUitk _graphicsRenderer;

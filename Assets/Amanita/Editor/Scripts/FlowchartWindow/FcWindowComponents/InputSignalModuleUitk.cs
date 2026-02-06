@@ -1,8 +1,8 @@
 using Amanita.EditorUtils;
 using System;
 using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -14,7 +14,9 @@ namespace Amanita.VScripting.EditorUtils
     {
         public void Initialize(FlowchartWindowUitk window)
         {
-            owner = window ?? throw new ArgumentNullException(nameof(window));
+            owner = window != null ? 
+                window : 
+                throw new ArgumentNullException(nameof(window));
             RegisterPointerCallbacks(true);
         }
 
@@ -169,8 +171,14 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 else
                 {
-                    //Debug.Log("Left click detected");
+                    Debug.Log("Left click detected");
                     FlowchartWindowSignals.LeftClicked(guiEvent.mousePosition);
+                    bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(guiEvent.mousePosition);
+                    if (!mouseOverBlock)
+                    {
+                        Debug.Log("Empty space clicked");
+                        FlowchartWindowSignals.EmptySpaceClicked(guiEvent.mousePosition);
+                    }
                 }
             }
             else if (guiEvent.RightClick())
@@ -193,7 +201,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (!IsMouseOverBlock(guiEvent.mousePosition))
+            if (!BlockHitTester.IsMouseOverBlock(guiEvent.mousePosition))
             {
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown(guiEvent.mousePosition, guiEvent);
             }

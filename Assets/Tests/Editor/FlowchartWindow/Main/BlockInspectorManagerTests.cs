@@ -106,7 +106,7 @@ namespace VScriptingTests.FlowchartWindow.Main
             Selection.activeObject = null;
             Selection.activeGameObject = null;
 
-            BlockSignals.BlockRemovedFromSelection(block);
+            BlockSignals.BlockDeselected(block);
 
             Assert.That(BlockInspectorManager.LastShownBlock, Is.Null);
             Assert.That(Selection.activeGameObject, Is.SameAs(flowchart.gameObject));

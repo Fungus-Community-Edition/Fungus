@@ -42,7 +42,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt)
         {
-            Debug.Log($"Box selection tracking disabled at {pos}");
+            //Debug.Log($"Box selection tracking disabled at {pos}");
             _shouldTrack = false;
         }
 
@@ -72,7 +72,7 @@ namespace Amanita.VScripting.EditorUtils
                 startPos.y);
 
             interaction.SelectionBoxDragOngoing = false;
-            Debug.Log($"Box selection started at {startPos}");
+            //Debug.Log($"Box selection started at {startPos}");
         }
 
         public void OnLeftMouseDragged(Vector2 _, Event evt)
@@ -151,6 +151,7 @@ namespace Amanita.VScripting.EditorUtils
             float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
             Vector2 scrollPos = flowchart.ScrollPos;
 
+            IList<Block> blocksSelected = new List<Block>();
             foreach (var block in EnumerateBlocks(ctx))
             {
                 if (block == null)
@@ -166,6 +167,22 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     ctx.Selection.Add(block);
                 }
+            }
+
+            int blockCount = ctx.Selection.BlockCount;
+            if (blockCount == 1)
+            {
+                BlockSignals.BlockSelected?.Invoke(ctx.Selection.Blocks[0]);
+                Debug.Log("1 block selected via box selection.");
+            }
+            else if (blockCount > 1)
+            {
+                BlockSignals.MultiBlocksSelected?.Invoke(ctx.Selection.Blocks);
+                Debug.Log($"{blockCount} blocks selected via box selection.");
+            }
+            else
+            {
+                FlowchartWindowSignals.EmptySpaceClicked?.Invoke(Vector2.zero);
             }
         }
 

@@ -21,24 +21,34 @@ namespace Amanita.VScripting
         /// Blocks are selected.
         /// </summary>
         public static Action<Block> BlockSelected = delegate { };
-
-        public static Action<Block> BlockRemovedFromSelection = delegate { };
-
+        public static Action<Block> BlockDeselected = delegate { };
         /// <summary>
         /// For when multiple blocks are selected at once
         /// </summary>
         public static Action<IList<Block>> MultiBlocksSelected = delegate { };
 
+        public static Action<IList<Block>> MultiBlocksDeselected = delegate { };
+
         /// <summary>
         /// Sent just before a Block is deleted.
         /// </summary>
         public static Action<Block> PreBlockDelete = delegate { };
+        /// <summary>
+        /// Sent just after a Block is deleted. The uint argument is the ID of the deleted Block.
+        /// </summary>
+        public static Action<uint> PostBlockDelete = delegate { };
 
         /// <summary>
         /// Sent just before multiple Blocks are deleted at once.
         /// </summary>
         public static Action<IList<Block>> PreMultiBlockDelete = delegate { };
+        /// <summary>
+        /// Sent just after multiple Blocks are deleted at once. The IList<uint> argument
+        /// contains the IDs of the deleted Blocks.
+        /// </summary>
+        public static Action<IList<uint>> PostMultiBlockDelete = delegate { };
 
+        public static Action<IList<Block>> BlocksCopied = delegate { };
         #endregion
 
         #region Runtime Signals
@@ -82,6 +92,21 @@ namespace Amanita.VScripting
     public interface IBlockCreatedResponder
     {
         void OnBlockCreated(Block block);
+    }
+
+    public interface IBlockDeselectionResponder
+    {
+        void OnBlockDeselected(Block block);
+    }
+
+    public interface IMultiBlockSelectionResponder
+    {
+        void OnMultiBlocksSelected(IList<Block> blocks);
+    }
+
+    public interface IMultiBlockDeselectionResponder
+    {
+        void OnMultiBlocksDeselected(IList<Block> blocks);
     }
 
 }

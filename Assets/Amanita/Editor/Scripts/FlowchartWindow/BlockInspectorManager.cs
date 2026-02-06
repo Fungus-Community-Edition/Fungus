@@ -21,7 +21,7 @@ namespace Amanita.VScripting.EditorUtils
         private static void ListenForEvents()
         {
             BlockSignals.BlockSelected += OnBlockSelected;
-            BlockSignals.BlockRemovedFromSelection += OnBlockRemovedFromSelection;
+            BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
             BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
 
             FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;

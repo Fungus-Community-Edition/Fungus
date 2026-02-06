@@ -707,7 +707,6 @@ namespace Amanita.VScripting
         {
             IList<Block> blocksToSignal = SelectedBlocks;
             UIModel.ClearSelectedBlocks();
-            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
         }
 
         public virtual void AddRangeToSelection(IList<Block> toSelect)
