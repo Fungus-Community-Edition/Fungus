@@ -309,7 +309,6 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        private BlockInspectorSynchronization _blockInspectorSync;
         private SingleClickBlockSelector _blockClickSelectionSyncer;
         private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;

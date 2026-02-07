@@ -103,6 +103,8 @@ namespace Amanita.VScripting.EditorUtils
                     bottomLeftCorner.y,
                     topRightCorner.x,
                     topRightCorner.y);
+
+                UpdateSelectionDuringDrag(flowchartContext, interaction.SelectionBox);
             }
 
             //Debug.Log($"Selection box drag tracker: Box selection dragged to {current}");
@@ -138,20 +140,17 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public static readonly Vector2 MinThreshold = new Vector2(2, 2);
 
-        private static void SelectBlocksOverlappedByBox(FlowchartContext ctx, Rect selectionBox)
+        private static void UpdateSelectionDuringDrag(FlowchartContext ctx, Rect selectionBox)
         {
-            ctx.Selection.ClearBlocks();
-
             Flowchart flowchart = ctx.Flowchart;
             if (flowchart == null)
             {
                 return;
             }
 
-            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
-            Vector2 scrollPos = flowchart.ScrollPos;
+            Rect zoomSelectionBox = ToFlowchartSpace(selectionBox, flowchart);
 
-            IList<Block> blocksSelected = new List<Block>();
+            ctx.Selection.ClearBlocks();
             foreach (var block in EnumerateBlocks(ctx))
             {
                 if (block == null)
@@ -159,15 +158,16 @@ namespace Amanita.VScripting.EditorUtils
                     continue;
                 }
 
-                Rect windowSpaceRect = block._NodeRect;
-                windowSpaceRect.position = (windowSpaceRect.position + scrollPos) * zoom;
-                windowSpaceRect.size *= zoom;
-
-                if (selectionBox.Overlaps(windowSpaceRect))
+                if (zoomSelectionBox.Overlaps(block._NodeRect))
                 {
                     ctx.Selection.Add(block);
                 }
             }
+        }
+
+        private static void SelectBlocksOverlappedByBox(FlowchartContext ctx, Rect selectionBox)
+        {
+            UpdateSelectionDuringDrag(ctx, selectionBox);
 
             int blockCount = ctx.Selection.BlockCount;
             if (blockCount == 1)
@@ -184,6 +184,20 @@ namespace Amanita.VScripting.EditorUtils
             {
                 FlowchartWindowSignals.EmptySpaceClicked?.Invoke(Vector2.zero);
             }
+        }
+
+        private static Rect ToFlowchartSpace(Rect selectionBox, Flowchart flowchart)
+        {
+            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 
+                1f : 
+                flowchart.Zoom;
+
+            Rect zoomSelectionBox = selectionBox;
+            zoomSelectionBox.position -= flowchart.ScrollPos * zoom;
+            zoomSelectionBox.position /= zoom;
+            zoomSelectionBox.size /= zoom;
+
+            return zoomSelectionBox;
         }
 
         private static IEnumerable<Block> EnumerateBlocks(FlowchartContext ctx)

@@ -16,6 +16,7 @@ namespace Amanita.VScripting.EditorUtils
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
             IBlockDrawerUitk blockDrawer)
         {
+            #region Validate Parameters
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
@@ -30,11 +31,17 @@ namespace Amanita.VScripting.EditorUtils
             {
                 throw new ArgumentNullException(nameof(blockDrawer));
             }
+            #endregion
 
+            #region Create Submodules
             gridRenderer = new GridRendererUitk(context, gridDrawContext);
             blockRenderer = new BlockRendererUitk(context, blockDrawer);
             selectionBoxRenderer = new SelectionBoxRendererUitk(context);
+            var connectionDrawer = new ConnectionDrawerUitk(new ConnectionGathererUitk(blockRenderer));
+            connectionRenderer = new ConnectionRendererUitk(context, connectionDrawer);
+            #endregion
 
+            #region Position and Style
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.top = 0f;
@@ -42,20 +49,24 @@ namespace Amanita.VScripting.EditorUtils
             style.bottom = 0f;
             style.left = 0f;
             style.flexGrow = 1f;
+            #endregion
 
             Add(gridRenderer);
             Add(blockRenderer);
+            Add(connectionRenderer);
             Add(selectionBoxRenderer);
         }
 
         private readonly GridRendererUitk gridRenderer;
         private readonly BlockRendererUitk blockRenderer;
         private readonly SelectionBoxRendererUitk selectionBoxRenderer;
+        private readonly ConnectionRendererUitk connectionRenderer;
         private bool isDisposed;
 
         public void Initialize(FlowchartWindowUitk window)
         {
             gridRenderer.Initialize(window);
+            connectionRenderer.Initialize(window);
             blockRenderer.Initialize(window);
             selectionBoxRenderer.Initialize(window);
         }
@@ -74,6 +85,7 @@ namespace Amanita.VScripting.EditorUtils
 
             isDisposed = true;
             gridRenderer.Dispose();
+            connectionRenderer.Dispose();
             blockRenderer.Dispose();
             selectionBoxRenderer.Dispose();
             RemoveFromHierarchy();
@@ -82,6 +94,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnScrollWheelMoved()
         {
             gridRenderer.OnScrollWheelMoved();
+            connectionRenderer.OnScrollWheelMoved();
             blockRenderer.OnScrollWheelMoved();
             selectionBoxRenderer.OnScrollWheelMoved();
         }
@@ -89,6 +102,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnWindowPanned()
         {
             gridRenderer.OnWindowPanned();
+            connectionRenderer.OnWindowPanned();
             blockRenderer.OnWindowPanned();
             selectionBoxRenderer.OnWindowPanned();
         }
@@ -96,56 +110,66 @@ namespace Amanita.VScripting.EditorUtils
         public void OnBlockSelected(Block block)
         {
             gridRenderer.OnBlockSelected(block);
+            connectionRenderer.OnBlockSelected(block);
             blockRenderer.OnBlockSelected(block);
         }
 
         public void OnMultiBlocksSelected(IList<Block> blocks)
         {
             gridRenderer.OnMultiBlocksSelected(blocks);
+            connectionRenderer.OnMultiBlocksSelected(blocks);
             blockRenderer.OnMultiBlocksSelected(blocks);
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
             gridRenderer.OnFlowchartChanged(previous, next);
+            connectionRenderer.OnFlowchartChanged(previous, next);
             blockRenderer.OnFlowchartChanged(previous, next);
             selectionBoxRenderer.OnFlowchartChanged(previous, next);
         }
 
         public void OnPreBlockDeletion(IList<Block> blocks)
         {
+            connectionRenderer.OnPreBlockDeletion(blocks);
             blockRenderer.OnPreBlockDeletion(blocks);
         }
 
         public void OnPreBlockDeletion(Block block)
         {
+            connectionRenderer.OnPreBlockDeletion(block);
             blockRenderer.OnPreBlockDeletion(block);
         }
 
         public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
         {
+            connectionRenderer.OnLeftMouseDragStarted(startPos, evt);
             blockRenderer.OnLeftMouseDragStarted(startPos, evt);
             selectionBoxRenderer.OnLeftMouseDragStarted(startPos, evt);
         }
 
         public void OnLeftMouseDragged(Vector2 delta, Event evt)
         {
+            connectionRenderer.OnLeftMouseDragged(delta, evt);
             selectionBoxRenderer.OnLeftMouseDragged(delta, evt);
         }
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
         {
+            connectionRenderer.OnLeftMouseDragEnded(endPos, evt);
             blockRenderer.OnLeftMouseDragEnded(endPos, evt);
             selectionBoxRenderer.OnLeftMouseDragEnded(endPos, evt);
         }
 
         public void OnBlockDeselected(Block block)
         {
+            connectionRenderer.OnBlockDeselected(block);
             blockRenderer.OnBlockDeselected(block);
         }
 
         public void OnMultiBlocksDeselected(IList<Block> blocks)
         {
+            connectionRenderer.OnMultiBlocksDeselected(blocks);
             blockRenderer.OnMultiBlocksDeselected(blocks);
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -13,20 +14,13 @@ namespace Amanita.VScripting.EditorUtils
                 return false;
             }
 
-            bool zoomAtZero = Mathf.Approximately(flowchart.Zoom, 0f);
-            float zoom = zoomAtZero ? 
-                1f : 
-                flowchart.Zoom;
-            Vector2 mousePosInWindowSpace = mousePosition / zoom;
-            Vector2 scrollPos = flowchart.ScrollPos;
-
             IReadOnlyCollection<Block> blocks = flowchart.Blocks;
             if (blocks == null || blocks.Count == 0)
             {
                 Block[] fallback = flowchart.GetComponents<Block>();
                 for (int i = 0; i < fallback.Length; i++)
                 {
-                    bool isOverBlock = IsMouseOverBlock(fallback[i], mousePosInWindowSpace, scrollPos);
+                    bool isOverBlock = IsMouseOverBlock(fallback[i], flowchart, mousePosition);
                     if (isOverBlock)
                     {
                         return true;
@@ -38,7 +32,7 @@ namespace Amanita.VScripting.EditorUtils
 
             foreach (Block block in blocks)
             {
-                bool isOverBlock = IsMouseOverBlock(block, mousePosInWindowSpace, scrollPos);
+                bool isOverBlock = IsMouseOverBlock(block, flowchart, mousePosition);
                 if (isOverBlock)
                 {
                     return true;
@@ -48,17 +42,71 @@ namespace Amanita.VScripting.EditorUtils
             return false;
         }
 
-        private static bool IsMouseOverBlock(Block block, Vector2 mousePosInWindowSpace, Vector2 scrollPos)
+        internal static bool TryGetBlockWindowRect(Block block, Flowchart flowchart, out Rect rect)
         {
-            if (block == null)
+            rect = default;
+            if (block == null || flowchart == null)
             {
                 return false;
             }
 
-            Rect windowSpaceRect = block._NodeRect;
-            windowSpaceRect.position += scrollPos;
+            if (TryGetBlockRectFromRenderer(block, out rect))
+            {
+                return true;
+            }
 
-            return windowSpaceRect.Contains(mousePosInWindowSpace);
+            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
+            Vector2 scrollPos = flowchart.ScrollPos;
+
+            rect = block._NodeRect;
+            rect.position = (rect.position + scrollPos) * zoom;
+            rect.size *= zoom;
+
+            return true;
+        }
+
+        private static bool IsMouseOverBlock(Block block, Flowchart flowchart, Vector2 mousePosition)
+        {
+            if (!TryGetBlockWindowRect(block, flowchart, out Rect windowSpaceRect))
+            {
+                return false;
+            }
+
+            return windowSpaceRect.Contains(mousePosition);
+        }
+
+        private static bool TryGetBlockRectFromRenderer(Block block, out Rect rect)
+        {
+            rect = default;
+
+            FlowchartWindowUitk window = FlowchartWindowUitk.S;
+            if (window == null)
+            {
+                return false;
+            }
+
+            VisualElement root = window.rootVisualElement;
+            if (root == null)
+            {
+                return false;
+            }
+
+            BlockRendererUitk renderer = root.Q<BlockRendererUitk>();
+            if (renderer == null || !renderer.TryGetBlockRect(block, out Rect localRect))
+            {
+                return false;
+            }
+
+            VisualElement parent = renderer.parent;
+            if (parent == null)
+            {
+                rect = localRect;
+                return true;
+            }
+
+            Vector2 worldPos = parent.LocalToWorld(localRect.position);
+            rect = new Rect(worldPos, localRect.size);
+            return true;
         }
     }
 }

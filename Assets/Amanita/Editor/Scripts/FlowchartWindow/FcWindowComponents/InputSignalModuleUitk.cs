@@ -336,53 +336,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private static bool IsMouseOverBlock(Vector2 mousePosition)
         {
-            Flowchart flowchart = EditorSelectionTracker.ActiveFlowchart;
-            if (flowchart == null)
-            {
-                return false;
-            }
-
-            float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
-            Vector2 mousePosInWindowSpace = mousePosition / zoom;
-            Vector2 scrollPos = flowchart.ScrollPos;
-
-            IReadOnlyCollection<Block> blocks = flowchart.Blocks;
-            if (blocks == null || blocks.Count == 0)
-            {
-                Block[] fallback = flowchart.GetComponents<Block>();
-                for (int i = 0; i < fallback.Length; i++)
-                {
-                    if (IsMouseOverBlock(fallback[i], mousePosInWindowSpace, scrollPos))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            foreach (var block in blocks)
-            {
-                if (IsMouseOverBlock(block, mousePosInWindowSpace, scrollPos))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsMouseOverBlock(Block block, Vector2 mousePosInWindowSpace, Vector2 scrollPos)
-        {
-            if (block == null)
-            {
-                return false;
-            }
-
-            Rect windowSpaceRect = block._NodeRect;
-            windowSpaceRect.position += scrollPos;
-
-            return windowSpaceRect.Contains(mousePosInWindowSpace);
+            return BlockHitTester.IsMouseOverBlock(mousePosition);
         }
 
         private void HandlePanInputRelease(Event guiEvent)

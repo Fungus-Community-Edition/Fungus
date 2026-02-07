@@ -20,7 +20,7 @@ namespace Amanita.VScripting.EditorUtils
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
         IBlockSelectionResponder, IPreBlockDeletionResponder, ILeftMouseDragStartResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
-        IMultiBlockDeselectionResponder
+        IMultiBlockDeselectionResponder, IBlockRectProvider
     {
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
@@ -329,7 +329,32 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
         }
 
-        
+        public bool TryGetBlockRect(Block block, out Rect rect)
+        {
+            rect = default;
+            if (block == null)
+            {
+                return false;
+            }
+
+            if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button == null)
+            {
+                return false;
+            }
+
+            VisualElement parentEl = parent;
+            Rect worldRect = binding.Button.worldBound;
+
+            if (parentEl == null)
+            {
+                rect = worldRect;
+                return true;
+            }
+
+            Vector2 localPos = parentEl.WorldToLocal(worldRect.position);
+            rect = new Rect(localPos, worldRect.size);
+            return true;
+        }
 
         public void Dispose()
         {
