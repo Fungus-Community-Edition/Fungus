@@ -14,7 +14,7 @@ namespace Amanita.VScripting.EditorUtils
         void UpdateBlockCollection();
         void Repaint();
         T GetComponent<T>() where T : IFcWindowComponent;
-        Vector2 GetBlockCenter(IList<Block> blocks);
+        Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks);
 
         void OnGUI();
         Rect CalcFlowchartWindowViewRect();
@@ -23,7 +23,7 @@ namespace Amanita.VScripting.EditorUtils
         DrawGridContext DrawGridCtx { get; }
         DrawBlockContext DrawBlockCtx { get; }
         FlowchartContext FlowchartCtx { get; }
-        IList<Block> Blocks { get; }
+        IReadOnlyCollection<Block> Blocks { get; }
         Rect Position { get; }
         VisualElement RootVisualElement { get; }
         void DoZoom(float delta, Vector2 center);

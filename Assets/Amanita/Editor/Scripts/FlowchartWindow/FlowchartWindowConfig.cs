@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -21,6 +22,10 @@ namespace Amanita.VScripting.EditorUtils
             GridLineColor = new Color(0.5f, 0.5f, 0.5f, 0.2f)
         };
 
+        [Header("Style Sheets")]
+        [SerializeField] private StyleSheet _blockStyleSheet;
+        [SerializeField] private StyleSheet _selectedBlockStyleSheet;
+
         public string FlowchartWindowTitle => _flowchartWindowTitle;
         public Vector2 WindowMinSize => _windowMinSize;
 
@@ -31,5 +36,8 @@ namespace Amanita.VScripting.EditorUtils
         public bool SnapBlocksToGrid => _snapBlocksToGrid;
         
         public DrawGridContext GridDrawConfig => _gridDrawConfig;
+
+        public StyleSheet BlockStyleSheet => _blockStyleSheet;
+        public StyleSheet SelectedBlockStyleSheet => _selectedBlockStyleSheet;
     }
 }

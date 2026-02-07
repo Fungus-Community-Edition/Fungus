@@ -1,5 +1,6 @@
 using UnityEngine;
 using Amanita.EditorUtils;
+using System.Collections.Generic;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -7,6 +8,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         public virtual void Dispose()
         {
+            ToggleSubs(false);
             _window = null;
             _gridRenderer.Dispose();
             _blockRenderer.Dispose();
@@ -27,6 +29,7 @@ namespace Amanita.VScripting.EditorUtils
             _drawGridCtx = window.DrawGridCtx;
             _drawBlockCtx = window.DrawBlockCtx;
             _flowchartCtx = window.FlowchartCtx;
+            ToggleSubs(true);
         }
 
         protected IFlowchartHost _window;
@@ -36,6 +39,41 @@ namespace Amanita.VScripting.EditorUtils
         protected DrawGridContext _drawGridCtx;
         protected DrawBlockContext _drawBlockCtx;
         protected FlowchartContext _flowchartCtx;
+
+        void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                BlockSignals.BlockCreated += OnBlockCreated;
+                BlockSignals.PreBlockDelete += OnPreBlockDelete;
+                BlockSignals.PreMultiBlockDelete += OnPreMultiBlockDelete;
+            }
+            else
+            {
+                BlockSignals.BlockCreated -= OnBlockCreated;
+            }
+        }
+
+        private void OnPreMultiBlockDelete(IList<Block> list)
+        {
+            DrawBlocksAndConnections();
+        }
+
+        private void OnPreBlockDelete(Block block)
+        {
+            DrawBlocksAndConnections();
+        }
+
+        private void OnBlockCreated(Block block)
+        {
+            DrawBlocksAndConnections();
+        }
+
+        void DrawBlocksAndConnections()
+        {
+            _blockRenderer.Render(_drawBlockCtx);
+            _connectionRenderer.Render(_drawBlockCtx, _flowchartCtx);
+        }
 
         public virtual void OnEditorUpdate()
         {
@@ -73,9 +111,7 @@ namespace Amanita.VScripting.EditorUtils
 
             if (Event.current.type == EventType.Repaint)
             {
-                // Draw blocks & connections
-                _blockRenderer.Render(_drawBlockCtx);
-                _connectionRenderer.Render(_drawBlockCtx, _flowchartCtx);
+                DrawBlocksAndConnections();
             }
 
             EditorZoomArea.End();

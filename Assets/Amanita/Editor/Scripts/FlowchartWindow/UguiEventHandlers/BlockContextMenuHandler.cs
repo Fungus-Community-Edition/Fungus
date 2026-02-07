@@ -93,7 +93,7 @@ namespace Amanita.VScripting.EditorUtils
             var selection = flowchartCtx.Selection;
             IList<Block> selectedBlocks = selection.Blocks;
             _host.Clipboard.Copy(selectedBlocks);
-            FlowchartWindowSignals.BlocksCopied(selectedBlocks);
+            BlockSignals.BlocksCopied(selectedBlocks);
         }
 
         protected virtual void CutBlocks(FlowchartContext flowchartCtx)

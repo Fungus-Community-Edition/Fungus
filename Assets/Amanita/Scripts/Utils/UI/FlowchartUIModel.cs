@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Amanita.VScripting.UI
 {
+    /// <summary>
+    /// Model for Flowchart editor window. Stores information about selected blocks and
+    /// commands, scroll position, zoom level, etc.
+    /// </summary>
     [System.Serializable]
     public class FlowchartUIModel : IFlowchartUIModel
     {
@@ -34,8 +38,6 @@ namespace Amanita.VScripting.UI
         /// Zoom level of Flowchart editor window.
         /// </summary>
         [field: SerializeField] public float Zoom { get; set; } = 1f;
-
-        
 
         /// <summary>
         /// Height of Command block view in inspector.
@@ -105,11 +107,28 @@ namespace Amanita.VScripting.UI
 
         public virtual void ClearSelectedBlocks()
         {
+            int amountToClear = _selectedBlocks.Count;
+            if (amountToClear == 0)
+            {
+                return;
+            }
+
+            Block firstBlock = _selectedBlocks[0];
+            IList<Block> blocksToDeselect = new List<Block>(_selectedBlocks);
             foreach (var blockEl in _selectedBlocks)
             {
                 blockEl.IsSelected = false;
             }
             _selectedBlocks.Clear();
+
+            if (amountToClear > 1)
+            {
+                BlockSignals.MultiBlocksDeselected(blocksToDeselect);
+            }
+            else if (amountToClear == 1)
+            {
+                BlockSignals.BlockDeselected(firstBlock);
+            }
         }
 
         public virtual void ClearSelectedCommands()
@@ -130,14 +149,17 @@ namespace Amanita.VScripting.UI
             {
                 BlockSignals.MultiBlocksSelected(toAdd);
             }
+            else if (toAdd.Count == 1)
+            {
+                BlockSignals.BlockSelected(toAdd[0]);
+            }
         }
 
         public virtual void AddToSelection(Block block)
         {
             if (block != null && !_selectedBlocks.Contains(block))
             {
-                block.IsSelected = true;
-                _selectedBlocks.Add(block);
+                AddToSelectionWithoutSignal(block);
                 BlockSignals.BlockSelected(block);
             }
         }
@@ -167,26 +189,21 @@ namespace Amanita.VScripting.UI
             }
         }
 
-        public virtual void RemoveFromSelection(Block toRemove)
-        {
-            toRemove.IsSelected = false;
-            _selectedBlocks.Remove(toRemove);
-        }
-
-        public virtual void RemoveFromSelection(Command toRemove)
+        public virtual void Deselect(Command toRemove)
         {
             _selectedCommands.Remove(toRemove);
         }
 
         public virtual void Deselect(Block toDeselect)
         {
-            toDeselect.IsSelected = false;
-            _selectedBlocks.Remove(toDeselect);
+            DeselectWithoutSignal(toDeselect);
+            BlockSignals.BlockDeselected(toDeselect);
         }
 
-        public virtual void Deselect(Command toDeselect)
+        public virtual void DeselectWithoutSignal(Block toDeselect)
         {
-
+            toDeselect.IsSelected = false;
+            _selectedBlocks.Remove(toDeselect);
         }
 
         [field: SerializeField] public bool SelectedCommandsStale { get; set; }
