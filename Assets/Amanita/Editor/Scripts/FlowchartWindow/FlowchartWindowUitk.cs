@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 using Collections;
+using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -115,6 +116,7 @@ namespace Amanita.VScripting.EditorUtils
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
+        public FlowchartContext FcContext => _fcContext;
         protected virtual void OnDisable()
         {
             Debug.Log("FlowchartWindowUitk OnDisable");
@@ -126,7 +128,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _s = null;
             }
-
+            Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
 
             _blockModuleDispatcher.ClearModules();
@@ -152,9 +154,12 @@ namespace Amanita.VScripting.EditorUtils
             _zoomHandler?.Dispose();
             _scrollPosResetter?.Dispose();
             _boxSelectionHandler?.Dispose();
+            _blockDragHandler?.Dispose();
 
             _blockClickSelectionSyncer?.Dispose();
             _repaintTriggerer?.Dispose();
+
+            _inputDetector.Dispose();
         }
 
         void NullOutSubmodules()
@@ -165,6 +170,7 @@ namespace Amanita.VScripting.EditorUtils
             _zoomHandler = null;
             _scrollPosResetter = null;
             _boxSelectionHandler = null;
+            _blockDragHandler = null;
 
             _blockClickSelectionSyncer = null;
             _repaintTriggerer = null;
@@ -182,7 +188,11 @@ namespace Amanita.VScripting.EditorUtils
             _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
             VisualElement root = rootVisualElement;
-
+            root.pickingMode = PickingMode.Position; 
+            // ^So that PointerUp events trigger properly when clicking on empty space.
+            // Sub-elements can override this to receive events as normal.
+            root.SetPadding(0);
+            root.SetMargin(0);
             // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
             if (ActiveFlowchart == null)
             {
@@ -221,6 +231,7 @@ namespace Amanita.VScripting.EditorUtils
                 _fcNameLabel.style.marginTop = 10;
                 _fcNameLabel.style.marginLeft = 10;
                 _fcNameLabel.style.position = Position.Absolute;
+                _fcNameLabel.pickingMode = PickingMode.Ignore; // So it doesn't block mouse events to the window. We want it to be decorative only.
             }
 
             EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
@@ -237,6 +248,7 @@ namespace Amanita.VScripting.EditorUtils
                 _zoomHandler = new ZoomHandlerUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
                 _scrollPosResetter = new ScrollPosResetter(_fcContext);
                 _boxSelectionHandler = new SelectionBoxDragTrackerUitk(_fcContext);
+                _blockDragHandler = new BlockDragHandlerUitk(_fcContext);
                 #endregion
 
                 _blockClickSelectionSyncer = new SingleClickBlockSelector(_fcContext);
@@ -255,10 +267,12 @@ namespace Amanita.VScripting.EditorUtils
                 RegisterModule(_zoomHandler);
                 RegisterModule(_scrollPosResetter);
                 RegisterModule(_boxSelectionHandler);
+                RegisterModule(_blockDragHandler);
                 #endregion
 
                 RegisterModule(_blockClickSelectionSyncer);
                 RegisterModule(_repaintTriggerer);
+                RegisterModule(_inputDetector);
             }
 
             AttachUiElements();
@@ -280,10 +294,12 @@ namespace Amanita.VScripting.EditorUtils
                 _zoomHandler.Initialize(this);
                 _scrollPosResetter.Initialize(this);
                 _boxSelectionHandler.Initialize(this);
+                _blockDragHandler.Initialize(this);
                 #endregion
 
                 _blockClickSelectionSyncer.Initialize(this);
                 _repaintTriggerer.Initialize(this);
+                _inputDetector.Initialize(this);
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
@@ -309,14 +325,17 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private PanHandlerUitk _panHandler;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        private BlockInspectorSynchronization _blockInspectorSync;
         private SingleClickBlockSelector _blockClickSelectionSyncer;
         private FcWindowRepaintTriggerer _repaintTriggerer;
         private ZoomHandlerUitk _zoomHandler;
         private SelectionBoxDragTrackerUitk _boxSelectionHandler;
+        private BlockDragHandlerUitk _blockDragHandler;
+        private readonly HitDetectionHandler _hitDetector = new HitDetectionHandler();
         #endregion
 
-        static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk();
+        public InputSignalModuleUitk InputSignals => _inputDetector;
+
+        static DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk(new BlockGraphicsGenerator());
         private MissingFlowchartOverlay MissingOverlay
         {
             get
@@ -363,7 +382,8 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-            _inputDetector?.OnGUI(Event.current);
+            _hitDetector.Handle(Event.current, _fcContext);
+            _inputDetector.OnGUI(Event.current);
             _scrollPosResetter?.OnGUI(Event.current);
         }
 

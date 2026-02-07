@@ -1,9 +1,6 @@
-using Amanita.Utils;
 using System;
 using System.Globalization;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using Collections;
 using System.Linq;

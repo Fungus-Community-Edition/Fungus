@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,19 +12,22 @@ namespace Amanita.VScripting.EditorUtils
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
         IScrollWheelMoveResponder, IWindowPanResponder, IFlowchartChangeResponder
     {
+        public int Priority { get; set; } = 0;
         public SelectionBoxRendererUitk(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
 
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
+            this.SetPadding(0f);
+            this.SetMargin(0f);
 
             RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             generateVisualContent += OnGenerateVisualContent;
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext fcContext;
         private bool isDisposed;
 
         public void Initialize(FlowchartWindowUitk window)
@@ -55,21 +59,33 @@ namespace Amanita.VScripting.EditorUtils
             RemoveFromHierarchy();
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
+            _shouldRender = !BlockHitTester.IsMouseOverBlock(info.FlowchartPosition);
+            if (!_shouldRender)
+            {
+                //Debug.Log($"Selection box renderer: Not starting drag because mouse is over a block at {info.FlowchartPosition}");
+            }
             RequestRepaint();
         }
 
-        public void OnLeftMouseDragged(Vector2 delta, Event evt)
+        private bool _shouldRender;
+
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
+            if (fcContext.Interaction.SelectionBox == Rect.zero)
+            {
+                return;
+            }
+            //Debug.Log($"Selection box renderer: Dragging with delta {info.FlowchartDelta}");
             RequestRepaint();
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
-            //Debug.Log($"Selection box renderer: Drag ended at {endPos}");
             _ignoreSelectionBoxThisFrame = true;
             RequestRepaint();
+            _shouldRender = false;
         }
 
         private bool _ignoreSelectionBoxThisFrame;
@@ -93,7 +109,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void RequestRepaint()
         {
-            if (isDisposed)
+            if (isDisposed || !_shouldRender)
             {
                 return;
             }
@@ -108,7 +124,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = fcContext.Interaction;
             bool thereIsBoxToRender = interaction != null && interaction.SelectionBoxDragOngoing && 
                 interaction.HasSelectionBox;
             if (!thereIsBoxToRender)

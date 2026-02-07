@@ -302,7 +302,7 @@ namespace Amanita.VScripting.EditorUtils
             Flowchart = current;
         }
 
-        protected virtual void OnEmptySpaceClicked(Vector2 position)
+        protected virtual void OnEmptySpaceClicked(PointerEventInfo info)
         {
             UpdateBlockCollection();
         }

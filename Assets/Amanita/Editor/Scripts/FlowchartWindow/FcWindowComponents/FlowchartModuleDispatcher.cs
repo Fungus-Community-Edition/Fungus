@@ -7,6 +7,10 @@ namespace Amanita.VScripting.EditorUtils
 {
     public interface IFlowchartWindowModule : IDisposable
     {
+        /// <summary>
+        /// Lower number, sooner execution; Modules are executed in ascending order of this value.
+        /// </summary>
+        int Priority { get; set; }
         void Initialize(FlowchartWindowUitk window);
     }
 
@@ -20,14 +24,11 @@ namespace Amanita.VScripting.EditorUtils
             modules.Add(module);
 
             AddResponder<IFlowchartChangeResponder>(module);
-            
             AddResponder<ICommandSelectionResponder>(module);
-
             AddResponder<IWindowPanResponder>(module);
 
             AddResponder<IVariableAddResponder>(module);
             AddResponder<IVariableRemoveResponder>(module);
-
         }
 
         public void RemoveModule(IFlowchartWindowModule module)

@@ -9,6 +9,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class ScrollPosResetter : IFlowchartWindowModule
     {
+        public int Priority { get; set; } = 0;
         public ScrollPosResetter(FlowchartContext fcContext)
         {
             _fcContext = fcContext;

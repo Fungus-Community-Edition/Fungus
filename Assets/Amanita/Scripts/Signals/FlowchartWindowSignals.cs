@@ -1,21 +1,47 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.VScripting
 {
+    /// <summary>
+    /// Struct that encapsulates information about pointer events in the flowchart window, such as mouse clicks 
+    /// and drags. This includes the position of the pointer in both flowchart and panel coordinates, as well 
+    /// as the delta movement since the last event.
+    /// 
+    /// We need this to make it easier to respond to drag events, given the differences between panel space in
+    /// the Flowchart Window as well as the coordinate space of the flowchart itself. Without this convenience,
+    /// it can be harder to properly do things like tell when a Block or empty space is clicked.
+    /// </summary>
+    public struct PointerEventInfo
+    {
+        public PointerEventInfo(Vector2 flowchartPosition, Vector2 panelPosition, Vector2 flowchartDelta, Vector2 panelDelta)
+        {
+            FlowchartPosition = flowchartPosition;
+            PanelPosition = panelPosition;
+            FlowchartDelta = flowchartDelta;
+            PanelDelta = panelDelta;
+        }
+
+        public Vector2 FlowchartPosition { get; set;  }
+        public Vector2 PanelPosition { get; set;  }
+        public Vector2 FlowchartDelta { get; set;  }
+        public Vector2 PanelDelta { get; set;  }
+    }
+
     public static class FlowchartWindowSignals
     {
+
         /// <summary>
         /// Invoked when the user left-clicks inside the flowchart window just once.
         /// </summary>
-        public static Action<Vector2> LeftClicked = delegate { };
-        public static Action<Vector2> RightClicked = delegate { };
+        public static Action<PointerEventInfo> LeftMouseDown = delegate { };
+        public static Action<PointerEventInfo> RightClicked = delegate { };
+        public static Action<PointerEventInfo, Event> RightMouseUp = delegate { };
 
         /// <summary>
         /// Invoked when the user double-left-clicks inside the flowchart window.
         /// </summary>
-        public static Action<Vector2> DoubleClicked = delegate { };
+        public static Action<PointerEventInfo> DoubleClicked = delegate { };
 
         public static Action ScrollWheelMoved = delegate { };
 
@@ -25,37 +51,40 @@ namespace Amanita.VScripting
         /// </summary>
         public static Action<Vector2> ScrollWheelDragged = delegate { };
 
-        public static Action<Vector2, Event> EmptySpaceLeftMouseDown = delegate { };
-        public static Action<Vector2, Event> EmptySpaceLeftMouseUp = delegate { };
-        public static Action<Vector2, Event> LeftMouseUp = delegate { };
+        public static Action<PointerEventInfo, Event> EmptySpaceLeftMouseDown = delegate { };
+        public static Action<PointerEventInfo, Event> EmptySpaceLeftMouseUp = delegate { };
+        public static Action<PointerEventInfo, Event> LeftMouseUp = delegate { };
 
-        public static Action<Vector2> EmptySpaceClicked = delegate { };
+        public static Action<PointerEventInfo, Event> EmptySpaceRightMouseDown = delegate { };
+        public static Action<PointerEventInfo, Event> EmptySpaceRightMouseUp = delegate { };
+
+        public static Action<PointerEventInfo> EmptySpaceClicked = delegate { };
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };
         public static Action WindowPanned = delegate { };
 
-        public static Action<Vector2, Event> LeftMouseDragStarted = delegate { };
-        public static Action<Vector2, Event> LeftMouseDragged = delegate { };
-        public static Action<Vector2, Event> LeftMouseDragEnded = delegate { };
+        public static Action<PointerEventInfo, Event> LeftMouseDragStarted = delegate { };
+        public static Action<PointerEventInfo, Event> LeftMouseDragged = delegate { };
+        public static Action<PointerEventInfo, Event> LeftMouseDragEnded = delegate { };
 
-        public static Action<Vector2, Event> RightMouseDragStarted = delegate { };
-        public static Action<Vector2, Event> RightMouseDragged = delegate { };
-        public static Action<Vector2, Event> RightMouseDragEnded = delegate { };
+        public static Action<PointerEventInfo, Event> RightMouseDragStarted = delegate { };
+        public static Action<PointerEventInfo, Event> RightMouseDragged = delegate { };
+        public static Action<PointerEventInfo, Event> RightMouseDragEnded = delegate { };
     }
 
     // Interfaces for subscribing to flowchart window signals
-    public interface ILeftClickResponder
+    public interface ILeftMouseDownResponder
     {
-        void OnLeftClick(Vector2 position);
+        void OnLeftMouseDown(PointerEventInfo info);
     }
 
     public interface IRightClickResponder
     {
-        void OnRightClick(Vector2 position);
+        void OnRightClick(PointerEventInfo info);
     }
 
     public interface IDoubleClickResponder
     {
-        void OnDoubleClick(Vector2 position);
+        void OnDoubleClick(PointerEventInfo info);
     }
 
     public interface IScrollWheelMoveResponder
@@ -70,22 +99,22 @@ namespace Amanita.VScripting
 
     public interface IEmptySpaceLeftMouseDownResponder
     {
-        void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt);
+        void OnEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt);
     }
 
     public interface ILeftMouseUpResponder
     {
-        void OnLeftMouseUp(Vector2 pos, Event evt);
+        void OnLeftMouseUp(PointerEventInfo info, Event evt);
     }
 
     public interface IEmptySpaceLeftMouseUpResponder
     {
-        void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt);
+        void OnEmptySpaceLeftMouseUp(PointerEventInfo info, Event evt);
     }
 
     public interface IEmptySpaceClickResponder
     {
-        void OnEmptySpaceClicked(Vector2 pos);
+        void OnEmptySpaceClicked(PointerEventInfo info);
     }
 
     public interface IFlowchartChangeResponder
@@ -100,32 +129,32 @@ namespace Amanita.VScripting
 
     public interface ILeftMouseDragStartResponder
     {
-        void OnLeftMouseDragStarted(Vector2 startPos, Event evt);
+        void OnLeftMouseDragStarted(PointerEventInfo info, Event evt);
     }
 
     public interface ILeftMouseDragResponder
     {
-        void OnLeftMouseDragged(Vector2 direction, Event evt);
+        void OnLeftMouseDragged(PointerEventInfo info, Event evt);
     }
 
     public interface ILeftMouseDragEndResponder
     {
-        void OnLeftMouseDragEnded(Vector2 endPos, Event evt);
+        void OnLeftMouseDragEnded(PointerEventInfo info, Event evt);
     }
 
     public interface IRightMouseDragStartResponder
     {
-        void OnRightMouseDragStarted(Vector2 startPos, Event evt);
+        void OnRightMouseDragStarted(PointerEventInfo info, Event evt);
     }
 
     public interface IRightMouseDragResponder
     {
-        void OnRightMouseDragged(Vector2 direction, Event evt);
+        void OnRightMouseDragged(PointerEventInfo info, Event evt);
     }
 
     public interface IRightMouseDragEndResponder
     {
-        void OnRightMouseDragEnded(Vector2 endPos, Event evt);
+        void OnRightMouseDragEnded(PointerEventInfo info, Event evt);
     }
 
 }

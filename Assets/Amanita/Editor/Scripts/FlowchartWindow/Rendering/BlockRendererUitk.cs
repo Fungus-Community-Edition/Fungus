@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -18,13 +17,16 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
-        IBlockSelectionResponder, IPreBlockDeletionResponder, ILeftMouseDragStartResponder,
+        IBlockSelectionResponder, IPreBlockDeletionResponder, 
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
-        IMultiBlockDeselectionResponder
+        IMultiBlockDeselectionResponder, IBlockRectProvider
     {
+        public int Priority { get; set; } = 0;
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
         private bool isDisposed;
+        private bool initialRefreshPending;
 
         /// <summary>
         /// Binds a block to its visual representation and event handlers.
@@ -37,23 +39,66 @@ namespace Amanita.VScripting.EditorUtils
         
         public BlockRendererUitk(FlowchartContext context, IBlockDrawerUitk blockDrawer)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
             drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
-            pickingMode = PickingMode.Ignore;
+            //pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
+
+            RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext fcContext;
         private readonly IBlockDrawerUitk drawer;
 
         public void Initialize(FlowchartWindowUitk window)
         {
             owner = window;
-            EditorApplication.delayCall += () => RefreshBlocks(); 
-            // ^To make sure the blocks render at the right size on initial window open. Otherwise,
-            // they render at the wrong size until selected.
+            initialRefreshPending = true;
+            TryRefreshAfterLayout();
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent evt)
+        {
+            TryRefreshAfterLayout();
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+            {
+                return;
+            }
+
+            TryRefreshAfterLayout();
+        }
+
+        private void TryRefreshAfterLayout()
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (panel == null)
+            {
+                return;
+            }
+
+            if (contentRect.width <= 0f || contentRect.height <= 0f)
+            {
+                return;
+            }
+
+            initialRefreshPending = false;
+            RefreshBlocks();
         }
 
         public void RefreshBlocks()
@@ -63,14 +108,14 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = fcContext.Flowchart;
             if (flowchart == null)
             {
                 ClearAll();
                 return;
             }
 
-            IReadOnlyCollection<Block> present = flowchartContext.Document.AllBlocks;
+            IReadOnlyCollection<Block> present = fcContext.Document.AllBlocks;
             RemoveMissing(present);
 
             foreach (var block in present)
@@ -127,6 +172,8 @@ namespace Amanita.VScripting.EditorUtils
 
             if (binding.Button != null)
             {
+                UnregisterInputForwarders(binding.Button);
+
                 if (binding.ClickHandler != null)
                 {
                     binding.Button.clicked -= binding.ClickHandler;
@@ -144,24 +191,42 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (!blockBindings.TryGetValue(block, out BlockBinding binding))
+            bool blockAlreadyDrawn = blockBindings.TryGetValue(block, out BlockBinding binding);
+            if (!blockAlreadyDrawn)
             {
                 UitkButton button = drawer.CreateButton(block);
                 button.style.position = Position.Absolute;
 
+                RegisterInputForwarders(button);
+
                 var capturedBlock = block;
+                button.clicked += OnClick;
                 void OnClick()
                 {
                     BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
                 }
-                button.clicked += OnClick;
+
+                void OnButtonGeometryChanged(GeometryChangedEvent evt)
+                {
+                    if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+                    {
+                        return;
+                    }
+                    // We do this (calling UpdateButton on the first geometry change) so that right when the
+                    // window opens, the button is rendered at the right size. For some reason, putting
+                    // RefreshBlocks in Initialize doesn't work...
+                    button.UnregisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
+                    drawer.UpdateButton(button, capturedBlock, CurrentZoom);
+                    UpdateBlockLayouts();
+                }
+                button.RegisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
 
                 binding = new BlockBinding
                 {
                     Button = button,
                     ClickHandler = OnClick
                 };
-
+                
                 blockBindings.Add(block, binding);
                 Add(button);
             }
@@ -200,7 +265,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                Flowchart flowchart = flowchartContext.Flowchart;
+                Flowchart flowchart = fcContext.Flowchart;
                 return flowchart != null ? flowchart.ScrollPos : Vector2.zero;
             }
         }
@@ -209,7 +274,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                Flowchart flowchart = flowchartContext.Flowchart;
+                Flowchart flowchart = fcContext.Flowchart;
                 float zoom = flowchart != null ? flowchart.Zoom : 1f;
                 return Mathf.Approximately(zoom, 0f) ? 1f : zoom;
             }
@@ -273,6 +338,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             foreach (var entry in blockBindings)
             {
+                UnregisterInputForwarders(entry.Value.Button);
                 UnsubClickHandler(entry.Value);
                 entry.Value.Button?.RemoveFromHierarchy();
             }
@@ -301,7 +367,7 @@ namespace Amanita.VScripting.EditorUtils
             RemoveBlock(block);
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             #region Keep Blocks from blocking drag events
             foreach (var entry in blockBindings)
@@ -315,7 +381,7 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
             #region Let Blocks be selectable again
             foreach (var entry in blockBindings)
@@ -329,7 +395,32 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
         }
 
-        
+        public bool TryGetBlockRect(Block block, out Rect rect)
+        {
+            rect = default;
+            if (block == null)
+            {
+                return false;
+            }
+
+            if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button == null)
+            {
+                return false;
+            }
+
+            VisualElement parentEl = parent;
+            Rect worldRect = binding.Button.worldBound;
+
+            if (parentEl == null)
+            {
+                rect = worldRect;
+                return true;
+            }
+
+            Vector2 localPos = parentEl.WorldToLocal(worldRect.position);
+            rect = new Rect(localPos, worldRect.size);
+            return true;
+        }
 
         public void Dispose()
         {
@@ -340,7 +431,65 @@ namespace Amanita.VScripting.EditorUtils
 
             isDisposed = true;
             ClearAll();
-            this.RemoveFromHierarchy();
+            UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            RemoveFromHierarchy();
+        }
+
+        private InputSignalModuleUitk InputSignals => owner != null ? owner.InputSignals : null;
+
+        private void RegisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.RegisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.RegisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.RegisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.RegisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void UnregisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.UnregisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.UnregisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.UnregisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.UnregisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void OnBlockPointerDown(PointerDownEvent evt)
+        {
+            InputSignals?.OnPointerDown(evt);
+        }
+
+        private void OnBlockPointerMove(PointerMoveEvent evt)
+        {
+            InputSignals?.OnPointerMove(evt);
+        }
+
+        private void OnBlockPointerUp(PointerUpEvent evt)
+        {
+            InputSignals?.OnPointerUp(evt);
+        }
+
+        private void OnBlockPointerCancel(PointerCancelEvent evt)
+        {
+            InputSignals?.OnPointerCancel(evt);
+        }
+
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
+        {
+            if (fcContext.Interaction.BlockDragOngoing)
+            {
+                UpdateBlockLayouts();
+            }
         }
     }
 

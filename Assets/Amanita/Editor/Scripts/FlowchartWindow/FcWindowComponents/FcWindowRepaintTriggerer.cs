@@ -12,6 +12,7 @@ namespace Amanita.VScripting.EditorUtils
         IBlockSelectionResponder, IVariableAddResponder, IVariableRemoveResponder, 
         IPostBlockDeletionResponder
     {
+        public int Priority { get; set; } = 0;
         public void Initialize(FlowchartWindowUitk window)
         {
             if (window == null)
