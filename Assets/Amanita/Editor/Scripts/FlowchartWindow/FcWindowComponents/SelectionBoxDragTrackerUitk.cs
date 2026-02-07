@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
@@ -34,7 +35,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt)
         {
             // We only want to start tracking when the drag starts on empty space, so...
-            //Debug.Log($"Box selection tracking enabled at {pos}");
+            Debug.Log($"Box selection tracking enabled at {pos}");
             _shouldTrack = true;
         }
 
@@ -42,8 +43,11 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt)
         {
-            //Debug.Log($"Box selection tracking disabled at {pos}");
-            _shouldTrack = false;
+            Debug.Log($"Box selection tracking disabled at {pos}");
+            // Let's delay it by a frame so that our DragEnded response can still run. Otherwise, 
+            // _shouldTrack will be false by the time we get to DragEnded if the mouse up happens
+            // before the drag ends, which it usually does.
+            EditorApplication.delayCall += () => _shouldTrack = false;
         }
 
         public void Dispose()
@@ -104,7 +108,7 @@ namespace Amanita.VScripting.EditorUtils
                     topRightCorner.x,
                     topRightCorner.y);
 
-                UpdateSelectionDuringDrag(flowchartContext, interaction.SelectionBox);
+                //UpdateSelectionDuringDrag(flowchartContext, interaction.SelectionBox);
             }
 
             //Debug.Log($"Selection box drag tracker: Box selection dragged to {current}");
@@ -140,7 +144,7 @@ namespace Amanita.VScripting.EditorUtils
         /// </summary>
         public static readonly Vector2 MinThreshold = new Vector2(2, 2);
 
-        private static void UpdateSelectionDuringDrag(FlowchartContext ctx, Rect selectionBox)
+        private static void UpdateBlockSelection(FlowchartContext ctx, Rect selectionBox)
         {
             Flowchart flowchart = ctx.Flowchart;
             if (flowchart == null)
@@ -167,7 +171,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void SelectBlocksOverlappedByBox(FlowchartContext ctx, Rect selectionBox)
         {
-            UpdateSelectionDuringDrag(ctx, selectionBox);
+            UpdateBlockSelection(ctx, selectionBox);
 
             int blockCount = ctx.Selection.BlockCount;
             if (blockCount == 1)

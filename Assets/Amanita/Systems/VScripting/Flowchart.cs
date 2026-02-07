@@ -158,7 +158,21 @@ namespace Amanita.VScripting
 
         protected StringSubstituter stringSubstituter;
         
-        public IReadOnlyCollection<Block> Blocks => _blocks;
+        public IReadOnlyCollection<Block> Blocks
+        {
+            get
+            {
+                // Weird for a Flowchart to have 0 Blocks... let's try to find some if
+                // we don't have any cached.
+                if (_blocks.Count == 0) 
+                {
+                    var blocksFound = GetComponents<Block>();
+                    _blocks.AddRange(blocksFound);
+                }
+
+                return _blocks;
+            }
+        }
         public IReadOnlyCollection<Command> Commands => (IReadOnlyCollection<Command>)_commands;
 
         protected virtual void Awake()
