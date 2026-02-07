@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Amanita.VScripting.UI
 {
+    /// <summary>
+    /// Model for Flowchart editor window. Stores information about selected blocks and
+    /// commands, scroll position, zoom level, etc.
+    /// </summary>
     [System.Serializable]
     public class FlowchartUIModel : IFlowchartUIModel
     {

@@ -93,37 +93,6 @@ namespace Amanita.VScripting
         void OnFlowchartChanged(Flowchart oldFc, Flowchart newFc);
     }
 
-    public interface IBlocksCopiedResponder
-    {
-        void OnBlocksCopied(IList<Block> blocks);
-    }
-
-    public interface IPreBlockDeletionResponder
-    {
-        void OnPreBlockDeletion(IList<Block> blocks);
-        void OnPreBlockDeletion(Block block);
-    }
-
-    public interface IPostBlockDeletionResponder
-    {
-        void OnPostBlockDeletion(uint blockId);
-    }
-
-    public interface IPostMultiBlockDeletionResponder
-    {
-        void OnPostMultiBlockDeletion(IList<uint> blockIds);
-    }
-
-    public interface IBlockSelectionResponder
-    {
-        void OnBlockSelected(Block block);
-    }
-
-    public interface ICommandSelectionResponder
-    {
-        void OnCommandSelected(Command command);
-    }
-
     public interface IWindowPanResponder
     {
         void OnWindowPanned();

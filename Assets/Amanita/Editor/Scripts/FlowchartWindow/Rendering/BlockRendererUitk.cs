@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -50,7 +51,9 @@ namespace Amanita.VScripting.EditorUtils
         public void Initialize(FlowchartWindowUitk window)
         {
             owner = window;
-            RefreshBlocks();
+            EditorApplication.delayCall += () => RefreshBlocks(); 
+            // ^To make sure the blocks render at the right size on initial window open. Otherwise,
+            // they render at the wrong size until selected.
         }
 
         public void RefreshBlocks()

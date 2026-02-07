@@ -94,6 +94,11 @@ namespace Amanita.VScripting
         void OnBlockCreated(Block block);
     }
 
+    public interface IBlockSelectionResponder
+    {
+        void OnBlockSelected(Block block);
+    }
+
     public interface IBlockDeselectionResponder
     {
         void OnBlockDeselected(Block block);
@@ -107,6 +112,27 @@ namespace Amanita.VScripting
     public interface IMultiBlockDeselectionResponder
     {
         void OnMultiBlocksDeselected(IList<Block> blocks);
+    }
+
+    public interface IPreBlockDeletionResponder
+    {
+        void OnPreBlockDeletion(IList<Block> blocks);
+        void OnPreBlockDeletion(Block block);
+    }
+
+    public interface IPostBlockDeletionResponder
+    {
+        void OnPostBlockDeletion(uint blockId);
+    }
+
+    public interface IPostMultiBlockDeletionResponder
+    {
+        void OnPostMultiBlockDeletion(IList<uint> blockIds);
+    }
+
+    public interface IBlocksCopiedResponder
+    {
+        void OnBlocksCopied(IList<Block> blocks);
     }
 
 }

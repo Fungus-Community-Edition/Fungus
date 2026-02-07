@@ -4,6 +4,8 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using System.Collections.Generic;
+using Collections;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -20,7 +22,7 @@ namespace Amanita.VScripting.EditorUtils
         public static void ShowFromMenuItem()
         {
             EnsureConfigAssetInProject();
-            
+
             FlowchartWindowUitk wnd = _s != null ?
                 _s :
                 GetWindow<FlowchartWindowUitk>();
@@ -38,7 +40,7 @@ namespace Amanita.VScripting.EditorUtils
         public static FlowchartWindowConfig Config { get; private set; }
         private static readonly string _configSubfolderPath = "Amanita/Configs";
         private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
-        
+
         protected virtual void OnEnable()
         {
             if (_s != null && _s != this)
@@ -48,59 +50,19 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _s = this;
-            
+
             ToggleSubs(true);
         }
 
         protected virtual void ToggleSubs(bool on)
         {
+            _blockModuleDispatcher.ToggleSubs(on);
+            _mouseModuleDispatcher.ToggleSubs(on);
+
             if (on)
             {
                 EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
-
-                #region Block Signal Subs
-                BlockSignals.BlockCreated += _moduleDispatcher.NotifyBlockCreated;
-
-                BlockSignals.BlockClicked += _moduleDispatcher.NotifyBlockClicked;
-                BlockSignals.BlockSelected += _moduleDispatcher.NotifyBlockSelected;
-                BlockSignals.MultiBlocksSelected += _moduleDispatcher.NotifyMultiBlocksSelected;
-
-                BlockSignals.BlockDeselected += _moduleDispatcher.NotifyBlockDeselected;
-                BlockSignals.MultiBlocksDeselected += _moduleDispatcher.NotifyMultiBlocksDeselected;
-
-                BlockSignals.PreBlockDelete += _moduleDispatcher.NotifyPreBlockDeleted;
-                BlockSignals.PostBlockDelete += _moduleDispatcher.NotifyPostBlockDeleted;
-                BlockSignals.PreMultiBlockDelete += _moduleDispatcher.NotifyPreMultiBlockDeleted;
-
-                BlockSignals.BlocksCopied += _moduleDispatcher.NotifyBlocksCopied;
-                #endregion
-
-                #region Mouse Input Subs
-                FlowchartWindowSignals.LeftClicked += _moduleDispatcher.NotifyLeftClick;
-                FlowchartWindowSignals.RightClicked += _moduleDispatcher.NotifyRightClick;
-
-                FlowchartWindowSignals.LeftMouseUp += _moduleDispatcher.NotifyLeftMouseUp;
-                FlowchartWindowSignals.EmptySpaceLeftMouseDown += _moduleDispatcher.NotifyEmptySpaceLeftMouseDown;
-                FlowchartWindowSignals.EmptySpaceLeftMouseUp += _moduleDispatcher.NotifyEmptySpaceLeftMouseUp;
-
-                FlowchartWindowSignals.LeftMouseDragStarted += _moduleDispatcher.NotifyLeftMouseDragStarted;
-                FlowchartWindowSignals.LeftMouseDragged += _moduleDispatcher.NotifyLeftMouseDragged;
-                FlowchartWindowSignals.LeftMouseDragEnded += _moduleDispatcher.NotifyLeftMouseDragEnded;
-
-                FlowchartWindowSignals.RightMouseDragStarted += _moduleDispatcher.NotifyRightMouseDragStarted;
-                FlowchartWindowSignals.RightMouseDragged += _moduleDispatcher.NotifyRightMouseDragged;
-                FlowchartWindowSignals.RightMouseDragEnded += _moduleDispatcher.NotifyRightMouseDragEnded;
-
-                FlowchartWindowSignals.DoubleClicked += _moduleDispatcher.NotifyDoubleClick;
-                FlowchartWindowSignals.ScrollWheelMoved += _moduleDispatcher.NotifyScrollWheelMoved;
-                FlowchartWindowSignals.ScrollWheelDragged += _moduleDispatcher.NotifyScrollWheelDragged;
-
-                FlowchartWindowSignals.EmptySpaceClicked += _moduleDispatcher.NotifyEmptySpaceClicked;
-                #endregion
-
                 FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
-                
-                
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened += OnSceneOpened;
@@ -111,59 +73,16 @@ namespace Amanita.VScripting.EditorUtils
             else
             {
                 EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
-
-                #region Block Signal Unsubs
-                BlockSignals.BlockCreated -= _moduleDispatcher.NotifyBlockCreated;
-
-                BlockSignals.BlockClicked -= _moduleDispatcher.NotifyBlockClicked;
-                BlockSignals.BlockSelected -= _moduleDispatcher.NotifyBlockSelected;
-                BlockSignals.MultiBlocksSelected -= _moduleDispatcher.NotifyMultiBlocksSelected;
-
-                BlockSignals.BlockDeselected -= _moduleDispatcher.NotifyBlockDeselected;
-                BlockSignals.MultiBlocksDeselected -= _moduleDispatcher.NotifyMultiBlocksDeselected;
-
-                BlockSignals.PreBlockDelete -= _moduleDispatcher.NotifyPreBlockDeleted;
-                BlockSignals.PostBlockDelete -= _moduleDispatcher.NotifyPostBlockDeleted;
-                BlockSignals.PreMultiBlockDelete -= _moduleDispatcher.NotifyPreMultiBlockDeleted;
-
-                BlockSignals.BlocksCopied -= _moduleDispatcher.NotifyBlocksCopied;
-                #endregion
-
-                #region Mouse Input Unsub
-                FlowchartWindowSignals.LeftClicked -= _moduleDispatcher.NotifyLeftClick;
-                FlowchartWindowSignals.RightClicked -= _moduleDispatcher.NotifyRightClick;
-
-                FlowchartWindowSignals.LeftMouseUp -= _moduleDispatcher.NotifyLeftMouseUp;
-                FlowchartWindowSignals.EmptySpaceLeftMouseDown -= _moduleDispatcher.NotifyEmptySpaceLeftMouseDown;
-                FlowchartWindowSignals.EmptySpaceLeftMouseUp -= _moduleDispatcher.NotifyEmptySpaceLeftMouseUp;
-
-                FlowchartWindowSignals.LeftMouseDragStarted -= _moduleDispatcher.NotifyLeftMouseDragStarted;
-                FlowchartWindowSignals.LeftMouseDragged -= _moduleDispatcher.NotifyLeftMouseDragged;
-                FlowchartWindowSignals.LeftMouseDragEnded -= _moduleDispatcher.NotifyLeftMouseDragEnded;
-
-                FlowchartWindowSignals.RightMouseDragStarted -= _moduleDispatcher.NotifyRightMouseDragStarted;
-                FlowchartWindowSignals.RightMouseDragged -= _moduleDispatcher.NotifyRightMouseDragged;
-                FlowchartWindowSignals.RightMouseDragEnded -= _moduleDispatcher.NotifyRightMouseDragEnded;
-
-                FlowchartWindowSignals.DoubleClicked -= _moduleDispatcher.NotifyDoubleClick;
-                FlowchartWindowSignals.ScrollWheelMoved -= _moduleDispatcher.NotifyScrollWheelMoved;
-                FlowchartWindowSignals.ScrollWheelDragged -= _moduleDispatcher.NotifyScrollWheelDragged;
-
-                FlowchartWindowSignals.EmptySpaceClicked -= _moduleDispatcher.NotifyEmptySpaceClicked;
-                #endregion
-
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
-                
-                
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
-
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
-
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
                 CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
             }
         }
 
+        private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
+        private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();
         private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
@@ -173,9 +92,18 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Flowchart resolved = current == null ?
-                FindFirstObjectByType<Flowchart>() :
-                current;
+            Flowchart resolved;
+            bool currentWasRemovedWhileWeHavePrevious = current == null && previous != null;
+            if (currentWasRemovedWhileWeHavePrevious)
+            {
+                resolved = previous;
+            }
+            else
+            {
+                resolved = current == null ?
+                    FindFirstObjectByType<Flowchart>() :
+                    current;
+            }
 
             bool changedToDiffFlowchart = !ReferenceEquals(previous, resolved); // Just in case.
             if (!changedToDiffFlowchart)
@@ -201,7 +129,9 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubs(false);
 
-            _moduleDispatcher.ClearModules();// 
+            _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
+            _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
 
@@ -248,6 +178,8 @@ namespace Amanita.VScripting.EditorUtils
 
         public void CreateGUI()
         {
+            _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
             VisualElement root = rootVisualElement;
 
@@ -315,18 +247,18 @@ namespace Amanita.VScripting.EditorUtils
             void RegisterModules()
             {
                 #region Graphics-rendering
-                _moduleDispatcher.AddModule(_graphicsRenderer);
+                RegisterModule(_graphicsRenderer);
                 #endregion
 
                 #region Viewport-handling
-                _moduleDispatcher.AddModule(_panHandler);
-                _moduleDispatcher.AddModule(_zoomHandler);
-                _moduleDispatcher.AddModule(_scrollPosResetter);
-                _moduleDispatcher.AddModule(_boxSelectionHandler);
+                RegisterModule(_panHandler);
+                RegisterModule(_zoomHandler);
+                RegisterModule(_scrollPosResetter);
+                RegisterModule(_boxSelectionHandler);
                 #endregion
 
-                _moduleDispatcher.AddModule(_blockClickSelectionSyncer);
-                _moduleDispatcher.AddModule(_repaintTriggerer);
+                RegisterModule(_blockClickSelectionSyncer);
+                RegisterModule(_repaintTriggerer);
             }
 
             AttachUiElements();
@@ -353,8 +285,20 @@ namespace Amanita.VScripting.EditorUtils
                 _blockClickSelectionSyncer.Initialize(this);
                 _repaintTriggerer.Initialize(this);
             }
-            
+
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
+        }
+
+        private void RegisterModule(IFlowchartWindowModule module)
+        {
+            if (module == null)
+            {
+                return;
+            }
+
+            _moduleDispatcher.AddModule(module);
+            _blockModuleDispatcher.AddModule(module);
+            _mouseModuleDispatcher.AddModule(module);
         }
 
         private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
@@ -470,7 +414,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             rootVisualElement.Clear();
-            _moduleDispatcher.ClearModules();// 
+            _blockModuleDispatcher.ClearModules();
+            _moduleDispatcher.ClearModules();
             DisposeSubmodules();
             NullOutSubmodules();
 
@@ -485,4 +430,33 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
+    internal class FlowchartWindowSubManager
+    {
+        public FlowchartWindowSubManager(IList<IModuleDispatcher> moduleManagers)
+        {
+            _moduleManagers.AddRange(moduleManagers);
+        }
+
+        private readonly IList<IModuleDispatcher> _moduleManagers = new List<IModuleDispatcher>();
+
+        public void ToggleSubs(bool on)
+        {
+
+        }
+    }
+
+    internal interface IModuleDispatcher
+    {
+        void AddModule(object module);
+        void RemoveModule(object module);
+        void ClearModules();
+        void ToggleSubs(bool on);
+    }
+
+    internal interface IModuleDispatcher<T> : IModuleDispatcher
+    {
+        void AddModule(T module);
+        void RemoveModule(T module);
+
+    }
 }

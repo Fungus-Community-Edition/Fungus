@@ -13,18 +13,26 @@ namespace Amanita.VScripting.EditorUtils
     [InitializeOnLoad]
     public static class EditorSelectionTracker
     {
-        private static Flowchart activeFlowchart;
-        private static readonly List<Block> blockSelection = new List<Block>();
-        private static readonly List<Command> commandSelection = new List<Command>();
-        private static bool isCleaningUp;
-
         public static Flowchart ActiveFlowchart => activeFlowchart != null ?
             activeFlowchart :
             ResolveActiveFlowchart();
+        private static Flowchart activeFlowchart;
         public static Flowchart LastActiveFlowchart { get; private set; }
         public static IReadOnlyList<Block> CurrentBlocks => blockSelection;
+        private static readonly List<Block> blockSelection = new List<Block>();
         public static IReadOnlyList<Command> CurrentCommands => commandSelection;
+        private static readonly List<Command> commandSelection = new List<Command>();
+
+        /// <summary>
+        /// The "primary" block is the first block in the selection, and is the one that will 
+        /// be used for things like inspector display.
+        /// </summary>
         public static Block PrimaryBlock { get; private set; }
+
+        /// <summary>
+        /// The "primary" command is the first command in the selection, and is the one that will 
+        /// be used for things like inspector display.
+        /// </summary>
         public static Command PrimaryCommand { get; private set; }
 
         public static event Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
@@ -37,44 +45,6 @@ namespace Amanita.VScripting.EditorUtils
             DestroyLegacyStateInstances();
             AttemptInitialHydration();
             ToggleSubs(true);
-        }
-
-        private static void ToggleSubs(bool on)
-        {
-            if (on)
-            {
-                Selection.selectionChanged += OnUnitySelectionChanged;
-
-                BlockSignals.BlockSelected += OnBlockSelected;
-                BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
-
-                FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
-                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected += OnCommandSelected;
-
-                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-                AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
-                EditorApplication.quitting += Cleanup;
-            }
-            else
-            {
-                Selection.selectionChanged -= OnUnitySelectionChanged;
-
-                BlockSignals.BlockSelected -= OnBlockSelected;
-                BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
-
-                FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
-                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected -= OnCommandSelected;
-
-                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-                AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
-                EditorApplication.quitting -= Cleanup;
-            }
         }
 
         private static void DestroyLegacyStateInstances()
@@ -123,8 +93,8 @@ namespace Amanita.VScripting.EditorUtils
                 return null;
             }
 
-            Flowchart selected;
-            return activeObject.TryGetComponent(out selected) ? selected : null;
+            activeObject.TryGetComponent(out Flowchart selected);
+            return selected;
         }
 
         private static Flowchart FindFlowchartInScene()
@@ -147,10 +117,195 @@ namespace Amanita.VScripting.EditorUtils
                 LastActiveFlowchart = flowchart;
             }
 
+            SyncSelectionsFromFlowchart(flowchart);
+            SelectedFlowchartChanged(previous, flowchart);
+        }
+
+        private static void SyncSelectionsFromFlowchart(Flowchart flowchart)
+        {
+            SyncBlockSelectionFromFlowchart(flowchart);
+            SyncCommandSelectionFromFlowchart(flowchart);
+        }
+
+        private static void SyncBlockSelectionFromFlowchart(Flowchart flowchart)
+        {
+            var toReplaceWith = flowchart != null ?
+                flowchart.SelectedBlocks :
+                null;
+            ReplaceBlockSelection(toReplaceWith);
+        }
+
+        private static void ReplaceBlockSelection(IEnumerable<Block> toReplaceWith)
+        {
+            blockSelection.Clear();
+            if (toReplaceWith != null)
+            {
+                foreach (Block block in toReplaceWith)
+                {
+                    if (block != null)
+                    {
+                        blockSelection.Add(block);
+                    }
+                }
+            }
+
+            Block previous = PrimaryBlock;
+            PrimaryBlock = blockSelection.Count > 0 ?
+                blockSelection[0] :
+                null;
+
+            BlockSelectionChanged(blockSelection);
+            if (!ReferenceEquals(previous, PrimaryBlock))
+            {
+                PrimaryBlockChanged(previous, PrimaryBlock);
+            }
+        }
+
+        private static void SyncCommandSelectionFromFlowchart(Flowchart flowchart)
+        {
+            var toReplaceWith = flowchart != null ?
+                flowchart.SelectedCommands :
+                null;
+            ReplaceCommandSelection(toReplaceWith);
+        }
+
+        private static void ReplaceCommandSelection(IEnumerable<Command> toReplaceWith)
+        {
+            commandSelection.Clear();
+            if (toReplaceWith != null)
+            {
+                foreach (Command cmd in toReplaceWith)
+                {
+                    if (cmd != null)
+                    {
+                        commandSelection.Add(cmd);
+                    }
+                }
+            }
+
+            Command previous = PrimaryCommand;
+            PrimaryCommand = commandSelection.Count > 0 ?
+                commandSelection[0] :
+                null;
+
+            CommandSelectionChanged(commandSelection);
+            if (!ReferenceEquals(previous, PrimaryCommand))
+            {
+                PrimaryCommandChanged(previous, PrimaryCommand);
+            }
+        }
+
+        private static void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                Selection.selectionChanged += OnUnitySelectionChanged;
+
+                BlockSignals.BlockSelected += OnBlockSelected;
+                BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
+                BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
+
+                FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
+                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+
+                CommandSignals.CommandSelected += OnCommandSelected;
+
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+                AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+                EditorApplication.quitting += Cleanup;
+            }
+            else
+            {
+                Selection.selectionChanged -= OnUnitySelectionChanged;
+
+                BlockSignals.BlockSelected -= OnBlockSelected;
+                BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
+                BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
+
+                FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
+                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+
+                CommandSignals.CommandSelected -= OnCommandSelected;
+
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+                AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+                EditorApplication.quitting -= Cleanup;
+            }
+        }
+
+        private static void OnUnitySelectionChanged()
+        {
+            GameObject activeObject = Selection.activeGameObject;
+            if (activeObject == null)
+            {
+                return;
+            }
+
+            if (activeObject.TryGetComponent(out Flowchart selected))
+            {
+                SetActiveFlowchart(selected);
+            }
+        }
+
+        private static void OnBlockSelected(Block block)
+        {
+            Flowchart flowchart = block != null ?
+                block.GetFlowchart() :
+                null;
+            if (flowchart != null)
+            {
+                SetActiveFlowchart(flowchart);
+            }
+
+            Flowchart toSyncFrom = flowchart != null ?
+                flowchart :
+                activeFlowchart;
+            SyncBlockSelectionFromFlowchart(toSyncFrom);
+        }
+
+        private static void OnBlockRemovedFromSelection(Block block)
+        {
+            Flowchart flowchart = block != null ?
+                block.GetFlowchart() :
+                activeFlowchart;
+
+            SyncBlockSelectionFromFlowchart(flowchart);
+        }
+
+        private static void OnMultiBlocksSelected(IList<Block> blocks)
+        {
+            Flowchart flowchart = null;
+            if (blocks != null && blocks.Count > 0)
+            {
+                Block first = blocks[0];
+                if (first != null)
+                {
+                    flowchart = first.GetFlowchart();
+                }
+            }
+
+            if (flowchart != null)
+            {
+                SetActiveFlowchart(flowchart);
+            }
+
+            ReplaceBlockSelection(blocks);
+        }
+
+        private static void OnFlowchartWindowChanged(Flowchart previous, Flowchart current)
+        {
+            if (current == null && previous == null)
+            {
+                return;
+            }
+
+            SetActiveFlowchart(current);
+        }
+
+        private static void OnEmptySpaceClicked(Vector2 _)
+        {
             ClearBlockSelectionInternal();
             ClearCommandSelectionInternal();
-
-            SelectedFlowchartChanged(previous, flowchart);
         }
 
         private static void ClearBlockSelectionInternal()
@@ -191,20 +346,6 @@ namespace Amanita.VScripting.EditorUtils
 
         public static event Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
 
-        private static void OnUnitySelectionChanged()
-        {
-            GameObject activeObject = Selection.activeGameObject;
-            if (activeObject == null)
-            {
-                return;
-            }
-
-            if (activeObject.TryGetComponent(out Flowchart selected))
-            {
-                SetActiveFlowchart(selected);
-            }
-        }
-
         public static Flowchart ResolveActiveFlowchart(bool attemptSceneFallback = true)
         {
             if (activeFlowchart != null)
@@ -232,121 +373,17 @@ namespace Amanita.VScripting.EditorUtils
             return null;
         }
 
-        private static void OnBlockSelected(Block block)
-        {
-            Flowchart flowchart = block != null ? block.GetFlowchart() : null;
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            ReplaceBlockSelection(flowchart != null ? flowchart.SelectedBlocks : null);
-        }
-
-        private static void ReplaceBlockSelection(IEnumerable<Block> blocks)
-        {
-            blockSelection.Clear();
-            if (blocks != null)
-            {
-                foreach (Block block in blocks)
-                {
-                    if (block != null)
-                    {
-                        blockSelection.Add(block);
-                    }
-                }
-            }
-
-            Block previous = PrimaryBlock;
-            PrimaryBlock = blockSelection.Count > 0 ? blockSelection[0] : null;
-
-            BlockSelectionChanged(blockSelection);
-            if (!ReferenceEquals(previous, PrimaryBlock))
-            {
-                PrimaryBlockChanged(previous, PrimaryBlock);
-            }
-        }
-
-        private static void OnBlockRemovedFromSelection(Block block)
-        {
-            Flowchart flowchart = block != null ? 
-                block.GetFlowchart() : 
-                activeFlowchart;
-            var blocks = flowchart != null ? 
-                flowchart.SelectedBlocks : 
-                null;
-            ReplaceBlockSelection(blocks);
-        }
-
-        private static void OnMultiBlocksSelected(IList<Block> blocks)
-        {
-            Flowchart flowchart = null;
-            if (blocks != null && blocks.Count > 0)
-            {
-                Block first = blocks[0];
-                if (first != null)
-                {
-                    flowchart = first.GetFlowchart();
-                }
-            }
-
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            ReplaceBlockSelection(blocks);
-        }
-
-        private static void OnFlowchartWindowChanged(Flowchart previous, Flowchart current)
-        {
-            if (current == null && previous == null)
-            {
-                return;
-            }
-
-            SetActiveFlowchart(current);
-        }
-
         private static void OnCommandSelected(Command command)
         {
-            Flowchart flowchart = command != null ? command.GetFlowchart() : null;
+            Flowchart flowchart = command != null ? 
+                command.GetFlowchart() : 
+                null;
             if (flowchart != null)
             {
                 SetActiveFlowchart(flowchart);
             }
 
-            ReplaceCommandSelection(flowchart != null ? flowchart.SelectedCommands : null);
-        }
-
-        private static void ReplaceCommandSelection(IEnumerable<Command> commands)
-        {
-            commandSelection.Clear();
-            if (commands != null)
-            {
-                foreach (Command command in commands)
-                {
-                    if (command != null)
-                    {
-                        commandSelection.Add(command);
-                    }
-                }
-            }
-
-            Command previous = PrimaryCommand;
-            PrimaryCommand = commandSelection.Count > 0 ? commandSelection[0] : null;
-
-            CommandSelectionChanged(commandSelection);
-            if (!ReferenceEquals(previous, PrimaryCommand))
-            {
-                PrimaryCommandChanged(previous, PrimaryCommand);
-            }
-        }
-
-        private static void OnEmptySpaceClicked(Vector2 _)
-        {
-            ClearBlockSelectionInternal();
-            ClearCommandSelectionInternal();
+            SyncCommandSelectionFromFlowchart(flowchart ?? activeFlowchart);
         }
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -373,6 +410,8 @@ namespace Amanita.VScripting.EditorUtils
 
             ToggleSubs(false);
         }
+
+        private static bool isCleaningUp;
 
     }
 }
