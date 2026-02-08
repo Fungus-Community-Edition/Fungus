@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -25,6 +24,7 @@ namespace Amanita.VScripting.EditorUtils
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
         private bool isDisposed;
+        private bool initialRefreshPending;
 
         /// <summary>
         /// Binds a block to its visual representation and event handlers.
@@ -43,6 +43,9 @@ namespace Amanita.VScripting.EditorUtils
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
+
+            RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
         private readonly FlowchartContext flowchartContext;
@@ -51,9 +54,49 @@ namespace Amanita.VScripting.EditorUtils
         public void Initialize(FlowchartWindowUitk window)
         {
             owner = window;
-            EditorApplication.delayCall += () => RefreshBlocks(); 
-            // ^To make sure the blocks render at the right size on initial window open. Otherwise,
-            // they render at the wrong size until selected.
+            initialRefreshPending = true;
+            TryRefreshAfterLayout();
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent evt)
+        {
+            TryRefreshAfterLayout();
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+            {
+                return;
+            }
+
+            TryRefreshAfterLayout();
+        }
+
+        private void TryRefreshAfterLayout()
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (panel == null)
+            {
+                return;
+            }
+
+            if (contentRect.width <= 0f || contentRect.height <= 0f)
+            {
+                return;
+            }
+
+            initialRefreshPending = false;
+            RefreshBlocks();
         }
 
         public void RefreshBlocks()
@@ -144,7 +187,8 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (!blockBindings.TryGetValue(block, out BlockBinding binding))
+            bool blockAlreadyDrawn = blockBindings.TryGetValue(block, out BlockBinding binding);
+            if (!blockAlreadyDrawn)
             {
                 UitkButton button = drawer.CreateButton(block);
                 button.style.position = Position.Absolute;
@@ -155,6 +199,21 @@ namespace Amanita.VScripting.EditorUtils
                     BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
                 }
                 button.clicked += OnClick;
+
+                void OnButtonGeometryChanged(GeometryChangedEvent evt)
+                {
+                    if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+                    {
+                        return;
+                    }
+                    // We do this (calling UpdateButton on the first geometry change) so that right when the
+                    // window opens, the button is rendered at the right size. For some reason, putting
+                    // RefreshBlocks in Initialize doesn't work...
+                    button.UnregisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
+                    drawer.UpdateButton(button, capturedBlock, CurrentZoom);
+                    UpdateBlockLayouts();
+                }
+                button.RegisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
 
                 binding = new BlockBinding
                 {
@@ -365,7 +424,9 @@ namespace Amanita.VScripting.EditorUtils
 
             isDisposed = true;
             ClearAll();
-            this.RemoveFromHierarchy();
+            UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            RemoveFromHierarchy();
         }
     }
 

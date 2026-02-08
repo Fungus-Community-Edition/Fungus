@@ -35,7 +35,7 @@ namespace Amanita.VScripting.EditorUtils
         public void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt)
         {
             // We only want to start tracking when the drag starts on empty space, so...
-            Debug.Log($"Box selection tracking enabled at {pos}");
+            //Debug.Log($"Box selection tracking enabled at {pos}");
             _shouldTrack = true;
         }
 
@@ -43,10 +43,10 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt)
         {
-            Debug.Log($"Box selection tracking disabled at {pos}");
-            // Let's delay it by a frame so that our DragEnded response can still run. Otherwise, 
-            // _shouldTrack will be false by the time we get to DragEnded if the mouse up happens
-            // before the drag ends, which it usually does.
+            //Debug.Log($"Box selection tracking disabled at {pos}");
+            // Let's delay it by a frame so that our DragEnded response can still run properly. Otherwise, 
+            // it might exit too early due to _shouldTrack being set false right here. As this func
+            // usually runs before DragEnded... yeah.
             EditorApplication.delayCall += () => _shouldTrack = false;
         }
 
@@ -68,7 +68,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            interaction.StartSelectionBoxPosition = startPos;
+            interaction.SelectionBoxStartPos = startPos;
             interaction.SelectionBox = Rect.MinMaxRect(
                 startPos.x,
                 startPos.y,
@@ -87,7 +87,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            Vector2 start = interaction.StartSelectionBoxPosition;
+            Vector2 start = interaction.SelectionBoxStartPos;
             Vector2 current = evt.mousePosition;
             Vector2 diff = new Vector2(Mathf.Abs(start.x - current.x), Mathf.Abs(start.y - current.y));
             bool movedFarEnough = diff.x > MinThreshold.x && diff.y > MinThreshold.y;
@@ -123,7 +123,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            bool releasedMouseOnValidSpot = interaction.StartSelectionBoxPosition.x >= 0;
+            bool releasedMouseOnValidSpot = interaction.SelectionBoxStartPos.x >= 0;
             bool validFc = flowchartContext.Flowchart != null;
             if (!(releasedMouseOnValidSpot && interaction.SelectionBoxDragOngoing && validFc))
             {

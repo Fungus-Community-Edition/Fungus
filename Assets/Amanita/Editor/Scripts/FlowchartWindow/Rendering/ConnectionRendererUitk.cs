@@ -48,7 +48,6 @@ namespace Amanita.VScripting.EditorUtils
         public void Initialize(FlowchartWindowUitk window)
         {
             owner = window ?? throw new ArgumentNullException(nameof(window));
-            RequestRepaint();
         }
 
         public void Dispose()

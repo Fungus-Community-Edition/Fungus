@@ -15,7 +15,7 @@ namespace Amanita.VScripting.EditorUtils
         public bool HasDraggedSelected { get; set; }
 
         public Vector2 StartDragPosition { get; set; }
-        public Vector2 StartSelectionBoxPosition { get; set; }
+        public Vector2 SelectionBoxStartPos { get; set; }
 
         public Rect SelectionBox { get; set; } = Rect.zero;
 
@@ -29,7 +29,7 @@ namespace Amanita.VScripting.EditorUtils
         public void ResetSelectionBox()
         {
             SelectionBox = Rect.zero;
-            StartSelectionBoxPosition = Vector2.zero;
+            SelectionBoxStartPos = Vector2.zero;
             SelectionBoxDragOngoing = false;
         }
 

@@ -160,10 +160,13 @@ namespace Amanita.VScripting.EditorUtils
             {
                 radius *= fChart.Zoom;
             }
+            Color prevColor = painter.fillColor;
+            painter.fillColor = painter.strokeColor = Color.green;
             painter.BeginPath();
             painter.Arc(center, radius, 0f, 360f);
             painter.Fill();
             painter.Stroke();
+            painter.fillColor = painter.strokeColor = prevColor;
         }
 
         public static Vector2 GetPointOnCurve(Vector2 fromAnchor, Vector2 fromControl,
