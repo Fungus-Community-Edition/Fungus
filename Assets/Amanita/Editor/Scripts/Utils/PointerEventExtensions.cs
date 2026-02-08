@@ -28,5 +28,21 @@ namespace Amanita.EditorUtils
         {
             return (evt.pressedButtons & 1) != 0 && evt.altKey;
         }
+
+        public static void ApplyButtonTo(this IPointerEvent evt, Event systemEvent)
+        {
+            if (evt.IsLeftMouseButtonPressed())
+            {
+                systemEvent.button = 0;
+            }
+            else if (evt.IsRightMouseButtonPressed())
+            {
+                systemEvent.button = 1;
+            }
+            else if (evt.IsMiddleMouseButtonPressed())
+            {
+                systemEvent.button = 2;
+            }
+        }
     }
 }

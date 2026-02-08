@@ -13,7 +13,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         private readonly IBlockGraphicsGenerator graphicsGenerator;
         private const float MinWidth = 60f;
-        private const float MaxWidth = 260f;
+        private const float MaxWidth = 280f;
         private const float PaddingX = 18f;
         private const float PaddingY = 10f;
         private const float DefaultHeight = 40f;
@@ -30,6 +30,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             this.graphicsGenerator = graphicsGenerator ?? throw new ArgumentNullException(nameof(graphicsGenerator));
         }
+
 
         public UitkButton CreateButton(Block block)
         {

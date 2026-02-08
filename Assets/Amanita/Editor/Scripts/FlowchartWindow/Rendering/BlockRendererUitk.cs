@@ -40,7 +40,7 @@ namespace Amanita.VScripting.EditorUtils
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
             drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
-            pickingMode = PickingMode.Ignore;
+            //pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
 
@@ -170,6 +170,8 @@ namespace Amanita.VScripting.EditorUtils
 
             if (binding.Button != null)
             {
+                UnregisterInputForwarders(binding.Button);
+
                 if (binding.ClickHandler != null)
                 {
                     binding.Button.clicked -= binding.ClickHandler;
@@ -192,6 +194,8 @@ namespace Amanita.VScripting.EditorUtils
             {
                 UitkButton button = drawer.CreateButton(block);
                 button.style.position = Position.Absolute;
+
+                RegisterInputForwarders(button);
 
                 var capturedBlock = block;
                 void OnClick()
@@ -332,6 +336,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             foreach (var entry in blockBindings)
             {
+                UnregisterInputForwarders(entry.Value.Button);
                 UnsubClickHandler(entry.Value);
                 entry.Value.Button?.RemoveFromHierarchy();
             }
@@ -427,6 +432,54 @@ namespace Amanita.VScripting.EditorUtils
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             RemoveFromHierarchy();
+        }
+
+        private InputSignalModuleUitk InputSignals => owner != null ? owner.InputSignals : null;
+
+        private void RegisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.RegisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.RegisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.RegisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.RegisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void UnregisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.UnregisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.UnregisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.UnregisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.UnregisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void OnBlockPointerDown(PointerDownEvent evt)
+        {
+            InputSignals?.OnPointerDown(evt);
+        }
+
+        private void OnBlockPointerMove(PointerMoveEvent evt)
+        {
+            InputSignals?.OnPointerMove(evt);
+        }
+
+        private void OnBlockPointerUp(PointerUpEvent evt)
+        {
+            InputSignals?.OnPointerUp(evt);
+        }
+
+        private void OnBlockPointerCancel(PointerCancelEvent evt)
+        {
+            InputSignals?.OnPointerCancel(evt);
         }
     }
 

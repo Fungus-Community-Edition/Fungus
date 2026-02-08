@@ -48,6 +48,8 @@ namespace Amanita.VScripting.EditorUtils
             style.right = 0f;
             style.bottom = 0f;
             style.left = 0f;
+            // ^ All set to 0 so this can work with the entire window, not just some part of it.
+            // The window's padding will create the necessary offset from the edges.
             style.flexGrow = 1f;
             #endregion
 
@@ -55,6 +57,11 @@ namespace Amanita.VScripting.EditorUtils
             Add(blockRenderer);
             Add(connectionRenderer);
             Add(selectionBoxRenderer);
+
+            submodules.Add(gridRenderer);
+            submodules.Add(blockRenderer);
+            submodules.Add(connectionRenderer);
+            submodules.Add(selectionBoxRenderer);
         }
 
         private readonly GridRendererUitk gridRenderer;
@@ -62,6 +69,9 @@ namespace Amanita.VScripting.EditorUtils
         private readonly SelectionBoxRendererUitk selectionBoxRenderer;
         private readonly ConnectionRendererUitk connectionRenderer;
         private bool isDisposed;
+
+        private readonly IList<IFlowchartWindowModule> submodules = new List<IFlowchartWindowModule>();
+        // ^ Cache of all submodules for easy iteration in event handlers.
 
         public void Initialize(FlowchartWindowUitk window)
         {
@@ -84,93 +94,167 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isDisposed = true;
-            gridRenderer.Dispose();
-            connectionRenderer.Dispose();
-            blockRenderer.Dispose();
-            selectionBoxRenderer.Dispose();
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                submodules[i].Dispose();
+            }
             RemoveFromHierarchy();
         }
 
         public void OnScrollWheelMoved()
         {
-            gridRenderer.OnScrollWheelMoved();
-            connectionRenderer.OnScrollWheelMoved();
-            blockRenderer.OnScrollWheelMoved();
-            selectionBoxRenderer.OnScrollWheelMoved();
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IScrollWheelMoveResponder responder)
+                {
+                    continue;
+                }
+                responder.OnScrollWheelMoved();
+            }
         }
 
         public void OnWindowPanned()
         {
-            gridRenderer.OnWindowPanned();
-            connectionRenderer.OnWindowPanned();
-            blockRenderer.OnWindowPanned();
-            selectionBoxRenderer.OnWindowPanned();
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IWindowPanResponder responder)
+                {
+                    continue;
+                }
+                responder.OnWindowPanned();
+            }
         }
 
         public void OnBlockSelected(Block block)
         {
-            gridRenderer.OnBlockSelected(block);
-            connectionRenderer.OnBlockSelected(block);
-            blockRenderer.OnBlockSelected(block);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IBlockSelectionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnBlockSelected(block);
+            }
         }
 
         public void OnMultiBlocksSelected(IList<Block> blocks)
         {
-            gridRenderer.OnMultiBlocksSelected(blocks);
-            connectionRenderer.OnMultiBlocksSelected(blocks);
-            blockRenderer.OnMultiBlocksSelected(blocks);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IMultiBlockSelectionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnMultiBlocksSelected(blocks);
+            }
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
-            gridRenderer.OnFlowchartChanged(previous, next);
-            connectionRenderer.OnFlowchartChanged(previous, next);
-            blockRenderer.OnFlowchartChanged(previous, next);
-            selectionBoxRenderer.OnFlowchartChanged(previous, next);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IFlowchartChangeResponder responder)
+                {
+                    continue;
+                }
+                responder.OnFlowchartChanged(previous, next);
+            }
         }
 
         public void OnPreBlockDeletion(IList<Block> blocks)
         {
-            connectionRenderer.OnPreBlockDeletion(blocks);
-            blockRenderer.OnPreBlockDeletion(blocks);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IPreBlockDeletionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnPreBlockDeletion(blocks);
+            }
         }
 
         public void OnPreBlockDeletion(Block block)
         {
-            connectionRenderer.OnPreBlockDeletion(block);
-            blockRenderer.OnPreBlockDeletion(block);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IPreBlockDeletionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnPreBlockDeletion(block);
+            }
         }
 
         public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
         {
-            connectionRenderer.OnLeftMouseDragStarted(startPos, evt);
-            blockRenderer.OnLeftMouseDragStarted(startPos, evt);
-            selectionBoxRenderer.OnLeftMouseDragStarted(startPos, evt);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not ILeftMouseDragStartResponder responder)
+                {
+                    continue;
+                }
+                responder.OnLeftMouseDragStarted(startPos, evt);
+            }
         }
 
         public void OnLeftMouseDragged(Vector2 delta, Event evt)
         {
-            connectionRenderer.OnLeftMouseDragged(delta, evt);
-            selectionBoxRenderer.OnLeftMouseDragged(delta, evt);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not ILeftMouseDragResponder responder)
+                {
+                    continue;
+                }
+                responder.OnLeftMouseDragged(delta, evt);
+            }
         }
 
         public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
         {
-            connectionRenderer.OnLeftMouseDragEnded(endPos, evt);
-            blockRenderer.OnLeftMouseDragEnded(endPos, evt);
-            selectionBoxRenderer.OnLeftMouseDragEnded(endPos, evt);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not ILeftMouseDragEndResponder responder)
+                {
+                    continue;
+                }
+                responder.OnLeftMouseDragEnded(endPos, evt);
+            }
         }
 
         public void OnBlockDeselected(Block block)
         {
-            connectionRenderer.OnBlockDeselected(block);
-            blockRenderer.OnBlockDeselected(block);
+             for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IBlockDeselectionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnBlockDeselected(block);
+            }
         }
 
         public void OnMultiBlocksDeselected(IList<Block> blocks)
         {
-            connectionRenderer.OnMultiBlocksDeselected(blocks);
-            blockRenderer.OnMultiBlocksDeselected(blocks);
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var sModule = submodules[i];
+                if (sModule is not IMultiBlockDeselectionResponder responder)
+                {
+                    continue;
+                }
+                responder.OnMultiBlocksDeselected(blocks);
+            }
         }
     }
 }

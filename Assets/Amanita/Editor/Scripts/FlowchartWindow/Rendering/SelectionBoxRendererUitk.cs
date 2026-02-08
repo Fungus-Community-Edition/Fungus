@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,6 +19,8 @@ namespace Amanita.VScripting.EditorUtils
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
+            this.SetPadding(0f);
+            this.SetMargin(0f);
 
             RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             generateVisualContent += OnGenerateVisualContent;
@@ -62,6 +65,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnLeftMouseDragged(Vector2 delta, Event evt)
         {
+            Debug.Log($"Selection box renderer: Dragging with delta {delta}");
             RequestRepaint();
         }
 

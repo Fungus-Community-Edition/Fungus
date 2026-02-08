@@ -42,6 +42,11 @@ namespace Amanita.VScripting.EditorUtils
             return false;
         }
 
+        /// <summary>
+        /// Tries to get the block's rect in window space. It first attempts to get the rect 
+        /// from the BlockRendererUitk for better accuracy, and falls back to calculating it 
+        /// from the block's NodeRect if necessary.
+        /// </summary>
         internal static bool TryGetBlockWindowRect(Block block, Flowchart flowchart, out Rect rect)
         {
             rect = default;
