@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
 using UnityEngine.SceneManagement;

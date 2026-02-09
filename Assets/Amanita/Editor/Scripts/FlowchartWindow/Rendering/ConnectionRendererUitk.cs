@@ -132,9 +132,9 @@ namespace Amanita.VScripting.EditorUtils
         public void OnFlowchartChanged(Flowchart previous, Flowchart next) => RequestRepaint();
         public void OnWindowPanned() => RequestRepaint();
         public void OnScrollWheelMoved() => RequestRepaint();
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt) => RequestRepaint();
-        public void OnLeftMouseDragged(Vector2 direction, Event evt) => RequestRepaint();
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt) => RequestRepaint();
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt) => RequestRepaint();
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt) => RequestRepaint();
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt) => RequestRepaint();
         public void OnBlockSelected(Block block) => RequestRepaint();
         public void OnBlockDeselected(Block block) => RequestRepaint();
         public void OnMultiBlocksSelected(IList<Block> blocks) => RequestRepaint();

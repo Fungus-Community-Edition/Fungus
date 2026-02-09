@@ -33,21 +33,15 @@ namespace Amanita.VScripting.EditorUtils
 
         private bool isDisposed;
 
-        public void OnEmptySpaceLeftMouseDown(Vector2 pos, Event evt)
+        public void OnEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt)
         {
-            // We only want to start tracking when the drag starts on empty space, so...
-            //Debug.Log($"Box selection tracking enabled at {pos}");
             _shouldTrack = true;
         }
 
-        bool _shouldTrack;
+        private bool _shouldTrack;
 
-        public void OnEmptySpaceLeftMouseUp(Vector2 pos, Event evt)
+        public void OnEmptySpaceLeftMouseUp(PointerEventInfo info, Event evt)
         {
-            //Debug.Log($"Box selection tracking disabled at {pos}");
-            // Let's delay it by a frame so that our DragEnded response can still run properly. Otherwise, 
-            // it might exit too early due to _shouldTrack being set false right here. As this func
-            // usually runs before DragEnded... yeah.
             EditorApplication.delayCall += () => _shouldTrack = false;
         }
 
@@ -61,7 +55,7 @@ namespace Amanita.VScripting.EditorUtils
             isDisposed = true;
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null || !_shouldTrack)
             {
@@ -69,18 +63,17 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            interaction.SelectionBoxStartPos = startPos;
+            interaction.SelectionBoxStartPos = info.FlowchartPosition;
             interaction.SelectionBox = Rect.MinMaxRect(
-                startPos.x,
-                startPos.y,
-                startPos.x,
-                startPos.y);
+                info.FlowchartPosition.x,
+                info.FlowchartPosition.y,
+                info.FlowchartPosition.x,
+                info.FlowchartPosition.y);
 
             interaction.SelectionBoxDragOngoing = false;
-            //Debug.Log($"Box selection started at {startPos}");
         }
 
-        public void OnLeftMouseDragged(Vector2 _, Event evt)
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null || !_shouldTrack)
             {
@@ -89,7 +82,7 @@ namespace Amanita.VScripting.EditorUtils
 
             var interaction = flowchartContext.Interaction;
             Vector2 start = interaction.SelectionBoxStartPos;
-            Vector2 current = evt.mousePosition;
+            Vector2 current = info.FlowchartPosition;
             Vector2 diff = new Vector2(Mathf.Abs(start.x - current.x), Mathf.Abs(start.y - current.y));
             bool movedFarEnough = diff.x > MinThreshold.x && diff.y > MinThreshold.y;
 
@@ -108,15 +101,10 @@ namespace Amanita.VScripting.EditorUtils
                     bottomLeftCorner.y,
                     topRightCorner.x,
                     topRightCorner.y);
-
-                //UpdateSelectionDuringDrag(flowchartContext, interaction.SelectionBox);
             }
-
-            //Debug.Log($"Selection box drag tracker: Box selection dragged to {current}");
-
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null || !_shouldTrack)
             {
@@ -136,7 +124,7 @@ namespace Amanita.VScripting.EditorUtils
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;
             _shouldTrack = false;
-            Debug.Log($"Box selection ended at {endPos}");
+            Debug.Log($"Box selection ended at {info.FlowchartPosition}");
             Debug.Log($"Zoom: {flowchartContext.Flowchart.Zoom}, ScrollPos: {flowchartContext.Flowchart.ScrollPos}");
         }
 
@@ -184,10 +172,6 @@ namespace Amanita.VScripting.EditorUtils
             {
                 BlockSignals.MultiBlocksSelected?.Invoke(ctx.Selection.Blocks);
                 Debug.Log($"{blockCount} blocks selected via box selection.");
-            }
-            else
-            {
-                FlowchartWindowSignals.EmptySpaceClicked?.Invoke(Vector2.zero);
             }
         }
 

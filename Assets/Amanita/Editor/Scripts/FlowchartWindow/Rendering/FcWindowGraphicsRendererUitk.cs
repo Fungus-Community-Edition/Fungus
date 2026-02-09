@@ -193,7 +193,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             for (int i = 0; i < submodules.Count; i++)
             {
@@ -202,11 +202,11 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     continue;
                 }
-                responder.OnLeftMouseDragStarted(startPos, evt);
+                responder.OnLeftMouseDragStarted(info, evt);
             }
         }
 
-        public void OnLeftMouseDragged(Vector2 delta, Event evt)
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
             for (int i = 0; i < submodules.Count; i++)
             {
@@ -215,11 +215,11 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     continue;
                 }
-                responder.OnLeftMouseDragged(delta, evt);
+                responder.OnLeftMouseDragged(info, evt);
             }
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
             for (int i = 0; i < submodules.Count; i++)
             {
@@ -228,7 +228,7 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     continue;
                 }
-                responder.OnLeftMouseDragEnded(endPos, evt);
+                responder.OnLeftMouseDragEnded(info, evt);
             }
         }
 

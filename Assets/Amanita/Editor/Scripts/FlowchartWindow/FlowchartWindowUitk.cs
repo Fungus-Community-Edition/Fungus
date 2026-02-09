@@ -330,6 +330,7 @@ namespace Amanita.VScripting.EditorUtils
         private ZoomHandlerUitk _zoomHandler;
         private SelectionBoxDragTrackerUitk _boxSelectionHandler;
         private BlockDragHandlerUitk _blockDragHandler;
+        private readonly HitDetectionHandler _hitDetector = new HitDetectionHandler();
         #endregion
 
         public InputSignalModuleUitk InputSignals => _inputDetector;
@@ -381,6 +382,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
+            _hitDetector.Handle(Event.current, _fcContext);
             _inputDetector.OnGUI(Event.current);
             _scrollPosResetter?.OnGUI(Event.current);
         }

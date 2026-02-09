@@ -17,7 +17,8 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
-        IBlockSelectionResponder, IPreBlockDeletionResponder, ILeftMouseDragStartResponder,
+        IBlockSelectionResponder, IPreBlockDeletionResponder, 
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider
     {
@@ -38,7 +39,7 @@ namespace Amanita.VScripting.EditorUtils
         
         public BlockRendererUitk(FlowchartContext context, IBlockDrawerUitk blockDrawer)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
             drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
             //pickingMode = PickingMode.Ignore;
@@ -49,7 +50,7 @@ namespace Amanita.VScripting.EditorUtils
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext fcContext;
         private readonly IBlockDrawerUitk drawer;
 
         public void Initialize(FlowchartWindowUitk window)
@@ -107,14 +108,14 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = fcContext.Flowchart;
             if (flowchart == null)
             {
                 ClearAll();
                 return;
             }
 
-            IReadOnlyCollection<Block> present = flowchartContext.Document.AllBlocks;
+            IReadOnlyCollection<Block> present = fcContext.Document.AllBlocks;
             RemoveMissing(present);
 
             foreach (var block in present)
@@ -199,11 +200,11 @@ namespace Amanita.VScripting.EditorUtils
                 RegisterInputForwarders(button);
 
                 var capturedBlock = block;
+                button.clicked += OnClick;
                 void OnClick()
                 {
                     BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
                 }
-                button.clicked += OnClick;
 
                 void OnButtonGeometryChanged(GeometryChangedEvent evt)
                 {
@@ -225,7 +226,7 @@ namespace Amanita.VScripting.EditorUtils
                     Button = button,
                     ClickHandler = OnClick
                 };
-
+                
                 blockBindings.Add(block, binding);
                 Add(button);
             }
@@ -264,7 +265,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                Flowchart flowchart = flowchartContext.Flowchart;
+                Flowchart flowchart = fcContext.Flowchart;
                 return flowchart != null ? flowchart.ScrollPos : Vector2.zero;
             }
         }
@@ -273,7 +274,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             get
             {
-                Flowchart flowchart = flowchartContext.Flowchart;
+                Flowchart flowchart = fcContext.Flowchart;
                 float zoom = flowchart != null ? flowchart.Zoom : 1f;
                 return Mathf.Approximately(zoom, 0f) ? 1f : zoom;
             }
@@ -366,7 +367,7 @@ namespace Amanita.VScripting.EditorUtils
             RemoveBlock(block);
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             #region Keep Blocks from blocking drag events
             foreach (var entry in blockBindings)
@@ -380,7 +381,7 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
             #region Let Blocks be selectable again
             foreach (var entry in blockBindings)
@@ -481,6 +482,14 @@ namespace Amanita.VScripting.EditorUtils
         private void OnBlockPointerCancel(PointerCancelEvent evt)
         {
             InputSignals?.OnPointerCancel(evt);
+        }
+
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
+        {
+            if (fcContext.Interaction.BlockDragOngoing)
+            {
+                UpdateBlockLayouts();
+            }
         }
     }
 

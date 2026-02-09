@@ -15,7 +15,7 @@ namespace Amanita.VScripting.EditorUtils
         public int Priority { get; set; } = 0;
         public SelectionBoxRendererUitk(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
 
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
@@ -27,7 +27,7 @@ namespace Amanita.VScripting.EditorUtils
             generateVisualContent += OnGenerateVisualContent;
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext fcContext;
         private bool isDisposed;
 
         public void Initialize(FlowchartWindowUitk window)
@@ -59,30 +59,30 @@ namespace Amanita.VScripting.EditorUtils
             RemoveFromHierarchy();
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
-            // BlockHitTester expects panel/world space. As we were given local space, we need to
-            // convert it before checking if the mouse is over a block.
-            Vector2 worldStartPos = BlockHitTester.ToWorldPosition(startPos, this);
-            _shouldRender = !BlockHitTester.IsMouseOverBlock(worldStartPos);
+            _shouldRender = !BlockHitTester.IsMouseOverBlock(info.FlowchartPosition);
             if (!_shouldRender)
             {
-                Debug.Log($"Selection box renderer: Not starting drag because mouse is over a block at {startPos}");
+                //Debug.Log($"Selection box renderer: Not starting drag because mouse is over a block at {info.FlowchartPosition}");
             }
             RequestRepaint();
         }
 
         private bool _shouldRender;
 
-        public void OnLeftMouseDragged(Vector2 delta, Event evt)
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            Debug.Log($"Selection box renderer: Dragging with delta {delta}");
+            if (fcContext.Interaction.SelectionBox == Rect.zero)
+            {
+                return;
+            }
+            //Debug.Log($"Selection box renderer: Dragging with delta {info.FlowchartDelta}");
             RequestRepaint();
         }
 
-        public void OnLeftMouseDragEnded(Vector2 endPos, Event evt)
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
-            //Debug.Log($"Selection box renderer: Drag ended at {endPos}");
             _ignoreSelectionBoxThisFrame = true;
             RequestRepaint();
             _shouldRender = false;
@@ -124,7 +124,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = fcContext.Interaction;
             bool thereIsBoxToRender = interaction != null && interaction.SelectionBoxDragOngoing && 
                 interaction.HasSelectionBox;
             if (!thereIsBoxToRender)

@@ -52,7 +52,7 @@ namespace Amanita.VScripting.EditorUtils
             _blockInspectorSync?.HandleBlockClicked(block);
         }
 
-        protected virtual void OnEmptySpaceClicked(Vector2 pos)
+        protected virtual void OnEmptySpaceClicked(PointerEventInfo info)
         {
             _blockInspectorSync?.HandleEmptySpaceClicked();
         }

@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
     /// <summary>
     /// Handles click-and-drag of selected blocks in the UITK flowchart window.
     /// </summary>
-    public sealed class BlockDragHandlerUitk : IFlowchartWindowModule, ILeftClickResponder, 
+    public sealed class BlockDragHandlerUitk : IFlowchartWindowModule, ILeftMouseDownResponder, 
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseUpResponder
     {
         public int Priority { get; set; } = 0;
@@ -43,7 +43,7 @@ namespace Amanita.VScripting.EditorUtils
             isDisposed = true;
         }
 
-        public void OnLeftClick(Vector2 position)
+        public void OnLeftMouseDown(PointerEventInfo info)
         {
             if (isDisposed)
             {
@@ -51,10 +51,10 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            interaction.BlockHitInLastMouseDown = BlockHitTester.FindTopmostBlock(position);
+            interaction.BlockHitInLastMouseDown = BlockHitTester.FindTopmostBlock(info.PanelPosition);
         }
 
-        public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null || evt.alt)
             {
@@ -69,7 +69,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Vector2 mousePosInWindowSpace = flowchartContext.Document.ToWindowSpace(evt.mousePosition);
+            Vector2 mousePosInWindowSpace = flowchartContext.Document.ToWindowSpace(info.FlowchartPosition);
             interaction.StartDragPosition = mousePosInWindowSpace - flowchart.ScrollPos;
 
             Block blockHit = interaction.BlockHitInLastMouseDown;
@@ -83,7 +83,7 @@ namespace Amanita.VScripting.EditorUtils
             interaction.HasDraggedSelected = false;
         }
 
-        public void OnLeftMouseDragged(Vector2 direction, Event evt)
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null || evt.alt)
             {
@@ -119,8 +119,8 @@ namespace Amanita.VScripting.EditorUtils
             float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 
                 1f : 
                 flowchart.Zoom;
-            Vector2 movementDelta = direction / zoom;
-
+            Vector2 movementDelta = info.PanelDelta / zoom;
+            //Debug.Log($"Dragging blocks with movement delta {movementDelta} at zoom {flowchart.Zoom}");
             foreach (var block in selection)
             {
                 if (block == null)
@@ -131,12 +131,13 @@ namespace Amanita.VScripting.EditorUtils
                 Rect rect = block._NodeRect;
                 rect.position += movementDelta;
                 block._NodeRect = rect;
+                Debug.Log($"Moved block '{block.BlockName}'");
             }
 
             interaction.HasDraggedSelected = true;
         }
 
-        public void OnLeftMouseUp(Vector2 pos, Event evt)
+        public void OnLeftMouseUp(PointerEventInfo info, Event evt)
         {
             if (isDisposed || evt == null)
             {

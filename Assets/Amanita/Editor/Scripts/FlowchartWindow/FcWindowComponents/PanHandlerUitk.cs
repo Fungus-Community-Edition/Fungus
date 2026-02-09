@@ -60,14 +60,14 @@ namespace Amanita.VScripting.EditorUtils
 
         private static readonly float minDirectionMagnitude = 0.01f;
 
-        public void OnRightMouseDragged(Vector2 direction, Event evt)
+        public void OnRightMouseDragged(PointerEventInfo info, Event evt)
         {
             if (!evt.shift)
             {
                 return;
             }
 
-            OnDragInput(direction);
+            OnDragInput(info.PanelDelta);
         }
 
         public void Dispose()

@@ -8,7 +8,7 @@ namespace Amanita.EditorUtils
     {
         public bool Handle(Event eventToHandle, FlowchartContext ctx)
         {
-            bool weWantToReact = eventToHandle.type == EventType.MouseDown && eventToHandle.button == leftMouseButton;
+            bool weWantToReact = eventToHandle.MouseDown() && eventToHandle.LeftMouseButton();
             if (weWantToReact)
             {
                 return OnMouseDown(eventToHandle, ctx);
@@ -16,8 +16,6 @@ namespace Amanita.EditorUtils
 
             return false;
         }
-
-        protected static readonly int leftMouseButton = 0;
 
         protected virtual bool OnMouseDown(Event inputEvent, FlowchartContext flowchartCtx)
         {

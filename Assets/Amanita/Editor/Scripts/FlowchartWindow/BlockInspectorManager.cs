@@ -205,7 +205,7 @@ namespace Amanita.VScripting.EditorUtils
             Clear();
         }
 
-        private static void OnEmptySpaceClicked(Vector2 _)
+        private static void OnEmptySpaceClicked(PointerEventInfo _)
         {
             ClearInternal(trackedFlowchart);
         }
