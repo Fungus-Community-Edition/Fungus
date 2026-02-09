@@ -12,6 +12,7 @@ namespace Amanita.VScripting.EditorUtils
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
         IScrollWheelMoveResponder, IWindowPanResponder, IFlowchartChangeResponder
     {
+        public int Priority { get; set; } = 0;
         public SelectionBoxRendererUitk(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
@@ -60,8 +61,18 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
         {
+            // BlockHitTester expects panel/world space. As we were given local space, we need to
+            // convert it before checking if the mouse is over a block.
+            Vector2 worldStartPos = BlockHitTester.ToWorldPosition(startPos, this);
+            _shouldRender = !BlockHitTester.IsMouseOverBlock(worldStartPos);
+            if (!_shouldRender)
+            {
+                Debug.Log($"Selection box renderer: Not starting drag because mouse is over a block at {startPos}");
+            }
             RequestRepaint();
         }
+
+        private bool _shouldRender;
 
         public void OnLeftMouseDragged(Vector2 delta, Event evt)
         {
@@ -74,6 +85,7 @@ namespace Amanita.VScripting.EditorUtils
             //Debug.Log($"Selection box renderer: Drag ended at {endPos}");
             _ignoreSelectionBoxThisFrame = true;
             RequestRepaint();
+            _shouldRender = false;
         }
 
         private bool _ignoreSelectionBoxThisFrame;
@@ -97,7 +109,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void RequestRepaint()
         {
-            if (isDisposed)
+            if (isDisposed || !_shouldRender)
             {
                 return;
             }

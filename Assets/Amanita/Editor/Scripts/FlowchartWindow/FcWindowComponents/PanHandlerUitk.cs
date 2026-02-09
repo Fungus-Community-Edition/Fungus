@@ -8,6 +8,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public sealed class PanHandlerUitk : IFlowchartWindowModule, IScrollWheelDragResponder, IRightMouseDragResponder
     {
+        public int Priority { get; set; } = 0;
         private FlowchartContext flowchartContext;
         private FlowchartWindowUitk owner;
         private bool isDisposed;

@@ -13,6 +13,7 @@ namespace Amanita.VScripting.EditorUtils
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
     {
+        public int Priority { get; set; } = 0;
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
             IBlockDrawerUitk blockDrawer)
         {

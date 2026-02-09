@@ -11,6 +11,7 @@ namespace Amanita.VScripting.EditorUtils
         IScrollWheelMoveResponder,
         IFlowchartChangeResponder
     {
+        public int Priority { get; set; } = 0;
         private readonly FlowchartContext flowchartContext;
         private FlowchartWindowUitk owner;
         private bool isDisposed;

@@ -15,6 +15,7 @@ namespace Amanita.VScripting.EditorUtils
         IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder,
         IFlowchartChangeResponder
     {
+        public int Priority { get; set; } = 0;
         private readonly FlowchartContext flowchartContext;
         private readonly DrawGridContext drawGridContext;
         private Vector2 cachedScrollPosition = new Vector2(float.NaN, float.NaN);

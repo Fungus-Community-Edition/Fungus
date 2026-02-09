@@ -16,6 +16,7 @@ namespace Amanita.VScripting.EditorUtils
         IPostMultiBlockDeletionResponder, IBlockCreatedResponder, IBlocksCopiedResponder,
         ICommandSelectionResponder
     {
+        public int Priority { get; set; } = 0;
         private const float DefaultBlockHeight = 40f;
         private const float BlockMinWidth = 60f;
         private const float BlockMaxWidth = 260f;

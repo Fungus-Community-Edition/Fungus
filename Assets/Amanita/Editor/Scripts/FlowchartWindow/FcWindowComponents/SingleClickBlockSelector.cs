@@ -10,6 +10,7 @@ namespace Amanita.VScripting.EditorUtils
     public sealed class SingleClickBlockSelector : IFlowchartWindowModule,
         IEmptySpaceClickResponder, IBlockClickResponder, IBlockCreatedResponder
     {
+        public int Priority { get; set; } = 0;
         public SingleClickBlockSelector(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));

@@ -13,6 +13,7 @@ namespace Amanita.VScripting.EditorUtils
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
         IEmptySpaceLeftMouseDownResponder, IEmptySpaceLeftMouseUpResponder
     {
+        public int Priority { get; set; } = 0;
         public SelectionBoxDragTrackerUitk(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));

@@ -116,6 +116,7 @@ namespace Amanita.VScripting.EditorUtils
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
+        public FlowchartContext FcContext => _fcContext;
         protected virtual void OnDisable()
         {
             Debug.Log("FlowchartWindowUitk OnDisable");

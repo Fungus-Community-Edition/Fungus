@@ -10,9 +10,10 @@ namespace Amanita.VScripting.EditorUtils
     /// <summary>
     /// Handles click-and-drag of selected blocks in the UITK flowchart window.
     /// </summary>
-    public sealed class BlockDragHandlerUitk : IFlowchartWindowModule,
-        ILeftClickResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseUpResponder
+    public sealed class BlockDragHandlerUitk : IFlowchartWindowModule, ILeftClickResponder, 
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseUpResponder
     {
+        public int Priority { get; set; } = 0;
         public BlockDragHandlerUitk(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
@@ -50,7 +51,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             var interaction = flowchartContext.Interaction;
-            interaction.BlockHitInLastMouseDown = FindTopmostBlock(position);
+            interaction.BlockHitInLastMouseDown = BlockHitTester.FindTopmostBlock(position);
         }
 
         public void OnLeftMouseDragStarted(Vector2 startPos, Event evt)
@@ -154,38 +155,6 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             interaction.ResetDragState();
-        }
-
-        private Block FindTopmostBlock(Vector2 mousePosition)
-        {
-            Flowchart flowchart = flowchartContext.Flowchart;
-            if (flowchart == null)
-            {
-                return null;
-            }
-
-            var blocks = flowchartContext.Document.AllBlocks;
-            if (blocks == null || blocks.Count == 0)
-            {
-                return null;
-            }
-
-            Block topmost = null;
-            foreach (var blockEl in blocks)
-            {
-                if (blockEl == null)
-                {
-                    continue;
-                }
-
-                if (BlockHitTester.TryGetBlockWindowRect(blockEl, flowchart, out Rect rect) &&
-                    rect.Contains(mousePosition))
-                {
-                    topmost = blockEl;
-                }
-            }
-
-            return topmost;
         }
 
         private const string StartBlockDragGroupName = "Block Drag";

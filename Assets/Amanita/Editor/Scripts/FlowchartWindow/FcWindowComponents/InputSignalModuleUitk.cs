@@ -12,6 +12,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public sealed class InputSignalModuleUitk : IFlowchartWindowModule, IDisposable
     {
+        public int Priority { get; set; } = 0;
         public void Initialize(FlowchartWindowUitk window)
         {
             RegisterPointerCallbacks(false);

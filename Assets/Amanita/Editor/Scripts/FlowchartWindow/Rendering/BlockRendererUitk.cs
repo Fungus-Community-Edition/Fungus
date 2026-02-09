@@ -21,6 +21,7 @@ namespace Amanita.VScripting.EditorUtils
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider
     {
+        public int Priority { get; set; } = 0;
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
         private FlowchartWindowUitk owner;
         private bool isDisposed;
