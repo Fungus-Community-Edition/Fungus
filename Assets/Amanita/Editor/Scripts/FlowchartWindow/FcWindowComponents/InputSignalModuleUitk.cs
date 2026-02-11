@@ -311,13 +311,6 @@ namespace Amanita.VScripting.EditorUtils
 
         private PointerEventInfo _pointerUpInfo;
 
-        void SetPointerEventInfo(ref PointerEventInfo info, PointerUpEvent upEvent)
-        {
-            info.FlowchartPosition = ToFlowchartSpace(upEvent.position);
-            info.PanelPosition = ToPanelSpace(info.FlowchartPosition);
-            info.PanelDelta = upEvent.deltaPosition;
-            info.FlowchartDelta = ToFlowchartDelta(info.PanelPosition, info.PanelDelta);
-        }
 
         /// <summary>
         /// We need this because Block buttons capture the pointer, keeping OnPointerUp from firing. 
@@ -595,18 +588,5 @@ namespace Amanita.VScripting.EditorUtils
             return end - start;
         }
 
-        private Event _lastPointerInfoEvent;
-        private PointerEventInfo _cachedPointerInfo;
-
-        private PointerEventInfo BuildPointerEventInfo(Event guiEvent)
-        {
-            Debug.Log($"Building PointerEventInfo for event: {guiEvent}");
-            Vector2 flowchartPos = guiEvent.mousePosition;
-            Vector2 panelPos = ToPanelSpace(flowchartPos);
-            Vector2 panelDelta = guiEvent.delta;
-            Vector2 flowchartDelta = ToFlowchartDelta(panelPos, panelDelta);
-
-            return new PointerEventInfo(flowchartPos, panelPos, flowchartDelta, panelDelta);
-        }
     }
 }
