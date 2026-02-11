@@ -36,6 +36,7 @@ namespace Amanita.VScripting
         /// </summary>
         public static Action<PointerEventInfo> LeftMouseDown = delegate { };
         public static Action<PointerEventInfo> RightClicked = delegate { };
+        public static Action<PointerEventInfo, Event> RightMouseUp = delegate { };
 
         /// <summary>
         /// Invoked when the user double-left-clicks inside the flowchart window.
@@ -53,6 +54,9 @@ namespace Amanita.VScripting
         public static Action<PointerEventInfo, Event> EmptySpaceLeftMouseDown = delegate { };
         public static Action<PointerEventInfo, Event> EmptySpaceLeftMouseUp = delegate { };
         public static Action<PointerEventInfo, Event> LeftMouseUp = delegate { };
+
+        public static Action<PointerEventInfo, Event> EmptySpaceRightMouseDown = delegate { };
+        public static Action<PointerEventInfo, Event> EmptySpaceRightMouseUp = delegate { };
 
         public static Action<PointerEventInfo> EmptySpaceClicked = delegate { };
         public static Action<Flowchart, Flowchart> ChangedFlowchart = delegate { };

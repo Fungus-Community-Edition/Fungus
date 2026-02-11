@@ -200,13 +200,13 @@ namespace Amanita.VScripting.EditorUtils
                 }
                 else
                 {
-                    Debug.Log("Left click detected");
+                    Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
 
                     bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(_mouseDownInfo.PanelPosition);
                     if (!mouseOverBlock)
                     {
-                        Debug.Log("Empty space clicked");
+                        Debug.Log("Empty space left mouse down");
                         FlowchartWindowSignals.EmptySpaceLeftMouseDown(_mouseDownInfo, guiEvent);
                     }
                 }
@@ -235,9 +235,15 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (guiEvent.RightClick())
             {
-                PointerEventInfo info = GetPointerEventInfo(guiEvent);
-                Debug.Log("Right click detected");
-                FlowchartWindowSignals.RightClicked(info);
+                Debug.Log("Right mouse down detected");
+                FlowchartWindowSignals.RightClicked(_mouseDownInfo);
+
+                bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(this._mouseDownInfo.PanelPosition);
+                if (!mouseOverBlock)
+                {
+                    Debug.Log("Empty space right mouse down");
+                    FlowchartWindowSignals.EmptySpaceRightMouseDown(this._mouseDownInfo, guiEvent);
+                }
             }
 
             return guiEvent.RightClick();
@@ -335,6 +341,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             SetPointerEventInfo(ref _pointerUpInfo, guiEvent);
             HandleLeftMouseUp(guiEvent);
+            HandleRightMouseUp(guiEvent);
             HandlePanInputRelease(guiEvent);
             HandleLeftDragRelease(guiEvent);
             HandleRightDragRelease(guiEvent);
@@ -373,12 +380,24 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            PointerEventInfo info = GetPointerEventInfo(guiEvent);
-            FlowchartWindowSignals.LeftMouseUp(info, guiEvent);
+            FlowchartWindowSignals.LeftMouseUp(_pointerUpInfo, guiEvent);
 
-            if (!IsMouseOverBlock(info.PanelPosition))
+            if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
             {
-                FlowchartWindowSignals.EmptySpaceLeftMouseUp(info, guiEvent);
+                FlowchartWindowSignals.EmptySpaceLeftMouseUp(_pointerUpInfo, guiEvent);
+            }
+        }
+
+        private void HandleRightMouseUp(Event guiEvent)
+        {
+            if (!guiEvent.RightMouseButton())
+            {
+                return;
+            }
+            FlowchartWindowSignals.RightMouseUp(_pointerUpInfo, guiEvent);
+            if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
+            {
+                FlowchartWindowSignals.EmptySpaceRightMouseUp(_pointerUpInfo, guiEvent);
             }
         }
 
@@ -408,8 +427,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isLeftDragActive = false;
-            PointerEventInfo info = GetPointerEventInfo(guiEvent);
-            FlowchartWindowSignals.LeftMouseDragEnded(info, guiEvent);
+            FlowchartWindowSignals.LeftMouseDragEnded(_pointerUpInfo, guiEvent);
         }
 
         private void HandleRightDragRelease(Event guiEvent)
@@ -420,8 +438,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isRightDragActive = false;
-            PointerEventInfo info = GetPointerEventInfo(guiEvent);
-            FlowchartWindowSignals.RightMouseDragEnded(info, guiEvent);
+            FlowchartWindowSignals.RightMouseDragEnded(_pointerUpInfo, guiEvent);
         }
 
         private bool isLeftDragActive;
@@ -580,18 +597,6 @@ namespace Amanita.VScripting.EditorUtils
 
         private Event _lastPointerInfoEvent;
         private PointerEventInfo _cachedPointerInfo;
-
-        private PointerEventInfo GetPointerEventInfo(Event guiEvent)
-        {
-            if (Equals(guiEvent, _cachedPointerInfo))
-            {
-                return _cachedPointerInfo;
-            }
-
-            _lastPointerInfoEvent = guiEvent;
-            _cachedPointerInfo = BuildPointerEventInfo(guiEvent);
-            return _cachedPointerInfo;
-        }
 
         private PointerEventInfo BuildPointerEventInfo(Event guiEvent)
         {
