@@ -14,7 +14,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (on)
             {
-                FlowchartWindowSignals.LeftClicked += NotifyLeftClick;
+                FlowchartWindowSignals.LeftMouseDown += NotifyLeftMouseDown;
                 FlowchartWindowSignals.RightClicked += NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp += NotifyLeftMouseUp;
@@ -37,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils
             }
             else
             {
-                FlowchartWindowSignals.LeftClicked -= NotifyLeftClick;
+                FlowchartWindowSignals.LeftMouseDown -= NotifyLeftMouseDown;
                 FlowchartWindowSignals.RightClicked -= NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp -= NotifyLeftMouseUp;
@@ -84,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils
             modules.Add(module);
 
             #region Mouse Events
-            AddResponder<ILeftClickResponder>(module);
+            AddResponder<ILeftMouseDownResponder>(module);
             AddResponder<IRightClickResponder>(module);
             AddResponder<IDoubleClickResponder>(module);
 
@@ -111,7 +111,7 @@ namespace Amanita.VScripting.EditorUtils
             modules.Remove(module);
 
             #region Mouse Events
-            RemoveResponder<ILeftClickResponder>(module);
+            RemoveResponder<ILeftMouseDownResponder>(module);
             RemoveResponder<IRightClickResponder>(module);
             RemoveResponder<IDoubleClickResponder>(module);
 
@@ -142,44 +142,45 @@ namespace Amanita.VScripting.EditorUtils
         #region Notifiers
 
         #region Mouse Notifiers
-        public void NotifyLeftClick(Vector2 position) =>
-            Broadcast<ILeftClickResponder>(res => res.OnLeftClick(position));
 
-        public void NotifyRightClick(Vector2 position) =>
-            Broadcast<IRightClickResponder>(res => res.OnRightClick(position));
+        public void NotifyLeftMouseDown(PointerEventInfo info) =>
+            Broadcast<ILeftMouseDownResponder>(res => res.OnLeftMouseDown(info));
 
-        public void NotifyDoubleClick(Vector2 position) =>
-            Broadcast<IDoubleClickResponder>(res => res.OnDoubleClick(position));
+        public void NotifyRightClick(PointerEventInfo info) =>
+            Broadcast<IRightClickResponder>(res => res.OnRightClick(info));
 
-        public void NotifyLeftMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
-            Broadcast<ILeftMouseDragStartResponder>(res => res.OnLeftMouseDragStarted(startPosition, guiEvent));
+        public void NotifyDoubleClick(PointerEventInfo info) =>
+            Broadcast<IDoubleClickResponder>(res => res.OnDoubleClick(info));
 
-        public void NotifyLeftMouseDragged(Vector2 currentPosition, Event guiEvent) =>
-            Broadcast<ILeftMouseDragResponder>(res => res.OnLeftMouseDragged(currentPosition, guiEvent));
+        public void NotifyLeftMouseDragStarted(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<ILeftMouseDragStartResponder>(res => res.OnLeftMouseDragStarted(info, guiEvent));
 
-        public void NotifyLeftMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
-            Broadcast<ILeftMouseDragEndResponder>(res => res.OnLeftMouseDragEnded(endPosition, guiEvent));
+        public void NotifyLeftMouseDragged(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<ILeftMouseDragResponder>(res => res.OnLeftMouseDragged(info, guiEvent));
 
-        public void NotifyLeftMouseUp(Vector2 position, Event evt) =>
-            Broadcast<ILeftMouseUpResponder>(res => res.OnLeftMouseUp(position, evt));
+        public void NotifyLeftMouseDragEnded(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<ILeftMouseDragEndResponder>(res => res.OnLeftMouseDragEnded(info, guiEvent));
 
-        public void NotifyRightMouseDragStarted(Vector2 startPosition, Event guiEvent) =>
-            Broadcast<IRightMouseDragStartResponder>(res => res.OnRightMouseDragStarted(startPosition, guiEvent));
+        public void NotifyLeftMouseUp(PointerEventInfo info, Event evt) =>
+            Broadcast<ILeftMouseUpResponder>(res => res.OnLeftMouseUp(info, evt));
 
-        public void NotifyRightMouseDragged(Vector2 currentPosition, Event guiEvent) =>
-            Broadcast<IRightMouseDragResponder>(res => res.OnRightMouseDragged(currentPosition, guiEvent));
+        public void NotifyRightMouseDragStarted(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<IRightMouseDragStartResponder>(res => res.OnRightMouseDragStarted(info, guiEvent));
 
-        public void NotifyRightMouseDragEnded(Vector2 endPosition, Event guiEvent) =>
-            Broadcast<IRightMouseDragEndResponder>(res => res.OnRightMouseDragEnded(endPosition, guiEvent));
+        public void NotifyRightMouseDragged(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<IRightMouseDragResponder>(res => res.OnRightMouseDragged(info, guiEvent));
 
-        public void NotifyEmptySpaceClicked(Vector2 position) =>
-            Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(position));
+        public void NotifyRightMouseDragEnded(PointerEventInfo info, Event guiEvent) =>
+            Broadcast<IRightMouseDragEndResponder>(res => res.OnRightMouseDragEnded(info, guiEvent));
 
-        public void NotifyEmptySpaceLeftMouseDown(Vector2 position, Event evt) =>
-            Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(position, evt));
+        public void NotifyEmptySpaceClicked(PointerEventInfo info) =>
+            Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(info));
 
-        public void NotifyEmptySpaceLeftMouseUp(Vector2 position, Event evt) =>
-            Broadcast<IEmptySpaceLeftMouseUpResponder>(res => res.OnEmptySpaceLeftMouseUp(position, evt));
+        public void NotifyEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(info, evt));
+
+        public void NotifyEmptySpaceLeftMouseUp(PointerEventInfo info, Event evt) =>
+            Broadcast<IEmptySpaceLeftMouseUpResponder>(res => res.OnEmptySpaceLeftMouseUp(info, evt));
 
         public void NotifyScrollWheelMoved() =>
             Broadcast<IScrollWheelMoveResponder>(res => res.OnScrollWheelMoved());

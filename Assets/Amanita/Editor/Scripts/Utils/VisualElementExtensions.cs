@@ -44,5 +44,13 @@ namespace Amanita.EditorUtils
             element.style.paddingLeft = padding;
             element.style.paddingRight = padding;
         }
+
+        public static void SetMargin(this VisualElement element, float margin)
+        {
+            element.style.marginTop = margin;
+            element.style.marginBottom = margin;
+            element.style.marginLeft = margin;
+            element.style.marginRight = margin;
+        }
     }
 }

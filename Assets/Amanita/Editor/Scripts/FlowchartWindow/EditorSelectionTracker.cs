@@ -302,7 +302,7 @@ namespace Amanita.VScripting.EditorUtils
             SetActiveFlowchart(current);
         }
 
-        private static void OnEmptySpaceClicked(Vector2 _)
+        private static void OnEmptySpaceClicked(PointerEventInfo _)
         {
             ClearBlockSelectionInternal();
             ClearCommandSelectionInternal();

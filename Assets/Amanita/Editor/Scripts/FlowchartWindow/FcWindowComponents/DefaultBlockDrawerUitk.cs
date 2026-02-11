@@ -13,7 +13,7 @@ namespace Amanita.VScripting.EditorUtils
     {
         private readonly IBlockGraphicsGenerator graphicsGenerator;
         private const float MinWidth = 60f;
-        private const float MaxWidth = 260f;
+        private const float MaxWidth = 280f;
         private const float PaddingX = 18f;
         private const float PaddingY = 10f;
         private const float DefaultHeight = 40f;
@@ -30,6 +30,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             this.graphicsGenerator = graphicsGenerator ?? throw new ArgumentNullException(nameof(graphicsGenerator));
         }
+
 
         public UitkButton CreateButton(Block block)
         {
@@ -75,6 +76,15 @@ namespace Amanita.VScripting.EditorUtils
 
             button.text = SafeBlockName(block);
 
+            UpdateFont(button, zoom);
+            void UpdateFont(UitkButton button, float zoom)
+            {
+                button.style.fontSize = Mathf.RoundToInt(BaseFontSize);
+                button.transform.scale = new Vector3(zoom, zoom, 1f);
+                // ^Scaling only here (and going unscaled in the other calculations) allows us to 
+                // make sure that the zoom-based scaling happens properly, making things look right.
+            }
+
             UpdateSize();
             void UpdateSize()
             {
@@ -84,6 +94,8 @@ namespace Amanita.VScripting.EditorUtils
                     MeasureMode.Undefined,
                     float.NaN,
                     MeasureMode.Undefined);
+                // ^So that single-line blocks don't get weird word-wrapping, at least so long
+                // as they don't exceed the max width.
 
                 float totalPaddingX = PaddingX * 2f;
                 float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
@@ -96,11 +108,16 @@ namespace Amanita.VScripting.EditorUtils
                     float.NaN,
                     MeasureMode.Undefined);
 
-                float width = unclampedWidth * zoom;
-                float height = Mathf.Max(DefaultHeight, wrappedSize.y + PaddingY) * zoom;
+                float width = unclampedWidth;
+                float height = Mathf.Max(DefaultHeight, wrappedSize.y + PaddingY);
 
                 button.style.width = width;
                 button.style.height = height;
+
+                Rect newNodeRect = block._NodeRect;
+                newNodeRect.width = width;
+                newNodeRect.height = height;
+                block._NodeRect = newNodeRect;
             }
 
             bool isSelected;
@@ -114,13 +131,6 @@ namespace Amanita.VScripting.EditorUtils
 
                 isSelected = block.IsSelected && !block.IsControlSelected;
                 button.EnableInClassList(SelectedClass, isSelected);
-            }
-
-            UpdateFont(button, zoom);
-            void UpdateFont(UitkButton button, float zoom)
-            {
-                button.transform.scale = new Vector3(zoom, zoom, 1f);
-                button.style.fontSize = Mathf.RoundToInt(BaseFontSize);
             }
         }
 
