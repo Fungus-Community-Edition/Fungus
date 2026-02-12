@@ -39,7 +39,7 @@ namespace Amanita.VScripting.EditorUtils
         }
 
         public virtual Rect Position { get; set; }
-        public virtual IFlowchartHost FcHost { get; set; }
+        public virtual IFlowchartHostCore FcHost { get; set; }
 
         public IList<Block> QueuedForDeletion
         {

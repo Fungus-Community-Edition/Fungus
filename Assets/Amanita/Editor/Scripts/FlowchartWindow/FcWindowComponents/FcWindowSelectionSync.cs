@@ -9,7 +9,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowSelectionSync : IFcWindowComponent, IDisposable
     {
-        public virtual void Initialize(IFlowchartHost window)
+        public virtual void Initialize(IFlowchartViewHost window)
         {
             _window = window;
             _blockInspectorSync = new BlockInspectorSynchronization(
@@ -29,16 +29,16 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void DeregisterCallbacks()
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
-            BlockSignals.BlockClicked -= OnBlockClicked;
-            FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+            BlockSignals.BlockLeftClicked -= OnBlockClicked;
+            FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
         }
 
         protected virtual void ListenForEvents()
         {
             BlockSignals.BlockCreated += OnBlockCreated;
-            BlockSignals.BlockClicked += OnBlockClicked;
-            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            BlockSignals.BlockLeftClicked += OnBlockClicked;
+            FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
         }
 
@@ -66,7 +66,7 @@ namespace Amanita.VScripting.EditorUtils
         protected bool _skipNextEditorUpdate;
         protected BlockInspectorSynchronization _blockInspectorSync;
 
-        protected IFlowchartHost _window;
+        protected IFlowchartViewHost _window;
 
         public virtual void OnEditorUpdate()
         {
@@ -156,7 +156,7 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
-            BlockSignals.BlockClicked -= OnBlockClicked;
+            BlockSignals.BlockLeftClicked -= OnBlockClicked;
 
             _blockInspectorSync = null;
             _prevVarCount = 0;

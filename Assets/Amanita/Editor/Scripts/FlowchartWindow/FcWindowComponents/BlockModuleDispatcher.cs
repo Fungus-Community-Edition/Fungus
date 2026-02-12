@@ -16,7 +16,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 BlockSignals.BlockCreated += NotifyBlockCreated;
 
-                BlockSignals.BlockClicked += NotifyBlockClicked;
+                BlockSignals.BlockLeftClicked += NotifyBlockClicked;
                 BlockSignals.BlockSelected += NotifyBlockSelected;
                 BlockSignals.MultiBlocksSelected += NotifyMultiBlocksSelected;
 
@@ -33,7 +33,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 BlockSignals.BlockCreated -= NotifyBlockCreated;
 
-                BlockSignals.BlockClicked -= NotifyBlockClicked;
+                BlockSignals.BlockLeftClicked -= NotifyBlockClicked;
                 BlockSignals.BlockSelected -= NotifyBlockSelected;
                 BlockSignals.MultiBlocksSelected -= NotifyMultiBlocksSelected;
 

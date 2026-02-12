@@ -18,7 +18,7 @@ namespace Amanita.VScripting.EditorUtils
             _connectionRenderer.Dispose();
         }
 
-        public virtual void Initialize(IFlowchartHost window)
+        public virtual void Initialize(IFlowchartViewHost window)
         {
             _window = window;
             _gridRenderer = new GridRenderer(new HandlesLineDrawer());
@@ -32,7 +32,7 @@ namespace Amanita.VScripting.EditorUtils
             ToggleSubs(true);
         }
 
-        protected IFlowchartHost _window;
+        protected IFlowchartViewHost _window;
         protected GridRenderer _gridRenderer;
         protected BlockRenderer _blockRenderer;
         protected ConnectionRenderer _connectionRenderer;
@@ -71,6 +71,12 @@ namespace Amanita.VScripting.EditorUtils
 
         void DrawBlocksAndConnections()
         {
+            if (Event.current == null || Event.current.type != EventType.Repaint)
+            {
+                _window?.Repaint();
+                return;
+            }
+
             _blockRenderer.Render(_drawBlockCtx);
             _connectionRenderer.Render(_drawBlockCtx, _flowchartCtx);
         }

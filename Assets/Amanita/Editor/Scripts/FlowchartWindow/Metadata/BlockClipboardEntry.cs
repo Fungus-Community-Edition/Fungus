@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using Object = UnityEngine.Object;
-using ClipboardObject = Amanita.VScripting.EditorUtils.FlowchartWindow.ClipboardObject;
+using ClipboardObject = Amanita.EditorUtils.ClipboardObject;
 using Amanita.VScripting.EventHandlers;
 
 namespace Amanita.VScripting.EditorUtils
@@ -48,7 +48,7 @@ namespace Amanita.VScripting.EditorUtils
             newSerializedObject.ApplyModifiedProperties();
         }
 
-        internal Block PasteBlock(IFlowchartHost flowWind, Flowchart flowchart)
+        internal Block PasteBlock(IFlowchartHostCore flowWind, Flowchart flowchart)
         {
             var newBlock = flowWind.CreateBlock(flowchart, Vector2.zero);
 

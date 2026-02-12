@@ -43,6 +43,10 @@ namespace Amanita.EditorUtils
             {
                 systemEvent.button = 2;
             }
+            else if (evt.button >= 0)
+            {
+                systemEvent.button = evt.button;
+            }
         }
     }
 }

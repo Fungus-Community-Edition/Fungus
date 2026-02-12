@@ -17,14 +17,14 @@ namespace Amanita.VScripting.EditorUtils
             viewRect = default;
         }
 
-        public virtual void Initialize(IFlowchartHost window)
+        public virtual void Initialize(IFlowchartViewHost window)
         {
             _window = window;
             _execTracker = new FlowchartWindow.ExecutingBlocks();
             _iconStyle = new GUIStyle();
         }
 
-        protected IFlowchartHost _window;
+        protected IFlowchartViewHost _window;
         protected FlowchartWindow.ExecutingBlocks _execTracker;
         protected GUIStyle _iconStyle;
 

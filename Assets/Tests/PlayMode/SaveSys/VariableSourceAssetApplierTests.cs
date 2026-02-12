@@ -9,7 +9,6 @@ using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Amanita.FSExt;
 using UnityEditor;
-using System.Threading.Tasks;
 
 namespace SaveSystemTests
 {

@@ -12,7 +12,9 @@ namespace Amanita.VScripting.EditorUtils
 
         public static List<T> Get()
         {
-            return pool.Count > 0 ? pool.Pop() : new List<T>();
+            return pool.Count > 0 ? 
+                pool.Pop() : 
+                new List<T>();
         }
 
         public static void Release(List<T> list)

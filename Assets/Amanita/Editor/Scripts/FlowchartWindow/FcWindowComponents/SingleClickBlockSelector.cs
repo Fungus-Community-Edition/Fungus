@@ -8,7 +8,7 @@ namespace Amanita.VScripting.EditorUtils
     /// Handles single-click-driven block selection and empty space deselection.
     /// </summary>
     public sealed class SingleClickBlockSelector : IFlowchartWindowModule, 
-        IEmptySpaceClickResponder, IBlockClickResponder, IBlockCreatedResponder
+        IEmptySpaceLeftClickResponder, IBlockClickResponder, IBlockCreatedResponder
     {
         public int Priority { get; set; } = 0;
         public SingleClickBlockSelector(FlowchartContext context)
@@ -85,7 +85,7 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        public void OnEmptySpaceClicked(PointerEventInfo info)
+        public void OnEmptySpaceLeftClicked(PointerEventInfo info)
         {
             if (isDisposed)
             {

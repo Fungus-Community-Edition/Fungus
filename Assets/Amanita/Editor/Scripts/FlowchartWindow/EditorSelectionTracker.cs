@@ -206,7 +206,7 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
 
                 FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
-                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
 
                 CommandSignals.CommandSelected += OnCommandSelected;
 
@@ -223,7 +223,7 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
 
                 FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
-                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
 
                 CommandSignals.CommandSelected -= OnCommandSelected;
 
