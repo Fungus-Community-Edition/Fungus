@@ -4,8 +4,6 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
-using System.Collections.Generic;
-using Collections;
 using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
@@ -15,9 +13,8 @@ namespace Amanita.VScripting.EditorUtils
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        private static FlowchartWindowUitk _s;
-
         public static FlowchartWindowUitk S => _s;
+        private static FlowchartWindowUitk _s;
 
         [MenuItem("Window/Atelier Mycelia/Experimental/FlowchartWindowUitk")]
         public static void ShowFromMenuItem()
@@ -122,83 +119,31 @@ namespace Amanita.VScripting.EditorUtils
             Debug.Log("FlowchartWindowUitk OnDisable");
         }
 
-        protected virtual void OnDestroy()
-        {
-            if (ReferenceEquals(_s, this))
-            {
-                _s = null;
-            }
-            Debug.Log("FlowchartWindowUitk OnDestroy");
-            ToggleSubs(false);
-
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
-            _fcContext?.Dispose();
-            _fcContext = null;
-
-            DisposeSubmodules();
-            NullOutSubmodules();
-
-            _fcNameLabel?.RemoveFromHierarchy();
-            _missingOverlay?.Dispose();
-            _missingOverlay = null;
-            NullOutVisualElements();
-        }
-
-        void DisposeSubmodules()
-        {
-            _graphicsRenderer?.Dispose();
-
-            _panHandler?.Dispose();
-            _zoomHandler?.Dispose();
-            _scrollPosResetter?.Dispose();
-            _boxSelectionHandler?.Dispose();
-            _blockDragHandler?.Dispose();
-
-            _blockClickSelectionSyncer?.Dispose();
-            _repaintTriggerer?.Dispose();
-
-            _inputDetector.Dispose();
-        }
-
-        void NullOutSubmodules()
-        {
-            _graphicsRenderer = null;
-
-            _panHandler = null;
-            _zoomHandler = null;
-            _scrollPosResetter = null;
-            _boxSelectionHandler = null;
-            _blockDragHandler = null;
-
-            _blockClickSelectionSyncer = null;
-            _repaintTriggerer = null;
-
-        }
-
-        void NullOutVisualElements()
-        {
-            _fcNameLabel = null;
-        }
-
         public void CreateGUI()
         {
+            #region Clear dispatchers
             _blockModuleDispatcher.ClearModules();
             _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
-            VisualElement root = rootVisualElement;
-            root.pickingMode = PickingMode.Position; 
+            #endregion
+
+            #region Prep the root
+            Root.pickingMode = PickingMode.Position; 
             // ^So that PointerUp events trigger properly when clicking on empty space.
             // Sub-elements can override this to receive events as normal.
-            root.SetPadding(0);
-            root.SetMargin(0);
+            Root.SetPadding(0);
+            Root.SetMargin(0);
+            // ^To take up the full space of the window
+            #endregion
+
+            #region For when there's no Flowchart to show
             // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
             if (ActiveFlowchart == null)
             {
-                MissingOverlay.Show(root);
+                MissingOverlay.Show(Root);
                 return;
             }
+            #endregion
 
             MissingOverlay.Hide();
 
@@ -239,71 +184,49 @@ namespace Amanita.VScripting.EditorUtils
             CreateModules();
             void CreateModules()
             {
-                #region Graphics-rendering
                 _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
-                #endregion
+                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
 
-                #region Viewport-handling
-                _panHandler = new PanHandlerUitk(_fcContext);
-                _zoomHandler = new ZoomHandlerUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
-                _scrollPosResetter = new ScrollPosResetter(_fcContext);
-                _boxSelectionHandler = new SelectionBoxDragTrackerUitk(_fcContext);
-                _blockDragHandler = new BlockDragHandlerUitk(_fcContext);
-                #endregion
-
-                _blockClickSelectionSyncer = new SingleClickBlockSelector(_fcContext);
+                _singleClickBlockSelector = new SingleClickBlockSelector(_fcContext);
                 _repaintTriggerer = new FcWindowRepaintTriggerer();
+                _emptySpacePopupModule = new FlowchartEmptySpacePopupModuleUitk();
             }
 
             RegisterModules();
             void RegisterModules()
             {
-                #region Graphics-rendering
                 RegisterModule(_graphicsRenderer);
-                #endregion
+                RegisterModule(_viewportHandlers);
 
-                #region Viewport-handling
-                RegisterModule(_panHandler);
-                RegisterModule(_zoomHandler);
-                RegisterModule(_scrollPosResetter);
-                RegisterModule(_boxSelectionHandler);
-                RegisterModule(_blockDragHandler);
-                #endregion
-
-                RegisterModule(_blockClickSelectionSyncer);
+                RegisterModule(_singleClickBlockSelector);
                 RegisterModule(_repaintTriggerer);
                 RegisterModule(_inputDetector);
+                RegisterModule(_emptySpacePopupModule);
             }
 
             AttachUiElements();
             void AttachUiElements()
             {
-                root.Add(_graphicsRenderer);
-                root.Add(_fcNameLabel);
+                Root.Add(_graphicsRenderer);
+                Root.Add(_fcNameLabel);
             }
 
             InitSubmodules();
             void InitSubmodules()
             {
-                #region Graphics-rendering
                 _graphicsRenderer.Initialize(this);
-                #endregion
+                _viewportHandlers.Initialize(this);
 
-                #region Viewport-handling
-                _panHandler.Initialize(this);
-                _zoomHandler.Initialize(this);
-                _scrollPosResetter.Initialize(this);
-                _boxSelectionHandler.Initialize(this);
-                _blockDragHandler.Initialize(this);
-                #endregion
-
-                _blockClickSelectionSyncer.Initialize(this);
+                _singleClickBlockSelector.Initialize(this);
                 _repaintTriggerer.Initialize(this);
                 _inputDetector.Initialize(this);
+                _emptySpacePopupModule.Initialize(this);
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
+
+        private VisualElement Root => rootVisualElement;
 
         private void RegisterModule(IFlowchartWindowModule module)
         {
@@ -323,28 +246,23 @@ namespace Amanita.VScripting.EditorUtils
 
         #region Submodules
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
-        private PanHandlerUitk _panHandler;
+        private FcWindowViewportHandlersUitk _viewportHandlers;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        private SingleClickBlockSelector _blockClickSelectionSyncer;
+        private SingleClickBlockSelector _singleClickBlockSelector;
         private FcWindowRepaintTriggerer _repaintTriggerer;
-        private ZoomHandlerUitk _zoomHandler;
-        private SelectionBoxDragTrackerUitk _boxSelectionHandler;
-        private BlockDragHandlerUitk _blockDragHandler;
+        private FlowchartEmptySpacePopupModuleUitk _emptySpacePopupModule;
+
+        
         private readonly HitDetectionHandler _hitDetector = new HitDetectionHandler();
         #endregion
-
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
-        static DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk(new BlockGraphicsGenerator());
+        static readonly DefaultBlockDrawerUitk _blockDrawer = new DefaultBlockDrawerUitk(new BlockGraphicsGenerator());
         private MissingFlowchartOverlay MissingOverlay
         {
             get
             {
-                if (_missingOverlay == null)
-                {
-                    _missingOverlay = new MissingFlowchartOverlay(OnRefreshButtonClicked);
-                }
-
+                _missingOverlay ??= new MissingFlowchartOverlay(OnRefreshButtonClicked);
                 return _missingOverlay;
             }
         }
@@ -371,8 +289,6 @@ namespace Amanita.VScripting.EditorUtils
 
         }
 
-        private ScrollPosResetter _scrollPosResetter;
-
         private FlowchartContext _fcContext;
 
         private void OnGUI()
@@ -384,7 +300,7 @@ namespace Amanita.VScripting.EditorUtils
             }
             _hitDetector.Handle(Event.current, _fcContext);
             _inputDetector.OnGUI(Event.current);
-            _scrollPosResetter?.OnGUI(Event.current);
+            _viewportHandlers.OnGUI(Event.current);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -448,21 +364,58 @@ namespace Amanita.VScripting.EditorUtils
 
             CreateGUI();
         }
-    }
 
-    internal class FlowchartWindowSubManager
-    {
-        public FlowchartWindowSubManager(IList<IModuleDispatcher> moduleManagers)
+        #region Cleanup
+        protected virtual void OnDestroy()
         {
-            _moduleManagers.AddRange(moduleManagers);
+            if (ReferenceEquals(_s, this))
+            {
+                _s = null;
+            }
+            Debug.Log("FlowchartWindowUitk OnDestroy");
+            ToggleSubs(false);
+
+            _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
+            _moduleDispatcher.ClearModules();
+            _fcContext?.Dispose();
+            _fcContext = null;
+
+            DisposeSubmodules();
+            NullOutSubmodules();
+
+            _fcNameLabel?.RemoveFromHierarchy();
+            _missingOverlay?.Dispose();
+            _missingOverlay = null;
+            NullOutVisualElements();
         }
 
-        private readonly IList<IModuleDispatcher> _moduleManagers = new List<IModuleDispatcher>();
-
-        public void ToggleSubs(bool on)
+        void DisposeSubmodules()
         {
+            _graphicsRenderer?.Dispose();
+            _viewportHandlers?.Dispose();
 
+            _singleClickBlockSelector?.Dispose();
+            _repaintTriggerer?.Dispose();
+
+            _inputDetector.Dispose();
+            _emptySpacePopupModule?.Dispose();
         }
+
+        void NullOutSubmodules()
+        {
+            _graphicsRenderer = null;
+            _viewportHandlers = null;
+            _singleClickBlockSelector = null;
+            _repaintTriggerer = null;
+            _emptySpacePopupModule = null;
+        }
+
+        void NullOutVisualElements()
+        {
+            _fcNameLabel = null;
+        }
+        #endregion
     }
 
     internal interface IModuleDispatcher

@@ -16,10 +16,10 @@ namespace Amanita.VScripting.EditorUtils
         public int Priority { get; set; } = 0;
         public SelectionBoxDragTrackerUitk(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext fcContext;
         
         public void Initialize(FlowchartWindowUitk window)
         {
@@ -35,9 +35,16 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt)
         {
+            if (fcContext.Selection.BlockCount > 0)
+            {
+                _shouldTrack = false;
+                return; // This can happen right after adding a Block, which selects it.
+                        // We don't want to start a box selection in that case.
+            }
             _shouldTrack = true;
         }
 
+        
         private bool _shouldTrack;
 
         public void OnEmptySpaceLeftMouseUp(PointerEventInfo info, Event evt)
@@ -57,12 +64,18 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
+            if (fcContext.Selection.BlockCount > 0)
+            {
+                _shouldTrack = false;
+                return; // This can happen right after adding a Block, which selects it.
+                        // We don't want to start a box selection in that case.
+            }
             if (isDisposed || evt == null || !_shouldTrack)
             {
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = fcContext.Interaction;
             interaction.SelectionBoxStartPos = info.FlowchartPosition;
             interaction.SelectionBox = Rect.MinMaxRect(
                 info.FlowchartPosition.x,
@@ -80,7 +93,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = fcContext.Interaction;
             Vector2 start = interaction.SelectionBoxStartPos;
             Vector2 current = info.FlowchartPosition;
             Vector2 diff = new Vector2(Mathf.Abs(start.x - current.x), Mathf.Abs(start.y - current.y));
@@ -111,21 +124,21 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = fcContext.Interaction;
             bool releasedMouseOnValidSpot = interaction.SelectionBoxStartPos.x >= 0;
-            bool validFc = flowchartContext.Flowchart != null;
+            bool validFc = fcContext.Flowchart != null;
             if (!(releasedMouseOnValidSpot && interaction.SelectionBoxDragOngoing && validFc))
             {
                 return;
             }
 
-            SelectBlocksOverlappedByBox(flowchartContext, interaction.SelectionBox);
+            SelectBlocksOverlappedByBox(fcContext, interaction.SelectionBox);
 
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;
             _shouldTrack = false;
             Debug.Log($"Box selection ended at {info.FlowchartPosition}");
-            Debug.Log($"Zoom: {flowchartContext.Flowchart.Zoom}, ScrollPos: {flowchartContext.Flowchart.ScrollPos}");
+            Debug.Log($"Zoom: {fcContext.Flowchart.Zoom}, ScrollPos: {fcContext.Flowchart.ScrollPos}");
         }
 
         /// <summary>

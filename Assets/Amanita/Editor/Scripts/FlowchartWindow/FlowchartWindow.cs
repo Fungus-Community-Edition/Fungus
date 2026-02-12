@@ -285,7 +285,7 @@ namespace Amanita.VScripting.EditorUtils
                 Undo.undoRedoPerformed += Undo_ForceRepaint;
                 EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
                 ListenForUiToolkitEvents();
-                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
             }
             else
             {
@@ -293,7 +293,7 @@ namespace Amanita.VScripting.EditorUtils
                 Undo.undoRedoPerformed -= Undo_ForceRepaint;
                 EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
                 UnregisterUiToolkitCallbacks();
-                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
             }
         }
 

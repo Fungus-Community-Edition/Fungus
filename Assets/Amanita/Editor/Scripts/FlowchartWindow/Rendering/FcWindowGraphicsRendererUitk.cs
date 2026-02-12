@@ -9,7 +9,7 @@ namespace Amanita.VScripting.EditorUtils
     /// Encapsulates all flowchart window graphics renderers (grid, blocks, selection box).
     /// </summary>
     public sealed class FcWindowGraphicsRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
-        IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, 
+        IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
     {
@@ -59,10 +59,10 @@ namespace Amanita.VScripting.EditorUtils
             Add(connectionRenderer);
             Add(selectionBoxRenderer);
 
-            submodules.Add(gridRenderer);
-            submodules.Add(blockRenderer);
-            submodules.Add(connectionRenderer);
-            submodules.Add(selectionBoxRenderer);
+            _submodules.Add(gridRenderer);
+            _submodules.Add(blockRenderer);
+            _submodules.Add(connectionRenderer);
+            _submodules.Add(selectionBoxRenderer);
         }
 
         private readonly GridRendererUitk gridRenderer;
@@ -71,7 +71,7 @@ namespace Amanita.VScripting.EditorUtils
         private readonly ConnectionRendererUitk connectionRenderer;
         private bool isDisposed;
 
-        private readonly IList<IFlowchartWindowModule> submodules = new List<IFlowchartWindowModule>();
+        private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();
         // ^ Cache of all submodules for easy iteration in event handlers.
 
         public void Initialize(FlowchartWindowUitk window)
@@ -95,167 +95,90 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             isDisposed = true;
-            for (int i = 0; i < submodules.Count; i++)
+            for (int i = 0; i < _submodules.Count; i++)
             {
-                submodules[i].Dispose();
+                _submodules[i].Dispose();
             }
             RemoveFromHierarchy();
         }
 
         public void OnScrollWheelMoved()
         {
-            for (int i = 0; i < submodules.Count; i++)
+            Forward<IScrollWheelMoveResponder>(r => r.OnScrollWheelMoved());
+        }
+
+        private void Forward<TResponder>(Action<TResponder> action)
+            where TResponder : class
+        {
+            for (int i = 0; i < _submodules.Count; i++)
             {
-                var sModule = submodules[i];
-                if (sModule is not IScrollWheelMoveResponder responder)
+                if (_submodules[i] is not TResponder responder)
                 {
                     continue;
                 }
-                responder.OnScrollWheelMoved();
+
+                action(responder);
             }
         }
 
         public void OnWindowPanned()
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IWindowPanResponder responder)
-                {
-                    continue;
-                }
-                responder.OnWindowPanned();
-            }
+            Forward<IWindowPanResponder>(r => r.OnWindowPanned());
         }
 
         public void OnBlockSelected(Block block)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IBlockSelectionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnBlockSelected(block);
-            }
+            Forward<IBlockSelectionResponder>(r => r.OnBlockSelected(block));
         }
 
         public void OnMultiBlocksSelected(IList<Block> blocks)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IMultiBlockSelectionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnMultiBlocksSelected(blocks);
-            }
+            Forward<IMultiBlockSelectionResponder>(r => r.OnMultiBlocksSelected(blocks));
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IFlowchartChangeResponder responder)
-                {
-                    continue;
-                }
-                responder.OnFlowchartChanged(previous, next);
-            }
+            Forward<IFlowchartChangeResponder>(r => r.OnFlowchartChanged(previous, next));
         }
 
         public void OnPreBlockDeletion(IList<Block> blocks)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IPreBlockDeletionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnPreBlockDeletion(blocks);
-            }
+            Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(blocks));
         }
 
         public void OnPreBlockDeletion(Block block)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IPreBlockDeletionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnPreBlockDeletion(block);
-            }
+            Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(block));
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not ILeftMouseDragStartResponder responder)
-                {
-                    continue;
-                }
-                responder.OnLeftMouseDragStarted(info, evt);
-            }
+            Forward<ILeftMouseDragStartResponder>(r => r.OnLeftMouseDragStarted(info, evt));
         }
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not ILeftMouseDragResponder responder)
-                {
-                    continue;
-                }
-                responder.OnLeftMouseDragged(info, evt);
-            }
+            Forward<ILeftMouseDragResponder>(r => r.OnLeftMouseDragged(info, evt));
         }
 
         public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not ILeftMouseDragEndResponder responder)
-                {
-                    continue;
-                }
-                responder.OnLeftMouseDragEnded(info, evt);
-            }
+            Forward<ILeftMouseDragEndResponder>(r => r.OnLeftMouseDragEnded(info, evt));
         }
 
         public void OnBlockDeselected(Block block)
         {
-             for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IBlockDeselectionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnBlockDeselected(block);
-            }
+            Forward<IBlockDeselectionResponder>(r => r.OnBlockDeselected(block));
         }
 
         public void OnMultiBlocksDeselected(IList<Block> blocks)
         {
-            for (int i = 0; i < submodules.Count; i++)
-            {
-                var sModule = submodules[i];
-                if (sModule is not IMultiBlockDeselectionResponder responder)
-                {
-                    continue;
-                }
-                responder.OnMultiBlocksDeselected(blocks);
-            }
+            Forward<IMultiBlockDeselectionResponder>(r => r.OnMultiBlocksDeselected(blocks));
+        }
+
+        public void OnBlockCreated(Block block)
+        {
+            Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
         }
     }
 }

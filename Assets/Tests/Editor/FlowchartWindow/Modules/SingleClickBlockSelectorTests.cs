@@ -110,7 +110,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             Selection.activeGameObject = selectionObject;
 
             PointerEventInfo newInfo = new PointerEventInfo(Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
-            syncer.OnEmptySpaceClicked(newInfo);
+            syncer.OnEmptySpaceLeftClicked(newInfo);
 
             Assert.That(flowchart.SelectedBlock, Is.Null);
             Assert.That(Selection.activeGameObject, Is.EqualTo(flowchartObject));

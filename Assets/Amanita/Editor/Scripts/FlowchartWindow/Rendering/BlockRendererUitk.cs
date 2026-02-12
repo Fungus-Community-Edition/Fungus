@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -17,6 +18,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
+        IBlockCreatedResponder,
         IBlockSelectionResponder, IPreBlockDeletionResponder, 
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
@@ -315,6 +317,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 drawer.UpdateButton(binding.Button, block, CurrentZoom);
             }
+            else
+            {
+                // We probably just created this block, so ensure it has a visual.
+                EnsureBlockVisual(block);
+            }
         }
 
         public void OnBlockDeselected(Block block)
@@ -490,6 +497,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 UpdateBlockLayouts();
             }
+        }
+
+        public void OnBlockCreated(Block block)
+        {
+            UpdateButtonForBlock(block);
         }
     }
 

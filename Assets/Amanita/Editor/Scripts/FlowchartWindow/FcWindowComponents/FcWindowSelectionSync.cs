@@ -30,7 +30,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
             BlockSignals.BlockClicked -= OnBlockClicked;
-            FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+            FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
         }
 
@@ -38,7 +38,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             BlockSignals.BlockCreated += OnBlockCreated;
             BlockSignals.BlockClicked += OnBlockClicked;
-            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
         }
 

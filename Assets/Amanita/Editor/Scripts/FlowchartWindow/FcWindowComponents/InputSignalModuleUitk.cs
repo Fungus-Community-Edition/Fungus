@@ -235,13 +235,13 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (guiEvent.RightClick())
             {
-                Debug.Log("Right mouse down detected");
+                //Debug.Log("Right mouse down detected");
                 FlowchartWindowSignals.RightClicked(_mouseDownInfo);
 
                 bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(this._mouseDownInfo.PanelPosition);
                 if (!mouseOverBlock)
                 {
-                    Debug.Log("Empty space right mouse down");
+                    //Debug.Log("Empty space right mouse down");
                     FlowchartWindowSignals.EmptySpaceRightMouseDown(this._mouseDownInfo, guiEvent);
                 }
             }
@@ -253,7 +253,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             if (guiEvent.PanInput())
             {
-                Debug.Log("Pan input started");
+                //Debug.Log("Pan input started");
                 activePanAnchor = guiEvent.mousePosition;
             }
 
@@ -288,7 +288,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Debug.Log("Pointer move handling drag");
+            //Debug.Log("Pointer move handling drag");
             MarkUitkInput();
             SetToImguiEvent(ref _pointerMoveEvent, evt, EventType.MouseDrag);
             HandleMouseDrag(_pointerMoveEvent);
@@ -378,6 +378,11 @@ namespace Amanita.VScripting.EditorUtils
             if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
             {
                 FlowchartWindowSignals.EmptySpaceLeftMouseUp(_pointerUpInfo, guiEvent);
+                if (owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
+                {
+                    Debug.Log("Empty space left-clicked");
+                    FlowchartWindowSignals.EmptySpaceLeftClicked(_pointerUpInfo);
+                }
             }
         }
 
@@ -387,10 +392,17 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
+
             FlowchartWindowSignals.RightMouseUp(_pointerUpInfo, guiEvent);
             if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
             {
                 FlowchartWindowSignals.EmptySpaceRightMouseUp(_pointerUpInfo, guiEvent);
+
+                if (owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
+                {
+                    Debug.Log("Empty space right-clicked");
+                    FlowchartWindowSignals.EmptySpaceRightClicked(_pointerUpInfo);
+                }
             }
         }
 
