@@ -313,6 +313,13 @@ namespace Amanita.VScripting.EditorUtils
 
         private void UpdateButtonForBlock(Block block)
         {
+            // It's possible that this is being called in response to a block from another
+            // Flowchart being deselected due to a Flowchart change. In that case, we won't
+            // have a binding for this block, and that's fine - we just won't update any button.
+            if (block == null)
+            {
+                return;
+            }
             if (blockBindings.TryGetValue(block, out BlockBinding binding))
             {
                 drawer.UpdateButton(binding.Button, block, CurrentZoom);

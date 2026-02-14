@@ -65,10 +65,13 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened += OnSceneOpened;
+                EditorSceneManager.sceneClosed += OnSceneClosed;
+                EditorSceneManager.sceneLoaded += OnSceneLoaded;
 
                 AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
                 CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
+
             }
             else
             {
@@ -77,11 +80,25 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
+                EditorSceneManager.sceneClosed -= OnSceneClosed;
+                EditorSceneManager.sceneLoaded -= OnSceneLoaded;
 
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
                 CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
             }
+        }
+
+        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            ResetActiveFlowchartSelections();
+            _graphicsRenderer?.RefreshNow();
+        }
+
+        private void OnSceneClosed(Scene scene)
+        {
+            ResetActiveFlowchartSelections();
+            _graphicsRenderer?.RefreshNow();
         }
 
         private void OnZoomChanged(float newZoom)
@@ -120,7 +137,14 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             _fcContext.Flowchart = resolved;
+            UpdateLabels();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
+        }
+
+        private void UpdateLabels()
+        {
+            _fcNameLabel.text = $"FC: {FcContext.Flowchart.name}";
+            _zoomAmountLabel.text = $"Zoom: {Math.Round(FcContext.Flowchart.Zoom * 100)}%";
         }
 
         public FlowchartContext FcContext => _fcContext;
@@ -327,7 +351,22 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
+            // Both this and OnSceneClosed can also execute in response to the user
+            // right-clicking the scene in the hierarchy and selecting "Discard changes".
+            // In that case, the active Flowchart may be destroyed without us knowing,
+            // so we need to check validity and update accordingly.
             EnsureFlowchartForScene();
+            ResetActiveFlowchartSelections();
+            _graphicsRenderer?.RefreshNow();
+        }
+
+        private void ResetActiveFlowchartSelections()
+        {
+            if (ActiveFlowchart != null)
+            {
+                ActiveFlowchart.ClearSelectedBlocks();
+                ActiveFlowchart.ClearSelectedCommands();
+            }
         }
 
         private void EnsureFlowchartForScene()

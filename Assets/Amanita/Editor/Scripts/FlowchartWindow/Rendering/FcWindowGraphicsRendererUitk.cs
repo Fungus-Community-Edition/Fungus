@@ -85,6 +85,7 @@ namespace Amanita.VScripting.EditorUtils
         public void RefreshNow()
         {
             gridRenderer.RefreshNow();
+            blockRenderer.RefreshBlocks();
         }
 
         public void Dispose()

@@ -90,18 +90,6 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
-        private void OnBlockLeftClicked(Block block, Event @event)
-        {
-            if (isDisposed || owner == null)
-            {
-                return;
-            }
-
-            EnsurePopupsExist();
-            HideAllPopups();
-
-        }
-
         private void OnEmptySpaceRightClicked(PointerEventInfo info)
         {
             if (isDisposed || owner == null)
@@ -160,6 +148,17 @@ namespace Amanita.VScripting.EditorUtils
             popup.style.top = anchor.y;
         }
 
+        private void OnBlockLeftClicked(Block block, Event @event)
+        {
+            if (isDisposed || owner == null)
+            {
+                return;
+            }
+
+            EnsurePopupsExist();
+            HideAllPopups();
+        }
+
         private void OnBlockRightClicked(Block block, PointerEventInfo info)
         {
             if (isDisposed || owner == null)
@@ -185,7 +184,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public void OnRightClick(PointerEventInfo info)
         {
-            //HandleDismissClick(info);
+            HideEmptySpacePopup();
         }
 
         private void HandleDismissClick(PointerEventInfo info)
@@ -230,8 +229,6 @@ namespace Amanita.VScripting.EditorUtils
             _emptySpacePopup?.RemoveFromHierarchy();
         }
 
-        
-        
         private void OnAddButtonClicked()
         {
             if (isDisposed)
@@ -240,27 +237,32 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             Debug.Log("Empty space popup: Add button clicked.");
-            var fcContext = owner.FcContext;
-            var fc = fcContext.Flowchart;
-            fc.ClearSelectedBlocks();
+            FChart.ClearSelectedBlocks();
+            Block newBlock = AddNewBlockToWindowAndFlowchart();
+            Undo.RegisterCreatedObjectUndo(newBlock, "Add New Block");
+            FChart.AddToSelection(newBlock);
+            HideEmptySpacePopup();
+        }
 
+        private FlowchartContext FcContext => owner.FcContext;
+        private Flowchart FChart => FcContext?.Flowchart;
+
+        Block AddNewBlockToWindowAndFlowchart()
+        {
             Vector2 blockLocation = DecideWhereToPlaceBlock();
             Vector2 DecideWhereToPlaceBlock()
             {
                 Vector2 windowSpaceMousePos = lastPopupWindowPosition ?? Vector2.zero;
-                float zoom = Mathf.Approximately(fc.Zoom, 0f) ?
+                float zoom = Mathf.Approximately(FChart.Zoom, 0f) ?
                     1f :
-                    fc.Zoom;
-                Vector2 mousePosInFcSpace = (windowSpaceMousePos / zoom) - fc.ScrollPos;
+                    FChart.Zoom;
+                Vector2 mousePosInFcSpace = (windowSpaceMousePos / zoom) - FChart.ScrollPos;
                 mousePosInFcSpace -= offset;
                 return mousePosInFcSpace;
             }
 
-            var newBlock = fc.CreateBlock(blockLocation);
-
-            Undo.RegisterCreatedObjectUndo(newBlock, "Add New Block");
-            fc.AddToSelection(newBlock);
-            HideEmptySpacePopup();
+            var newBlock = FChart.CreateBlock(blockLocation);
+            return newBlock;
         }
 
         private readonly Vector2 offset = new Vector2(70f, 15f);

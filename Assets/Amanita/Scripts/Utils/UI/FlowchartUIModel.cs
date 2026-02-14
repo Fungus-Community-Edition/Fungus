@@ -117,6 +117,10 @@ namespace Amanita.VScripting.UI
             IList<Block> blocksToDeselect = new List<Block>(_selectedBlocks);
             foreach (var blockEl in _selectedBlocks)
             {
+                if (blockEl == null)
+                {
+                    continue;
+                }
                 blockEl.IsSelected = false;
             }
             _selectedBlocks.Clear();
