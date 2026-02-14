@@ -5,6 +5,7 @@ using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using Amanita.EditorUtils;
+using System;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -67,16 +68,25 @@ namespace Amanita.VScripting.EditorUtils
 
                 AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
                 CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
+                FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
             }
             else
             {
                 EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
                 FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
                 FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
+
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
+
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
                 CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
+                FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
             }
+        }
+
+        private void OnZoomChanged(float newZoom)
+        {
+            _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
         }
 
         private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
@@ -128,11 +138,16 @@ namespace Amanita.VScripting.EditorUtils
             #endregion
 
             #region Prep the root
-            Root.pickingMode = PickingMode.Position; 
+            UxmlRoot = m_VisualTreeAsset.Instantiate();
+            rootVisualElement.Add(UxmlRoot);
+            UxmlRoot.pickingMode = PickingMode.Position; 
             // ^So that PointerUp events trigger properly when clicking on empty space.
             // Sub-elements can override this to receive events as normal.
-            Root.SetPadding(0);
-            Root.SetMargin(0);
+            UxmlRoot.SetPadding(0);
+            UxmlRoot.SetMargin(0);
+            UxmlRoot.style.flexGrow = 1f;
+            UxmlRoot.style.width = Length.Percent(100);
+            UxmlRoot.style.height = Length.Percent(100);
             // ^To take up the full space of the window
             #endregion
 
@@ -140,7 +155,7 @@ namespace Amanita.VScripting.EditorUtils
             // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
             if (ActiveFlowchart == null)
             {
-                MissingOverlay.Show(Root);
+                MissingOverlay.Show(UxmlRoot);
                 return;
             }
             #endregion
@@ -170,13 +185,15 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     labelText = $"FC: {_fcContext.Flowchart.name}";
                 }
-                _fcNameLabel = new UitkLabel(labelText);
-                _fcNameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-                _fcNameLabel.style.fontSize = 24;
-                _fcNameLabel.style.marginTop = 10;
-                _fcNameLabel.style.marginLeft = 10;
-                _fcNameLabel.style.position = Position.Absolute;
-                _fcNameLabel.pickingMode = PickingMode.Ignore; // So it doesn't block mouse events to the window. We want it to be decorative only.
+                _fcNameLabel = UxmlRoot.Q<UitkLabel>("FcNameLabel");
+                _fcNameLabel.text = labelText;
+            }
+
+            PrepZoomLabel();
+            void PrepZoomLabel()
+            {
+                _zoomAmountLabel = UxmlRoot.Q<UitkLabel>("ZoomLabel");
+                OnZoomChanged(_fcContext.Flowchart?.Zoom ?? 1f);
             }
 
             EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
@@ -187,6 +204,7 @@ namespace Amanita.VScripting.EditorUtils
                 _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
                 _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
 
+                _hitDetector = new HitDetectionHandlerUitk();
                 _singleClickBlockSelector = new SingleClickBlockSelector(_fcContext);
                 _repaintTriggerer = new FcWindowRepaintTriggerer();
                 _emptySpacePopupModule = new FlowchartContextMenuManagerUitk();
@@ -207,8 +225,8 @@ namespace Amanita.VScripting.EditorUtils
             AttachUiElements();
             void AttachUiElements()
             {
-                Root.Add(_graphicsRenderer);
-                Root.Add(_fcNameLabel);
+                UxmlRoot.Add(_graphicsRenderer);
+                UxmlRoot.Add(_fcNameLabel);
             }
 
             InitSubmodules();
@@ -227,7 +245,11 @@ namespace Amanita.VScripting.EditorUtils
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
 
-        private VisualElement Root => rootVisualElement;
+        /// <summary>
+        /// The functionally-true root, gotten from the uxml. We use this as the parent for all of our UI elements,
+        /// and to determine where to show things like the missing Flowchart overlay.
+        /// </summary>
+        private VisualElement UxmlRoot { get; set; }
 
         private void RegisterModule(IFlowchartWindowModule module)
         {
@@ -253,8 +275,8 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowRepaintTriggerer _repaintTriggerer;
         private FlowchartContextMenuManagerUitk _emptySpacePopupModule;
 
-        
-        private readonly HitDetectionHandlerUitk _hitDetector = new HitDetectionHandlerUitk();
+
+        private HitDetectionHandlerUitk _hitDetector;
         #endregion
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
@@ -398,12 +420,14 @@ namespace Amanita.VScripting.EditorUtils
             _singleClickBlockSelector?.Dispose();
             _repaintTriggerer?.Dispose();
 
+            _hitDetector.Dispose();
             _inputDetector.Dispose();
             _emptySpacePopupModule?.Dispose();
         }
 
         void NullOutSubmodules()
         {
+            _hitDetector = null;
             _graphicsRenderer = null;
             _viewportHandlers = null;
             _singleClickBlockSelector = null;

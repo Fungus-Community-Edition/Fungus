@@ -72,6 +72,8 @@ namespace Amanita.VScripting
         public static Action<PointerEventInfo, Event> RightMouseDragStarted = delegate { };
         public static Action<PointerEventInfo, Event> RightMouseDragged = delegate { };
         public static Action<PointerEventInfo, Event> RightMouseDragEnded = delegate { };
+
+        public static Action<float> ZoomChanged = delegate { };
     }
 
     // Interfaces for subscribing to flowchart window signals
