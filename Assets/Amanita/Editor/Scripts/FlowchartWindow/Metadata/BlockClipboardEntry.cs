@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using Object = UnityEngine.Object;
-using ClipboardObject = Amanita.VScripting.EditorUtils.FlowchartWindow.ClipboardObject;
+using ClipboardObject = Amanita.EditorUtils.ClipboardObject;
 using Amanita.VScripting.EventHandlers;
 
 namespace Amanita.VScripting.EditorUtils

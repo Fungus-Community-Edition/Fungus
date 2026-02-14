@@ -15,7 +15,7 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 FlowchartWindowSignals.LeftMouseDown += NotifyLeftMouseDown;
-                FlowchartWindowSignals.RightClicked += NotifyRightClick;
+                FlowchartWindowSignals.RightMouseDown += NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp += NotifyLeftMouseUp;
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown += NotifyEmptySpaceLeftMouseDown;
@@ -38,7 +38,7 @@ namespace Amanita.VScripting.EditorUtils
             else
             {
                 FlowchartWindowSignals.LeftMouseDown -= NotifyLeftMouseDown;
-                FlowchartWindowSignals.RightClicked -= NotifyRightClick;
+                FlowchartWindowSignals.RightMouseDown -= NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp -= NotifyLeftMouseUp;
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown -= NotifyEmptySpaceLeftMouseDown;

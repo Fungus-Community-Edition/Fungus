@@ -35,7 +35,7 @@ namespace Amanita.VScripting
         /// Invoked when the user left-clicks inside the flowchart window just once.
         /// </summary>
         public static Action<PointerEventInfo> LeftMouseDown = delegate { };
-        public static Action<PointerEventInfo> RightClicked = delegate { };
+        public static Action<PointerEventInfo> RightMouseDown = delegate { };
         public static Action<PointerEventInfo, Event> RightMouseUp = delegate { };
         public static Action<PointerEventInfo> LeftClicked = delegate { };
 

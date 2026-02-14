@@ -189,7 +189,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 _singleClickBlockSelector = new SingleClickBlockSelector(_fcContext);
                 _repaintTriggerer = new FcWindowRepaintTriggerer();
-                _emptySpacePopupModule = new FlowchartEmptySpacePopupModuleUitk();
+                _emptySpacePopupModule = new FlowchartContextMenuManagerUitk();
             }
 
             RegisterModules();
@@ -220,6 +220,7 @@ namespace Amanita.VScripting.EditorUtils
                 _singleClickBlockSelector.Initialize(this);
                 _repaintTriggerer.Initialize(this);
                 _inputDetector.Initialize(this);
+                _hitDetector.Initialize(this);
                 _emptySpacePopupModule.Initialize(this);
             }
 
@@ -250,10 +251,10 @@ namespace Amanita.VScripting.EditorUtils
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
         private SingleClickBlockSelector _singleClickBlockSelector;
         private FcWindowRepaintTriggerer _repaintTriggerer;
-        private FlowchartEmptySpacePopupModuleUitk _emptySpacePopupModule;
+        private FlowchartContextMenuManagerUitk _emptySpacePopupModule;
 
         
-        private readonly HitDetectionHandler _hitDetector = new HitDetectionHandler();
+        private readonly HitDetectionHandlerUitk _hitDetector = new HitDetectionHandlerUitk();
         #endregion
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
@@ -298,7 +299,6 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-            _hitDetector.Handle(Event.current, _fcContext);
             _inputDetector.OnGUI(Event.current);
             _viewportHandlers.OnGUI(Event.current);
         }

@@ -12,7 +12,8 @@ namespace Amanita.VScripting
     public static class BlockSignals
     {
         #region Editor-Only Signals
-        public static Action<Block, Event> BlockClicked = delegate { };
+        public static Action<Block, Event> BlockLeftClicked = delegate { };
+        public static Action<Block, PointerEventInfo> BlockRightClicked = delegate { };
         public static Action<Block> BlockCreated = delegate { };
 
         /// <summary>

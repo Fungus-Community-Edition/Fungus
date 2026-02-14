@@ -29,7 +29,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void DeregisterCallbacks()
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
-            BlockSignals.BlockClicked -= OnBlockClicked;
+            BlockSignals.BlockLeftClicked -= OnBlockClicked;
             FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartChanged;
         }
@@ -37,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void ListenForEvents()
         {
             BlockSignals.BlockCreated += OnBlockCreated;
-            BlockSignals.BlockClicked += OnBlockClicked;
+            BlockSignals.BlockLeftClicked += OnBlockClicked;
             FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
             FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
         }
@@ -156,7 +156,7 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             BlockSignals.BlockCreated -= OnBlockCreated;
-            BlockSignals.BlockClicked -= OnBlockClicked;
+            BlockSignals.BlockLeftClicked -= OnBlockClicked;
 
             _blockInspectorSync = null;
             _prevVarCount = 0;

@@ -205,9 +205,9 @@ namespace Amanita.VScripting.EditorUtils
                 button.clicked += OnClick;
                 void OnClick()
                 {
-                    BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
+                    BlockSignals.BlockLeftClicked?.Invoke(capturedBlock, Event.current);
                 }
-
+                
                 void OnButtonGeometryChanged(GeometryChangedEvent evt)
                 {
                     if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
@@ -483,12 +483,13 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnBlockPointerUp(PointerUpEvent evt)
         {
-            InputSignals?.OnPointerUp(evt);
+            Debug.Log("BlockRendererUitk received pointer up event, forwarding to InputSignals.");
+            //InputSignals?.OnPointerUp(evt);
         }
 
         private void OnBlockPointerCancel(PointerCancelEvent evt)
         {
-            InputSignals?.OnPointerCancel(evt);
+            
         }
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)

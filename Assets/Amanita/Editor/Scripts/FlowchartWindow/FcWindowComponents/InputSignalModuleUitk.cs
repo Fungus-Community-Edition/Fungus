@@ -35,7 +35,6 @@ namespace Amanita.VScripting.EditorUtils
                 root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
                 root.RegisterCallback<PointerMoveEvent>(OnPointerMove);
                 root.RegisterCallback<PointerUpEvent>(OnPointerUp, TrickleDown.TrickleDown);
-                root.RegisterCallback<PointerCancelEvent>(OnPointerCancel, TrickleDown.TrickleDown);
                 root.RegisterCallback<WheelEvent>(OnWheel, TrickleDown.TrickleDown);
             }
             else
@@ -43,7 +42,6 @@ namespace Amanita.VScripting.EditorUtils
                 root.UnregisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
                 root.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
                 root.UnregisterCallback<PointerUpEvent>(OnPointerUp, TrickleDown.TrickleDown);
-                root.UnregisterCallback<PointerCancelEvent>(OnPointerCancel, TrickleDown.TrickleDown);
                 root.UnregisterCallback<WheelEvent>(OnWheel, TrickleDown.TrickleDown);
             }
         }
@@ -202,11 +200,13 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
-
-                    bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(_mouseDownInfo.PanelPosition);
+                    Block blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
+                    owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
+                    bool mouseOverBlock = blockHit != null;
                     if (!mouseOverBlock)
                     {
                         Debug.Log("Empty space left mouse down");
+                        
                         FlowchartWindowSignals.EmptySpaceLeftMouseDown(_mouseDownInfo, guiEvent);
                     }
                 }
@@ -233,10 +233,10 @@ namespace Amanita.VScripting.EditorUtils
 
         private bool HandleRightMouseDown(Event guiEvent)
         {
-            if (guiEvent.RightClick())
+            if (guiEvent.RightMouseButton())
             {
                 //Debug.Log("Right mouse down detected");
-                FlowchartWindowSignals.RightClicked(_mouseDownInfo);
+                FlowchartWindowSignals.RightMouseDown(_mouseDownInfo);
 
                 bool mouseOverBlock = BlockHitTester.IsMouseOverBlock(this._mouseDownInfo.PanelPosition);
                 if (!mouseOverBlock)
@@ -311,25 +311,6 @@ namespace Amanita.VScripting.EditorUtils
 
         private PointerEventInfo _pointerUpInfo;
 
-
-        /// <summary>
-        /// We need this because Block buttons capture the pointer, keeping OnPointerUp from firing. 
-        /// PointerCancelEvent does fire, however, so we can treat it as a pointer up for our purposes.
-        /// </summary>
-        /// <param name="evt"></param>
-        internal void OnPointerCancel(PointerCancelEvent evt)
-        {
-            Debug.Log($"Running PointerCancel callback with event: {evt}");
-            if (!ShouldHandleUiEvent(evt))
-            {
-                return;
-            }
-
-            MarkUitkInput();
-            SetToImguiEvent(ref _pointerUpEvent, evt, EventType.MouseUp);
-            HandlePointerRelease(_pointerUpEvent);
-        }
-
         private void HandlePointerRelease(Event guiEvent)
         {
             SetPointerEventInfo(ref _pointerUpInfo, guiEvent);
@@ -394,7 +375,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             FlowchartWindowSignals.RightMouseUp(_pointerUpInfo, guiEvent);
-            if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
+            Block blockHit = BlockHitTester.FindTopmostBlock(_pointerUpInfo.PanelPosition);
+            if (blockHit == null)
             {
                 FlowchartWindowSignals.EmptySpaceRightMouseUp(_pointerUpInfo, guiEvent);
 
@@ -403,6 +385,11 @@ namespace Amanita.VScripting.EditorUtils
                     Debug.Log("Empty space right-clicked");
                     FlowchartWindowSignals.EmptySpaceRightClicked(_pointerUpInfo);
                 }
+            }
+            else
+            {
+                Debug.Log($"Right-clicked on block: {blockHit.BlockName}");
+                BlockSignals.BlockRightClicked(blockHit, _pointerUpInfo);
             }
         }
 

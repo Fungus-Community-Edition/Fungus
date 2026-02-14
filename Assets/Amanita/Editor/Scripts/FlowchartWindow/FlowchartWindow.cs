@@ -22,18 +22,6 @@ namespace Amanita.VScripting.EditorUtils
         protected readonly Color connectionColor = new Color(0.65f, 0.65f, 0.65f, 1.0f);
         // /Settings
 
-        public class ClipboardObject
-        {
-            internal SerializedObject serializedObject;
-            internal Type type;
-
-            internal ClipboardObject(Object obj)
-            {
-                serializedObject = new SerializedObject(obj);
-                type = obj.GetType();
-            }
-        }
-
         /// <summary>
         /// Helper class to maintain list of blocks that are currently executing when the game is running in editor
         /// </summary>

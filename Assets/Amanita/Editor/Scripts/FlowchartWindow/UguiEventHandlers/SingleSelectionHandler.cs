@@ -94,7 +94,7 @@ namespace Amanita.EditorUtils
             }
             else if (!hitEmpty)  // only when a real block was clicked
             {
-                BlockSignals.BlockClicked(blockHit, inputEvent);
+                BlockSignals.BlockLeftClicked(blockHit, inputEvent);
             }
 
             ctx.FcHost.UpdateBlockCollection();
