@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// Clipboard for copying and pasting Flowchart blocks. Stores a list of 
+    /// BlockClipboardEntry objects, which are snapshots of the copied blocks.
+    /// </summary>
     public class BlockClipboard : IDisposable
     {
         readonly List<BlockClipboardEntry> _entries = new List<BlockClipboardEntry>();

@@ -55,13 +55,17 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnCopyButtonClicked()
         {
-            Clipboard?.CopyBlocks(FlowchartContext);
+            CopyButtonClicked?.Invoke();
         }
+
+        public event Action CopyButtonClicked = delegate { };
 
         private void OnCutButtonClicked()
         {
-            Clipboard?.CutBlocks(FlowchartContext);
+            CutButtonClicked?.Invoke();
         }
+
+        public event Action CutButtonClicked = delegate { };
 
         private void OnDeleteButtonClicked()
         {
@@ -75,12 +79,10 @@ namespace Amanita.VScripting.EditorUtils
             _cutButton = null;
             _deleteButton = null;
             TargetBlock = null;
-            Clipboard = null;
             FlowchartContext = null;
         }
 
         public Block TargetBlock { get; set; }
-        public AmanitaClipboard Clipboard { get; set; }
         public FlowchartContext FlowchartContext { get; set; }
     }
 }

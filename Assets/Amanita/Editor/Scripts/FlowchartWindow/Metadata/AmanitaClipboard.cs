@@ -1,10 +1,19 @@
 using System;
 using System.Collections.Generic;
+using Amanita.VScripting.EditorUtils;
+using Amanita.VScripting;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.EditorUtils
 {
+    /// <summary>
+    /// Centralized class for handling clipboard operations related to Amanita (such as Flowchart blocks and commands).
+    /// </summary>
     public class AmanitaClipboard : IDisposable
     {
+        // If we ever find ourselves needing to track more types of copied data
+        // (e.g. variables, comments, etc.) we can expand this class to include
+        // additional clipboards or a more generic clipboard system.
+
         public AmanitaClipboard()
             : this(new BlockClipboard(null), new CommandClipboard())
         {

@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// Clipboard for copying and pasting Flowchart commands. Stores copies of the selected 
+    /// commands in a temporary GameObject.
+    /// </summary>
     public class CommandClipboard
     {
         public virtual bool HasCommands()

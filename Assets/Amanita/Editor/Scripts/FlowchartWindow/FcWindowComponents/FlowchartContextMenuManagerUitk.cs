@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -42,7 +43,6 @@ namespace Amanita.VScripting.EditorUtils
             _emptySpacePopup.style.position = _blockPopup.style.position = Position.Absolute;
             // ^So the popups can be positioned relative to the mouse click position without being affected by layout.
 
-            _blockPopup.Clipboard = owner?.Clipboard;
         }
 
         private FcEmptySpacePopupWindow _emptySpacePopup;
@@ -84,12 +84,29 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _emptySpacePopup.AddButtonClicked += OnAddButtonClicked;
                 _emptySpacePopup.PasteButtonClicked += OnPasteButtonClicked;
+                _blockPopup.CopyButtonClicked += OnCopyButtonClicked;
+                _blockPopup.CutButtonClicked += OnCutButtonClicked;
             }
             else
             {
                 _emptySpacePopup.AddButtonClicked -= OnAddButtonClicked;
                 _emptySpacePopup.PasteButtonClicked -= OnPasteButtonClicked;
+                _blockPopup.CopyButtonClicked -= OnCopyButtonClicked;
+                _blockPopup.CutButtonClicked -= OnCutButtonClicked;
             }
+        }
+
+        private void OnCutButtonClicked()
+        {
+            Clipboard?.CutBlocks(FcContext);
+        }
+
+        private AmanitaClipboard Clipboard => owner?.Clipboard;
+
+        private void OnCopyButtonClicked()
+        {
+            Clipboard?.CopyBlocks(FcContext);
+            throw new NotImplementedException();
         }
 
         private void OnEmptySpaceRightClicked(PointerEventInfo info)
@@ -183,7 +200,6 @@ namespace Amanita.VScripting.EditorUtils
             PositionRelativeToMouse(_blockPopup);
             _blockPopup.TargetBlock = block;
             _blockPopup.FlowchartContext = owner.FcContext;
-            _blockPopup.Clipboard = owner.Clipboard;
         }
 
         public void OnRightClick(PointerEventInfo info)
