@@ -44,7 +44,6 @@ namespace Amanita.VScripting.EditorUtils
             _shouldTrack = true;
         }
 
-        
         private bool _shouldTrack;
 
         public void OnEmptySpaceLeftMouseUp(PointerEventInfo info, Event evt)

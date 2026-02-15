@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,8 +35,44 @@ namespace Amanita.VScripting
             {
                 return;
             }
+            EnsureVariableDataInstances();
             RefreshVariableDataCache();
             AssertOwnership();
+        }
+
+        private void EnsureVariableDataInstances()
+        {
+#if UNITY_EDITOR
+            // We only want to do this in the editor, since at runtime, we expect the
+            // VariableDatas to already be populated and don't want to risk overwriting any data.
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo[] fields = GetType().GetFields(flags);
+            for (int i = 0; i < fields.Length; i++)
+            {
+                FieldInfo field = fields[i];
+                System.Type fieldType = field.FieldType;
+                if (!typeof(IVariableData).IsAssignableFrom(fieldType))
+                {
+                    continue;
+                }
+
+                if (fieldType.IsAbstract)
+                {
+                    continue;
+                }
+
+                if (field.GetValue(this) != null)
+                {
+                    continue;
+                }
+
+                object created = Activator.CreateInstance(fieldType);
+                if (created != null)
+                {
+                    field.SetValue(this, created);
+                }
+            }
+#endif
         }
 
         /// <summary>

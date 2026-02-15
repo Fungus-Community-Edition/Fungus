@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
 
 namespace VScriptingTests.FCWindowOperations
 {

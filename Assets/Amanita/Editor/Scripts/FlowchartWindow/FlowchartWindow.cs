@@ -5,7 +5,6 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 using Amanita.EditorUtils;
 using StylePos = UnityEngine.UIElements.Position;
 

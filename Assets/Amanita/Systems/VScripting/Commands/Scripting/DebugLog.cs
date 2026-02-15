@@ -34,7 +34,6 @@ namespace Amanita.VScripting
 
         public override void OnEnter ()
         {
-            EnsureLogMessage();
             var flowchart = GetFlowchart();
             string message = logMessage.Value;
 
@@ -61,7 +60,6 @@ namespace Amanita.VScripting
 
         public override string GetSummary()
         {
-            EnsureLogMessage();
             return logMessage.GetDescription();
         }
 
@@ -72,7 +70,6 @@ namespace Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            EnsureLogMessage();
             return ReferenceEquals(logMessage.VarRef, variable) || base.HasReference(variable);
         }
 
@@ -83,8 +80,6 @@ namespace Amanita.VScripting
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-            EnsureLogMessage();
-
             var f = GetFlowchart();
             if (f == null)
             {
@@ -96,12 +91,5 @@ namespace Amanita.VScripting
 #endif
         #endregion Editor caches
 
-        private void EnsureLogMessage()
-        {
-            if (logMessage == null)
-            {
-                logMessage = new StringDataMulti();
-            }
-        }
     }
 }

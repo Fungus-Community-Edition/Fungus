@@ -272,12 +272,21 @@ namespace Amanita.VScripting.EditorUtils
         private readonly Vector2 offset = new Vector2(70f, 15f);
         private void OnPasteButtonClicked()
         {
-            if (isDisposed)
+            if (isDisposed || owner == null)
             {
                 return;
             }
 
-            Debug.Log("Empty space popup: Paste button clicked.");
+            AmanitaClipboard clipboard = owner.Clipboard;
+            if (clipboard == null || !clipboard.HasBlockEntries)
+            {
+                return;
+            }
+
+            Vector2 windowSpaceMousePos = lastPopupWindowPosition ?? Vector2.zero;
+            clipboard.BlockClipboard.Paste(windowSpaceMousePos);
+            owner.UpdateBlockCollection();
+            HideEmptySpacePopup();
         }
 
         public void Dispose()
