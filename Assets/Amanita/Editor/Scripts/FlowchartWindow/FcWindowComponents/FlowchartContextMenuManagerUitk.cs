@@ -41,6 +41,8 @@ namespace Amanita.VScripting.EditorUtils
             _blockPopup = new BlockContextMenuUitk();
             _emptySpacePopup.style.position = _blockPopup.style.position = Position.Absolute;
             // ^So the popups can be positioned relative to the mouse click position without being affected by layout.
+
+            _blockPopup.Clipboard = owner?.Clipboard;
         }
 
         private FcEmptySpacePopupWindow _emptySpacePopup;
@@ -180,6 +182,8 @@ namespace Amanita.VScripting.EditorUtils
             EnsureOnScreenAtFront(_blockPopup);
             PositionRelativeToMouse(_blockPopup);
             _blockPopup.TargetBlock = block;
+            _blockPopup.FlowchartContext = owner.FcContext;
+            _blockPopup.Clipboard = owner.Clipboard;
         }
 
         public void OnRightClick(PointerEventInfo info)

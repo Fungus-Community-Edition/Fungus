@@ -67,5 +67,10 @@ namespace Amanita.VScripting.EditorUtils
         {
 
         }
+
+        public void Initialize(IFlowchartViewHost window)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

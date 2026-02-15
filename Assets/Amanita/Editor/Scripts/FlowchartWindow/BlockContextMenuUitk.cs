@@ -20,6 +20,7 @@ namespace Amanita.VScripting.EditorUtils
             Add(root);
 
             RegisterControls();
+            ToggleSubs(true);
         }
 
         private void RegisterControls()
@@ -33,6 +34,11 @@ namespace Amanita.VScripting.EditorUtils
 
         private void ToggleSubs(bool on)
         {
+            if (_copyButton == null || _cutButton == null || _deleteButton == null)
+            {
+                return;
+            }
+
             if (on)
             {
                 _copyButton.clicked += OnCopyButtonClicked;
@@ -49,12 +55,12 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnCopyButtonClicked()
         {
-            Debug.Log("Block context menu: Copy button clicked.");
+            Clipboard?.CopyBlocks(FlowchartContext);
         }
 
         private void OnCutButtonClicked()
         {
-            Debug.Log("Block context menu: Cut button clicked.");
+            Clipboard?.CutBlocks(FlowchartContext);
         }
 
         private void OnDeleteButtonClicked()
@@ -69,8 +75,12 @@ namespace Amanita.VScripting.EditorUtils
             _cutButton = null;
             _deleteButton = null;
             TargetBlock = null;
+            Clipboard = null;
+            FlowchartContext = null;
         }
 
         public Block TargetBlock { get; set; }
+        public AmanitaClipboard Clipboard { get; set; }
+        public FlowchartContext FlowchartContext { get; set; }
     }
 }

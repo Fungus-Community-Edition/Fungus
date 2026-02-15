@@ -6,10 +6,12 @@ using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using Amanita.EditorUtils;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class FlowchartWindowUitk : EditorWindow
+    public class FlowchartWindowUitk : EditorWindow, IFlowchartHostCore
     {
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
@@ -40,19 +42,22 @@ namespace Amanita.VScripting.EditorUtils
         private static readonly string _configSubfolderPath = "Amanita/Configs";
         private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
 
-        protected virtual void OnEnable()
+        public AmanitaClipboard Clipboard { get; private set; }
+
+        public Flowchart Flowchart => _fcContext?.Flowchart;
+
+        BlockClipboard IFlowchartHostCore.Clipboard
         {
-            if (_s != null && _s != this)
+            get => Clipboard?.BlockClipboard;
+            set
             {
-                Close();
-                return;
+                CommandClipboard commandClipboard = Clipboard?.CommandClipboard ?? new CommandClipboard();
+                Clipboard = new AmanitaClipboard(value, commandClipboard);
             }
-
-            _s = this;
-
-            ToggleSubs(true);
         }
 
+        bool IFlowchartHostCore.HasClipboard => Clipboard?.BlockClipboard != null &&
+                                                Clipboard.BlockClipboard.HasEntries;
         protected virtual void ToggleSubs(bool on)
         {
             _blockModuleDispatcher.ToggleSubs(on);
@@ -101,9 +106,68 @@ namespace Amanita.VScripting.EditorUtils
             _graphicsRenderer?.RefreshNow();
         }
 
-        private void OnZoomChanged(float newZoom)
+        public Block CreateBlock(Flowchart fc, Vector2 pos)
         {
-            _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
+            if (fc == null)
+            {
+                return null;
+            }
+
+            Block newBlock = fc.CreateBlock(pos);
+            UpdateBlockCollection();
+            Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
+
+            fc.AddToSelection(newBlock);
+            return newBlock;
+        }
+
+        public void DeselectAll()
+        {
+            if (Flowchart == null)
+            {
+                return;
+            }
+
+            Undo.RecordObject(Flowchart, "Deselect");
+            Flowchart.ClearSelectedCommands();
+            Flowchart.ClearSelectedBlocks();
+
+            if (Selection.activeGameObject != Flowchart.gameObject)
+            {
+                Selection.activeGameObject = Flowchart.gameObject;
+            }
+        }
+
+        public void UpdateBlockCollection()
+        {
+            _graphicsRenderer?.RefreshNow();
+        }
+
+        public T GetComponent<T>() where T : IFcWindowComponent
+        {
+            return default(T);
+        }
+
+        public Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
+        {
+            if (blocks == null || blocks.Count == 0)
+            {
+                return Vector2.zero;
+            }
+
+            var firstBlock = blocks.First();
+            Vector2 min = firstBlock._NodeRect.min;
+            Vector2 max = firstBlock._NodeRect.max;
+
+            foreach (var blockEl in blocks)
+            {
+                min.x = Mathf.Min(min.x, blockEl._NodeRect.min.x);
+                min.y = Mathf.Min(min.y, blockEl._NodeRect.min.y);
+                max.x = Mathf.Max(max.x, blockEl._NodeRect.max.x);
+                max.y = Mathf.Max(max.y, blockEl._NodeRect.max.y);
+            }
+
+            return (min + max) * 0.5f;
         }
 
         private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
@@ -136,6 +200,11 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
+            if (previous != null)
+            {
+                previous.ClearSelectedBlocks();
+                previous.ClearSelectedCommands();
+            }
             _fcContext.Flowchart = resolved;
             UpdateLabels();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
@@ -186,6 +255,15 @@ namespace Amanita.VScripting.EditorUtils
 
             MissingOverlay.Hide();
 
+            PrepClipboard();
+            void PrepClipboard()
+            {
+                if (Clipboard == null)
+                {
+                    Clipboard = new AmanitaClipboard(this);
+                }
+            }
+
             PrepFcContext();
             void PrepFcContext()
             {
@@ -196,7 +274,7 @@ namespace Amanita.VScripting.EditorUtils
                     _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
                     return;
                 }
-                _fcContext.FcHost = null; // TODO: assign proper host
+                _fcContext.FcHost = this;
                 _fcContext.Position = new Rect(0, 0, position.width, position.height);
                 _fcContext.GridObjectSnap = 10f;
             }
@@ -274,6 +352,11 @@ namespace Amanita.VScripting.EditorUtils
         /// and to determine where to show things like the missing Flowchart overlay.
         /// </summary>
         private VisualElement UxmlRoot { get; set; }
+
+        private void OnZoomChanged(float newZoom)
+        {
+            _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
+        }
 
         private void RegisterModule(IFlowchartWindowModule module)
         {
@@ -449,6 +532,9 @@ namespace Amanita.VScripting.EditorUtils
             _missingOverlay?.Dispose();
             _missingOverlay = null;
             NullOutVisualElements();
+
+            Clipboard?.Dispose();
+            Clipboard = null;
         }
 
         void DisposeSubmodules()

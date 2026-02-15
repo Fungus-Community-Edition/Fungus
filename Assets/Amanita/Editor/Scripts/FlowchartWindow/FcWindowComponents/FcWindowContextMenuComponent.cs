@@ -73,6 +73,11 @@ namespace Amanita.VScripting.EditorUtils
             host = null;
             rightClickDown = Vector2.zero;
         }
+
+        public void Initialize(IFlowchartViewHost window)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     // Extension to convert window-space to flowchart-space

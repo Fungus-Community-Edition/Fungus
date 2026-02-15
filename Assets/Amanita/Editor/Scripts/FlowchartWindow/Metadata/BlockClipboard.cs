@@ -11,9 +11,14 @@ namespace Amanita.VScripting.EditorUtils
     {
         readonly List<BlockClipboardEntry> _entries = new List<BlockClipboardEntry>();
 
-        public BlockClipboard(IFlowchartHost window)
+        public BlockClipboard()
+            : this(null)
         {
-            this.Window = window;
+        }
+
+        public BlockClipboard(IFlowchartHostCore window)
+        {
+            Window = window;
         }
 
         public void Copy(IEnumerable<Block> blocks)
@@ -75,7 +80,7 @@ namespace Amanita.VScripting.EditorUtils
                            select elem).Any();
             return result;
         }
-        public virtual IFlowchartHost Window { get; protected set; }
+        public virtual IFlowchartHostCore Window { get; protected set; }
         protected virtual Flowchart Flowchart
         {
             get
@@ -91,6 +96,11 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Paste(Vector2 screenMousePos, bool relative = false)
         {
+            if (Window == null || Flowchart == null)
+            {
+                return;
+            }
+
             // 1) Undo + clear out old selection
             Undo.RecordObject(Flowchart, "Paste Blocks");
             Window.DeselectAll();

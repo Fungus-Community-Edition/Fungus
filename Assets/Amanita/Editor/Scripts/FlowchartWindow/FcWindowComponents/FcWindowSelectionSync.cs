@@ -9,7 +9,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowSelectionSync : IFcWindowComponent, IDisposable
     {
-        public virtual void Initialize(IFlowchartHost window)
+        public virtual void Initialize(IFlowchartViewHost window)
         {
             _window = window;
             _blockInspectorSync = new BlockInspectorSynchronization(
@@ -66,7 +66,7 @@ namespace Amanita.VScripting.EditorUtils
         protected bool _skipNextEditorUpdate;
         protected BlockInspectorSynchronization _blockInspectorSync;
 
-        protected IFlowchartHost _window;
+        protected IFlowchartViewHost _window;
 
         public virtual void OnEditorUpdate()
         {

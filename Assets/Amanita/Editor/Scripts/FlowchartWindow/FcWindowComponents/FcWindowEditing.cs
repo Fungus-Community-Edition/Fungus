@@ -11,7 +11,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class FcWindowEditing : IFcWindowComponent
     {
-        public virtual void Initialize(IFlowchartHost window)
+        public virtual void Initialize(IFlowchartViewHost window)
         {
             _window = window;
 
@@ -33,7 +33,7 @@ namespace Amanita.VScripting.EditorUtils
             window.Clipboard = _clipboard;
         }
 
-        protected IFlowchartHost _window;
+        protected IFlowchartHostCore _window;
         protected FlowchartWindowInputHandler _inputPipeline;
         protected BlockClipboard _clipboard;
 

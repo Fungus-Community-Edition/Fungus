@@ -11,7 +11,7 @@ using StylePos = UnityEngine.UIElements.Position;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class FlowchartWindow : EventWindow, IFlowchartHost
+    public class FlowchartWindow : EventWindow, IFlowchartHostCore, IFlowchartViewHost
     {
         // Settings for the submodules to consider
         public const float MinZoomValue = 0.25f;
