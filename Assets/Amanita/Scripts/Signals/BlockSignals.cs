@@ -30,24 +30,31 @@ namespace Amanita.VScripting
 
         public static Action<IList<Block>> MultiBlocksDeselected = delegate { };
 
+        public static Action<Block> PreBlockCut = delegate { };
+        public static Action<ushort> PostBlockCut = delegate { };
+
+        public static Action<IList<Block>> PreMultiBlockCut = delegate { };
+        public static Action<IList<ushort>> PostMultiBlockCut = delegate { };
         /// <summary>
-        /// Sent just before a Block is deleted.
+        /// Sent just before a Block is deleted. This should only signal for when the user
+        /// is deleting one Block at a time, not when they're deleting multiple at once.
+        /// 
         /// </summary>
         public static Action<Block> PreBlockDelete = delegate { };
         /// <summary>
-        /// Sent just after a Block is deleted. The uint argument is the ID of the deleted Block.
+        /// Sent just after a Block is deleted. The ushort argument is the ID of the deleted Block.
         /// </summary>
-        public static Action<uint> PostBlockDelete = delegate { };
+        public static Action<ushort> PostBlockDelete = delegate { };
 
         /// <summary>
         /// Sent just before multiple Blocks are deleted at once.
         /// </summary>
         public static Action<IList<Block>> PreMultiBlockDelete = delegate { };
         /// <summary>
-        /// Sent just after multiple Blocks are deleted at once. The IList<uint> argument
+        /// Sent just after multiple Blocks are deleted at once. The IList<ushort> argument
         /// contains the IDs of the deleted Blocks.
         /// </summary>
-        public static Action<IList<uint>> PostMultiBlockDelete = delegate { };
+        public static Action<IList<ushort>> PostMultiBlockDelete = delegate { };
 
         public static Action<IList<Block>> BlocksCopied = delegate { };
         #endregion
@@ -83,6 +90,26 @@ namespace Amanita.VScripting
         {
             OnCommandExecute(block, command, commandIndex, maxCommandIndex);
         }
+    }
+
+    public interface IPreBlockCutResponder
+    {
+        void OnPreBlockCut(Block block);
+    }
+
+    public interface IPostBlockCutResponder
+    {
+        void OnPostBlockCut(ushort blockId);
+    }
+
+    public interface IPreMultiBlockCutResponder
+    {
+        void OnPreMultiBlockCut(IList<Block> blocks);
+    }
+
+    public interface IPostMultiBlockCutResponder
+    {
+        void OnPostMultiBlockCut(IList<ushort> blockIds);
     }
 
     public interface IBlockClickResponder
@@ -123,12 +150,12 @@ namespace Amanita.VScripting
 
     public interface IPostBlockDeletionResponder
     {
-        void OnPostBlockDeletion(uint blockId);
+        void OnPostBlockDeletion(ushort blockId);
     }
 
     public interface IPostMultiBlockDeletionResponder
     {
-        void OnPostMultiBlockDeletion(IList<uint> blockIds);
+        void OnPostMultiBlockDeletion(IList<ushort> blockIds);
     }
 
     public interface IBlocksCopiedResponder

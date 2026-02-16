@@ -411,6 +411,10 @@ namespace Amanita.VScripting
 
         public virtual void GetConnectedBlocks(ref List<Block> connectedBlocks)
         {
+            if (commandList == null)
+            {
+                return;
+            }
             for (int i = 0; i < commandList.Count; i++)
             {
                 var command = commandList[i];

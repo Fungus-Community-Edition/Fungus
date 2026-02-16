@@ -305,7 +305,7 @@ namespace Amanita.VScripting.EditorUtils
             Repaint();
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
             EditorSelectionTracker.SelectedFlowchartChanged -= HandleActiveFlowchartChanged;
 

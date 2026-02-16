@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
+using System.Linq;
 
 namespace Amanita.EditorUtils
 {
@@ -36,7 +37,7 @@ namespace Amanita.EditorUtils
         public bool HasBlockEntries => BlockClipboard != null && BlockClipboard.HasEntries;
         public bool HasCommandEntries => CommandClipboard != null && CommandClipboard.HasCommands();
 
-        public virtual void CopyBlocks(FlowchartContext context)
+        public virtual void CopyBlocks(FlowchartContext context, bool doSignal = true)
         {
             if (context == null || BlockClipboard == null)
             {
@@ -50,21 +51,57 @@ namespace Amanita.EditorUtils
             }
 
             BlockClipboard.Copy(selectedBlocks);
-            BlockSignals.BlocksCopied(selectedBlocks);
+            if (doSignal)
+            {
+                BlockSignals.BlocksCopied(selectedBlocks);
+            }
         }
 
-        public virtual void CutBlocks(FlowchartContext context)
+        public virtual void CutBlocks(FlowchartContext context, bool doSignal = true)
         {
             if (context == null)
             {
                 return;
             }
+            var selected = context.Selection.Blocks;
+            IList<ushort> blockIds = null;
 
-            CopyBlocks(context);
-            DeleteBlocks(context);
+            #region Pre-Signals
+            if (doSignal)
+            {
+                blockIds = selected.Select(b => b.ItemId).ToList();
+                if (selected.Count == 1)
+                {
+                    BlockSignals.PreBlockCut(selected[0]);
+                }
+                else
+                {
+                    BlockSignals.PreMultiBlockCut(selected);
+                }
+            }
+            #endregion
+
+            // Not signaling the copying and deletion so that client code can have
+            // an easier time differentiating the timings of cpoying, cutting and deleting.
+            BlockClipboard.Copy(selected, true);
+            DeleteBlocks(context, false);
+
+            #region Post-Signals
+            if (doSignal)
+            {
+                if (selected.Count == 1)
+                {
+                    BlockSignals.PostBlockCut(blockIds[0]);
+                }
+                else
+                {
+                    BlockSignals.PostMultiBlockCut(blockIds);
+                }
+            }
+            #endregion
         }
 
-        public virtual void DeleteBlocks(FlowchartContext context)
+        public virtual void DeleteBlocks(FlowchartContext context, bool doSignal = true)
         {
             if (context == null || context.FcHost == null)
             {
@@ -79,39 +116,42 @@ namespace Amanita.EditorUtils
             }
 
             #region Gather up Block IDs for post-deletion signals
-            IList<uint> blockIDs = new List<uint>();
-            for (int i = 0; i < blockCount; i++)
-            {
-                var currentBlock = selection.Blocks[i];
-                blockIDs.Add(currentBlock.ItemId);
-            }
+            IList<ushort> blockIDs = null;
             #endregion
 
             #region Pre-Delete Broadcasts
-            if (blockCount == 1)
+            if (doSignal)
             {
-                BlockSignals.PreBlockDelete(selection.Blocks[0]);
-            }
-            else
-            {
-                BlockSignals.PreMultiBlockDelete(selection.Blocks);
+                blockIDs = selection.Blocks.Select(elem => elem.ItemId).ToList();
+                if (blockCount == 1)
+                {
+                    BlockSignals.PreBlockDelete(selection.Blocks[0]);
+                }
+                else
+                {
+                    BlockSignals.PreMultiBlockDelete(selection.Blocks);
+                }
             }
             #endregion
 
-            FcWindowBlockDeletion blockDeletion = new FcWindowBlockDeletion();
-            blockDeletion.Execute(context);
+            _blockDeletion.Execute(context);
 
             #region Post-Delete Broadcasts
-            if (blockCount == 1)
+            if (doSignal)
             {
-                BlockSignals.PostBlockDelete(blockIDs[0]);
-            }
-            else
-            {
-                BlockSignals.PostMultiBlockDelete(blockIDs);
+                if (blockCount == 1)
+                {
+                    BlockSignals.PostBlockDelete(blockIDs[0]);
+                }
+                else
+                {
+                    BlockSignals.PostMultiBlockDelete(blockIDs);
+                }
             }
             #endregion
         }
+
+        private readonly FcWindowBlockDeletion _blockDeletion = new FcWindowBlockDeletion();
 
         public virtual void CopySelectedCommands(Flowchart flowchart)
         {

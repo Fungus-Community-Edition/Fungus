@@ -27,9 +27,14 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Copy(IEnumerable<Block> blocks)
         {
+            Copy(blocks, false);
+        }
+
+        public void Copy(IEnumerable<Block> blocks, bool isCut)
+        {
             origBlocks.Clear();
             _entries.Clear();
-            IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy));
+            IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy, isCut));
             _entries.AddRange(newEntries);
             origBlocks.AddRange(blocks.ToList());
         }
@@ -106,13 +111,26 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // 1) Undo + clear out old selection
-            Undo.RecordObject(Flowchart, "Paste Blocks");
             Window.DeselectAll();
-
+            Undo.RecordObject(Flowchart, "Paste Block(s)");
+            
             // 2) Actually instantiate each snapshot
             var pasted = _entries
                 .Select(entry => entry.PasteBlock(Window, Flowchart))
                 .ToList();
+
+            var pastedById = new Dictionary<ushort, Block>();
+            for (int i = 0; i < _entries.Count && i < pasted.Count; i++)
+            {
+                pastedById[(ushort)_entries[i].BlockID] = pasted[i];
+            }
+
+            for (int i = 0; i < _entries.Count && i < pasted.Count; i++)
+            {
+                _entries[i].RestoreObjectReferences(pasted[i], Flowchart, pastedById);
+                _entries[i].RefreshPastedObjects(pasted[i]);
+            }
+
             // 3) Compute offset so center of pasted blocks is at mouse
             Vector2 copiedCenter = Window.GetBlockCenter(pasted) + Flowchart.ScrollPos;
             Vector2 worldMouse = screenMousePos / Flowchart.Zoom;

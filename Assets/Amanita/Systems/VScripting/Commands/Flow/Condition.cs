@@ -8,6 +8,7 @@ namespace Amanita.VScripting
     [AddComponentMenu("")]
     public abstract class Condition : Command
     {
+        public override bool NonStandardPaste => true;
         protected End endCommand;
      
         public override void OnEnter()

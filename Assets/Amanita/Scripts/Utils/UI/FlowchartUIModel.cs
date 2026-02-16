@@ -13,7 +13,7 @@ namespace Amanita.VScripting.UI
         [SerializeField] protected List<Block> _selectedBlocks = new List<Block>();
         [SerializeField] protected List<Command> _selectedCommands = new List<Command>();
 
-        [System.NonSerialized]
+        [SerializeField]
         private GameObject _owner;
 
         public virtual GameObject Owner

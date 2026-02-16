@@ -11,7 +11,9 @@ namespace Amanita.VScripting.EditorUtils
     public sealed class FcWindowGraphicsRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
-        IPreBlockDeletionResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
+        IPreBlockDeletionResponder, IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
+        IPreBlockCutResponder, IPostBlockCutResponder, IPreMultiBlockCutResponder, IPostMultiBlockCutResponder
     {
         public int Priority { get; set; } = 0;
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
@@ -159,6 +161,16 @@ namespace Amanita.VScripting.EditorUtils
             Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(block));
         }
 
+        public void OnPostBlockDeletion(ushort blockId)
+        {
+            Forward<IPostBlockDeletionResponder>(r => r.OnPostBlockDeletion(blockId));
+        }
+
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        {
+            Forward<IPostMultiBlockDeletionResponder>(r => r.OnPostMultiBlockDeletion(blockIds));
+        }
+
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             Forward<ILeftMouseDragStartResponder>(r => r.OnLeftMouseDragStarted(info, evt));
@@ -187,6 +199,26 @@ namespace Amanita.VScripting.EditorUtils
         public void OnBlockCreated(Block block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
+        }
+
+        public void OnPreBlockCut(Block block)
+        {
+            Forward<IPreBlockCutResponder>(r => r.OnPreBlockCut(block));
+        }
+
+        public void OnPostBlockCut(ushort blockId)
+        {
+            Forward<IPostBlockCutResponder>(r => r.OnPostBlockCut(blockId));
+        }
+
+        public void OnPreMultiBlockCut(IList<Block> blocks)
+        {
+            Forward<IPreMultiBlockCutResponder>(r => r.OnPreMultiBlockCut(blocks));
+        }
+
+        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        {
+            Forward<IPostMultiBlockCutResponder>(r => r.OnPostMultiBlockCut(blockIds));
         }
     }
 }

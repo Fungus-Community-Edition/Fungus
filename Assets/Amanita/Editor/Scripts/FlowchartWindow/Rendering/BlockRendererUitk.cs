@@ -20,9 +20,11 @@ namespace Amanita.VScripting.EditorUtils
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
         IBlockCreatedResponder,
         IBlockSelectionResponder, IPreBlockDeletionResponder,
+        IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
-        IMultiBlockDeselectionResponder, IBlockRectProvider
+        IMultiBlockDeselectionResponder, IBlockRectProvider,
+        IPostBlockCutResponder, IPostMultiBlockCutResponder
     {
         public int Priority { get; set; } = 0;
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
@@ -50,6 +52,25 @@ namespace Amanita.VScripting.EditorUtils
 
             RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                Undo.undoRedoPerformed += OnUndoRedoPerformedFirst;
+            }
+            else
+            {
+                Undo.undoRedoPerformed -= OnUndoRedoPerformedFirst;
+            }
+        }
+
+        private void OnUndoRedoPerformedFirst()
+        {
+            ClearAll(); // Helps prevent some buttons from sticking around when they shouldn't.
+            RefreshBlocks();
         }
 
         private readonly FlowchartContext fcContext;
@@ -59,6 +80,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             owner = window;
             initialRefreshPending = true;
+            ToggleSubs(true);
             TryRefreshAfterLayout();
         }
 
@@ -126,6 +148,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             UpdateBlockLayouts();
+            MarkDirtyRepaint();
         }
 
         private void RemoveMissing(IReadOnlyCollection<Block> currentBlocks)
@@ -172,18 +195,25 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (binding.Button != null)
+            UitkButton buttonToRemove = binding.Button;
+            if (buttonToRemove != null)
             {
-                UnregisterInputForwarders(binding.Button);
+                UnregisterInputForwarders(buttonToRemove);
 
                 if (binding.ClickHandler != null)
                 {
-                    binding.Button.clicked -= binding.ClickHandler;
+                    buttonToRemove.clicked -= binding.ClickHandler;
                 }
-                binding.Button.RemoveFromHierarchy();
+
+                buttonToRemove.visible = false;
+                buttonToRemove.style.display = DisplayStyle.None;
+                buttonToRemove.MarkDirtyRepaint();
+                buttonToRemove.RemoveFromHierarchy();
+                
             }
 
             blockBindings.Remove(block);
+            MarkDirtyRepaint();
         }
 
         private void EnsureBlockVisual(Block block)
@@ -197,6 +227,7 @@ namespace Amanita.VScripting.EditorUtils
             if (!blockAlreadyDrawn)
             {
                 UitkButton button = drawer.CreateButton(block);
+                button.name = block.BlockName;
                 button.style.position = Position.Absolute;
 
                 RegisterInputForwarders(button);
@@ -374,8 +405,6 @@ namespace Amanita.VScripting.EditorUtils
                 var blockEl = blocks[i];
                 RemoveBlock(blockEl);
             }
-
-            EditorApplication.delayCall += RefreshBlocks;
         }
 
         public void OnPreBlockDeletion(Block block)
@@ -444,7 +473,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-
+            ToggleSubs(false);
             isDisposed = true;
             ClearAll();
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
@@ -514,14 +543,31 @@ namespace Amanita.VScripting.EditorUtils
             UpdateButtonForBlock(block);
         }
 
-        public void OnPostBlockDeletion(uint blockId)
+        public void OnPostBlockDeletion(ushort blockId)
         {
+            // Why do this in post? It's because by the time that the pre signal fires, the
+            // block(s) are still registered in the Flowchart. That leads to the
+            // should've-been-deleted blocks still being drawn in RefreshBlocks, which causes
+            // weird visual bugs. By waiting until post, we ensure that the blocks are fully
+            // deleted from the Flowchart before we try to refresh our visuals.
+            ClearAll();
             RefreshBlocks();
         }
 
-        public void OnPostMultiBlockDeletion(IList<uint> blockIds)
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
         {
+            ClearAll();
             RefreshBlocks();
+        }
+
+        public void OnPostBlockCut(ushort blockId)
+        {
+            OnPostBlockDeletion(blockId);
+        }
+
+        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        {
+            OnPostMultiBlockDeletion(blockIds);
         }
     }
 
