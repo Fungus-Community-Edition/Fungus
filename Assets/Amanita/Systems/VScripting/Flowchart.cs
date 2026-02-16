@@ -163,13 +163,12 @@ namespace Amanita.VScripting
             {
                 // Weird for a Flowchart to have 0 Blocks... let's try to find some if
                 // we don't have any cached.
-                if (_blocks.Count == 0) 
+                if (_blockListCache.Count == 0) 
                 {
-                    var blocksFound = GetComponents<Block>();
-                    _blocks.AddRange(blocksFound);
+                    RefreshBlockAndCommandCache();
                 }
 
-                return _blocks;
+                return _blockListCache;
             }
         }
         public IReadOnlyCollection<Command> Commands => (IReadOnlyCollection<Command>)_commands;
@@ -189,9 +188,7 @@ namespace Amanita.VScripting
                 legacyVariables.AddRange(found);
             }
 
-            var blocksFound = GetComponents<Block>();
-            _blocks.AddRange(blocksFound);
-            _commands = GetComponents<Command>().ToList();
+            RefreshBlockAndCommandCache();
 
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
@@ -203,8 +200,32 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeField] [HideInInspector] private HashSet<Block> _blocks = new HashSet<Block>();
-        [SerializeField] [HideInInspector] private IList<Command> _commands = new List<Command>();
+        private void RefreshBlockAndCommandCache()
+        {
+            _blockListCache ??= new List<Block>();
+            _blocks ??= new Dictionary<uint, Block>();
+            _commands ??= new List<Command>();
+            // ^Despite the initializers in this class, weird things can happen with Unity
+
+            _blockListCache.Clear();
+            _blocks.Clear();
+            _commands.Clear();
+
+            var blocksFound = GetComponents<Block>();
+            for (int i = 0; i < blocksFound.Length; i++)
+            {
+                var currentBlock = blocksFound[i];
+                _blockListCache.Add(currentBlock);
+                _blocks.Add(currentBlock.ItemId, currentBlock);
+            }
+            
+            var commandsFound = GetComponents<Command>();
+            _commands.AddRange(commandsFound);
+        }
+
+        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
+        private IDictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
+        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -392,22 +413,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            if (_blocks == null)
-            {
-                _blocks = new HashSet<Block>();
-            }
-            else
-            {
-                _blocks.Clear();
-            }
-
-            Block[] blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                _blocks.Add(blocks[i]);
-            }
-
-            _commands = GetComponents<Command>().ToList();
+            RefreshBlockAndCommandCache();
         }
 #endif
 
@@ -742,7 +748,7 @@ namespace Amanita.VScripting
             if (hideComponents)
             {
                 var blocks = _blocks;
-                foreach (var block in blocks)
+                foreach (var block in blocks.Values)
                 {
                     block.hideFlags = HideFlags.HideInInspector;
                     if (block.gameObject != gameObject)
@@ -951,7 +957,8 @@ namespace Amanita.VScripting
 #endif
             created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
-            _blocks.Add(created);
+            _blocks.Add(created.ItemId, created);
+            _blockListCache.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
         }
@@ -975,30 +982,20 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            foreach (var block in _blocks)
+            foreach (var blockEl in _blocks.Values)
             {
-                if (block.BlockName == blockName)
+                if (blockEl.BlockName == blockName)
                 {
-                    return block;
+                    return blockEl;
                 }
             }
 
             return null;
         }
 
-        public virtual Block FindBlockByItemId(int itemId)
+        public virtual Block FindBlockByItemId(uint itemId)
         {
-            Block result = null;
-
-            foreach (var blockEl in _blocks)
-            {
-                if (blockEl.ItemId == itemId)
-                {
-                    result = blockEl;
-                    break;
-                }
-            }
-
+            _blocks.TryGetValue(itemId, out Block result);
             return result;
         }
 
@@ -1974,10 +1971,8 @@ namespace Amanita.VScripting
         /// </summary>
         public void RemoveBlock(Block toUnregister)
         {
-            if (_blocks.Contains(toUnregister))
-            {
-                _blocks.Remove(toUnregister);
-            }
+            _blocks.Remove(toUnregister.ItemId);
+            _blockListCache.Remove(toUnregister);
         }
 
 #endif

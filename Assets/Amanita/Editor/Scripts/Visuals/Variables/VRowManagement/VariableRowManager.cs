@@ -278,11 +278,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 if (owner is UnityObj ownerObj && ownerObj != null)
                 {
-                    string typeName = varInvolved.GetType().Name;
+                    string typeName = varInvolved.ContentType.Name;
                     if (typeName.Equals("Single"))
                     {
                         typeName = "Float";
                     }
+
                     Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
                 }
             }

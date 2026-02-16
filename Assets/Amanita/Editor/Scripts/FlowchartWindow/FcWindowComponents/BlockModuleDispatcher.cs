@@ -129,10 +129,10 @@ namespace Amanita.VScripting.EditorUtils
         public void NotifyPreMultiBlockDeleted(IList<Block> blocks) =>
             Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocks));
 
-        public void NotifyPostBlockDeleted(uint blockId) =>
+        public void NotifyPostBlockDeleted(ushort blockId) =>
             Broadcast<IPostBlockDeletionResponder>(res => res.OnPostBlockDeletion(blockId));
 
-        public void NotifyPostMultiBlockDeleted(IList<uint> blockIds) =>
+        public void NotifyPostMultiBlockDeleted(IList<ushort> blockIds) =>
             Broadcast<IPostMultiBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blockIds));
 
         public void NotifyBlockClicked(Block block, Event evt) =>

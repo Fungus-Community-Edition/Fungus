@@ -1,0 +1,89 @@
+using System.Linq;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityObj = UnityEngine.Object;
+
+namespace Amanita.VScripting.EditorUtils
+{
+    public class FcWindowBlockDeletion
+    {
+        public void Execute(FlowchartContext ctx)
+        {
+            var selection = ctx.Selection;
+            var selected = selection.Blocks;
+            if (selected == null || selected.Count == 0)
+                return;
+
+            // We'll handle the deletion here instead of passing it to FcWindowEditing since we
+            // want to be able to undo the deletion of multiple blocks as a single action.
+            // That, and to keep the new flowchart window from needing to involve FcWindowEditing
+            // (that class is for the legacy window only).
+            Flowchart fChart = selected[0].GetFlowchart();
+            if (selected.Count == 1)
+            {
+                Block toDelete = selected[0];
+                Undo.RecordObject(fChart, $"Delete Block {toDelete.BlockName}");
+
+                fChart.RemoveBlock(toDelete);
+
+                BlockSignals.PreBlockDelete.Invoke(toDelete);
+                ushort id = toDelete.ItemId;
+
+                DestroyThoroughly(toDelete);
+                BlockSignals.PostBlockDelete.Invoke(id);
+            }
+            else
+            {
+                Undo.RecordObject(fChart, "Delete Multiple Blocks");
+
+                BlockSignals.PreMultiBlockDelete.Invoke(selected);
+                fChart.RemoveMultiBlocks(selected);
+
+                IList<ushort> blockIds = selected.Select((elem) => elem.ItemId).ToList();
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    var block = selected[i];
+                    blockIds.Add(block.ItemId);
+                }
+
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    var toDelete = selected[i];
+                    
+                    DestroyThoroughly(toDelete);
+                }
+
+                BlockSignals.PostMultiBlockDelete.Invoke(blockIds);
+
+            }
+
+            ctx.ForceRepaintCount++;
+        }
+
+        private void DestroyThoroughly(Block block)
+        {
+            if (block.IsSelected)
+            {
+                block.GetFlowchart().DeselectBlockNoCheck(block);
+            }
+
+            if (block._EventHandler != null)
+            {
+                UnityObj.DestroyImmediate(block._EventHandler);
+            }
+
+            DestroyCommandsOf(block);
+            
+            UnityObj.DestroyImmediate(block);
+        }
+
+        void DestroyCommandsOf(Block block)
+        {
+            for (int i = 0; i < block.CommandList.Count; i++)
+            {
+                Command cmd = block.CommandList[i];
+                UnityObj.DestroyImmediate(cmd);
+            }
+        }
+    }
+}

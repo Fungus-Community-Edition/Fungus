@@ -79,7 +79,7 @@ namespace Amanita.EditorUtils
             }
 
             #region Gather up Block IDs for post-deletion signals
-            IList<uint> blockIDs = new List<uint>();
+            IList<ushort> blockIDs = new List<ushort>();
             for (int i = 0; i < blockCount; i++)
             {
                 var currentBlock = selection.Blocks[i];

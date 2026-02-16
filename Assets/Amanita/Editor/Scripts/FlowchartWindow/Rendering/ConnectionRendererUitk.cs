@@ -141,8 +141,8 @@ namespace Amanita.VScripting.EditorUtils
         public void OnMultiBlocksDeselected(IList<Block> blocks) => RequestRepaint();
         public void OnPreBlockDeletion(IList<Block> blocks) => RequestRepaint();
         public void OnPreBlockDeletion(Block block) => RequestRepaint();
-        public void OnPostBlockDeletion(uint blockId) => RequestRepaint();
-        public void OnPostMultiBlockDeletion(IList<uint> blockIds) => RequestRepaint();
+        public void OnPostBlockDeletion(ushort blockId) => RequestRepaint();
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds) => RequestRepaint();
         public void OnBlockCreated(Block block) => RequestRepaint();
         public void OnBlocksCopied(IList<Block> blocks) => RequestRepaint();
         public void OnCommandSelected(Command command) => RequestRepaint();

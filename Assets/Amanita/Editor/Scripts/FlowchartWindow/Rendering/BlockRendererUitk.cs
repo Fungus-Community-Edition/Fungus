@@ -50,6 +50,31 @@ namespace Amanita.VScripting.EditorUtils
 
             RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                Undo.undoRedoPerformed += OnUndoRedoPerformedFirst;
+                Undo.undoRedoEvent += OnUndoRedoPerformed;
+            }
+            else
+            {
+                Undo.undoRedoPerformed -= OnUndoRedoPerformedFirst;
+                Undo.undoRedoEvent -= OnUndoRedoPerformed;
+            }
+        }
+
+        private void OnUndoRedoPerformedFirst()
+        {
+            EditorApplication.delayCall += RefreshBlocks;
+        }
+
+        private void OnUndoRedoPerformed(in UndoRedoInfo undo)
+        {
+            EditorApplication.delayCall += RefreshBlocks;
         }
 
         private readonly FlowchartContext fcContext;
@@ -59,6 +84,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             owner = window;
             initialRefreshPending = true;
+            ToggleSubs(true);
             TryRefreshAfterLayout();
         }
 
@@ -110,6 +136,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
+            ToggleSubs(false);
             Flowchart flowchart = fcContext.Flowchart;
             if (flowchart == null)
             {
@@ -172,15 +199,20 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            if (binding.Button != null)
+            Button buttonToRemove = binding.Button;
+            if (buttonToRemove != null)
             {
-                UnregisterInputForwarders(binding.Button);
+                UnregisterInputForwarders(buttonToRemove);
 
                 if (binding.ClickHandler != null)
                 {
-                    binding.Button.clicked -= binding.ClickHandler;
+                    buttonToRemove.clicked -= binding.ClickHandler;
                 }
-                binding.Button.RemoveFromHierarchy();
+                
+                buttonToRemove.RemoveFromHierarchy();
+                buttonToRemove.visible = false; 
+                // ^Since it might otherwise stay rendered despite being removed from the hierarchy
+                
             }
 
             blockBindings.Remove(block);
@@ -197,6 +229,7 @@ namespace Amanita.VScripting.EditorUtils
             if (!blockAlreadyDrawn)
             {
                 UitkButton button = drawer.CreateButton(block);
+                button.name = block.BlockName;
                 button.style.position = Position.Absolute;
 
                 RegisterInputForwarders(button);
@@ -375,12 +408,13 @@ namespace Amanita.VScripting.EditorUtils
                 RemoveBlock(blockEl);
             }
 
-            EditorApplication.delayCall += RefreshBlocks;
+            RefreshBlocks();
         }
 
         public void OnPreBlockDeletion(Block block)
         {
             RemoveBlock(block);
+            RefreshBlocks();
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)

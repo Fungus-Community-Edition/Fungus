@@ -35,19 +35,19 @@ namespace Amanita.VScripting
         /// </summary>
         public static Action<Block> PreBlockDelete = delegate { };
         /// <summary>
-        /// Sent just after a Block is deleted. The uint argument is the ID of the deleted Block.
+        /// Sent just after a Block is deleted. The ushort argument is the ID of the deleted Block.
         /// </summary>
-        public static Action<uint> PostBlockDelete = delegate { };
+        public static Action<ushort> PostBlockDelete = delegate { };
 
         /// <summary>
         /// Sent just before multiple Blocks are deleted at once.
         /// </summary>
         public static Action<IList<Block>> PreMultiBlockDelete = delegate { };
         /// <summary>
-        /// Sent just after multiple Blocks are deleted at once. The IList<uint> argument
+        /// Sent just after multiple Blocks are deleted at once. The IList<ushort> argument
         /// contains the IDs of the deleted Blocks.
         /// </summary>
-        public static Action<IList<uint>> PostMultiBlockDelete = delegate { };
+        public static Action<IList<ushort>> PostMultiBlockDelete = delegate { };
 
         public static Action<IList<Block>> BlocksCopied = delegate { };
         #endregion
@@ -123,12 +123,12 @@ namespace Amanita.VScripting
 
     public interface IPostBlockDeletionResponder
     {
-        void OnPostBlockDeletion(uint blockId);
+        void OnPostBlockDeletion(ushort blockId);
     }
 
     public interface IPostMultiBlockDeletionResponder
     {
-        void OnPostMultiBlockDeletion(IList<uint> blockIds);
+        void OnPostMultiBlockDeletion(IList<ushort> blockIds);
     }
 
     public interface IBlocksCopiedResponder
