@@ -26,6 +26,7 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PreBlockDelete += NotifyPreBlockDeleted;
                 BlockSignals.PostBlockDelete += NotifyPostBlockDeleted;
                 BlockSignals.PreMultiBlockDelete += NotifyPreMultiBlockDeleted;
+                BlockSignals.PostMultiBlockDelete += NotifyPostMultiBlockDeleted;
 
                 BlockSignals.BlocksCopied += NotifyBlocksCopied;
             }
@@ -43,6 +44,7 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PreBlockDelete -= NotifyPreBlockDeleted;
                 BlockSignals.PostBlockDelete -= NotifyPostBlockDeleted;
                 BlockSignals.PreMultiBlockDelete -= NotifyPreMultiBlockDeleted;
+                BlockSignals.PostMultiBlockDelete -= NotifyPostMultiBlockDeleted;
 
                 BlockSignals.BlocksCopied -= NotifyBlocksCopied;
             }
