@@ -4,10 +4,13 @@ using UnityEngine.UIElements;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public interface IFlowchartHost
+    /// <summary>
+    /// Core interface for flowchart host windows, implemented by FlowchartWindow.
+    /// </summary>
+    public interface IFlowchartHostCore
     {
         Flowchart Flowchart { get; }
-        BlockClipboard Clipboard { get; set;  }
+        BlockClipboard Clipboard { get; set; }
         bool HasClipboard { get; }
         Block CreateBlock(Flowchart fc, Vector2 pos);
         void DeselectAll();
@@ -15,8 +18,13 @@ namespace Amanita.VScripting.EditorUtils
         void Repaint();
         T GetComponent<T>() where T : IFcWindowComponent;
         Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks);
+    }
 
-        void OnGUI();
+    /// <summary>
+    /// Interface for flowchart host windows that provide a view (canvas) for rendering blocks and handling user input.
+    /// </summary>
+    public interface IFlowchartViewHost : IFlowchartHostCore
+    {
         Rect CalcFlowchartWindowViewRect();
         Color GridLineColor { get; }
 
@@ -29,5 +37,9 @@ namespace Amanita.VScripting.EditorUtils
         void DoZoom(float delta, Vector2 center);
         void CenterFlowchart();
         void SelectBlock(Block block);
+    }
+
+    public interface IFlowchartHost : IFlowchartViewHost
+    {
     }
 }

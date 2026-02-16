@@ -15,7 +15,7 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 FlowchartWindowSignals.LeftMouseDown += NotifyLeftMouseDown;
-                FlowchartWindowSignals.RightClicked += NotifyRightClick;
+                FlowchartWindowSignals.RightMouseDown += NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp += NotifyLeftMouseUp;
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown += NotifyEmptySpaceLeftMouseDown;
@@ -33,12 +33,12 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.ScrollWheelMoved += NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged += NotifyScrollWheelDragged;
 
-                FlowchartWindowSignals.EmptySpaceClicked += NotifyEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked += NotifyEmptySpaceLeftClicked;
             }
             else
             {
                 FlowchartWindowSignals.LeftMouseDown -= NotifyLeftMouseDown;
-                FlowchartWindowSignals.RightClicked -= NotifyRightClick;
+                FlowchartWindowSignals.RightMouseDown -= NotifyRightClick;
 
                 FlowchartWindowSignals.LeftMouseUp -= NotifyLeftMouseUp;
                 FlowchartWindowSignals.EmptySpaceLeftMouseDown -= NotifyEmptySpaceLeftMouseDown;
@@ -56,7 +56,7 @@ namespace Amanita.VScripting.EditorUtils
                 FlowchartWindowSignals.ScrollWheelMoved -= NotifyScrollWheelMoved;
                 FlowchartWindowSignals.ScrollWheelDragged -= NotifyScrollWheelDragged;
 
-                FlowchartWindowSignals.EmptySpaceClicked -= NotifyEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked -= NotifyEmptySpaceLeftClicked;
             }
         }
 
@@ -97,7 +97,7 @@ namespace Amanita.VScripting.EditorUtils
             AddResponder<IRightMouseDragResponder>(module);
             AddResponder<IRightMouseDragEndResponder>(module);
 
-            AddResponder<IEmptySpaceClickResponder>(module);
+            AddResponder<IEmptySpaceLeftClickResponder>(module);
             AddResponder<IEmptySpaceLeftMouseDownResponder>(module);
             AddResponder<IEmptySpaceLeftMouseUpResponder>(module);
 
@@ -124,7 +124,7 @@ namespace Amanita.VScripting.EditorUtils
             RemoveResponder<IRightMouseDragResponder>(module);
             RemoveResponder<IRightMouseDragEndResponder>(module);
 
-            RemoveResponder<IEmptySpaceClickResponder>(module);
+            RemoveResponder<IEmptySpaceLeftClickResponder>(module);
             RemoveResponder<IEmptySpaceLeftMouseDownResponder>(module);
             RemoveResponder<IEmptySpaceLeftMouseUpResponder>(module);
 
@@ -173,8 +173,8 @@ namespace Amanita.VScripting.EditorUtils
         public void NotifyRightMouseDragEnded(PointerEventInfo info, Event guiEvent) =>
             Broadcast<IRightMouseDragEndResponder>(res => res.OnRightMouseDragEnded(info, guiEvent));
 
-        public void NotifyEmptySpaceClicked(PointerEventInfo info) =>
-            Broadcast<IEmptySpaceClickResponder>(res => res.OnEmptySpaceClicked(info));
+        public void NotifyEmptySpaceLeftClicked(PointerEventInfo info) =>
+            Broadcast<IEmptySpaceLeftClickResponder>(res => res.OnEmptySpaceLeftClicked(info));
 
         public void NotifyEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt) =>
             Broadcast<IEmptySpaceLeftMouseDownResponder>(res => res.OnEmptySpaceLeftMouseDown(info, evt));

@@ -65,6 +65,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             ApplyZoomDelta(-scrollDelta.y * ZoomStepPerDelta);
+            FlowchartWindowSignals.ZoomChanged?.Invoke(flowchartContext.Flowchart?.Zoom ?? DefaultZoom);
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart current)

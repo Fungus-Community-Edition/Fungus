@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 

@@ -21,6 +21,9 @@ namespace Amanita.VScripting.EditorUtils
         public static readonly string BaseClass = "flowchartBlock";
         public static readonly string SelectedClass = "flowchartBlockSelected";
 
+        private static readonly Color GradientTop = new Color(1f, 1f, 1f, 0.18f);
+        private static readonly Color GradientBottom = new Color(0f, 0f, 0f, 0.25f);
+
         public DefaultBlockDrawerUitk()
             : this(new BlockGraphicsGenerator())
         {
@@ -62,6 +65,8 @@ namespace Amanita.VScripting.EditorUtils
                 button.AddToClassList(BaseClass);
                 button.AddToClassList(SelectedClass);
                 button.EnableInClassList(SelectedClass, false);
+
+                UitkGradientDrawer.AttachVerticalGradient(button, GradientTop, GradientBottom);
             }
 
             return button;

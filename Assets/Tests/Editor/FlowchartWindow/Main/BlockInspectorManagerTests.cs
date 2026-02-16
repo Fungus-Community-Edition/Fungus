@@ -120,7 +120,7 @@ namespace VScriptingTests.FlowchartWindow.Main
             Selection.activeGameObject = null;
 
             PointerEventInfo newInfo = new PointerEventInfo(Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
-            FlowchartWindowSignals.EmptySpaceClicked(newInfo);
+            FlowchartWindowSignals.EmptySpaceLeftClicked(newInfo);
 
             Assert.That(BlockInspectorManager.LastShownBlock, Is.Null);
             Assert.That(Selection.activeGameObject, Is.SameAs(flowchart.gameObject));

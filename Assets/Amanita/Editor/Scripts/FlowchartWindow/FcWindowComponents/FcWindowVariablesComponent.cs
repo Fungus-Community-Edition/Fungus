@@ -10,12 +10,12 @@ namespace Amanita.VScripting.EditorUtils
     {
         public VisualTreeAsset VariableDisplayEditorUxml { get; set; }
 
-        protected IFlowchartHost _window;
+        protected IFlowchartViewHost _window;
         protected TemplateContainer _rootElement;
         protected VariableRowManager _manager;
         protected IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
 
-        public void Initialize(IFlowchartHost host)
+        public void Initialize(IFlowchartViewHost host)
         {
             _window = host;
 

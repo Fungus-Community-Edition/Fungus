@@ -21,10 +21,10 @@ namespace Amanita.VScripting.EditorUtils
         private static void ListenForEvents()
         {
             BlockSignals.BlockSelected += OnBlockSelected;
-            BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
+            BlockSignals.BlockDeselected += OnBlockDEselected;
             BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
 
-            FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+            FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceLeftClicked;
             FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
 
             AssemblyReloadEvents.beforeAssemblyReload += DisposeInspector;
@@ -146,7 +146,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public static Block LastShownBlock => lastShownBlock;
 
-        private static void OnBlockRemovedFromSelection(Block block)
+        private static void OnBlockDEselected(Block block)
         {
             Flowchart flowchart = block != null ? 
                 block.GetFlowchart() : 
@@ -205,7 +205,7 @@ namespace Amanita.VScripting.EditorUtils
             Clear();
         }
 
-        private static void OnEmptySpaceClicked(PointerEventInfo _)
+        private static void OnEmptySpaceLeftClicked(PointerEventInfo _)
         {
             ClearInternal(trackedFlowchart);
         }

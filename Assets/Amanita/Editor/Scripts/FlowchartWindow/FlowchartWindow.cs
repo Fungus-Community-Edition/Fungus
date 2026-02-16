@@ -5,13 +5,12 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = UnityEngine.Object;
 using Amanita.EditorUtils;
 using StylePos = UnityEngine.UIElements.Position;
 
 namespace Amanita.VScripting.EditorUtils
 {
-    public class FlowchartWindow : EventWindow, IFlowchartHost
+    public class FlowchartWindow : EventWindow, IFlowchartHostCore, IFlowchartViewHost
     {
         // Settings for the submodules to consider
         public const float MinZoomValue = 0.25f;
@@ -21,18 +20,6 @@ namespace Amanita.VScripting.EditorUtils
 
         protected readonly Color connectionColor = new Color(0.65f, 0.65f, 0.65f, 1.0f);
         // /Settings
-
-        public class ClipboardObject
-        {
-            internal SerializedObject serializedObject;
-            internal Type type;
-
-            internal ClipboardObject(Object obj)
-            {
-                serializedObject = new SerializedObject(obj);
-                type = obj.GetType();
-            }
-        }
 
         /// <summary>
         /// Helper class to maintain list of blocks that are currently executing when the game is running in editor
@@ -285,7 +272,7 @@ namespace Amanita.VScripting.EditorUtils
                 Undo.undoRedoPerformed += Undo_ForceRepaint;
                 EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
                 ListenForUiToolkitEvents();
-                FlowchartWindowSignals.EmptySpaceClicked += OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
             }
             else
             {
@@ -293,7 +280,7 @@ namespace Amanita.VScripting.EditorUtils
                 Undo.undoRedoPerformed -= Undo_ForceRepaint;
                 EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
                 UnregisterUiToolkitCallbacks();
-                FlowchartWindowSignals.EmptySpaceClicked -= OnEmptySpaceClicked;
+                FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
             }
         }
 

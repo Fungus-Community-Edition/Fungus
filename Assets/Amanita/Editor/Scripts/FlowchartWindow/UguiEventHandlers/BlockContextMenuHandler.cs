@@ -6,13 +6,13 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class BlockContextMenuHandler : IUGUIEventHandler
     {
-        public BlockContextMenuHandler(IFlowchartHost host, IContextMenuFactory factory)
+        public BlockContextMenuHandler(IFlowchartHostCore host, IContextMenuFactory factory)
         {
             _host = host;
             _factory = factory;
         }
 
-        protected readonly IFlowchartHost _host;
+        protected readonly IFlowchartHostCore _host;
         protected readonly IContextMenuFactory _factory;
 
         public bool Handle(Event guiEvent, FlowchartContext flowchartCtx)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -17,7 +18,8 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
-        IBlockSelectionResponder, IPreBlockDeletionResponder, 
+        IBlockCreatedResponder,
+        IBlockSelectionResponder, IPreBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider
@@ -203,9 +205,9 @@ namespace Amanita.VScripting.EditorUtils
                 button.clicked += OnClick;
                 void OnClick()
                 {
-                    BlockSignals.BlockClicked?.Invoke(capturedBlock, Event.current);
+                    BlockSignals.BlockLeftClicked?.Invoke(capturedBlock, Event.current);
                 }
-
+                
                 void OnButtonGeometryChanged(GeometryChangedEvent evt)
                 {
                     if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
@@ -311,9 +313,21 @@ namespace Amanita.VScripting.EditorUtils
 
         private void UpdateButtonForBlock(Block block)
         {
+            // It's possible that this is being called in response to a block from another
+            // Flowchart being deselected due to a Flowchart change. In that case, we won't
+            // have a binding for this block, and that's fine - we just won't update any button.
+            if (block == null)
+            {
+                return;
+            }
             if (blockBindings.TryGetValue(block, out BlockBinding binding))
             {
                 drawer.UpdateButton(binding.Button, block, CurrentZoom);
+            }
+            else
+            {
+                // We probably just created this block, so ensure it has a visual.
+                EnsureBlockVisual(block);
             }
         }
 
@@ -360,6 +374,8 @@ namespace Amanita.VScripting.EditorUtils
                 var blockEl = blocks[i];
                 RemoveBlock(blockEl);
             }
+
+            EditorApplication.delayCall += RefreshBlocks;
         }
 
         public void OnPreBlockDeletion(Block block)
@@ -476,12 +492,13 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnBlockPointerUp(PointerUpEvent evt)
         {
-            InputSignals?.OnPointerUp(evt);
+            Debug.Log("BlockRendererUitk received pointer up event, forwarding to InputSignals.");
+            //InputSignals?.OnPointerUp(evt);
         }
 
         private void OnBlockPointerCancel(PointerCancelEvent evt)
         {
-            InputSignals?.OnPointerCancel(evt);
+            // No op
         }
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
@@ -490,6 +507,21 @@ namespace Amanita.VScripting.EditorUtils
             {
                 UpdateBlockLayouts();
             }
+        }
+
+        public void OnBlockCreated(Block block)
+        {
+            UpdateButtonForBlock(block);
+        }
+
+        public void OnPostBlockDeletion(uint blockId)
+        {
+            RefreshBlocks();
+        }
+
+        public void OnPostMultiBlockDeletion(IList<uint> blockIds)
+        {
+            RefreshBlocks();
         }
     }
 
