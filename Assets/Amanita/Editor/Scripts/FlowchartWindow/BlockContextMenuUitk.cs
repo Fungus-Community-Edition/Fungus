@@ -4,6 +4,10 @@ using System;
 
 namespace Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// Context menu for Flowchart Blocks in the Flowchart Window viewport. Contains buttons for copying, 
+    /// cutting, and deleting the selected Block(s).
+    /// </summary>
     public class BlockContextMenuUitk : VisualElement, IDisposable
     {
         private static readonly string uxmlPath = "UIToolkitTemplates/BlockContextMenu";
@@ -69,8 +73,10 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnDeleteButtonClicked()
         {
-            Debug.Log("Block context menu: Delete button clicked.");
+            DeleteButtonClicked?.Invoke();
         }
+
+        public event Action DeleteButtonClicked = delegate { };
 
         public void Dispose()
         {

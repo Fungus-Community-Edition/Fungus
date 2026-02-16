@@ -86,6 +86,7 @@ namespace Amanita.VScripting.EditorUtils
                 _emptySpacePopup.PasteButtonClicked += OnPasteButtonClicked;
                 _blockPopup.CopyButtonClicked += OnCopyButtonClicked;
                 _blockPopup.CutButtonClicked += OnCutButtonClicked;
+                _blockPopup.DeleteButtonClicked += OnDeleteButtonClicked;
             }
             else
             {
@@ -93,12 +94,26 @@ namespace Amanita.VScripting.EditorUtils
                 _emptySpacePopup.PasteButtonClicked -= OnPasteButtonClicked;
                 _blockPopup.CopyButtonClicked -= OnCopyButtonClicked;
                 _blockPopup.CutButtonClicked -= OnCutButtonClicked;
+                _blockPopup.DeleteButtonClicked -= OnDeleteButtonClicked;
+
             }
+        }
+
+        private void OnDeleteButtonClicked()
+        {
+            if (isDisposed || owner == null)
+            {
+                return;
+            }
+
+            Clipboard?.DeleteBlocks(FcContext);
+            HideAllPopups();
         }
 
         private void OnCutButtonClicked()
         {
             Clipboard?.CutBlocks(FcContext);
+            HideAllPopups();
         }
 
         private AmanitaClipboard Clipboard => owner?.Clipboard;
@@ -106,7 +121,7 @@ namespace Amanita.VScripting.EditorUtils
         private void OnCopyButtonClicked()
         {
             Clipboard?.CopyBlocks(FcContext);
-            throw new NotImplementedException();
+            HideAllPopups();
         }
 
         private void OnEmptySpaceRightClicked(PointerEventInfo info)

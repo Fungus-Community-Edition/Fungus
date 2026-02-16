@@ -67,10 +67,12 @@ namespace Amanita.VScripting.EditorUtils
 
         public virtual void OnInspectorGUI()
         {
+            // No op
         }
 
         public virtual void OnEditorUpdate()
         {
+            // No op
         }
 
         public virtual void QueueToDelete(IList<Block> toDelete)

@@ -1952,6 +1952,34 @@ namespace Amanita.VScripting
             return added;
         }
 
+        /// <summary>
+        /// For editor operations only. Removes the blocks from the list of blocks in the flowchart,
+        /// without destroying them. This is used for operations like deleting multiple blocks, where we
+        /// want to remove the blocks from the flowchart's list of blocks before destroying them,
+        /// to avoid null references in the flowchart's list of blocks.
+        /// </summary>
+        public void RemoveMultiBlocks(IList<Block> toUnregister)
+        {
+            for (int i = 0; i < toUnregister.Count; i++)
+            {
+                RemoveBlock(toUnregister[i]);
+            }
+        }
+
+        /// <summary>
+        /// For editor operations only. Removes the block from the list of blocks in the flowchart, 
+        /// without destroying it. This is used for operations like deleting a block, where we 
+        /// want to remove the block from the flowchart's list of blocks before destroying it, 
+        /// to avoid null references in the flowchart's list of blocks.
+        /// </summary>
+        public void RemoveBlock(Block toUnregister)
+        {
+            if (_blocks.Contains(toUnregister))
+            {
+                _blocks.Remove(toUnregister);
+            }
+        }
+
 #endif
 
     }

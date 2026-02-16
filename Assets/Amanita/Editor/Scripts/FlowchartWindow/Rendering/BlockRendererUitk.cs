@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkButton = UnityEngine.UIElements.Button;
@@ -18,7 +19,7 @@ namespace Amanita.VScripting.EditorUtils
     internal sealed class BlockRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
         IBlockCreatedResponder,
-        IBlockSelectionResponder, IPreBlockDeletionResponder, 
+        IBlockSelectionResponder, IPreBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider
@@ -373,6 +374,8 @@ namespace Amanita.VScripting.EditorUtils
                 var blockEl = blocks[i];
                 RemoveBlock(blockEl);
             }
+
+            EditorApplication.delayCall += RefreshBlocks;
         }
 
         public void OnPreBlockDeletion(Block block)
@@ -495,7 +498,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnBlockPointerCancel(PointerCancelEvent evt)
         {
-            
+            // No op
         }
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
@@ -509,6 +512,16 @@ namespace Amanita.VScripting.EditorUtils
         public void OnBlockCreated(Block block)
         {
             UpdateButtonForBlock(block);
+        }
+
+        public void OnPostBlockDeletion(uint blockId)
+        {
+            RefreshBlocks();
+        }
+
+        public void OnPostMultiBlockDeletion(IList<uint> blockIds)
+        {
+            RefreshBlocks();
         }
     }
 

@@ -1,3 +1,4 @@
+using Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Amanita.VScripting.EditorUtils
         IScrollWheelMoveResponder, IFlowchartChangeResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
         IEmptySpaceLeftMouseDownResponder, IEmptySpaceLeftMouseUpResponder,
-        ILeftMouseDownResponder, ILeftMouseUpResponder
+        ILeftMouseDownResponder, ILeftMouseUpResponder, IBlockClickResponder, IBlockCreatedResponder
     {
         public int Priority { get; set; } = 0;
 
@@ -23,17 +24,22 @@ namespace Amanita.VScripting.EditorUtils
                 throw new ArgumentNullException(nameof(context));
             }
 
+            _hitDetector = new HitDetectionHandlerUitk();
             _panHandler = new PanHandlerUitk(context);
             _zoomHandler = new ZoomHandlerUitk(context, minZoom, maxZoom);
             _scrollPosResetter = new ScrollPosResetter(context);
             _boxSelectionHandler = new SelectionBoxDragTrackerUitk(context);
             _blockDragHandler = new BlockDragHandlerUitk(context);
+            _singleClickBlockSelector = new SingleClickBlockSelector(context);
+            
 
+            _submodules.Add(_hitDetector);
             _submodules.Add(_panHandler);
             _submodules.Add(_zoomHandler);
             _submodules.Add(_scrollPosResetter);
             _submodules.Add(_boxSelectionHandler);
             _submodules.Add(_blockDragHandler);
+            _submodules.Add(_singleClickBlockSelector);
         }
 
         private readonly PanHandlerUitk _panHandler;
@@ -41,8 +47,11 @@ namespace Amanita.VScripting.EditorUtils
         private readonly ScrollPosResetter _scrollPosResetter;
         private readonly SelectionBoxDragTrackerUitk _boxSelectionHandler;
         private readonly BlockDragHandlerUitk _blockDragHandler;
+        private readonly SingleClickBlockSelector _singleClickBlockSelector;
+        private readonly HitDetectionHandlerUitk _hitDetector;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();
+        public IReadOnlyList<IFlowchartWindowModule> Submodules => (IReadOnlyList<IFlowchartWindowModule>)_submodules;
         private bool _isDisposed;
 
         public void Initialize(FlowchartWindowUitk window)
@@ -139,6 +148,16 @@ namespace Amanita.VScripting.EditorUtils
 
                 action(responder);
             }
+        }
+
+        public void OnBlockClicked(Block block, Event evt)
+        {
+            Forward<IBlockClickResponder>(r => r.OnBlockClicked(block, evt));
+        }
+
+        public void OnBlockCreated(Block block)
+        {
+            Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
         }
     }
 }

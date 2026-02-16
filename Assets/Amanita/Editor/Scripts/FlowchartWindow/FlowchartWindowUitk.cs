@@ -145,7 +145,27 @@ namespace Amanita.VScripting.EditorUtils
 
         public T GetComponent<T>() where T : IFcWindowComponent
         {
-            return default(T);
+            T result = default;
+            for (int i = 0; i < _graphicsRenderer.Submodules.Count; i++)
+            {
+                var module = _graphicsRenderer.Submodules[i];
+                if (module is T moduleAsT)
+                {
+                    result = moduleAsT;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < _viewportHandlers.Submodules.Count; i++)
+            {
+                var module = _viewportHandlers.Submodules[i];
+                if (module is T moduleAsT)
+                {
+                    result = moduleAsT;
+                    break;
+                }
+            }
+            return result;
         }
 
         public Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
@@ -319,9 +339,6 @@ namespace Amanita.VScripting.EditorUtils
                 _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
                 _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
 
-                _hitDetector = new HitDetectionHandlerUitk();
-                _singleClickBlockSelector = new SingleClickBlockSelector(_fcContext);
-                _repaintTriggerer = new FcWindowRepaintTriggerer();
                 _contextMenuManager = new FlowchartContextMenuManagerUitk();
             }
 
@@ -331,9 +348,6 @@ namespace Amanita.VScripting.EditorUtils
                 RegisterModule(_graphicsRenderer);
                 RegisterModule(_viewportHandlers);
 
-                RegisterModule(_hitDetector);
-                RegisterModule(_singleClickBlockSelector);
-                RegisterModule(_repaintTriggerer);
                 RegisterModule(_contextMenuManager);
                 RegisterModule(_inputDetector);
             }
@@ -351,10 +365,7 @@ namespace Amanita.VScripting.EditorUtils
                 _graphicsRenderer.Initialize(this);
                 _viewportHandlers.Initialize(this);
 
-                _singleClickBlockSelector.Initialize(this);
-                _repaintTriggerer.Initialize(this);
                 _inputDetector.Initialize(this);
-                _hitDetector.Initialize(this);
                 _contextMenuManager.Initialize(this);
             }
 
@@ -392,12 +403,9 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private FcWindowViewportHandlersUitk _viewportHandlers;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        private SingleClickBlockSelector _singleClickBlockSelector;
-        private FcWindowRepaintTriggerer _repaintTriggerer;
+        
         private FlowchartContextMenuManagerUitk _contextMenuManager;
 
-
-        private HitDetectionHandlerUitk _hitDetector;
         #endregion
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
@@ -553,21 +561,14 @@ namespace Amanita.VScripting.EditorUtils
             _graphicsRenderer?.Dispose();
             _viewportHandlers?.Dispose();
 
-            _singleClickBlockSelector?.Dispose();
-            _repaintTriggerer?.Dispose();
-
-            _hitDetector.Dispose();
             _inputDetector.Dispose();
             _contextMenuManager?.Dispose();
         }
 
         void NullOutSubmodules()
         {
-            _hitDetector = null;
             _graphicsRenderer = null;
             _viewportHandlers = null;
-            _singleClickBlockSelector = null;
-            _repaintTriggerer = null;
             _contextMenuManager = null;
         }
 

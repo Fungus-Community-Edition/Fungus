@@ -40,6 +40,7 @@ namespace Amanita.VScripting.EditorUtils
             selectionBoxRenderer = new SelectionBoxRendererUitk(context);
             var connectionDrawer = new ConnectionDrawerUitk(new ConnectionGathererUitk(blockRenderer));
             connectionRenderer = new ConnectionRendererUitk(context, connectionDrawer);
+            _repaintTriggerer = new FcWindowRepaintTriggerer();
             #endregion
 
             #region Position and Style
@@ -54,26 +55,32 @@ namespace Amanita.VScripting.EditorUtils
             style.flexGrow = 1f;
             #endregion
 
+            #region Add visual elements
             Add(gridRenderer);
             Add(blockRenderer);
             Add(connectionRenderer);
             Add(selectionBoxRenderer);
+            #endregion
 
+            #region Register Submodules
             _submodules.Add(gridRenderer);
             _submodules.Add(blockRenderer);
             _submodules.Add(connectionRenderer);
             _submodules.Add(selectionBoxRenderer);
+            _submodules.Add(_repaintTriggerer);
+            #endregion
         }
 
         private readonly GridRendererUitk gridRenderer;
         private readonly BlockRendererUitk blockRenderer;
         private readonly SelectionBoxRendererUitk selectionBoxRenderer;
         private readonly ConnectionRendererUitk connectionRenderer;
+        private FcWindowRepaintTriggerer _repaintTriggerer;
         private bool isDisposed;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();
         // ^ Cache of all submodules for easy iteration in event handlers.
-
+        public IReadOnlyList<IFlowchartWindowModule> Submodules => (IReadOnlyList<IFlowchartWindowModule>)_submodules;
         public void Initialize(FlowchartWindowUitk window)
         {
             gridRenderer.Initialize(window);
