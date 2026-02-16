@@ -26,18 +26,15 @@ namespace Amanita.VScripting.EditorUtils
             if (selected.Count == 1)
             {
                 Block toDelete = selected[0];
-                BlockSignals.PreBlockDelete.Invoke(toDelete);
 
                 fChart.RemoveBlock(toDelete);
 
                 ushort id = toDelete.ItemId;
 
                 DestroyThoroughly(toDelete);
-                BlockSignals.PostBlockDelete.Invoke(id);
             }
             else
             {
-                BlockSignals.PreMultiBlockDelete.Invoke(selected);
                 fChart.RemoveMultiBlocks(selected);
 
                 IList<ushort> blockIds = selected.Select((elem) => elem.ItemId).ToList();
@@ -48,7 +45,6 @@ namespace Amanita.VScripting.EditorUtils
                     DestroyThoroughly(toDelete);
                 }
 
-                BlockSignals.PostMultiBlockDelete.Invoke(blockIds);
             }
 
             ctx.ForceRepaintCount++;

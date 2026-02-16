@@ -98,7 +98,6 @@ namespace Amanita.EditorUtils
             }
             #endregion
 
-            FcWindowBlockDeletion blockDeletion = new FcWindowBlockDeletion();
             blockDeletion.Execute(context);
 
             #region Post-Delete Broadcasts
@@ -112,6 +111,8 @@ namespace Amanita.EditorUtils
             }
             #endregion
         }
+
+        private readonly FcWindowBlockDeletion blockDeletion = new FcWindowBlockDeletion();
 
         public virtual void CopySelectedCommands(Flowchart flowchart)
         {

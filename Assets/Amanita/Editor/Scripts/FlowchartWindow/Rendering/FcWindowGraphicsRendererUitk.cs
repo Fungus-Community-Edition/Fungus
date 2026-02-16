@@ -11,7 +11,8 @@ namespace Amanita.VScripting.EditorUtils
     public sealed class FcWindowGraphicsRendererUitk : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
-        IPreBlockDeletionResponder, ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
+        IPreBlockDeletionResponder, IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
     {
         public int Priority { get; set; } = 0;
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
@@ -157,6 +158,16 @@ namespace Amanita.VScripting.EditorUtils
         public void OnPreBlockDeletion(Block block)
         {
             Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(block));
+        }
+
+        public void OnPostBlockDeletion(ushort blockId)
+        {
+            Forward<IPostBlockDeletionResponder>(r => r.OnPostBlockDeletion(blockId));
+        }
+
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        {
+            Forward<IPostMultiBlockDeletionResponder>(r => r.OnPostMultiBlockDeletion(blockIds));
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)

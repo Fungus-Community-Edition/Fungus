@@ -20,6 +20,7 @@ namespace Amanita.VScripting.EditorUtils
         IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
         IBlockCreatedResponder,
         IBlockSelectionResponder, IPreBlockDeletionResponder,
+        IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider
@@ -69,7 +70,6 @@ namespace Amanita.VScripting.EditorUtils
         {
             RefreshBlocks();
         }
-
 
         private readonly FlowchartContext fcContext;
         private readonly IBlockDrawerUitk drawer;
@@ -193,7 +193,7 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            Button buttonToRemove = binding.Button;
+            UitkButton buttonToRemove = binding.Button;
             if (buttonToRemove != null)
             {
                 UnregisterInputForwarders(buttonToRemove);
@@ -204,12 +204,14 @@ namespace Amanita.VScripting.EditorUtils
                 }
 
                 buttonToRemove.visible = false;
+                buttonToRemove.style.display = DisplayStyle.None;
+                buttonToRemove.MarkDirtyRepaint();
                 buttonToRemove.RemoveFromHierarchy();
-                // ^Since it might otherwise stay rendered despite being removed from the hierarchy
                 
             }
 
             blockBindings.Remove(block);
+            MarkDirtyRepaint();
         }
 
         private void EnsureBlockVisual(Block block)
@@ -401,16 +403,11 @@ namespace Amanita.VScripting.EditorUtils
                 var blockEl = blocks[i];
                 RemoveBlock(blockEl);
             }
-
-            this.schedule.Execute(RefreshBlocks);
-            // ^So that the block actually gets removed from the viewport instead of getting shrunk
-            // and stuck to some part of the viewport
         }
 
         public void OnPreBlockDeletion(Block block)
         {
             RemoveBlock(block);
-            this.schedule.Execute(RefreshBlocks);
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
@@ -544,13 +541,20 @@ namespace Amanita.VScripting.EditorUtils
             UpdateButtonForBlock(block);
         }
 
-        public void OnPostBlockDeletion(uint blockId)
+        public void OnPostBlockDeletion(ushort blockId)
         {
+            // Why do this in post? It's because by the time that the pre signal fires, the
+            // block(s) are still registered in the Flowchart. That leads to the
+            // should've-been-deleted blocks still being drawn in RefreshBlocks, which causes
+            // weird visual bugs. By waiting until post, we ensure that the blocks are fully
+            // deleted from the Flowchart before we try to refresh our visuals.
+            ClearAll();
             RefreshBlocks();
         }
 
-        public void OnPostMultiBlockDeletion(IList<uint> blockIds)
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
         {
+            ClearAll();
             RefreshBlocks();
         }
     }
