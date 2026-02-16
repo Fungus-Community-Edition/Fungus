@@ -489,19 +489,19 @@ namespace Amanita.VScripting
             // Make sure item ids are unique and monotonically increasing.
             // This should always be the case, but some legacy Flowcharts may have issues.
             List<ushort> usedIds = new List<ushort>();
+            RefreshBlockAndCommandCache();
             CheckForBlocks();
             void CheckForBlocks()
             {
-                
-                var blocks = GetComponents<Block>();
-                for (ushort i = 0; i < blocks.Length; i++)
+                foreach (var blockEl in _blocks.Values)
                 {
-                    var block = blocks[i];
-                    if (block.ItemId == 0 || usedIds.Contains(block.ItemId))
+                    if (blockEl == null) continue;
+
+                    if (blockEl.ItemId == 0 || usedIds.Contains(blockEl.ItemId))
                     {
-                        block.ItemId = NextItemId();
+                        blockEl.ItemId = NextItemId();
                     }
-                    usedIds.Add(block.ItemId);
+                    usedIds.Add(blockEl.ItemId);
                 }
             }
             
@@ -509,14 +509,19 @@ namespace Amanita.VScripting
             void CheckForCommands()
             {
                 var commands = GetComponents<Command>();
-                for (ushort i = 0; i < commands.Length; i++)
+                foreach (Command commandEl in _commands)
                 {
-                    var command = commands[i];
-                    if (command.ItemId == 0 || usedIds.Contains(command.ItemId))
+                    if (commandEl == null)
                     {
-                        command.ItemId = NextItemId();
+                        Debug.LogWarning($"Found null Command while ensuring unique IDs.");
+                        continue;
                     }
-                    usedIds.Add(command.ItemId);
+
+                    if (commandEl.ItemId == 0 || usedIds.Contains(commandEl.ItemId))
+                    {
+                        commandEl.ItemId = NextItemId();
+                    }
+                    usedIds.Add(commandEl.ItemId);
                 }
             }
 

@@ -58,24 +58,18 @@ namespace Amanita.VScripting.EditorUtils
             if (on)
             {
                 Undo.undoRedoPerformed += OnUndoRedoPerformedFirst;
-                Undo.undoRedoEvent += OnUndoRedoPerformed;
             }
             else
             {
                 Undo.undoRedoPerformed -= OnUndoRedoPerformedFirst;
-                Undo.undoRedoEvent -= OnUndoRedoPerformed;
             }
         }
 
         private void OnUndoRedoPerformedFirst()
         {
-            EditorApplication.delayCall += RefreshBlocks;
+            RefreshBlocks();
         }
 
-        private void OnUndoRedoPerformed(in UndoRedoInfo undo)
-        {
-            EditorApplication.delayCall += RefreshBlocks;
-        }
 
         private readonly FlowchartContext fcContext;
         private readonly IBlockDrawerUitk drawer;
@@ -136,7 +130,6 @@ namespace Amanita.VScripting.EditorUtils
                 return;
             }
 
-            ToggleSubs(false);
             Flowchart flowchart = fcContext.Flowchart;
             if (flowchart == null)
             {
@@ -153,6 +146,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             UpdateBlockLayouts();
+            MarkDirtyRepaint();
         }
 
         private void RemoveMissing(IReadOnlyCollection<Block> currentBlocks)
@@ -208,9 +202,9 @@ namespace Amanita.VScripting.EditorUtils
                 {
                     buttonToRemove.clicked -= binding.ClickHandler;
                 }
-                
+
+                buttonToRemove.visible = false;
                 buttonToRemove.RemoveFromHierarchy();
-                buttonToRemove.visible = false; 
                 // ^Since it might otherwise stay rendered despite being removed from the hierarchy
                 
             }
@@ -408,13 +402,15 @@ namespace Amanita.VScripting.EditorUtils
                 RemoveBlock(blockEl);
             }
 
-            RefreshBlocks();
+            this.schedule.Execute(RefreshBlocks);
+            // ^So that the block actually gets removed from the viewport instead of getting shrunk
+            // and stuck to some part of the viewport
         }
 
         public void OnPreBlockDeletion(Block block)
         {
             RemoveBlock(block);
-            RefreshBlocks();
+            this.schedule.Execute(RefreshBlocks);
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
@@ -478,7 +474,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-
+            ToggleSubs(false);
             isDisposed = true;
             ClearAll();
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);

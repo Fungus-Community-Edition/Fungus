@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -34,21 +35,42 @@ namespace Amanita.VScripting.EditorUtils
             this.connectionDrawer = connectionDrawer ?? throw new ArgumentNullException(nameof(connectionDrawer));
 
             pickingMode = PickingMode.Ignore;
+            this.contentContainer.StretchToParentSize();
             style.position = Position.Absolute;
             style.top = 0f;
             style.right = 0f;
             style.bottom = 0f;
             style.left = 0f;
             style.flexGrow = 1f;
-
-            RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
-            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            generateVisualContent += OnGenerateVisualContent;
         }
 
         public void Initialize(FlowchartWindowUitk window)
         {
             owner = window ?? throw new ArgumentNullException(nameof(window));
+            ToggleSubs(true);
+        }
+
+        void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                Undo.undoRedoPerformed += OnUndoRedoPerformed;
+                generateVisualContent += OnGenerateVisualContent;
+                RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            }
+            else
+            {
+                Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+                generateVisualContent -= OnGenerateVisualContent;
+                UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            }
+        }
+
+        private void OnUndoRedoPerformed()
+        {
+            RequestRepaint();
         }
 
         public void Dispose()
@@ -57,11 +79,10 @@ namespace Amanita.VScripting.EditorUtils
             {
                 return;
             }
-
+            ToggleSubs(false);
             isDisposed = true;
 
-            UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
-            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            
             generateVisualContent -= OnGenerateVisualContent;
 
             connectionDrawer.Dispose();
