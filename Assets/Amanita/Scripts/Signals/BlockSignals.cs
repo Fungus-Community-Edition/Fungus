@@ -31,7 +31,9 @@ namespace Amanita.VScripting
         public static Action<IList<Block>> MultiBlocksDeselected = delegate { };
 
         /// <summary>
-        /// Sent just before a Block is deleted.
+        /// Sent just before a Block is deleted. This should only signal for when the user
+        /// is deleting one Block at a time, not when they're deleting multiple at once.
+        /// 
         /// </summary>
         public static Action<Block> PreBlockDelete = delegate { };
         /// <summary>
