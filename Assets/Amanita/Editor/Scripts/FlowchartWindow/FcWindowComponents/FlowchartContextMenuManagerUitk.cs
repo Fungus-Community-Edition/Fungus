@@ -116,7 +116,17 @@ namespace Amanita.VScripting.EditorUtils
             HideAllPopups();
         }
 
-        private AmanitaClipboard Clipboard => owner?.Clipboard;
+        private AmanitaClipboard Clipboard
+        {
+            get
+            {
+                if (owner == null)
+                {
+                    return null;
+                }
+                return owner.Clipboard;
+            }
+        }
 
         private void OnCopyButtonClicked()
         {
@@ -142,6 +152,10 @@ namespace Amanita.VScripting.EditorUtils
             UpdatePosCache();
             EnsureOnScreenAtFront(_emptySpacePopup);
             PositionRelativeToMouse(_emptySpacePopup);
+
+            // If there is nothing in the clipboard, disable the paste button
+            bool canPaste = Clipboard != null && Clipboard.HasBlockEntries;
+            _emptySpacePopup.PasteButtonEnabled = canPaste;
         }
 
         private PointerEventInfo _lastRightClickInfo;

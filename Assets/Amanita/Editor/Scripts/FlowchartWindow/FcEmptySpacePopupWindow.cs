@@ -23,11 +23,14 @@ namespace Amanita.VScripting.EditorUtils
                 Debug.LogError($"Failed to load VisualTreeAsset at path: {uxmlPath}");
                 return;
             }
+            _isDisposed = false;
             VisualElement root = visualTreeAsset.Instantiate();
             Add(root);
             RegisterControls();
             ToggleSubs(true);
         }
+
+        private bool _isDisposed;
 
         private void RegisterControls()
         {
@@ -77,8 +80,34 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Dispose()
         {
+            if (_isDisposed)
+            {
+                return;
+            }
+            _isDisposed = true;
             ToggleSubs(false);
             this.RemoveFromHierarchy();
+        }
+
+        public bool PasteButtonEnabled
+        {
+            get
+            {
+                if (_isDisposed || _pasteButton == null)
+                {
+                    return false;
+                }
+                return _pasteButton.enabledInHierarchy;
+            }
+            set
+            {
+                if (_isDisposed || _pasteButton == null)
+                {
+                    return;
+                }
+
+                _pasteButton.SetEnabled(value);
+            }
         }
     }
 }
