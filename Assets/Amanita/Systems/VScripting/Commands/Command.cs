@@ -23,6 +23,16 @@ namespace Amanita.VScripting
 
         protected string errorMessage = "";
 
+        /// <summary>
+        /// This is for Commands that have too much polymorphic state for Unity's serializedProperty system to 
+        /// copy over normally. Base implementation returns false. If overridden to return true, the editor will 
+        /// use something else (maybe json) to make sure that the pasted copies of this Command type have the 
+        /// state they should. This allows for correct copying of complex polymorphic data, at the cost of 
+        /// maybe some performance and losing reference copying (i.e. if two fields reference the same object, 
+        /// after pasting, they will reference two different but identical objects).
+        /// </summary>
+        public virtual bool NonStandardPaste => false;
+
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();

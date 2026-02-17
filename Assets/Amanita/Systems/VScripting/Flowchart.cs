@@ -1946,11 +1946,41 @@ namespace Amanita.VScripting
 #if UNITY_EDITOR
         public T AddCommand<T>(Block toAddTo) where T : Command
         {
-            Undo.RecordObject(this, "Add Command");
-            var added = this.gameObject.AddComponent<T>();
-            EditorUtility.SetDirty(this);
+            return AddCommand(typeof(T), toAddTo) as T;
+        }
+
+        public Command AddCommand(Type commandType, Block toAddTo)
+        {
+            if (!typeof(Command).IsAssignableFrom(commandType))
+            {
+                Debug.LogError($"AddCommand: {commandType} does not inherit from Command.");
+                return null;
+            }
+
+            // Record the Flowchart because we're about to modify its internal _commands list
+            Undo.RecordObject(this, $"Add {commandType.Name} Command");
+
+            // Record the GameObject because we're adding a component to it
+            Undo.RecordObject(this.gameObject, $"Add {commandType.Name} Command Component");
+
+            // Create the component with Undo support
+            var added = Undo.AddComponent(this.gameObject, commandType) as Command;
+
+            if (added == null)
+            {
+                Debug.LogError($"AddCommand: Failed to add component of type {commandType}.");
+                return null;
+            }
+
+            // Update Flowchart's internal list
             _commands.Add(added);
+
+            // Update the Block's list
             toAddTo.CommandList.Add(added);
+
+            // Mark Flowchart dirty so Unity saves the change
+            EditorUtility.SetDirty(this);
+
             return added;
         }
 

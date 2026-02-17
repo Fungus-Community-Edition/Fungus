@@ -1,10 +1,12 @@
+﻿using Amanita.VScripting.Commands;
+using Amanita.VScripting.EventHandlers;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using System.Linq;
-using Object = UnityEngine.Object;
 using ClipboardObject = Amanita.EditorUtils.ClipboardObject;
-using Amanita.VScripting.EventHandlers;
+using Object = UnityEngine.Object;
+using Type = System.Type;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -18,9 +20,10 @@ namespace Amanita.VScripting.EditorUtils
         {
             this.block = new SerializedObject(block);
             BlockID = block.ItemId;
-            foreach (var command in block.CommandList)
+
+            foreach (var commandEl in block.CommandList)
             {
-                commands.Add(new ClipboardObject(command));
+                commands.Add(new ClipboardObject(commandEl));
             }
             if (block._EventHandler != null)
             {
@@ -31,21 +34,34 @@ namespace Amanita.VScripting.EditorUtils
         public virtual int BlockID { get; protected set; }
         protected void CopyProperties(SerializedObject source, Object dest, params SerializedPropertyType[] excludeTypes)
         {
-            var newSerializedObject = new SerializedObject(dest);
+            var destSO = new SerializedObject(dest);
+            destSO.Update();
+
             var prop = source.GetIterator();
+
             while (prop.NextVisible(true))
             {
-                // Exclude problematic valObj fields
-                if (prop.propertyPath.EndsWith("valObj"))
+                // Skip excluded types
+                if (excludeTypes.Contains(prop.propertyType))
                     continue;
 
-                if (!excludeTypes.Contains(prop.propertyType))
+                var destProp = destSO.FindProperty(prop.propertyPath);
+                if (destProp == null)
+                    continue;
+
+                // Managed reference safety
+                if (prop.propertyType == SerializedPropertyType.ManagedReference)
                 {
-                    newSerializedObject.CopyFromSerializedProperty(prop);
+                    if (prop.managedReferenceFullTypename != destProp.managedReferenceFullTypename)
+                        continue;
                 }
+
+                Debug.Log($"Copying property: {prop.propertyPath} ({prop.propertyType}) on {dest.GetType().Name}");
+
+                destSO.CopyFromSerializedProperty(prop);
             }
 
-            newSerializedObject.ApplyModifiedProperties();
+            destSO.ApplyModifiedProperties();
         }
 
         internal Block PasteBlock(IFlowchartHostCore flowWind, Flowchart flowchart)
@@ -54,12 +70,23 @@ namespace Amanita.VScripting.EditorUtils
 
             // Copy all command serialized properties
             // Copy references to match duplication behavior
-            foreach (var command in commands)
+            foreach (var commandEl in commands)
             {
-                var newCommand = Undo.AddComponent(flowchart.gameObject, command.type) as Command;
-                CopyProperties(command.serializedObject, newCommand);
+                var newCommand = flowchart.AddCommand(commandEl.type, newBlock);
+
+                if (newCommand.NonStandardPaste)
+                {
+                    // JSON path — handles SerializeReference, polymorphic graphs, etc.
+                    var json = EditorJsonUtility.ToJson(commandEl.serializedObject.targetObject);
+                    EditorJsonUtility.FromJsonOverwrite(json, newCommand);
+                }
+                else
+                {
+                    // Default path — safe for simple, flat, non-polymorphic Commands
+                    CopyProperties(commandEl.serializedObject, newCommand);
+                }
+
                 newCommand.ItemId = flowchart.NextItemId();
-                newBlock.CommandList.Add(newCommand);
             }
 
             // Copy event handler
@@ -81,6 +108,11 @@ namespace Amanita.VScripting.EditorUtils
             );
 
             newBlock.BlockName = flowchart.GetUniqueBlockKey(block.FindProperty("blockName").stringValue + " (Copy)");
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            // ^Due to how the Commands' summaries can otherwise be misleading after being pasted. For example, 
+            // a Set Variable that says "error: no Variable selected" even though that copy's internal 
+            // state is what it should be. Might be an issue of the Command's cached summary not updating
+            // until the next inspector update, but this is a simple fix.
 
             return newBlock;
         }
