@@ -165,4 +165,8 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
+    public interface IBlockDrawer
+    {
+        void Draw(Block toDraw, DrawBlockContext drawCtx);
+    }
 }

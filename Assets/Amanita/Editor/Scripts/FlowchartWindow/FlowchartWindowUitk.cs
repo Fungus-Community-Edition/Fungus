@@ -422,6 +422,19 @@ namespace Amanita.VScripting.EditorUtils
             }
         }
 
+        public VisualElement RootVisualElement
+        {
+            get
+            {
+                if (_s == null)
+                {
+                    return null;
+                }
+
+                return UxmlRoot;
+            }
+        }
+
         void OnRefreshButtonClicked()
         {
             Flowchart flowchart = FindFirstObjectByType<Flowchart>();

@@ -123,7 +123,7 @@ namespace Amanita.VScripting.EditorUtils
     
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
         {
-            EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+            EditorWindow.GetWindow(typeof(FlowchartWindowUitk), false, "Flowchart");
         }
     }
 }

@@ -240,7 +240,7 @@ namespace Amanita.VScripting.EditorUtils
                 ? 1f
                 : drawGridContext.GridLineSpacingSize;
 
-            float minZoom = FlowchartWindow.MinZoomValue;
+            float minZoom = FlowchartWindowUitk.Config.MinZoom;
             float normalized = Mathf.Clamp01(Mathf.InverseLerp(minZoom, DefaultZoomLevel, currentZoom));
             float spacingMultiplier = Mathf.Lerp(SpacingScaleAtMinZoom, 1f, normalized);
 

@@ -170,7 +170,7 @@ namespace Amanita.EditorUtils
 
             bool highlight = Selection.activeGameObject == view.gameObject;
 
-            var flowchart = FlowchartWindow.GetFlowchart();
+            var flowchart = EditorSelectionTracker.ActiveFlowchart;
             if (flowchart != null)
             {
                 var selectedCommands = flowchart.SelectedCommands;
