@@ -12,7 +12,7 @@ namespace Amanita.VScripting
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    public abstract class Command : MonoBehaviour, IVariableReference
+    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler
     {
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
@@ -36,6 +36,20 @@ namespace Amanita.VScripting
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
+        }
+
+        /// <summary>
+        /// For refreshing the Command's state so that things like var datas are stable
+        /// and won't lose data or references when copying/pasting or doing other editor operations.
+        /// </summary>
+        public virtual void Refresh()
+        {
+            RefreshForVarDataStability();
+        }
+
+        public virtual void OnPreCut()
+        {
+            Refresh();
         }
 
         private void RefreshForVarDataStability()

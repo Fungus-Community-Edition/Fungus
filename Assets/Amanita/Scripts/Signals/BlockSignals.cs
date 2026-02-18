@@ -30,6 +30,11 @@ namespace Amanita.VScripting
 
         public static Action<IList<Block>> MultiBlocksDeselected = delegate { };
 
+        public static Action<Block> PreBlockCut = delegate { };
+        public static Action<ushort> PostBlockCut = delegate { };
+
+        public static Action<IList<Block>> PreMultiBlockCut = delegate { };
+        public static Action<IList<ushort>> PostMultiBlockCut = delegate { };
         /// <summary>
         /// Sent just before a Block is deleted. This should only signal for when the user
         /// is deleting one Block at a time, not when they're deleting multiple at once.
@@ -85,6 +90,26 @@ namespace Amanita.VScripting
         {
             OnCommandExecute(block, command, commandIndex, maxCommandIndex);
         }
+    }
+
+    public interface IPreBlockCutResponder
+    {
+        void OnPreBlockCut(Block block);
+    }
+
+    public interface IPostBlockCutResponder
+    {
+        void OnPostBlockCut(ushort blockId);
+    }
+
+    public interface IPreMultiBlockCutResponder
+    {
+        void OnPreMultiBlockCut(IList<Block> blocks);
+    }
+
+    public interface IPostMultiBlockCutResponder
+    {
+        void OnPostMultiBlockCut(IList<ushort> blockIds);
     }
 
     public interface IBlockClickResponder

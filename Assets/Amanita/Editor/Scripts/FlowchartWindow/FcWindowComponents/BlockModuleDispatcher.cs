@@ -29,6 +29,11 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PostMultiBlockDelete += NotifyPostMultiBlockDeleted;
 
                 BlockSignals.BlocksCopied += NotifyBlocksCopied;
+
+                BlockSignals.PreBlockCut += NotifyPreBlockCut;
+                BlockSignals.PostBlockCut += NotifyPostBlockCut;
+                BlockSignals.PreMultiBlockCut += NotifyPreMultiBlockCut;
+                BlockSignals.PostMultiBlockCut += NotifyPostMultiBlockCut;
             }
             else
             {
@@ -47,8 +52,15 @@ namespace Amanita.VScripting.EditorUtils
                 BlockSignals.PostMultiBlockDelete -= NotifyPostMultiBlockDeleted;
 
                 BlockSignals.BlocksCopied -= NotifyBlocksCopied;
+
+                BlockSignals.PreBlockCut -= NotifyPreBlockCut;
+                BlockSignals.PostBlockCut -= NotifyPostBlockCut;
+                BlockSignals.PreMultiBlockCut -= NotifyPreMultiBlockCut;
+                BlockSignals.PostMultiBlockCut -= NotifyPostMultiBlockCut;
             }
         }
+
+
         public void AddModule(object module)
         {
             if (module is not IFlowchartWindowModule flowchartModule)
@@ -84,6 +96,11 @@ namespace Amanita.VScripting.EditorUtils
             AddResponder<IBlockDeselectionResponder>(module);
             AddResponder<IMultiBlockDeselectionResponder>(module);
 
+            AddResponder<IPreBlockCutResponder>(module);
+            AddResponder<IPreMultiBlockCutResponder>(module);
+            AddResponder<IPostBlockCutResponder>(module);
+            AddResponder<IPostMultiBlockCutResponder>(module);
+
             #endregion
         }
 
@@ -102,6 +119,11 @@ namespace Amanita.VScripting.EditorUtils
             RemoveResponder<IMultiBlockSelectionResponder>(module);
             RemoveResponder<IBlockDeselectionResponder>(module);
             RemoveResponder<IMultiBlockDeselectionResponder>(module);
+
+            RemoveResponder<IPreBlockCutResponder>(module);
+            RemoveResponder<IPreMultiBlockCutResponder>(module);
+            RemoveResponder<IPostBlockCutResponder>(module);
+            RemoveResponder<IPostMultiBlockCutResponder>(module);
 
             #endregion
 
@@ -122,6 +144,19 @@ namespace Amanita.VScripting.EditorUtils
         #region Notifiers
 
         #region Block Notifiers
+
+        public void NotifyPreBlockCut(Block block) =>
+            Broadcast<IPreBlockCutResponder>(res => res.OnPreBlockCut(block));
+
+        public void NotifyPreMultiBlockCut(IList<Block> blocks) =>
+            Broadcast<IPreMultiBlockCutResponder>(res => res.OnPreMultiBlockCut(blocks));
+
+        public void NotifyPostBlockCut(ushort blockId) =>
+            Broadcast<IPostBlockCutResponder>(res => res.OnPostBlockCut(blockId));
+
+        public void NotifyPostMultiBlockCut(IList<ushort> blockIds) =>
+            Broadcast<IPostMultiBlockCutResponder>(res => res.OnPostMultiBlockCut(blockIds));
+
         public void NotifyBlockCreated(Block block) =>
             Broadcast<IBlockCreatedResponder>(res => res.OnBlockCreated(block));
 

@@ -23,7 +23,8 @@ namespace Amanita.VScripting.EditorUtils
         IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
-        IMultiBlockDeselectionResponder, IBlockRectProvider
+        IMultiBlockDeselectionResponder, IBlockRectProvider,
+        IPostBlockCutResponder, IPostMultiBlockCutResponder
     {
         public int Priority { get; set; } = 0;
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
@@ -68,6 +69,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void OnUndoRedoPerformedFirst()
         {
+            ClearAll(); // Helps prevent some buttons from sticking around when they shouldn't.
             RefreshBlocks();
         }
 
@@ -556,6 +558,16 @@ namespace Amanita.VScripting.EditorUtils
         {
             ClearAll();
             RefreshBlocks();
+        }
+
+        public void OnPostBlockCut(ushort blockId)
+        {
+            OnPostBlockDeletion(blockId);
+        }
+
+        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        {
+            OnPostMultiBlockDeletion(blockIds);
         }
     }
 

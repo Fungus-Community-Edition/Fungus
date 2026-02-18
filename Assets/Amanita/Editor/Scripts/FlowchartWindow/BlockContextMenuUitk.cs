@@ -90,5 +90,6 @@ namespace Amanita.VScripting.EditorUtils
 
         public Block TargetBlock { get; set; }
         public FlowchartContext FlowchartContext { get; set; }
+
     }
 }

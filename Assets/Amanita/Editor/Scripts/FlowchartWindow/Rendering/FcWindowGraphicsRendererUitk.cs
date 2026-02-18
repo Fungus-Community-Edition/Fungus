@@ -12,7 +12,8 @@ namespace Amanita.VScripting.EditorUtils
         IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
-        ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
+        IPreBlockCutResponder, IPostBlockCutResponder, IPreMultiBlockCutResponder, IPostMultiBlockCutResponder
     {
         public int Priority { get; set; } = 0;
         public FcWindowGraphicsRendererUitk(FlowchartContext context, DrawGridContext gridDrawContext,
@@ -198,6 +199,26 @@ namespace Amanita.VScripting.EditorUtils
         public void OnBlockCreated(Block block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
+        }
+
+        public void OnPreBlockCut(Block block)
+        {
+            Forward<IPreBlockCutResponder>(r => r.OnPreBlockCut(block));
+        }
+
+        public void OnPostBlockCut(ushort blockId)
+        {
+            Forward<IPostBlockCutResponder>(r => r.OnPostBlockCut(blockId));
+        }
+
+        public void OnPreMultiBlockCut(IList<Block> blocks)
+        {
+            Forward<IPreMultiBlockCutResponder>(r => r.OnPreMultiBlockCut(blocks));
+        }
+
+        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        {
+            Forward<IPostMultiBlockCutResponder>(r => r.OnPostMultiBlockCut(blockIds));
         }
     }
 }

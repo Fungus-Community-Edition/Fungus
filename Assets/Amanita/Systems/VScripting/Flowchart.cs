@@ -26,7 +26,7 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable
     {
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
