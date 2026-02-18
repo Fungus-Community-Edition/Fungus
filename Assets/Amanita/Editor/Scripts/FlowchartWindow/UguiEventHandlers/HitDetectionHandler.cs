@@ -4,35 +4,6 @@ using UnityEngine;
 
 namespace Amanita.EditorUtils
 {
-    public class HitDetectionHandler : IUGUIEventHandler
-    {
-        public bool Handle(Event eventToHandle, FlowchartContext ctx)
-        {
-            bool weWantToReact = eventToHandle.MouseDown();
-            if (weWantToReact)
-            {
-                return OnMouseDown(eventToHandle, ctx);
-            }
-
-            return false;
-        }
-
-        protected virtual bool OnMouseDown(Event inputEvent, FlowchartContext flowchartCtx)
-        {
-            if (flowchartCtx == null)
-            {
-                return false;
-            }
-
-            flowchartCtx.Interaction.ResetSelectionBox();
-            Block blockHit = flowchartCtx.Document.TopmostBlockOverlapping(inputEvent.mousePosition);
-            flowchartCtx.Interaction.BlockHitInLastMouseDown = blockHit;
-
-            return false;
-            // Prep work only; other handlers still need the event.
-        }
-    }
-
     public class HitDetectionHandlerUitk : IFlowchartWindowModule, ILeftMouseDownResponder
     {
         public int Priority { get; set; } = 0;
@@ -96,7 +67,7 @@ namespace Amanita.EditorUtils
             isDisposed = true;
         }
 
-        void ILeftMouseDownResponder.OnLeftMouseDown(PointerEventInfo info)
+        public void OnLeftMouseDown(PointerEventInfo info)
         {
             OnMouseDown(info);
         }

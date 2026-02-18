@@ -192,8 +192,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
 #if UNITY_EDITOR
-            var flowchartFromWindow = FlowchartWindow.GetFlowchart();
-            TryRebindTo(flowchartFromWindow);
+            var fcFromTracker = EditorSelectionTracker.ActiveFlowchart;
+            TryRebindTo(fcFromTracker);
 #endif
         }
 

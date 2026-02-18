@@ -80,7 +80,7 @@ namespace Amanita.VScripting.EditorUtils
             // We assume that we are drawing as part of a Command's editor fields, and that
             // thus we have a Flowchart selected. We'll use that to find the variable instance.
             VariableReference reference = (VariableReference)prop.boxedValue;
-            reference.VarOwner = FlowchartWindow.GetFlowchart();
+            reference.VarOwner = EditorSelectionTracker.ActiveFlowchart;
             return reference.Variable;
         }
 

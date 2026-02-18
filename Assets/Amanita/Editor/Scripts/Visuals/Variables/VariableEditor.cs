@@ -332,7 +332,7 @@ namespace Amanita.VScripting.EditorUtils
 
             VariableEditor.VariableField(property, 
                                          label,
-                                         FlowchartWindow.GetFlowchart(),
+                                         EditorSelectionTracker.ActiveFlowchart,
                                          variableProperty.defaultText,
                                          ShouldBeAnOptionInTheDropdown,
                                          (lbl, idx, options) => EditorGUI.Popup(position, lbl, idx, options));

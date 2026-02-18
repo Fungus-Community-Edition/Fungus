@@ -76,7 +76,7 @@ namespace Amanita.VScripting.EditorUtils
             }
 
             // Flowchart is useful for listing vars, but do not force owner to it
-            Flowchart localFlowchart = FlowchartWindow.GetFlowchart();
+            Flowchart localFlowchart = EditorSelectionTracker.ActiveFlowchart;
             if (localFlowchart == null)
             {
                 GameObject selectedGo = Selection.activeGameObject;

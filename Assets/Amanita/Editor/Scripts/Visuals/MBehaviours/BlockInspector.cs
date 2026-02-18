@@ -38,7 +38,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             ClearEditors();
             var ammieManager = AmanitaManager.S;
-            Flowchart currentFc = FlowchartWindow.GetFlowchart();
+            Flowchart currentFc = EditorSelectionTracker.ActiveFlowchart;
             if (ammieManager != null && currentFc != null)
             {
                 Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
