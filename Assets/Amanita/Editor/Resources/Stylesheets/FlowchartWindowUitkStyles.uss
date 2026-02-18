@@ -1,8 +1,13 @@
-:root {
+:root 
+{
+    /* -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
     --fc-name-label-color: var(--unity-text-default-color);
 }
 
-.fcNameLabel {
+.fcNameLabel 
+{
+    -unity-font-definition: var(--main-font);
     font-size: 20px;
     font-weight: bold;
     margin-top: 10px;
@@ -12,7 +17,8 @@
     position: absolute;
 }
 
-.zoom-label {
+.zoom-label 
+{
     width: 160px;
     height: 50px;
     margin: 10px 10px 0 0;
@@ -23,3 +29,11 @@
     -unity-text-align: upper-right;
 }
 
+.var-display-editor
+{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    min-width: 400px;
+
+}

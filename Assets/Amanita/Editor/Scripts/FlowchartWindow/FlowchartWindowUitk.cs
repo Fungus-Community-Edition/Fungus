@@ -340,6 +340,7 @@ namespace Amanita.VScripting.EditorUtils
                 _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
 
                 _contextMenuManager = new FlowchartContextMenuManagerUitk();
+                _variablesPanel = new FcWindowVariablesPanelUitk();
             }
 
             RegisterModules();
@@ -350,6 +351,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 RegisterModule(_contextMenuManager);
                 RegisterModule(_inputDetector);
+                RegisterModule(_variablesPanel);
             }
 
             AttachUiElements();
@@ -367,6 +369,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 _inputDetector.Initialize(this);
                 _contextMenuManager.Initialize(this);
+                _variablesPanel.Initialize(this);
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
@@ -403,9 +406,9 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private FcWindowViewportHandlersUitk _viewportHandlers;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        
-        private FlowchartContextMenuManagerUitk _contextMenuManager;
 
+        private FlowchartContextMenuManagerUitk _contextMenuManager;
+        private FcWindowVariablesPanelUitk _variablesPanel;
         #endregion
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
@@ -563,6 +566,7 @@ namespace Amanita.VScripting.EditorUtils
 
             _inputDetector.Dispose();
             _contextMenuManager?.Dispose();
+            _variablesPanel?.Dispose();
         }
 
         void NullOutSubmodules()
@@ -570,6 +574,7 @@ namespace Amanita.VScripting.EditorUtils
             _graphicsRenderer = null;
             _viewportHandlers = null;
             _contextMenuManager = null;
+            _variablesPanel = null;
         }
 
         void NullOutVisualElements()
@@ -579,18 +584,5 @@ namespace Amanita.VScripting.EditorUtils
         #endregion
     }
 
-    internal interface IModuleDispatcher
-    {
-        void AddModule(object module);
-        void RemoveModule(object module);
-        void ClearModules();
-        void ToggleSubs(bool on);
-    }
-
-    internal interface IModuleDispatcher<T> : IModuleDispatcher
-    {
-        void AddModule(T module);
-        void RemoveModule(T module);
-
-    }
+    
 }

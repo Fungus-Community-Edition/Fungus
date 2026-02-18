@@ -295,7 +295,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 73907072}
-  - component: {fileID: 73907071}
   m_Layer: 0
   m_Name: _FungusState
   m_TagString: Untagged
@@ -303,20 +302,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &73907071
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 73907070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 1620115404}
-  lastSelectedFc: {fileID: 1789447538}
 --- !u!4 &73907072
 Transform:
   m_ObjectHideFlags: 1
@@ -1446,8 +1431,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 221
     y: 205
-    width: 300
-    height: 100
+    width: 60
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 21
@@ -1510,7 +1495,7 @@ MonoBehaviour:
     _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1620115399}
-    <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
+    <ScrollPos>k__BackingField: {x: 227.66022, y: -97.090515}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1
@@ -1609,14 +1594,14 @@ MonoBehaviour:
         key: firstMarkerID
         itemID: 3
         _ownerIdIndex: 0
-        value: first
+        value: firstToTheParty
     - rid: 846271704159223899
       type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: someColor
         itemID: 4
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
     - rid: 4605209356947947849
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1624,7 +1609,7 @@ MonoBehaviour:
         scope: 0
         key: Var
         itemID: 7
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 1.234
     - rid: 7903257792018382921
       type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1632,7 +1617,7 @@ MonoBehaviour:
         scope: 0
         key: vecTwoVar
         itemID: 5
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {x: 5, y: 24}
     - rid: 7903257792018382959
       type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1640,7 +1625,7 @@ MonoBehaviour:
         scope: 0
         key: vecThreeVar
         itemID: 6
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: {x: 0, y: 123, z: 0}
     - rid: 8107162614221504726
       type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1648,7 +1633,7 @@ MonoBehaviour:
         scope: 0
         key: afterFirstLoad
         itemID: 9
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 0
     - rid: 8107162708717338949
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1656,7 +1641,7 @@ MonoBehaviour:
         scope: 0
         key: timesLoaded
         itemID: 10
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 0
     - rid: 8107162708717339082
       type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1664,7 +1649,7 @@ MonoBehaviour:
         scope: 0
         key: secondLoad
         itemID: 11
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: 0
     - rid: 8107162709333639348
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
@@ -1672,7 +1657,7 @@ MonoBehaviour:
         scope: 0
         key: secondMarkerId
         itemID: 12
-        _ownerIdIndex: 0
+        _ownerIdIndex: -1
         value: secondsss
 --- !u!4 &1620115405
 Transform:
@@ -2043,8 +2028,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 208
     y: 376
-    width: 300
-    height: 100
+    width: 115
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 18
@@ -2530,8 +2515,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 425.33978
     y: 203.09052
-    width: 300
-    height: 100
+    width: 118
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 34
@@ -2584,6 +2569,7 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
+  targetBlockId: 34
 --- !u!114 &1620115446
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3049,6 +3035,7 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
+  targetBlockId: 52
 --- !u!114 &1620115461
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3065,8 +3052,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 646.3398
     y: 209.09052
-    width: 300
-    height: 100
+    width: 136
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 52
@@ -3468,8 +3455,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 26.339783
     y: 388.0905
-    width: 300
-    height: 100
+    width: 129
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 60
@@ -3558,8 +3545,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 392.33978
     y: 373.0905
-    width: 300
-    height: 100
+    width: 133
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 63
@@ -3730,8 +3717,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 716.3398
     y: 455.0905
-    width: 300
-    height: 100
+    width: 151
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 69
@@ -5110,7 +5097,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2788740156257821556, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
