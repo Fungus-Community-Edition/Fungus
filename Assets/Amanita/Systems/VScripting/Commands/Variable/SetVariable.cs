@@ -20,6 +20,10 @@ namespace Amanita.VScripting.Commands
         [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
         // ^Contains both the LHS variable reference and the RHS data
 
+#if UNITY_EDITOR
+        public override bool NonStandardPaste => true;
+#endif
+
         protected virtual void DoSetOperation()
         {
             if (anyVar.LhsVariable == null)

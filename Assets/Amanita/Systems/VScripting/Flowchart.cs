@@ -26,7 +26,7 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable
     {
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
@@ -163,13 +163,12 @@ namespace Amanita.VScripting
             {
                 // Weird for a Flowchart to have 0 Blocks... let's try to find some if
                 // we don't have any cached.
-                if (_blocks.Count == 0) 
+                if (_blockListCache.Count == 0) 
                 {
-                    var blocksFound = GetComponents<Block>();
-                    _blocks.AddRange(blocksFound);
+                    RefreshBlockAndCommandCache();
                 }
 
-                return _blocks;
+                return _blockListCache;
             }
         }
         public IReadOnlyCollection<Command> Commands => (IReadOnlyCollection<Command>)_commands;
@@ -189,9 +188,7 @@ namespace Amanita.VScripting
                 legacyVariables.AddRange(found);
             }
 
-            var blocksFound = GetComponents<Block>();
-            _blocks.AddRange(blocksFound);
-            _commands = GetComponents<Command>().ToList();
+            RefreshBlockAndCommandCache();
 
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
@@ -203,8 +200,32 @@ namespace Amanita.VScripting
             }
         }
 
-        [SerializeField] [HideInInspector] private HashSet<Block> _blocks = new HashSet<Block>();
-        [SerializeField] [HideInInspector] private IList<Command> _commands = new List<Command>();
+        private void RefreshBlockAndCommandCache()
+        {
+            _blockListCache ??= new List<Block>();
+            _blocks ??= new Dictionary<uint, Block>();
+            _commands ??= new List<Command>();
+            // ^Despite the initializers in this class, weird things can happen with Unity
+
+            _blockListCache.Clear();
+            _blocks.Clear();
+            _commands.Clear();
+
+            var blocksFound = GetComponents<Block>();
+            for (int i = 0; i < blocksFound.Length; i++)
+            {
+                var currentBlock = blocksFound[i];
+                _blockListCache.Add(currentBlock);
+                _blocks.Add(currentBlock.ItemId, currentBlock);
+            }
+            
+            var commandsFound = GetComponents<Command>();
+            _commands.AddRange(commandsFound);
+        }
+
+        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
+        private IDictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
+        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -392,22 +413,7 @@ namespace Amanita.VScripting
                 return;
             }
 
-            if (_blocks == null)
-            {
-                _blocks = new HashSet<Block>();
-            }
-            else
-            {
-                _blocks.Clear();
-            }
-
-            Block[] blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                _blocks.Add(blocks[i]);
-            }
-
-            _commands = GetComponents<Command>().ToList();
+            RefreshBlockAndCommandCache();
         }
 #endif
 
@@ -483,19 +489,19 @@ namespace Amanita.VScripting
             // Make sure item ids are unique and monotonically increasing.
             // This should always be the case, but some legacy Flowcharts may have issues.
             List<ushort> usedIds = new List<ushort>();
+            RefreshBlockAndCommandCache();
             CheckForBlocks();
             void CheckForBlocks()
             {
-                
-                var blocks = GetComponents<Block>();
-                for (ushort i = 0; i < blocks.Length; i++)
+                foreach (var blockEl in _blocks.Values)
                 {
-                    var block = blocks[i];
-                    if (block.ItemId == 0 || usedIds.Contains(block.ItemId))
+                    if (blockEl == null) continue;
+
+                    if (blockEl.ItemId == 0 || usedIds.Contains(blockEl.ItemId))
                     {
-                        block.ItemId = NextItemId();
+                        blockEl.ItemId = NextItemId();
                     }
-                    usedIds.Add(block.ItemId);
+                    usedIds.Add(blockEl.ItemId);
                 }
             }
             
@@ -503,14 +509,19 @@ namespace Amanita.VScripting
             void CheckForCommands()
             {
                 var commands = GetComponents<Command>();
-                for (ushort i = 0; i < commands.Length; i++)
+                foreach (Command commandEl in _commands)
                 {
-                    var command = commands[i];
-                    if (command.ItemId == 0 || usedIds.Contains(command.ItemId))
+                    if (commandEl == null)
                     {
-                        command.ItemId = NextItemId();
+                        Debug.LogWarning($"Found null Command while ensuring unique IDs.");
+                        continue;
                     }
-                    usedIds.Add(command.ItemId);
+
+                    if (commandEl.ItemId == 0 || usedIds.Contains(commandEl.ItemId))
+                    {
+                        commandEl.ItemId = NextItemId();
+                    }
+                    usedIds.Add(commandEl.ItemId);
                 }
             }
 
@@ -742,7 +753,7 @@ namespace Amanita.VScripting
             if (hideComponents)
             {
                 var blocks = _blocks;
-                foreach (var block in blocks)
+                foreach (var block in blocks.Values)
                 {
                     block.hideFlags = HideFlags.HideInInspector;
                     if (block.gameObject != gameObject)
@@ -951,7 +962,8 @@ namespace Amanita.VScripting
 #endif
             created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
-            _blocks.Add(created);
+            _blocks.Add(created.ItemId, created);
+            _blockListCache.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
         }
@@ -975,30 +987,20 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            foreach (var block in _blocks)
+            foreach (var blockEl in _blocks.Values)
             {
-                if (block.BlockName == blockName)
+                if (blockEl.BlockName == blockName)
                 {
-                    return block;
+                    return blockEl;
                 }
             }
 
             return null;
         }
 
-        public virtual Block FindBlockByItemId(int itemId)
+        public virtual Block FindBlockByItemId(uint itemId)
         {
-            Block result = null;
-
-            foreach (var blockEl in _blocks)
-            {
-                if (blockEl.ItemId == itemId)
-                {
-                    result = blockEl;
-                    break;
-                }
-            }
-
+            _blocks.TryGetValue(itemId, out Block result);
             return result;
         }
 
@@ -1944,11 +1946,41 @@ namespace Amanita.VScripting
 #if UNITY_EDITOR
         public T AddCommand<T>(Block toAddTo) where T : Command
         {
-            Undo.RecordObject(this, "Add Command");
-            var added = this.gameObject.AddComponent<T>();
-            EditorUtility.SetDirty(this);
+            return AddCommand(typeof(T), toAddTo) as T;
+        }
+
+        public Command AddCommand(Type commandType, Block toAddTo)
+        {
+            if (!typeof(Command).IsAssignableFrom(commandType))
+            {
+                Debug.LogError($"AddCommand: {commandType} does not inherit from Command.");
+                return null;
+            }
+
+            // Record the Flowchart because we're about to modify its internal _commands list
+            Undo.RecordObject(this, $"Add {commandType.Name} Command");
+
+            // Record the GameObject because we're adding a component to it
+            Undo.RecordObject(this.gameObject, $"Add {commandType.Name} Command Component");
+
+            // Create the component with Undo support
+            var added = Undo.AddComponent(this.gameObject, commandType) as Command;
+
+            if (added == null)
+            {
+                Debug.LogError($"AddCommand: Failed to add component of type {commandType}.");
+                return null;
+            }
+
+            // Update Flowchart's internal list
             _commands.Add(added);
+
+            // Update the Block's list
             toAddTo.CommandList.Add(added);
+
+            // Mark Flowchart dirty so Unity saves the change
+            EditorUtility.SetDirty(this);
+
             return added;
         }
 
@@ -1974,10 +2006,8 @@ namespace Amanita.VScripting
         /// </summary>
         public void RemoveBlock(Block toUnregister)
         {
-            if (_blocks.Contains(toUnregister))
-            {
-                _blocks.Remove(toUnregister);
-            }
+            _blocks.Remove(toUnregister.ItemId);
+            _blockListCache.Remove(toUnregister);
         }
 
 #endif
