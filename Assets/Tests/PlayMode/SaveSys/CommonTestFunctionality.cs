@@ -498,7 +498,6 @@ namespace SaveSystemTests
 
         protected virtual void UnregisterTestOnlyUids()
         {
-            var fcUidRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
             foreach (var fc in testOnlyFlowcharts)
             {
                 fc.OnTearDown();
@@ -509,9 +508,6 @@ namespace SaveSystemTests
                 fc.OnTearDown();
             }
 
-            var vsaRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-            foreach (var vsa in testOnlyVarSourceAssets)
-                vsaRegistry.RemoveGuid(vsa.UniqueId);
         }
 
         // ---- Save File Deletion ----

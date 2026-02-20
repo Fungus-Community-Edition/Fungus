@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public static class BlockHitTester
     {
@@ -84,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils
         {
             rect = default;
 
-            FlowchartWindowUitk window = FlowchartWindowUitk.S;
+            FlowchartWindow window = FlowchartWindow.S;
             if (window == null)
             {
                 return false;
@@ -96,7 +96,7 @@ namespace Amanita.VScripting.EditorUtils
                 return false;
             }
 
-            BlockRendererUitk renderer = root.Q<BlockRendererUitk>();
+            BlockRenderer renderer = root.Q<BlockRenderer>();
             if (renderer == null || !renderer.TryGetBlockRect(block, out Rect localRect))
             {
                 return false;

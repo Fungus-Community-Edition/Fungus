@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Handles when to get the new flowchart window to repaint.
@@ -12,7 +12,7 @@ namespace Amanita.VScripting.EditorUtils
         IPostBlockDeletionResponder
     {
         public int Priority { get; set; } = 0;
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             if (window == null)
             {
@@ -23,7 +23,7 @@ namespace Amanita.VScripting.EditorUtils
             isDisposed = false;
         }
 
-        private FlowchartWindowUitk owner;
+        private FlowchartWindow owner;
         private bool isDisposed;
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)

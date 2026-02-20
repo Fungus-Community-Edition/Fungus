@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public sealed class BlockModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>
     {

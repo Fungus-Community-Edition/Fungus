@@ -442,11 +442,6 @@ namespace Amanita.VScripting
         {
             StopAllBlocks();
             StopAllCoroutines();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
             FlowchartSignals.FlowchartDisabled(this);
@@ -744,6 +739,12 @@ namespace Amanita.VScripting
         public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
 
         public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+
+        public void DeselectAll()
+        {
+            UIModel.ClearSelectedBlocks();
+            UIModel.ClearSelectedCommands();
+        }
 
         /// <summary>
         /// Set the block objects to be hidden or visible depending on the hideComponents property.
@@ -1923,8 +1924,6 @@ namespace Amanita.VScripting
 
         public virtual void OnTearDown()
         {
-            GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-            fcReg.RemoveGuid(this.UniqueId);
         }
 
 #endif

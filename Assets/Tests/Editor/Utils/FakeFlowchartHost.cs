@@ -6,6 +6,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityEngine.UIElements;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace Amanita.EditorUtils
 {
@@ -30,8 +31,8 @@ namespace Amanita.EditorUtils
             inputSignals.Initialize(window);
 
             blockDrawer = new FakeBlockDrawerUitk();
-            graphicsRenderer = new FcWindowGraphicsRendererUitk(FlowchartCtx, DrawGridCtx, blockDrawer);
-            viewportHandlers = new FcWindowViewportHandlersUitk(FlowchartCtx, FlowchartWindowUitk.Config.MinZoom, FlowchartWindowUitk.Config.MaxZoom);
+            graphicsRenderer = new FcWindowGraphicsRenderer(FlowchartCtx, DrawGridCtx, blockDrawer);
+            viewportHandlers = new MainViewportManager(FlowchartCtx, FlowchartWindow.Config.MinZoom, FlowchartWindow.Config.MaxZoom);
 
             rootVisualElement.Add(graphicsRenderer);
 
@@ -198,14 +199,14 @@ namespace Amanita.EditorUtils
         public VisualElement RootVisualElement => rootVisualElement;
         private VisualElement rootVisualElement;
 
-        public FcWindowGraphicsRendererUitk GraphicsRenderer => graphicsRenderer;
-        public FcWindowViewportHandlersUitk ViewportHandlers => viewportHandlers;
-        public InputSignalModuleUitk InputSignals => inputSignals;
+        public FcWindowGraphicsRenderer GraphicsRenderer => graphicsRenderer;
+        public MainViewportManager ViewportHandlers => viewportHandlers;
+        public InputSignalModule InputSignals => inputSignals;
 
-        private FlowchartWindowUitk window;
-        private FcWindowGraphicsRendererUitk graphicsRenderer;
-        private FcWindowViewportHandlersUitk viewportHandlers;
-        private InputSignalModuleUitk inputSignals;
+        private FlowchartWindow window;
+        private FcWindowGraphicsRenderer graphicsRenderer;
+        private MainViewportManager viewportHandlers;
+        private InputSignalModule inputSignals;
         private IBlockDrawerUitk blockDrawer;
 
         private sealed class FakeBlockDrawerUitk : IBlockDrawerUitk
@@ -220,7 +221,7 @@ namespace Amanita.EditorUtils
             }
         }
 
-        private sealed class TestFlowchartWindowUitk : FlowchartWindowUitk
+        private sealed class TestFlowchartWindowUitk : FlowchartWindow
         {
             protected override void OnEnable()
             {
@@ -237,7 +238,7 @@ namespace Amanita.EditorUtils
 
         private static void EnsureWindowConfig()
         {
-            if (FlowchartWindowUitk.Config != null)
+            if (FlowchartWindow.Config != null)
             {
                 return;
             }
@@ -248,7 +249,7 @@ namespace Amanita.EditorUtils
 
         private static void SetStaticConfig(FlowchartWindowConfig config)
         {
-            PropertyInfo property = typeof(FlowchartWindowUitk).GetProperty("Config",
+            PropertyInfo property = typeof(FlowchartWindow).GetProperty("Config",
                 BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
             if (property != null)
@@ -257,15 +258,15 @@ namespace Amanita.EditorUtils
                 return;
             }
 
-            FieldInfo field = typeof(FlowchartWindowUitk).GetField("<Config>k__BackingField",
+            FieldInfo field = typeof(FlowchartWindow).GetField("<Config>k__BackingField",
                 BindingFlags.Static | BindingFlags.NonPublic);
 
             field?.SetValue(null, config);
         }
 
-        private static void SetWindowContext(FlowchartWindowUitk targetWindow, FlowchartContext context)
+        private static void SetWindowContext(FlowchartWindow targetWindow, FlowchartContext context)
         {
-            FieldInfo field = typeof(FlowchartWindowUitk).GetField("_fcContext",
+            FieldInfo field = typeof(FlowchartWindow).GetField("_fcContext",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
             field?.SetValue(targetWindow, context);

@@ -8,6 +8,7 @@ using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
 using UnityObj = UnityEngine.Object;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {
@@ -21,13 +22,13 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Selection.activeGameObject = flowchart.gameObject;
             EditorSelectionTracker.ResolveActiveFlowchart();
 
-            window = ScriptableObject.CreateInstance<FlowchartWindowUitk>();
+            window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
             SetWindowContext(window, ctx);
 
-            hitDetector = new HitDetectionHandlerUitk();
+            hitDetector = new HitDetector();
             selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
-            blockDragHandler = new BlockDragHandlerUitk(ctx);
-            singleClickSelector = new SingleClickBlockSelector(ctx);
+            blockDragHandler = new BlockDragHandler(ctx);
+            singleClickSelector = new Amanita.VScripting.EditorUtils.FcWindow.SingleSelectionHandler(ctx);
 
             hitDetector.Initialize(window);
             selectionBoxTracker.Initialize(window);
@@ -60,16 +61,16 @@ namespace VScriptingTests.FCWindowOperations.Integration
         protected Event mouseButtonReleased;
         protected Vector2 dragDelta = new Vector2(5, 7);
 
-        private HitDetectionHandlerUitk hitDetector;
+        private HitDetector hitDetector;
         private SelectionBoxDragTrackerUitk selectionBoxTracker;
-        private BlockDragHandlerUitk blockDragHandler;
-        private SingleClickBlockSelector singleClickSelector;
-        private FlowchartWindowUitk window;
+        private BlockDragHandler blockDragHandler;
+        private Amanita.VScripting.EditorUtils.FcWindow.SingleSelectionHandler singleClickSelector;
+        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
 
-        private static void SetWindowContext(FlowchartWindowUitk targetWindow, FlowchartContext context)
+        private static void SetWindowContext(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow targetWindow, FlowchartContext context)
         {
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            FieldInfo field = typeof(FlowchartWindowUitk).GetField("_fcContext", flags);
+            FieldInfo field = typeof(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow).GetField("_fcContext", flags);
             field.SetValue(targetWindow, context);
         }
 

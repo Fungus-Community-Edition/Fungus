@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {
@@ -15,8 +16,8 @@ namespace VScriptingTests.FlowchartWindow.Modules
         private GameObject selectionObject;
         private Flowchart flowchart;
         private FlowchartContext context;
-        private FlowchartWindowUitk window;
-        private SingleClickBlockSelector syncer;
+        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
+        private SingleSelectionHandler syncer;
         private GameObject previousSelection;
 
         [SetUp]
@@ -33,8 +34,8 @@ namespace VScriptingTests.FlowchartWindow.Modules
             context = new FlowchartContext();
             context.Flowchart = flowchart;
 
-            window = ScriptableObject.CreateInstance<FlowchartWindowUitk>();
-            syncer = new SingleClickBlockSelector(context);
+            window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
+            syncer = new SingleSelectionHandler(context);
             syncer.Initialize(window);
 
             destroyOnTearDown.Add(flowchartObject);

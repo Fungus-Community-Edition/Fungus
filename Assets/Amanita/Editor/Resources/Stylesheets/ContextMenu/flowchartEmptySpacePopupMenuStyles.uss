@@ -1,0 +1,120 @@
+:root
+{
+    --main-font: resource('Fonts/Exo2/Exo2-Regular');
+    -unity-font-definition: var(--main-font);
+
+    height: 85px;
+    width: 140px;
+
+    /* Add button colors */
+    --add-light: #7EE8A6;
+    --add-dark: #6BD893;
+
+    /* Paste button colors */
+    --paste-light: #F4D06F;
+    --paste-dark: #E6C45F;
+
+    --hover-size: 1.1;
+    --normal-border-radius: 6px;
+    --hover-border-radius: 10px;
+
+    --disabled-opacity: 0.45;
+
+    --default-shadow-color: rgba(0,0,0,0.45);
+    --hover-shadow-color: rgba(0,0,0,0.65);
+}
+
+.popup-pill
+{
+    min-width: 130px;
+    flex-grow: 1;
+    height: 35px;
+    padding: 0;
+    padding-bottom: 3px;
+    border-radius: var(--normal-border-radius);
+    flex-direction: row;
+    align-items: center;
+    background-image: none;
+    -unity-background-image-tint-color: transparent;
+
+    transition-property: scale, border-radius;
+    transform-origin: center;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+
+    margin: 0px 0px 3px 0px;
+
+    /* Faux shadow */
+    border-bottom-width: 3px;
+    border-bottom-color: var(--default-shadow-color);
+}
+
+.popup-pill:hover
+{
+    scale: var(--hover-size);
+    border-radius: var(--hover-border-radius);
+
+    /* Stronger shadow */
+    /* border-bottom-color: var(--hover-shadow-color); */
+}
+
+.popup-pill:active
+{
+    background-color: var(--active-color);
+
+    /* Pressed = no shadow */
+    border-bottom-width: 0;
+    padding-bottom: 0;
+}
+
+.popup-pill:disabled
+{
+    opacity: var(--disabled-opacity);
+    scale: 1.0;
+}
+
+/* INNER ELEMENT — faux gradient */
+.pill-inner
+{
+    flex-grow: 1;
+    height: auto;
+    align-self: stretch;
+    border-radius: var(--normal-border-radius);
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    color: black;
+
+    -unity-font-style: bold;
+}
+
+/* ADD BUTTON COLORS */
+.add-button .pill-inner
+{
+    background-color: var(--add-light);
+    border-bottom-width: 3px;
+    border-bottom-color: var(--add-dark);
+}
+
+/* PASTE BUTTON COLORS */
+.paste-button .pill-inner
+{
+    background-color: var(--paste-light);
+    border-bottom-width: 3px;
+    border-bottom-color: var(--paste-dark);
+}
+
+.bg-panel
+{
+    background-color: #3A2F28;
+    border-radius: var(--normal-border-radius);
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+    align-items: center;
+    flex-direction: column;
+    border-color: rgba(170,170, 170, 1);
+    border-width: 2px;
+    justify-content: center;
+}
+

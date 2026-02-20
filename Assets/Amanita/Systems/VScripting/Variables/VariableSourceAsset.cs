@@ -417,11 +417,6 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             EditorOnDisable();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
             VsaSignals.VsaDisabled(this);
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Handles setting up the selection box during left-mouse drag operations. This does NOT draw the box;
@@ -21,7 +21,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private readonly FlowchartContext fcContext;
         
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             if (window == null)
             {
@@ -136,8 +136,8 @@ namespace Amanita.VScripting.EditorUtils
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;
             _shouldTrack = false;
-            Debug.Log($"Box selection ended at {info.FlowchartPosition}");
-            Debug.Log($"Zoom: {fcContext.Flowchart.Zoom}, ScrollPos: {fcContext.Flowchart.ScrollPos}");
+            //Debug.Log($"Box selection ended at {info.FlowchartPosition}");
+            //Debug.Log($"Zoom: {fcContext.Flowchart.Zoom}, ScrollPos: {fcContext.Flowchart.ScrollPos}");
         }
 
         /// <summary>

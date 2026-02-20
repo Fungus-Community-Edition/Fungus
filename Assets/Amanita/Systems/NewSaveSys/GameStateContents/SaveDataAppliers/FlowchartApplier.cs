@@ -63,7 +63,8 @@ namespace Amanita.SaveSys
             Flowchart flowchart = null;
 
             bool flowchartFound = false;
-            string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.";
+            string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name " +
+                $"{saveData.FlowchartName} not found.";
             bool onMainThread = UnityThreadUtil.IsMainThread;
             void MainOperation()
             {
@@ -205,11 +206,16 @@ namespace Amanita.SaveSys
             // If empty, (re)build the cache; include inactive flowcharts
             if (allFlowcharts.Count == 0)
             {
-                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None).ToList();
+                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, 
+                    FindObjectsSortMode.None).ToList();
 
             }
 
-            flowchart = FindFlowchartById(saveData.UniqueId) ?? FindFlowchartByName(saveData.FlowchartName);
+            flowchart = FindFlowchartById(saveData.UniqueId);
+            if (flowchart == null)
+            {
+                FindFlowchartByName(saveData.FlowchartName);
+            }
             return flowchart != null;
         }
 

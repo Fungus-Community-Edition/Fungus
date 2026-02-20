@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using Amanita.EditorUtils;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -39,7 +40,7 @@ namespace VScriptingTests.FCWindowOperations
         Block _insideBlock;
         Block _outsideBlock;
         FakeDrawer _drawer;
-        BlockRendererUitk _renderer;
+        BlockRenderer _renderer;
 
         [SetUp]
         public void SetUp()
@@ -67,7 +68,7 @@ namespace VScriptingTests.FCWindowOperations
 
             // 4) Test double + renderer under test
             _drawer = new FakeDrawer();
-            _renderer = new BlockRendererUitk(_flowchartCtx, _drawer);
+            _renderer = new BlockRenderer(_flowchartCtx, _drawer);
         }
 
         [TearDown]

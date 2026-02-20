@@ -5,6 +5,7 @@ using Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {
@@ -12,7 +13,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
     {
         private readonly IList<UnityObj> toDestroy = new List<UnityObj>();
         private FlowchartContext context;
-        private FlowchartWindowUitk windowStub;
+        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow windowStub;
         private ScrollPosResetter resetter;
         private Flowchart flowchart;
 
@@ -122,7 +123,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
                 shift = shift
             };
 
-        private sealed class TestFlowchartWindow : FlowchartWindowUitk
+        private sealed class TestFlowchartWindow : Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow
         {
             private new void OnEnable() { }
             private new void OnDisable() { }
