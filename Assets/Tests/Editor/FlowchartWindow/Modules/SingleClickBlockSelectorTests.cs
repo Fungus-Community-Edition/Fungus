@@ -95,8 +95,8 @@ namespace VScriptingTests.FlowchartWindow.Modules
 
             flowchart.SelectedBlock = block;
             flowchart.SelectedCommands = new List<Command> { command };
-
-            syncer.OnBlockClicked(null, null);
+            Event dummyEvent = new Event();
+            syncer.OnBlockClicked(null, dummyEvent);
 
             Assert.That(flowchart.SelectedBlock, Is.Null);
             Assert.That(flowchart.SelectedCommandCount, Is.EqualTo(0));

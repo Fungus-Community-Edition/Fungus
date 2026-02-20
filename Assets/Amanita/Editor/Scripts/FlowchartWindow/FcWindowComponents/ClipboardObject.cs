@@ -59,7 +59,8 @@ namespace Amanita.EditorUtils
 
         internal sealed class ObjectReferenceSnapshot
         {
-            public ObjectReferenceSnapshot(string propertyPath, ushort blockId, string blockName, string flowchartId)
+            public ObjectReferenceSnapshot(string propertyPath, ushort blockId, string blockName, 
+                string flowchartId)
             {
                 PropertyPath = propertyPath;
                 BlockId = blockId;
