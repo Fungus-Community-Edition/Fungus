@@ -17,7 +17,7 @@ namespace Amanita.VScripting.EditorUtils
         private const float PaddingX = 18f;
         private const float PaddingY = 10f;
         private const float DefaultHeight = 40f;
-        private const float BaseFontSize = 12f;
+        private const float BaseFontSize = 16f;
         public static readonly string BaseClass = "flowchartBlock";
         public static readonly string SelectedClass = "flowchartBlockSelected";
 
@@ -165,4 +165,8 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
+    public interface IBlockDrawer
+    {
+        void Draw(Block toDraw, DrawBlockContext drawCtx);
+    }
 }

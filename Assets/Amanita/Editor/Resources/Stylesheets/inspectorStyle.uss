@@ -1,6 +1,6 @@
 :root
 {
-	--main-font: resource('Fonts/Exo2/Exo2-Regular');
+	--main-font: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
 	--dark-mode-text-color: rgb(230, 230, 230);
 	--dark-mode-text-bg-color: rgb(26, 26, 26);
 	--text-field-font-size: 14px;

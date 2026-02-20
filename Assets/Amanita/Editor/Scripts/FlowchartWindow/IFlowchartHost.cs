@@ -18,6 +18,7 @@ namespace Amanita.VScripting.EditorUtils
         void Repaint();
         T GetComponent<T>() where T : IFcWindowComponent;
         Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks);
+        VisualElement RootVisualElement { get; }
     }
 
     /// <summary>
@@ -26,14 +27,13 @@ namespace Amanita.VScripting.EditorUtils
     public interface IFlowchartViewHost : IFlowchartHostCore
     {
         Rect CalcFlowchartWindowViewRect();
-        Color GridLineColor { get; }
 
         DrawGridContext DrawGridCtx { get; }
         DrawBlockContext DrawBlockCtx { get; }
         FlowchartContext FlowchartCtx { get; }
         IReadOnlyCollection<Block> Blocks { get; }
         Rect Position { get; }
-        VisualElement RootVisualElement { get; }
+        
         void DoZoom(float delta, Vector2 center);
         void CenterFlowchart();
         void SelectBlock(Block block);

@@ -291,10 +291,7 @@ namespace Amanita.VScripting.EditorUtils
             PrepClipboard();
             void PrepClipboard()
             {
-                if (Clipboard == null)
-                {
-                    Clipboard = new AmanitaClipboard(this);
-                }
+                Clipboard ??= new AmanitaClipboard(this);
             }
 
             PrepFcContext();
@@ -328,7 +325,10 @@ namespace Amanita.VScripting.EditorUtils
             void PrepZoomLabel()
             {
                 _zoomAmountLabel = UxmlRoot.Q<UitkLabel>("ZoomLabel");
-                OnZoomChanged(_fcContext.Flowchart?.Zoom ?? 1f);
+                var newZoom = _fcContext.Flowchart != null ? 
+                    _fcContext.Flowchart.Zoom : 
+                    1f;
+                OnZoomChanged(newZoom);
             }
 
             EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
@@ -336,10 +336,13 @@ namespace Amanita.VScripting.EditorUtils
             CreateModules();
             void CreateModules()
             {
-                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
-                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
+                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, 
+                    _blockDrawer);
+                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, 
+                    Config.MaxZoom);
 
                 _contextMenuManager = new FlowchartContextMenuManagerUitk();
+                _variablesPanel = new FcWindowVariablesPanelUitk();
             }
 
             RegisterModules();
@@ -350,6 +353,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 RegisterModule(_contextMenuManager);
                 RegisterModule(_inputDetector);
+                RegisterModule(_variablesPanel);
             }
 
             AttachUiElements();
@@ -367,6 +371,7 @@ namespace Amanita.VScripting.EditorUtils
 
                 _inputDetector.Initialize(this);
                 _contextMenuManager.Initialize(this);
+                _variablesPanel.Initialize(this);
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
@@ -403,9 +408,9 @@ namespace Amanita.VScripting.EditorUtils
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
         private FcWindowViewportHandlersUitk _viewportHandlers;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
-        
-        private FlowchartContextMenuManagerUitk _contextMenuManager;
 
+        private FlowchartContextMenuManagerUitk _contextMenuManager;
+        private FcWindowVariablesPanelUitk _variablesPanel;
         #endregion
         public InputSignalModuleUitk InputSignals => _inputDetector;
 
@@ -416,6 +421,19 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _missingOverlay ??= new MissingFlowchartOverlay(OnRefreshButtonClicked);
                 return _missingOverlay;
+            }
+        }
+
+        public VisualElement RootVisualElement
+        {
+            get
+            {
+                if (_s == null)
+                {
+                    return null;
+                }
+
+                return UxmlRoot;
             }
         }
 
@@ -563,6 +581,7 @@ namespace Amanita.VScripting.EditorUtils
 
             _inputDetector.Dispose();
             _contextMenuManager?.Dispose();
+            _variablesPanel?.Dispose();
         }
 
         void NullOutSubmodules()
@@ -570,6 +589,7 @@ namespace Amanita.VScripting.EditorUtils
             _graphicsRenderer = null;
             _viewportHandlers = null;
             _contextMenuManager = null;
+            _variablesPanel = null;
         }
 
         void NullOutVisualElements()
@@ -579,18 +599,5 @@ namespace Amanita.VScripting.EditorUtils
         #endregion
     }
 
-    internal interface IModuleDispatcher
-    {
-        void AddModule(object module);
-        void RemoveModule(object module);
-        void ClearModules();
-        void ToggleSubs(bool on);
-    }
-
-    internal interface IModuleDispatcher<T> : IModuleDispatcher
-    {
-        void AddModule(T module);
-        void RemoveModule(T module);
-
-    }
+    
 }

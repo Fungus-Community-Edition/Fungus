@@ -2,9 +2,12 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
+using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {
@@ -15,34 +18,103 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             base.SetUp();
 
-            pipeline = new FlowchartWindowInputHandler(
-                new HitDetectionHandler(),
-                new SingleSelectionHandler(),
-                new BoxSelectionHandler(),
-                new BlockDragHandler()
-            );
+            Selection.activeGameObject = flowchart.gameObject;
+            EditorSelectionTracker.ResolveActiveFlowchart();
+
+            window = ScriptableObject.CreateInstance<FlowchartWindowUitk>();
+            SetWindowContext(window, ctx);
+
+            hitDetector = new HitDetectionHandlerUitk();
+            selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
+            blockDragHandler = new BlockDragHandlerUitk(ctx);
+            singleClickSelector = new SingleClickBlockSelector(ctx);
+
+            hitDetector.Initialize(window);
+            selectionBoxTracker.Initialize(window);
+            blockDragHandler.Initialize(window);
+            singleClickSelector.Initialize(window);
 
             mouseButtonReleased = new Event { type = EventType.MouseUp, button = MouseButton.Left };
             mouseDrag = new Event { type = EventType.MouseDrag, button = MouseButton.Left, delta = dragDelta };
         }
 
+        [TearDown]
+        public override void TearDown()
+        {
+            hitDetector?.Dispose();
+            selectionBoxTracker?.Dispose();
+            blockDragHandler?.Dispose();
+            singleClickSelector?.Dispose();
+
+            if (window != null)
+            {
+                UnityObj.DestroyImmediate(window);
+                window = null;
+            }
+
+            Selection.activeGameObject = null;
+
+            base.TearDown();
+        }
+
         protected Event mouseButtonReleased;
         protected Vector2 dragDelta = new Vector2(5, 7);
 
-        /// <summary>
-        /// Simulates the "pre-pass" hit test done on MouseDown only.
-        /// </summary>
-        void PrePassHitTest(Event e)
+        private HitDetectionHandlerUitk hitDetector;
+        private SelectionBoxDragTrackerUitk selectionBoxTracker;
+        private BlockDragHandlerUitk blockDragHandler;
+        private SingleClickBlockSelector singleClickSelector;
+        private FlowchartWindowUitk window;
+
+        private static void SetWindowContext(FlowchartWindowUitk targetWindow, FlowchartContext context)
         {
-            var interaction = ctx.Interaction;
-            var document = ctx.Document;
-            if (e.type == EventType.MouseDown)
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            FieldInfo field = typeof(FlowchartWindowUitk).GetField("_fcContext", flags);
+            field.SetValue(targetWindow, context);
+        }
+
+        private static PointerEventInfo CreatePointerInfo(Vector2 position, Vector2 delta)
+        {
+            return new PointerEventInfo(position, position, delta, delta);
+        }
+
+        private void HandleLeftMouseDown(Vector2 position, Event evt)
+        {
+            PointerEventInfo info = CreatePointerInfo(position, Vector2.zero);
+            hitDetector.OnLeftMouseDown(info);
+
+            if (ctx.Interaction.BlockHitInLastMouseDown == null)
             {
-                interaction.BlockHitInLastMouseDown = document.TopmostBlockOverlapping(e.mousePosition);
-                // reset marquee on down
-                interaction.SelectionBox = Rect.zero;
-                interaction.SelectionBoxDragOngoing = false;
-                interaction.BlockDragOngoing = false;
+                selectionBoxTracker.OnEmptySpaceLeftMouseDown(info, evt);
+            }
+        }
+
+        private void HandleLeftMouseDrag(Vector2 startPosition, Vector2 currentPosition, 
+            Vector2 delta, Event evt)
+        {
+            PointerEventInfo dragStartInfo = CreatePointerInfo(startPosition, Vector2.zero);
+            selectionBoxTracker.OnLeftMouseDragStarted(dragStartInfo, evt);
+            blockDragHandler.OnLeftMouseDragStarted(dragStartInfo, evt);
+
+            PointerEventInfo dragInfo = CreatePointerInfo(currentPosition, delta);
+            selectionBoxTracker.OnLeftMouseDragged(dragInfo, evt);
+            blockDragHandler.OnLeftMouseDragged(dragInfo, evt);
+        }
+
+        private void HandleLeftMouseDragEnd(Vector2 position, Event evt)
+        {
+            PointerEventInfo info = CreatePointerInfo(position, Vector2.zero);
+            selectionBoxTracker.OnLeftMouseDragEnded(info, evt);
+        }
+
+        private void HandleLeftMouseUp(Vector2 position, Event evt)
+        {
+            PointerEventInfo info = CreatePointerInfo(position, Vector2.zero);
+            blockDragHandler.OnLeftMouseUp(info, evt);
+
+            if (ctx.Interaction.BlockHitInLastMouseDown == null)
+            {
+                selectionBoxTracker.OnEmptySpaceLeftMouseUp(info, evt);
             }
         }
 
@@ -53,10 +125,9 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Vector2 baseBlockPos = initBlockPositions[blockIndex];
             Block targetBlock = blocks[blockIndex];
             mouseDown.mousePosition = initBlockPositions[blockIndex];
-            PrePassHitTest(mouseDown);
 
-            bool downConsumed = pipeline.Process(mouseDown, ctx);
-            Assert.IsTrue(downConsumed, "Should consume MouseDown on selected block");
+            HandleLeftMouseDown(baseBlockPos, mouseDown);
+            singleClickSelector.OnBlockClicked(targetBlock, mouseDown);
 
             // block should now be selected and drag able to begin
             var selection = ctx.Selection;
@@ -67,14 +138,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
                 "Intended block wasn't the last one hit in mouse down");
 
             // 2) MouseDrag moves the block
-            DragTheBlock();
-            void DragTheBlock()
-            {
-                mouseDrag.mousePosition = baseBlockPos; // drag from that same initial pos
-                PrePassHitTest(mouseDrag);             // no-op for drag
-                bool dragConsumed = pipeline.Process(mouseDrag, ctx);
-                Assert.IsTrue(dragConsumed, "Drag event should be consumed");
-            }
+            HandleLeftMouseDrag(baseBlockPos, baseBlockPos, dragDelta, mouseDrag);
 
             // Expected movement = delta / zoom (zoom=1)
             Vector2 expected = baseBlockPos + dragDelta;
@@ -83,12 +147,12 @@ namespace VScriptingTests.FCWindowOperations.Integration
             
             // 3) MouseUp finalizes & clears drag
             mouseButtonReleased.mousePosition = expected;
-            PrePassHitTest(mouseButtonReleased);
-            bool upConsumed = pipeline.Process(mouseButtonReleased, ctx);
-            Assert.IsTrue(upConsumed, "MouseUp should be consumed to end drag");
+            HandleLeftMouseDragEnd(expected, mouseButtonReleased);
+            HandleLeftMouseUp(expected, mouseButtonReleased);
 
             // After up, no BlockDragOngoing and DragBlock == null
             Assert.IsFalse(interaction.BlockDragOngoing, "DragOngoing should be cleared");
+            Assert.IsNull(interaction.RootBlockToDrag, "Drag block should be cleared");
         }
 
         static IEnumerable<int> BlockIndices()
@@ -103,14 +167,9 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Block targetBlock = blocks[0];
             Vector2 initBlockPos = initBlockPositions[0];
             mouseDown.mousePosition = initBlockPos;
-            PrePassHitTest(mouseDown);
 
-            bool downConsumed = pipeline.Process(mouseDown, ctx);
-
-            // SingleSelectionHandler will clear+re-add, so it will select it
-            // But BoxSelectionHandler ignores it, then BlockDragHandler should register it as
-            // draggable
-            Assert.IsTrue(downConsumed, "MouseDown should be consumed for selection");
+            HandleLeftMouseDown(initBlockPos, mouseDown);
+            singleClickSelector.OnBlockClicked(targetBlock, mouseDown);
 
             // Deselect for this test
             flowchart.ClearSelectedBlocks();
@@ -119,38 +178,37 @@ namespace VScriptingTests.FCWindowOperations.Integration
             interaction.RootBlockToDrag = null;
 
             // Now mouseDrag: no block selected so no drag
-            mouseDrag.mousePosition = initBlockPos;
-            PrePassHitTest(mouseDrag);
-            bool dragConsumed = pipeline.Process(mouseDrag, ctx);
-            Assert.IsFalse(dragConsumed, "Should not consume drag on unselected block");
+            HandleLeftMouseDrag(initBlockPos, initBlockPos, dragDelta, mouseDrag);
+            HandleLeftMouseUp(initBlockPos + dragDelta, mouseButtonReleased);
 
             // block stays in place
             bool blockStayedInPlace = initBlockPos.Equals(targetBlock._NodeRect.position);
-            Assert.IsTrue(blockStayedInPlace, $"Block did not stay in place");
+            Assert.IsTrue(blockStayedInPlace, "Block did not stay in place");
         }
 
         [Test]
         public void DragOutsideEmpty_DoesNotStartBoxOrDrag()
         {
+            Vector2 start = new Vector2(150, 150);
+            Vector2 end = new Vector2(160, 160);
+            Vector2 delta = end - start;
+
             // click in empty space
-            mouseDown.mousePosition = new Vector2(150, 150);
-            PrePassHitTest(mouseDown);
-            bool downConsumed = pipeline.Process(mouseDown, ctx);
-            Assert.IsTrue(downConsumed, "BoxSelectionHandler should consume down on empty");
+            mouseDown.mousePosition = start;
+            HandleLeftMouseDown(start, mouseDown);
 
             // drag in empty space: should continue marquee
-            mouseDrag.mousePosition = new Vector2(160, 160);
-            PrePassHitTest(mouseDrag);
-            bool dragConsumed = pipeline.Process(mouseDrag, ctx);
-            Assert.IsTrue(dragConsumed, "BoxSelectionHandler should consume drag");
+            mouseDrag.mousePosition = end;
+            HandleLeftMouseDrag(start, end, delta, mouseDrag);
+
+            Assert.IsTrue(ctx.Interaction.SelectionBoxDragOngoing, "Box selection should be ongoing during drag");
 
             // mouse up: finalize marquee (select none)
-            mouseButtonReleased.mousePosition = new Vector2(160, 160);
-            PrePassHitTest(mouseButtonReleased);
-            bool upConsumed = pipeline.Process(mouseButtonReleased, ctx);
-            Assert.IsTrue(upConsumed, "BoxSelectionHandler should consume up");
+            mouseButtonReleased.mousePosition = end;
+            HandleLeftMouseDragEnd(end, mouseButtonReleased);
+            HandleLeftMouseUp(end, mouseButtonReleased);
 
-            // no block selected
+            Assert.IsFalse(ctx.Interaction.SelectionBoxDragOngoing, "Box selection drag state should be cleared");
             Assert.IsEmpty(flowchart.SelectedBlocks);
         }
     }

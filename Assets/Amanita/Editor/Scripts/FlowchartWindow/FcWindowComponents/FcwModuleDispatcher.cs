@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Amanita.EditorUtils;
 
 namespace Amanita.VScripting.EditorUtils
 {
