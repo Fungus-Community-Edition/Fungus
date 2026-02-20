@@ -25,7 +25,7 @@ namespace Amanita
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
-    public sealed class AmanitaManager : MonoBehaviour
+    public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
@@ -320,7 +320,6 @@ namespace Amanita
             void FetchSubmodules()
             {
                 FlowchartRegistry.EnsureInitialized(true);
-                this.gameObject.GetOrAddComponent<AmanitaState>();
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
@@ -570,5 +569,23 @@ namespace Amanita
         {
             EnsureVariableRegistryIsReady();
         }
+
+#if UNITY_EDITOR
+        public void OnTearDown()
+        {
+            List<ITearDownResponder> responders = new List<ITearDownResponder>();
+            foreach (var submodule in GetComponentsInChildren<IAmanitaManagerSubmodule>())
+            {
+                if (submodule is ITearDownResponder responder)
+                {
+                    responders.Add(responder);
+                }
+            }
+            foreach (var responder in responders)
+            {
+                responder.OnTearDown();
+            }
+        }
+#endif
     }
 }

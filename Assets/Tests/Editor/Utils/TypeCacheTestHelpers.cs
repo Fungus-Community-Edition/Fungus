@@ -2,7 +2,6 @@ using Amanita.SaveSys;
 using Amanita.SaveSys.EditorUtils;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
 using Type = System.Type;
 
 internal static class TypeCacheTestHelpers

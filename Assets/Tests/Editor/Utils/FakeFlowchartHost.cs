@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
@@ -13,30 +14,46 @@ namespace Amanita.EditorUtils
         public virtual void Init()
         {
             Flowchart = new GameObject("fc").AddComponent<Flowchart>();
-            components.Add(new FcWindowCanvas());
-            components.Add(new FcWindowEditing());
+            EnsureWindowConfig();
+
+            window = ScriptableObject.CreateInstance<TestFlowchartWindowUitk>();
+            rootVisualElement = window.rootVisualElement;
+            rootVisualElement.name = "FakeFlowchartHostRoot";
+            rootVisualElement.style.flexGrow = 1f;
+            rootVisualElement.style.width = Length.Percent(100f);
+            rootVisualElement.style.height = Length.Percent(100f);
 
             UpdateContexts();
-            void UpdateContexts()
-            {
-                FlowchartCtx.FcHost = this;
-                FlowchartCtx.Flowchart = Flowchart;
-                FlowchartCtx.Position = Position;
+            SetWindowContext(window, FlowchartCtx);
 
-                DrawGridCtx.GridLineSpacingSize = 120;
-                DrawGridCtx.GridLineColor = GridLineColor;
+            inputSignals = window.InputSignals;
+            inputSignals.Initialize(window);
 
-                DrawBlockCtx.FlowchartCtx = FlowchartCtx;
-                DrawBlockCtx.DefaultBlockHeight = 40;
-                DrawBlockCtx.BlockMinWidth = 60;
-                DrawBlockCtx.BlockMaxWidth = 240;
-                DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
-            }
+            blockDrawer = new FakeBlockDrawerUitk();
+            graphicsRenderer = new FcWindowGraphicsRendererUitk(FlowchartCtx, DrawGridCtx, blockDrawer);
+            viewportHandlers = new FcWindowViewportHandlersUitk(FlowchartCtx, FlowchartWindowUitk.Config.MinZoom, FlowchartWindowUitk.Config.MaxZoom);
 
-            foreach (var elem in components)
-            {
-                elem.Initialize(this);
-            }
+            rootVisualElement.Add(graphicsRenderer);
+
+            graphicsRenderer.Initialize(window);
+            viewportHandlers.Initialize(window);
+        }
+
+        private void UpdateContexts()
+        {
+            FlowchartCtx.FcHost = this;
+            FlowchartCtx.Flowchart = Flowchart;
+            FlowchartCtx.Position = position;
+            FlowchartCtx.GridObjectSnap = 10f;
+
+            DrawGridCtx.GridLineSpacingSize = 120;
+            DrawGridCtx.GridLineColor = GridLineColor;
+
+            DrawBlockCtx.FlowchartCtx = FlowchartCtx;
+            DrawBlockCtx.DefaultBlockHeight = 40;
+            DrawBlockCtx.BlockMinWidth = 60;
+            DrawBlockCtx.BlockMaxWidth = 240;
+            DrawBlockCtx.ViewRect = CalcFlowchartWindowViewRect();
         }
 
         public Flowchart Flowchart { get; protected set; }
@@ -46,7 +63,6 @@ namespace Amanita.EditorUtils
         public Block CreateBlock(Flowchart fc, Vector2 pos)
         {
             var newBlock = fc.CreateBlock(pos);
-            // give it a visible area for hit‐testing
             newBlock._NodeRect = new Rect(pos, defaultNodeSize);
             created.Add(newBlock);
             fc.AddToSelection(newBlock);
@@ -58,7 +74,6 @@ namespace Amanita.EditorUtils
         protected IList<Block> created = new List<Block>();
 
         public void DeselectAll() => Flowchart.ClearSelectedBlocks();
-
 
         public IList<Block> QueuedForDeletion { get { return new List<Block>(queuedForDeletion); } }
         protected IList<Block> queuedForDeletion = new List<Block>();
@@ -72,11 +87,28 @@ namespace Amanita.EditorUtils
             queuedForDeletion.Clear();
         }
 
-        public void UpdateBlockCollection() { /* no-op for tests */ }
-        public void Repaint() { /* no-op for tests */ }
+        public void UpdateBlockCollection()
+        {
+            graphicsRenderer?.RefreshNow();
+        }
+
+        public void Repaint()
+        {
+            FlowchartCtx.ForceRepaintCount++;
+        }
 
         public virtual void Dispose()
         {
+            inputSignals?.Dispose();
+            graphicsRenderer?.Dispose();
+            viewportHandlers?.Dispose();
+
+            if (window != null)
+            {
+                ScriptableObject.DestroyImmediate(window);
+                window = null;
+            }
+
             Clipboard = null;
             queuedForDeletion.Clear();
             created.Clear();
@@ -94,34 +126,52 @@ namespace Amanita.EditorUtils
 
         protected IList<IFcWindowComponent> components = new List<IFcWindowComponent>();
 
-        public virtual Vector2 GetBlockCenter(IList<Block> blocks)
+        public virtual Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
         {
             return Vector2.zero;
         }
 
         public void OnGUI()
         {
-            
+            inputSignals?.OnGUI(Event.current);
+            viewportHandlers?.OnGUI(Event.current);
         }
 
         public Rect CalcFlowchartWindowViewRect()
         {
-            return Rect.zero;
+            return new Rect(0f, 0f, position.width, position.height);
         }
 
         public void DoZoom(float delta, Vector2 center)
         {
-            
+            if (Flowchart == null)
+            {
+                return;
+            }
+
+            Flowchart.Zoom = Mathf.Max(0.01f, Flowchart.Zoom + delta);
+            FlowchartWindowSignals.ZoomChanged(Flowchart.Zoom);
         }
 
         public void CenterFlowchart()
         {
-            
+            if (Flowchart == null)
+            {
+                return;
+            }
+
+            Flowchart.ScrollPos = Vector2.zero;
+            FlowchartWindowSignals.WindowPanned();
         }
 
         public void SelectBlock(Block block)
         {
-            block.IsSelected = true;
+            if (block == null || Flowchart == null)
+            {
+                return;
+            }
+
+            Flowchart.AddToSelection(block);
         }
 
         public virtual DrawGridContext DrawGridCtx { get; protected set; } = new DrawGridContext();
@@ -131,10 +181,94 @@ namespace Amanita.EditorUtils
 
         public FlowchartContext FlowchartCtx { get; protected set; } = new FlowchartContext();
 
-        public IList<Block> Blocks { get { return Flowchart.GetComponents<Block>(); } }
+        public IReadOnlyCollection<Block> Blocks
+        {
+            get => Flowchart != null ? Flowchart.Blocks : Array.Empty<Block>();
+        }
 
-        public Rect Position => Rect.zero;
+        public Rect Position => position;
+        private Rect position = new Rect(0f, 0f, 200f, 200f);
 
-        public VisualElement RootVisualElement => throw new NotImplementedException();
+        public void SetPosition(Rect newPosition)
+        {
+            position = newPosition;
+            UpdateContexts();
+        }
+
+        public VisualElement RootVisualElement => rootVisualElement;
+        private VisualElement rootVisualElement;
+
+        public FcWindowGraphicsRendererUitk GraphicsRenderer => graphicsRenderer;
+        public FcWindowViewportHandlersUitk ViewportHandlers => viewportHandlers;
+        public InputSignalModuleUitk InputSignals => inputSignals;
+
+        private FlowchartWindowUitk window;
+        private FcWindowGraphicsRendererUitk graphicsRenderer;
+        private FcWindowViewportHandlersUitk viewportHandlers;
+        private InputSignalModuleUitk inputSignals;
+        private IBlockDrawerUitk blockDrawer;
+
+        private sealed class FakeBlockDrawerUitk : IBlockDrawerUitk
+        {
+            public Button CreateButton(Block block)
+            {
+                return new Button();
+            }
+
+            public void UpdateButton(Button button, Block block, float zoom)
+            {
+            }
+        }
+
+        private sealed class TestFlowchartWindowUitk : FlowchartWindowUitk
+        {
+            protected override void OnEnable()
+            {
+            }
+
+            protected override void OnDisable()
+            {
+            }
+
+            protected override void OnDestroy()
+            {
+            }
+        }
+
+        private static void EnsureWindowConfig()
+        {
+            if (FlowchartWindowUitk.Config != null)
+            {
+                return;
+            }
+
+            var config = ScriptableObject.CreateInstance<FlowchartWindowConfig>();
+            SetStaticConfig(config);
+        }
+
+        private static void SetStaticConfig(FlowchartWindowConfig config)
+        {
+            PropertyInfo property = typeof(FlowchartWindowUitk).GetProperty("Config",
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (property != null)
+            {
+                property.SetValue(null, config);
+                return;
+            }
+
+            FieldInfo field = typeof(FlowchartWindowUitk).GetField("<Config>k__BackingField",
+                BindingFlags.Static | BindingFlags.NonPublic);
+
+            field?.SetValue(null, config);
+        }
+
+        private static void SetWindowContext(FlowchartWindowUitk targetWindow, FlowchartContext context)
+        {
+            FieldInfo field = typeof(FlowchartWindowUitk).GetField("_fcContext",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+            field?.SetValue(targetWindow, context);
+        }
     }
 }

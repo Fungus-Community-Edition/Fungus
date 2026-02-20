@@ -15,8 +15,9 @@ namespace Amanita.VScripting.EditorUtils
             var fc = fcContext.Flowchart;
             var viewRect = drawCtx.ViewRect;
             var result = new List<ConnectionInfo>();
+            var document = fcContext.Document;
 
-            foreach (var blockEl in fcContext.AllBlocks.Where(b => b != null))
+            foreach (var blockEl in document.AllBlocks.Where(b => b != null))
             {
                 bool blockIsSelected = fc.SelectedBlock == blockEl;
                 Rect fromRect = CalculateWindowRect(blockEl, drawCtx, fc);

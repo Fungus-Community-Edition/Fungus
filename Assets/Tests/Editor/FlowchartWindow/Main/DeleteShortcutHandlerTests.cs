@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -81,8 +80,9 @@ namespace VScriptingTests.FCWindowOperations
         [Test]
         public void Handle_ReturnsFalse_WhenNoBlocksSelected()
         {
+            var selection = ctx.Selection;
             _focus.IsFocused = true;
-            ctx.SelectedBlocks = new List<Block>();
+            ctx.Flowchart.ClearSelectedBlocks();
 
             bool result = _handler.Handle(_evt, ctx);
 
@@ -102,7 +102,8 @@ namespace VScriptingTests.FCWindowOperations
             _evt.keyCode = defaultOrAlternateKey;
             _focus.IsFocused = true;
             var block = host.CreateBlock(host.Flowchart, Vector2.zero);
-            ctx.SelectedBlocks = new List<Block> { block };
+            ctx.Flowchart.ClearSelectedBlocks();
+            ctx.Flowchart.AddToSelection(block);
 
             bool result = _handler.Handle(_evt, ctx);
 

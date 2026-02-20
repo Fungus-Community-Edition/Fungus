@@ -1,7 +1,5 @@
 using Amanita.SaveSys;
 using NUnit.Framework;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace SaveSystemTests
 {
