@@ -59,46 +59,6 @@ namespace Amanita
             }
         }
 
-        public static int GetNumericIdTiedTo(string guid)
-        {
-            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
-            fcGuidRegistry.Refresh();
-            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
-            int result = fcGuidRegistry.GetNumericId(guid);
-            if (result >= 0)
-            {
-                return result;
-            }
-
-            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
-            vsaGuidRegistry.Refresh();
-            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
-            result = vsaGuidRegistry.GetNumericId(guid);
-            return result;
-        }
-
-        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
-        {
-            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
-            if (gotOneReady)
-            {
-                return existing;
-            }
-
-            string assetName = $"{typeof(T).Name}GuidRegistry";
-            var result = SOUtils.EnsureSOExists<GuidRegistry>(whereGuidRegistriesGo, assetName);
-            result.AddTypeStoredFor<T>();
-            typeToRegistryMap[typeof(T)] = result;
-            return result;
-        }
-
-        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
-
-        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
-            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
-        {
-        };
-
         public static DefaultTweenAdapter DefaultTweener
         {
             get
@@ -146,12 +106,6 @@ namespace Amanita
         private static readonly string resourcesRootFolder = ""; 
         // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
-
-        private static void EnsureGuidRegistriesAvailable()
-        {
-            GetOrAddGuidRegistryFor<Flowchart>();//
-            GetOrAddGuidRegistryFor<VariableSourceAsset>();
-        }
 
         public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
 
@@ -259,7 +213,6 @@ namespace Amanita
             _s = this;
 
             EnsureShadowDbAvailable();
-            EnsureGuidRegistriesAvailable();
             EnsureEventSystemInScene();
             void EnsureEventSystemInScene()
             {

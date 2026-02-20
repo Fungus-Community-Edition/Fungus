@@ -442,11 +442,6 @@ namespace Amanita.VScripting
         {
             StopAllBlocks();
             StopAllCoroutines();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
             FlowchartSignals.FlowchartDisabled(this);
@@ -1923,8 +1918,6 @@ namespace Amanita.VScripting
 
         public virtual void OnTearDown()
         {
-            GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-            fcReg.RemoveGuid(this.UniqueId);
         }
 
 #endif
