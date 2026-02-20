@@ -291,10 +291,7 @@ namespace Amanita.VScripting.EditorUtils
             PrepClipboard();
             void PrepClipboard()
             {
-                if (Clipboard == null)
-                {
-                    Clipboard = new AmanitaClipboard(this);
-                }
+                Clipboard ??= new AmanitaClipboard(this);
             }
 
             PrepFcContext();
@@ -328,7 +325,10 @@ namespace Amanita.VScripting.EditorUtils
             void PrepZoomLabel()
             {
                 _zoomAmountLabel = UxmlRoot.Q<UitkLabel>("ZoomLabel");
-                OnZoomChanged(_fcContext.Flowchart?.Zoom ?? 1f);
+                var newZoom = _fcContext.Flowchart != null ? 
+                    _fcContext.Flowchart.Zoom : 
+                    1f;
+                OnZoomChanged(newZoom);
             }
 
             EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
@@ -336,8 +336,10 @@ namespace Amanita.VScripting.EditorUtils
             CreateModules();
             void CreateModules()
             {
-                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, _blockDrawer);
-                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, Config.MaxZoom);
+                _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, 
+                    _blockDrawer);
+                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, 
+                    Config.MaxZoom);
 
                 _contextMenuManager = new FlowchartContextMenuManagerUitk();
                 _variablesPanel = new FcWindowVariablesPanelUitk();
