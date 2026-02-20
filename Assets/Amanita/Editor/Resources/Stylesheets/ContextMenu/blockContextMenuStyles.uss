@@ -3,16 +3,20 @@
     --main-font: resource('Fonts/Exo2/Exo2-Regular');
     -unity-font-definition: var(--main-font);
 
-    height: 85px;
-    width: 170px;
+    height: 125px;
+    width: 140px;
 
-    /* Add button colors */
-    --add-light: #7EE8A6;
-    --add-dark: #6BD893;
+    /* Copy button colors */
+    --copy-light: #8EC9FF;
+    --copy-dark: #6AA7D6;
 
-    /* Paste button colors */
-    --paste-light: #F4D06F;
-    --paste-dark: #E6C45F;
+    /* Cut button colors */
+    --cut-light: #FFB27C;
+    --cut-dark: #E59463;
+
+    /* Delete button colors */
+    --delete-light: #FF7A7A;
+    --delete-dark: #D86565;
 
     --hover-size: 1.1;
     --normal-border-radius: 6px;
@@ -26,7 +30,7 @@
 
 .popup-pill
 {
-    width: 150px;
+    min-width: 120px;
     height: 35px;
     padding: 0;
     padding-bottom: 3px;
@@ -87,20 +91,28 @@
     -unity-font-style: bold;
 }
 
-/* ADD BUTTON COLORS */
-.add-button .pill-inner
+/* COPY BUTTON COLORS */
+.copy-button .pill-inner
 {
-    background-color: var(--add-light);
+    background-color: var(--copy-light);
     border-bottom-width: 3px;
-    border-bottom-color: var(--add-dark);
+    border-bottom-color: var(--copy-dark);
 }
 
-/* PASTE BUTTON COLORS */
-.paste-button .pill-inner
+/* CUT BUTTON COLORS */
+.cut-button .pill-inner
 {
-    background-color: var(--paste-light);
+    background-color: var(--cut-light);
     border-bottom-width: 3px;
-    border-bottom-color: var(--paste-dark);
+    border-bottom-color: var(--cut-dark);
+}
+
+/* DELETE BUTTON COLORS */
+.delete-button .pill-inner
+{
+    background-color: var(--delete-light);
+    border-bottom-width: 3px;
+    border-bottom-color: var(--delete-dark);
 }
 
 .bg-panel
@@ -115,5 +127,5 @@
     border-color: rgba(170,170, 170, 1);
     border-width: 2px;
     justify-content: center;
+   
 }
-

@@ -106,7 +106,7 @@ namespace Amanita.VScripting.EditorUtils
                         }
                         else if (DiagnosticsEnabled)
                         {
-                            Debug.Log($"[ConnectionGathererUitk] Skip connection. From={fromRect} To={toRect} View={viewRect}");
+                            //Debug.Log($"[ConnectionGathererUitk] Skip connection. From={fromRect} To={toRect} View={viewRect}");
                         }
                     }
                 }

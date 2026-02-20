@@ -136,8 +136,8 @@ namespace Amanita.VScripting.EditorUtils
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;
             _shouldTrack = false;
-            Debug.Log($"Box selection ended at {info.FlowchartPosition}");
-            Debug.Log($"Zoom: {fcContext.Flowchart.Zoom}, ScrollPos: {fcContext.Flowchart.ScrollPos}");
+            //Debug.Log($"Box selection ended at {info.FlowchartPosition}");
+            //Debug.Log($"Zoom: {fcContext.Flowchart.Zoom}, ScrollPos: {fcContext.Flowchart.ScrollPos}");
         }
 
         /// <summary>

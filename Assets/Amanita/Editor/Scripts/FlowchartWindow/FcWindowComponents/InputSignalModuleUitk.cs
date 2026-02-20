@@ -193,7 +193,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 if (guiEvent.DoubleClick())
                 {
-                    Debug.Log("Double click detected");
+                    //Debug.Log("Double click detected");
                     FlowchartWindowSignals.DoubleClicked(_mouseDownInfo);
                 }
                 else
@@ -438,7 +438,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private void HandleMouseDrag(Event guiEvent)
         {
-            Debug.Log($"Mouse drag detected with button: {guiEvent.button}");
+            //Debug.Log($"Mouse drag detected with button: {guiEvent.button}");
             SetPointerEventInfo(ref _mouseDragInfo, guiEvent);
             HandleLeftDrag();
             void HandleLeftDrag()
