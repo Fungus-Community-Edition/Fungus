@@ -6,6 +6,7 @@ using UnityEngine;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityEngine.UIElements;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace Amanita.EditorUtils
 {
@@ -31,7 +32,7 @@ namespace Amanita.EditorUtils
 
             blockDrawer = new FakeBlockDrawerUitk();
             graphicsRenderer = new FcWindowGraphicsRendererUitk(FlowchartCtx, DrawGridCtx, blockDrawer);
-            viewportHandlers = new FcWindowViewportHandlersUitk(FlowchartCtx, FlowchartWindowUitk.Config.MinZoom, FlowchartWindowUitk.Config.MaxZoom);
+            viewportHandlers = new MainViewportManager(FlowchartCtx, FlowchartWindowUitk.Config.MinZoom, FlowchartWindowUitk.Config.MaxZoom);
 
             rootVisualElement.Add(graphicsRenderer);
 
@@ -199,12 +200,12 @@ namespace Amanita.EditorUtils
         private VisualElement rootVisualElement;
 
         public FcWindowGraphicsRendererUitk GraphicsRenderer => graphicsRenderer;
-        public FcWindowViewportHandlersUitk ViewportHandlers => viewportHandlers;
+        public MainViewportManager ViewportHandlers => viewportHandlers;
         public InputSignalModuleUitk InputSignals => inputSignals;
 
         private FlowchartWindowUitk window;
         private FcWindowGraphicsRendererUitk graphicsRenderer;
-        private FcWindowViewportHandlersUitk viewportHandlers;
+        private MainViewportManager viewportHandlers;
         private InputSignalModuleUitk inputSignals;
         private IBlockDrawerUitk blockDrawer;
 

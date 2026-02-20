@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Listens for a specific input event and resets the scroll position of the flowchart to (0,0).

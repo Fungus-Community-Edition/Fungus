@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {

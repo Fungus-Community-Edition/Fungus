@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
 
     public abstract class FcwModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 

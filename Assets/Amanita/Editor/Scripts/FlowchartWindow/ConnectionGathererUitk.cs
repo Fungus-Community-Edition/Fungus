@@ -3,7 +3,7 @@ using UnityEngine;
 using static UnityEngine.UIElements.VisualElement;
 using UitkButton = UnityEngine.UIElements.Button;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public interface IBlockRectProvider
     {

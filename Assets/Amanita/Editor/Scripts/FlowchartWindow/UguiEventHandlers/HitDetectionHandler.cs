@@ -2,7 +2,7 @@ using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public class HitDetectionHandlerUitk : IFlowchartWindowModule, ILeftMouseDownResponder
     {

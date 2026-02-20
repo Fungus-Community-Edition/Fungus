@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using static UnityEngine.UIElements.VisualElement;
 using UitkButton = UnityEngine.UIElements.Button;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Default UITK drawer that produces tinted buttons sized to block text.

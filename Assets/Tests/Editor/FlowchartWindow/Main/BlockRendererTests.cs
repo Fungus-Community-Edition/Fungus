@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using Amanita.EditorUtils;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {

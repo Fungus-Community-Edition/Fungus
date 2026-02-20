@@ -5,7 +5,7 @@ using Amanita.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// UITK-based grid renderer that redraws only when flowchart context changes,

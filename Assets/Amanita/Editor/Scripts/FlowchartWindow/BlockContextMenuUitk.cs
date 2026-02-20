@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
     /// </summary>
     public class BlockContextMenuUitk : VisualElement, IDisposable
     {
-        private static readonly string uxmlPath = "UIToolkitTemplates/BlockContextMenu";
+        private static readonly string uxmlPath = "UIToolkitTemplates/ContextMenus/BlockContextMenu";
 
         public BlockContextMenuUitk()
         {

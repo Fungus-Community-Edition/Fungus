@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public class FlowchartWindowUitk : EditorWindow, IFlowchartHostCore
     {
@@ -19,7 +19,7 @@ namespace Amanita.VScripting.EditorUtils
         public static FlowchartWindowUitk S => _s;
         private static FlowchartWindowUitk _s;
 
-        [MenuItem("Window/Atelier Mycelia/Experimental/FlowchartWindowUitk")]
+        [MenuItem("Window/Atelier Mycelia/Amanita/FlowchartWindowUitk")]
         public static void ShowFromMenuItem()
         {
             EnsureConfigAssetInProject();
@@ -338,7 +338,7 @@ namespace Amanita.VScripting.EditorUtils
             {
                 _graphicsRenderer = new FcWindowGraphicsRendererUitk(_fcContext, Config.GridDrawConfig, 
                     _blockDrawer);
-                _viewportHandlers = new FcWindowViewportHandlersUitk(_fcContext, Config.MinZoom, 
+                _viewportHandlers = new MainViewportManager(_fcContext, Config.MinZoom, 
                     Config.MaxZoom);
 
                 _contextMenuManager = new FlowchartContextMenuManagerUitk();
@@ -406,7 +406,7 @@ namespace Amanita.VScripting.EditorUtils
 
         #region Submodules
         private FcWindowGraphicsRendererUitk _graphicsRenderer;
-        private FcWindowViewportHandlersUitk _viewportHandlers;
+        private MainViewportManager _viewportHandlers;
         private readonly InputSignalModuleUitk _inputDetector = new InputSignalModuleUitk();
 
         private FlowchartContextMenuManagerUitk _contextMenuManager;

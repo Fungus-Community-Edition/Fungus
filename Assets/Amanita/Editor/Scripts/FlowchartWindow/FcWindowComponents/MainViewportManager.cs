@@ -3,21 +3,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Encapsulates viewport input handlers (pan/zoom/reset/selection/drag) for the UITK flowchart window.
     /// </summary>
-    public sealed class FcWindowViewportHandlersUitk : IFlowchartWindowModule,
+    public sealed class MainViewportManager : IFlowchartWindowModule,
         IScrollWheelDragResponder, IRightMouseDragResponder,
         IScrollWheelMoveResponder, IFlowchartChangeResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
-        IEmptySpaceLeftMouseDownResponder, IEmptySpaceLeftMouseUpResponder,
+        IEmptySpaceLeftMouseDownResponder, IEmptySpaceLeftMouseUpResponder, IEmptySpaceLeftClickResponder,
         ILeftMouseDownResponder, ILeftMouseUpResponder, IBlockClickResponder, IBlockCreatedResponder
     {
         public int Priority { get; set; } = 0;
 
-        public FcWindowViewportHandlersUitk(FlowchartContext context, float minZoom, float maxZoom)
+        public MainViewportManager(FlowchartContext context, float minZoom, float maxZoom)
         {
             if (context == null)
             {
@@ -158,6 +158,11 @@ namespace Amanita.VScripting.EditorUtils
         public void OnBlockCreated(Block block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
+        }
+
+        public void OnEmptySpaceLeftClicked(PointerEventInfo info)
+        {
+            Forward<IEmptySpaceLeftClickResponder>(r => r.OnEmptySpaceLeftClicked(info));
         }
     }
 }

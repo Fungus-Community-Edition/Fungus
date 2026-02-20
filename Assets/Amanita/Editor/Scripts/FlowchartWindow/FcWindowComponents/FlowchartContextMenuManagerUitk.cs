@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Shows the empty space popup window on right-click and listens for its button actions.

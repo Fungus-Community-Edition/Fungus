@@ -5,10 +5,10 @@ using UnityEngine;
 using Amanita.EditorUtils;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
-    /// Handles click-and-drag of selected blocks in the UITK flowchart window.
+    /// Keeps the click-and-drag selection box updated based on user input.
     /// </summary>
     public sealed class BlockDragHandlerUitk : IFlowchartWindowModule, ILeftMouseDownResponder, 
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseUpResponder
