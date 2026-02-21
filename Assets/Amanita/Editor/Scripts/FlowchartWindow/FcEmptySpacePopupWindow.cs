@@ -45,7 +45,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void ApplyGradient(VisualElement element)
         {
-            UitkGradientDrawer.AttachVerticalGradient(element, GradientTop, GradientBottom);
+            GradientDrawer.AttachVerticalGradient(element, GradientTop, GradientBottom);
         }
 
         private void ToggleSubs(bool on)

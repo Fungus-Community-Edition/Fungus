@@ -18,7 +18,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         private readonly FlowchartContext flowchartContext;
         
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             isDisposed = false;
             if (window == null)

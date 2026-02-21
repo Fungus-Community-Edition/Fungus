@@ -17,12 +17,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         private FlowchartContext _fcContext;
 
-        public void Initialize(FlowchartWindowUitk owner)
+        public void Initialize(FlowchartWindow owner)
         {
             this._owner = owner;
         }
 
-        private FlowchartWindowUitk _owner;
+        private FlowchartWindow _owner;
 
         public void OnGUI(Event cEvent)
         {

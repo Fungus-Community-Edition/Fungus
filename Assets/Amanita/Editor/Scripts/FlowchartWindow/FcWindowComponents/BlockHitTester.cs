@@ -84,7 +84,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         {
             rect = default;
 
-            FlowchartWindowUitk window = FlowchartWindowUitk.S;
+            FlowchartWindow window = FlowchartWindow.S;
             if (window == null)
             {
                 return false;
@@ -96,7 +96,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 return false;
             }
 
-            BlockRendererUitk renderer = root.Q<BlockRendererUitk>();
+            BlockRenderer renderer = root.Q<BlockRenderer>();
             if (renderer == null || !renderer.TryGetBlockRect(block, out Rect localRect))
             {
                 return false;

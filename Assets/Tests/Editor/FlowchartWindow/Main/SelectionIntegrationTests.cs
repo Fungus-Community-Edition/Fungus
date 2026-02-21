@@ -18,7 +18,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             base.SetUp();
 
-            window = ScriptableObject.CreateInstance<FlowchartWindowUitk>();
+            window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
             SetWindowContext(window, ctx);
 
             selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
@@ -43,11 +43,11 @@ namespace VScriptingTests.FCWindowOperations.Integration
 
         private SelectionBoxDragTrackerUitk selectionBoxTracker;
         private SingleSelectionHandler singleSelectionHandler;
-        private FlowchartWindowUitk window;
+        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
 
-        private static void SetWindowContext(FlowchartWindowUitk targetWindow, FlowchartContext context)
+        private static void SetWindowContext(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow targetWindow, FlowchartContext context)
         {
-            FieldInfo field = typeof(FlowchartWindowUitk).GetField("_fcContext", BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = typeof(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow).GetField("_fcContext", BindingFlags.Instance | BindingFlags.NonPublic);
             field.SetValue(targetWindow, context);
         }
 

@@ -9,20 +9,21 @@ using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FlowchartWindow.Modules
 {
-    public sealed class ScrollPosResetterTests
+    public sealed class PanHandlerTests
     {
         private readonly IList<UnityObj> toDestroy = new List<UnityObj>();
         private FlowchartContext context;
         private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow windowStub;
-        private ScrollPosResetter resetter;
+        private Amanita.VScripting.EditorUtils.FcWindow.PanHandler handler;
         private Flowchart flowchart;
 
         [SetUp]
         public void SetUp()
         {
-            GameObject flowchartGo = new GameObject("Flowchart_Resetter_Test");
-            flowchart = flowchartGo.AddComponent<Flowchart>();
-            flowchart.ScrollPos = new Vector2(100f, -42f);
+            GameObject go = new GameObject("Flowchart_PanHandler_Test");
+            flowchart = go.AddComponent<Flowchart>();
+            flowchart.ScrollPos = _initScrollPos;
+            flowchart.Zoom = 2f;
 
             context = new FlowchartContext
             {
@@ -30,17 +31,19 @@ namespace VScriptingTests.FlowchartWindow.Modules
             };
 
             windowStub = ScriptableObject.CreateInstance<TestFlowchartWindow>();
-            resetter = new ScrollPosResetter(context);
-            resetter.Initialize(windowStub);
+            handler = new Amanita.VScripting.EditorUtils.FcWindow.PanHandler(context);
+            handler.Initialize(windowStub);
 
-            toDestroy.Add(flowchartGo);
+            toDestroy.Add(go);
             toDestroy.Add(windowStub);
         }
+
+        private readonly Vector2 _initScrollPos = new Vector2(10f, 10f);
 
         [TearDown]
         public void TearDown()
         {
-            resetter?.Dispose();
+            handler?.Dispose();
             context?.Dispose();
 
             foreach (UnityObj obj in toDestroy)
@@ -55,73 +58,70 @@ namespace VScriptingTests.FlowchartWindow.Modules
         }
 
         [Test]
-        public void ShiftPlusRKeyDown_ResetsScroll_AndBroadcastsWindowPan()
+        public void ScrollWheelDrag_UpdatesScrollPos_AndRaisesWindowPanned()
         {
             bool panRaised = false;
-            Action handler = () => panRaised = true;
-            FlowchartWindowSignals.WindowPanned += handler;
+            Action listener = () => panRaised = true;
+            FlowchartWindowSignals.WindowPanned += listener;
 
             try
             {
-                resetter.OnGUI(KeyDown(KeyCode.R, shift: true));
+                Vector2 direction = new Vector2(4f, -6f);
+                handler.OnScrollWheelDragged(direction);
 
-                Assert.That(flowchart.ScrollPos, Is.EqualTo(Vector2.zero));
+                Vector2 expectedDelta = direction / flowchart.Zoom;
+                Vector2 expectedScroll = _initScrollPos - expectedDelta;
+
+                Assert.That(flowchart.ScrollPos, Is.EqualTo(expectedScroll));
                 Assert.That(panRaised, Is.True);
             }
             finally
             {
-                FlowchartWindowSignals.WindowPanned -= handler;
+                FlowchartWindowSignals.WindowPanned -= listener;
             }
         }
 
         [Test]
-        public void NonMatchingEvent_DoesNothing()
+        public void TinyDrag_IsIgnored()
         {
-            Vector2 originalScroll = flowchart.ScrollPos;
+            flowchart.ScrollPos = new Vector2(1f, 1f);
+
             bool panRaised = false;
-            Action handler = () => panRaised = true;
-            FlowchartWindowSignals.WindowPanned += handler;
+            Action listener = () => panRaised = true;
+            FlowchartWindowSignals.WindowPanned += listener;
 
             try
             {
-                resetter.OnGUI(KeyDown(KeyCode.T, shift: true));
+                handler.OnScrollWheelDragged(new Vector2(0.001f, 0.001f));
 
-                Assert.That(flowchart.ScrollPos, Is.EqualTo(originalScroll));
+                Assert.That(flowchart.ScrollPos, Is.EqualTo(new Vector2(1f, 1f)));
                 Assert.That(panRaised, Is.False);
             }
             finally
             {
-                FlowchartWindowSignals.WindowPanned -= handler;
+                FlowchartWindowSignals.WindowPanned -= listener;
             }
         }
 
         [Test]
-        public void ShiftPlusR_WithNullFlowchart_DoesNotRaisePan()
+        public void NullFlowchart_NoOp()
         {
             context.Flowchart = null;
+
             bool panRaised = false;
-            Action handler = () => panRaised = true;
-            FlowchartWindowSignals.WindowPanned += handler;
+            Action listener = () => panRaised = true;
+            FlowchartWindowSignals.WindowPanned += listener;
 
             try
             {
-                resetter.OnGUI(KeyDown(KeyCode.R, shift: true));
-
+                handler.OnScrollWheelDragged(new Vector2(5f, 5f));
                 Assert.That(panRaised, Is.False);
             }
             finally
             {
-                FlowchartWindowSignals.WindowPanned -= handler;
+                FlowchartWindowSignals.WindowPanned -= listener;
             }
         }
-
-        private static Event KeyDown(KeyCode key, bool shift = false) =>
-            new Event
-            {
-                type = EventType.KeyDown,
-                keyCode = key,
-                shift = shift
-            };
 
         private sealed class TestFlowchartWindow : Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow
         {

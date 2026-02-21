@@ -4,10 +4,14 @@ using UnityEngine;
 
 namespace Amanita.VScripting.EditorUtils.FcWindow
 {
-    public class HitDetectionHandlerUitk : IFlowchartWindowModule, ILeftMouseDownResponder
+    /// <summary>
+    /// Handles hit detection for mouse clicks in the FlowchartWindow, determining which 
+    /// Block (if any) was hit and storing it in the Interaction context for use by other modules.
+    /// </summary>
+    public class HitDetector : IFlowchartWindowModule, ILeftMouseDownResponder
     {
         public int Priority { get; set; } = 0;
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             if (window == null)
             {
@@ -17,7 +21,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             isDisposed = false;
             ToggleSubs(true);
         }
-        private FlowchartWindowUitk owner;
+        private FlowchartWindow owner;
         private bool isDisposed;
 
         private void ToggleSubs(bool on)

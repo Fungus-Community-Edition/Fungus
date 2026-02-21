@@ -24,12 +24,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 throw new ArgumentNullException(nameof(context));
             }
 
-            _hitDetector = new HitDetectionHandlerUitk();
-            _panHandler = new PanHandlerUitk(context);
-            _zoomHandler = new ZoomHandlerUitk(context, minZoom, maxZoom);
+            _hitDetector = new HitDetector();
+            _panHandler = new PanHandler(context);
+            _zoomHandler = new ZoomHandler(context, minZoom, maxZoom);
             _scrollPosResetter = new ScrollPosResetter(context);
             _boxSelectionHandler = new SelectionBoxDragTrackerUitk(context);
-            _blockDragHandler = new BlockDragHandlerUitk(context);
+            _blockDragHandler = new BlockDragHandler(context);
             _singleClickBlockSelector = new SingleClickBlockSelector(context);
             
 
@@ -42,19 +42,19 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             _submodules.Add(_singleClickBlockSelector);
         }
 
-        private readonly PanHandlerUitk _panHandler;
-        private readonly ZoomHandlerUitk _zoomHandler;
+        private readonly PanHandler _panHandler;
+        private readonly ZoomHandler _zoomHandler;
         private readonly ScrollPosResetter _scrollPosResetter;
         private readonly SelectionBoxDragTrackerUitk _boxSelectionHandler;
-        private readonly BlockDragHandlerUitk _blockDragHandler;
+        private readonly BlockDragHandler _blockDragHandler;
         private readonly SingleClickBlockSelector _singleClickBlockSelector;
-        private readonly HitDetectionHandlerUitk _hitDetector;
+        private readonly HitDetector _hitDetector;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();
         public IReadOnlyList<IFlowchartWindowModule> Submodules => (IReadOnlyList<IFlowchartWindowModule>)_submodules;
         private bool _isDisposed;
 
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             for (int i = 0; i < _submodules.Count; i++)
             {

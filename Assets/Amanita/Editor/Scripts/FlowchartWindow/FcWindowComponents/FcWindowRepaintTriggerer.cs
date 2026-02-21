@@ -12,7 +12,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         IPostBlockDeletionResponder
     {
         public int Priority { get; set; } = 0;
-        public void Initialize(FlowchartWindowUitk window)
+        public void Initialize(FlowchartWindow window)
         {
             if (window == null)
             {
@@ -23,7 +23,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             isDisposed = false;
         }
 
-        private FlowchartWindowUitk owner;
+        private FlowchartWindow owner;
         private bool isDisposed;
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)

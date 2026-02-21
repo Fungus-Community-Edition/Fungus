@@ -24,10 +24,10 @@ namespace VScriptingTests.FCWindowOperations
                 GridLineSpacingSize = _gridLineSpacingSize
             };
 
-            _renderer = new GridRendererUitk(ctx, _gridCtx);
+            _renderer = new GridRenderer(ctx, _gridCtx);
         }
 
-        protected GridRendererUitk _renderer;
+        protected GridRenderer _renderer;
         protected DrawGridContext _gridCtx;
         protected readonly Color _gridLineColor = Color.red;
         protected readonly int _gridLineSpacingSize = 50;
