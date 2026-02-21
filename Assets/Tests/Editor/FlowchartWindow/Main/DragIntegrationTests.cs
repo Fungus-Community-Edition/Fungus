@@ -28,7 +28,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
             hitDetector = new HitDetector();
             selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
             blockDragHandler = new BlockDragHandler(ctx);
-            singleClickSelector = new SingleClickBlockSelector(ctx);
+            singleClickSelector = new Amanita.VScripting.EditorUtils.FcWindow.SingleSelectionHandler(ctx);
 
             hitDetector.Initialize(window);
             selectionBoxTracker.Initialize(window);
@@ -64,7 +64,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         private HitDetector hitDetector;
         private SelectionBoxDragTrackerUitk selectionBoxTracker;
         private BlockDragHandler blockDragHandler;
-        private SingleClickBlockSelector singleClickSelector;
+        private Amanita.VScripting.EditorUtils.FcWindow.SingleSelectionHandler singleClickSelector;
         private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
 
         private static void SetWindowContext(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow targetWindow, FlowchartContext context)

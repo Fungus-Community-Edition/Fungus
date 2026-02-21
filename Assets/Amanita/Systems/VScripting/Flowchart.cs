@@ -740,6 +740,12 @@ namespace Amanita.VScripting
 
         public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
 
+        public void DeselectAll()
+        {
+            UIModel.ClearSelectedBlocks();
+            UIModel.ClearSelectedCommands();
+        }
+
         /// <summary>
         /// Set the block objects to be hidden or visible depending on the hideComponents property.
         /// </summary>

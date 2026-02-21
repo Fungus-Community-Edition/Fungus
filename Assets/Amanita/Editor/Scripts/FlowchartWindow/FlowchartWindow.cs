@@ -19,8 +19,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         public static FlowchartWindow S => _s;
         private static FlowchartWindow _s;
 
-        [MenuItem("Window/Atelier Mycelia/Amanita/FlowchartWindow")]
-        public static void ShowFromMenuItem()
+        /// <summary>
+        /// Opens the FlowchartWindow, or focuses it if it's already open. Best use this instead
+        /// of EditorWindow.GetWindow directly, since that would skip some important setup.
+        /// </summary>
+        [MenuItem("Window/Atelier Mycelia/Amanita/Flowchart Window")]
+        public static void BringUp()
         {
             EnsureConfigAssetInProject();
 
@@ -40,7 +44,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         public static FlowchartWindowConfig Config { get; private set; }
         private static readonly string _configSubfolderPath = "Amanita/Configs";
-        private static readonly string _configAssetName = "FlowchartWindowUitkConfig";
+        private static readonly string _configAssetName = "FlowchartWindowConfig";
 
         public AmanitaClipboard Clipboard { get; private set; }
 
@@ -128,9 +132,8 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
-            Undo.RecordObject(Flowchart, "Deselect");
-            Flowchart.ClearSelectedCommands();
-            Flowchart.ClearSelectedBlocks();
+            Undo.RecordObject(Flowchart, $"Deselect in {Flowchart.name}");
+            Flowchart.DeselectAll();
 
             if (Selection.activeGameObject != Flowchart.gameObject)
             {
@@ -156,9 +159,9 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 }
             }
 
-            for (int i = 0; i < _viewportHandlers.Submodules.Count; i++)
+            for (int i = 0; i < _viewportManager.Submodules.Count; i++)
             {
-                var module = _viewportHandlers.Submodules[i];
+                var module = _viewportManager.Submodules[i];
                 if (module is T moduleAsT)
                 {
                     result = moduleAsT;
@@ -338,10 +341,10 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             {
                 _graphicsRenderer = new FcWindowGraphicsRenderer(_fcContext, Config.GridDrawConfig, 
                     _blockDrawer);
-                _viewportHandlers = new MainViewportManager(_fcContext, Config.MinZoom, 
+                _viewportManager = new MainViewportManager(_fcContext, Config.MinZoom, 
                     Config.MaxZoom);
 
-                _contextMenuManager = new FlowchartContextMenuManager();
+                _contextMenuManager = new ContextMenuManager();
                 _variablesPanel = new FcWindowVariablesPanel();
             }
 
@@ -349,7 +352,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             void RegisterModules()
             {
                 RegisterModule(_graphicsRenderer);
-                RegisterModule(_viewportHandlers);
+                RegisterModule(_viewportManager);
 
                 RegisterModule(_contextMenuManager);
                 RegisterModule(_inputDetector);
@@ -367,7 +370,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             void InitSubmodules()
             {
                 _graphicsRenderer.Initialize(this);
-                _viewportHandlers.Initialize(this);
+                _viewportManager.Initialize(this);
 
                 _inputDetector.Initialize(this);
                 _contextMenuManager.Initialize(this);
@@ -406,10 +409,10 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         #region Submodules
         private FcWindowGraphicsRenderer _graphicsRenderer;
-        private MainViewportManager _viewportHandlers;
+        private MainViewportManager _viewportManager;
         private readonly InputSignalModule _inputDetector = new InputSignalModule();
 
-        private FlowchartContextMenuManager _contextMenuManager;
+        private ContextMenuManager _contextMenuManager;
         private FcWindowVariablesPanel _variablesPanel;
         #endregion
         public InputSignalModule InputSignals => _inputDetector;
@@ -469,7 +472,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
             _inputDetector.OnGUI(Event.current);
-            _viewportHandlers.OnGUI(Event.current);
+            _viewportManager.OnGUI(Event.current);
         }
 
         private void OnSceneOpened(Scene scene, OpenSceneMode mode)
@@ -577,7 +580,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         void DisposeSubmodules()
         {
             _graphicsRenderer?.Dispose();
-            _viewportHandlers?.Dispose();
+            _viewportManager?.Dispose();
 
             _inputDetector.Dispose();
             _contextMenuManager?.Dispose();
@@ -587,7 +590,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         void NullOutSubmodules()
         {
             _graphicsRenderer = null;
-            _viewportHandlers = null;
+            _viewportManager = null;
             _contextMenuManager = null;
             _variablesPanel = null;
         }

@@ -201,7 +201,6 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                     Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
                     Block blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
-                    owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
                     bool mouseOverBlock = blockHit != null;
                     if (!mouseOverBlock)
                     {

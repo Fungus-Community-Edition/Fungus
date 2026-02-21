@@ -9,7 +9,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
     /// <summary>
     /// Shows the empty space popup window on right-click and listens for its button actions.
     /// </summary>
-    public sealed class FlowchartContextMenuManager : IFlowchartWindowModule, 
+    public sealed class ContextMenuManager : IFlowchartWindowModule, 
         IRightClickResponder, ILeftMouseUpResponder
     {
         public int Priority { get; set; } = 0;

@@ -17,7 +17,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         private Flowchart flowchart;
         private FlowchartContext context;
         private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
-        private SingleClickBlockSelector syncer;
+        private SingleSelectionHandler syncer;
         private GameObject previousSelection;
 
         [SetUp]
@@ -35,7 +35,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             context.Flowchart = flowchart;
 
             window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
-            syncer = new SingleClickBlockSelector(context);
+            syncer = new SingleSelectionHandler(context);
             syncer.Initialize(window);
 
             destroyOnTearDown.Add(flowchartObject);

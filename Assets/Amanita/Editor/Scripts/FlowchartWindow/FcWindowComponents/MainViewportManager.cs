@@ -24,13 +24,14 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 throw new ArgumentNullException(nameof(context));
             }
 
+
             _hitDetector = new HitDetector();
             _panHandler = new PanHandler(context);
             _zoomHandler = new ZoomHandler(context, minZoom, maxZoom);
             _scrollPosResetter = new ScrollPosResetter(context);
             _boxSelectionHandler = new SelectionBoxDragTrackerUitk(context);
             _blockDragHandler = new BlockDragHandler(context);
-            _singleClickBlockSelector = new SingleClickBlockSelector(context);
+            _singleClickBlockSelector = new SingleSelectionHandler(context);
             
 
             _submodules.Add(_hitDetector);
@@ -47,7 +48,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         private readonly ScrollPosResetter _scrollPosResetter;
         private readonly SelectionBoxDragTrackerUitk _boxSelectionHandler;
         private readonly BlockDragHandler _blockDragHandler;
-        private readonly SingleClickBlockSelector _singleClickBlockSelector;
+        private readonly SingleSelectionHandler _singleClickBlockSelector;
         private readonly HitDetector _hitDetector;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();

@@ -7,11 +7,11 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
     /// <summary>
     /// Handles single-click-driven block selection and empty space deselection.
     /// </summary>
-    public sealed class SingleClickBlockSelector : IFlowchartWindowModule, 
+    public sealed class SingleSelectionHandler : IFlowchartWindowModule, 
         IEmptySpaceLeftClickResponder, IBlockClickResponder, IBlockCreatedResponder
     {
         public int Priority { get; set; } = 0;
-        public SingleClickBlockSelector(FlowchartContext context)
+        public SingleSelectionHandler(FlowchartContext context)
         {
             flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -61,8 +61,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             bool validBlock = block != null; // We assume that the block belongs to the flowchart.
             if (!validBlock) // Probably empty space clicked.
             {
-                Flowchart.ClearSelectedBlocks();
-                Flowchart.ClearSelectedCommands();
+                Flowchart.DeselectAll();
                 return;
             }
 
@@ -87,14 +86,14 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         public void OnEmptySpaceLeftClicked(PointerEventInfo info)
         {
-            if (isDisposed)
+            if (isDisposed || Flowchart == null)
             {
                 return;
             }
 
             SetFlowchartAsSelecting(null);
 
-            if (Flowchart != null && Selection.activeGameObject != Flowchart.gameObject)
+            if (Selection.activeGameObject != Flowchart.gameObject)
             {
                 Selection.activeGameObject = Flowchart.gameObject;
             }

@@ -40,16 +40,17 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnMouseDown(PointerEventInfo eventInfo)
         {
-            ResetSelectionBox();
-            Block blockHit = TopmostBlockOverlapping(eventInfo.FlowchartPosition);
+            Block blockHit = TopmostBlockOverlapping(eventInfo.PanelPosition);
+            owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
             BlockHitInLastMouseDown = blockHit;
+
+            if (blockHit != null)
+            {
+                Debug.Log($"Hit block: {blockHit.BlockName}");
+            }
         }
 
         private FlowchartContext FcContext => owner.FcContext;
-        private void ResetSelectionBox()
-        {
-            FcContext.Interaction.ResetSelectionBox();
-        }
 
         private Block TopmostBlockOverlapping(Vector2 mousePos)
         {
