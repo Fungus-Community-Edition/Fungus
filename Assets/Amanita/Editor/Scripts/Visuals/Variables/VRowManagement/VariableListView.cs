@@ -38,6 +38,11 @@ namespace Amanita.VScripting.EditorUtils
             {
                 InitListViewStructure();
             }
+            else
+            {
+                string errorMessage = $"VariableListView was not given a valid ListView in its init args.";
+                Debug.LogError(errorMessage);
+            }
         }
 
         protected ListView _listDisplay;
@@ -351,7 +356,9 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void UpdateCount()
         {
             if (_countDisplay != null)
+            {
                 _countDisplay.text = $"Count: {varsToDisplay.Count}";
+            }
         }
 
         public event Action<IList<IVariable>> OrderChanged;
@@ -377,18 +384,25 @@ namespace Amanita.VScripting.EditorUtils
                     _listDisplay.Clear();
                     _listDisplay = null;
                 }
-
-                _listDisplay?.RemoveFromHierarchy();
             }
 
-            
-            _countDisplay?.RemoveFromHierarchy();
-            _countDisplay = null;
+            ResetCountDisplay();
             _rowFactory = null;
 
             _flowchart = null;
             _flowchartInstanceID = 0;
             _isDisposed = true;
+
+            void ResetCountDisplay()
+            {
+                if (_countDisplay == null)
+                {
+                    return;
+                }
+
+                _countDisplay.text = "Count: 0";
+                _countDisplay = null;
+            }
         }
 
         protected bool _isDisposed;
@@ -398,7 +412,11 @@ namespace Amanita.VScripting.EditorUtils
 
         protected void HandleUndoRedoPerformed()
         {
-            AcquireFlowchartIfLost();
+            if (!AcquireFlowchartIfLost())
+            {
+                return;
+            }
+
             SyncFromFlowchart();
             UpdateCount();
         }
@@ -457,7 +475,7 @@ namespace Amanita.VScripting.EditorUtils
                 found = false;
                 try
                 {
-                    var viaWindow = FlowchartWindow.GetFlowchart();
+                    var viaWindow = EditorSelectionTracker.ActiveFlowchart;
                     if (viaWindow != null)
                     {
                         SetFlowchart(viaWindow);

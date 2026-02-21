@@ -1,7 +1,9 @@
 /* Individual rows */
 #VariableDisplayEditorRoot
 {
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular');
+    /* -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
+
     background-color: rgba(0, 0, 255, 0.05);
     max-width: 500px;
 }
@@ -13,7 +15,7 @@
     align-items: center;     
     justify-content: flex-start;
     margin-bottom: 5px;
-    font-size: 20px;
+    font-size: 22px;
     height: 40px;
 }
 
@@ -34,6 +36,7 @@
 #addVarButton
 {
     background-color: white;
+
     color: black;
     height: 30px;
     font-size: 18px;

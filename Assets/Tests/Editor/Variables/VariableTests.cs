@@ -29,7 +29,13 @@ namespace VScriptingTests.VariableOperations
         public virtual void TearDown()
         {
             foreach (var obj in _toDestroy)
-                if (obj != null) UnityObj.DestroyImmediate(obj);
+            {
+                if (obj != null && obj != AmanitaManager.S.gameObject)
+                {
+                    UnityObj.DestroyImmediate(obj);
+                }
+            }
+        
             _toDestroy.Clear();
 
             fcHolder = null;

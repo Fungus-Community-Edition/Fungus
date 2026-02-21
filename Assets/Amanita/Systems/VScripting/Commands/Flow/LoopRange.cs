@@ -59,7 +59,7 @@ namespace Amanita.VScripting
             MoveToEnd();
         }
 
-        public override void OnValidate()
+        protected override void OnValidate()
         {
             // no infinite loops
             if (step.Value == 0)

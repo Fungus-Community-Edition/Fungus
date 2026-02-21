@@ -4,14 +4,20 @@ using UnityEngine;
 
 namespace Amanita.Tweening
 {
-    public class TweenManager : MonoBehaviour
+    public class TweenManager : MonoBehaviour, IAmanitaManagerSubmodule
     {
+        [SerializeField] private int orderIndex = 0;
+        public int OrderIndex => orderIndex;
         protected static TweenManager _s;
         public static TweenManager S
         {
             get
             {
                 return _s;
+            }
+            set
+            {
+                _s = value;
             }
         }
 

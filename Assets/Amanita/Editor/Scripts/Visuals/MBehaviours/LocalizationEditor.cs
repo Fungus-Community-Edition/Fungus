@@ -111,7 +111,7 @@ namespace Amanita.LocalizationSys.EditorUtils
 
         protected virtual void ShowNotification(Localization localization)
         {
-            FlowchartWindow.ShowNotification(localization.NotificationText);
+            //FlowchartWindow.ShowNotification(localization.NotificationText);
             localization.NotificationText = "";
         }
     }

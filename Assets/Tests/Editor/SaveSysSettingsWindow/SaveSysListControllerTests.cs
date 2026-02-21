@@ -3,7 +3,6 @@ using Amanita.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
@@ -177,14 +176,14 @@ public class DummyApplier : ScriptableObject, ISaveDataApplier
 
     public void Apply() { }
 
-    public Task Apply(SaveData saveData)
+    public void Apply(SaveData saveData, Action onComplete)
     {
-        return Task.CompletedTask;
+        onComplete?.Invoke();
     }
 
-    public Task ApplyRange(IList<SaveData> datas)
+    public void ApplyRange(IList<SaveData> datas, Action onComplete)
     {
-        return Task.CompletedTask;
+        onComplete?.Invoke();
     }
 
     public bool CanApply(SaveData saveData)

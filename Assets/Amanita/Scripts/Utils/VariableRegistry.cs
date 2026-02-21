@@ -86,10 +86,14 @@ namespace Amanita.VScripting
 
             // Other Flowcharts
             var cachedFcs = AmanitaManager.S.FlowchartsInScene;
-            foreach (var otherChart in cachedFcs.Where(fc => !ReferenceEquals(fc, localSource)))
+            foreach (var otherChart in cachedFcs.Where(fc => fc != null && !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)
                 {
+                    if (toRegister == null)
+                    {
+                        continue;
+                    }
                     string key = $"{otherChart.gameObject.name}/{toRegister.Key}";
                     Register(key, toRegister);
                     bool isLegacyVariable = toRegister is Variable;

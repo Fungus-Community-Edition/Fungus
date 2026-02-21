@@ -46,7 +46,6 @@ namespace Amanita.VScripting.EditorUtils
 				return;
 			}
 
-			AmanitaManager.EnsureExists();
 			upIcon = AmanitaEditorResources.Up;
 			downIcon = AmanitaEditorResources.Down;
 			addIcon = AmanitaEditorResources.Add;
@@ -565,8 +564,6 @@ namespace Amanita.VScripting.EditorUtils
 					showPlay = true;
 				}
 			}
-
-
 
 			CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
 

@@ -2,7 +2,6 @@ using Amanita.Myceliaudio;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Threading.Tasks;
 using Lorekeeper;
 
 namespace Amanita.SaveSys
@@ -10,7 +9,7 @@ namespace Amanita.SaveSys
     [SaveSysDisplayName("Myceliaudio Applier (Amanita Default)")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
-        public override Task Apply(MyceliaudioSaveData saveData)
+        public override void Apply(MyceliaudioSaveData saveData)
         {
             AudioSystem audioSys = AudioSystem.S;
             ApplyAudioSettings();
@@ -72,13 +71,13 @@ namespace Amanita.SaveSys
                 }
             }
         
-            return Task.CompletedTask;
         }
 
 
-        public override Task Apply(SaveData saveData)
+        public override void Apply(SaveData saveData, System.Action onComplete)
         {
-            return Apply(saveData as MyceliaudioSaveData);
+            Apply(saveData as MyceliaudioSaveData);
+            onComplete?.Invoke();
         }
 
     }

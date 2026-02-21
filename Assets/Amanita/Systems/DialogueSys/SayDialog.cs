@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Amanita.Lua;
 using Amanita.Tweening;
 
@@ -66,14 +65,14 @@ namespace Amanita.DialogueSys
 		[Tooltip("The character UI object")]
 		[SerializeField] protected Image characterImage;
 		public virtual Image CharacterImage { get { return characterImage; } }
-	
+
 		[Tooltip("Adjust width of story text when Character Image is displayed (to avoid overlapping)")]
 		[SerializeField] protected bool fitTextWithImage = true;
 
 		[Tooltip("Close any other open Say Dialogs when this one is active")]
 		[SerializeField] protected bool closeOtherDialogs;
 
-		protected float startStoryTextWidth; 
+		protected float startStoryTextWidth;
 		protected float startStoryTextInset;
 
 		protected WriterAudio writerAudio;
@@ -91,25 +90,17 @@ namespace Amanita.DialogueSys
 
 		protected StringSubstituter stringSubstituter = new StringSubstituter();
 
-		// Cache active Say Dialogs to avoid expensive scene search
-		protected static List<SayDialog> activeSayDialogs = new List<SayDialog>();
 
 		protected virtual void Awake()
 		{
-			if (!activeSayDialogs.Contains(this))
-			{
-				activeSayDialogs.Add(this);
-			}
-
 			nameTextAdapter.InitFromGameObject(nameText != null ? nameText.gameObject : nameTextGO);
 			storyTextAdapter.InitFromGameObject(storyText != null ? storyText.gameObject : storyTextGO);
 		}
 
 		protected virtual void OnDestroy()
 		{
-			activeSayDialogs.Remove(this);
 		}
-			
+
 		protected virtual Writer GetWriter()
 		{
 			if (writer != null)
@@ -132,13 +123,13 @@ namespace Amanita.DialogueSys
 			{
 				return canvasGroup;
 			}
-			
+
 			canvasGroup = GetComponent<CanvasGroup>();
 			if (canvasGroup == null)
 			{
 				canvasGroup = gameObject.AddComponent<CanvasGroup>();
 			}
-			
+
 			return canvasGroup;
 		}
 
@@ -148,13 +139,13 @@ namespace Amanita.DialogueSys
 			{
 				return writerAudio;
 			}
-			
+
 			writerAudio = GetComponent<WriterAudio>();
 			if (writerAudio == null)
 			{
 				writerAudio = gameObject.AddComponent<WriterAudio>();
 			}
-			
+
 			return writerAudio;
 		}
 
@@ -167,7 +158,7 @@ namespace Amanita.DialogueSys
 			GraphicRaycaster raycaster = GetComponent<GraphicRaycaster>();
 			if (raycaster == null)
 			{
-				gameObject.AddComponent<GraphicRaycaster>();    
+				gameObject.AddComponent<GraphicRaycaster>();
 			}
 
 			// It's possible that SetCharacterImage() has already been called from the
@@ -179,7 +170,7 @@ namespace Amanita.DialogueSys
 				SetCharacterName("", Color.white);
 			}
 			if (currentCharacterImage == null)
-			{                
+			{
 				// Character image is hidden by default.
 				SetCharacterImage(null);
 			}
@@ -191,7 +182,7 @@ namespace Amanita.DialogueSys
 
 			if (continueButton != null)
 			{
-				continueButton.gameObject.SetActive( GetWriter().IsWaitingForInput );
+				continueButton.gameObject.SetActive(GetWriter().IsWaitingForInput);
 			}
 		}
 
@@ -225,7 +216,7 @@ namespace Amanita.DialogueSys
 				canvasGroup.alpha = alpha;
 
 				if (alpha <= 0f)
-				{                   
+				{
 					// Deactivate dialog object once invisible
 					gameObject.SetActive(false);
 				}
@@ -240,48 +231,6 @@ namespace Amanita.DialogueSys
 		#region Public members
 
 		public Character SpeakingCharacter { get { return speakingCharacter; } }
-
-		/// <summary>
-		/// Currently active Say Dialog used to display Say text
-		/// </summary>
-		public static SayDialog ActiveSayDialog { get; set; }
-
-		/// <summary>
-		/// Returns a SayDialog by searching for one in the scene or creating one if none exists.
-		/// </summary>
-		public static SayDialog GetSayDialog()
-		{
-			if (ActiveSayDialog == null)
-			{
-				SayDialog sd = null;
-
-				// Use first active Say Dialog in the scene (if any)
-				if (activeSayDialogs.Count > 0)
-				{
-					sd = activeSayDialogs[0];
-				}
-
-				if (sd != null)
-				{
-					ActiveSayDialog = sd;
-				}
-
-				if (ActiveSayDialog == null)
-				{
-					// Auto spawn a say dialog object from the prefab
-					GameObject prefab = Resources.Load<GameObject>("Prefabs/SayDialog");
-					if (prefab != null)
-					{
-						GameObject go = Instantiate(prefab) as GameObject;
-						go.SetActive(false);
-						go.name = "SayDialog";
-						ActiveSayDialog = go.GetComponent<SayDialog>();
-					}
-				}
-			}
-
-			return ActiveSayDialog;
-		}
 
 		/// <summary>
 		/// Stops all active portrait tweens.
@@ -392,7 +341,7 @@ namespace Amanita.DialogueSys
 					// Use game object name as default
 					characterName = character.GetObjectName();
 				}
-					
+
 				SetCharacterName(characterName, character.NameColor);
 			}
 		}
@@ -419,34 +368,34 @@ namespace Amanita.DialogueSys
 
 				if (startStoryTextWidth != 0)
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
+						startStoryTextInset,
 						startStoryTextWidth);
 				}
 			}
 
 			// Adjust story text box to not overlap image rect
-			if (fitTextWithImage && 
+			if (fitTextWithImage &&
 				StoryText != null &&
 				characterImage.gameObject.activeSelf)
 			{
 				if (Mathf.Approximately(startStoryTextWidth, 0f))
 				{
 					startStoryTextWidth = StoryTextRectTrans.rect.width;
-					startStoryTextInset = StoryTextRectTrans.offsetMin.x; 
+					startStoryTextInset = StoryTextRectTrans.offsetMin.x;
 				}
 
 				// Clamp story text to left or right depending on relative position of the character image
 				if (StoryTextRectTrans.position.x < characterImage.rectTransform.position.x)
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
+						startStoryTextInset,
 						startStoryTextWidth - characterImage.rectTransform.rect.width);
 				}
 				else
 				{
-					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 
-						startStoryTextInset, 
+					StoryTextRectTrans.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right,
+						startStoryTextInset,
 						startStoryTextWidth - characterImage.rectTransform.rect.width);
 				}
 			}
@@ -506,12 +455,12 @@ namespace Amanita.DialogueSys
 
 			if (closeOtherDialogs)
 			{
-				for (int i = 0; i < activeSayDialogs.Count; i++)
+				var activeSayDialogs = SayDialogManager.S.ActiveSayDialogs;
+				foreach (var dialog in activeSayDialogs)
 				{
-					var sd = activeSayDialogs[i];
-					if (sd.gameObject != gameObject)
+					if (dialog != this)
 					{
-						sd.SetActive(false);
+						dialog.SetActive(false);
 					}
 				}
 			}
@@ -540,7 +489,7 @@ namespace Amanita.DialogueSys
 		/// <summary>
 		/// Tell the Say Dialog to fade out once writing and player input have finished.
 		/// </summary>
-		public virtual bool FadeWhenDone { get {return fadeWhenDone; } set { fadeWhenDone = value; } }
+		public virtual bool FadeWhenDone { get { return fadeWhenDone; } set { fadeWhenDone = value; } }
 
 		/// <summary>
 		/// Stop the Say Dialog while its writing text.
@@ -563,5 +512,15 @@ namespace Amanita.DialogueSys
 		}
 
 		#endregion
+
+		protected virtual void OnEnable()
+		{
+			DialogueSysSignals.SayDialogEnabled(this);
+		}
+
+		protected virtual void OnDisable()
+		{
+			DialogueSysSignals.SayDialogDisabled(this);
+		}
 	}
 }

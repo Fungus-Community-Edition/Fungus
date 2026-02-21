@@ -26,20 +26,20 @@ namespace Amanita.VScripting.EditorUtils
             IVariable currentLeftHandSideVar = ReadIVariable(lhsVarRefProp);
 
             AnyVariableAndDataPair pairInstance = holdsVarAndDataPair.boxedValue as AnyVariableAndDataPair;
+            AnyVariableData anyVarData = pairInstance.Data;
             position.y += EditorGUIUtility.singleLineHeight;
 
             HandleInnerDataField();
             void HandleInnerDataField()
             {
                 // Safely read AnyVariableData whether Unity reports ManagedReference or Generic.
-                SerializedProperty anyVarDataProp = holdsVarAndDataPair.FindPropertyRelative("data");
-                AnyVariableData anyVarData = anyVarDataProp.boxedValue as AnyVariableData;
-
-                if (anyVarData != null && currentLeftHandSideVar != null)
+                var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
+                if (effectiveVarType == null)
                 {
-                    var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
-                    anyVarData.SetFor(effectiveVarType, currentLeftHandSideVar.ContentType);
+                    EditorGUI.LabelField(position, "Must select a variable before setting data.");
+                    return;
                 }
+                anyVarData.SetFor(effectiveVarType, currentLeftHandSideVar.ContentType);
 
                 HandleLhsVarChanges();
                 void HandleLhsVarChanges()
@@ -53,7 +53,6 @@ namespace Amanita.VScripting.EditorUtils
                     }
                 }
 
-                anyVarDataProp.boxedValue = anyVarData;
                 holdsVarAndDataPair.boxedValue = pairInstance;
                 holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
 
@@ -81,7 +80,7 @@ namespace Amanita.VScripting.EditorUtils
             // We assume that we are drawing as part of a Command's editor fields, and that
             // thus we have a Flowchart selected. We'll use that to find the variable instance.
             VariableReference reference = (VariableReference)prop.boxedValue;
-            reference.VarOwner = FlowchartWindow.GetFlowchart();
+            reference.VarOwner = EditorSelectionTracker.ActiveFlowchart;
             return reference.Variable;
         }
 

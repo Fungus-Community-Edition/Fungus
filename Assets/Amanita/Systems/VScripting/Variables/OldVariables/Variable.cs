@@ -38,20 +38,6 @@ namespace Amanita.VScripting
 
         public static readonly byte InvalidID = 0;
 
-        public virtual int OwnerIdIndex
-        {
-            get
-            {
-                var owner = GetFlowchart();
-                if (owner != null)
-                {
-                    return AmanitaManager.GetNumericIdTiedTo(owner.UniqueId);
-                }
-
-                return -1;
-            }
-        }
-
         public virtual bool IsScalar() => false;
 
         // Non-global variables each belong to a particular Flowchart. Thus, rather

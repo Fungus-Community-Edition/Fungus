@@ -1,366 +1,574 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Amanita.EditorUtils;
-using System;
+using UnityEngine.UIElements;
+using UitkButton = UnityEngine.UIElements.Button;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
+    public interface IBlockDrawerUitk
+    {
+        UitkButton CreateButton(Block block);
+        void UpdateButton(UitkButton button, Block block, float zoom);
+    }
+
     /// <summary>
-    /// Handles drawing all the Blocks in the currently-selected Flowchart
+    /// Renders Flowchart blocks as UITK buttons that size themselves to their contents.
     /// </summary>
-    public class BlockRenderer : IDisposable
+    internal sealed class BlockRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
+        IFlowchartChangeResponder, IWindowPanResponder, IScrollWheelMoveResponder,
+        IBlockCreatedResponder,
+        IBlockSelectionResponder, IPreBlockDeletionResponder,
+        IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
+        ILeftMouseDragStartResponder, ILeftMouseDragResponder,
+        ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
+        IMultiBlockDeselectionResponder, IBlockRectProvider,
+        IPostBlockCutResponder, IPostMultiBlockCutResponder
     {
-        public virtual void Dispose()
+        public int Priority { get; set; } = 0;
+        private readonly Dictionary<Block, BlockBinding> blockBindings = new();
+        private FlowchartWindow owner;
+        private bool isDisposed;
+        private bool initialRefreshPending;
+
+        /// <summary>
+        /// Binds a block to its visual representation and event handlers.
+        /// </summary>
+        private sealed class BlockBinding
         {
-            _drawer = null;
-            _graphicsGenerator = null;
-        }
-
-        public BlockRenderer(IBlockDrawer drawer, IBlockGraphicsGenerator graphicsGenerator)
-        {
-            _drawer = drawer;
-            _graphicsGenerator = graphicsGenerator;
-        }
-
-        protected IBlockDrawer _drawer;
-        protected IBlockGraphicsGenerator _graphicsGenerator;
-
-        public virtual void Render(DrawBlockContext drawCtx)
-        {
-            var fc = drawCtx.FlowchartCtx.Flowchart;
-            var viewRect = drawCtx.ViewRect;
-
-            foreach (var block in drawCtx.FlowchartCtx.AllBlocks)
-            {
-                // size in model-space
-                var content = new GUIContent(block.BlockName);
-                var textSize = drawCtx.NodeStyle.CalcSize(content);
-                const float pad = 10f;
-
-                Rect modelRect = block._NodeRect;
-                modelRect.width = Mathf.Clamp(textSize.x + pad, drawCtx.BlockMinWidth, drawCtx.BlockMaxWidth);
-                modelRect.height = drawCtx.DefaultBlockHeight;
-                if (drawCtx.UseGridSnap)
-                    modelRect = modelRect.SnapPosition(drawCtx.GridObjectSnap);
-
-                // scroll (no manual zoom here—EditorZoomArea handles that)
-                Rect windowRect = modelRect;
-                windowRect.position += fc.ScrollPos;
-
-                // clip
-                if (!viewRect.Overlaps(windowRect))
-                    continue;
-
-                // stash it and draw
-                drawCtx.CurrentBlockWindowRect = windowRect;
-                drawCtx.Graphics = _graphicsGenerator.GenerateFor(block);
-                _drawer.Draw(block, drawCtx);
-            }
-        }
-
-        protected virtual Rect ToWindowSpaceRect(Rect baseRect, DrawBlockContext drawCtx)
-        {
-            Flowchart fc = drawCtx.FlowchartCtx.Flowchart;
-            Rect result = baseRect;
-
-            if (drawCtx.UseGridSnap)
-                result = result.SnapPosition(drawCtx.GridObjectSnap);
-            result.position += fc.ScrollPos;
-
-            return result;
-        }
-    }
-
-    public interface IBlockDrawer
-    {
-        void Draw(Block toDraw, DrawBlockContext drawCtx);
-    }
-
-    public class DefaultBlockDrawer : IBlockDrawer
-    {
-        public void Draw(Block block, DrawBlockContext ctx)
-        {
-            var rect = ctx.CurrentBlockWindowRect;    // THIS is screen-space in zoomed coords
-
-            var graphics = ctx.Graphics;
-            var style = ctx.NodeStyle;
-            var savedBg = style.normal.background;
-            var savedTxt = style.normal.textColor;
-            
-            GUIStyle nodeStyle = ctx.NodeStyle;
-
-            // highlight
-            if (block.IsSelected && !block.IsControlSelected)
-            {
-                //Debug.Log($"Block {block.BlockName} is selected");
-                GUI.backgroundColor = Color.white;
-                style.normal.background = graphics.onTexture;
-                GUI.Box(rect, "", style);
-                style.normal.background = savedBg;
-            }
-
-            // Draw tinted block; ensure text is readable
-            var brightness = graphics.tint.r * 0.3 + graphics.tint.g * 0.59 + graphics.tint.b * 0.11;
-            var tmpNormTxtCol = nodeStyle.normal.textColor;
-            nodeStyle.normal.textColor = brightness >= 0.5 ? Color.black : Color.white;
-
-            SetBlockOpacity();
-            void SetBlockOpacity()
-            {
-                switch (block.FilterState)
-                {
-                    case Block.FilteredState.Full:
-                        break;
-                    case Block.FilteredState.Partial:
-                        graphics.tint.a *= 0.65f;
-                        break;
-                    case Block.FilteredState.None:
-                        graphics.tint.a *= 0.2f;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            nodeStyle.normal.background = graphics.offTexture;
-            GUI.backgroundColor = graphics.tint;
-            GUI.Box(rect, block.BlockName, nodeStyle);
-
-            GUI.backgroundColor = Color.white;
-
-            // description
-            if (!string.IsNullOrEmpty(block.Description))
-            {
-                var descRect = rect;
-                descRect.y += rect.height;
-                descRect.height = ctx.DescriptionStyle.CalcHeight(
-                    new GUIContent(block.Description), rect.width);
-                GUI.Label(descRect, block.Description, ctx.DescriptionStyle);
-            }
-
-            // restore state
-            style.normal.textColor = savedTxt;
-            GUI.backgroundColor = Color.white;
+            public UitkButton Button;
+            public Action ClickHandler;
         }
         
-        protected virtual BlockGraphics GetBlockGraphics(Block block)
+        public BlockRenderer(FlowchartContext context, IBlockDrawerUitk blockDrawer)
         {
-            var graphics = new BlockGraphics();
+            fcContext = context ?? throw new ArgumentNullException(nameof(context));
+            drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
-            blockGraphicsUniqueListWorkSpace.Clear();
-            blockGraphicsConnectedWorkSpace.Clear();
-            Color defaultTint;
-            if (block._EventHandler != null)
+            //pickingMode = PickingMode.Ignore;
+            style.position = Position.Absolute;
+            style.flexGrow = 1f;
+
+            RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
             {
-                graphics.offTexture = AmanitaEditorResources.EventNodeOff;
-                graphics.onTexture = AmanitaEditorResources.EventNodeOn;
-                defaultTint = AmanitaConstants.DefaultEventBlockTint;
+                Undo.undoRedoPerformed += OnUndoRedoPerformedFirst;
             }
             else
             {
-                // Count the number of unique connections (excluding self references)
-                block.GetConnectedBlocks(ref blockGraphicsConnectedWorkSpace);
-                foreach (var connectedBlock in blockGraphicsConnectedWorkSpace)
-                {
-                    if (connectedBlock == block ||
-                        blockGraphicsUniqueListWorkSpace.Contains(connectedBlock))
-                    {
-                        continue;
-                    }
-                    blockGraphicsUniqueListWorkSpace.Add(connectedBlock);
-                }
+                Undo.undoRedoPerformed -= OnUndoRedoPerformedFirst;
+            }
+        }
 
-                if (blockGraphicsUniqueListWorkSpace.Count > 1)
+        private void OnUndoRedoPerformedFirst()
+        {
+            ClearAll(); // Helps prevent some buttons from sticking around when they shouldn't.
+            RefreshBlocks();
+        }
+
+        private readonly FlowchartContext fcContext;
+        private readonly IBlockDrawerUitk drawer;
+
+        public void Initialize(FlowchartWindow window)
+        {
+            owner = window;
+            initialRefreshPending = true;
+            ToggleSubs(true);
+            TryRefreshAfterLayout();
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent evt)
+        {
+            TryRefreshAfterLayout();
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+            {
+                return;
+            }
+
+            TryRefreshAfterLayout();
+        }
+
+        private void TryRefreshAfterLayout()
+        {
+            if (!initialRefreshPending)
+            {
+                return;
+            }
+
+            if (panel == null)
+            {
+                return;
+            }
+
+            if (contentRect.width <= 0f || contentRect.height <= 0f)
+            {
+                return;
+            }
+
+            initialRefreshPending = false;
+            RefreshBlocks();
+        }
+
+        public void RefreshBlocks()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            Flowchart flowchart = fcContext.Flowchart;
+            if (flowchart == null)
+            {
+                ClearAll();
+                return;
+            }
+
+            IReadOnlyCollection<Block> present = fcContext.Document.AllBlocks;
+            RemoveMissing(present);
+
+            foreach (var block in present)
+            {
+                EnsureBlockVisual(block);
+            }
+
+            UpdateBlockLayouts();
+            MarkDirtyRepaint();
+        }
+
+        private void RemoveMissing(IReadOnlyCollection<Block> currentBlocks)
+        {
+            using ListPool<Block>.DisposableList pooledKeysHandle = ListPool<Block>.Get(out List<Block> pooledKeys);
+            pooledKeys.AddRange(blockBindings.Keys);
+            for (int i = 0; i < pooledKeys.Count; i++)
+            {
+                Block tracked = pooledKeys[i];
+                if (!ContainsBlock(currentBlocks, tracked))
                 {
-                    graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
-                    defaultTint = AmanitaConstants.DefaultChoiceBlockTint;
+                    RemoveBlock(tracked);
                 }
-                else
+            }
+        }
+
+        private static bool ContainsBlock(IReadOnlyCollection<Block> blocks, Block target)
+        {
+            if (blocks == null)
+            {
+                return false;
+            }
+
+            if (blocks is ICollection<Block> collection)
+            {
+                return collection.Contains(target);
+            }
+
+            foreach (var block in blocks)
+            {
+                if (ReferenceEquals(block, target))
                 {
-                    graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
-                    defaultTint = AmanitaConstants.DefaultProcessBlockTint;
+                    return true;
                 }
             }
 
-            graphics.tint = (block.UseCustomTint ? block.Tint : defaultTint) * AmanitaEditorPreferences.flowchartBlockTint;
-
-            return graphics;
+            return false;
         }
 
-        static protected IList<Block> blockGraphicsUniqueListWorkSpace = new List<Block>();
-        static protected List<Block> blockGraphicsConnectedWorkSpace = new List<Block>();
-
-    }
-
-    public class DrawBlockContext : IDisposable
-    {
-        public virtual void Dispose()
+        private void RemoveBlock(Block block)
         {
-            BlockMinWidth = 60;
-            BlockMinWidth = 240;
-            DefaultBlockHeight = 40;
-            NodeStyle = DescriptionStyle = HandlerStyle = BlockSearchPopupNormalStyle =
-                BlockSearchPopupSelectedStyle = null;
-            Graphics = default;
-            ViewRect = CurrentBlockWindowRect = default;
-        }
-
-        public virtual FlowchartContext FlowchartCtx { get; set; }
-        public virtual float BlockMinWidth { get; set; } = 60;
-        public virtual float BlockMaxWidth { get; set; } = 240;
-        public virtual float DefaultBlockHeight { get; set; } = 40;
-        public virtual bool UseGridSnap { get { return AmanitaEditorPreferences.useGridSnap; } }
-        public virtual float GridObjectSnap { get { return FlowchartCtx.GridObjectSnap; } }
-        public virtual GUIStyle NodeStyle { get; set; }
-        public virtual GUIStyle DescriptionStyle { get; set; }
-        public virtual GUIStyle HandlerStyle { get; set; }
-        public virtual GUIStyle BlockSearchPopupNormalStyle { get; set; }
-        public virtual GUIStyle BlockSearchPopupSelectedStyle { get; set; }
-        public virtual BlockGraphics Graphics { get; set; }
-        public virtual IList<Block> AllBlocks { get { return FlowchartCtx.AllBlocks; } }
-        public virtual Rect ViewRect { get; set; }
-        public Rect CurrentBlockWindowRect { get; set; }
-
-    }
-
-    public interface IBlockGraphicsGenerator
-    {
-        BlockGraphics GenerateFor(Block block);
-    }
-
-    public class BlockGraphicsGenerator : IBlockGraphicsGenerator
-    {
-        public virtual BlockGraphics GenerateFor(Block block)
-        {
-            var graphics = new BlockGraphics();
-
-            blockGraphicsUniqueListWorkSpace.Clear();
-            blockGraphicsConnectedWorkSpace.Clear();
-            Color defaultTint;
-            if (block._EventHandler != null)
+            if (!blockBindings.TryGetValue(block, out BlockBinding binding))
             {
-                graphics.offTexture = AmanitaEditorResources.EventNodeOff;
-                graphics.onTexture = AmanitaEditorResources.EventNodeOn;
-                defaultTint = AmanitaConstants.DefaultEventBlockTint;
+                return;
+            }
+
+            UitkButton buttonToRemove = binding.Button;
+            if (buttonToRemove != null)
+            {
+                UnregisterInputForwarders(buttonToRemove);
+
+                if (binding.ClickHandler != null)
+                {
+                    buttonToRemove.clicked -= binding.ClickHandler;
+                }
+
+                buttonToRemove.visible = false;
+                buttonToRemove.style.display = DisplayStyle.None;
+                buttonToRemove.MarkDirtyRepaint();
+                buttonToRemove.RemoveFromHierarchy();
+                
+            }
+
+            blockBindings.Remove(block);
+            MarkDirtyRepaint();
+        }
+
+        private void EnsureBlockVisual(Block block)
+        {
+            if (block == null)
+            {
+                return;
+            }
+
+            bool blockAlreadyDrawn = blockBindings.TryGetValue(block, out BlockBinding binding);
+            if (!blockAlreadyDrawn)
+            {
+                UitkButton button = drawer.CreateButton(block);
+                button.name = block.BlockName;
+                button.style.position = Position.Absolute;
+
+                RegisterInputForwarders(button);
+
+                var capturedBlock = block;
+                button.clicked += OnClick;
+                void OnClick()
+                {
+                    BlockSignals.BlockLeftClicked?.Invoke(capturedBlock, Event.current);
+                }
+                
+                void OnButtonGeometryChanged(GeometryChangedEvent evt)
+                {
+                    if (evt.newRect.width <= 0f || evt.newRect.height <= 0f)
+                    {
+                        return;
+                    }
+                    // We do this (calling UpdateButton on the first geometry change) so that right when the
+                    // window opens, the button is rendered at the right size. For some reason, putting
+                    // RefreshBlocks in Initialize doesn't work...
+                    button.UnregisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
+                    drawer.UpdateButton(button, capturedBlock, CurrentZoom);
+                    UpdateBlockLayouts();
+                }
+                button.RegisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
+
+                binding = new BlockBinding
+                {
+                    Button = button,
+                    ClickHandler = OnClick
+                };
+                
+                blockBindings.Add(block, binding);
+                Add(button);
+            }
+
+            drawer.UpdateButton(binding.Button, block, CurrentZoom);
+        }
+
+        /// <summary>
+        /// Based on the current scroll and zoom, update the positions and sizes of all block buttons.
+        /// </summary>
+        private void UpdateBlockLayouts()
+        {
+            Vector2 scroll = CurrentScroll;
+            float zoom = CurrentZoom;
+
+            foreach (var pair in blockBindings)
+            {
+                Block block = pair.Key;
+                UitkButton button = pair.Value.Button;
+                if (block == null || button == null)
+                {
+                    continue;
+                }
+
+                Rect rect = block._NodeRect;
+                Vector2 viewPos = (rect.position + scroll) * zoom;
+
+                button.style.left = viewPos.x;
+                button.style.top = viewPos.y;
+
+                drawer.UpdateButton(button, block, zoom);
+            }
+        }
+
+        private Vector2 CurrentScroll
+        {
+            get
+            {
+                Flowchart flowchart = fcContext.Flowchart;
+                return flowchart != null ? flowchart.ScrollPos : Vector2.zero;
+            }
+        }
+
+        private float CurrentZoom
+        {
+            get
+            {
+                Flowchart flowchart = fcContext.Flowchart;
+                float zoom = flowchart != null ? flowchart.Zoom : 1f;
+                return Mathf.Approximately(zoom, 0f) ? 1f : zoom;
+            }
+        }
+
+        #region Callbacks
+        public void OnFlowchartChanged(Flowchart previous, Flowchart next)
+        {
+            RefreshBlocks();
+        }
+
+        public void OnWindowPanned()
+        {
+            UpdateBlockLayouts();
+        }
+
+        public void OnScrollWheelMoved()
+        {
+            UpdateBlockLayouts();
+        }
+
+        public void OnMultiBlocksSelected(IList<Block> blocks)
+        {
+            UpdateButtonForMultiBlocks(blocks);
+        }
+
+        private void UpdateButtonForMultiBlocks(IList<Block> blocks)
+        {
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                UpdateButtonForBlock(blocks[i]);
+            }
+        }
+
+        private void UpdateButtonForBlock(Block block)
+        {
+            // It's possible that this is being called in response to a block from another
+            // Flowchart being deselected due to a Flowchart change. In that case, we won't
+            // have a binding for this block, and that's fine - we just won't update any button.
+            if (block == null)
+            {
+                return;
+            }
+            if (blockBindings.TryGetValue(block, out BlockBinding binding))
+            {
+                drawer.UpdateButton(binding.Button, block, CurrentZoom);
             }
             else
             {
-                // Count the number of unique connections (excluding self references)
-                block.GetConnectedBlocks(ref blockGraphicsConnectedWorkSpace);
-                foreach (var connectedBlock in blockGraphicsConnectedWorkSpace)
-                {
-                    if (connectedBlock == block ||
-                        blockGraphicsUniqueListWorkSpace.Contains(connectedBlock))
-                    {
-                        continue;
-                    }
-                    blockGraphicsUniqueListWorkSpace.Add(connectedBlock);
-                }
-
-                if (blockGraphicsUniqueListWorkSpace.Count > 1)
-                {
-                    graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
-                    defaultTint = AmanitaConstants.DefaultChoiceBlockTint;
-                }
-                else
-                {
-                    graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
-                    defaultTint = AmanitaConstants.DefaultProcessBlockTint;
-                }
+                // We probably just created this block, so ensure it has a visual.
+                EnsureBlockVisual(block);
             }
-
-            graphics.tint = (block.UseCustomTint ? block.Tint : defaultTint) * AmanitaEditorPreferences.flowchartBlockTint;
-
-            return graphics;
         }
 
-        static protected IList<Block> blockGraphicsUniqueListWorkSpace = new List<Block>();
-        static protected List<Block> blockGraphicsConnectedWorkSpace = new List<Block>();
-    }
-
-    public interface INodeStyleProvider
-    {
-        void ProvideStylesTo(DrawBlockContext ctx);
-    }
-
-    public class NodeStyleProvider : INodeStyleProvider
-    {
-        // cache styles here, rather than duping them for every block we may ever draw,
-        // does mean any modifications made to the style when drawing must be undone as you go
-        // ^The comment that was above InitStyles in an older ver of FlowchartWindow.cs
-        public virtual void ProvideStylesTo(DrawBlockContext ctx)
+        public void OnBlockDeselected(Block block)
         {
-            PrepStyles();
-            void PrepStyles()
+            UpdateButtonForBlock(block);
+        }
+
+        public void OnMultiBlocksDeselected(IList<Block> blocks)
+        {
+            UpdateButtonForMultiBlocks(blocks);
+        }
+
+        #endregion
+
+        public void OnBlockSelected(Block block)
+        {
+            UpdateButtonForBlock(block);
+        }
+
+        private void ClearAll()
+        {
+            foreach (var entry in blockBindings)
             {
-                // To reduce GC cruft, we want to cache the styles we provide
-                if (nodeStyle == null)
-                {
-                    nodeStyle = new GUIStyle();
-                }
-
-                // All block nodes use the same GUIStyle, but with a different background
-                nodeStyle.border = new RectOffset(HorizontalPad, HorizontalPad,
-                    VerticalPad, VerticalPad);
-                nodeStyle.padding = nodeStyle.border;
-                nodeStyle.contentOffset = Vector2.zero;
-                nodeStyle.alignment = TextAnchor.MiddleCenter;
-                nodeStyle.wordWrap = true;
-
-                if (EditorStyles.helpBox != null && descriptionStyle == null)
-                {
-                    descriptionStyle = new GUIStyle(EditorStyles.helpBox);
-                }
-                descriptionStyle.wordWrap = true;
-
-                if (EditorStyles.whiteLabel != null && handlerStyle == null)
-                {
-                    handlerStyle = new GUIStyle(EditorStyles.label);
-                }
-                handlerStyle.wordWrap = true;
-                handlerStyle.margin.top = 0;
-                handlerStyle.margin.bottom = 0;
-                handlerStyle.alignment = TextAnchor.MiddleCenter;
-
-                if (blockSearchPopupNormalStyle == null || blockSearchPopupSelectedStyle == null)
-                {
-                    blockSearchPopupNormalStyle = new GUIStyle(GUI.skin.FindStyle("MenuItem"));
-                }
-                blockSearchPopupNormalStyle.padding = new RectOffset(8, 0, 0, 0);
-                blockSearchPopupNormalStyle.imagePosition = ImagePosition.ImageLeft;
-                blockSearchPopupSelectedStyle = new GUIStyle(blockSearchPopupNormalStyle);
-                blockSearchPopupSelectedStyle.normal = blockSearchPopupSelectedStyle.hover;
-                blockSearchPopupNormalStyle.hover = blockSearchPopupNormalStyle.normal;
+                UnregisterInputForwarders(entry.Value.Button);
+                UnsubClickHandler(entry.Value);
+                entry.Value.Button?.RemoveFromHierarchy();
             }
+            blockBindings.Clear();
+        }
 
-            DoTheProviding();
-            void DoTheProviding()
+        private void UnsubClickHandler(BlockBinding binding)
+        {
+            if (binding.Button != null && binding.ClickHandler != null)
             {
-                ctx.NodeStyle = nodeStyle;
-                ctx.DescriptionStyle = descriptionStyle;
-                ctx.HandlerStyle = handlerStyle;
-                ctx.BlockSearchPopupNormalStyle = blockSearchPopupNormalStyle;
-                ctx.BlockSearchPopupSelectedStyle = blockSearchPopupSelectedStyle;
+                binding.Button.clicked -= binding.ClickHandler;
             }
         }
 
-        protected GUIStyle nodeStyle, descriptionStyle,
-            handlerStyle, blockSearchPopupNormalStyle,
-            blockSearchPopupSelectedStyle;
+        public void OnPreBlockDeletion(IList<Block> blocks)
+        {
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                var blockEl = blocks[i];
+                RemoveBlock(blockEl);
+            }
+        }
 
-        public virtual int HorizontalPad { get; set; } = 20;
-        public virtual int VerticalPad { get; set; } = 5;
+        public void OnPreBlockDeletion(Block block)
+        {
+            RemoveBlock(block);
+        }
+
+        public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
+        {
+            #region Keep Blocks from blocking drag events
+            foreach (var entry in blockBindings)
+            {
+                var button = entry.Value.Button;
+                if (button != null)
+                {
+                    button.pickingMode = PickingMode.Ignore;
+                }
+            }
+            #endregion
+        }
+
+        public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
+        {
+            #region Let Blocks be selectable again
+            foreach (var entry in blockBindings)
+            {
+                var button = entry.Value.Button;
+                if (button != null)
+                {
+                    button.pickingMode = PickingMode.Position;
+                }
+            }
+            #endregion
+        }
+
+        public bool TryGetBlockRect(Block block, out Rect rect)
+        {
+            rect = default;
+            if (block == null)
+            {
+                return false;
+            }
+
+            if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button == null)
+            {
+                return false;
+            }
+
+            VisualElement parentEl = parent;
+            Rect worldRect = binding.Button.worldBound;
+
+            if (parentEl == null)
+            {
+                rect = worldRect;
+                return true;
+            }
+
+            Vector2 localPos = parentEl.WorldToLocal(worldRect.position);
+            rect = new Rect(localPos, worldRect.size);
+            return true;
+        }
+
+        public void Dispose()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+            ToggleSubs(false);
+            isDisposed = true;
+            ClearAll();
+            UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            RemoveFromHierarchy();
+        }
+
+        private InputSignalModule InputSignals => owner != null ? owner.InputSignals : null;
+
+        private void RegisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.RegisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.RegisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.RegisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.RegisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void UnregisterInputForwarders(UitkButton button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.UnregisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            button.UnregisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            button.UnregisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            button.UnregisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+        }
+
+        private void OnBlockPointerDown(PointerDownEvent evt)
+        {
+            InputSignals?.OnPointerDown(evt);
+        }
+
+        private void OnBlockPointerMove(PointerMoveEvent evt)
+        {
+            InputSignals?.OnPointerMove(evt);
+        }
+
+        private void OnBlockPointerUp(PointerUpEvent evt)
+        {
+            Debug.Log("BlockRendererUitk received pointer up event, forwarding to InputSignals.");
+            //InputSignals?.OnPointerUp(evt);
+        }
+
+        private void OnBlockPointerCancel(PointerCancelEvent evt)
+        {
+            // No op
+        }
+
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
+        {
+            if (fcContext.Interaction.BlockDragOngoing)
+            {
+                UpdateBlockLayouts();
+            }
+        }
+
+        public void OnBlockCreated(Block block)
+        {
+            UpdateButtonForBlock(block);
+        }
+
+        public void OnPostBlockDeletion(ushort blockId)
+        {
+            // Why do this in post? It's because by the time that the pre signal fires, the
+            // block(s) are still registered in the Flowchart. That leads to the
+            // should've-been-deleted blocks still being drawn in RefreshBlocks, which causes
+            // weird visual bugs. By waiting until post, we ensure that the blocks are fully
+            // deleted from the Flowchart before we try to refresh our visuals.
+            ClearAll();
+            RefreshBlocks();
+        }
+
+        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        {
+            ClearAll();
+            RefreshBlocks();
+        }
+
+        public void OnPostBlockCut(ushort blockId)
+        {
+            OnPostBlockDeletion(blockId);
+        }
+
+        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        {
+            OnPostMultiBlockDeletion(blockIds);
+        }
     }
 
-    public struct BlockGraphics
-    {
-        internal Color tint;
-        internal Texture2D onTexture;
-        internal Texture2D offTexture;
-    }
 }

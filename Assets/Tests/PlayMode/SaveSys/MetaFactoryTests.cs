@@ -63,16 +63,16 @@ namespace SaveSystemTests
         {
             VersionProvider.VersionToReturn = string.Empty;
             var meta = Factory.CreateMeta(slotNumber: 1);
-            bool success = meta.SaveVersion == SaveSysConstants.NullSaveVer;
+            bool success = meta.SaveVersion == SaveSysConstants.DefaultSaveVer;
             Assert.IsTrue(success, "Meta save version is not null when app version is empty");
         }
 
         [Test]
         public void CreateMeta_HasNullSaveVersion_WhenApplicationVersionIsNullConstant()
         {
-            VersionProvider.VersionToReturn = SaveSysConstants.NullSaveVer;
+            VersionProvider.VersionToReturn = SaveSysConstants.DefaultSaveVer;
             var meta = Factory.CreateMeta(slotNumber: 1);
-            bool success = meta.SaveVersion == SaveSysConstants.NullSaveVer;
+            bool success = meta.SaveVersion == SaveSysConstants.DefaultSaveVer;
             Assert.IsTrue(success, "Meta save version is not null when app version is empty");
         }
 

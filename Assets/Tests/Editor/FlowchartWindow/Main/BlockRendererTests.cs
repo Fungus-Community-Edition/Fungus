@@ -2,49 +2,44 @@
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.EditorUtils;
+using UnityEngine.UIElements;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
+using Amanita.EditorUtils;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
     [TestFixture]
     public class BlockRendererTests
     {
-        // Test doubles
-        class FakeDrawer : IBlockDrawer
+        // Test double
+        class FakeDrawer : IBlockDrawerUitk
         {
-            public List<(Block Block, BlockGraphics Graphics)> DrawCalls
-                = new List<(Block, BlockGraphics)>();
+            public readonly List<Block> CreatedFor = new List<Block>();
+            public readonly List<(Block Block, Button Button, float Zoom)> UpdateCalls
+                = new List<(Block, Button, float)>();
+            public readonly Dictionary<Block, Button> CreatedButtons = new Dictionary<Block, Button>();
 
-            public void Draw(Block toDraw, DrawBlockContext drawCtx)
+            public Button CreateButton(Block block)
             {
-                DrawCalls.Add((toDraw, drawCtx.Graphics));
+                CreatedFor.Add(block);
+                var button = new Button();
+                CreatedButtons[block] = button;
+                return button;
             }
-        }
 
-        class FakeGraphicsGenerator : IBlockGraphicsGenerator
-        {
-            public List<Block> GeneratedFor = new List<Block>();
-            public List<BlockGraphics> ReturnedGraphics = new List<BlockGraphics>();
-
-            public BlockGraphics GenerateFor(Block block)
+            public void UpdateButton(Button button, Block block, float zoom)
             {
-                GeneratedFor.Add(block);
-                // Return a distinct BlockGraphics for each call
-                var g = new BlockGraphics();
-                ReturnedGraphics.Add(g);
-                return g;
+                UpdateCalls.Add((block, button, zoom));
             }
         }
 
         FlowchartContext _flowchartCtx;
-        DrawBlockContext _drawCtx;
         FakeFlowchartHost _host;
         Block _insideBlock;
         Block _outsideBlock;
         FakeDrawer _drawer;
-        FakeGraphicsGenerator _gfxGen;
         BlockRenderer _renderer;
 
         [SetUp]
@@ -54,6 +49,7 @@ namespace VScriptingTests.FCWindowOperations
             _host = new FakeFlowchartHost();
             _host.Init();
             var fc = _host.Flowchart;
+            fc.Zoom = 1f;
 
             // 2) Create two blocks, one inside a 100×100 view, one outside
             _insideBlock = _host.CreateBlock(fc, Vector2.zero);
@@ -66,71 +62,61 @@ namespace VScriptingTests.FCWindowOperations
             _flowchartCtx = new FlowchartContext
             {
                 Flowchart = fc,
-                Position = new Rect(0, 0, 100, 100),  // window size in screen‐space
+                Position = new Rect(0, 0, 100, 100),  // window size in screen-space
                 FcHost = _host,
-                AllBlocks = new List<Block> { _insideBlock, _outsideBlock }
             };
 
-            // 4) Prepare DrawBlockContext
-            _drawCtx = new DrawBlockContext
-            {
-                FlowchartCtx = _flowchartCtx,
-                BlockMinWidth = 60,
-                BlockMaxWidth = 240,
-                DefaultBlockHeight = 40,
-                NodeStyle = new GUIStyle(),
-                DescriptionStyle = new GUIStyle(),
-                HandlerStyle = new GUIStyle(),
-                ViewRect = new Rect(0, 0, 100, 100)
-            };
-
-            // 5) Test doubles + renderer under test
+            // 4) Test double + renderer under test
             _drawer = new FakeDrawer();
-            _gfxGen = new FakeGraphicsGenerator();
-            _renderer = new BlockRenderer(_drawer, _gfxGen);
+            _renderer = new BlockRenderer(_flowchartCtx, _drawer);
         }
 
         [TearDown]
         public void TearDown()
         {
+            _renderer.Dispose();
             _host.Dispose();
         }
 
         [Test]
-        public void Render_DrawsOnlyBlocksInsideViewRect()
+        public void RefreshBlocks_CreatesButtonsForAllBlocks()
         {
             // Act
-            _renderer.Render(_drawCtx);
+            _renderer.RefreshBlocks();
 
-            // Assert: only the inside block was drawn
-            var drawnBlocks = _drawer.DrawCalls.Select(c => c.Block).ToList();
-            Assert.That(drawnBlocks, Is.EqualTo(new[] { _insideBlock }));
-            Assert.That(_drawer.DrawCalls.Count, Is.EqualTo(1));
+            // Assert: both blocks were created
+            CollectionAssert.AreEquivalent(new[] { _insideBlock, _outsideBlock }, _drawer.CreatedFor);
+            Assert.That(_renderer.childCount, Is.EqualTo(2));
         }
 
         [Test]
-        public void Render_CallsGraphicsGeneratorForEachVisibleBlock()
+        public void RefreshBlocks_UpdatesButtonsForAllBlocks()
         {
             // Act
-            _renderer.Render(_drawCtx);
+            _renderer.RefreshBlocks();
 
-            // Assert: generator called exactly once, for the inside block
-            Assert.That(_gfxGen.GeneratedFor, Is.EqualTo(new[] { _insideBlock }));
-            Assert.That(_gfxGen.GeneratedFor.Count, Is.EqualTo(1));
+            // Assert: both blocks received updates
+            var updatedBlocks = _drawer.UpdateCalls.Select(c => c.Block).Distinct().ToList();
+            CollectionAssert.AreEquivalent(new[] { _insideBlock, _outsideBlock }, updatedBlocks);
         }
 
         [Test]
-        public void Render_PassesGeneratedGraphicsIntoDrawer()
+        public void RefreshBlocks_PassesCreatedButtonsIntoUpdater()
         {
             // Act
-            _renderer.Render(_drawCtx);
+            _renderer.RefreshBlocks();
 
-            // The BlockGraphics instance returned by generator should match the one the drawer saw
-            var returned = _gfxGen.ReturnedGraphics[0];
-            var passed = _drawer.DrawCalls[0].Graphics;
-            bool success = returned.Equals(passed);
-            string errorMessage = "The BlockGraphics instance returned by the generator doesn't match the one the dreawer gets";
-            Assert.IsTrue(success, errorMessage);
+            // Assert: update calls use the same button created for each block
+            foreach (var pair in _drawer.CreatedButtons)
+            {
+                Block block = pair.Key;
+                Button createdButton = pair.Value;
+
+                bool found = _drawer.UpdateCalls.Any(c =>
+                    ReferenceEquals(c.Block, block) && ReferenceEquals(c.Button, createdButton));
+
+                Assert.IsTrue(found, $"Expected update calls for block '{block.BlockName}' to use its created button.");
+            }
         }
     }
 }

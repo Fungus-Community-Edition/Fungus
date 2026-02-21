@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using Amanita.VScripting;
 
 namespace Amanita.Myceliaudio.VScripting

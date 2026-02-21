@@ -33,6 +33,7 @@ namespace Amanita.SaveSys
                 throw new ArgumentNullException(nameof(mainData), "Main Save data cannot be null.");
             }
 
+            Debug.Log($"About to load scene named: {sceneToLoad.name}");
             await HandleSceneLoading(sceneToLoad);
             async Task HandleSceneLoading(Scene scene)
             {
@@ -67,7 +68,13 @@ namespace Amanita.SaveSys
                         continue;
                     }
 
-                    await applierEl.ApplyRange(compatible);
+                    bool completed = false;
+                    applierEl.ApplyRange(compatible, () => completed = true);
+
+                    while (!completed)
+                    {
+                        await Task.Yield();
+                    }
                 }
             }
         

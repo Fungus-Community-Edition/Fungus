@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -16,13 +16,14 @@ namespace Amanita.SaveSys
         /// Lower order means it will execute sooner.
         /// </summary>
         int Order { get; }
+
         /// <summary>
         /// Checks if this applier can apply the given SaveData.
         /// </summary>
         bool CanApply(SaveData saveData);
 
-        Task ApplyRange(IList<SaveData> datas);
-        Task Apply(SaveData saveData);
+        void Apply(SaveData saveData, Action onComplete);
+        void ApplyRange(IList<SaveData> datas, Action onComplete);
 
     }
 
@@ -36,7 +37,7 @@ namespace Amanita.SaveSys
         /// </summary>
         public virtual void PreInstallInit()
         {
-
+            // Nothing by default
         }
 
         public virtual int Order => order;
@@ -46,19 +47,9 @@ namespace Amanita.SaveSys
             return false;
         }
 
-        public virtual async Task ApplyRange(IList<SaveData> datas)
-        {
-            foreach (SaveData data in datas)
-            {
-                if (CanApply(data))
-                {
-                    await Apply(data);
-                }
-            }
+        public abstract void Apply(SaveData saveData, Action onComplete);
 
-        }
-
-        public abstract Task Apply(SaveData saveData);
+        public abstract void ApplyRange(IList<SaveData> datas, Action onComplete);
     }
 
     /// <summary>
@@ -67,7 +58,19 @@ namespace Amanita.SaveSys
     public abstract class SaveDataApplier<TSaveData> : SaveDataApplier
     where TSaveData : SaveData
     {
-        public abstract Task Apply(TSaveData saveData);
+        public override void ApplyRange(IList<SaveData> datas, Action onComplete)
+        {
+            for (int i = 0; i < datas.Count; i++)
+            {
+                if (datas[i] is TSaveData typedData)
+                {
+                    Apply(typedData);
+                }
+            }
+            onComplete?.Invoke();
+        }
+
+        public abstract void Apply(TSaveData saveData);
         
         public override bool CanApply(SaveData saveData)
         {

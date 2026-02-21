@@ -24,10 +24,10 @@ namespace Amanita.SaveSys.UI.VScripting
             switch (state)
             {
                 case SaveMenuState.Open:
-                    Menu.Open();
+                    Menu.Open(null);
                     break;
                 case SaveMenuState.Close:
-                    Menu.Close();
+                    Menu.Close(null);
                     break;
                 case SaveMenuState.Toggle:
                     Menu.Toggle();
@@ -43,7 +43,7 @@ namespace Amanita.SaveSys.UI.VScripting
             Continue();
         }
 
-        private static SaveMenuManager Menu => AmanitaManager.SaveMenu;
+        private static SaveMenuManager Menu => AmanitaManager.SaveMenuManager;
 
         public override string GetSummary()
         {

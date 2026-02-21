@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
 using Amanita.VScripting;
-using Amanita;
 
 namespace SaveSystemTests
 {
@@ -42,8 +41,10 @@ namespace SaveSystemTests
             stringVar.Value = "Not Hello, World!";
             transformVar.Value = null;
 
-            Task applyTask = flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData });
-            await applyTask;
+            bool completed = false;
+            flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData }, () => completed = true);
+            while (!completed)
+                await Task.Yield();
 
             bool appliedCorrectName = nameVar.Value == expectedNameVarValue;
             bool appliedCorrectScore = scoreVar.Value == expectedScoreVarValue;
@@ -65,8 +66,10 @@ namespace SaveSystemTests
             yield return CommonSetup();
             yield return new WaitForSeconds(0.1f);
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
-            Task applyTask = flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData });
-            yield return new WaitUntil(() => applyTask.IsCompleted);
+            bool completed = false;
+            flowchartApplier.ApplyRange(new FlowchartSaveData[] { flowchartSaveData }, () => completed = true);
+            while (!completed)
+                yield return null;
             yield return new WaitForSeconds(0.1f);
             // The block should be executed at this time
 
@@ -90,7 +93,8 @@ namespace SaveSystemTests
             // Try to apply save data for a flowchart that no longer exists
             // Should not throw, should log a warning
             LogAssert.Expect(LogType.Warning, $"Flowchart with ID {flowchartSaveData.UniqueId} or name {flowchartSaveData.FlowchartName} not found.");
-            await flowchartApplier.Apply(flowchartSaveData);
+            flowchartApplier.Apply(flowchartSaveData, null);
+            await Task.Yield();
         }
 
         protected virtual void RemoveAllFlowchartsFromTheScene()
@@ -115,7 +119,8 @@ namespace SaveSystemTests
             // SaveData still refers to the removed variable
             // Should not throw, should log a warning for the missing variable
             LogAssert.Expect(LogType.Warning, $"Variable {removedVar.Key} not found in flowchart {flowchart.name}.");
-            await flowchartApplier.Apply(flowchartSaveData);
+            flowchartApplier.Apply(flowchartSaveData, null);
+            await Task.Yield(); 
         }
 
         [Test]
@@ -131,7 +136,10 @@ namespace SaveSystemTests
             // SaveData still refers to the removed block
             // Should not throw, should log a warning for the missing block
             LogAssert.Expect(LogType.Warning, $"Block {removedBlock.BlockName} not found in flowchart {flowchart.name}.");
-            await flowchartApplier.Apply(flowchartSaveData);
+            bool completed = false;
+            flowchartApplier.Apply(flowchartSaveData, () => completed = true);
+            while (!completed)
+                await Task.Yield();
         }
 
         [Test]
@@ -160,7 +168,8 @@ namespace SaveSystemTests
 
             // Should log a warning and not throw
             LogAssert.Expect(LogType.Warning, $"Command {command.ItemId} not found in block {block.BlockName}.");
-            await flowchartApplier.Apply(flowchartSaveData);
+            flowchartApplier.Apply(flowchartSaveData, null);
+            await Task.Yield();
         }
 
         [Test]
@@ -174,7 +183,8 @@ namespace SaveSystemTests
             // Run Apply on a background thread
             await Task.Run(async () =>
             {
-                await flowchartApplier.Apply(flowchartSaveData);
+                flowchartApplier.Apply(flowchartSaveData, null);
+                await Task.Yield();
             });
 
             // The variable should be restored to its saved value
@@ -215,7 +225,10 @@ namespace SaveSystemTests
             secondVar.Value = "changed";
 
             // Apply both save datas
-            await flowchartApplier.ApplyRange(new[] { flowchartSaveData, secondSaveData });
+            bool completed = false;
+            flowchartApplier.ApplyRange(new[] { flowchartSaveData, secondSaveData }, () => completed = true);
+            while (!completed)
+                await Task.Yield();
 
             // Assert both flowcharts' variables were restored
             var firstSavedVars = flowchartSaveData.SavedVars;
@@ -252,7 +265,8 @@ namespace SaveSystemTests
             keptVar.Value = "RestoredName";
 
             // Apply the partial save data
-            await flowchartApplier.Apply(flowchartSaveData);
+            flowchartApplier.Apply(flowchartSaveData, null);
+            await Task.Yield(); 
 
             // Only the kept variable should be restored
             Assert.AreEqual("RestoredName", nameVar.Value, "Kept variable was not restored.");
@@ -278,7 +292,8 @@ namespace SaveSystemTests
             // Change a variable so we can verify it gets restored
             nameVar.Value = "ChangedForNameFallback";
 
-            await flowchartApplier.Apply(flowchartSaveData);
+            flowchartApplier.Apply(flowchartSaveData, null);
+            await Task.Yield();
 
             // The variable should be restored, meaning the fallback by name worked
             Assert.AreEqual(

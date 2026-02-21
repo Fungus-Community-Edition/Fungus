@@ -1,9 +1,6 @@
-using Amanita.Utils;
 using System;
 using System.Globalization;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using Collections;
 using System.Linq;
@@ -20,20 +17,20 @@ namespace Amanita.SaveSys
         [SerializeField] protected string name = string.Empty;
         // ^To let players personalize their saves and get a better sense
         // of ownership over their progress
-        [SerializeField] protected string saveID = string.Empty;
+        [SerializeField] protected string saveId = string.Empty;
         [SerializeField] protected int slotNumber = 1;
         [SerializeField] protected string saveVersion = "null";
         [SerializeField] protected string utcTimeStamp = string.Empty;
         [SerializeField] protected string sceneName = string.Empty;
         [SerializeField] protected int sceneBuildIndex = -1;
-        [SerializeField] protected string timeSpanString = TimeSpan.Zero.ToString();
+        [SerializeField] protected string playtimeStamp = TimeSpan.Zero.ToString();
         [SerializeField] protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
 
         public bool IsValid
         {
             get
             {
-                bool validID = !string.IsNullOrEmpty(saveID);
+                bool validID = !string.IsNullOrEmpty(saveId);
                 bool validVersion = !string.IsNullOrEmpty(saveVersion);
                 bool validTimeStamp = !string.IsNullOrEmpty(utcTimeStamp);
                 return validID && validVersion && validTimeStamp;
@@ -46,9 +43,9 @@ namespace Amanita.SaveSys
             set { name = value; }
         }
 
-        public string SaveID
+        public string SaveId
         {
-            get { return saveID; }
+            get { return saveId; }
             set
             {
                 string toApply = value;
@@ -57,7 +54,7 @@ namespace Amanita.SaveSys
                 {
                     toApply = toApply[..IDAndVersionLengthCap];
                 }
-                saveID = toApply;
+                saveId = toApply;
             }
         }
 
@@ -81,13 +78,14 @@ namespace Amanita.SaveSys
             set
             {
                 string toApply = value;
-                if (toApply.Length > IDAndVersionLengthCap)
+                if (toApply != null && toApply.Length > IDAndVersionLengthCap)
                 {
                     toApply = toApply[..IDAndVersionLengthCap];
                 }
                 saveVersion = toApply;
             }
         }
+
         public string UTCTimeStamp
         {
             get { return utcTimeStamp; }
@@ -101,11 +99,13 @@ namespace Amanita.SaveSys
         public virtual string SceneName
         {
             get { return sceneName; }
+            set { sceneName = value; }
         }
 
         public virtual int SceneBuildIndex
         {
             get { return sceneBuildIndex; }
+            set { sceneBuildIndex = value; }
         }
 
         public virtual TimeSpan Playtime
@@ -114,7 +114,7 @@ namespace Amanita.SaveSys
             set
             {
                 playtime = value;
-                timeSpanString = playtime.ToString();
+                playtimeStamp = playtime.ToString();
             }
         }
         protected TimeSpan playtime = TimeSpan.Zero;
@@ -169,6 +169,7 @@ namespace Amanita.SaveSys
         {
             utcTimeStamp = timeStamp.ToString(iso8601Format);
         }
+
         protected virtual void UpdateTimeStamp()
         {
             utcTimeStamp = DateTime.UtcNow.ToString(iso8601Format);
@@ -177,31 +178,23 @@ namespace Amanita.SaveSys
 
         public SaveMetaData()
         {
-            this.saveID = string.Empty;
-            this.timeStamp = DateTime.UtcNow;
-            this.saveVersion = NullSaveVer;
-            UpdateTimeStampString();
+            
         }
 
-        protected virtual string NullSaveVer { get { return SaveSysConstants.NullSaveVer; } }
-
-        public SaveMetaData(string saveId = null, DateTime timeStamp = default,
-            string saveVersion = "")
+        public SaveMetaData(string saveId = "", DateTime timeStamp = default,
+            string saveVersion = "", int slotNumber = -1) : this()
         {
-            if (string.IsNullOrEmpty(saveId))
+            this.SaveId = saveId;
+            
+            if (timeStamp == default)
             {
-                saveId = string.Empty;
+                timeStamp = DateTime.UtcNow;
             }
-            this.SaveID = saveId;
-
             this.timeStamp = timeStamp;
 
-            if (string.IsNullOrEmpty(saveVersion))
-            {
-                saveVersion = NullSaveVer;
-            }
+            this.SaveVersion = saveVersion;
+            this.slotNumber = slotNumber;
 
-            this.saveVersion = saveVersion;
             UpdateTimeStampString();
         }
 
@@ -212,13 +205,13 @@ namespace Amanita.SaveSys
                 throw new ArgumentNullException(nameof(other), "Cannot copy from a null SaveMetaData.");
             }
             this.name = other.name;
-            this.saveID = other.saveID;
+            this.saveId = other.saveId;
             this.slotNumber = other.slotNumber;
             this.saveVersion = other.saveVersion;
             this.utcTimeStamp = other.utcTimeStamp;
             this.sceneName = other.sceneName;
             this.sceneBuildIndex = other.sceneBuildIndex;
-            this.timeSpanString = other.timeSpanString;
+            this.playtimeStamp = other.playtimeStamp;
             this.playtime = other.playtime;
             this.progressMarkers = new List<ProgressMarker>(other.progressMarkers);
             UpdateTimeStampStructure();
@@ -235,61 +228,40 @@ namespace Amanita.SaveSys
 
         protected virtual void UpdatePlaytimeStructure()
         {
-            if (TimeSpan.TryParse(timeSpanString, out var parsedTimeSpan))
+            if (TimeSpan.TryParse(playtimeStamp, out var parsedTimeSpan))
             {
                 playtime = parsedTimeSpan;
             }
             else
             {
-                string errorMessage = $"Failed to parse time span string: {timeSpanString}. " +
+                string errorMessage = $"Failed to parse time span string: {playtimeStamp}. " +
                     "Setting playtime to zero.";
                 playtime = TimeSpan.Zero;
                 throw new FormatException(errorMessage);
             }
         }
 
-        public virtual void RegisterCurrentSceneInfo()
-        {
-            void GetTheInfo()
-            {
-                sceneName = SceneManager.GetActiveScene().name;
-                sceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
-            }
-
-            bool onMainThread = UnityThreadUtil.IsMainThread;
-            if (onMainThread)
-            {
-                GetTheInfo();
-            }
-            else
-            {
-                using (var countdown = new CountdownEvent(1))
-                {
-                    MainThreadDispatcher.Enqueue(() =>
-                    {
-                        GetTheInfo();
-                        countdown.Signal();
-                    }
-                    );
-
-                    countdown.Wait();
-                }
-            }
-            
-        }
-
         public virtual bool Equals(SaveMetaData other)
         {
-            if (other == null) return false;
+            if (other == null)
+            {
+                return false;
+            }
 
-            return saveID == other.saveID &&
-                saveVersion == other.saveVersion &&
-                utcTimeStamp == other.utcTimeStamp &&
-                SaveName == other.SaveName &&
-                SceneName == other.SceneName &&
-                sceneBuildIndex == other.sceneBuildIndex &&
-                slotNumber == other.slotNumber &&
-                playtime.Equals(other.playtime);
+            // Organized like this for ease of debugging.
+            bool sameId = saveId == other.saveId;
+            bool sameVersion = saveVersion == other.saveVersion;
+            bool sameTimeStamp = utcTimeStamp == other.utcTimeStamp;
+            bool sameName = SaveName == other.SaveName;
+            bool sameSceneName = SceneName == other.SceneName;
+            bool sameSceneIndex = sceneBuildIndex == other.sceneBuildIndex;
+            bool sameSlotNum = slotNumber == other.slotNumber;
+            bool samePlaytime = playtime.Equals(other.playtime);
+
+            bool result = sameId && sameVersion && sameTimeStamp &&
+                sameName && sameSceneName && sameSceneIndex &&
+                sameSlotNum && samePlaytime;
+            return result;
         }
 
         public static SaveMetaData CreateFrom(ISaveMetaData other)
@@ -301,7 +273,7 @@ namespace Amanita.SaveSys
 
             SaveMetaData result = new SaveMetaData();
             result.name = other.SaveName;
-            result.saveID = other.SaveID;
+            result.saveId = other.SaveId;
             result.slotNumber = other.SlotNumber;
             result.saveVersion = other.SaveVersion;
             result.sceneName = other.SceneName;
@@ -311,12 +283,37 @@ namespace Amanita.SaveSys
             return result;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is SaveMetaData otherMeta)
+            {
+                return Equals(otherMeta);
+            }
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = (hash * 23) + (saveId?.GetHashCode() ?? 0);
+                hash = (hash * 23) + (saveVersion?.GetHashCode() ?? 0);
+                hash = (hash * 23) + (utcTimeStamp?.GetHashCode() ?? 0);
+                hash = (hash * 23) + (name?.GetHashCode() ?? 0);
+                hash = (hash * 23) + (sceneName?.GetHashCode() ?? 0);
+                hash = (hash * 23) + sceneBuildIndex.GetHashCode();
+                hash = (hash * 23) + slotNumber.GetHashCode();
+                hash = (hash * 23) + playtime.GetHashCode();
+                return hash;
+            }
+        }
     }
 
     // For stuff that probably all save meta data should have
     public interface ISaveMetaData : ISaveData
     {
-        string SaveID { get; }
+        string SaveId { get; }
         string SaveName { get; set; }
         int SlotNumber { get; }
         string SaveVersion { get; }

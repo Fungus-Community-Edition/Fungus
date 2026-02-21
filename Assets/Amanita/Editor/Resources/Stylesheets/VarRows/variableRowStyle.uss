@@ -1,9 +1,10 @@
 :root
 {
-	--main-font: resource('Fonts/Exo2/Exo2-Regular');
+	/* --main-font: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+	--main-font: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
 	--dark-mode-text-color: var(--dark-mode-text-color);
 	--dark-mode-text-bg-color: #1A1A1A;
-	--text-field-font-size: 14px;
+	--text-field-font-size: 18px;
 	--text-field-border-radius: 5px;
 	--normal-row-height: 30px;
 	--rainbow-tex: url("project://database/Assets/Amanita/Editor/Resources/Textures/rainbowTex.png");
@@ -67,18 +68,17 @@
 	padding: 2px;
 	width: 150px;
 	margin: 0;
-	font-size: 14px;
+	font-size: 16px;
 }
 
 #ValueFieldHolder
 {
-	flex-grow: 0;
 	width: 120px;
 	padding: 0;
 	-unity-text-align: middle-left;
 	border-radius: var(--slightly-rounded);
 	border-color: white;
-	font-size: 14px;
+	font-size: 18px;
 	margin: 0px 3px 0px 0px;
 }
 
@@ -96,7 +96,7 @@
 	height: 100%;
 	padding: 0px;
 	margin: 0px 2px 0px 0px;
-	font-size: 14px;
+	font-size: 18px;
 	flex-grow: 0;
 	flex-shrink: 0;
 }

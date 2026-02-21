@@ -7,9 +7,9 @@ namespace Amanita.SaveSys
     public interface ISaveManager
     {
         Task Init();
-        Task SaveTo(int slotNumber, CancellationToken token = default);
-        Task<CompositeSaveData> LoadMain(int slotNumber, bool loadScene, CancellationToken token = default);
-        Task<ISaveMetaData> LoadMeta(int slotNumber, CancellationToken token = default);
+        Task SaveToSlotAsync(int slotNumber, CancellationToken token = default);
+        Task<CompositeSaveData> LoadMainAsync(int slotNumber, bool loadScene, CancellationToken token = default);
+        Task<ISaveMetaData> LoadMetaAsync(int slotNumber, CancellationToken token = default);
         void DeleteSave(int slot);
 
         IList<int> GetOccupiedSlots();

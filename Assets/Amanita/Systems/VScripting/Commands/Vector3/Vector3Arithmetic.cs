@@ -25,6 +25,14 @@ namespace Amanita.VScripting
         [SerializeField]
         protected Operation operation = Operation.Add;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(lhs);
+            variableDataCache.Add(rhs);
+            variableDataCache.Add(output);
+        }
+
         public override void OnEnter()
         {
             Vector3 tmp;

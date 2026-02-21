@@ -30,12 +30,13 @@ namespace VScriptingTests.FlowchartLifecycle
         [SetUp]
         public void Setup()
         {
+            FlowchartRegistry.EnsureInitialized(true);
             AmanitaManager.EnsureExists();
             AmanitaManager.S.Init();
             fcHolder = new GameObject("TestFlowchart_InstantiationTestHolder");
             toDestroyOnTearDown.Add(fcHolder);
             testFc = fcHolder.AddComponent<Flowchart>();
-            testFc.IsTestOnly = true;
+            testFc.AlwaysKeepGuid = false;
             Block blockAdded = testFc.CreateBlock(new Vector2(0, 0));
             TestGameStarted testGameStarted = fcHolder.AddComponent<TestGameStarted>();
             blockAdded._EventHandler = testGameStarted;
@@ -52,7 +53,10 @@ namespace VScriptingTests.FlowchartLifecycle
         {
             EventSystem evSys = UnityObj.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
             // ^Might've been created by the fc during the test
-            toDestroyOnTearDown.Add(evSys.gameObject);
+            if (evSys != null)
+            {
+                toDestroyOnTearDown.Add(evSys.gameObject);
+            }
 
             if (testFc != null)
             {
@@ -63,7 +67,7 @@ namespace VScriptingTests.FlowchartLifecycle
             {
                 if (obj != null)
                 {
-                    UnityObj.Destroy(obj);
+                    UnityObj.DestroyImmediate(obj);
                 }
             }
 
@@ -81,12 +85,13 @@ namespace VScriptingTests.FlowchartLifecycle
             yield return null;
 
             // Assert
-            Assert.IsTrue(Flowchart.CachedFlowcharts.Contains(testFc), "Flowchart should be present in CachedFlowcharts after OnEnable.");
+            var flowcharts = AmanitaManager.S.FlowchartsInScene;
+            Assert.IsTrue(flowcharts.Contains(testFc), "Flowchart should be present in CachedFlowcharts after OnEnable.");
 
         }
 
         [UnityTest]
-        public IEnumerator Flowchart_RemovesFromCachedFlowcharts_OnDisableOrDestroy()
+        public IEnumerator Flowchart_RemovesFromCachedFlowcharts_OnDestroy()
         {
             yield return null;
             var cachedFcs = AmanitaManager.S.FlowchartsInScene;
@@ -94,20 +99,15 @@ namespace VScriptingTests.FlowchartLifecycle
                 "Precondition failed: Flowchart not added to cache.");
 
             // Act: disable first to trigger OnDisable, then destroy to ensure cleanup
-            fcHolder.SetActive(false);
+            testFc.OnTearDown();
+            UnityObj.Destroy(fcHolder);
             yield return null;
+            cachedFcs = AmanitaManager.S.FlowchartsInScene; // Since FlowchartsInScene only returns a snapshot
             Assert.IsFalse(cachedFcs.Contains(testFc), 
                 "Flowchart should be removed from CachedFlowcharts on OnDisable.");
 
-            // Re-enable to re-add, then destroy to verify removal via OnDestroy/cleanup
-            fcHolder.SetActive(true);
-            yield return null;
-            Assert.IsTrue(cachedFcs.Contains(testFc), 
-                "Precondition failed: Flowchart not re-added to cache.");
-
-            testFc.OnTearDown(); // ensure proper cleanup
-            UnityObj.Destroy(fcHolder);
             yield return null; // allow destroy to complete
+            yield return null;
 
             Assert.IsFalse(cachedFcs.Contains(testFc), 
                 "Flowchart should be removed from CachedFlowcharts after destruction.");
@@ -122,23 +122,6 @@ namespace VScriptingTests.FlowchartLifecycle
             // Assert: Awake should assign UIModel.Owner to this GameObject
             Assert.IsNotNull(testFc.UIModel, "Flowchart.UIModel should not be null after Awake.");
             Assert.AreEqual(testFc.gameObject, testFc.UIModel.Owner, "Flowchart should register itself as UIModel.Owner in Awake.");
-
-        }
-
-        [UnityTest]
-        public IEnumerator Flowchart_Ensures_EventSystem_InScene()
-        {
-            // Arrange
-            yield return null;
-
-            // Act
-            yield return null;
-
-            // Assert: Flowchart.CheckEventSystem should ensure an EventSystem exists and is active
-            var eventSystem = UnityObj.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-            Assert.IsNotNull(eventSystem, "Flowchart should ensure an EventSystem exists in the scene.");
-            toDestroyOnTearDown.Add(eventSystem.gameObject);
-            Assert.IsTrue(eventSystem.gameObject.activeSelf, "EventSystem should be active after Flowchart initialization.");
 
         }
 

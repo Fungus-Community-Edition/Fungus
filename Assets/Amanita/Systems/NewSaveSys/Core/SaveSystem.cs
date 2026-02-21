@@ -7,7 +7,8 @@ using System.IO;
 
 namespace Amanita.SaveSys
 { 
-    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager
+    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager,
+        ITearDownResponder
     {
         protected virtual void Awake()
         {
@@ -49,6 +50,11 @@ namespace Amanita.SaveSys
         {
             CoreLockMode = true;
             saveManager.Init();
+        }
+
+        public bool DoesSaveExist(int slotNum)
+        {
+            return SaveManager.SlotExists(slotNum);
         }
 
         // We expect an instance of this to be attached to the AmanitaManager singleton
@@ -261,20 +267,20 @@ namespace Amanita.SaveSys
         #endregion
 
         #region Save/Load/Delete Operations
-        public virtual Task SaveTo(int slotNum)
+        public virtual Task SaveToSlotAsync(int slotNum)
         {
-            return saveManager.SaveTo(slotNum);
+            return saveManager.SaveToSlotAsync(slotNum);
         }
 
-        public virtual Task<CompositeSaveData> LoadMain(int slotNum, bool loadScene = true,
+        public virtual Task<CompositeSaveData> LoadMainAsync(int slotNum, bool loadScene = true,
             CancellationToken token = default)
         {
-            return saveManager.LoadMain(slotNum, loadScene, token);
+            return saveManager.LoadMainAsync(slotNum, loadScene, token);
         }
 
         public virtual Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
         {
-            return saveManager.LoadMeta(slotNum, token);
+            return saveManager.LoadMetaAsync(slotNum, token);
         }
 
         public virtual void DeleteSave(int slotNum)
@@ -286,6 +292,11 @@ namespace Amanita.SaveSys
         public static void ResetStaticsForTest()
         {
             S = null;
+        }
+
+        protected virtual void OnDisable()
+        {
+            CancelInvoke();
         }
 
         protected virtual void OnDestroy()
@@ -398,6 +409,15 @@ namespace Amanita.SaveSys
             return markerManager.GetOrderedMarkers();
         }
 
+        public virtual void EnsureMultiMarkersRegistered(IList<ProgressMarker> markers)
+        {
+            for (int i = 0; i < markers.Count; i++)
+            {
+                string id = markers[i].Id;
+                EnsureMarkerRegistered(id, markers[i].Order);
+            }
+        }
+
         public virtual void EnsureMarkerRegistered(string id, int order = 0)
         {
             if (!IsProgressMarkerRegistered(id))
@@ -407,6 +427,11 @@ namespace Amanita.SaveSys
         }
         #endregion
 
+        public virtual void OnTearDown()
+        {
+            // Implement any necessary cleanup logic here
+            CancelInvoke();
+        }
     }
 
 }

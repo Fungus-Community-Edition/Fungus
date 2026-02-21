@@ -18,9 +18,9 @@ namespace Amanita.VScripting.EditorUtils
             base.OnEnable();
 
             anyVarDataPairProp = serializedObject.FindProperty("anyVar");
-            anyVarDataProp = serializedObject.FindProperty("anyVar.data");           // AnyVariableData
+            lhsVarProp = serializedObject.FindProperty("anyVar.varRef"); // VariableReference
+            anyVarDataProp = serializedObject.FindProperty("anyVar.data"); // AnyVariableData
             setOperatorProp = serializedObject.FindProperty("setOperator");
-            lhsVarProp = serializedObject.FindProperty("varToSet");                  // VariableReference
         }
 
         public override void DrawCommandGUI()

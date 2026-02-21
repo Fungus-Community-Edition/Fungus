@@ -1,5 +1,8 @@
 using UnityEngine;
 using Amanita.EditorUtils;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -20,6 +23,7 @@ namespace Amanita.VScripting.EditorUtils
 
         public bool Handle(Event evt, FlowchartContext ctx)
         {
+            var selection = ctx.Selection;
             bool correctInput = evt.type == EventType.KeyDown && evt.keyCode == Key;
             if (!correctInput)
                 return false;
@@ -27,7 +31,7 @@ namespace Amanita.VScripting.EditorUtils
             if (!_focusChecker.CheckFocus(ctx))
                 return false;
 
-            var selected = ctx.SelectedBlocks;
+            var selected = selection.Blocks;
             if (selected == null || selected.Count == 0)
                 return false;
 
@@ -37,18 +41,5 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    public class FcWindowBlockDeletion
-    {
-        public void Execute(FlowchartContext ctx)
-        {
-            var selected = ctx.SelectedBlocks;
-            if (selected == null || selected.Count == 0)
-                return;
-
-            FcWindowEditing windowEditing = ctx.FcHost.GetComponent<FcWindowEditing>();
-            windowEditing.QueueToDelete(selected);
-            ctx.ForceRepaintCount++;
-        }
-
-    }
+    
 }

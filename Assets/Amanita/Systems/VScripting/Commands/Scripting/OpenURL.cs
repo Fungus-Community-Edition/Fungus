@@ -13,6 +13,12 @@ namespace Amanita.VScripting
         [Tooltip("URL to open in the browser")]
         [SerializeField] protected StringData url = new StringData();
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(url);
+        }
+
         #region Public members
 
         public override void OnEnter()

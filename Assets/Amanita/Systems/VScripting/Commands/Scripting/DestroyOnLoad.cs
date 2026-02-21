@@ -13,6 +13,12 @@ namespace Amanita.VScripting
     {
         [SerializeField] protected GameObjectData target;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(target);
+        }
+
         public override void OnEnter()
         {
             DontDestroyOnLoad(target.Value);

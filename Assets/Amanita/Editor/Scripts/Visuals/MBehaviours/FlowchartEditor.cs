@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 
@@ -16,9 +16,10 @@ namespace Amanita.VScripting.EditorUtils
         protected virtual void OnEnable()
         {
             if (EraseOrphanedInstance()) // Check for an orphaned editor instance
+            {
                 return;
+            }
 
-            AmanitaManager.EnsureExists();
             addTexture = AmanitaEditorResources.AddSmall;
             _manager?.Dispose();
         }
@@ -122,7 +123,7 @@ namespace Amanita.VScripting.EditorUtils
     
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
         {
-            EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+            FlowchartWindow.BringUp();
         }
     }
 }

@@ -1,7 +1,6 @@
 using Amanita.VScripting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Amanita.FSExt;
 using FullSerializer;
@@ -15,7 +14,7 @@ namespace Amanita.SaveSys
     {
         public virtual void PreInstallInit()
         {
-            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("").ToList();
+            _cachedVsas = Resources.LoadAll<VariableSourceAsset>("");
         }
 
         protected IList<VariableSourceAsset> _cachedVsas;
@@ -29,7 +28,8 @@ namespace Amanita.SaveSys
         {
             if (!toCreateFrom.IncludeInSaves)
             {
-                Debug.LogWarning($"Flowchart {toCreateFrom.name} is set to not be included in saves. Thus, it shall not be encoded.");
+                Debug.LogWarning($"VariableSourceAsset {toCreateFrom.name} is set to not be " +
+                    $"included in saves. Thus, it shall not be encoded.");
                 return null;
             }
 

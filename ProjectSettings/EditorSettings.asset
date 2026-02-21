@@ -3,7 +3,7 @@
 --- !u!159 &1
 EditorSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 13
+  serializedVersion: 14
   m_SerializationMode: 2
   m_LineEndingsForNewScripts: 1
   m_DefaultBehaviorMode: 1
@@ -23,7 +23,7 @@ EditorSettings:
   m_EnableTextureStreamingInPlayMode: 1
   m_EnableEditorAsyncCPUTextureLoading: 0
   m_AsyncShaderCompilation: 1
-  m_PrefabModeAllowAutoSave: 1
+  m_PrefabModeAllowAutoSave: 0
   m_EnterPlayModeOptionsEnabled: 1
   m_EnterPlayModeOptions: 0
   m_GameObjectNamingDigits: 1
@@ -33,6 +33,7 @@ EditorSettings:
   m_UseLegacyProbeSampleCount: 1
   m_SerializeInlineMappingsOnOneLine: 0
   m_DisableCookiesInLightmapper: 1
+  m_ShadowmaskStitching: 0
   m_AssetPipelineMode: 1
   m_RefreshImportMode: 0
   m_CacheServerMode: 0

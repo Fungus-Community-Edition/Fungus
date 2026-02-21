@@ -1,11 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
-using UnityEditor;
-using UnityEngine;
+using Amanita;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
+using NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 
 namespace VScriptingTests.VariableOperations
@@ -16,17 +21,30 @@ namespace VScriptingTests.VariableOperations
         public void SetUp()
         {
             Flowchart.ResetStaticsForTest();
-            
+            FlowchartRegistry.EnsureInitialized(true);
+
+            // Create a new scene with a name
+            Scene testScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            SceneManager.SetActiveScene(testScene);
+            // Give it a name - this is the key part
+            testScene.name = "TestScene_VariableRowPersistence";
+
+            ammieManager = AmanitaManager.EnsureExists();
+
             _firstFcHolder = new GameObject("Flowchart_A");
             _secondFcHolder = new GameObject("Flowchart_B");
             _firstFc = _firstFcHolder.AddComponent<Flowchart>();
             _secondFc = _secondFcHolder.AddComponent<Flowchart>();
+            _firstFc.AlwaysKeepGuid = false;
+            _secondFc.AlwaysKeepGuid = false;
 
             _toDestroy = new List<UnityObject>();
             _toDestroy.Add(_firstFcHolder);
             _toDestroy.Add(_secondFcHolder);
+            _toDestroy.Add(ammieManager.gameObject);
         }
 
+        protected AmanitaManager ammieManager;
         protected GameObject _firstFcHolder;
         protected GameObject _secondFcHolder;
         protected Flowchart _firstFc;
@@ -133,18 +151,18 @@ namespace VScriptingTests.VariableOperations
             Assert.IsTrue(options[1] == "BoolVar");
         }
 
-        [Test]
-        public void VariableField_IncludesPublicFromOtherFlowchart_ExcludesPrivate()
+        [UnityTest]
+        public IEnumerator VariableField_IncludesPublicFromOtherFlowchart_ExcludesPrivate()
         {
             // Local
             var localVar = _firstFc.AddNewMuscariable<bool, BoolMuscariable>("LocalBool", default, VariableScope.Private);
 
             // Remote public + private
             var publicVar = _secondFc.AddNewMuscariable<bool, BoolMuscariable>("RemotePublic", default, VariableScope.Public);
-            _secondFc.AddNewMuscariable<int, IntMuscariable>("RemotePrivate", default, VariableScope.Private);
+            var privateVar = _secondFc.AddNewMuscariable<int, IntMuscariable>("RemotePrivate", default, VariableScope.Private);
 
             var (serialObj, holdsProp, _) = MakeHolder();
-
+            yield return null; // Wait a frame to ensure FlowchartRegistry has registered both flowcharts.
             // Force index 2: options expected order: 0 default null, 1 LocalBool, 2 Flowchart_B/RemotePublic
             // Note that after the default null is local vars followed by other flowchart vars, 
             // and then finally whatever globals AmanitaManager might have.

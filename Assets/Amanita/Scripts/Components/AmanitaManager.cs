@@ -10,6 +10,11 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using Amanita.SaveSys.UI;
+using UnityEngine.EventSystems;
+
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem.UI;
+#endif
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,10 +25,11 @@ namespace Amanita
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
-    public sealed class AmanitaManager : MonoBehaviour
+    public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
+        [SerializeField] private SaveMenuManager saveMenuPrefab;
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
@@ -52,46 +58,6 @@ namespace Amanita
                 globalVariables.AddRange(value);
             }
         }
-
-        public static int GetNumericIdTiedTo(string guid)
-        {
-            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
-            fcGuidRegistry.Refresh();
-            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
-            int result = fcGuidRegistry.GetNumericId(guid);
-            if (result >= 0)
-            {
-                return result;
-            }
-
-            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
-            vsaGuidRegistry.Refresh();
-            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
-            result = vsaGuidRegistry.GetNumericId(guid);
-            return result;
-        }
-
-        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
-        {
-            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
-            if (gotOneReady)
-            {
-                return existing;
-            }
-
-            string assetName = $"{typeof(T).Name}GuidRegistry";
-            var result = SOUtils.EnsureSOExists<GuidRegistry>(whereGuidRegistriesGo, assetName);
-            result.AddTypeStoredFor<T>();
-            typeToRegistryMap[typeof(T)] = result;
-            return result;
-        }
-
-        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
-
-        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
-            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
-        {
-        };
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -141,29 +107,22 @@ namespace Amanita
         // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
 
-        private static void EnsureGuidRegistriesAvailable()
-        {
-            GetOrAddGuidRegistryFor<Flowchart>();//
-            GetOrAddGuidRegistryFor<VariableSourceAsset>();
-        }
+        public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
+        [MenuItem("Tools/Atelier Mycelia/Amanita/Ensure Amanita Manager", priority = 0)]
         public static AmanitaManager EnsureExists()
         {
             // Fast path
-            if (_s != null)
-            {
-                return _s;
-            }
-
             lock (_ensureLock)
-            {
+            { 
                 // Double-check after taking the lock
                 if (_s != null)
                 {
+                    _s.Init();
                     return _s;
                 }
 
@@ -188,7 +147,7 @@ namespace Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !UnityEditor.EditorUtility.IsPersistent(elem.gameObject) && 
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && 
                         elem != newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
@@ -222,8 +181,6 @@ namespace Amanita
                 return null;
             }
 
-            // Resources.Load may call Awake on the prefab's script in some Unity versions,
-            // so we null-check again after instantiation.
             AmanitaManager instantiated;
 #if UNITY_EDITOR
             instantiated = PrefabUtility.InstantiatePrefab(prefab) as AmanitaManager;
@@ -235,11 +192,11 @@ namespace Amanita
             return instantiated;
         }
 
-        private FlowchartRegistry fcRegistry = new FlowchartRegistry();
-
         public void Init()
         {
-            if (IsFullyInitted)
+            if (IsFullyInitted || 
+                this.gameObject.scene == default ||
+                this.gameObject.scene.name == this.name) // <- This can happen when we're in prefab mode
             {
                 return;
             }
@@ -255,19 +212,18 @@ namespace Amanita
             }
             _s = this;
 
-            fcRegistry.Init();
-            RegisterFlowchartsInScene();
-            void RegisterFlowchartsInScene()
+            EnsureShadowDbAvailable();
+            EnsureEventSystemInScene();
+            void EnsureEventSystemInScene()
             {
-                var flowchartsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-                foreach (var fChart in flowchartsInScene)
+                var existing = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+                if (existing == null)
                 {
-                    fcRegistry.RegisterFlowchart(fChart);
+                    var esGo = new GameObject("EventSystem");
+                    esGo.AddComponent<EventSystem>();
+                    esGo.AddComponent<InputSystemUIInputModule>();
                 }
             }
-
-            EnsureShadowDbAvailable();
-            EnsureGuidRegistriesAvailable();
 
             VariableRegistry = new VariableRegistry(this);
 
@@ -298,12 +254,9 @@ namespace Amanita
             // So GetOrCreateAnchorFor can parent anchors.
             EnsureTweenAnchorHolder();
             PrepSubmodules();
-
         }
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene => fcRegistry.GetFlowcharts();//
-
-        public static SaveMenuManager SaveMenu { get; private set; }
+        public static SaveMenuManager SaveMenuManager { get; private set; }
 
         public bool IsFullyInitted
         {
@@ -316,22 +269,27 @@ namespace Amanita
         private void PrepSubmodules()
         {
             // We assume that these are each on separate GameObjects (for the sake of easier testing)
-            CameraManager = GetComponentInChildren<CameraManager>();
-            EventDispatcher = GetComponentInChildren<EventDispatcher>();
-            NarrativeLog = GetComponentInChildren<NarrativeLog>();
-            AudioSystem = GetComponentInChildren<AudioSystem>();
-            SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
-            TweenManager = GetComponentInChildren<TweenManager>();
-            SaveMenu = GetComponentInChildren<SaveMenuManager>();
-
-            InitAll();
-            void InitAll()
+            FetchSubmodules();
+            void FetchSubmodules()
             {
-                // The order here matters
-                TweenManager.Init();
-                NarrativeLog.Init();
-                AudioSystem.Init();
-                SaveSysInstaller.Init();
+                FlowchartRegistry.EnsureInitialized(true);
+                CameraManager = GetComponentInChildren<CameraManager>();
+                EventDispatcher = GetComponentInChildren<EventDispatcher>();
+                NarrativeLog = GetComponentInChildren<NarrativeLog>();
+                AudioSystem = GetComponentInChildren<AudioSystem>();
+                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
+                TweenManager = GetComponentInChildren<TweenManager>();
+                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
+                
+            }
+
+            List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
+            // Lower order index, earlier execution
+            submodules.Sort((first, second) => first.OrderIndex.CompareTo(second.OrderIndex));
+            for (int i = 0; i < submodules.Count; i++)
+            {
+                var module = submodules[i];
+                module.Init();
             }
         }
 
@@ -377,12 +335,12 @@ namespace Amanita
             }
             
             _s = this;
-            if (Application.isPlaying)
+            Init();
+
+            if (Application.IsPlaying(this))
             {
                 DontDestroyOnLoad(gameObject);
             }
-
-            Init();
         }
 
         private SaveSystemInstaller SaveSysInstaller { get; set; }
@@ -432,7 +390,10 @@ namespace Amanita
         {
             if (_s == this)
             {
-                fcRegistry.Dispose();
+                _s = null;
+                SaveSystem.S = null;
+                AudioSystem.S = null;
+                TweenManager.S = null;
 
                 // Clean up anchors we created
                 if (_adapterAnchors != null)
@@ -453,9 +414,7 @@ namespace Amanita
                     _adapterAnchors.Clear();
                 }
 
-                _s = null;
-
-                SaveSystem.S = null;
+                
             }
         }
 
@@ -548,8 +507,6 @@ namespace Amanita
         {
             if (VariableRegistry == null)
             {
-                fcRegistry ??= new FlowchartRegistry();
-                fcRegistry.Init(); // Since the VariableRegistry relies on this being ready
                 VariableRegistry = new VariableRegistry(this);
                 var selected = Selection.activeGameObject;
                 Flowchart currentFc = null;
@@ -565,5 +522,23 @@ namespace Amanita
         {
             EnsureVariableRegistryIsReady();
         }
+
+#if UNITY_EDITOR
+        public void OnTearDown()
+        {
+            List<ITearDownResponder> responders = new List<ITearDownResponder>();
+            foreach (var submodule in GetComponentsInChildren<IAmanitaManagerSubmodule>())
+            {
+                if (submodule is ITearDownResponder responder)
+                {
+                    responders.Add(responder);
+                }
+            }
+            foreach (var responder in responders)
+            {
+                responder.OnTearDown();
+            }
+        }
+#endif
     }
 }

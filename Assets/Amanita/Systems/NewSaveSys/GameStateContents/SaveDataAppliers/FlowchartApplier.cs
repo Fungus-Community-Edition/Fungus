@@ -1,12 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
 using Amanita.Utils;
 using System;
 using Amanita.VScripting;
 using UnityEngine.SceneManagement;
+using Amanita.VScripting.EventHandlers;
 
 namespace Amanita.SaveSys
 {
@@ -58,12 +58,13 @@ namespace Amanita.SaveSys
             }
         }
 
-        public override Task Apply(FlowchartSaveData saveData)
+        public override void Apply(FlowchartSaveData saveData)
         {
             Flowchart flowchart = null;
 
             bool flowchartFound = false;
-            string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name {saveData.FlowchartName} not found.";
+            string flowchartNotFoundMessage = $"Flowchart with ID {saveData.UniqueId} or name " +
+                $"{saveData.FlowchartName} not found.";
             bool onMainThread = UnityThreadUtil.IsMainThread;
             void MainOperation()
             {
@@ -112,12 +113,25 @@ namespace Amanita.SaveSys
                 }
             }
 
-            return Task.CompletedTask;
-
             void ApplyStuff()
             {
+                RemoveGameStartedEventHandlers();
                 ApplyVarStates();
                 ApplyBlockStates();
+            }
+
+            void RemoveGameStartedEventHandlers()
+            {
+                // Remember: Flowcharts should only get a chance to call their Start methods _after_
+                // all the appliers (including this one) have done their thing.
+                // Thus, this is a safe time to remove any GameStarted event handlers,
+                // making sure they don’t get triggered prematurely.
+                var gameStartedBlocks = flowchart.GetComponents<Block>()
+                    .Where(blockEl => blockEl._EventHandler is GameStarted);
+                foreach (var blockEl in gameStartedBlocks)
+                {
+                    blockEl._EventHandler = null;
+                }
             }
 
             void ApplyVarStates()
@@ -192,11 +206,16 @@ namespace Amanita.SaveSys
             // If empty, (re)build the cache; include inactive flowcharts
             if (allFlowcharts.Count == 0)
             {
-                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None).ToList();
+                allFlowcharts = FindObjectsByType<Flowchart>(FindObjectsInactive.Include, 
+                    FindObjectsSortMode.None).ToList();
 
             }
 
-            flowchart = FindFlowchartById(saveData.UniqueId) ?? FindFlowchartByName(saveData.FlowchartName);
+            flowchart = FindFlowchartById(saveData.UniqueId);
+            if (flowchart == null)
+            {
+                FindFlowchartByName(saveData.FlowchartName);
+            }
             return flowchart != null;
         }
 
@@ -227,9 +246,10 @@ namespace Amanita.SaveSys
                     select flowchart).FirstOrDefault();
         }
 
-        public override Task Apply(SaveData saveData)
+        public override void Apply(SaveData saveData, System.Action onComplete)
         {
-            return Apply(saveData as FlowchartSaveData);
+            Apply(saveData as FlowchartSaveData);
+            onComplete?.Invoke();
         }
     }
 }

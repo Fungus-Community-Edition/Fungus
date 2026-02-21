@@ -36,11 +36,11 @@ namespace VScriptingTests.FlowchartLifecycle
         public virtual void DoSetUp()
         {
             AmanitaManager.EnsureExists();
-            AmanitaManager.S.Init();
             fChartHolder = new GameObject("Flowchart_VariableHandlingTestHolder");
             fChart = fChartHolder.AddComponent<Flowchart>();
-            fChart.IsTestOnly = true;
+            fChart.AlwaysKeepGuid = false;
             toDestroyInTearDown.Add(fChartHolder);
+            toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
         }
 
         private GameObject fChartHolder;
@@ -51,6 +51,7 @@ namespace VScriptingTests.FlowchartLifecycle
         public virtual void DoTearDown()
         {
             fChart.OnTearDown();
+            AmanitaManager.S.OnTearDown();
 
             foreach (var obj in toDestroyInTearDown)
             {
