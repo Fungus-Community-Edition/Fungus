@@ -8,6 +8,7 @@ using UnityObject = UnityEngine.Object;
 using Amanita.VScripting;
 using Amanita.VScripting.EditorUtils;
 using Amanita;
+using Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -39,13 +40,16 @@ namespace VScriptingTests.FCWindowOperations
                 }
             }
 
-            handler = new BlockDragHandler();
+            Selection.activeGameObject = fcHolder;
+            EditorSelectionTracker.ResolveActiveFlowchart();
 
             fcContext = new FlowchartContext()
             {
                 Flowchart = flowchart,
                 Position = initPosition,
             };
+
+            handler = new BlockDragHandler(fcContext);
 
             PrepEvents();
             void PrepEvents()
@@ -75,12 +79,24 @@ namespace VScriptingTests.FCWindowOperations
 
             }
 
+            PrepPointerInfo();
+            void PrepPointerInfo()
+            {
+                mouseDownInfo = PointerInfoFor(0, Vector2.zero);
+                mouseDragInfo = PointerInfoFor(0, dragDelta);
+                mouseUpInfo = PointerInfoFor(0, Vector2.zero);
+            }
+
             SetGridSnap(initGridSnap);
             Undo.FlushUndoRecordObjects();
             Undo.IncrementCurrentGroup();
             Undo.SetCurrentGroupName("");
-            
 
+            DecideWhatToDestroyDuringTearDown();
+            void DecideWhatToDestroyDuringTearDown()
+            {
+                toDestroyInTearDown.Add(fcHolder);
+            }
         }
 
         protected GameObject fcHolder;
@@ -103,8 +119,11 @@ namespace VScriptingTests.FCWindowOperations
 
         protected Event mouseDownEvent, mouseDragEvent,
             mouseUpEvent;
+        protected PointerEventInfo mouseDownInfo, mouseDragInfo, mouseUpInfo;
         protected Vector2 mousePos = new Vector2(100, 100);
         protected readonly Vector2 dragDelta = new Vector2(5, 10);
+
+        private readonly IList<UnityObject> toDestroyInTearDown = new List<UnityObject>();
 
         protected virtual void SetGridSnap(bool val)
         {
@@ -116,10 +135,18 @@ namespace VScriptingTests.FCWindowOperations
         [TearDown]
         public virtual void TearDown()
         {
-            UnityObject.DestroyImmediate(fcHolder);
+            foreach (var obj in toDestroyInTearDown)
+            {
+                if (obj != null)
+                {
+                    UnityObject.DestroyImmediate(obj);
+                }
+            }
+            toDestroyInTearDown.Clear();
             blocksInFlowchart = null;
             fcContext = null;
             handler = null;
+            Selection.activeGameObject = null;
 
             ResetEvents();
             void ResetEvents()
@@ -134,31 +161,41 @@ namespace VScriptingTests.FCWindowOperations
         }
 
         [Test]
-        public virtual void MouseDown_UnselectedBlock_NoConsume()
+        public virtual void MouseDown_UnselectedBlock_RecordsHit()
         {
-            bool consumed = handler.Handle(mouseDownEvent, fcContext);
-            Assert.IsFalse(consumed, "Consumed a mouse down event with no selected blocks.");
+            handler.OnLeftMouseDown(mouseDownInfo);
+
+            var interaction = fcContext.Interaction;
+            Block expectedBlock = blocksInFlowchart[0];
+            Assert.AreEqual(expectedBlock, interaction.BlockHitInLastMouseDown, 
+                "Expected a hit on the block under the cursor.");
+            Assert.IsNull(interaction.RootBlockToDrag, "Drag state should not start on mouse down.");
         }
 
         [Test]
         public virtual void MouseDown_UnselectedBlock_NoDragBlockSet()
         {
-            handler.Handle(mouseDownEvent, fcContext);
+            handler.OnLeftMouseDown(mouseDownInfo);
+
             var interaction = fcContext.Interaction;
-            bool success = interaction.RootBlockToDrag == null;
-            Assert.IsTrue(success, "Drag Block was set after MouseDown on unselected Block");
+            Assert.IsNull(interaction.RootBlockToDrag, 
+                "Drag Block was set after MouseDown on unselected Block");
+            Assert.IsFalse(interaction.DragUndoRecorded, "Drag undo recorded on mouse down.");
+            Assert.IsFalse(interaction.BlockDragOngoing, "Drag state started on mouse down.");
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
-        public virtual void MouseDown_SelectedBlock_YesConsume(int blockIndex)
+        public virtual void MouseDown_SelectedBlock_RecordsHit(int blockIndex)
         {
             SelectBlock(blockIndex);
-            //mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
+            PointerEventInfo info = PointerInfoFor(blockIndex, Vector2.zero);
+
+            handler.OnLeftMouseDown(info);
+
             Block blockHit = blocksInFlowchart[blockIndex];
             var interaction = fcContext.Interaction;
-            interaction.BlockHitInLastMouseDown = blockHit;
-            bool consumed = handler.Handle(mouseDownEvent, fcContext);
-            Assert.IsTrue(consumed, $"Block #{blockIndex} should consume MouseDown");
+            Assert.AreEqual(blockHit, interaction.BlockHitInLastMouseDown, 
+                $"Block #{blockIndex} should be registered as the hit block.");
         }
 
         static IEnumerable<int> BlockIndices()
@@ -177,48 +214,48 @@ namespace VScriptingTests.FCWindowOperations
             return initBlockPositions[blockIndex];
         }
 
+        protected PointerEventInfo PointerInfoFor(int blockIndex, Vector2 delta)
+        {
+            Vector2 position = MousePositionFor(blockIndex);
+            return new PointerEventInfo(position, position, delta, delta);
+        }
+
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseDrag_FirstMovement_RecordsUndoGroup(int blockIndex)
         {
             // Arrange
             SelectBlock(blockIndex);
-            mouseDownEvent.mousePosition = MousePositionFor(blockIndex);
             var interaction = fcContext.Interaction;
-            interaction.RootBlockToDrag = blocksInFlowchart[blockIndex];
+            interaction.BlockHitInLastMouseDown = blocksInFlowchart[blockIndex];
+
+            PointerEventInfo dragStartInfo = PointerInfoFor(blockIndex, Vector2.zero);
+            PointerEventInfo dragInfo = PointerInfoFor(blockIndex, dragDelta);
 
             // Act
-            bool consumed = handler.Handle(mouseDragEvent, fcContext);
+            handler.OnLeftMouseDragStarted(dragStartInfo, mouseDragEvent);
+            handler.OnLeftMouseDragged(dragInfo, mouseDragEvent);
 
             // Assert
-            Assert.IsTrue(consumed, $"Block #{blockIndex} drag should be consumed");
-            Assert.AreEqual(
-            handler.startBlockDragGroupName,
-            Undo.GetCurrentGroupName(),
-            $"Block #{blockIndex} did not register undo on first drag"
-                    );
-
-            //string assertErrorMessage = "Should consume mouseDown on selected block";
-            //Assert.IsTrue(consumed, assertErrorMessage);
-
-            //string groupName = Undo.GetCurrentGroupName();
-            //assertErrorMessage = $"Block #{blockIndex} did not register undo on first drag";
-            //Assert.AreEqual(handler.startBlockDragGroupName, groupName, assertErrorMessage);
-
+            Assert.IsTrue(interaction.DragUndoRecorded, 
+                $"Block #{blockIndex} did not record undo on first drag");
+            Assert.IsTrue(interaction.BlockDragOngoing, 
+                $"Block #{blockIndex} did not register as dragging.");
         }
 
         [Test]
         public virtual void MouseDrag_ValidDragBlock_MoveAllBlocksCorrectDist()
         {
             flowchart.AddRangeToSelection(blocksInFlowchart);
-            Block firstBlock = blocksInFlowchart[0];
             var interaction = fcContext.Interaction;
-            interaction.RootBlockToDrag = firstBlock;
+            interaction.BlockHitInLastMouseDown = blocksInFlowchart[0];
 
-            Vector2 expectedMovement = mouseDragEvent.delta / flowchart.Zoom;
+            PointerEventInfo dragStartInfo = PointerInfoFor(0, Vector2.zero);
+            PointerEventInfo dragInfo = PointerInfoFor(0, dragDelta);
 
-            handler.Handle(mouseDragEvent, fcContext);
+            handler.OnLeftMouseDragStarted(dragStartInfo, mouseDragEvent);
+            handler.OnLeftMouseDragged(dragInfo, mouseDragEvent);
 
-            IList<Vector2> blockPositionsAfter = blocksInFlowchart.Select((elem) => elem._NodeRect.position).ToList();
+            Vector2 expectedMovement = dragDelta / flowchart.Zoom;
 
             for (int i = 0; i < blocksInFlowchart.Count; i++)
             {
@@ -227,7 +264,7 @@ namespace VScriptingTests.FCWindowOperations
                 Vector2 actualPos = currentBlock._NodeRect.position;
 
                 Vector2 expectedPos = prevPos + expectedMovement;
-                string assertErrorMessage = $"Did not move {currentBlock.BlockName} to the right position." +
+                string assertErrorMessage = $"Didn't move {currentBlock.BlockName} to the right position." +
                     $"\nExpected: {expectedPos}" +
                     $"\nWhat we got: {actualPos}";
                 Assert.AreEqual(expectedPos, actualPos, assertErrorMessage);
@@ -242,7 +279,7 @@ namespace VScriptingTests.FCWindowOperations
             Rect rectBefore = blockToDrag._NodeRect;
             SimulateDraggingBlockAtIndex(blockIndex);
 
-            handler.Handle(mouseUpEvent, fcContext);
+            handler.OnLeftMouseUp(mouseUpInfo, mouseUpEvent);
 
             // If things were properly snapped, then the SnapPosition func should
             // return a rect equal to the one it was called on
@@ -251,46 +288,51 @@ namespace VScriptingTests.FCWindowOperations
             Assert.AreNotEqual(rectBefore, rectAfter, assertErrorMessage);
 
             Rect snappedRectAfter = blockToDrag._NodeRect.SnapPosition(fcContext.GridObjectSnap);
-            
-            assertErrorMessage = $"The snapping for Block #{blockIndex} didn't work as intended.\n" + 
-                $"Rect pos after drag: {rectAfter.position}\n" + 
+
+            assertErrorMessage = $"The snapping for Block #{blockIndex} didn't work as intended.\n" +
+                $"Rect pos after drag: {rectAfter.position}\n" +
                 $"Expected rect pos after drag: {snappedRectAfter.position}";
             Assert.AreEqual(rectAfter, snappedRectAfter, assertErrorMessage);
-            
         }
 
         protected virtual void SimulateDraggingBlockAtIndex(int blockIndex)
         {
             Block toDrag = blocksInFlowchart[blockIndex];
-            mouseDragEvent.mousePosition = MousePositionFor(blockIndex);
             flowchart.AddToSelection(toDrag);
+
             var interaction = fcContext.Interaction;
-            interaction.RootBlockToDrag = toDrag;
-            handler.Handle(mouseDragEvent, fcContext);
+            interaction.BlockHitInLastMouseDown = toDrag;
+
+            PointerEventInfo dragStartInfo = PointerInfoFor(blockIndex, Vector2.zero);
+            PointerEventInfo dragInfo = PointerInfoFor(blockIndex, dragDelta);
+
+            handler.OnLeftMouseDragStarted(dragStartInfo, mouseDragEvent);
+            handler.OnLeftMouseDragged(dragInfo, mouseDragEvent);
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
         public virtual void MouseUp_ValidDragBlock_ClearsDragBlock(int blockIndex)
         {
             SimulateDraggingBlockAtIndex(blockIndex);
-            handler.Handle(mouseUpEvent, fcContext);
-            string assertErrorMessage = $"Block #{blockIndex} was not cleared after being dragged and released";
+            handler.OnLeftMouseUp(mouseUpInfo, mouseUpEvent);
+
+            string assertErrorMessage = $"Block #{blockIndex} was not cleared after " +
+                $"being dragged and released";
             var interaction = fcContext.Interaction;
             Assert.IsNull(interaction.RootBlockToDrag, assertErrorMessage);
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
-        public void MouseDown_SelectedBlock_UndoGroupNotRecorded(int blockIndex)
+        public void MouseDown_AlreadySelectedBlock_UndoGroupNotRecorded(int blockIndex)
         {
             SelectBlock(blockIndex);
-            Block blockHit = blocksInFlowchart[blockIndex];
-            var interaction = fcContext.Interaction;
-            interaction.BlockHitInLastMouseDown = blockHit;
+            string undoGroupNameBefore = Undo.GetCurrentGroupName();
+            PointerEventInfo info = PointerInfoFor(blockIndex, Vector2.zero);
 
-            bool consumed = handler.Handle(mouseDownEvent, fcContext);
-
-            Assert.IsTrue(consumed, $"Block #{blockIndex} should consume MouseDown");
-            Assert.IsEmpty(Undo.GetCurrentGroupName(), $"Unexpected undo on MouseDown for block #{blockIndex}");
+            handler.OnLeftMouseDown(info);
+            string undoGroupNameAfter = Undo.GetCurrentGroupName();
+            Assert.AreEqual(undoGroupNameBefore, undoGroupNameAfter, 
+                $"MouseDown on already selected block #{blockIndex} should not record an undo group.");
         }
     }
 }

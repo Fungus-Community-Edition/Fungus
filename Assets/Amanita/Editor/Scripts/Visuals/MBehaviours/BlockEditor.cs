@@ -565,8 +565,6 @@ namespace Amanita.VScripting.EditorUtils
 				}
 			}
 
-
-
 			CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
 
 			if (commandCopyBuffer.HasCommands())

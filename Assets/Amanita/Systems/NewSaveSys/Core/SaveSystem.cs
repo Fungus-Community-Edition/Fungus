@@ -7,7 +7,8 @@ using System.IO;
 
 namespace Amanita.SaveSys
 { 
-    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager
+    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager,
+        ITearDownResponder
     {
         protected virtual void Awake()
         {
@@ -293,6 +294,11 @@ namespace Amanita.SaveSys
             S = null;
         }
 
+        protected virtual void OnDisable()
+        {
+            CancelInvoke();
+        }
+
         protected virtual void OnDestroy()
         {
             if (S == this)
@@ -421,6 +427,11 @@ namespace Amanita.SaveSys
         }
         #endregion
 
+        public virtual void OnTearDown()
+        {
+            // Implement any necessary cleanup logic here
+            CancelInvoke();
+        }
     }
 
 }

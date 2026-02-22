@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,7 +12,7 @@ namespace Amanita.VScripting
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    public abstract class Command : MonoBehaviour, IVariableReference
+    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler
     {
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
@@ -22,9 +23,33 @@ namespace Amanita.VScripting
 
         protected string errorMessage = "";
 
+        /// <summary>
+        /// This is for Commands that have too much polymorphic state for Unity's serializedProperty system to 
+        /// copy over normally. Base implementation returns false. If overridden to return true, the editor will 
+        /// use something else (maybe json) to make sure that the pasted copies of this Command type have the 
+        /// state they should. This allows for correct copying of complex polymorphic data, at the cost of 
+        /// maybe some performance and losing reference copying (i.e. if two fields reference the same object, 
+        /// after pasting, they will reference two different but identical objects).
+        /// </summary>
+        public virtual bool NonStandardPaste => false;
+
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
+        }
+
+        /// <summary>
+        /// For refreshing the Command's state so that things like var datas are stable
+        /// and won't lose data or references when copying/pasting or doing other editor operations.
+        /// </summary>
+        public virtual void Refresh()
+        {
+            RefreshForVarDataStability();
+        }
+
+        public virtual void OnPreCut()
+        {
+            Refresh();
         }
 
         private void RefreshForVarDataStability()
@@ -34,8 +59,44 @@ namespace Amanita.VScripting
             {
                 return;
             }
+            EnsureVariableDataInstances();
             RefreshVariableDataCache();
             AssertOwnership();
+        }
+
+        private void EnsureVariableDataInstances()
+        {
+#if UNITY_EDITOR
+            // We only want to do this in the editor, since at runtime, we expect the
+            // VariableDatas to already be populated and don't want to risk overwriting any data.
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            FieldInfo[] fields = GetType().GetFields(flags);
+            for (int i = 0; i < fields.Length; i++)
+            {
+                FieldInfo field = fields[i];
+                System.Type fieldType = field.FieldType;
+                if (!typeof(IVariableData).IsAssignableFrom(fieldType))
+                {
+                    continue;
+                }
+
+                if (fieldType.IsAbstract)
+                {
+                    continue;
+                }
+
+                if (field.GetValue(this) != null)
+                {
+                    continue;
+                }
+
+                object created = Activator.CreateInstance(fieldType);
+                if (created != null)
+                {
+                    field.SetValue(this, created);
+                }
+            }
+#endif
         }
 
         /// <summary>

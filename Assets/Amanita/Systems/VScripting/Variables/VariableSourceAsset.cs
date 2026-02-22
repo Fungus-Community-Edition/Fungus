@@ -15,7 +15,8 @@ using UnityEditor;
 namespace Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
-    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler
+    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,
+        IRefreshable
     {
         [SerializeField] private bool includeInSaves = true;
         [SerializeField, HideInInspector] private string uniqueId = string.Empty;
@@ -416,11 +417,6 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             EditorOnDisable();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
             VsaSignals.VsaDisabled(this);
         }
 

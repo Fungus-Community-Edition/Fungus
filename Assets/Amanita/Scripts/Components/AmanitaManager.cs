@@ -25,7 +25,7 @@ namespace Amanita
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
-    public sealed class AmanitaManager : MonoBehaviour
+    public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
@@ -58,46 +58,6 @@ namespace Amanita
                 globalVariables.AddRange(value);
             }
         }
-
-        public static int GetNumericIdTiedTo(string guid)
-        {
-            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
-            fcGuidRegistry.Refresh();
-            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
-            int result = fcGuidRegistry.GetNumericId(guid);
-            if (result >= 0)
-            {
-                return result;
-            }
-
-            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
-            vsaGuidRegistry.Refresh();
-            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
-            result = vsaGuidRegistry.GetNumericId(guid);
-            return result;
-        }
-
-        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
-        {
-            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
-            if (gotOneReady)
-            {
-                return existing;
-            }
-
-            string assetName = $"{typeof(T).Name}GuidRegistry";
-            var result = SOUtils.EnsureSOExists<GuidRegistry>(whereGuidRegistriesGo, assetName);
-            result.AddTypeStoredFor<T>();
-            typeToRegistryMap[typeof(T)] = result;
-            return result;
-        }
-
-        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
-
-        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
-            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
-        {
-        };
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -146,12 +106,6 @@ namespace Amanita
         private static readonly string resourcesRootFolder = ""; 
         // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
-
-        private static void EnsureGuidRegistriesAvailable()
-        {
-            GetOrAddGuidRegistryFor<Flowchart>();//
-            GetOrAddGuidRegistryFor<VariableSourceAsset>();
-        }
 
         public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
 
@@ -259,7 +213,6 @@ namespace Amanita
             _s = this;
 
             EnsureShadowDbAvailable();
-            EnsureGuidRegistriesAvailable();
             EnsureEventSystemInScene();
             void EnsureEventSystemInScene()
             {
@@ -320,7 +273,6 @@ namespace Amanita
             void FetchSubmodules()
             {
                 FlowchartRegistry.EnsureInitialized(true);
-                this.gameObject.GetOrAddComponent<AmanitaState>();
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
@@ -570,5 +522,23 @@ namespace Amanita
         {
             EnsureVariableRegistryIsReady();
         }
+
+#if UNITY_EDITOR
+        public void OnTearDown()
+        {
+            List<ITearDownResponder> responders = new List<ITearDownResponder>();
+            foreach (var submodule in GetComponentsInChildren<IAmanitaManagerSubmodule>())
+            {
+                if (submodule is ITearDownResponder responder)
+                {
+                    responders.Add(responder);
+                }
+            }
+            foreach (var responder in responders)
+            {
+                responder.OnTearDown();
+            }
+        }
+#endif
     }
 }

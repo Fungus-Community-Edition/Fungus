@@ -192,8 +192,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
 #if UNITY_EDITOR
-            var flowchartFromWindow = FlowchartWindow.GetFlowchart();
-            TryRebindTo(flowchartFromWindow);
+            var fcFromTracker = EditorSelectionTracker.ActiveFlowchart;
+            TryRebindTo(fcFromTracker);
 #endif
         }
 
@@ -278,11 +278,12 @@ namespace Amanita.VScripting.EditorUtils
             {
                 if (owner is UnityObj ownerObj && ownerObj != null)
                 {
-                    string typeName = varInvolved.GetType().Name;
+                    string typeName = varInvolved.ContentType.Name;
                     if (typeName.Equals("Single"))
                     {
                         typeName = "Float";
                     }
+
                     Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
                 }
             }

@@ -219,24 +219,9 @@ namespace Amanita.VScripting
             set
             {
                 _owner = value;
-                if (_owner == null)
-                {
-                    _ownerIdIndex = -1;
-                }
-                else
-                {
-                    _ownerIdIndex = AmanitaManager.GetNumericIdTiedTo(_owner.UniqueId);
-                }
             }
         }
         protected IVariableSource _owner;
-
-        public virtual int OwnerIdIndex
-        {
-            get { return _ownerIdIndex; }
-        }
-        [SerializeField] protected int _ownerIdIndex = -1;
-        // ^The reference to the owner doesn't persist, so we store a key of sorts for rehydration.
 
         public abstract Muscariable Clone();
 

@@ -59,7 +59,7 @@ namespace VScriptingTests.FCWindowOperations
             var interaction = ctx.Interaction;
             Assert.IsTrue(consumed);
             Assert.AreNotEqual(default, interaction.SelectionBox);
-            Assert.AreEqual(down.mousePosition, interaction.StartSelectionBoxPosition);
+            Assert.AreEqual(down.mousePosition, interaction.SelectionBoxStartPos);
         }
 
         [Test]
