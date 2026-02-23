@@ -178,7 +178,8 @@ namespace Amanita.SaveSys
                             mainStateTextToWrite = Serializer.ToJson(saveData, true);
                         }
 
-                        string everythingToWrite = $"{metaTextToWrite}{ReadWriteDelimiter}" +
+                        string firstDelimiter = ReadWriteDelimiters[0];
+                        string everythingToWrite = $"{metaTextToWrite}{firstDelimiter}" +
                             $"{mainStateTextToWrite}{CompletionMarker}";
                         await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
                     }

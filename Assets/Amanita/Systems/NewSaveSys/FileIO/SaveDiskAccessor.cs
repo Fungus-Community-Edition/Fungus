@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -59,8 +60,18 @@ namespace Amanita.SaveSys
         public virtual string FilePathFormat => storageSettings.FilePathFormat;
         #endregion
 
-        public static string ReadWriteDelimiter => "\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n";
-        
+        public static readonly string[] ReadWriteDelimiters = new string[]
+        {
+            $"\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n", 
+            // ^The basic one, with just \n instances. This is what we will write to the file, and what
+            // we will expect to see when reading.
+
+            $"\r\n\r\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\r\n\r\n",
+            // ^But sometimes, some platforms (looking at you, WebGL) don't
+            // handle \n the same as others. That, and the save writer might append \r instances
+            // for whatever reason, so we want to be able to handle those as well.
+        };
+
         public virtual bool ExpectEncryption
         {
             get => storageSettings.ExpectEncryption;

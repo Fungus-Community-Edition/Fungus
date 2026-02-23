@@ -36,7 +36,7 @@ namespace SaveSystemTests
                 string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
                 string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
 
-                string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+                string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
 
                 byte key = 0xAA;
                 IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -119,7 +119,7 @@ namespace SaveSystemTests
 
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -147,7 +147,7 @@ namespace SaveSystemTests
             stringVar.Value = "こんにちは世界🌏 Привет мир 𝄞";
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -189,9 +189,9 @@ namespace SaveSystemTests
         public void EncryptsDataContainingDelimiterAndMarker()
         {
             // Arrange: inject delimiter and completion marker into the data
-            string delimiter = SaveDiskAccessor.ReadWriteDelimiter;
+            string firstDelimiter = SaveDiskAccessor.ReadWriteDelimiters[0];
             string marker = SaveDiskAccessor.CompletionMarker;
-            stringVar.Value = $"Value with delimiter: {delimiter} and marker: {marker}";
+            stringVar.Value = $"Value with delimiter: {firstDelimiter} and marker: {marker}";
             
             IList<byte> expectedBytes;
             fsSerializer serializer = AmanitaManager.DefaultSerializer;
@@ -202,7 +202,7 @@ namespace SaveSystemTests
                 // ^Need to cast here so that the serialized json here and in the encryptor match.
                 // Turns out that when fsSerializer serializes an interface type, it includes type metadata,
                 // and not when passed a concrete type.
-                string expectedJsonText = $"{expectedMetaDataJson}{delimiter}{expectedMainSaveDataJson}{marker}";
+                string expectedJsonText = $"{expectedMetaDataJson}{firstDelimiter}{expectedMainSaveDataJson}{marker}";
                 byte key = 0xAA;
                 expectedBytes = utf8.GetBytes(expectedJsonText)
                     .Select(b => (byte)(b ^ key))
@@ -236,7 +236,7 @@ namespace SaveSystemTests
             // passed the exact concrete type to serialize. Parent classes are treated the same
             // as interfaces when it comes to deciding whether or not to include $type.
 
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -263,7 +263,7 @@ namespace SaveSystemTests
             stringVar.Value = "   \t\n";
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))

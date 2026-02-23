@@ -46,13 +46,11 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             fcContext = context ?? throw new ArgumentNullException(nameof(context));
             drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
-            //pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
             style.flexGrow = 1f;
 
             RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            
         }
 
         private void ToggleSubs(bool on)
@@ -279,7 +277,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 {
                     return;
                 }
-
+                ClearAll();
                 drawer.UpdateButton(button, block, CurrentZoom);
                 UpdateBlockLayouts();
             }).ExecuteLater(1);

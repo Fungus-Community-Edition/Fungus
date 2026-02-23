@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Text;
 using FullSerializer;
 using Amanita.FSExt;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
@@ -89,7 +90,7 @@ namespace Amanita.SaveSys
             
         }
 
-        protected static string Delimiter => SaveDiskAccessor.ReadWriteDelimiter;
+        protected static IList<string> Delimiter => SaveDiskAccessor.ReadWriteDelimiters;
 
         protected virtual Encoding Encoding => Encoding.UTF8;
         protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;

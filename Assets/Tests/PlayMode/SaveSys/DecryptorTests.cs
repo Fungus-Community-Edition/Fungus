@@ -38,7 +38,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -61,7 +61,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -84,7 +84,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -124,7 +124,7 @@ namespace SaveSystemTests
             // Arrange: missing completion marker
             string metaJson = JsonUtility.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -145,7 +145,7 @@ namespace SaveSystemTests
 
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -180,9 +180,9 @@ namespace SaveSystemTests
         public void DecryptsDataContainingDelimiterAndMarker()
         {
             // Arrange
-            string delimiter = SaveDiskAccessor.ReadWriteDelimiter;
+            string[] delimiters = SaveDiskAccessor.ReadWriteDelimiters;
             string marker = SaveDiskAccessor.CompletionMarker;
-            string testValue = $"Value with delimiter: {delimiter} and marker: {marker}";
+            string testValue = $"Value with delimiter: {delimiters} and marker: {marker}";
 
             stringVar.Value = testValue;
             StringVarCodec stringVarCodec = new StringVarCodec();
@@ -193,7 +193,7 @@ namespace SaveSystemTests
 
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{delimiter}{mainJson}{marker}";
+            string fullJson = $"{metaJson}{delimiters}{mainJson}{marker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -222,7 +222,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -249,7 +249,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiters}{mainJson}{SaveDiskAccessor.CompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest

@@ -10,6 +10,7 @@ using Amanita.IO;
 using FullSerializer;
 using Amanita.FSExt;
 
+
 namespace Amanita.SaveSys
 {
     /// <summary>
@@ -21,8 +22,7 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Amanita/SaveSys/DefaultDecryptor", order = 1)]
     public class Decryptor : ScriptableObject, IDecryptor
     {
-        protected static string[] delimiterArr = new string[] { SaveDiskAccessor.ReadWriteDelimiter };
-        protected static string DelimiterText => SaveDiskAccessor.ReadWriteDelimiter;
+        protected static string[] delimiterArr = SaveDiskAccessor.ReadWriteDelimiters;
 
         /// <summary>
         /// What we expect the client's input to be is an object array with the 
