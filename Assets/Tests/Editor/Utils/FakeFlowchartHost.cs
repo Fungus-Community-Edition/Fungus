@@ -211,13 +211,17 @@ namespace Amanita.EditorUtils
 
         private sealed class FakeBlockDrawerUitk : IBlockDrawerUitk
         {
-            public Button CreateButton(Block block)
+            public BlockButton CreateButton(Block block)
             {
-                return new Button();
+                var button = new BlockButton(new BlockGraphicsGenerator());
+                button.Initialize(block, FlowchartWindow.Config?.BlockUxml,
+                    FlowchartWindow.Config?.BlockStyleSheet, FlowchartWindow.Config?.SelectedBlockStyleSheet);
+                return button;
             }
 
-            public void UpdateButton(Button button, Block block, float zoom)
+            public void UpdateButton(BlockButton button, Block block, float zoom)
             {
+                button?.UpdateVisuals(block, zoom);
             }
         }
 

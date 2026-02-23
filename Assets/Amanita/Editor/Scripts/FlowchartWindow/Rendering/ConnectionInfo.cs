@@ -1,17 +1,17 @@
-using UnityEngine;
+using Amanita.VScripting;
 
 namespace Amanita.VScripting.EditorUtils
 {
     public readonly struct ConnectionInfo
     {
-        public readonly Rect FromRect;
-        public readonly Rect ToRect;
+        public readonly Block FromBlock;
+        public readonly Block ToBlock;
         public readonly bool Highlight;
 
-        public ConnectionInfo(Rect fromRect, Rect toRect, bool highlight)
+        public ConnectionInfo(Block fromBlock, Block toBlock, bool highlight)
         {
-            FromRect = fromRect;
-            ToRect = toRect;
+            FromBlock = fromBlock;
+            ToBlock = toBlock;
             Highlight = highlight;
         }
     }

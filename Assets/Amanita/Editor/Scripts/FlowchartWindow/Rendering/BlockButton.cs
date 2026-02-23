@@ -218,6 +218,18 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 float.NaN,
                 MeasureMode.Undefined);
 
+            // Initial sizing might be invalid. If we continue with an invalid size, that can lead
+            // to NaN bounds in ConnectionGatherer. That would then cause the connections to not render
+            // until the user does some input such as panning the screen.
+            // That's why here, to prevent that state-poisoning, we guard against applying an invalid size.
+            // This guard probably procs for the first frame or two after a block is created or
+            // after the FlowchartWindow opens. But after that, the size should be valid and we can
+            // apply it and render the connections correctly.
+            if (IsInvalidSize(unrestrictedSize))
+            {
+                return;
+            }
+
             float totalPaddingX = PaddingX * 2f;
             float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
             float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, minTextWidth);
@@ -229,8 +241,18 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 float.NaN,
                 MeasureMode.Undefined);
 
+            if (IsInvalidSize(wrappedSize))
+            {
+                return;
+            }
+
             float width = unclampedWidth;
             float height = Mathf.Max(DefaultHeight, wrappedSize.y + PaddingY);
+
+            if (IsInvalidNumber(width) || IsInvalidNumber(height))
+            {
+                return;
+            }
 
             ApplySize(width, height);
 
@@ -238,6 +260,16 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             newNodeRect.width = width;
             newNodeRect.height = height;
             _block._NodeRect = newNodeRect;
+        }
+
+        private static bool IsInvalidSize(Vector2 size)
+        {
+            return IsInvalidNumber(size.x) || IsInvalidNumber(size.y);
+        }
+
+        private static bool IsInvalidNumber(float value)
+        {
+            return float.IsNaN(value) || float.IsInfinity(value);
         }
 
         private void ApplySize(float width, float height)

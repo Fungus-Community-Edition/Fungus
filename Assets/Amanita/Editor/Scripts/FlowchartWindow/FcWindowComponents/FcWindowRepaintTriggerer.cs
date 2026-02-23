@@ -39,7 +39,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
-            EditorApplication.delayCall += () => owner?.Repaint();
+            EditorApplication.delayCall += () =>
+            {
+                if (owner != null)
+                {
+                    owner.Repaint();
+                }
+            };
         }
 
         public void OnVariableAdded(Flowchart addedTo, IVariable variable)

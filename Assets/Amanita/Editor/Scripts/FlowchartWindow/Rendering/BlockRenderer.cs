@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkButton = UnityEngine.UIElements.Button;
+using Amanita.VScripting;
 
 namespace Amanita.VScripting.EditorUtils.FcWindow
 {
     public interface IBlockDrawerUitk
     {
-        UitkButton CreateButton(Block block);
-        void UpdateButton(UitkButton button, Block block, float zoom);
+        BlockButton CreateButton(Block block);
+        void UpdateButton(BlockButton button, Block block, float zoom);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         /// </summary>
         private sealed class BlockBinding
         {
-            public UitkButton Button;
+            public BlockButton Button;
             public Action ClickHandler;
         }
         
@@ -148,6 +148,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             }
 
             UpdateBlockLayouts();
+            FlowchartWindowSignals.WindowPanned();
             MarkDirtyRepaint();
         }
 
@@ -195,21 +196,17 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
-            UitkButton buttonToRemove = binding.Button;
+            BlockButton buttonToRemove = binding.Button;
             if (buttonToRemove != null)
             {
                 UnregisterInputForwarders(buttonToRemove);
 
                 if (binding.ClickHandler != null)
                 {
-                    buttonToRemove.clicked -= binding.ClickHandler;
+                    buttonToRemove.Clicked -= binding.ClickHandler;
                 }
 
-                buttonToRemove.visible = false;
-                buttonToRemove.style.display = DisplayStyle.None;
-                buttonToRemove.MarkDirtyRepaint();
-                buttonToRemove.RemoveFromHierarchy();
-                
+                buttonToRemove.Dispose();
             }
 
             blockBindings.Remove(block);
@@ -226,14 +223,14 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             bool blockAlreadyDrawn = blockBindings.TryGetValue(block, out BlockBinding binding);
             if (!blockAlreadyDrawn)
             {
-                UitkButton button = drawer.CreateButton(block);
+                BlockButton button = drawer.CreateButton(block);
                 button.name = block.BlockName;
                 button.style.position = Position.Absolute;
 
                 RegisterInputForwarders(button);
 
                 var capturedBlock = block;
-                button.clicked += OnClick;
+                button.Clicked += OnClick;
                 void OnClick()
                 {
                     BlockSignals.BlockLeftClicked?.Invoke(capturedBlock, Event.current);
@@ -254,6 +251,8 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 }
                 button.RegisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
 
+                ScheduleInitialRefresh(button, capturedBlock);
+
                 binding = new BlockBinding
                 {
                     Button = button,
@@ -267,6 +266,25 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             drawer.UpdateButton(binding.Button, block, CurrentZoom);
         }
 
+        private void ScheduleInitialRefresh(BlockButton button, Block block)
+        {
+            if (button == null || block == null)
+            {
+                return;
+            }
+
+            button.schedule.Execute(() =>
+            {
+                if (button.panel == null)
+                {
+                    return;
+                }
+
+                drawer.UpdateButton(button, block, CurrentZoom);
+                UpdateBlockLayouts();
+            }).ExecuteLater(1);
+        }
+
         /// <summary>
         /// Based on the current scroll and zoom, update the positions and sizes of all block buttons.
         /// </summary>
@@ -278,7 +296,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             foreach (var pair in blockBindings)
             {
                 Block block = pair.Key;
-                UitkButton button = pair.Value.Button;
+                BlockButton button = pair.Value.Button;
                 if (block == null || button == null)
                 {
                     continue;
@@ -385,7 +403,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             {
                 UnregisterInputForwarders(entry.Value.Button);
                 UnsubClickHandler(entry.Value);
-                entry.Value.Button?.RemoveFromHierarchy();
+                entry.Value.Button?.Dispose();
             }
             blockBindings.Clear();
         }
@@ -394,7 +412,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         {
             if (binding.Button != null && binding.ClickHandler != null)
             {
-                binding.Button.clicked -= binding.ClickHandler;
+                binding.Button.Clicked -= binding.ClickHandler;
             }
         }
 
@@ -420,7 +438,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 var button = entry.Value.Button;
                 if (button != null)
                 {
-                    button.pickingMode = PickingMode.Ignore;
+                    button.SetPickingMode(PickingMode.Ignore);
                 }
             }
             #endregion
@@ -434,7 +452,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 var button = entry.Value.Button;
                 if (button != null)
                 {
-                    button.pickingMode = PickingMode.Position;
+                    button.SetPickingMode(PickingMode.Position);
                 }
             }
             #endregion
@@ -455,6 +473,10 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
             VisualElement parentEl = parent;
             Rect worldRect = binding.Button.worldBound;
+            if (IsInvalidRect(worldRect))
+            {
+                return false;
+            }
 
             if (parentEl == null)
             {
@@ -465,6 +487,21 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             Vector2 localPos = parentEl.WorldToLocal(worldRect.position);
             rect = new Rect(localPos, worldRect.size);
             return true;
+        }
+
+        private static bool IsInvalidRect(Rect rect)
+        {
+            return IsInvalidNumber(rect.x) ||
+                   IsInvalidNumber(rect.y) ||
+                   IsInvalidNumber(rect.width) ||
+                   IsInvalidNumber(rect.height) ||
+                   rect.width <= 0f ||
+                   rect.height <= 0f;
+        }
+
+        private static bool IsInvalidNumber(float value)
+        {
+            return float.IsNaN(value) || float.IsInfinity(value);
         }
 
         public void Dispose()
@@ -483,30 +520,32 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         private InputSignalModule InputSignals => owner != null ? owner.InputSignals : null;
 
-        private void RegisterInputForwarders(UitkButton button)
+        private void RegisterInputForwarders(BlockButton button)
         {
-            if (button == null)
+            VisualElement inputTarget = button != null ? button.InputTarget : null;
+            if (inputTarget == null)
             {
                 return;
             }
 
-            button.RegisterCallback<PointerDownEvent>(OnBlockPointerDown);
-            button.RegisterCallback<PointerMoveEvent>(OnBlockPointerMove);
-            button.RegisterCallback<PointerUpEvent>(OnBlockPointerUp);
-            button.RegisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+            inputTarget.RegisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            inputTarget.RegisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            inputTarget.RegisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            inputTarget.RegisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
         }
 
-        private void UnregisterInputForwarders(UitkButton button)
+        private void UnregisterInputForwarders(BlockButton button)
         {
-            if (button == null)
+            VisualElement inputTarget = button != null ? button.InputTarget : null;
+            if (inputTarget == null)
             {
                 return;
             }
 
-            button.UnregisterCallback<PointerDownEvent>(OnBlockPointerDown);
-            button.UnregisterCallback<PointerMoveEvent>(OnBlockPointerMove);
-            button.UnregisterCallback<PointerUpEvent>(OnBlockPointerUp);
-            button.UnregisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
+            inputTarget.UnregisterCallback<PointerDownEvent>(OnBlockPointerDown);
+            inputTarget.UnregisterCallback<PointerMoveEvent>(OnBlockPointerMove);
+            inputTarget.UnregisterCallback<PointerUpEvent>(OnBlockPointerUp);
+            inputTarget.UnregisterCallback<PointerCancelEvent>(OnBlockPointerCancel);
         }
 
         private void OnBlockPointerDown(PointerDownEvent evt)
