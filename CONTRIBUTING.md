@@ -20,6 +20,7 @@ Your pull request will have a better chance of being accepted if you do the foll
 * Follow our [coding standard]
 * Write a [good commit message][commit].
 * Target and make changes against the develop branch.
+* For `BlockButton` UI, stylesheets are defined in UXML; code should only toggle USS classes and not add stylesheets programmatically.
 
 [code of conduct]: https://github.com/snozbot/fungus/blob/master/CODE_OF_CONDUCT.md
 [commit]: http://chris.beams.io/posts/git-commit/

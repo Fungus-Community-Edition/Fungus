@@ -22,6 +22,9 @@ namespace Amanita.VScripting.EditorUtils
             GridLineColor = new Color(0.5f, 0.5f, 0.5f, 0.2f)
         };
 
+        [Header("Visual Tree Assets")]
+        [SerializeField] private VisualTreeAsset _blockUxml;
+
         [Header("Style Sheets")]
         [SerializeField] private StyleSheet _blockStyleSheet;
         [SerializeField] private StyleSheet _selectedBlockStyleSheet;
@@ -37,6 +40,7 @@ namespace Amanita.VScripting.EditorUtils
         
         public DrawGridContext GridDrawConfig => _gridDrawConfig;
 
+        public VisualTreeAsset BlockUxml => _blockUxml;
         public StyleSheet BlockStyleSheet => _blockStyleSheet;
         public StyleSheet SelectedBlockStyleSheet => _selectedBlockStyleSheet;
     }

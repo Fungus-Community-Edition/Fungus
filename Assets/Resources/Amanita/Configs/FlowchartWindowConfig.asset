@@ -22,6 +22,8 @@ MonoBehaviour:
   _gridDrawConfig:
     _gridLineSpacingSize: 50
     _gridLineColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.2}
+  _blockUxml: {fileID: 9197481963319205126, guid: 0000286715fcd014ca5fa9b14662b43d,
+    type: 3}
   _blockStyleSheet: {fileID: 7433441132597879392, guid: c5370193fd94e934294ae6a43a009150,
     type: 3}
   _selectedBlockStyleSheet: {fileID: 7433441132597879392, guid: d4180856140ec80419fb117e641823b5,
