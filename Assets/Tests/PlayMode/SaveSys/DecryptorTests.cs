@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
 using Amanita.FSExt;
+using UnityEngine.TestTools;
 
 namespace SaveSystemTests
 {
@@ -38,7 +39,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -61,7 +62,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -84,7 +85,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -124,8 +125,8 @@ namespace SaveSystemTests
             // Arrange: missing completion marker
             string metaJson = JsonUtility.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}";
-            byte[] encrypted = Encrypt(fullJson);
+            string fullJsonIncomplete = $"{metaJson}{FirstDelimiter}{mainJson}";
+            byte[] encrypted = Encrypt(fullJsonIncomplete);
 
             var req = new BaseDecryptionRequest
             {
@@ -134,6 +135,7 @@ namespace SaveSystemTests
             };
 
             // Act & Assert
+            LogAssert.ignoreFailingMessages = true; // Suppress expected error logs
             Assert.Throws<ArgumentException>(() => decryptor.DecryptMeta(req), "Did not reject data missing completion marker.");
         }
 
@@ -145,7 +147,7 @@ namespace SaveSystemTests
 
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -180,9 +182,7 @@ namespace SaveSystemTests
         public void DecryptsDataContainingDelimiterAndMarker()
         {
             // Arrange
-            string delimiter = SaveDiskAccessor.ReadWriteDelimiter;
-            string marker = SaveDiskAccessor.CompletionMarker;
-            string testValue = $"Value with delimiter: {delimiter} and marker: {marker}";
+            string testValue = $"Value with delimiter: {FirstDelimiter} and marker: {FirstCompletionMarker}";
 
             stringVar.Value = testValue;
             StringVarCodec stringVarCodec = new StringVarCodec();
@@ -193,7 +193,7 @@ namespace SaveSystemTests
 
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{delimiter}{mainJson}{marker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -222,7 +222,7 @@ namespace SaveSystemTests
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest
@@ -242,14 +242,15 @@ namespace SaveSystemTests
             string r2Main = serializerForTest.ToJson(secondResult.MainState, true);
             Assert.AreEqual(r1Main, r2Main, "Main state mismatch between decryptions.");
         }
-
+        private string FirstDelimiter => SaveDiskAccessor.ReadWriteDelimiters.FirstOrDefault();
+        private string FirstCompletionMarker => SaveDiskAccessor.CompletionMarkers.FirstOrDefault();
         [Test]
         public void DecryptorIsThreadSafeForParallelCalls()
         {
             // Arrange
             string metaJson = serializerForTest.ToJson(metaData, true);
             string mainJson = serializerForTest.ToJson(MainSave, true);
-            string fullJson = $"{metaJson}{SaveDiskAccessor.ReadWriteDelimiter}{mainJson}{SaveDiskAccessor.CompletionMarker}";
+            string fullJson = $"{metaJson}{FirstDelimiter}{mainJson}{FirstCompletionMarker}";
             byte[] encrypted = Encrypt(fullJson);
 
             var req = new BaseDecryptionRequest

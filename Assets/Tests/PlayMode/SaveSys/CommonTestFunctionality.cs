@@ -126,6 +126,7 @@ namespace SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            LogAssert.ignoreFailingMessages = false;
             PlayerPrefs.DeleteAll();
             DestroyExistingAmanitaManagerIfAny();
             ResetSingletonStatics();

@@ -36,7 +36,7 @@ namespace SaveSystemTests
                 string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
                 string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
 
-                string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+                string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{FirstCompletionMarker}";
 
                 byte key = 0xAA;
                 IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
@@ -46,7 +46,7 @@ namespace SaveSystemTests
                 BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest()
                 {
                     SaveDataSet = saveDataSet,
-                    CompletionMarker = SaveDiskAccessor.CompletionMarker
+                    CompletionMarker = FirstCompletionMarker
                 };
                 object output = encryptor.GetOutput(encryptionRequest);
                 byte[] bytesWeGot = (byte[])output;
@@ -119,7 +119,7 @@ namespace SaveSystemTests
 
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{FirstCompletionMarker}";;
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -128,7 +128,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Act & Assert: ensure it completes in a reasonable time and is correct
@@ -147,7 +147,7 @@ namespace SaveSystemTests
             stringVar.Value = "こんにちは世界🌏 Привет мир 𝄞";
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{FirstCompletionMarker}";;
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -156,7 +156,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Act
@@ -174,7 +174,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Act
@@ -185,15 +185,18 @@ namespace SaveSystemTests
             Assert.IsTrue(((byte[])output1).SequenceEqual((byte[])output2), "Encryptor did not produce consistent output for the same input.");
         }
 
+        private string FirstDelimiter => SaveDiskAccessor.ReadWriteDelimiters.First();
+        private string FirstCompletionMarker => SaveDiskAccessor.CompletionMarkers.First();
+
         [Test]
         public void EncryptsDataContainingDelimiterAndMarker()
         {
             // Arrange: inject delimiter and completion marker into the data
-            string delimiter = SaveDiskAccessor.ReadWriteDelimiter;
-            string marker = SaveDiskAccessor.CompletionMarker;
-            stringVar.Value = $"Value with delimiter: {delimiter} and marker: {marker}";
+            string marker = FirstCompletionMarker;
+            stringVar.Value = $"Value with delimiter: {FirstDelimiter} and marker: {marker}";
             
-            IList<byte> expectedBytes;
+            IList<byte> expectedBytes, secondExpectedBytes;
+            // ^Need a second for the \r nonsense
             fsSerializer serializer = AmanitaManager.DefaultSerializer;
             lock (serializer)
             {
@@ -202,11 +205,18 @@ namespace SaveSystemTests
                 // ^Need to cast here so that the serialized json here and in the encryptor match.
                 // Turns out that when fsSerializer serializes an interface type, it includes type metadata,
                 // and not when passed a concrete type.
-                string expectedJsonText = $"{expectedMetaDataJson}{delimiter}{expectedMainSaveDataJson}{marker}";
+                string secondMarker = SaveDiskAccessor.CompletionMarkers[1];
+                string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{marker}";
+                string secondExpectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{secondMarker}";
                 byte key = 0xAA;
                 expectedBytes = utf8.GetBytes(expectedJsonText)
                     .Select(b => (byte)(b ^ key))
                     .ToArray();
+                secondExpectedBytes = utf8.GetBytes(secondExpectedJsonText)
+                    .Select(b => (byte)(b ^ key))
+                    .ToArray();
+
+
             }
 
             var encryptionRequest = new BaseEncryptionRequest
@@ -217,11 +227,23 @@ namespace SaveSystemTests
 
             // Act
             object output = encryptor.GetOutput(encryptionRequest);
+            byte[] outputBytes = (byte[])output;
+            // For debugging purposes, decrypt the output (which is a byte array) back to a string and log it,
+            // to see if the delimiters and markers are where we expect.
+            
             byte[] bytesWeGot = (byte[])output;
+            string decrypted = DecryptBytesToString(bytesWeGot); // Just for debugging to see the actual text with delimiters and markers in it.
 
             // Assert
-            Assert.IsTrue(expectedBytes.SequenceEqual(bytesWeGot),
+            Assert.IsTrue(expectedBytes.SequenceEqual(bytesWeGot) || secondExpectedBytes.SequenceEqual(bytesWeGot),
                 "Encryptor did not handle delimiter/marker in data as expected.");
+        }
+
+        private string DecryptBytesToString(byte[] encryptedBytes)
+        {
+            byte key = 0xAA;
+            byte[] decryptedBytes = encryptedBytes.Select(b => (byte)(b ^ key)).ToArray();
+            return utf8.GetString(decryptedBytes);
         }
 
         [Test]
@@ -236,7 +258,7 @@ namespace SaveSystemTests
             // passed the exact concrete type to serialize. Parent classes are treated the same
             // as interfaces when it comes to deciding whether or not to include $type.
 
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{FirstCompletionMarker}";;
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -245,7 +267,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Act
@@ -263,7 +285,7 @@ namespace SaveSystemTests
             stringVar.Value = "   \t\n";
             string expectedMetaDataJson = serializerForTest.ToJson(saveDataSet.Meta, true);
             string expectedMainSaveDataJson = serializerForTest.ToJson(saveDataSet.MainState, true);
-            string expectedJsonText = $"{expectedMetaDataJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainSaveDataJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedJsonText = $"{expectedMetaDataJson}{FirstDelimiter}{expectedMainSaveDataJson}{FirstCompletionMarker}";;
             byte key = 0xAA;
             IList<byte> expectedBytes = utf8.GetBytes(expectedJsonText)
                 .Select(b => (byte)(b ^ key))
@@ -272,7 +294,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Act
@@ -290,7 +312,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Get output for the current state
@@ -309,7 +331,7 @@ namespace SaveSystemTests
             var encryptionRequest2 = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
 
             // Get output for the mutated state
@@ -326,7 +348,7 @@ namespace SaveSystemTests
             var encryptionRequest = new BaseEncryptionRequest
             {
                 SaveDataSet = saveDataSet,
-                CompletionMarker = SaveDiskAccessor.CompletionMarker
+                CompletionMarker = FirstCompletionMarker
             };
             const int threadCount = 8;
             byte[][] results = new byte[threadCount][];

@@ -1,5 +1,6 @@
 using System;
 using Amanita.EditorUtils;
+using Amanita.VScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -30,8 +31,33 @@ namespace Amanita.VScripting.EditorUtils
             for (int i = 0; i < connections.Count; i++)
             {
                 ConnectionInfo connection = connections[i];
-                DrawRectConnection(painter, connection.FromRect, connection.ToRect, connection.Highlight);
+                if (connection.FromBlock == null || connection.ToBlock == null)
+                {
+                    continue;
+                }
+
+                Rect fromRect = CalculateWindowRect(connection.FromBlock, fcContext.Flowchart);
+                Rect toRect = CalculateWindowRect(connection.ToBlock, fcContext.Flowchart);
+                DrawRectConnection(painter, fromRect, toRect, connection.Highlight);
             }
+        }
+
+        private static Rect CalculateWindowRect(Block block, Flowchart fc)
+        {
+            Rect modelRect = block._NodeRect;
+
+            float zoom = 1f;
+            Vector2 scrollPos = Vector2.zero;
+            if (fc != null)
+            {
+                zoom = Mathf.Approximately(fc.Zoom, 0f) ? 1f : fc.Zoom;
+                scrollPos = fc.ScrollPos;
+            }
+
+            modelRect.width *= zoom;
+            modelRect.height *= zoom;
+            modelRect.position = (modelRect.position + scrollPos) * zoom;
+            return modelRect;
         }
 
         private void DrawRectConnection(Painter2D painter, Rect fromRect, Rect toRect, bool highlight)
