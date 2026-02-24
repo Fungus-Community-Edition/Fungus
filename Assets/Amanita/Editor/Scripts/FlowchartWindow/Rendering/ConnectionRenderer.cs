@@ -22,6 +22,9 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         private const float BlockMinWidth = 60f;
         private const float BlockMaxWidth = 260f;
 
+        private const bool DiagnosticsEnabled = true;
+        private int diagnosticsRemaining = 6;
+
         private readonly FlowchartContext flowchartContext;
         private readonly DrawBlockContext drawBlockContext = new DrawBlockContext();
         private readonly ConnectionDrawer connectionDrawer;
@@ -35,18 +38,16 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             this.connectionDrawer = connectionDrawer ?? throw new ArgumentNullException(nameof(connectionDrawer));
 
             pickingMode = PickingMode.Ignore;
-            this.contentContainer.StretchToParentSize();
             style.position = Position.Absolute;
-            style.top = 0f;
-            style.right = 0f;
-            style.bottom = 0f;
-            style.left = 0f;
             style.flexGrow = 1f;
+            this.contentContainer.StretchToParentSize();
         }
 
         public void Initialize(FlowchartWindow window)
         {
-            owner = window ?? throw new ArgumentNullException(nameof(window));
+            owner = window != null ? 
+                window : 
+                throw new ArgumentNullException(nameof(window));
             ToggleSubs(true);
         }
 
@@ -92,11 +93,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnAttachedToPanel(AttachToPanelEvent evt)
         {
+            LogDiagnostics("AttachToPanel");
             RequestRepaint();
         }
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
+            LogDiagnostics($"GeometryChanged newRect={evt.newRect}");
             RequestRepaint();
         }
 
@@ -114,7 +117,19 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             }
 
             UpdateDrawContext();
+            LogDiagnostics($"GenerateVisualContent contentRect={contentRect} viewRect={drawBlockContext.ViewRect}");
             connectionDrawer.Draw(mgc.painter2D, drawBlockContext, flowchartContext);
+        }
+
+        private void LogDiagnostics(string message)
+        {
+            if (!DiagnosticsEnabled || diagnosticsRemaining <= 0)
+            {
+                return;
+            }
+
+            diagnosticsRemaining--;
+            Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
         }
 
         private void UpdateDrawContext()
@@ -129,15 +144,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             drawBlockContext.BlockMinWidth = BlockMinWidth;
             drawBlockContext.BlockMaxWidth = BlockMaxWidth;
 
-            float zoom = 1f;
-            Flowchart flowchart = flowchartContext.Flowchart;
-            if (flowchart != null)
+            Rect viewRectSource = contentRect;
+            if (viewRectSource.width <= 0f || viewRectSource.height <= 0f)
             {
-                zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
+                viewRectSource = flowchartContext.Position;
             }
 
-            Rect localRect = contentRect;
-            drawBlockContext.ViewRect = new Rect(0f, 0f, localRect.width / zoom, localRect.height / zoom);
+            drawBlockContext.ViewRect = new Rect(0f, 0f, viewRectSource.width, viewRectSource.height);
         }
 
         private void RequestRepaint()
@@ -150,6 +163,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             MarkDirtyRepaint();
         }
 
+        #region Just request a repaint for all of these events, since any of them could change the connections that need to be drawn.
         public void OnFlowchartChanged(Flowchart previous, Flowchart next) => RequestRepaint();
         public void OnWindowPanned() => RequestRepaint();
         public void OnScrollWheelMoved() => RequestRepaint();
@@ -167,5 +181,6 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         public void OnBlockCreated(Block block) => RequestRepaint();
         public void OnBlocksCopied(IList<Block> blocks) => RequestRepaint();
         public void OnCommandSelected(Command command) => RequestRepaint();
+        #endregion
     }
 }

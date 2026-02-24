@@ -42,19 +42,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             selectionBoxRenderer = new SelectionBoxRenderer(context);
             var connectionDrawer = new ConnectionDrawer(new ConnectionGatherer(blockRenderer));
             connectionRenderer = new ConnectionRenderer(context, connectionDrawer);
-            _repaintTriggerer = new FcWindowRepaintTriggerer();
             #endregion
 
             #region Position and Style
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
-            style.top = 0f;
-            style.right = 0f;
-            style.bottom = 0f;
-            style.left = 0f;
-            // ^ All set to 0 so this can work with the entire window, not just some part of it.
-            // The window's padding will create the necessary offset from the edges.
             style.flexGrow = 1f;
+            this.StretchToParentSize();
             #endregion
 
             #region Add visual elements
@@ -67,9 +61,9 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             #region Register Submodules
             _submodules.Add(gridRenderer);
             _submodules.Add(blockRenderer);
-            _submodules.Add(connectionRenderer);
             _submodules.Add(selectionBoxRenderer);
             _submodules.Add(_repaintTriggerer);
+            _submodules.Add(connectionRenderer);
             #endregion
         }
 
@@ -77,7 +71,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         private readonly BlockRenderer blockRenderer;
         private readonly SelectionBoxRenderer selectionBoxRenderer;
         private readonly ConnectionRenderer connectionRenderer;
-        private FcWindowRepaintTriggerer _repaintTriggerer;
+        private readonly FcWindowRepaintTriggerer _repaintTriggerer = new FcWindowRepaintTriggerer();
         private bool isDisposed;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();

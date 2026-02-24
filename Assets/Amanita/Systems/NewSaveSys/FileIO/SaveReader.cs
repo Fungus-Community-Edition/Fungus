@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -73,7 +74,7 @@ namespace Amanita.SaveSys
             byte[] rawBytes = await ReadAllBytesAsync(filePath, cancelToken);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
-            decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+            decryptionRequest.CompletionMarker = CompletionMarkers.First();
         }
 
         protected virtual async Task<byte[]> ReadAllBytesAsync(string filePath, CancellationToken cancelToken)
@@ -142,7 +143,7 @@ namespace Amanita.SaveSys
                     byte[] rawBytes = File.ReadAllBytes(file);
                     decryptionRequest.RawBytes = rawBytes;
                     decryptionRequest.WrittenAsPlainText = !ExpectEncryption;
-                    decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+                    decryptionRequest.CompletionMarker = CompletionMarkers.First();
                     var meta = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
                     result.Add(meta);
                 }
@@ -170,7 +171,7 @@ namespace Amanita.SaveSys
                     byte[] rawBytes = await ReadAllBytesAsync(file, cancelToken);
                     decryptionRequest.RawBytes = rawBytes;
                     decryptionRequest.WrittenAsPlainText = !ExpectEncryption;
-                    decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+                    decryptionRequest.CompletionMarker = CompletionMarkers.First();
                     var meta = (SaveMetaData)usableDecryptor.DecryptMeta(decryptionRequest);
                     result.Add(meta);
                 }
@@ -195,7 +196,7 @@ namespace Amanita.SaveSys
             byte[] rawBytes = File.ReadAllBytes(filePath);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
-            decryptionRequest.CompletionMarker = SaveDiskAccessor.CompletionMarker;
+            decryptionRequest.CompletionMarker = CompletionMarkers.First();
         }
 
         public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null)

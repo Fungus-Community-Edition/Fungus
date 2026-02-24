@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Text;
 using FullSerializer;
 using Amanita.FSExt;
+using System.Collections.Generic;
 
 namespace Amanita.SaveSys
 {
@@ -70,7 +71,7 @@ namespace Amanita.SaveSys
                     string metaJson = Serializer.ToJson(dataSet.Meta, true);
                     string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
 
-                    string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
+                    string fullJson = $"{metaJson}{FirstDelimiter}{mainStateJson}{completionMarker}";
                     return fullJson;
                 }
             }
@@ -89,7 +90,7 @@ namespace Amanita.SaveSys
             
         }
 
-        protected static string Delimiter => SaveDiskAccessor.ReadWriteDelimiter;
+        protected static string FirstDelimiter => SaveDiskAccessor.ReadWriteDelimiters[0];
 
         protected virtual Encoding Encoding => Encoding.UTF8;
         protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
