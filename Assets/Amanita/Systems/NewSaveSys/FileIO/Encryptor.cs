@@ -71,7 +71,7 @@ namespace Amanita.SaveSys
                     string metaJson = Serializer.ToJson(dataSet.Meta, true);
                     string mainStateJson = Serializer.ToJson(dataSet.MainState, true);
 
-                    string fullJson = $"{metaJson}{Delimiter}{mainStateJson}{completionMarker}";
+                    string fullJson = $"{metaJson}{FirstDelimiter}{mainStateJson}{completionMarker}";
                     return fullJson;
                 }
             }
@@ -90,7 +90,7 @@ namespace Amanita.SaveSys
             
         }
 
-        protected static IList<string> Delimiter => SaveDiskAccessor.ReadWriteDelimiters;
+        protected static string FirstDelimiter => SaveDiskAccessor.ReadWriteDelimiters[0];
 
         protected virtual Encoding Encoding => Encoding.UTF8;
         protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;

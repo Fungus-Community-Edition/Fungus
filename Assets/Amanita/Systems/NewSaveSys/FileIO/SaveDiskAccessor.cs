@@ -84,8 +84,21 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        // For checking the validity of the save files.
-        public static string CompletionMarker { get; protected set; } = "\n<!-- Amanita Save Sys: Save Completed! -->";
+        /// <summary>
+        /// For checking the validity of the save files. The first of these is what the SaveWriter will 
+        /// (or is at least expected to) append to the end of the file after writing. The SaveReader
+        /// will look for any of these elements when reading. This is to help ensure that the file was 
+        /// fully written and not corrupted or truncated.
+        /// 
+        /// As for why we have this as an array instead of a standalone string... sometimes, the 
+        /// SaveWriter appends \r or such stuff for whatever reason. That's why we have fallback 
+        /// elements for such cases.
+        /// </summary>
+        public static string[] CompletionMarkers { get; protected set; } = new string[]
+            { 
+                "\n<!-- Amanita Save Sys: Save Completed! -->",
+                "\r\n<!-- Amanita Save Sys: Save Completed! -->"
+            };
 
         public string RelativePath => storageSettings.RelativePath;
 

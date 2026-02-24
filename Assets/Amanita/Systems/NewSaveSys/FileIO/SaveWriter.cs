@@ -9,6 +9,7 @@ using System.Threading;
 using FullSerializer;
 using Amanita.FSExt;
 using Action = System.Action;
+using System.Linq;
 
 namespace Amanita.SaveSys
 {
@@ -180,7 +181,7 @@ namespace Amanita.SaveSys
 
                         string firstDelimiter = ReadWriteDelimiters[0];
                         string everythingToWrite = $"{metaTextToWrite}{firstDelimiter}" +
-                            $"{mainStateTextToWrite}{CompletionMarker}";
+                            $"{mainStateTextToWrite}{CompletionMarkers}";
                         await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
                     }
                 }
@@ -192,7 +193,7 @@ namespace Amanita.SaveSys
                     {
                         SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
                         encryptionRequest.SaveDataSet = saveDataSet;
-                        encryptionRequest.CompletionMarker = CompletionMarker;
+                        encryptionRequest.CompletionMarker = CompletionMarkers.First();
                         IEncryptor correctEncryptor = encryptor as IEncryptor;
                         byte[] encryptedData = (byte[])correctEncryptor.GetOutput(encryptionRequest);
                         
