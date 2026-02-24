@@ -46,6 +46,21 @@ namespace Amanita.VScripting
         [Tooltip("Select if the calling block should stop or continue executing commands, or wait until the called block finishes.")]
         [SerializeField] protected CallMode callMode;
 
+        [SerializeField] private ushort targetBlockId;
+        public ushort TargetBlockId => targetBlockId;
+
+        public override void OnPreCut()
+        {
+            base.OnPreCut();
+            RegisterTargetBlockId();
+        }
+
+        private void RegisterTargetBlockId()
+        {
+            targetBlockId = targetBlock != null ? 
+                targetBlock.ItemId : 
+                (ushort)0;
+        }
         #region Public members
 
         public override void OnEnter()
@@ -159,5 +174,11 @@ namespace Amanita.VScripting
         }
 
         #endregion
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            RegisterTargetBlockId();
+        }
     }
 }

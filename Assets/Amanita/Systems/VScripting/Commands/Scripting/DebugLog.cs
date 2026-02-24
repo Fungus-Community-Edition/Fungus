@@ -35,7 +35,12 @@ namespace Amanita.VScripting
         public override void OnEnter ()
         {
             var flowchart = GetFlowchart();
-            string message = flowchart.SubstituteVariables(logMessage.Value);
+            string message = logMessage.Value;
+
+            if (flowchart != null)
+            {
+                message = flowchart.SubstituteVariables(message);
+            }
 
             switch (logType)
             {
@@ -75,12 +80,16 @@ namespace Amanita.VScripting
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-
             var f = GetFlowchart();
+            if (f == null)
+            {
+                return;
+            }
 
             f.DetermineSubstituteVariables(logMessage.Value, referencedVariables);
         }
 #endif
         #endregion Editor caches
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using FullSerializer;
 
 namespace Amanita.SaveSys
 {

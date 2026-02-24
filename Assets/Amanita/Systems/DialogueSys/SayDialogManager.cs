@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Amanita.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System;
 
 namespace Amanita.DialogueSys
 {     

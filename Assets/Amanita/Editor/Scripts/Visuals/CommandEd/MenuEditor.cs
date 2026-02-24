@@ -30,7 +30,7 @@ namespace Amanita.VScripting.EditorUtils
         
         public override void DrawCommandGUI()
         {
-            var flowchart = FlowchartWindow.GetFlowchart();
+            var flowchart = EditorSelectionTracker.ActiveFlowchart;
             if (flowchart == null)
             {
                 return;
@@ -48,12 +48,12 @@ namespace Amanita.VScripting.EditorUtils
                                    new GUIContent("<None>"), 
                                    flowchart);
             const int popupWidth = 17;
-            if(targetBlockProp.objectReferenceValue == null && GUILayout.Button("+",GUILayout.MaxWidth(popupWidth)))
+            if (targetBlockProp.objectReferenceValue == null && GUILayout.Button("+",GUILayout.MaxWidth(popupWidth)))
             {
-                var fcWindow = EditorWindow.GetWindow<FlowchartWindow>();
                 var menuTarget = (AmanitaMenu)target;
-                var activeFlowchart = menuTarget.GetFlowchart();
-                var newBlock = fcWindow.CreateBlockSuppressSelect(activeFlowchart, menuTarget.ParentBlock._NodeRect.position - Vector2.down * 60);
+                var activeFlowchart = EditorSelectionTracker.ActiveFlowchart;
+                Vector2 pos = menuTarget.ParentBlock._NodeRect.position - Vector2.down * 60;
+                var newBlock = activeFlowchart.CreateBlock(pos);
                 targetBlockProp.objectReferenceValue = newBlock;
                 activeFlowchart.SelectedBlock = menuTarget.ParentBlock;
             }

@@ -1,7 +1,6 @@
 ﻿using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -207,7 +206,7 @@ namespace SaveSystemTests
 
             string expectedMetaJson = serializer.ToJson(args.SaveMetaData, true);
             string expectedMainJson = serializerForTest.ToJson(args.MainState, true);
-            string expectedAll = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedAll = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainJson}{SaveDiskAccessor.CompletionMarkers}";
 
             await CommonSaveWriteTestAsync(args);
 
@@ -235,7 +234,7 @@ namespace SaveSystemTests
             fsSerializer ser = AmanitaManager.DefaultSerializer;
             string expectedMetaJson = ser.ToJson(args.SaveMetaData, true);
             string expectedMainJson = serializerForTest.ToJson(args.MainState, true);
-            string expectedPlain = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainJson}{SaveDiskAccessor.CompletionMarker}";
+            string expectedPlain = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainJson}{SaveDiskAccessor.CompletionMarkers}";
 
             byte key = 0xAA;
             byte[] expectedEncrypted = System.Text.Encoding.UTF8
