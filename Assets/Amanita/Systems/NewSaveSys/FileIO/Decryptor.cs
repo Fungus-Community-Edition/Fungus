@@ -9,7 +9,7 @@ using UnityEngine;
 using Amanita.IO;
 using FullSerializer;
 using Amanita.FSExt;
-
+using Collections;
 
 namespace Amanita.SaveSys
 {
@@ -75,7 +75,7 @@ namespace Amanita.SaveSys
                 if (!EndsWithCompletionMarker(originalBytes))
                 {
                     string errorMessage = "Decrypted bytes do not end with the expected completion marker.";
-                    throw new ArgumentException(errorMessage);
+                    throw new IOException(errorMessage);
                 }
                 // The marker should only take up one line at the end of the plain text. Thus, the whole
                 // plain json should be everything up to the marker. And thus to extract said json, we can
@@ -154,29 +154,14 @@ namespace Amanita.SaveSys
             // check if the end of the given byte array matches any of them. If it matches
             // at least one, then we can say that the bytes end with a completion marker.
             var allMarkers = SaveDiskAccessor.CompletionMarkers;
+
             for (int i = 0; i < allMarkers.Length; i++)
             {
                 string marker = allMarkers[i];
                 byte[] markerBytes = Encoding.GetBytes(marker);
-                bool isMarkerTooBig = markerBytes.Length >= bytes.Length;
-                if (isMarkerTooBig)
-                {
-                    Debug.Log($"Marker {marker} is too big to be a valid marker for the given byte array. Skipping this marker.");
-                    continue;
-                }
-
-                var expectedMarkerBytes = bytes.Skip(bytes.Length - markerBytes.Length);
-                if (expectedMarkerBytes.SequenceEqual(markerBytes))
+                if (bytes.EndsWith(markerBytes))
                 {
                     return true;
-                }
-                else
-                {
-                    string endOfArrayInPlainText = Encoding.GetString(bytes.Skip(bytes.Length - markerBytes.Length).ToArray());
-                    string errorMessage = $"Marker {marker} does not match the end of the given byte array. " +
-                        $"The end of that array, after decryption into plain text, is: {endOfArrayInPlainText}";
-                    Debug.LogError(errorMessage);
-
                 }
             }
 
@@ -274,6 +259,7 @@ namespace Amanita.SaveSys
         public ISaveData DecryptMainState(object input)
         {
             string fullReadableJson = DecryptIntoPlainJson(input);
+            Debug.Log("Decrypted into plain json");
             ISaveData result = DecryptMainState(fullReadableJson);
             
             return result;

@@ -4,6 +4,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System.Collections;
+using BindingFlags = System.Reflection.BindingFlags;
+using Type = System.Type;
 
 namespace SaveSystemTests
 {
@@ -24,8 +26,9 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
 
-            singleHandler = flowchart.gameObject.AddComponent<TestRehydrationEventHandler>();
-            multiHandler = flowchart.gameObject.AddComponent<MultiFieldRehydrationHandler>();
+            var fcGo = flowchart.gameObject;
+            singleHandler = fcGo.AddComponent<TestRehydrationEventHandler>();
+            multiHandler = fcGo.AddComponent<MultiFieldRehydrationHandler>();
             multiHandler.ParentBlock = flowchart.GetComponentInChildren<Block>(true);
             singleHandler.ParentBlock = multiHandler.ParentBlock;
         }
@@ -37,8 +40,9 @@ namespace SaveSystemTests
             var detachedCopy = new StringMuscariable { Value = "Detached" };
             detachedCopy.ItemId = nameVar.ItemId;
 
-            typeof(TestRehydrationEventHandler)
-                .GetField("testStringVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            _rehydroHandlerType
+                .GetField("testStringVar", flags)
                 .SetValue(singleHandler, detachedCopy);
 
             Assert.That(detachedCopy.Owner, Is.Null, "Sanity check: detached copy should have null Owner");
@@ -55,6 +59,8 @@ namespace SaveSystemTests
                 "Rehydrated variable should match the Flowchart's canonical value");
         }
 
+        private static readonly Type _rehydroHandlerType = typeof(TestRehydrationEventHandler);
+
         [UnityTest]
         public IEnumerator RehydratesMultipleDetachedVariables()
         {
@@ -64,15 +70,15 @@ namespace SaveSystemTests
             var detachedIsNew = new BoolMuscariable { Value = true, ItemId = isNewPlayerVar.ItemId };
 
             typeof(MultiFieldRehydrationHandler)
-                .GetField("testNameVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .GetField("testNameVar", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(multiHandler, detachedName);
 
             typeof(MultiFieldRehydrationHandler)
-                .GetField("testScoreVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .GetField("testScoreVar", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(multiHandler, detachedScore);
 
             typeof(MultiFieldRehydrationHandler)
-                .GetField("testIsNewPlayerVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .GetField("testIsNewPlayerVar", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(multiHandler, detachedIsNew);
 
             Assert.That(detachedName.Owner, Is.Null);
@@ -97,21 +103,24 @@ namespace SaveSystemTests
         [UnityTest]
         public IEnumerator AlreadyHydratedVariableIsLeftAlone()
         {
-            // Arrange: assign the canonical Flowchart variable directly
-            typeof(TestRehydrationEventHandler)
-                .GetField("testStringVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            // Arrange: assign a hydrated variable directly
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            _rehydroHandlerType
+                .GetField("testStringVar", flags)
                 .SetValue(singleHandler, nameVar);
 
             var before = singleHandler.TestStringVar;
-            Assert.That(before.Owner, Is.EqualTo(flowchart), "Sanity check: variable is already hydrated");
+            var expectedOwner = before.Owner;
+            Assert.That(expectedOwner, Is.Not.Null, "Sanity check: variable is already hydrated");
 
             // Act
             singleHandler.ForceRehydrateVariables();
             yield return null;
 
-            // Assert: reference is unchanged
+            // Assert: reference and owner are unchanged
             var after = singleHandler.TestStringVar;
             Assert.That(after, Is.SameAs(before), "Already hydrated variable should not be replaced");
+            Assert.That(after.Owner, Is.SameAs(expectedOwner), "Owner should remain unchanged");
         }
 
         [UnityTest]
@@ -119,8 +128,8 @@ namespace SaveSystemTests
         {
             // Arrange: assign a detached copy with a bogus ItemId
             var bogusCopy = new StringMuscariable { Value = "Bogus", ItemId = 0 };
-            typeof(TestRehydrationEventHandler)
-                .GetField("testStringVar", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            _rehydroHandlerType
+                .GetField("testStringVar", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(singleHandler, bogusCopy);
 
             Assert.That(bogusCopy.Owner, Is.Null, "Sanity check: bogus copy should have null Owner");

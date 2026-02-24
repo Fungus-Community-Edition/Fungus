@@ -244,6 +244,7 @@ namespace SaveSystemTests
                 throw new Exception("Flowchart component not found in test scene prefab.");
             flowchart.AlwaysKeepGuid = false;
             flowchart.gameObject.SetActive(true);
+            flowchart.Refresh();
 
             // Variables
             nameVar = (IVariable<string>)flowchart.GetVariable("name");

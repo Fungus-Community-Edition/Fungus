@@ -7,6 +7,7 @@ using UnityEngine;
 using Encoding = System.Text.Encoding;
 using Amanita.FSExt;
 using UnityEngine.TestTools;
+using System.IO;
 
 namespace SaveSystemTests
 {
@@ -136,7 +137,7 @@ namespace SaveSystemTests
 
             // Act & Assert
             LogAssert.ignoreFailingMessages = true; // Suppress expected error logs
-            Assert.Throws<ArgumentException>(() => decryptor.DecryptMeta(req), "Did not reject data missing completion marker.");
+            Assert.Throws<IOException>(() => decryptor.DecryptMeta(req), "Did not reject data missing completion marker.");
         }
 
         [Test, TestCaseSource(nameof(UnicodeTestCases))]

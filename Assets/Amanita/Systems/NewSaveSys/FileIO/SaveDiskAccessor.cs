@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Amanita.SaveSys
@@ -62,15 +62,18 @@ namespace Amanita.SaveSys
 
         public static readonly string[] ReadWriteDelimiters = new string[]
         {
-            $"\n\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n", 
+            $"\n\n3<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\n\n", 
             // ^The basic one, with just \n instances. This is what we will write to the file, and what
             // we will expect to see when reading.
 
-            $"\r\n\r\n<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\r\n\r\n",
+            $"\r\n\r\n3<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>\r\n\r\n",
             // ^But sometimes, some platforms (looking at you, WebGL) don't
             // handle \n the same as others. That, and the save writer might append \r instances
             // for whatever reason, so we want to be able to handle those as well.
         };
+
+        public static string FirstReadWriteDelimiter => ReadWriteDelimiters[0];
+        public static string FirstCompletionMarker => CompletionMarkers[0];
 
         public virtual bool ExpectEncryption
         {
@@ -95,9 +98,9 @@ namespace Amanita.SaveSys
         /// elements for such cases.
         /// </summary>
         public static string[] CompletionMarkers { get; protected set; } = new string[]
-            { 
-                "\n<!-- Amanita Save Sys: Save Completed! -->",
-                "\r\n<!-- Amanita Save Sys: Save Completed! -->"
+            {
+                "\n3<!-- Amanita Save Sys: Save Completed! -->",
+                "\r\n3<!-- Amanita Save Sys: Save Completed! -->"
             };
 
         public string RelativePath => storageSettings.RelativePath;

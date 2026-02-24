@@ -179,10 +179,10 @@ namespace Amanita.SaveSys
                             mainStateTextToWrite = Serializer.ToJson(saveData, true);
                         }
 
-                        string firstDelimiter = ReadWriteDelimiters[0];
-                        string everythingToWrite = $"{metaTextToWrite}{firstDelimiter}" +
-                            $"{mainStateTextToWrite}{CompletionMarkers}";
-                        await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding).ConfigureAwait(false);
+                        string everythingToWrite = $"{metaTextToWrite}{FirstReadWriteDelimiter}" +
+                            $"{mainStateTextToWrite}{FirstCompletionMarker}";
+                        await File.WriteAllTextAsync(filePath, everythingToWrite, actualEncoding)
+                            .ConfigureAwait(false);
                     }
                 }
 
@@ -193,7 +193,7 @@ namespace Amanita.SaveSys
                     {
                         SaveDataSet saveDataSet = new SaveDataSet(request.SaveMetaData, request.MainState);
                         encryptionRequest.SaveDataSet = saveDataSet;
-                        encryptionRequest.CompletionMarker = CompletionMarkers.First();
+                        encryptionRequest.CompletionMarker = FirstCompletionMarker;
                         IEncryptor correctEncryptor = encryptor as IEncryptor;
                         byte[] encryptedData = (byte[])correctEncryptor.GetOutput(encryptionRequest);
                         
@@ -264,7 +264,8 @@ namespace Amanita.SaveSys
             bool validBaseDirectory = !string.IsNullOrEmpty(baseDirectory);
             if (!validBaseDirectory)
             {
-                errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a valid SaveDirectoryType.\n";
+                errorMessage += $"BaseSaveDirectory {writeArgs.BaseSaveDirectory} is not a " +
+                    $"valid SaveDirectoryType.\n";
                 exception = new System.ArgumentException(errorMessage, nameof(writeArgs.BaseSaveDirectory));
                 throw exception;
             }
@@ -294,7 +295,8 @@ namespace Amanita.SaveSys
             if (wrongTypeOfSOAssigned)
             {
                 encryptor = DefaultAmanitaAssets.Encryptor;
-                Debug.LogError($"Tried to assign a Scriptable Object that does not implement IEncryptor. Reverting to default.");
+                Debug.LogError($"Tried to assign a Scriptable Object that does not implement " +
+                    $"IEncryptor. Reverting to default.");
             }
         }
 

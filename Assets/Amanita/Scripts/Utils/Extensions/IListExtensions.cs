@@ -127,5 +127,26 @@ namespace Collections
 
             return false;
         }
+    
+        public static bool EndsWith<T>(this IList<T> list, IList<T> potentialEnding)
+        {
+            if (potentialEnding.Count > list.Count)
+            {
+                return false;
+            }
+
+            int offset = list.Count - potentialEnding.Count;
+            for (int i = 0; i < potentialEnding.Count; i++)
+            {
+                T expectedElem = list[offset + i];
+                T elemWeGot = potentialEnding[i];
+                if (!expectedElem.Equals(elemWeGot))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

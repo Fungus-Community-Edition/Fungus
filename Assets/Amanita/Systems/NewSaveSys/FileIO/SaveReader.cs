@@ -74,7 +74,7 @@ namespace Amanita.SaveSys
             byte[] rawBytes = await ReadAllBytesAsync(filePath, cancelToken);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
-            decryptionRequest.CompletionMarker = CompletionMarkers.First();
+            decryptionRequest.CompletionMarker = FirstCompletionMarker;
         }
 
         protected virtual async Task<byte[]> ReadAllBytesAsync(string filePath, CancellationToken cancelToken)
@@ -196,7 +196,7 @@ namespace Amanita.SaveSys
             byte[] rawBytes = File.ReadAllBytes(filePath);
             decryptionRequest.RawBytes = rawBytes;
             decryptionRequest.WrittenAsPlainText = writtenAsPlainText;
-            decryptionRequest.CompletionMarker = CompletionMarkers.First();
+            decryptionRequest.CompletionMarker = FirstCompletionMarker;
         }
 
         public virtual CompositeSaveData ReadMainSaveDataFromDisk(SaveReadRequest request, Action onComplete = null)
