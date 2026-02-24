@@ -155,12 +155,15 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
+            manager?.Dispose();
+            manager = null;
+
             AssetDatabase.DeleteAsset(TestAssetPath);
 
             try
             {
-                _listView?.Dispose();
                 _rowFactory?.Dispose();
+                _listView?.Dispose();
             }
             catch
             {
@@ -170,23 +173,20 @@ namespace VScriptingTests.VariableOperations
             foreach (var elem in _toDestroy)
             {
                 if (Application.isEditor && elem != null)
+                {
                     UnityObj.DestroyImmediate(elem);
+                }
             }
 
-            ReleaseNullRefs();
-            void ReleaseNullRefs()
-            {
-                _toDestroy.Clear();
-                _listView = null;
-                _rowFactory = null;
-                _uiList = null;
-                _countLabel = null;
-                _rowPool = null;
-                _handlerPool = null;
-                _resolver = null;
-                _source = null;
-                manager = null;
-            }
+            _toDestroy.Clear();
+            _listView = null;
+            _rowFactory = null;
+            _uiList = null;
+            _countLabel = null;
+            _rowPool = null;
+            _handlerPool = null;
+            _resolver = null;
+            _source = null;
         }
 
         [Test]

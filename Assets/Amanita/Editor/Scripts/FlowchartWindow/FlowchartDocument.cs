@@ -6,30 +6,28 @@ namespace Amanita.VScripting.EditorUtils
 {
     public class FlowchartDocument : IDisposable
     {
-        public Flowchart Flowchart { get; set; }
+        private static readonly Block[] EmptyBlocks = Array.Empty<Block>();
 
-        public IList<Block> AllBlocks
+        public Flowchart Flowchart
         {
-            get { return _allBlocks; }
-            set
-            {
-                _allBlocks.Clear();
-                if (value == null)
-                {
-                    return;
-                }
-
-                foreach (var block in value)
-                {
-                    if (block != null)
-                    {
-                        _allBlocks.Add(block);
-                    }
-                }
-            }
+            get { return _flowchart; }
+            set { _flowchart = value; }
         }
 
-        private readonly IList<Block> _allBlocks = new List<Block>();
+        private Flowchart _flowchart;
+
+        public IReadOnlyCollection<Block> AllBlocks
+        {
+            get
+            {
+                if (Flowchart == null)
+                {
+                    return EmptyBlocks;
+                }
+
+                return Flowchart.Blocks;
+            }
+        }
 
         public Block TopmostBlockOverlapping(Vector2 mousePosition)
         {
@@ -38,10 +36,10 @@ namespace Amanita.VScripting.EditorUtils
                 return null;
             }
 
-            IList<Block> blocks = _allBlocks;
+            IList<Block> blocks = GetOrderedBlocksSnapshot();
             if (blocks.Count == 0)
             {
-                blocks = Flowchart.GetComponents<Block>();
+                return null;
             }
 
             Vector2 mousePosInWindowSpace = ToWindowSpace(mousePosition);
@@ -66,6 +64,48 @@ namespace Amanita.VScripting.EditorUtils
             return null;
         }
 
+        private IList<Block> GetOrderedBlocksSnapshot()
+        {
+            if (Flowchart == null)
+            {
+                return EmptyBlocks;
+            }
+
+            IReadOnlyCollection<Block> blocks = AllBlocks;
+            if (blocks == null)
+            {
+                return EmptyBlocks;
+            }
+
+            if (blocks.Count == 0)
+            {
+                return Flowchart.GetComponents<Block>();
+            }
+
+            if (blocks is IList<Block> list)
+            {
+                return list;
+            }
+
+            if (blocks is IReadOnlyList<Block> readOnlyList)
+            {
+                return CopyReadOnlyList(readOnlyList);
+            }
+
+            return new List<Block>(blocks);
+        }
+
+        private static IList<Block> CopyReadOnlyList(IReadOnlyList<Block> source)
+        {
+            List<Block> copy = new List<Block>(source.Count);
+            for (int i = 0; i < source.Count; i++)
+            {
+                copy.Add(source[i]);
+            }
+
+            return copy;
+        }
+
         public Vector2 ToWindowSpace(Vector2 mousePosition)
         {
             if (Flowchart == null)
@@ -80,7 +120,6 @@ namespace Amanita.VScripting.EditorUtils
         public virtual void Dispose()
         {
             Flowchart = null;
-            _allBlocks.Clear();
         }
     }
 }

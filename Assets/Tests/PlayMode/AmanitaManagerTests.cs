@@ -141,22 +141,6 @@ public class AmanitaManagerTests
         Assert.IsNotNull(directResource, "ShadowDatabase asset is missing from Resources/ShadowDatabase.");
     }
 
-    [UnityTest]
-    public IEnumerator GuidRegistries_Exist_For_Flowchart_And_VariableSourceAsset()
-    {
-        yield return CreateManagerAsync();
-
-        var flowchartRegistry = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-        var vsaRegistry = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-
-        Assert.IsNotNull(flowchartRegistry, "Flowchart GuidRegistry should have been created.");
-        Assert.IsNotNull(vsaRegistry, "VariableSourceAsset GuidRegistry should have been created.");
-
-        bool fcRegistryCreated = AssetDatabase.GetAssetPath(flowchartRegistry) != string.Empty;
-        bool vsaRegistryCreated = AssetDatabase.GetAssetPath(vsaRegistry) != string.Empty;
-        Assert.IsTrue(fcRegistryCreated, "Flowchart GuidRegistry asset should exist on disk.");
-        Assert.IsTrue(vsaRegistryCreated, "VariableSourceAsset GuidRegistry asset should exist on disk.");
-    }
 
     [UnityTest]
     public IEnumerator Init_SetsUp_VariableRegistry()

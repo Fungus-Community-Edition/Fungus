@@ -1,0 +1,51 @@
+/* For non-selected Blocks. */
+
+:root
+{
+	--block-border-color: rgba(0, 0, 0, 0.5);
+	-unity-font-definition: resource("Fonts/Amaranth/Amaranth-Regular SDF-UITK");
+	--selected-block-border-color: rgba(0, 250, 0, 1);
+}
+
+.fill-whole-parent
+{
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+}
+
+.block-button
+{
+	padding: 7px;
+	
+
+}
+
+.block-label
+{
+	padding: 0px;
+	font-size: 24px;
+}
+
+.flowchartBlock
+{
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	white-space: normal;
+
+	padding-left: 15px;
+	padding-right: 15px;
+
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	border-radius: 6px;
+	border-width: 3px;
+	border-color: var(--block-border-color);
+}
+
+.flowchartBlockSelected
+{
+	border-color: var(--selected-block-border-color);
+}

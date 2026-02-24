@@ -20,7 +20,7 @@ namespace Amanita.VScripting.EditorUtils
         
         public override void DrawCommandGUI()
         {
-            var flowchart = FlowchartWindow.GetFlowchart();
+            var flowchart = EditorSelectionTracker.ActiveFlowchart;
             if (flowchart == null)
             {
                 return;

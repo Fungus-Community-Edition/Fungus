@@ -1,37 +1,80 @@
-using UnityEngine;
-using Amanita.VScripting.EditorUtils;
 using Amanita.VScripting;
+using Amanita.VScripting.EditorUtils;
+using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace Amanita.VScripting.EditorUtils.FcWindow
 {
-    public class HitDetectionHandler : IUGUIEventHandler
+    /// <summary>
+    /// Handles hit detection for mouse clicks in the FlowchartWindow, determining which 
+    /// Block (if any) was hit and storing it in the Interaction context for use by other modules.
+    /// </summary>
+    public class HitDetector : IFlowchartWindowModule, ILeftMouseDownResponder
     {
-        public bool Handle(Event eventToHandle, FlowchartContext ctx)
+        public int Priority { get; set; } = 0;
+        public void Initialize(FlowchartWindow window)
         {
-            bool weWantToReact = eventToHandle.type == EventType.MouseDown && eventToHandle.button == leftMouseButton;
-            if (weWantToReact)
+            if (window == null)
             {
-                return OnMouseDown(eventToHandle, ctx);
+                throw new System.ArgumentNullException(nameof(window));
             }
+            owner = window;
+            isDisposed = false;
+            ToggleSubs(true);
+        }
+        private FlowchartWindow owner;
+        private bool isDisposed;
 
-            return false;
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                FlowchartWindowSignals.LeftMouseDown += OnMouseDown;
+                FlowchartWindowSignals.RightMouseDown += OnMouseDown;
+            }
+            else
+            {
+                FlowchartWindowSignals.LeftMouseDown -= OnMouseDown;
+                FlowchartWindowSignals.RightMouseDown -= OnMouseDown;
+            }
         }
 
-        protected static readonly int leftMouseButton = 0;
-
-        protected virtual bool OnMouseDown(Event inputEvent, FlowchartContext flowchartCtx)
+        private void OnMouseDown(PointerEventInfo eventInfo)
         {
-            if (flowchartCtx == null)
+            Block blockHit = TopmostBlockOverlapping(eventInfo.PanelPosition);
+            owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
+            BlockHitInLastMouseDown = blockHit;
+
+            if (blockHit != null)
             {
-                return false;
+                Debug.Log($"Hit block: {blockHit.BlockName}");
             }
+        }
 
-            flowchartCtx.Interaction.ResetSelectionBox();
-            Block blockHit = flowchartCtx.Document.TopmostBlockOverlapping(inputEvent.mousePosition);
-            flowchartCtx.Interaction.BlockHitInLastMouseDown = blockHit;
+        private FlowchartContext FcContext => owner.FcContext;
 
-            return false;
-            // Prep work only; other handlers still need the event.
+        private Block TopmostBlockOverlapping(Vector2 mousePos)
+        {
+            return BlockHitTester.FindTopmostBlock(mousePos);
+        }
+
+        private Block BlockHitInLastMouseDown
+        {
+            set => FcContext.Interaction.BlockHitInLastMouseDown = value;
+        }
+
+        public void Dispose()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+            ToggleSubs(false);
+            isDisposed = true;
+        }
+
+        public void OnLeftMouseDown(PointerEventInfo info)
+        {
+            OnMouseDown(info);
         }
     }
 }

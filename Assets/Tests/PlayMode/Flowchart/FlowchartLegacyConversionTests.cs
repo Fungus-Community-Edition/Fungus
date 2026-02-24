@@ -39,6 +39,7 @@ namespace VScriptingTests
         {
             AmanitaManager.EnsureExists();
             toDestroyInTearDown.Clear();
+            toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
         }
 
         protected static readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
@@ -46,12 +47,15 @@ namespace VScriptingTests
         [TearDown]
         public void TearDown()
         {
+            AmanitaManager manager = AmanitaManager.S;
+            manager.OnTearDown();
             foreach (var elem in toDestroyInTearDown)
             {
                 if (elem == null) continue;
                 UnityObj.DestroyImmediate(elem);
             }
             toDestroyInTearDown.Clear();
+            AmanitaManager.ResetStaticsForTest();
         }
 
         // In this test suite, we only include cases for variable types that ship with the base package.

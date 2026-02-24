@@ -1,5 +1,8 @@
 using UnityEngine;
 using Amanita.EditorUtils;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityObj = UnityEngine.Object;
 
 namespace Amanita.VScripting.EditorUtils
 {
@@ -38,19 +41,5 @@ namespace Amanita.VScripting.EditorUtils
         }
     }
 
-    public class FcWindowBlockDeletion
-    {
-        public void Execute(FlowchartContext ctx)
-        {
-            var selection = ctx.Selection;
-            var selected = selection.Blocks;
-            if (selected == null || selected.Count == 0)
-                return;
-
-            FcWindowEditing windowEditing = ctx.FcHost.GetComponent<FcWindowEditing>();
-            windowEditing.QueueToDelete(selected);
-            ctx.ForceRepaintCount++;
-        }
-
-    }
+    
 }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using Amanita.VScripting;
 using System.Threading.Tasks;
-using System;
 
 namespace Amanita.SaveSys.VScripting
 {

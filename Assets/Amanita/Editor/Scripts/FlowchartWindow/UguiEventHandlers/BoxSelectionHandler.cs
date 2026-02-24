@@ -40,7 +40,7 @@ namespace Amanita.EditorUtils
 
             if (mouseIsOnEmptySpace)
             {
-                interaction.StartSelectionBoxPosition = inputEvent.mousePosition;
+                interaction.SelectionBoxStartPos = inputEvent.mousePosition;
                 interaction.SelectionBox = Rect.MinMaxRect(
                     inputEvent.mousePosition.x,
                     inputEvent.mousePosition.y,
@@ -62,9 +62,9 @@ namespace Amanita.EditorUtils
             bool consumed = false;
 
             bool startedOnEmptySpace = !interaction.WeHitBlockInLastMouseDown;
-            if (interaction.StartSelectionBoxPosition.x >= 0 && startedOnEmptySpace)
+            if (interaction.SelectionBoxStartPos.x >= 0 && startedOnEmptySpace)
             {
-                Vector2 start = interaction.StartSelectionBoxPosition;
+                Vector2 start = interaction.SelectionBoxStartPos;
                 Vector2 current = inputEvent.mousePosition;
                 Vector2 diff = new Vector2(Mathf.Abs(start.x - current.x), Mathf.Abs(start.y - current.y));
                 bool movedFarEnough = diff.x > MinThreshold.x && diff.y > MinThreshold.y;
@@ -101,7 +101,7 @@ namespace Amanita.EditorUtils
         protected virtual bool OnMouseReleased(Event mouseEvent, FlowchartContext ctx)
         {
             var interaction = ctx.Interaction;
-            bool releasedMouseOnValidSpot = interaction.StartSelectionBoxPosition.x >= 0;
+            bool releasedMouseOnValidSpot = interaction.SelectionBoxStartPos.x >= 0;
 
             if (!(releasedMouseOnValidSpot && interaction.SelectionBoxDragOngoing && ctx.Flowchart != null))
             {
