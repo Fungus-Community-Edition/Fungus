@@ -10,6 +10,7 @@ using Amanita.IO;
 using FullSerializer;
 using Amanita.FSExt;
 
+
 namespace Amanita.SaveSys
 {
     /// <summary>
@@ -21,8 +22,7 @@ namespace Amanita.SaveSys
     [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Amanita/SaveSys/DefaultDecryptor", order = 1)]
     public class Decryptor : ScriptableObject, IDecryptor
     {
-        protected static string[] delimiterArr = new string[] { SaveDiskAccessor.ReadWriteDelimiter };
-        protected static string DelimiterText => SaveDiskAccessor.ReadWriteDelimiter;
+        protected static string[] delimiterArr = SaveDiskAccessor.ReadWriteDelimiters;
 
         /// <summary>
         /// What we expect the client's input to be is an object array with the 
@@ -59,7 +59,7 @@ namespace Amanita.SaveSys
                 // The marker should only take up one line at the end of the plain text. Thus, the whole
                 // plain json should be everything up to the marker. And thus to extract said json, we can
                 // just take the text up to the marker.
-                plainJson = plainText[..^SaveDiskAccessor.CompletionMarker.Length]; 
+                plainJson = plainText[..^SaveDiskAccessor.CompletionMarkers.Length]; 
                 // ^Equals plainText.Substring(0, plainText.Length - SaveDiskAccessor.CompletionMarker.Length);
 
             }
@@ -80,7 +80,8 @@ namespace Amanita.SaveSys
                 // The marker should only take up one line at the end of the plain text. Thus, the whole
                 // plain json should be everything up to the marker. And thus to extract said json, we can
                 // just take the text up to the marker.
-                byte[] completionMarkerBytes = Encoding.GetBytes(SaveDiskAccessor.CompletionMarker);
+                string firstMarker = SaveDiskAccessor.CompletionMarkers[0];
+                byte[] completionMarkerBytes = Encoding.GetBytes(firstMarker);
                 int markerLength = completionMarkerBytes.Length;
                 originalBytes = originalBytes.Take(originalBytes.Length - markerLength).ToArray();
                 plainJson = Encoding.GetString(originalBytes);
@@ -133,18 +134,53 @@ namespace Amanita.SaveSys
 
         protected virtual bool EndsWithCompletionMarker(string text)
         {
-            return text.EndsWith(SaveDiskAccessor.CompletionMarker);
+            var allMarkers = SaveDiskAccessor.CompletionMarkers;
+            for (int i = 0; i < allMarkers.Length; i++)
+            {
+                string marker = allMarkers[i];
+                if (text.EndsWith(marker))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // When encrypted, the marker should be in the form of bytes instead of plain text.
         protected virtual bool EndsWithCompletionMarker(byte[] bytes)
         {
-            byte[] completionMarkerBytes = Encoding.GetBytes(SaveDiskAccessor.CompletionMarker);
+            // We'll need to go through each completion marker, convert it to bytes, and
+            // check if the end of the given byte array matches any of them. If it matches
+            // at least one, then we can say that the bytes end with a completion marker.
+            var allMarkers = SaveDiskAccessor.CompletionMarkers;
+            for (int i = 0; i < allMarkers.Length; i++)
+            {
+                string marker = allMarkers[i];
+                byte[] markerBytes = Encoding.GetBytes(marker);
+                bool isMarkerTooBig = markerBytes.Length >= bytes.Length;
+                if (isMarkerTooBig)
+                {
+                    Debug.Log($"Marker {marker} is too big to be a valid marker for the given byte array. Skipping this marker.");
+                    continue;
+                }
 
-            if (bytes.Length < completionMarkerBytes.Length)
-                return false;
+                var expectedMarkerBytes = bytes.Skip(bytes.Length - markerBytes.Length);
+                if (expectedMarkerBytes.SequenceEqual(markerBytes))
+                {
+                    return true;
+                }
+                else
+                {
+                    string endOfArrayInPlainText = Encoding.GetString(bytes.Skip(bytes.Length - markerBytes.Length).ToArray());
+                    string errorMessage = $"Marker {marker} does not match the end of the given byte array. " +
+                        $"The end of that array, after decryption into plain text, is: {endOfArrayInPlainText}";
+                    Debug.LogError(errorMessage);
 
-            return bytes.Skip(bytes.Length - completionMarkerBytes.Length).SequenceEqual(completionMarkerBytes);
+                }
+            }
+
+            return false;
         }
 
         protected Encoding Encoding => Encoding.UTF8;
