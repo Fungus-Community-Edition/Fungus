@@ -137,7 +137,7 @@ namespace Amanita.VScripting.EditorUtils
                             continue;
                         }
 
-                        IList<IVariable> publicVars = fcElem.GetPublicVariables();
+                        IList<IVariable> publicVars = fcElem.GetVariablesByScope(VariableScope.Public);
                         for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
                         {
                             IVariable varElem = publicVars[publicVarIndex];

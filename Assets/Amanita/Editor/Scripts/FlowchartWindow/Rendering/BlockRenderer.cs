@@ -277,7 +277,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 {
                     return;
                 }
-                ClearAll();
+
+                if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button != button)
+                {
+                    return;
+                }
+
                 drawer.UpdateButton(button, block, CurrentZoom);
                 UpdateBlockLayouts();
             }).ExecuteLater(1);

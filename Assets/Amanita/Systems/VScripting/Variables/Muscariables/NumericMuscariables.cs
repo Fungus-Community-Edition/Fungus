@@ -70,12 +70,6 @@ namespace Amanita.VScripting
             return Value.CompareTo(otherNumericVar.Value);
         }
 
-        protected override object FilterForValueSet(object valueToConvert)
-        {
-            T result = (T)Convert.ChangeType(valueToConvert, this.ContentType);
-            return result;
-        }
-        
     }
 
     [Serializable]

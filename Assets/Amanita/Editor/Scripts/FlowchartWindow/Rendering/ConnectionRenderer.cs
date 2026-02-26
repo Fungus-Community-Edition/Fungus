@@ -129,7 +129,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             }
 
             diagnosticsRemaining--;
-            Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
+            //Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
         }
 
         private void UpdateDrawContext()

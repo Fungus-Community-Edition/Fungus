@@ -199,6 +199,10 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Flowchart GetFlowchart()
         {
+            if (this == null)
+            {
+                return null;
+            }
             return GetComponent<Flowchart>();
         }
 
