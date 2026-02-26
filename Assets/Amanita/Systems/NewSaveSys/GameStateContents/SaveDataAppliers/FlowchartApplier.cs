@@ -214,7 +214,7 @@ namespace Amanita.SaveSys
             flowchart = FindFlowchartById(saveData.UniqueId);
             if (flowchart == null)
             {
-                FindFlowchartByName(saveData.FlowchartName);
+                flowchart = FindFlowchartByName(saveData.FlowchartName);
             }
             return flowchart != null;
         }
@@ -240,10 +240,11 @@ namespace Amanita.SaveSys
 
         protected virtual Flowchart FindFlowchartByName(string name)
         {
-            return (from flowchart in allFlowcharts
-                    where flowchart != null
-                    where flowchart.name == name
-                    select flowchart).FirstOrDefault();
+            Flowchart result = (from fChart in allFlowcharts
+                    where fChart != null
+                    where fChart.name == name
+                    select fChart).FirstOrDefault();
+            return result;
         }
 
         public override void Apply(SaveData saveData, System.Action onComplete)

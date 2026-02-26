@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using UnityObject = UnityEngine.Object;
 using System;
 using Amanita.VScripting;
+using BindingFlags = System.Reflection.BindingFlags;
 
 namespace SaveSystemTests
 {
@@ -284,11 +285,11 @@ namespace SaveSystemTests
 
             // Change the flowchart's UniqueId so it no longer matches the save data
             string originalId = flowchart.UniqueId;
-            typeof(Flowchart)
-                .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(flowchart, originalId + "erho8ufgiyswegfi7wfgf7o");
+            var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var uniqueIdField = fcType.GetField("uniqueId", flags);
+            uniqueIdField.SetValue(flowchart, originalId + "erho8ufgiyswegfi7wfgf7o");
 
-            // The save data still has the old ID, but the name matches
+            // The save data still has the old ID, but the name matches.
             // Change a variable so we can verify it gets restored
             nameVar.Value = "ChangedForNameFallback";
 
@@ -296,16 +297,15 @@ namespace SaveSystemTests
             await Task.Yield();
 
             // The variable should be restored, meaning the fallback by name worked
-            Assert.AreEqual(
-                flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key)?.Value,
-                nameVar.Value,
+            var firstVarFound = flowchartSaveData.SavedVars.FirstOrDefault(v => v.VarName == nameVar.Key);
+            Assert.AreEqual(firstVarFound?.Value, nameVar.Value,
                 "Flowchart was not found by name fallback.");
 
             // Restore the original ID for other tests
-            typeof(Flowchart)
-                .GetField("uniqueId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .SetValue(flowchart, originalId);
+            uniqueIdField.SetValue(flowchart, originalId);
         }
+
+        private static readonly Type fcType = typeof(Flowchart);
 
     }
 }

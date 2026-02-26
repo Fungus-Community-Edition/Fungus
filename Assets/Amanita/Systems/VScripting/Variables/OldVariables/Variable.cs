@@ -251,6 +251,13 @@ namespace Amanita.VScripting
             }
         }
 
+        public virtual void Init(T startValue)
+        {
+            this.startValue = startValue;
+            this.value = startValue;
+            baseVal = startValue;
+        }
+
         protected override void OnBaseValueSet(object prevValue)
         {
             base.OnBaseValueSet(prevValue);
@@ -311,12 +318,6 @@ namespace Amanita.VScripting
         }
 
         protected bool initted = false;
-
-        protected virtual void Init(T startVal)
-        {
-            this.startValue = startVal;
-            baseVal = startVal;
-        }
 
         //Apply to get from base system.object to T
         public override void Apply(SetOperator op, object value)
