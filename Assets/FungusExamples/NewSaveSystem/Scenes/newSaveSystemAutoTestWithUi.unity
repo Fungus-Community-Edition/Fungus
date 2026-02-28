@@ -1478,24 +1478,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables:
+    - rid: 846271704159223897
+    - rid: 846271704159223899
+    - rid: 7903257792018382921
+    - rid: 7903257792018382959
+    - rid: 4605209356947947849
+    - rid: 8107162614221504726
+    - rid: 8107162708717338949
+    - rid: 8107162708717339082
+    - rid: 8107162709333639348
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
   version: 1
   legacyVariables: []
-  muscariables:
-  - rid: 846271704159223897
-  - rid: 846271704159223899
-  - rid: 7903257792018382921
-  - rid: 7903257792018382959
-  - rid: 4605209356947947849
-  - rid: 8107162614221504726
-  - rid: 8107162708717338949
-  - rid: 8107162708717339082
-  - rid: 8107162709333639348
+  _oldMuscariables: []
   description: Desc here loaaa
   uiModel:
     _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1620115399}
-    <ScrollPos>k__BackingField: {x: 227.66022, y: -97.090515}
+    <ScrollPos>k__BackingField: {x: 434.66022, y: -143.42386}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1
@@ -1506,7 +1511,7 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
@@ -1593,72 +1598,72 @@ MonoBehaviour:
         scope: 0
         key: firstMarkerID
         itemID: 3
-        _ownerIdIndex: 0
         value: firstToTheParty
+        startValue: 
     - rid: 846271704159223899
       type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: someColor
         itemID: 4
-        _ownerIdIndex: -1
         value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
+        startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
       type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: Var
         itemID: 7
-        _ownerIdIndex: -1
         value: 1.234
+        startValue: 0
     - rid: 7903257792018382921
       type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: vecTwoVar
         itemID: 5
-        _ownerIdIndex: -1
         value: {x: 5, y: 24}
+        startValue: {x: 0, y: 0}
     - rid: 7903257792018382959
       type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: vecThreeVar
         itemID: 6
-        _ownerIdIndex: -1
         value: {x: 0, y: 123, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
     - rid: 8107162614221504726
       type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: afterFirstLoad
         itemID: 9
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162708717338949
       type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: timesLoaded
         itemID: 10
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162708717339082
       type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: secondLoad
         itemID: 11
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162709333639348
       type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
       data:
         scope: 0
         key: secondMarkerId
         itemID: 12
-        _ownerIdIndex: -1
         value: secondsss
+        startValue: 
 --- !u!4 &1620115405
 Transform:
   m_ObjectHideFlags: 0
@@ -2028,7 +2033,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 208
     y: 376
-    width: 115
+    width: 125
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -2515,7 +2520,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 425.33978
     y: 203.09052
-    width: 118
+    width: 133
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -3052,7 +3057,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 646.3398
     y: 209.09052
-    width: 136
+    width: 150
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -3455,7 +3460,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 26.339783
     y: 388.0905
-    width: 129
+    width: 149
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -3545,7 +3550,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 392.33978
     y: 373.0905
-    width: 133
+    width: 149
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -3717,7 +3722,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 716.3398
     y: 455.0905
-    width: 151
+    width: 167
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -4019,9 +4024,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables: []
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
   version: 1
   legacyVariables: []
-  muscariables: []
+  _oldMuscariables: []
   description: 
   uiModel:
     _selectedBlocks: []
@@ -4217,21 +4227,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: saveToSelected.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: delayBeforeSave.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
     - target: {fileID: 819678433502044778, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_Name
@@ -4362,26 +4357,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2788740156257821556, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: selectedFlowchart
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: delayBeforeLoad.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: loadFromSelected.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
     - target: {fileID: 2915399098723150847, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4406,131 +4381,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: saveSlotIndex
-      value: 8107162709153547175
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[3050194087370293303]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162613787656548]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162613787656552]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162709153547175]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175]._ownerIdIndex
-      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3506124658064910297, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -4671,21 +4521,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: uiModel._selectedBlocks.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[4605209293432029257]._ownerIdIndex
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[7903257890697773170]._ownerIdIndex
-      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5112014327275012662, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -4945,7 +4780,7 @@ PrefabInstance:
     - target: {fileID: 7036876570447449985, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00009655301
+      value: -0.00001226664
       objectReference: {fileID: 0}
     - target: {fileID: 7045509288082565552, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -5097,24 +4932,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2788740156257821556, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
---- !u!114 &1789447538 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-    type: 3}
-  m_PrefabInstance: {fileID: 1789447537}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1884665525
 GameObject:
   m_ObjectHideFlags: 0

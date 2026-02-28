@@ -139,14 +139,14 @@ namespace SaveSystemTests
         // Helper to get typed muscariable value through BoxedValue
         private static T GetVarValue<T>(VariableSourceAsset asset, string key)
         {
-            var varToCheck = ((IMuscariableSource)asset).GetVariable(key);
+            var varToCheck = ((IMuscariableSource)asset).GetVariableByName(key);
             Assert.NotNull(varToCheck, $"Var '{key}' not found on asset '{asset.name}'");
             return varToCheck is Muscariable<T> typed ? typed.Value : (T)varToCheck.BoxedValue;
         }
 
         private static void SetVarValue<T>(VariableSourceAsset asset, string key, T value)
         {
-            var varToSetValOf = ((IMuscariableSource)asset).GetVariable(key);
+            var varToSetValOf = ((IMuscariableSource)asset).GetVariableByName(key);
             Assert.NotNull(varToSetValOf, $"Var '{key}' not found on asset '{asset.name}'");
             varToSetValOf.BoxedValue = value;
         }

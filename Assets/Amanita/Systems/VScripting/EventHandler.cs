@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -111,6 +112,11 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnEnable()
         {
+            if (!this.IsInTheScene)
+            {
+                return;
+            }
+
             if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
             {
                 ToggleSubs(true);
@@ -122,7 +128,11 @@ namespace Amanita.VScripting.EventHandlers
 
             if (RehydrateVarInputs)
             {
-                DoRehydrationProcess();
+                EditorApplication.delayCall += () =>
+                {
+                    fChart.Refresh();
+                    DoRehydrationProcess();
+                };
             }
         }
 
@@ -237,11 +247,13 @@ namespace Amanita.VScripting.EventHandlers
             var correct = fChart.GetVariableById(varToCheck.ItemId);
             if (correct == null)
             {
-                Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) not found.");
+                Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) with id {varToCheck.ItemId} not found.");
                 return;
             }
             field.SetValue(target, correct);
         }
+
+        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
         protected bool didRuntimeRehydration = false;
 
@@ -252,6 +264,10 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnValidate()
         {
+            if (!this.IsInTheScene)
+            {
+                return;
+            }
             // Seems that when this is set to execute in edit mode, OnValidate can be called
             // before Awake does. Thus, we need to ensure fChart is assigned.
             if (fChart == null)
@@ -260,7 +276,8 @@ namespace Amanita.VScripting.EventHandlers
             }
             if (RehydrateVarInputs)
             {
-                DoRehydrationProcess();
+                // For now, let's avoid rehydrating in OnValidate. Still got some transitional
+                // stuff to deal with...
             }
         }
 
