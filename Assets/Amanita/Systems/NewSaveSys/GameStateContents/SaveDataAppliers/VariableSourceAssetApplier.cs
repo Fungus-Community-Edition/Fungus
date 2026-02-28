@@ -39,7 +39,7 @@ namespace Amanita.SaveSys
                 }
 
                 IVariable varEl = toApplyTo.GetVariable(varSaveData.ItemId);
-                varEl ??= toApplyTo.GetVariable(varSaveData.VarName); // Fallback to searching by name
+                varEl ??= toApplyTo.GetVariableByName(varSaveData.VarName); // Fallback to searching by name
 
                 if (varEl == null)
                 {

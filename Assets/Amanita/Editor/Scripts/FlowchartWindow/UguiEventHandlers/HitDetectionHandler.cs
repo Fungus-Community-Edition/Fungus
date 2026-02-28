@@ -46,7 +46,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
 
             if (blockHit != null)
             {
-                Debug.Log($"Hit block: {blockHit.BlockName}");
+                //Debug.Log($"Hit block: {blockHit.BlockName}");
             }
         }
 

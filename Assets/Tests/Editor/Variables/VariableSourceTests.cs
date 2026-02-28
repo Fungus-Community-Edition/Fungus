@@ -82,7 +82,7 @@ namespace VScriptingTests.VariableOperations
             Assert.IsNotNull(floatVar);
             Assert.AreEqual("myFloat", floatVar.Key);
             Assert.AreEqual(3.5f, ((Muscariable<float>)floatVar).Value);
-            Assert.AreSame(floatVar, _source.GetVariable("myFloat"));
+            Assert.AreSame(floatVar, _source.GetVariableByName("myFloat"));
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace VScriptingTests.VariableOperations
             var intVar = _source.AddNewVariableOfContentType(typeof(int), "myInt");
             Assert.IsNotNull(intVar);
             Assert.AreEqual("myInt", intVar.Key);
-            Assert.AreSame(intVar, _source.GetVariable("myInt"));
+            Assert.AreSame(intVar, _source.GetVariableByName("myInt"));
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace VScriptingTests.VariableOperations
             legacy.Value = 1.23;
 
             _source.AddVariable(legacy);
-            var found = _source.GetVariable(legacy.Key);
+            var found = _source.GetVariableByName(legacy.Key);
 
             Assert.IsNotNull(found, "Converted variable not added");
             Assert.AreEqual(numericContentType, found.ContentType);
@@ -165,7 +165,7 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void GetVariable_ReturnsNullWhenNotFound()
         {
-            Assert.IsNull(_source.GetVariable("nope"));
+            Assert.IsNull(_source.GetVariableByName("nope"));
         }
     }
 }

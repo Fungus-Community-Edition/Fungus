@@ -201,6 +201,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 _nameLabel.style.fontSize = Mathf.RoundToInt(BaseFontSize);
             }
 
+            style.transformOrigin = new TransformOrigin(0f, 0f, 0f); // To make sure the connections render right
             transform.scale = new Vector3(zoom, zoom, 1f);
         }
 
