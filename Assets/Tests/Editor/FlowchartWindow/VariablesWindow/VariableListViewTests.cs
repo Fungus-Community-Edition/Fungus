@@ -585,6 +585,16 @@ namespace VScriptingTests.VariableOperations
             {
                 return false;
             }
+
+            public void Init(object startValue)
+            {
+                
+            }
+
+            public void OnReset()
+            {
+                
+            }
         }
     }
 

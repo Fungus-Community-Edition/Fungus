@@ -147,7 +147,7 @@ namespace Amanita.VScripting
         [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
-        public Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public Muscariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
@@ -287,22 +287,7 @@ namespace Amanita.VScripting
 
         public void RemoveVariable(Muscariable toRemove)
         {
-            throw new NotImplementedException();
-        }
-
-        Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
-        {
-            EnsureVariablesList();
-            for (int i = 0; i < variables.Count; i++)
-            {
-                Muscariable var = variables[i];
-                if (var.ItemId == itemId)
-                {
-                    return var;
-                }
-            }
-
-            return null;
+            variables.Remove(toRemove);
         }
 
         protected virtual void OnEnable()
@@ -463,51 +448,35 @@ namespace Amanita.VScripting
             EnsureVariablesList();
             return variables.ContainsReference(var);
         }
-    }
 
-    public interface IVariableSource : IHasUniqueID
-    {
-        event Action<IVariable> VariableAdded;
-        event Action<IVariable> VariableRemoved;
-        IReadOnlyList<IVariable> Variables { get; }
-        IVariable AddVariable(IVariable toAdd);
-        void RemoveVariable(IVariable toRemove);
-        IVariable GetVariable(byte itemId);
-        bool Contains(IVariable var);
-    }
+        T IVariableSource.GetVariableOfType<T>()
+        {
+            return variables.Where((elem) => elem is T).Cast<T>().FirstOrDefault();
+        }
 
-    public interface IHasUniqueID
-    {
-        string UniqueId { get; }
+        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        {
+            return GetVariableByName(name, strCompare);
+        }
+
+        T IVariableSource.GetVariableOfTypeByName<T>(string name, StringComparison strCompare)
+        {
+            return variables.Where((elem) => elem is T && elem.Key.Equals(name, strCompare))
+                .Cast<T>()
+                .FirstOrDefault();
+        }
+
+        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var result = variables.Where((elem) => type.IsAssignableFrom(elem.GetType()) && elem.Key.Equals(name, strCompare))
+                .FirstOrDefault();
+            return result;
+        }
     }
 
     public interface IForceResetUidHandler
     {
         void ForceResetUid();
-    }
-
-    public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable
-    {
-        new IReadOnlyList<TVar> Variables { get; }
-        TVar AddVariable(TVar toAdd);
-        void RemoveVariable(TVar toRemove);
-        TVar GetVar(int itemId);
-    }
-
-    public interface IMuscariableSource : IVariableSource<Muscariable>
-    {
-        Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal);
-        Muscariable AddNewVariableOfContentType(Type contentType, string key);
-    }
-
-    public interface IReorderableVariableSource : IVariableSource
-    {
-        void ReorderVariables(IList<IVariable> newlyOrderedVars);
-    }
-
-    public interface IReorderableMuscariableSource : IReorderableVariableSource, IMuscariableSource
-    {
-        
     }
 
     public interface IVarConvertible<TTargetType> where TTargetType : IVariable

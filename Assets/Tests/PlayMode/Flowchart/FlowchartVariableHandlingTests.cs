@@ -25,10 +25,10 @@ namespace VScriptingTests.FlowchartLifecycle
         private class TestIntMuscariable : Muscariable<int>
         {
             public static int InitCalls;
-            public override void Init()
+            public override void Init(int startVal)
             {
                 InitCalls++;
-                base.Init();
+                base.Init(startVal as object);
             }
         }
 
