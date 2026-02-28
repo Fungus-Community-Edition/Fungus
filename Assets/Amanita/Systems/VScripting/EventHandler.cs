@@ -112,7 +112,7 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnEnable()
         {
-            if (!this.IsInTheScene)
+            if (this == null || !this.IsInTheScene)
             {
                 return;
             }
@@ -130,7 +130,6 @@ namespace Amanita.VScripting.EventHandlers
             {
                 EditorApplication.delayCall += () =>
                 {
-                    fChart.Refresh();
                     DoRehydrationProcess();
                 };
             }
@@ -159,6 +158,15 @@ namespace Amanita.VScripting.EventHandlers
             if (weAreInTheEditor)
             {
                 RehydrateVariables();
+                return;
+            }
+
+            // Unity can call OnEnable after an object has been destroyed,
+            // which can cause us to hit this method with a null reference.
+            // In that case, just skip the rehydration process since it
+            // would only be relevant if the object were still alive.
+            if (this == null) 
+            {
                 return;
             }
 
