@@ -11,4 +11,13 @@ namespace AtMycelia.SaveSys
 
         public string DisplayName { get; }
     }
+
+    public class SaveSysAssetName : Attribute
+    {
+        public SaveSysAssetName(string assetName)
+        {
+            AssetName = assetName;
+        }
+        public string AssetName { get; }
+    }
 }

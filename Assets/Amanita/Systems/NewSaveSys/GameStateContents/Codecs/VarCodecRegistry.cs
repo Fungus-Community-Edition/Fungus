@@ -4,7 +4,6 @@ using System.Reflection;
 using UnityEngine;
 using System.Linq;
 using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita;
 
 namespace AtMycelia.SaveSys
 {

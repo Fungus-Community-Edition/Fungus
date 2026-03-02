@@ -84,8 +84,6 @@ namespace AtMycelia.SaveSys.EditorUtils
             }
         }
 
-        
-
         private VisualElement OnMakeItem()
         {
             return new DropdownField

@@ -11,8 +11,6 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Serialization;
 using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
-using UnityEngine.SceneManagement;
-using AtMycelia;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

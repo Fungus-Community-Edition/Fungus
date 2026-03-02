@@ -1,7 +1,6 @@
 using AtMycelia.Amanita.VScripting.EventHandlers;
 using UnityEngine;
 using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
-using AtMycelia.Amanita.VScripting;
 
 using AtMycelia.SaveSys;
 

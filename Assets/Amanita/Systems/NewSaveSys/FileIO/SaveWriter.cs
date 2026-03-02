@@ -9,15 +9,14 @@ using System.Threading;
 using FullSerializer;
 using AtMycelia.Amanita.FSExt;
 using Action = System.Action;
-using System.Linq;
 
 namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// This class is responsible for writing save data to disk.
     /// </summary>
-    [SaveSysDisplayName("Save Writer (Amanita Default)")]
-    [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Amanita/SaveSys/SaveWriter")]
+    [SaveSysDisplayName("Save Writer (Default)")]
+    [CreateAssetMenu(fileName = "NewSaveWriter", menuName = "Atelier Mycelia/SaveSys/SaveWriter")]
     public class SaveWriter : SaveDiskAccessor, ISaveWriter
     {
         [SerializeField] private ScriptableObject encryptor;

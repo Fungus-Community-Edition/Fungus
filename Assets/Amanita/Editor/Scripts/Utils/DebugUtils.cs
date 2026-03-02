@@ -1,7 +1,3 @@
-using AtMycelia.Amanita.VScripting;
-using UnityEditor;
-using UnityEngine;
-
 namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>

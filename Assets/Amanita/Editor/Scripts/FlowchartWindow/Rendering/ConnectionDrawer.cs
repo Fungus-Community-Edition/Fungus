@@ -1,6 +1,5 @@
 using System;
 using AtMycelia.Amanita.EditorUtils;
-using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 

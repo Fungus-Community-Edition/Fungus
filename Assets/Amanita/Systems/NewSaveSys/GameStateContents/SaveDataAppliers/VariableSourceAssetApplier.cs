@@ -9,6 +9,7 @@ namespace AtMycelia.SaveSys
     /// This is meant to apply to VariableSourceAssets on disk.
     /// </summary>
     [SaveSysDisplayName("Var Source Asset Applier (Amanita Default)")]
+    [SaveSysAssetName("DefVarSourceAssetApplier")]
     public class VariableSourceAssetApplier : SaveDataApplier<VariableSourceAssetSaveData>
     {
         public override void PreInstallInit()

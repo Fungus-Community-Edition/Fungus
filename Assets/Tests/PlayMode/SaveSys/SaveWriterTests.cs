@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using AtMycelia.Amanita.FSExt;
 using FullSerializer;
-using AtMycelia.Amanita;
 using UnityEngine.TestTools;
 
 namespace SaveSystemTests

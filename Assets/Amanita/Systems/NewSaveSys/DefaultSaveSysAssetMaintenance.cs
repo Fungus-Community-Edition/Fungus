@@ -35,7 +35,7 @@ namespace AtMycelia.SaveSys.EditorUtils
             if (settings == null)
             {
                 string path = SaveSysConstants.PathToSaveSysDefaultsFolder;
-                settings = SOUtils.EnsureSOExists<SaveStorageSettings>(path, "DefaultSaveStorageSettings");
+                settings = SOUtils.EnsureSOExists<SaveStorageSettings>(path, "Gen_DefSaveStorageSettings");
             }
 
             DefaultSaveSysAssets.SaveStorageSettings = settings;
@@ -48,7 +48,7 @@ namespace AtMycelia.SaveSys.EditorUtils
             SaveReader reader = DefaultSaveSysAssets.SaveReader;
             if (reader == null)
             {
-                reader = SOUtils.EnsureSOExists<SaveReader>(path, "DefaultSaveReader");
+                reader = SOUtils.EnsureSOExists<SaveReader>(path, "Gen_DefSaveReader");
             }
 
             reader.StorageSettings = DefaultSaveSysAssets.SaveStorageSettings;
@@ -63,7 +63,7 @@ namespace AtMycelia.SaveSys.EditorUtils
             SaveWriter writer = DefaultSaveSysAssets.SaveWriter;
             if (writer == null)
             {
-                writer = SOUtils.EnsureSOExists<SaveWriter>(path, "DefaultSaveWriter");
+                writer = SOUtils.EnsureSOExists<SaveWriter>(path, "Gen_DefSaveWriter");
             }
 
             writer.StorageSettings = DefaultSaveSysAssets.SaveStorageSettings;
@@ -76,7 +76,7 @@ namespace AtMycelia.SaveSys.EditorUtils
         public static Encryptor EnsureDefaultEncryptor()
         {
             string path = SaveSysConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
-            var encryptor = SOUtils.EnsureSOExists<Encryptor>(path, "DefaultEncryptor");
+            var encryptor = SOUtils.EnsureSOExists<Encryptor>(path, "Gen_DefEncryptor");
             DefaultSaveSysAssets.Encryptor = encryptor;
             return encryptor;
         }
@@ -84,7 +84,7 @@ namespace AtMycelia.SaveSys.EditorUtils
         public static Decryptor EnsureDefaultDecryptor()
         {
             string path = SaveSysConstants.PathToSaveSysDefaultsFolder; // Relative to Resources
-            var decryptor = SOUtils.EnsureSOExists<Decryptor>(path, "DefaultDecryptor");
+            var decryptor = SOUtils.EnsureSOExists<Decryptor>(path, "Gen_DefDecryptor");
             DefaultSaveSysAssets.Decryptor = decryptor;
             return decryptor;
         }

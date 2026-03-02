@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Progress Marker Applier (Amanita Default)")]
+    [SaveSysAssetName("DefProgMarkerApplier")]
     public class ProgressMarkerApplier : SaveDataApplier<ProgressMarkerSaveData>
     {
         public override void Apply(SaveData saveData, System.Action onComplete)

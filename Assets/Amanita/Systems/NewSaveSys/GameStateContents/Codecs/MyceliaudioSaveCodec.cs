@@ -12,6 +12,7 @@ using AtMycelia.SaveSys;
 namespace AtMycelia.Amanita.SaveSysExt
 {
     [SaveSysDisplayName("Myceliaudio Codec (Amanita Default)")]
+    [SaveSysAssetName("DefMyceliaudioCodec")]
     public class MyceliaudioSaveCodec : SaveCodec<AudioSystem, MyceliaudioSaveData>, IMainSaveCodec
     {
         // TODO: Support multiple BGM channels

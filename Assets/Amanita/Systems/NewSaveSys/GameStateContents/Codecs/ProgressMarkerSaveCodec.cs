@@ -5,6 +5,7 @@ using AtMycelia.Amanita.FSExt;
 namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Progress Marker Codec (Amanita Default)")]
+    [SaveSysAssetName("DefProgMarkerCodec")]
     public class ProgressMarkerSaveCodec : SaveCodec<ProgressMarker, ProgressMarkerSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {

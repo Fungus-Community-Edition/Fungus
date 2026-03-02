@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
 using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita.VScripting;
 using Block = AtMycelia.Amanita.VScripting.Block;
 using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 

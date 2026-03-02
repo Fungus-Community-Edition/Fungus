@@ -14,7 +14,7 @@ using UnityEditor;
 
 namespace AtMycelia.Amanita.VScripting
 {
-    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
+    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,
         IRefreshable
     {

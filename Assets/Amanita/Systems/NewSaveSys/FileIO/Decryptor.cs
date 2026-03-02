@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using AtMycelia.Amanita.IO;
 using FullSerializer;
 using AtMycelia.Amanita.FSExt;
 using Collections;
@@ -20,7 +19,7 @@ namespace AtMycelia.SaveSys
     /// best go with another ScriptableObject that implements IDecryptor.
     /// Note that this class expects that the save file uses JSON.
     /// </summary>
-    [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Amanita/SaveSys/DefaultDecryptor", order = 1)]
+    [CreateAssetMenu(fileName = "NewDefaultDecryptor", menuName = "Atelier Mycelia/SaveSys/DefaultDecryptor", order = 1)]
     public class Decryptor : ScriptableObject, IDecryptor
     {
         protected static string[] delimiterArr = SaveDiskAccessor.ReadWriteDelimiters;

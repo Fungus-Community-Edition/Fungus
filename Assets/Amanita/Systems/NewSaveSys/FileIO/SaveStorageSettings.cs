@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AtMycelia.SaveSys
 {
-    [CreateAssetMenu(fileName = "NewSaveStorageSettings", menuName = "Amanita/SaveSys/SaveStorageSettings")]
+    [CreateAssetMenu(fileName = "NewSaveStorageSettings", menuName = "Atelier Mycelia/SaveSys/SaveStorageSettings")]
     /// <summary>
     /// Settings for how save files are named and stored in directories.
     /// </summary>

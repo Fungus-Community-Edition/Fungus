@@ -9,8 +9,8 @@ using FileEncoding = System.Text.Encoding;
 
 namespace AtMycelia.SaveSys
 {
-    [SaveSysDisplayName("Save Reader (Amanita Default)")]
-    [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
+    [SaveSysDisplayName("Save Reader (Default)")]
+    [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Atelier Mycelia/SaveSys/SaveReader")]
     public class SaveReader : SaveDiskAccessor, ISaveReader
     {
         [SerializeField] private ScriptableObject decryptor;

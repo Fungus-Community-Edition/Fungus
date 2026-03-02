@@ -8,7 +8,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AtMycelia.Amanita.FSExt;
-using AtMycelia.Amanita;
 
 namespace SaveSystemTests
 {

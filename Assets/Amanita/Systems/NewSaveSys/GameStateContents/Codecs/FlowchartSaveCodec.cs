@@ -9,6 +9,7 @@ using AtMycelia.Amanita.FSExt;
 namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Flowchart Codec (Amanita Default)")]
+    [SaveSysAssetName("DefFlowchartCodec")]
     public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec, IMainSaveDataProducer
     {
         public virtual void PreInstallInit()

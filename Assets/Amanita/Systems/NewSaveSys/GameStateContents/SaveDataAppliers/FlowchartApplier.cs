@@ -11,6 +11,7 @@ using AtMycelia.Amanita.VScripting.EventHandlers;
 namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Flowchart Applier (Amanita Default)")]
+    [SaveSysAssetName("DefFlowchartApplier")]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
         protected IList<Flowchart> allFlowcharts = new List<Flowchart>();

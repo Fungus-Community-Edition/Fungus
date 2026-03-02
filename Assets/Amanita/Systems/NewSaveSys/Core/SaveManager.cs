@@ -1,5 +1,4 @@
-﻿using AtMycelia.SaveSys.VScripting;
-using AtMycelia.Amanita.Utils;
+﻿using AtMycelia.Amanita.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.SaveSys
 {

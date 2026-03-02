@@ -7,7 +7,6 @@ using FullSerializer;
 
 namespace AtMycelia.SaveSys
 {
-    [CreateAssetMenu(fileName = "BlockSaveEncoder", menuName = "Amanita/SaveSys/Encoders/BlockSaveEncoder")]
     public class BlockSaveCodec : SaveCodec<Block, BlockSaveData>,
         IMultiSaveCodec<Flowchart, BlockSaveData>
     {

@@ -58,7 +58,7 @@ namespace AtMycelia.SaveSys.EditorUtils
         private void PopulateReaderTypes()
         {
             var readers = SaveReaderTypeRegistry.Types
-                .Where(readerType => !readerType.Name.Contains("Test") &&
+                .Where(readerType => !readerType.Name.Contains("Test") && !readerType.Name.Contains("Dummy") &&
                             ScriptableObjType.IsAssignableFrom(readerType) &&
                             ReaderInterface.IsAssignableFrom(readerType))
                 .ToList();
@@ -68,7 +68,7 @@ namespace AtMycelia.SaveSys.EditorUtils
         private void PopulateWriterTypes()
         {
             var writers = SaveWriterTypeRegistry.Types
-                .Where(writerType => !writerType.Name.Contains("Test") &&
+                .Where(writerType => !writerType.Name.Contains("Test") && !writerType.Name.Contains("Dummy") &&
                             ScriptableObjType.IsAssignableFrom(writerType) &&
                             WriterInterface.IsAssignableFrom(writerType))
                 .ToList();
@@ -85,23 +85,30 @@ namespace AtMycelia.SaveSys.EditorUtils
 
             foreach (var applierType in _validMainApplierTypes)
             {
-                string baseDisplayName = GetDisplayName(applierType);
-                string assetName = $"Generated_{baseDisplayName}";
-                assetName = assetName.Replace(" ", "_");
+                string displayName = GetDisplayName(applierType);
+                string assetName = GetGenAssetNameFor(applierType);
 
                 var applierInstance = SOUtils.GetOrCreateScriptableObject(applierType,
                     whereAppliersShouldGo,
                     assetName);
 
                 // We already know that these instances inherit the right interface, so...
-                _validMainApplierChoices[baseDisplayName] = (ISaveDataApplier)applierInstance;
+                _validMainApplierChoices[displayName] = (ISaveDataApplier)applierInstance;
             }
+        }
+
+        private static string GetGenAssetNameFor(Type type)
+        {
+            string baseName = GetAssetName(type);
+            string assetName = $"Gen_{baseName}";
+            string result = assetName.Replace(" ", "_");
+            return result;
         }
 
         private void PopulateMainCodecTypesAndChoices()
         {
             List<Type> codecs = SaveDataCodecTypeRegistry.Types
-                .Where(codecType => !codecType.Name.Contains("Test") &&
+                .Where(codecType => !codecType.Name.Contains("Test") && !codecType.Name.Contains("Dummy") &&
                             ScriptableObjType.IsAssignableFrom(codecType) &&
                             CodecInterface.IsAssignableFrom(codecType))
                 .ToList();
@@ -109,14 +116,13 @@ namespace AtMycelia.SaveSys.EditorUtils
 
             foreach (var codecType in _validCodecTypes)
             {
-                string baseDisplayName = GetDisplayName(codecType);
-                string assetName = $"Generated_{baseDisplayName}";
-                assetName = assetName.Replace(" ", "_");
+                string displayName = GetDisplayName(codecType);
+                string assetName = GetGenAssetNameFor(codecType);
                 var codecInstance = SOUtils.GetOrCreateScriptableObject(codecType,
                     whereCodecsShouldGo,
                     assetName);
                 // We already know that these instances inherit the right interface, so...
-                _validMainCodecChoices[baseDisplayName] = (IMainSaveCodec)codecInstance;
+                _validMainCodecChoices[displayName] = (IMainSaveCodec)codecInstance;
             }
         }
 
@@ -124,7 +130,7 @@ namespace AtMycelia.SaveSys.EditorUtils
 
         private static bool IsValidApplierType(Type type)
         {
-            return !type.Name.Contains("Test") &&
+            return !type.Name.Contains("Test") && !type.Name.Contains("Dummy") &&
                     ScriptableObjType.IsAssignableFrom(type) &&
                     ApplierInterface.IsAssignableFrom(type);
         }
@@ -135,6 +141,11 @@ namespace AtMycelia.SaveSys.EditorUtils
         private static string GetDisplayName(Type type)
         {
             return SaveSysTypeUtils.GetDisplayName(type);
+        }
+
+        private static string GetAssetName(Type type)
+        {
+            return SaveSysTypeUtils.GetAssetName(type);
         }
     }
 }

@@ -7,7 +7,6 @@ using UnityEngine;
 using Encoding = System.Text.Encoding;
 using AtMycelia.Amanita.FSExt;
 using FullSerializer;
-using AtMycelia.Amanita;
 
 namespace SaveSystemTests
 {

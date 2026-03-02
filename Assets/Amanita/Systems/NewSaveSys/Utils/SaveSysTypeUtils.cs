@@ -15,5 +15,15 @@ namespace AtMycelia.SaveSys
 
             return $"{type.Name} ({type.Namespace})";
         }
+
+        public static string GetAssetName(Type type)
+        {
+            var attr = type.GetCustomAttribute<SaveSysAssetName>();
+            if (attr != null)
+            {
+                return attr.AssetName;
+            }
+            return type.Name;
+        }
     }
 }

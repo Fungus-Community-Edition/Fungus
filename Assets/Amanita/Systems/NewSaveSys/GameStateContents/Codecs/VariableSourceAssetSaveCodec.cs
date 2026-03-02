@@ -9,6 +9,7 @@ using AtMycelia.Amanita.Utils;
 namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("VSA Codec (Amanita Default)")]
+    [SaveSysAssetName("DefVsaCodec")]
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
         IMainSaveCodec, IMainSaveDataProducer
     {

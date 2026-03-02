@@ -8,6 +8,7 @@ using AtMycelia.SaveSys;
 namespace AtMycelia.Amanita.SaveSys
 {
     [SaveSysDisplayName("Myceliaudio Applier (Amanita Default)")]
+    [SaveSysAssetName("DefMyceliaudioApplier")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>
     {
         public override void Apply(MyceliaudioSaveData saveData)

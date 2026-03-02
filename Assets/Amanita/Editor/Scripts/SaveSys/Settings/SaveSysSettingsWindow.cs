@@ -29,7 +29,7 @@ namespace AtMycelia.SaveSys.EditorUtils
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        [MenuItem("Window/Atelier Mycelia/Amanita/Save Sys Settings")]
+        [MenuItem("Window/Atelier Mycelia/Save Sys/Settings")]
         public static void Open()
         {
             if (Instance != null)
@@ -46,10 +46,10 @@ namespace AtMycelia.SaveSys.EditorUtils
             var settings = GetSysSettings();
             static SaveSystemSettings GetSysSettings()
             {
-                SaveSystemSettings sysSettings = Resources.Load<SaveSystemSettings>("SaveSys/Settings/SaveSystemSettings");
+                SaveSystemSettings sysSettings = Resources.Load<SaveSystemSettings>("AtMycelia/SaveSys/SaveSystemSettings");
                 if (sysSettings == null)
                 {
-                    sysSettings = SOUtils.EnsureSOExists<SaveSystemSettings>("SaveSys/Settings",
+                    sysSettings = SOUtils.EnsureSOExists<SaveSystemSettings>("AtMycelia/SaveSys",
                         "SaveSystemSettings");
                     sysSettings.SaveReader = DefaultSaveSysAssets.SaveReader;
                     sysSettings.SaveWriter = DefaultSaveSysAssets.SaveWriter;

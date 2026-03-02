@@ -1386,7 +1386,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 4605209293432029257
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: loadSfx
@@ -1394,7 +1394,7 @@ MonoBehaviour:
         value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
         startValue: {fileID: 0}
     - rid: 7903257890697773170
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: lastSlotIndex
@@ -1494,7 +1494,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7084329990132072517
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: lastSlotIndex
@@ -1940,7 +1940,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 4605209097948364930
-      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0

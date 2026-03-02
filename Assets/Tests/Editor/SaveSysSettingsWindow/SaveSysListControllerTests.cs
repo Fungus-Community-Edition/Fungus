@@ -170,6 +170,7 @@ internal static class _controllerTestHelpers
 }
 
 // Dummy types for testing
+[SaveSysDisplayName("Mock")]
 public class DummyApplier : ScriptableObject, ISaveDataApplier
 {
     public int Order => 0;

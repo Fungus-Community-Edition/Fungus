@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
