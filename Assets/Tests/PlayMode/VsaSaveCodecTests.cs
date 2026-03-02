@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Amanita.SaveSys;
 
 namespace SaveSystemTests
 {

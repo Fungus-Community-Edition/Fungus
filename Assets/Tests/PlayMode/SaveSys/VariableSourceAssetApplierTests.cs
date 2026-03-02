@@ -7,8 +7,9 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Amanita.FSExt;
 using UnityEditor;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.FSExt;
 
 namespace SaveSystemTests
 {

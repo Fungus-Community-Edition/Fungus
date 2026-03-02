@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using AtMycelia.Graphics;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {

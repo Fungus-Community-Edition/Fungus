@@ -1,5 +1,4 @@
-﻿using AtMycelia.SaveSys;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
+using AtMycelia.SaveSys;
 
 namespace SaveSystemTests
 {

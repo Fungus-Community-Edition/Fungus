@@ -8,7 +8,10 @@
         "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Lorekeeper",
-        "AmanitaLegacyCollection"
+        "AmanitaLegacyCollection",
+        "AtMycelia.Common",
+        "AtMycelia.SaveSys.Core",
+        "AtMycelia.SaveSys.Editor"
     ],
     "includePlatforms": [
         "Editor"

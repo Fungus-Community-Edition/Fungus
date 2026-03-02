@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using AtMycelia.Amanita.FSExt;
+using AtMycelia.FSExt;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;

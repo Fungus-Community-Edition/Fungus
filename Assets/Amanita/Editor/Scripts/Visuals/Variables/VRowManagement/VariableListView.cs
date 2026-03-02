@@ -1,5 +1,4 @@
 ﻿using AtMycelia.Amanita.EditorUtils;
-using Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Collections;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {

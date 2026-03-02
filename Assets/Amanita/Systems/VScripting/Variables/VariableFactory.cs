@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
+
 namespace AtMycelia.Amanita.VScripting
 {
     public static class VariableFactory
@@ -11,22 +12,6 @@ namespace AtMycelia.Amanita.VScripting
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
             return (Muscariable<T>)CreateByContentType(typeof(T), toMakeCopyOf);
-        }
-
-        public static Muscariable CreateBySaveData(VariableSaveData saveData)
-        {
-            if (saveData == null)
-            {
-                Debug.LogWarning("Cannot create Muscariable from null VariableSaveData. Returning null.");
-                return null;
-            }
-            Muscariable result = CreateByVarTypeName(saveData.VarTypeName);
-
-            // Need to set the value after creation so that any type conversions
-            // or validations in the Muscariable are applied.
-            result.BoxedValue = saveData.Value;
-
-            return result;
         }
 
         public static Muscariable CreateByVarTypeName(string typeName, IVariable toMakeCopyOf = null)

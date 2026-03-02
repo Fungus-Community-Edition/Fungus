@@ -1,7 +1,7 @@
 using AtMycelia.Amanita.Lua;
 using AtMycelia.Amanita.VScripting.EventHandlers;
 using AtMycelia.Amanita.VScripting.UI;
-using Collections;
+using AtMycelia.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;

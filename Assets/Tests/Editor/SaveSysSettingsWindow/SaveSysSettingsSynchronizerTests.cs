@@ -1,4 +1,3 @@
-using AtMycelia.SaveSys;
 using AtMycelia.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.SaveSys;
 
 public class SaveSysSettingsSynchronizerTests
 {
