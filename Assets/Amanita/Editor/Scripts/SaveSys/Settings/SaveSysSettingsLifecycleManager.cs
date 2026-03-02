@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     public sealed class SaveSysSettingsLifecycleManager
     {

@@ -1,10 +1,10 @@
-﻿using Amanita.VScripting; // or your Flowchart namespace
+﻿using AtMycelia.Amanita.VScripting; // or your Flowchart namespace
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using Amanita;
+using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys;
+using AtMycelia.SaveSys;
 using Type = System.Type;
 using System.Reflection;
 

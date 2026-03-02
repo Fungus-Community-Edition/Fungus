@@ -1,11 +1,11 @@
-using Amanita.UI;
+using AtMycelia.Amanita.UI;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Type = System.Type;
 using UnityEngine.EventSystems;
 
-namespace Amanita.SaveSys.UI
+namespace AtMycelia.SaveSys.UI
 {
     /// <summary>
     /// For tying together multiple ISaveSlotUIView components under one controller.

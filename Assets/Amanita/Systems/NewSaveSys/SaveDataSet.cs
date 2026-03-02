@@ -1,4 +1,4 @@
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// This should always be assigned a meta, but not always a main. Better to

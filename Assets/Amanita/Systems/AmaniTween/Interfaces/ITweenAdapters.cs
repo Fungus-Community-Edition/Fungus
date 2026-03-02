@@ -1,9 +1,9 @@
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public interface ITransformTweenAdapter
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.UI
+namespace AtMycelia.Amanita.UI
 {
     [Flags]
     public enum UIPointerEventType

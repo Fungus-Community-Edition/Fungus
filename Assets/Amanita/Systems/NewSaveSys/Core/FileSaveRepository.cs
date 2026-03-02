@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Handles the interactions with persistent storage (the hard drives PCs have, for example)

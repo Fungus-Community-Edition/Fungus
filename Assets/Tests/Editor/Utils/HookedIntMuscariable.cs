@@ -1,4 +1,4 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.VariableOperations
 {

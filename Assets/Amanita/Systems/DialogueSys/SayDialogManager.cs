@@ -1,10 +1,10 @@
 using Collections;
 using System.Collections.Generic;
-using Amanita.Collections.Generic;
+using AtMycelia.Amanita.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {     
     /// <summary>
     /// Manages Say Dialogs within the dialogue system.

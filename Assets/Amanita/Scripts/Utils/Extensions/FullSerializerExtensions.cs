@@ -1,7 +1,7 @@
 using FullSerializer;
 using UnityEngine;
 
-namespace Amanita.FSExt
+namespace AtMycelia.Amanita.FSExt
 {
     public static class FullSerializerExtensions
     {

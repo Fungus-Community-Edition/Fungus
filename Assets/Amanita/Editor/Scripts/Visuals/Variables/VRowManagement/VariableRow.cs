@@ -1,8 +1,8 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRow : IDisposable
     {

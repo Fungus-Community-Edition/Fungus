@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class UnityVersionProvider : IVersionProvider
     {

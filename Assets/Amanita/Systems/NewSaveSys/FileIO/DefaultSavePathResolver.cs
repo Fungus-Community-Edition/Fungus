@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.IO;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class DefaultSavePathResolver : IConfigurableSaveSlotPathResolver,
         ISavePathResolver<SaveDirectoryType>,
@@ -210,7 +210,7 @@ namespace Amanita.SaveSys
             {
                 if (storageSettings == null)
                 {
-                    storageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                    storageSettings = DefaultSaveSysAssets.SaveStorageSettings;
                 }
 
                 return storageSettings;
@@ -222,7 +222,7 @@ namespace Amanita.SaveSys
                 {
                     Debug.LogWarning($"[DefaultSavePathResolver]: Assigned StorageSettings is null. " +
                         $"Reverting to default StorageSettings asset.");
-                    storageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                    storageSettings = DefaultSaveSysAssets.SaveStorageSettings;
                 }
                 fileExtension = storageSettings.FileExtension;
                 relativePath = storageSettings.RelativePath;
@@ -240,7 +240,7 @@ namespace Amanita.SaveSys
             set
             {
                 // We only want to change the format if we're working with a non-default storage settings asset
-                if (ReferenceEquals(storageSettings, DefaultAmanitaAssets.SaveStorageSettings))
+                if (ReferenceEquals(storageSettings, DefaultSaveSysAssets.SaveStorageSettings))
                 {
                     Debug.LogWarning($"[DefaultSavePathResolver]: Attempted to change the slot number format when this is " +
                         $"using the default storage settings. This is not allowed. Assign this a different Storage Settings SO " +

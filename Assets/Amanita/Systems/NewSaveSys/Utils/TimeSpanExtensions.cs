@@ -1,4 +1,4 @@
-namespace Amanita
+namespace AtMycelia
 {
     public static class TimeSpanExtensions
     {

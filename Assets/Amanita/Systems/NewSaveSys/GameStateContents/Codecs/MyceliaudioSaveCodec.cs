@@ -1,14 +1,15 @@
-using Amanita.FSExt;
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.FSExt;
+using AtMycelia.Amanita.Myceliaudio;
 using FullSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Lorekeeper;
-using Amanita.Utils;
+using AtMycelia.Amanita.Utils;
+using AtMycelia.SaveSys;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.Amanita.SaveSysExt
 {
     [SaveSysDisplayName("Myceliaudio Codec (Amanita Default)")]
     public class MyceliaudioSaveCodec : SaveCodec<AudioSystem, MyceliaudioSaveData>, IMainSaveCodec
@@ -31,7 +32,7 @@ namespace Amanita.SaveSys
 
         public override MyceliaudioSaveData Decode(string rawText)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 MyceliaudioSaveData result = serializer.FromJson<MyceliaudioSaveData>(rawText);

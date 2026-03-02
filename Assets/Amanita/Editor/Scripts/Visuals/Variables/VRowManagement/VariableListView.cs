@@ -1,4 +1,4 @@
-﻿using Amanita.EditorUtils;
+﻿using AtMycelia.Amanita.EditorUtils;
 using Collections;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).

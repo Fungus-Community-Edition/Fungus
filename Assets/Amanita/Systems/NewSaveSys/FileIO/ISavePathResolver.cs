@@ -1,4 +1,4 @@
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     // Credit to Bayat Games for inspiring me to come up with this idea
     public interface ISavePathResolver : ISaveFilePathResolver, ISaveFolderPathResolver

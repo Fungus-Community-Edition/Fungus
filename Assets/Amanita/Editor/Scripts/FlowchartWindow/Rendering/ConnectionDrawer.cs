@@ -1,10 +1,10 @@
 using System;
-using Amanita.EditorUtils;
-using Amanita.VScripting;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public sealed class ConnectionDrawer : IDisposable
     {

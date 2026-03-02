@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {     
     /// <summary>
     /// Synchronizes SaveSystemSettings asset with the SaveSysSettingsWindow UI.

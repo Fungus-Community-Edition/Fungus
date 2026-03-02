@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using FileEncoding = System.Text.Encoding;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Save Reader (Amanita Default)")]
     [CreateAssetMenu(fileName = "NewSaveReader", menuName = "Amanita/SaveSys/SaveReader")]
@@ -37,13 +37,13 @@ namespace Amanita.SaveSys
                 {
                     if (defaultDecryptor == null)
                     {
-                        defaultDecryptor = DefaultAmanitaAssets.Decryptor;
+                        defaultDecryptor = DefaultSaveSysAssets.Decryptor;
                     }
                 }
 
                 if (decryptor == null)
                 {
-                    decryptor = DefaultAmanitaAssets.Decryptor;
+                    decryptor = DefaultSaveSysAssets.Decryptor;
                 }
                 if (decryptor == null)
                 {
@@ -115,7 +115,7 @@ namespace Amanita.SaveSys
             base.OnValidate();
             if (decryptor == null)
             {
-                decryptor = DefaultAmanitaAssets.Decryptor;
+                decryptor = DefaultSaveSysAssets.Decryptor;
             }
             bool wrongTypeOfSOAssigned = decryptor != null && decryptor is not IDecryptor;
             if (wrongTypeOfSOAssigned)

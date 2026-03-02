@@ -1,4 +1,4 @@
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public interface IDecryptor
     {

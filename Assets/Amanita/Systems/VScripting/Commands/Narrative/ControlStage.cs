@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Supported display operations for Stage.

@@ -1,4 +1,4 @@
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Standard comparison operators.

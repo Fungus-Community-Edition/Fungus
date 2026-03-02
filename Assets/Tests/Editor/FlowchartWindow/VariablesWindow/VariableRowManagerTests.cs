@@ -1,5 +1,5 @@
-﻿using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+﻿using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -11,8 +11,8 @@ using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObject = UnityEngine.Object;
-using Amanita.EditorUtils;
-using Amanita;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {

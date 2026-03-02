@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Progress Marker Codec (Amanita Default)")]
     public class ProgressMarkerSaveCodec : SaveCodec<ProgressMarker, ProgressMarkerSaveData>,

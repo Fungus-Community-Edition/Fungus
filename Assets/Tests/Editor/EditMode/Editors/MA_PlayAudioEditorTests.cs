@@ -5,9 +5,9 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita;
-using Amanita.Myceliaudio.VScripting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
+using AtMycelia.Amanita.Myceliaudio.VScripting;
 using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.CommandEditorOperations

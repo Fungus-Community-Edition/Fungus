@@ -1,7 +1,7 @@
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     /// <summary>
     /// Handles lookup and persistence of SaveSysSettingsWindow UI elements.

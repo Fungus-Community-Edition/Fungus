@@ -1,10 +1,11 @@
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Lorekeeper;
+using AtMycelia.SaveSys;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.Amanita.SaveSys
 {
     [SaveSysDisplayName("Myceliaudio Applier (Amanita Default)")]
     public class MyceliaudioApplier : SaveDataApplier<MyceliaudioSaveData>

@@ -2,7 +2,7 @@ using Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.Myceliaudio.Utils
+namespace AtMycelia.Amanita.Myceliaudio.Utils
 {
     public class QuickPlayAudio : MonoBehaviour, IAudioPlayer
     {

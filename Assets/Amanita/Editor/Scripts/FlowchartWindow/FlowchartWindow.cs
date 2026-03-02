@@ -4,12 +4,12 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public class FlowchartWindow : EditorWindow, IFlowchartHostCore
     {

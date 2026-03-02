@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.Events;
 using FileEncoding = System.Text.Encoding;
 using System.Threading.Tasks;
-using Amanita.IO;
+using AtMycelia.Amanita.IO;
 using System.Threading;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using Action = System.Action;
 using System.Linq;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// This class is responsible for writing save data to disk.
@@ -50,7 +50,7 @@ namespace Amanita.SaveSys
 
             if (encryptor == null)
             {
-                encryptor = DefaultAmanitaAssets.Encryptor;
+                encryptor = DefaultSaveSysAssets.Encryptor;
             }
         }
 
@@ -234,7 +234,7 @@ namespace Amanita.SaveSys
             return true;
         }
 
-        private static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        private static fsSerializer Serializer => SaveSystem.DefaultSerializer;
         private readonly BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
         private readonly SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
 
@@ -294,7 +294,7 @@ namespace Amanita.SaveSys
             bool wrongTypeOfSOAssigned = encryptor != null && encryptor is not IEncryptor;
             if (wrongTypeOfSOAssigned)
             {
-                encryptor = DefaultAmanitaAssets.Encryptor;
+                encryptor = DefaultSaveSysAssets.Encryptor;
                 Debug.LogError($"Tried to assign a Scriptable Object that does not implement " +
                     $"IEncryptor. Reverting to default.");
             }

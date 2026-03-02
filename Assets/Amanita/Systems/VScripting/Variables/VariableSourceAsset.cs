@@ -1,4 +1,4 @@
-using Amanita.SaveSys;
+using AtMycelia.SaveSys;
 using Collections;
 using FullSerializer;
 using System;
@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,

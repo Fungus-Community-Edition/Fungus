@@ -2,10 +2,10 @@ using System.Linq;
 using UnityEngine;
 using System.Text;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Handles the encryption algorithm that SaveWriters will use. If you want
@@ -93,7 +93,7 @@ namespace Amanita.SaveSys
         protected static string FirstDelimiter => SaveDiskAccessor.ReadWriteDelimiters[0];
 
         protected virtual Encoding Encoding => Encoding.UTF8;
-        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        protected static fsSerializer Serializer => SaveSystem.DefaultSerializer;
 
     }
     

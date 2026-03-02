@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
-        "Amanita.Core",
+        "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Lorekeeper",
         "AmanitaLegacyCollection"

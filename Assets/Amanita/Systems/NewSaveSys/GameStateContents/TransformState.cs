@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [Serializable]
     public struct TransformState : IEquatable<TransformState>

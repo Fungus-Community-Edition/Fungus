@@ -1,9 +1,10 @@
 using UnityEngine.SceneManagement;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public static class SaveSysConstants 
     {
+        public const string PathToSaveSysDefaultsFolder = "Amanita/SaveSys/Defaults"; // Relative to Resources
         public static readonly Scene DoNotLoad = default;
         public static readonly string DefaultSaveVer = "1.0.0";
     }

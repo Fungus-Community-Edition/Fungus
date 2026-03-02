@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class DefaultMainStateFactory : IMainStateFactory
     {

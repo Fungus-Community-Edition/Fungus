@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveDiskAccessor : ScriptableObject, ISaveFolderPathResolver,
         ISaveFilePathResolver, ISaveSlotPathResolver, IHasConfigurableSaveSlotPathResolver
@@ -117,7 +117,7 @@ namespace Amanita.SaveSys
         {
             if (storageSettings == null)
             {
-                storageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                storageSettings = DefaultSaveSysAssets.SaveStorageSettings;
                 if (storageSettings == null)
                 {
                     Debug.LogWarning("No SaveStorageSettings assigned to SaveDiskAccessor, and no default found. Creating a new instance.");

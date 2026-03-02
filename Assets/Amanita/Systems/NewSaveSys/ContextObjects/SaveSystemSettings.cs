@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveSystemSettings : ScriptableObject
     {

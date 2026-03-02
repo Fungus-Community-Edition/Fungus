@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     /// <summary>
     /// Discovers and caches valid SaveSys types (readers, writers, appliers).

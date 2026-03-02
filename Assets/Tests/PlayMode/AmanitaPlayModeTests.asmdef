@@ -6,7 +6,7 @@
         "UnityEditor.TestRunner",
         "AmanitaEditorTests",
         "Lorekeeper",
-        "Amanita.Core",
+        "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Unity.InputSystem"
     ],

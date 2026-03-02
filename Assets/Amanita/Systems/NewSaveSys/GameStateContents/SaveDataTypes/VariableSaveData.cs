@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [System.Serializable]
     public class VariableSaveData : SaveData

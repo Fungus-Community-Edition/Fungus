@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Produces concrete SaveData instances for the main game state.

@@ -1,5 +1,5 @@
-﻿using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting;
+﻿using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

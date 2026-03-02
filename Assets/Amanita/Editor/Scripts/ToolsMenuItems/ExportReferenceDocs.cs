@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using Attribute = System.Attribute;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Helper functions for generating the markdown files for Commands and Events.

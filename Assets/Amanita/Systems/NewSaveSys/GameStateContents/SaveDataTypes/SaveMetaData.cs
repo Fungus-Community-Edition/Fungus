@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Collections;
 using System.Linq;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// For things that you'd want to show in the Save Slot UI or things that you'd otherwise

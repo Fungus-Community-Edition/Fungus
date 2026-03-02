@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-namespace Amanita.UI
+namespace AtMycelia.Amanita.UI
 {
     public class UIPointerEvents : MonoBehaviour, IPointerClickHandler, IPointerDownHandler,
         IPointerUpHandler, IPointerEnterHandler,

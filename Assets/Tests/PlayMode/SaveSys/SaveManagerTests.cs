@@ -1,4 +1,4 @@
-using Amanita.SaveSys;
+using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AmanitaSaveManager = Amanita.SaveSys.SaveManager;
+using AmanitaSaveManager = AtMycelia.SaveSys.SaveManager;
 
 namespace SaveSystemTests
 {

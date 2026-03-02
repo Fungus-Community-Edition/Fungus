@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveSysDisplayName : Attribute
     {

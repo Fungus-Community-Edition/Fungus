@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.SaveSys.UI
+namespace AtMycelia.SaveSys.UI
 {
     /// <summary>
     /// For displaying save slot metadata such as the time stamp, slot number, etc.

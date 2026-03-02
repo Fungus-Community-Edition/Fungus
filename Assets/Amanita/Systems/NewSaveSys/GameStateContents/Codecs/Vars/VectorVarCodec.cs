@@ -1,11 +1,11 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 using System;
 using UnityEngine;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// This class is responsible for encoding and decoding Vector2 and Vector3 data types.
@@ -36,7 +36,7 @@ namespace Amanita.SaveSys
 
         public virtual string EncodeToString(IVariable variable)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 if (variable is IVariable<Vector2> vecTwoVar)
@@ -75,7 +75,7 @@ namespace Amanita.SaveSys
 
         public virtual void ApplyState(IVariable variable, string data)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 // We assume that data is a Vector2State or Vector3State serialized as JSON.
@@ -132,7 +132,7 @@ namespace Amanita.SaveSys
         {
             // Again, we assume that the data is a Vector2State or Vector3State serialized as JSON.
             T result = default;
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 if (typeof(T) == typeof(Vector2))

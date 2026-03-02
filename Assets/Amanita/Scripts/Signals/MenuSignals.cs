@@ -1,4 +1,4 @@
-﻿namespace Amanita.DialogueSys
+﻿namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// Menu change event signalling system.

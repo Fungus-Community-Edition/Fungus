@@ -1,10 +1,10 @@
-using Amanita.Utils;
+using AtMycelia.Amanita.Utils;
 using System.Threading;
 using UnityEngine.SceneManagement;
 using DateTime = System.DateTime;
 using Guid = System.Guid;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class DefaultMetaFactory : IMetaFactory
     {

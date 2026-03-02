@@ -1,6 +1,6 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public interface IVarCodec
     {

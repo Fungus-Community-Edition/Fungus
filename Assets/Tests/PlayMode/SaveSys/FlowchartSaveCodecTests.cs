@@ -1,5 +1,5 @@
-using Amanita.SaveSys;
-using Amanita.VScripting;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using NUnit.Framework;
 using System.Collections;
@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Amanita.FSExt;
-using Amanita;
+using AtMycelia.Amanita.FSExt;
+using AtMycelia.Amanita;
 
 namespace SaveSystemTests
 {
@@ -107,7 +107,7 @@ namespace SaveSystemTests
             #region TwoDPos
             Vector2 expectedTwoDPos = twoDPosVar.Value;
             relevantSave = varSaves.Where((elem) => elem.Key == twoDPosVar.Key).First();
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 Vector2State vec2State = serializer.FromJson<Vector2State>(relevantSave.Value);

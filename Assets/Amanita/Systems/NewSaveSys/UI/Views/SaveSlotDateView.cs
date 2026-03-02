@@ -1,4 +1,4 @@
-namespace Amanita.SaveSys.UI
+namespace AtMycelia.SaveSys.UI
 {
     public class SaveSlotDateView : SaveSlotTextView
     {

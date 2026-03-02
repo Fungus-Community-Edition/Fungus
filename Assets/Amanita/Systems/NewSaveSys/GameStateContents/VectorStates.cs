@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [Serializable]
     public struct Vector2State : IEquatable<Vector2State>, IEquatable<Vector2>, IEquatable<Vector3>

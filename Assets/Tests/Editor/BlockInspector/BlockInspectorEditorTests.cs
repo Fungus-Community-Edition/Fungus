@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;

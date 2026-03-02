@@ -1,6 +1,6 @@
 using Type = System.Type;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     public class TypeChoiceInfo
     {

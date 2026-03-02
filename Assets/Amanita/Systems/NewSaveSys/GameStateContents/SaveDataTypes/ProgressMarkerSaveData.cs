@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Save data type for containing an active progress markers at the time of saving.

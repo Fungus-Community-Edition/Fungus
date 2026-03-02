@@ -1,8 +1,8 @@
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Handles hit detection for mouse clicks in the FlowchartWindow, determining which 

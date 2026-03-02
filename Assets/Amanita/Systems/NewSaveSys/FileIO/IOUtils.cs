@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.IO;
 
-namespace Amanita.IO
+namespace AtMycelia.Amanita.IO
 {
     public static class IOUtils
     {

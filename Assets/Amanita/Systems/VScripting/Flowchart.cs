@@ -1,6 +1,6 @@
-using Amanita.Lua;
-using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting.UI;
+using AtMycelia.Amanita.Lua;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.UI;
 using Collections;
 using System;
 using System.Collections;
@@ -10,14 +10,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 using UnityEngine.SceneManagement;
-
+using AtMycelia;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.

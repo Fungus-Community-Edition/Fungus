@@ -2,7 +2,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     /// <summary>
     /// Centralizes event subscription logic for SaveSysSettingsWindow.

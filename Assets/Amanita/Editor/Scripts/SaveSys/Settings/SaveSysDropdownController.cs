@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     /// <summary>
     /// Handles population, persistence, and instance mapping for SaveSys dropdowns.
@@ -94,7 +94,7 @@ namespace Amanita.SaveSys.EditorUtils
 
         private static void RegisterDefaultsFor(IDictionary<TypeChoiceInfo, ScriptableObject> map, Type interfaceType)
         {
-            const string defaultsSubfolder = AmanitaConstants.PathToSaveSysDefaultsFolder;
+            const string defaultsSubfolder = SaveSysConstants.PathToSaveSysDefaultsFolder;
             var defaultInstances = Resources.LoadAll<ScriptableObject>(defaultsSubfolder)
                 .Where(elem => elem != null && interfaceType.IsAssignableFrom(elem.GetType()))
                 .ToList();

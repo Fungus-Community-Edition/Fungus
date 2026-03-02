@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using System.Linq;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     public sealed class SaveSysListController<T>
     {

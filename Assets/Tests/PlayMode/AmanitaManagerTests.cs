@@ -1,7 +1,7 @@
 using System.Collections;
 using System.IO;
-using Amanita;
-using Amanita.VScripting;
+using AtMycelia.Amanita;
+using AtMycelia.Amanita.VScripting;
 using Lorekeeper;
 using NUnit.Framework;
 using UnityEngine;

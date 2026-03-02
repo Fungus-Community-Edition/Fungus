@@ -1,4 +1,4 @@
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// For displaying save slot metadata such as the time stamp, slot number, etc.

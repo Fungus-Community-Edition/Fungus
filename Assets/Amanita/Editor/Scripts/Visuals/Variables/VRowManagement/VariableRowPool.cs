@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRowPool
     {

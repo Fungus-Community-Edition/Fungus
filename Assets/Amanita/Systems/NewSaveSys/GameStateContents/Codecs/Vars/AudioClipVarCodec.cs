@@ -1,12 +1,13 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 using System;
 using UnityEngine;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using Lorekeeper;
+using AtMycelia.SaveSys;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.Amanita.SaveSysExt
 {
     /// <summary>
     /// This class is responsible for encoding and decoding Vector2 and Vector3 data types.
@@ -184,6 +185,6 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        private fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        private fsSerializer Serializer => SaveSystem.DefaultSerializer;
     }
 }

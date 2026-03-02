@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [VarCodec(true, typeof(IntegerVariable), typeof(FloatVariable), typeof(IntMuscariable), typeof(FloatMuscariable))]
     public class NumericVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>

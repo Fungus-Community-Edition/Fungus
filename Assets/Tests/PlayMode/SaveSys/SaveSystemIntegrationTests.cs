@@ -1,12 +1,12 @@
-﻿using Amanita.SaveSys;
+﻿using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Reflection;
 using UnityEngine;
-using Amanita.SaveSys.VScripting;
+using AtMycelia.SaveSys.VScripting;
 
 namespace SaveSystemTests
 {

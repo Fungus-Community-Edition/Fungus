@@ -1,9 +1,9 @@
-﻿using Amanita.SaveSys;
+﻿using AtMycelia.SaveSys;
 using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     public static class VariableFactory
     {

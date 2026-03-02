@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CustomEditor (typeof(WriterAudio))]
     public class WriterAudioEditor : Editor

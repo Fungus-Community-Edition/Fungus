@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Progress Marker Applier (Amanita Default)")]
     public class ProgressMarkerApplier : SaveDataApplier<ProgressMarkerSaveData>

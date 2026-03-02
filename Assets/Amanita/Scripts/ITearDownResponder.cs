@@ -1,4 +1,4 @@
-namespace Amanita
+namespace AtMycelia
 {
     /// <summary>
     /// Implement this interface on any class that needs to respond to TearDown calls from test suites.

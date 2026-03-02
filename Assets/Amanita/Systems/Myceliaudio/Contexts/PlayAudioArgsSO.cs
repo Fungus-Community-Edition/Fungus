@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     [CreateAssetMenu(fileName = "PlayAudioArgsSO", menuName = "Amanita/Myceliaudio/PlayAudioArgsSO")]
     public class PlayAudioArgsSO : ScriptableObject, IPlayAudioContext

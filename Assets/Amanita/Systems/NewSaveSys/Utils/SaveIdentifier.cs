@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [DisallowMultipleComponent]
     public class SaveIdentifier : MonoBehaviour

@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Static class that hooks into the hierachy changed and item gui callbacks to put

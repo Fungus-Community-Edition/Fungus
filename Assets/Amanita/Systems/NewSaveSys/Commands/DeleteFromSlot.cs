@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Delete from Slot",

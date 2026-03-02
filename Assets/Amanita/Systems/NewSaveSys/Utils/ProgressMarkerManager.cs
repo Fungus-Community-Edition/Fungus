@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class ProgressMarkerManager : IProgressMarkerManager
     {

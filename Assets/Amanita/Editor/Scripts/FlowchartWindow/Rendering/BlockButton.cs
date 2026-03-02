@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using static UnityEngine.UIElements.VisualElement;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// A button representing a Block in the flowchart. Displays the Block's name and changes 

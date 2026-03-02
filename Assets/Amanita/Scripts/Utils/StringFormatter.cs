@@ -1,7 +1,7 @@
 using System.Text;
 using System;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Misc string formatting functions.

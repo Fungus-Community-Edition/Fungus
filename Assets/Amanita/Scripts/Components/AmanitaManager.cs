@@ -1,17 +1,16 @@
-﻿using Amanita.DialogueSys;
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
-using Amanita.Tweening;
-using Amanita.VScripting;
+﻿using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys.UI;
+using AtMycelia.SaveSys.UI;
 using UnityEngine.EventSystems;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
 #endif
@@ -20,7 +19,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEditor;
 #endif
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.

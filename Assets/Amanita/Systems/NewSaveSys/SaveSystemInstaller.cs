@@ -1,14 +1,14 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Injects the save system's dependencies.
     /// </summary>
-    public class SaveSystemInstaller : MonoBehaviour, IAmanitaManagerSubmodule
+    public class SaveSystemInstaller : MonoBehaviour
     {
         [SerializeField] protected int orderIndex = 0;
         public int OrderIndex => orderIndex;
@@ -103,7 +103,7 @@ namespace Amanita.SaveSys
                     PrepRepo();
                     void PrepRepo()
                     {
-                        SaveStorageSettings defaultSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                        SaveStorageSettings defaultSettings = DefaultSaveSysAssets.SaveStorageSettings;
                         var resolver = new DefaultSavePathResolver();
                         resolver.StorageSettings = defaultSettings;
                         SaveRepo = new FileSaveRepository(sysSettings.SaveReader, sysSettings.SaveWriter,

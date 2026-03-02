@@ -1,7 +1,7 @@
 using Type = System.Type;
 using System.Reflection;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public static class SaveSysTypeUtils
     {

@@ -1,8 +1,8 @@
 using TMPro;
 using UnityEngine;
-using Amanita.UI;
+using AtMycelia.UI;
 
-namespace Amanita.SaveSys.UI
+namespace AtMycelia.SaveSys.UI
 {
     /// <summary>
     /// Base class for text-based save slot views.

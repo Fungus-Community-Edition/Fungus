@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.LocalizationSys.EditorUtils
+namespace AtMycelia.Amanita.LocalizationSys.EditorUtils
 {
     [CustomEditor(typeof(Localization))]
     public class LocalizationEditor : Editor 

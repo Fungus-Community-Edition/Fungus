@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Create custom tags for use in Say text.

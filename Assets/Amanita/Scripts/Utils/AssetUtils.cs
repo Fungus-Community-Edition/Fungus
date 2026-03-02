@@ -1,7 +1,7 @@
 using UnityEditor;
 using System.IO;
 
-namespace Amanita
+namespace AtMycelia
 {
     public static class AssetUtils
     {

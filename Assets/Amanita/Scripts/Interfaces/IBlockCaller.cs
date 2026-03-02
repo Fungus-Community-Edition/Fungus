@@ -1,4 +1,4 @@
-﻿namespace Amanita.VScripting
+﻿namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Interface for indicating that the class holds a reference to and may call a block

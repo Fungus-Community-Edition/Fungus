@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [Serializable]
     public class ProgressMarker

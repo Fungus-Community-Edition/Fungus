@@ -4,9 +4,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class CommandListAdaptor
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public class AudioTweenArgs : TweenArgs<AudioSource, float>
     {

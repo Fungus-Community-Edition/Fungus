@@ -1,12 +1,12 @@
-using Amanita.Utils;
+using AtMycelia.Amanita.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.FSExt;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("Flowchart Codec (Amanita Default)")]
     public class FlowchartSaveCodec : SaveCodec<Flowchart, FlowchartSaveData>, IMainSaveCodec, IMainSaveDataProducer

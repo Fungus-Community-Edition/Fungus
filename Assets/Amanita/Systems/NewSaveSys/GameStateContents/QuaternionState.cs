@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [Serializable]
     public struct QuaternionState : IEquatable<QuaternionState>, IEquatable<Quaternion>

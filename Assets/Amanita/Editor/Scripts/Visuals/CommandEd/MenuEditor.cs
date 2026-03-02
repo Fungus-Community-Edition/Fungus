@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using AmanitaMenu = Amanita.DialogueSys.Commands.Menu;
+using AmanitaMenu = AtMycelia.Amanita.DialogueSys.Commands.Menu;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(AmanitaMenu))]
     public class MenuEditor : CommandEditor 

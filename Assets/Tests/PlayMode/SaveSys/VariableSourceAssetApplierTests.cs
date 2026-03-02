@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Amanita.SaveSys;
-using Amanita.VScripting;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using UnityEditor;
 
 namespace SaveSystemTests

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia
 {
     public static class GameObjectExtensions
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-namespace Amanita.Utils
+namespace AtMycelia.Amanita.Utils
 {
     /// <summary>
     /// We need this so that things like codecs can execute stuff on the main thread.

@@ -5,11 +5,13 @@ using UnityEngine;
 using FullSerializer;
 using System.IO;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 { 
     public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager,
         ITearDownResponder
     {
+        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
+
         protected virtual void Awake()
         {
             // It's possible that we might not have an installer to handle this instance, so...
@@ -81,8 +83,6 @@ namespace Amanita.SaveSys
         // individual SaveManager dependencies (instead of needing to prep a whole
         // SaveManager themselves, then passing it to this class). Client code might
         // only want to swap out one module of the implementation, after all
-
-        public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
 
         /// <summary>
         /// Handler for saving and loading data to and from persistent storage.

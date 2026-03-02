@@ -1,6 +1,6 @@
-using Amanita;
-using Amanita.SaveSys;
-using Amanita.SaveSys.EditorUtils;
+using AtMycelia.Amanita;
+using AtMycelia.SaveSys;
+using AtMycelia.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
@@ -10,6 +10,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Type = System.Type;
+using AtMycelia;
 
 public class SaveSysSettingsWindowTests
 {

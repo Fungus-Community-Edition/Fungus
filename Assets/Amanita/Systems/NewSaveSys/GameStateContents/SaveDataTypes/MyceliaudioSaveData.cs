@@ -1,8 +1,8 @@
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [System.Serializable]
     public class MyceliaudioSaveData : SaveData

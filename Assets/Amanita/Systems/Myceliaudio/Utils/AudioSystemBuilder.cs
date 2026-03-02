@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public static class AudioSystemBuilder
     {

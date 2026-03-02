@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Amanita.SaveSys.CustEditor
+namespace AtMycelia.SaveSys.CustEditor
 {
     [CustomEditor(typeof(SaveIdentifier))]
     public class SaveIdentifierEditor : Editor

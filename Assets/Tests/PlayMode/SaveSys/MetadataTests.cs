@@ -1,8 +1,8 @@
-using Amanita.SaveSys;
+using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
 namespace SaveSystemTests
 {

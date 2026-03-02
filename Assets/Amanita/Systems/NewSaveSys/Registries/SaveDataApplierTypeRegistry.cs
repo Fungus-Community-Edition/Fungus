@@ -5,7 +5,7 @@ using Type = System.Type;
 using System.Linq;
 using Collections;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveDataApplierTypeRegistry : MonoBehaviour
     {

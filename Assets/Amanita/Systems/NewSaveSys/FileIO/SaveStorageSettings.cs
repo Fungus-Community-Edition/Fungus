@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [CreateAssetMenu(fileName = "NewSaveStorageSettings", menuName = "Amanita/SaveSys/SaveStorageSettings")]
     /// <summary>

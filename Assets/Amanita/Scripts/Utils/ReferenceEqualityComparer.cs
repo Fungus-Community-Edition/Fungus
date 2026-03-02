@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     public sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
         where T : class

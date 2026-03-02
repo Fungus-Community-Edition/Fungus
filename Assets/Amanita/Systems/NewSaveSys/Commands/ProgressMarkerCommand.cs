@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys", 
         "Progress Marker", 

@@ -1,10 +1,10 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [VarCodec(true, typeof(ColorVariable), typeof(ColorMuscariable))]
     public class ColorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
@@ -46,7 +46,7 @@ namespace Amanita.SaveSys
                 return string.Empty;
             }
 
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 ColorState colorState = ColorState.From(colorVar.Value);
@@ -79,7 +79,7 @@ namespace Amanita.SaveSys
                 return;
             }
 
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 ColorState colorState = serializer.FromJson<ColorState>(data);
@@ -114,7 +114,7 @@ namespace Amanita.SaveSys
                 throw new System.InvalidCastException(errorMessage);
             }
 
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 ColorState colorState = serializer.FromJson<ColorState>(data);

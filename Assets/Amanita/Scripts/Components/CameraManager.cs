@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
 	/// <summary>
 	/// Manager for main camera. Supports several types of camera transition including snap, pan & fade.

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.SaveSys.CustEditor
+namespace AtMycelia.SaveSys.CustEditor
 {
     public class SaveIdentifierBatchTool : EditorWindow
     {

@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.SaveSys.EditorUtils
+namespace AtMycelia.SaveSys.EditorUtils
 {
     public sealed class SaveSysSettingsWindow : EditorWindow
     {
@@ -51,9 +51,9 @@ namespace Amanita.SaveSys.EditorUtils
                 {
                     sysSettings = SOUtils.EnsureSOExists<SaveSystemSettings>("SaveSys/Settings",
                         "SaveSystemSettings");
-                    sysSettings.SaveReader = DefaultAmanitaAssets.SaveReader;
-                    sysSettings.SaveWriter = DefaultAmanitaAssets.SaveWriter;
-                    sysSettings.StorageSettings = DefaultAmanitaAssets.SaveStorageSettings;
+                    sysSettings.SaveReader = DefaultSaveSysAssets.SaveReader;
+                    sysSettings.SaveWriter = DefaultSaveSysAssets.SaveWriter;
+                    sysSettings.StorageSettings = DefaultSaveSysAssets.SaveStorageSettings;
                     if (sysSettings != null)
                     {
                         Debug.Log("Created SaveSystemSettings asset in Resources/SaveSys/Settings folder.");

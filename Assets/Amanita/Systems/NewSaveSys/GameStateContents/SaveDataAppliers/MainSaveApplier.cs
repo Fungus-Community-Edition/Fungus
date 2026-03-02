@@ -1,7 +1,7 @@
 using UnityEngine;
 using BaseObj = System.Object;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 { 
     public class MainSaveApplier : MonoBehaviour, IMainSaveApplier<CompositeSaveData>
     {

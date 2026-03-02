@@ -1,4 +1,4 @@
-using Amanita.Utils;
+using AtMycelia.Amanita.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-using Amanita.IO;
+using AtMycelia.Amanita.IO;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using Collections;
+using AtMycelia.IO;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Handles the decryption algorithm that SaveWriters will use. If you want
@@ -110,8 +111,8 @@ namespace Amanita.SaveSys
                 string metaDataRead = splitIntoJsons[0], mainDataRead = splitIntoJsons[1];
                 SaveMetaData metaObj = new SaveMetaData();
                 CompositeSaveData saveDataObj = new CompositeSaveData();
-                bool validMeta = JsonHelpers.TryFromJsonOverwrite(metaDataRead, ref metaObj);
-                bool validMain = JsonHelpers.TryFromJsonOverwrite(mainDataRead, ref saveDataObj);
+                bool validMeta = JsonHelpers.TryFromJsonOverwrite(metaDataRead, ref metaObj, Serializer);
+                bool validMain = JsonHelpers.TryFromJsonOverwrite(mainDataRead, ref saveDataObj, Serializer);
                 errorMessage = string.Empty;
                 if (!validMeta)
                 {
@@ -214,7 +215,7 @@ namespace Amanita.SaveSys
             if (UnityThreadUtil.IsMainThread)
             {
                 // FullSerializer is not thread-safe; lock the shared serializer instance.
-                lock (AmanitaManager.DefaultSerializer)
+                lock (Serializer)
                 {
                     result = Serializer.FromJson<SaveMetaData>(jsonForMetadata);
                 }
@@ -229,7 +230,7 @@ namespace Amanita.SaveSys
                         try
                         {
                             // Still lock here to avoid overlapping with other main-thread FS work.
-                            lock (AmanitaManager.DefaultSerializer)
+                            lock (Serializer)
                             {
                                 result = Serializer.FromJson<SaveMetaData>(jsonForMetadata);
                             }
@@ -270,7 +271,7 @@ namespace Amanita.SaveSys
             IList<string> splitIntoJsons = fullPlainJson.Split(delimiterArr, StringSplitOptions.None);
             string jsonForMainState = splitIntoJsons[1];
             CompositeSaveData compositeSaveDataRead = new CompositeSaveData();
-            bool validJson = JsonHelpers.TryFromJsonOverwrite(jsonForMainState, ref compositeSaveDataRead);
+            bool validJson = JsonHelpers.TryFromJsonOverwrite(jsonForMainState, ref compositeSaveDataRead, Serializer);
 
             if (!validJson)
             {
@@ -310,7 +311,7 @@ namespace Amanita.SaveSys
             ISaveData mainState;
 
             // FullSerializer calls must be serialized to avoid concurrent mutations of internal caches.
-            lock (AmanitaManager.DefaultSerializer)
+            lock (Serializer)
             {
                 meta = Serializer.FromJson<SaveMetaData>(jsonForMeta);
                 mainState = Serializer.FromJson<CompositeSaveData>(jsonForMainState);
@@ -320,7 +321,7 @@ namespace Amanita.SaveSys
             return result;
         }
 
-        protected fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        protected fsSerializer Serializer => SaveSystem.DefaultSerializer;
 
     }
 

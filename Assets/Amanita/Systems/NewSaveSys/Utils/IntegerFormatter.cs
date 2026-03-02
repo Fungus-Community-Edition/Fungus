@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
 
-namespace Amanita.UI
+namespace AtMycelia.UI
 {
-    [CreateAssetMenu(fileName = "IntegerFormatter", menuName = "Amanita/UI/Formatters/IntegerFormatter")]
+    [CreateAssetMenu(fileName = "IntegerFormatter", menuName = "Atelier Mycelia/UI/Formatters/IntegerFormatter")]
     public class IntegerFormatter : TextFormatter
     {
         protected override string DefaultFormat => "D2";

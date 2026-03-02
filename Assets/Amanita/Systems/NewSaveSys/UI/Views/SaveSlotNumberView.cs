@@ -1,8 +1,8 @@
-using Amanita.SaveSys.UI;
+using AtMycelia.SaveSys.UI;
 using UnityEngine;
 using TMPro;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveSlotNumberView : SaveSlotTextView
     {

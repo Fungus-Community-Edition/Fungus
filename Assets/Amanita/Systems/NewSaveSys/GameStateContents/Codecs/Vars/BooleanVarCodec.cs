@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [VarCodec(true, typeof(BooleanVariable), typeof(BoolMuscariable))]
     public class BooleanVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>

@@ -2,9 +2,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using SavePairDict = System.Collections.Generic.IDictionary<int, Amanita.SaveSys.SaveDataSet>;
+using SavePairDict = System.Collections.Generic.IDictionary<int, AtMycelia.SaveSys.SaveDataSet>;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Manages a collection of save data sets in memory (as opposed to persistent storage

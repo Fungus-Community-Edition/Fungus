@@ -1,4 +1,4 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Linq;
 using UnityEditor;
@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public sealed class BlockMovementHandler : IFlowchartWindowModule, ILeftMouseDragResponder,
         ILeftMouseUpResponder

@@ -1,5 +1,5 @@
-﻿using Amanita.SaveSys.VScripting;
-using Amanita.Utils;
+﻿using AtMycelia.SaveSys.VScripting;
+using AtMycelia.Amanita.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class SaveManager : ISaveManager
     {
@@ -60,28 +60,30 @@ namespace Amanita.SaveSys
 
             static async Task StopAllExecutingFlowchartBlocks()
             {
-                var flowcharts = AmanitaManager.S.FlowchartsInScene;
-                for (int i = 0; i < flowcharts.Count; i++)
-                {
-                    var fc = flowcharts[i];
-                    if (fc == null)
-                    {
-                        continue;
-                    }
-                    // We only want to stop this flowchart's executing blocks if it is NOT set 
-                    // to persist across scenes. Otherwise, stopping its blocks here would
-                    // interrupt any ongoing logic that is meant to continue.
-                    bool isPersistent = fc.gameObject.scene.name == "DontDestroyOnLoad";
-                    if (isPersistent || !fc.HasExecutingBlocks())
-                    {
-                        continue;
-                    }
+                // TODO: Create a Command that stops all Executing Flowchart blocks,
+                // and get it executed in a Flowchart instead of handled here
+                //var flowcharts = AmanitaManager.S.FlowchartsInScene;
+                //for (int i = 0; i < flowcharts.Count; i++)
+                //{
+                //    var fc = flowcharts[i];
+                //    if (fc == null)
+                //    {
+                //        continue;
+                //    }
+                //    // We only want to stop this flowchart's executing blocks if it is NOT set 
+                //    // to persist across scenes. Otherwise, stopping its blocks here would
+                //    // interrupt any ongoing logic that is meant to continue.
+                //    bool isPersistent = fc.gameObject.scene.name == "DontDestroyOnLoad";
+                //    if (isPersistent || !fc.HasExecutingBlocks())
+                //    {
+                //        continue;
+                //    }
 
-                    // If any blocks are executing, stop them so the next scene can start its Init
-                    Debug.Log($"Stopping all executing blocks in Flowchart named {fc.name} with " +
-                        $"GUID {fc.UniqueId} before loading save.");
-                    fc.StopAllBlocks();
-                }
+                //    // If any blocks are executing, stop them so the next scene can start its Init
+                //    Debug.Log($"Stopping all executing blocks in Flowchart named {fc.name} with " +
+                //        $"GUID {fc.UniqueId} before loading save.");
+                //    fc.StopAllBlocks();
+                //}
                 await Task.CompletedTask;
             }
         }
@@ -229,56 +231,57 @@ namespace Amanita.SaveSys
             ExecuteSaveLoadedHandlers();
             void ExecuteSaveLoadedHandlers()
             {
-                SaveSystem saveSys = SaveSystem.S;
-                var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
+                // TODO: Have loading the Save Loaded handlers be one of the FlowchartApplier's responsibilities.
+                //SaveSystem saveSys = SaveSystem.S;
+                //var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
 
-                // We only want to count the handlers that are either:
-                // - set to respond to any save load
-                // - set to respond to at least one marker that is registered in the SaveSystem
-                List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
-                .FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
-                .Where(handler => handler.IsAbleToRespond)
-                .ToList();
+                //// We only want to count the handlers that are either:
+                //// - set to respond to any save load
+                //// - set to respond to at least one marker that is registered in the SaveSystem
+                //List<SaveLoadedEvent> saveLoadedHandlers = UnityObj
+                //.FindObjectsByType<SaveLoadedEvent>(FindObjectsSortMode.None)
+                //.Where(handler => handler.IsAbleToRespond)
+                //.ToList();
 
-                Sort(saveLoadedHandlers);
+                //Sort(saveLoadedHandlers);
 
-                for (int i = 0; i < saveLoadedHandlers.Count; i++)
-                {
-                    var handler = saveLoadedHandlers[i];
-                    handler.ExecuteBlock();
-                }
+                //for (int i = 0; i < saveLoadedHandlers.Count; i++)
+                //{
+                //    var handler = saveLoadedHandlers[i];
+                //    handler.ExecuteBlock();
+                //}
             }
 
             return mainData;
         }
 
-        protected virtual void Sort(List<SaveLoadedEvent> toSort)
-        {
-            SaveSystem saveSys = SaveSystem.S;
+        //protected virtual void Sort(List<SaveLoadedEvent> toSort)
+        //{
+        //    SaveSystem saveSys = SaveSystem.S;
 
-            // To save clock cycles, precompute orders
-            var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
-            foreach (var handler in toSort)
-            {
-                handlerOrders[handler] = handler.LowestOrder();
-            }
+        //    // To save clock cycles, precompute orders
+        //    var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);
+        //    foreach (var handler in toSort)
+        //    {
+        //        handlerOrders[handler] = handler.LowestOrder();
+        //    }
 
-            toSort.Sort((first, second) =>
-            {
-                int firstOrder = handlerOrders[first];
-                int secondOrder = handlerOrders[second];
+        //    toSort.Sort((first, second) =>
+        //    {
+        //        int firstOrder = handlerOrders[first];
+        //        int secondOrder = handlerOrders[second];
 
-                bool shouldUseFallback = firstOrder == secondOrder;
-                if (shouldUseFallback)
-                {
-                    int firstId = first.GetInstanceID();
-                    int secondId = second.GetInstanceID();
-                    return firstId.CompareTo(secondId);
-                }
+        //        bool shouldUseFallback = firstOrder == secondOrder;
+        //        if (shouldUseFallback)
+        //        {
+        //            int firstId = first.GetInstanceID();
+        //            int secondId = second.GetInstanceID();
+        //            return firstId.CompareTo(secondId);
+        //        }
 
-                return firstOrder.CompareTo(secondOrder);
-            });
-        }
+        //        return firstOrder.CompareTo(secondOrder);
+        //    });
+        //}
 
         public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
         protected static string loadOp = "load";

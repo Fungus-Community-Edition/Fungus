@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
     public sealed class VariableManager : IVariableSource, IMuscariableSource

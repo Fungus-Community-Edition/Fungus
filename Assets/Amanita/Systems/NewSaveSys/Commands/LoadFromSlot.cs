@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Load From Slot",

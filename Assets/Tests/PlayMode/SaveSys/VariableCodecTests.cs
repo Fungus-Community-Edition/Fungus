@@ -1,8 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.SaveSys;
-using Amanita.VScripting;
-using Amanita.FSExt;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.FSExt;
 
 namespace SaveSystemTests
 {

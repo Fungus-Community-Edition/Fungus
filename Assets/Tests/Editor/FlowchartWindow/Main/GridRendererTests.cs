@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
-using Block = Amanita.VScripting.Block;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using Block = AtMycelia.Amanita.VScripting.Block;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {

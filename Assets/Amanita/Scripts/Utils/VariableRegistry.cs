@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Maintains a registry of all available variables from various sources accessible in the scene.

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using System.Linq;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public class VarCodecRegistry
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.UI
+namespace AtMycelia.UI
 {
     public abstract class TextFormatter : ScriptableObject, ITextFormatter
     {

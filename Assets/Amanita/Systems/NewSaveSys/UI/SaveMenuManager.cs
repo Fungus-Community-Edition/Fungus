@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.SaveSys.UI
+namespace AtMycelia.SaveSys.UI
 {
     /// <summary>
     /// Manages UI aspects of the save menu as a whole.
     /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
-    public class SaveMenuManager : MonoBehaviour, IAmanitaManagerSubmodule
+    public class SaveMenuManager : MonoBehaviour
     {
         [SerializeField] private int orderIndex = 0;
         [SerializeField] protected CanvasGroup canvasGroup;

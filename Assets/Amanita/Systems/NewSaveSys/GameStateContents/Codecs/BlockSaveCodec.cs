@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Amanita.VScripting;
-using Amanita.FSExt;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.FSExt;
 using FullSerializer;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [CreateAssetMenu(fileName = "BlockSaveEncoder", menuName = "Amanita/SaveSys/Encoders/BlockSaveEncoder")]
     public class BlockSaveCodec : SaveCodec<Block, BlockSaveData>,
@@ -23,7 +23,7 @@ namespace Amanita.SaveSys
 
         public override BlockSaveData Decode(string rawText)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 BlockSaveData result = serializer.FromJson<BlockSaveData>(rawText);

@@ -1,12 +1,14 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Scope types for Variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public enum VariableScope
     {
         /// <summary> Can only be accessed by commands in the same Flowchart. </summary>
@@ -20,6 +22,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     [RequireComponent(typeof(Flowchart))]
     [System.Serializable]
     [ExecuteInEditMode]
@@ -196,6 +199,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);

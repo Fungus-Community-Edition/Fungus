@@ -1,9 +1,11 @@
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using UnityEngine;
-using VSEvent = Amanita.VScripting.EventHandlers.EventHandler;
-using Amanita.VScripting;
+using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys.VScripting
+using AtMycelia.SaveSys;
+
+namespace AtMycelia.Amanita.VScripting
 {
     [EventHandlerInfo("SaveSys",
         "Save Slot Selected",

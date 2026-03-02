@@ -1,4 +1,4 @@
-using Amanita.SaveSys;
+using AtMycelia.SaveSys;
 using NUnit.Framework;
 
 namespace SaveSystemTests

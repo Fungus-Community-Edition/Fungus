@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public interface ISaveCodec
     {

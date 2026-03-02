@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public interface IAudioTrack
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Amanita.Globalization
+namespace AtMycelia.Amanita.Globalization
 {
 	public static class StandardFormatValues
 	{

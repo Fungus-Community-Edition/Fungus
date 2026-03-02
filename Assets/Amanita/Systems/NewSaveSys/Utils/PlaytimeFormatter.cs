@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.UI
+namespace AtMycelia.UI
 {
-    [CreateAssetMenu(fileName = "NewPlaytimeFormatter", menuName = "Amanita/UI/Formatters/PlaytimeFormatter", order = 1)]
+    [CreateAssetMenu(fileName = "NewPlaytimeFormatter", menuName = "Atelier Mycelia/UI/Formatters/PlaytimeFormatter", order = 1)]
     public class PlaytimeFormatter : TextFormatter, IPlaytimeFormatter
     {
         protected override bool CanWorkWith(object toFormat)

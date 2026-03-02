@@ -1,12 +1,12 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using FullSerializer;
-using Amanita.Utils;
+using AtMycelia.Amanita.Utils;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     [SaveSysDisplayName("VSA Codec (Amanita Default)")]
     public class VariableSourceAssetSaveCodec : SaveCodec<VariableSourceAsset, VariableSourceAssetSaveData>,
@@ -102,7 +102,7 @@ namespace Amanita.SaveSys
 
         public override VariableSourceAssetSaveData Decode(string rawText)
         {
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 VariableSourceAssetSaveData result = serializer.FromJson<VariableSourceAssetSaveData>(rawText);

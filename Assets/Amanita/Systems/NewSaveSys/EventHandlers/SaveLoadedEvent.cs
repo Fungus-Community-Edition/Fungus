@@ -1,12 +1,12 @@
 using UnityEngine;
-using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using VSEvent = Amanita.VScripting.EventHandlers.EventHandler;
+using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [EventHandlerInfo("SaveSys",
         "Save Loaded",

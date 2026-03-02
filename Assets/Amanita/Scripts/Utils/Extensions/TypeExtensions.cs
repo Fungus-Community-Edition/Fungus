@@ -1,12 +1,9 @@
 using System;
 
-namespace Amanita
+namespace AtMycelia
 {
     public static class TypeExtensions
     {
-        public static bool IsConcrete(this Type type)
-        {
-            return !(type.IsAbstract || type.IsInterface);
-        }
+        
     }
 }

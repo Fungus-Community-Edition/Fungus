@@ -2,9 +2,9 @@ using System;
 using System.Globalization;
 using UnityEngine;
 
-namespace Amanita.UI
+namespace AtMycelia.UI
 {
-    [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Amanita/UI/Formatters/DateFormatter", order = 1)]
+    [CreateAssetMenu(fileName = "NewDateFormatter", menuName = "Atelier Mycelia/UI/Formatters/DateFormatter", order = 1)]
     public class DateFormatter : TextFormatter, IDateFormatter
     {
         protected override string DefaultFormat => "yyyy-MM-dd HH:mm:ss";

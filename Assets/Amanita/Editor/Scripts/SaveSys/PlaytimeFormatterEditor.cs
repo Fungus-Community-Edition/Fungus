@@ -2,7 +2,7 @@
 using UnityEditor;
 using System;
 
-namespace Amanita.UI.EditorExt
+namespace AtMycelia.UI.EditorExt
 {
     [CustomEditor(typeof(PlaytimeFormatter))]
     public class PlaytimeFormatterEditor : Editor

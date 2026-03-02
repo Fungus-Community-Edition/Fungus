@@ -1,4 +1,4 @@
-﻿using Amanita.SaveSys;
+﻿using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 using FullSerializer;
-using Amanita;
+using AtMycelia.Amanita;
 using UnityEngine.TestTools;
 
 namespace SaveSystemTests
@@ -231,7 +231,7 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            fsSerializer ser = AmanitaManager.DefaultSerializer;
+            fsSerializer ser = SaveSystem.DefaultSerializer;
             string expectedMetaJson = ser.ToJson(args.SaveMetaData, true);
             string expectedMainJson = serializerForTest.ToJson(args.MainState, true);
             string expectedPlain = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiters}{expectedMainJson}{SaveDiskAccessor.CompletionMarkers}";

@@ -1,5 +1,5 @@
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
+using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
@@ -7,8 +7,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObject = UnityEngine.Object;
 using UnityEngine.EventSystems;
-using Amanita.VScripting;
-using Amanita;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.MuscariableTests
 {

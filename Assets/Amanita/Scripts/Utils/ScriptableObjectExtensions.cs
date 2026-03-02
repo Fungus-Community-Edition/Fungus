@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     public static class ScriptableObjectExtensions
     {

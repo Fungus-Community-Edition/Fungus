@@ -1,10 +1,10 @@
 using UnityEngine;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class DeleteShortcutHandler : IUGUIEventHandler
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Implement this interface to be notified about Writer events.

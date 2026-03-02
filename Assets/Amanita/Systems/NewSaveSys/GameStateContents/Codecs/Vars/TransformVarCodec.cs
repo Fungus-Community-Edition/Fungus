@@ -1,11 +1,11 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
-using Amanita.FSExt;
+using AtMycelia.Amanita.FSExt;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     /// <summary>
     /// Make sure that this class is NOT used outside the main thread. Unity doesn't
@@ -81,7 +81,7 @@ namespace Amanita.SaveSys
 
             // Use the shared serializer, not the converter's injected one (which is null outside FS pipeline).
             string json;
-            var fs = AmanitaManager.DefaultSerializer;
+            var fs = SaveSystem.DefaultSerializer;
             lock (fs)
             {
                 json = fs.ToJson(stateToEncode, true);
@@ -114,7 +114,7 @@ namespace Amanita.SaveSys
             }
 
             TransformState state;
-            var fs = AmanitaManager.DefaultSerializer;
+            var fs = SaveSystem.DefaultSerializer;
             lock (fs)
             {
                 state = fs.FromJson<TransformState>(data);
@@ -180,7 +180,7 @@ namespace Amanita.SaveSys
             if (typeof(T) == typeof(Transform))
             {
                 TransformState state;
-                var fs = Amanita.AmanitaManager.DefaultSerializer;
+                var fs = SaveSystem.DefaultSerializer;
                 lock (fs)
                 {
                     state = fs.FromJson<TransformState>(data);

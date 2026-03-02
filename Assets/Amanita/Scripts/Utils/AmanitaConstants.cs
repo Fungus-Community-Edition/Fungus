@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Global constants used in various parts of Amanita.

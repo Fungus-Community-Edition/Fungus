@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
 
-namespace Amanita.Utils
+namespace AtMycelia.Amanita.Utils
 {
     [DefaultExecutionOrder(-9999)]
     public static class UnityThreadUtil

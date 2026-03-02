@@ -1,5 +1,5 @@
-using Amanita.SaveSys;
-using Amanita.VScripting;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
 namespace SaveSystemTests

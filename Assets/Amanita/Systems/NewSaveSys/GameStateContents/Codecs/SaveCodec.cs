@@ -1,7 +1,7 @@
 using FullSerializer;
 using UnityEngine;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.SaveSys
 {
     public abstract class SaveCodec : ScriptableObject, ISaveCodec, ISaveCodecHandleCheck
     {
@@ -21,7 +21,7 @@ namespace Amanita.SaveSys
         }
 
         public abstract bool CanHandle(string typeName);
-        protected static fsSerializer Serializer => AmanitaManager.DefaultSerializer;
+        protected static fsSerializer Serializer => SaveSystem.DefaultSerializer;
 
         protected virtual void OnValidate()
         {
