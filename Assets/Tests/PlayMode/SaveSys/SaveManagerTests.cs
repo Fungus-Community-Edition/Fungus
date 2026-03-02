@@ -1,4 +1,3 @@
-using AtMycelia.SaveSys;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AmanitaSaveManager = AtMycelia.SaveSys.SaveManager;
+using BaseSaveManager = AtMycelia.SaveSys.SaveManager;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -20,13 +21,13 @@ namespace SaveSystemTests
         protected override bool ReqFlowchart => true;
         protected override bool ShouldDeleteTestSavesAtEnd => true;
 
-        protected AmanitaSaveManager manager;
+        protected BaseSaveManager manager;
 
         [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
-            manager = (AmanitaSaveManager) saveSys.SaveManager;
+            manager = (BaseSaveManager)SaveSystem.SaveManager;
             readReq.BaseSaveDirectory = manager.SaveDirType;
         }
 
@@ -55,7 +56,9 @@ namespace SaveSystemTests
 
             await manager.SaveToSlotAsync(slot).ConfigureAwait(false);
 
-            Assert.IsTrue(File.Exists(expectedPath), $"Save at slot {slot} does not exist.");
+            bool success = File.Exists(expectedPath);
+            Assert.IsTrue(success, $"Save at slot {slot} does not exist at {expectedPath}");
+            Debug.Log($"Successfully wrote save at slot {slot} to path {expectedPath}");
         }
 
         [UnityTest]

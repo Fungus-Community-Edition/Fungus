@@ -1,5 +1,3 @@
-using System;
-using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting

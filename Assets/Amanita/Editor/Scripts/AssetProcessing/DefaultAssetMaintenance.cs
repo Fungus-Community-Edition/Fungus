@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.SaveSys;
 using AtMycelia.Amanita.Tweening;
 
 namespace AtMycelia.Amanita.EditorUtils
@@ -22,7 +21,6 @@ namespace AtMycelia.Amanita.EditorUtils
         {
             Debug.Log($"Doing default asset maintenance...");
             EnsureDefaultTweenAdapter();
-
         }
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
@@ -30,7 +28,7 @@ namespace AtMycelia.Amanita.EditorUtils
             DefaultTweenAdapter adaptor = DefaultAmanitaAssets.TweenAdapter;
             if (adaptor == null)
             {
-                string pathToContainingFolder = string.Empty; // Relative to Resources
+                string pathToContainingFolder = "AtMycelia/Amanita"; // Relative to Resources
                 adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(pathToContainingFolder,
                     "DefaultTweenAdapter");
             }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {

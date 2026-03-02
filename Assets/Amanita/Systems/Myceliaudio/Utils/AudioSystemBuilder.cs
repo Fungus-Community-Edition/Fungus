@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using FullSerializer;
-using AtMycelia.Amanita.FSExt;
+using AtMycelia.FSExt;
 
 namespace AtMycelia.Amanita.Myceliaudio
 {

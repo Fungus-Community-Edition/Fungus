@@ -43,7 +43,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         public static FlowchartWindowConfig Config { get; private set; }
-        private static readonly string _configSubfolderPath = "Amanita/Configs";
+        private static readonly string _configSubfolderPath = "AtMycelia/Amanita";
         private static readonly string _configAssetName = "FlowchartWindowConfig";
 
         public AmanitaClipboard Clipboard { get; private set; }

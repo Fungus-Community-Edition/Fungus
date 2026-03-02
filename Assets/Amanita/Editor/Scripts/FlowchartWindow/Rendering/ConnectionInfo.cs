@@ -1,5 +1,3 @@
-using AtMycelia.Amanita.VScripting;
-
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public readonly struct ConnectionInfo

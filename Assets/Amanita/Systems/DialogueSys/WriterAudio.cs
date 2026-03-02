@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using AtMycelia.Amanita.Myceliaudio;
 using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Audio;
 
 namespace AtMycelia.Amanita
 {

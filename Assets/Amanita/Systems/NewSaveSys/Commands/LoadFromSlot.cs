@@ -102,7 +102,7 @@ namespace AtMycelia.SaveSys.VScripting
             }
             else
             {
-                Task loadTask = SaveSystem.S.LoadMainAsync(slotIndex, loadScene);
+                Task loadTask = SaveSystem.LoadMainAsync(slotIndex, loadScene);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(loadTask));

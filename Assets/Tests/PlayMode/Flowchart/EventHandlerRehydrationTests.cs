@@ -48,6 +48,10 @@ namespace SaveSystemTests
             Assert.That(detachedCopy.Owner, Is.Null, "Sanity check: detached copy should have null Owner");
 
             // Act
+            Assert.That(nameVar.ItemId, Is.Not.EqualTo(scoreVar.ItemId));
+            Assert.That(isNewPlayerVar.ItemId, Is.Not.EqualTo(scoreVar.ItemId));
+
+            Debug.Log($"scoreVar.ItemId= {scoreVar.ItemId}, resolvedType= {flowchart.GetVariableById(scoreVar.ItemId)?.GetType().Name}");
             singleHandler.ForceRehydrateVariables();
             yield return null;
 

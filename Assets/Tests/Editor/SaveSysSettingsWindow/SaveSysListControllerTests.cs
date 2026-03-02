@@ -1,4 +1,3 @@
-using AtMycelia.SaveSys;
 using AtMycelia.SaveSys.EditorUtils;
 using NUnit.Framework;
 using System;
@@ -7,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
+using AtMycelia.SaveSys;
 
 [TestFixture]
 public class SaveSysListControllerTests
@@ -170,6 +170,7 @@ internal static class _controllerTestHelpers
 }
 
 // Dummy types for testing
+[SaveSysDisplayName("Mock")]
 public class DummyApplier : ScriptableObject, ISaveDataApplier
 {
     public int Order => 0;

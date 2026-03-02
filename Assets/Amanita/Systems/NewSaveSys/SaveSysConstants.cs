@@ -1,3 +1,0 @@
-namespace AtMycelia.SaveSys
-{
-}

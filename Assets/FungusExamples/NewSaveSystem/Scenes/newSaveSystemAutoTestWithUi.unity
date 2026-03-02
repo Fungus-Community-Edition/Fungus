@@ -1593,7 +1593,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 846271704159223897
-      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: firstMarkerID
@@ -1601,7 +1601,7 @@ MonoBehaviour:
         value: firstToTheParty
         startValue: 
     - rid: 846271704159223899
-      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: someColor
@@ -1609,7 +1609,7 @@ MonoBehaviour:
         value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
         startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: Var
@@ -1617,7 +1617,7 @@ MonoBehaviour:
         value: 1.234
         startValue: 0
     - rid: 7903257792018382921
-      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecTwoVar
@@ -1625,7 +1625,7 @@ MonoBehaviour:
         value: {x: 5, y: 24}
         startValue: {x: 0, y: 0}
     - rid: 7903257792018382959
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecThreeVar
@@ -1633,7 +1633,7 @@ MonoBehaviour:
         value: {x: 0, y: 123, z: 0}
         startValue: {x: 0, y: 0, z: 0}
     - rid: 8107162614221504726
-      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: afterFirstLoad
@@ -1641,7 +1641,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 8107162708717338949
-      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: timesLoaded
@@ -1649,7 +1649,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 8107162708717339082
-      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: secondLoad
@@ -1657,7 +1657,7 @@ MonoBehaviour:
         value: 0
         startValue: 0
     - rid: 8107162709333639348
-      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: secondMarkerId
@@ -1711,7 +1711,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382955
-      type: {class: Vector2Data, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: Vector2Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1889,7 +1889,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382953
-      type: {class: ColorData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -2452,7 +2452,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 8107162619758773178
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -2659,7 +2659,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162708717338950
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3228,7 +3228,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 8107162709096399019
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3303,7 +3303,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639216
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3343,7 +3343,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639214
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3596,7 +3596,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639347
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3697,7 +3697,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 1000
-      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0

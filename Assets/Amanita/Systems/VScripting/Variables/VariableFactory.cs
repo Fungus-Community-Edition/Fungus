@@ -1,7 +1,7 @@
-﻿using AtMycelia.SaveSys;
-using System;
+﻿using System;
 using System.Reflection;
 using UnityEngine;
+
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -11,22 +11,6 @@ namespace AtMycelia.Amanita.VScripting
         public static Muscariable<T> Create<T>(IVariable toMakeCopyOf = null)
         {
             return (Muscariable<T>)CreateByContentType(typeof(T), toMakeCopyOf);
-        }
-
-        public static Muscariable CreateBySaveData(VariableSaveData saveData)
-        {
-            if (saveData == null)
-            {
-                Debug.LogWarning("Cannot create Muscariable from null VariableSaveData. Returning null.");
-                return null;
-            }
-            Muscariable result = CreateByVarTypeName(saveData.VarTypeName);
-
-            // Need to set the value after creation so that any type conversions
-            // or validations in the Muscariable are applied.
-            result.BoxedValue = saveData.Value;
-
-            return result;
         }
 
         public static Muscariable CreateByVarTypeName(string typeName, IVariable toMakeCopyOf = null)
@@ -52,6 +36,7 @@ namespace AtMycelia.Amanita.VScripting
             Type contentType = varInfo.ContentType;
             return CreateByContentType(contentType, toMakeCopyOf);
         }
+
         public static Muscariable CreateByContentType(Type contentType, IVariable toMakeCopyOf = null)
         {
             Muscariable result = null;
@@ -141,7 +126,8 @@ namespace AtMycelia.Amanita.VScripting
 
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = CreateByContentType(typeof(T), null) as Muscariable<T>;
+            Type contentType = typeof(T);
+            Muscariable<T> result = CreateByContentType(contentType, null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }

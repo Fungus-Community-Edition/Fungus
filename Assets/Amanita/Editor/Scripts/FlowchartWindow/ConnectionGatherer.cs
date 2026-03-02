@@ -114,7 +114,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             if (DiagnosticsEnabled && !bound.Overlaps(view))
             {
-                Debug.Log($"[ConnectionGathererUitk] Bound={bound} does not overlap View={view}");
+                //Debug.Log($"[ConnectionGathererUitk] Bound={bound} does not overlap View={view}");
             }
 
             return bound.Overlaps(view);

@@ -1,5 +1,3 @@
-using AtMycelia.Amanita.VScripting;
-using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow

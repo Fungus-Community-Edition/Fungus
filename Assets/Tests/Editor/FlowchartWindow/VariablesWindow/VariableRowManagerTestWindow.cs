@@ -11,7 +11,7 @@ using AtMycelia.Amanita.VScripting;
 
 // Optional: avoid pulling conflicting types into the global scope
 using AtMycelia.Amanita.EditorUtils;
-using Collections;
+using AtMycelia.Collections;
 using AtMycelia.Amanita.VScripting.EditorUtils;
 using AtMycelia.Amanita; // if you keep helpers here
 

@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace AtMycelia.Amanita.LocalizationSys.EditorUtils
 {

@@ -7,8 +7,8 @@ using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita.VScripting.EditorUtils;
-using AtMycelia.Amanita;
 using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Graphics;
 
 namespace VScriptingTests.FCWindowOperations
 {

@@ -66,8 +66,7 @@ namespace AtMycelia.SaveSys.VScripting
 
         public virtual bool HasAnyRegisteredIDs()
         {
-            SaveSystem saveSys = SaveSystem.S;
-            var registeredIDs = saveSys.ProgressMarkers.Select(elem => elem.Id).ToHashSet();
+            var registeredIDs = SaveSystem.ProgressMarkers.Select(elem => elem.Id).ToHashSet();
 
             return markerIDs != null && markerIDs.Any(elem => registeredIDs.Contains(elem.GetValue<string>()));
         }
@@ -83,12 +82,11 @@ namespace AtMycelia.SaveSys.VScripting
 
             int result = int.MaxValue;
 
-            SaveSystem saveSys = SaveSystem.S;
             for (int i = 0; i < markerIDs.Count; i++)
             {
                 VariableReference currentRef = markerIDs[i];
 
-                ProgressMarker marker = saveSys.GetProgressMarkerByID(currentRef.GetValue<string>());
+                ProgressMarker marker = SaveSystem.GetProgressMarkerByID(currentRef.GetValue<string>());
                 if (marker != null && marker.Order < result)
                 {
                     result = marker.Order;

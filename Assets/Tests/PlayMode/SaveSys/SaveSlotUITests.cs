@@ -1,15 +1,13 @@
-using AtMycelia.Amanita;
-using AtMycelia.SaveSys;
-using AtMycelia.SaveSys.UI;
-using AtMycelia.Amanita.UI;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
-using AtMycelia;
+using AtMycelia.SaveSys;
+using AtMycelia.SaveSys.UI;
 using AtMycelia.UI;
+using AtMycelia;
 
 namespace SaveSystemTests
 {

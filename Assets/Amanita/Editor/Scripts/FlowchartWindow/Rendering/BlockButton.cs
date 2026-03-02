@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.UIElements.VisualElement;
 using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow

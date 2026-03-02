@@ -1,8 +1,5 @@
 using UnityEngine;
 using AtMycelia.Amanita.EditorUtils;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {

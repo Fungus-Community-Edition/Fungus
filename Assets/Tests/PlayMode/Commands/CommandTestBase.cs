@@ -4,9 +4,9 @@ using System.Collections;
 using UnityEngine;
 using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.SaveSys;
 using Type = System.Type;
 using System.Reflection;
+using AtMycelia.SaveSys;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.
