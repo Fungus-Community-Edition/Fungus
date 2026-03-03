@@ -10,7 +10,7 @@
         "Amanita.Core.Editor",
         "Unity.InputSystem",
         "AtMycelia.Common",
-        "AtMycelia.SaveSys.Core"
+        "AtMycelia.Marasmius.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

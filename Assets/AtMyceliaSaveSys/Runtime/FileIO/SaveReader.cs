@@ -209,13 +209,6 @@ namespace AtMycelia.SaveSys
 
     }
 
-    public class BaseDecryptionRequest
-    {
-        public byte[] RawBytes { get; set; }
-        public bool WrittenAsPlainText { get; set; }
-        public string CompletionMarker { get; set; }
-    }
-
     public interface ISaveReader
     {
         ISaveMetaData ReadMetadataFromDisk(SaveReadRequest request, Action onComplete = null);
