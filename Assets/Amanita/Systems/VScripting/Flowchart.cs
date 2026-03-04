@@ -199,6 +199,10 @@ namespace AtMycelia.Amanita.VScripting
             {
                 variableManager.Initialize(_oldMuscariables, legacyVariables);
                 // For now, let's not clear those lists
+
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
             }
             else
             {
@@ -341,14 +345,15 @@ namespace AtMycelia.Amanita.VScripting
         {
             AssertUniqueID();
             AssertOwnership();
-            CheckItemIds();
-            CleanupComponents();
-            UpdateVersion();
-            PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
 #if UNITY_EDITOR
             RefreshEditorCaches();
             UpdateHideFlags();
 #endif
+            CheckItemIds();
+            CleanupComponents();
+            UpdateVersion();
+            PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
+
         }
 
 #if UNITY_EDITOR
@@ -490,25 +495,16 @@ namespace AtMycelia.Amanita.VScripting
             // It shouldn't happen but it seemed to occur for a user on the forum 
             legacyVariables.RemoveAll(item => item == null);
 
-            var allVariables = GetComponents<Variable>();
-            for (int i = 0; i < allVariables.Length; i++)
+            // Aviod destroying the legacy vars. Let them exist, even if we have muscaris
+            // acting in their place.
+
+            #region Destroy Commands that aren't in any blocks
+            for (int i = 0; i < _commands.Count; i++)
             {
-                var variable = allVariables[i];
-                if (!legacyVariables.Contains(variable))
-                {
-                    DestroyImmediate(variable);
-                }
-            }
-            
-            var blocks = GetComponents<Block>();
-            var commands = GetComponents<Command>();
-            for (int i = 0; i < commands.Length; i++)
-            {
-                var command = commands[i];
+                var command = _commands[i];
                 bool found = false;
-                for (int j = 0; j < blocks.Length; j++)
+                foreach (Block block in _blocks.Values)
                 {
-                    var block = blocks[j];
                     if (block.CommandList.Contains(command))
                     {
                         found = true;
@@ -520,15 +516,16 @@ namespace AtMycelia.Amanita.VScripting
                     DestroyImmediate(command);
                 }
             }
-            
+            #endregion
+
+            #region Destroy EventHandlers that aren't on any blocks
             var eventHandlers = GetComponents<AmanitaEventHandler>();
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                for (int j = 0; j < blocks.Length; j++)
+                foreach (Block block in _blocks.Values)
                 {
-                    var block = blocks[j];
                     if (block._EventHandler == eventHandler)
                     {
                         found = true;
@@ -540,6 +537,7 @@ namespace AtMycelia.Amanita.VScripting
                     DestroyImmediate(eventHandler);
                 }
             }
+            #endregion
         }
 
         protected virtual Block CreateBlockComponent(GameObject parent)
@@ -1196,12 +1194,11 @@ namespace AtMycelia.Amanita.VScripting
         /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
         /// into its Muscariable equivalent and the legacy variable will be destroyed.
         /// </summary>
-        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key,
+        public virtual IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
-            where TVarType : class, IVariable<TValHeld>
         {
-            return variableManager.AddNewVariable<TValHeld, TVarType>(key, value, scope);
+            return variableManager.AddNewVariable(key, value, scope);
         }
 
         /// <summary>
@@ -1225,6 +1222,11 @@ namespace AtMycelia.Amanita.VScripting
         public IVariable GetVariable(string key, StringComparison strCompare = StringComparison.Ordinal)
         {
             return variableManager.GetVariableByName(key, strCompare);
+        }
+
+        public IVariable<TContent> GetVariable<TContent>(string key, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            return variableManager.GetVariable<TContent>(key, strCompare);
         }
 
         public virtual IVariable GetVariableById(byte id)

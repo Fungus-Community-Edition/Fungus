@@ -50,7 +50,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 foreach (var elem in lookup.Values)
                 {
-                    elem.Init();
+                    elem.Init(elem.BoxedValue);
                 }
             }
         }
@@ -301,10 +301,19 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        public Muscariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result as Muscariable;
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
+        /// </summary>
+        public IVariable<TContent> GetVariable<TContent>(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            return result as IVariable<TContent>;
         }
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
@@ -373,12 +382,13 @@ namespace AtMycelia.Amanita.VScripting
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
 
-        public TVarType AddNewVariable<TValHeld, TVarType>(string key,
+        public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
-            where TVarType : class, IVariable<TValHeld>
         {
-            TVarType newVar = VariableFactory.Create(typeof(TValHeld)) as TVarType;
+            Type valueType = typeof(TValHeld);
+            
+            IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
@@ -392,8 +402,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 newVar.Init(value);
             }
-            
-            AddVariable(toRegister);
+
             VariableAdded(toRegister);
 
             return newVar;

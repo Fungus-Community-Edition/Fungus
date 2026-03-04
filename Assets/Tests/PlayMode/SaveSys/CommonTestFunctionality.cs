@@ -255,8 +255,7 @@ namespace SaveSystemTests
             threeDPosVar = (IVariable<Vector3>)flowchart.GetVariable("threeDPos");
             twoDPosVar = (IVariable<Vector2>)flowchart.GetVariable("twoDPos");
 
-            flowchart.AddNewVariable<string, StringVariable>("someStringVar", "Hello, World!");
-            stringVar = flowchart.GetVariable("someStringVar") as IVariable<string>;
+            stringVar = flowchart.AddNewVariable("someStringVar", "Hello, World!");
             transformVar = (IVariable<Transform>)flowchart.GetVariable("someTrans");
         }
 

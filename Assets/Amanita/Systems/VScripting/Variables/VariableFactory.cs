@@ -37,6 +37,7 @@ namespace AtMycelia.Amanita.VScripting
             Type contentType = varInfo.ContentType;
             return CreateByContentType(contentType, toMakeCopyOf);
         }
+
         public static Muscariable CreateByContentType(Type contentType, IVariable toMakeCopyOf = null)
         {
             Muscariable result = null;
@@ -126,7 +127,8 @@ namespace AtMycelia.Amanita.VScripting
 
         public static Muscariable<T> Create<T>(T startingValue)
         {
-            Muscariable<T> result = CreateByContentType(typeof(T), null) as Muscariable<T>;
+            Type contentType = typeof(T);
+            Muscariable<T> result = CreateByContentType(contentType, null) as Muscariable<T>;
             result.Value = startingValue;
             return result;
         }
