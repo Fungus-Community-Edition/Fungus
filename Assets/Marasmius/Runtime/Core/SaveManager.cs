@@ -17,7 +17,7 @@ namespace AtMycelia.SaveSys
             void EnsureSaveFolderIsThere()
             {
                 var resolver = SaveRepo.PathResolver;
-                string folderDir = resolver.GetSaveFolderPath(SaveSystem.S.SaveDirectoryType);
+                string folderDir = resolver.GetSaveFolderPath(SaveSystem.SaveDirectoryType);
                 if (!Directory.Exists(folderDir))
                 {
                     Directory.CreateDirectory(folderDir);
@@ -229,7 +229,7 @@ namespace AtMycelia.SaveSys
             void ExecuteSaveLoadedHandlers()
             {
                 // TODO: Have loading the Save Loaded handlers be one of the FlowchartApplier's responsibilities.
-                //SaveSystem saveSys = SaveSystem.S;
+                //SaveSystem saveSys = SaveSystem;
                 //var registeredMarkers = saveSys.ProgressMarkers.Select((elem) => elem.Id).ToList();
 
                 //// We only want to count the handlers that are either:
@@ -254,7 +254,7 @@ namespace AtMycelia.SaveSys
 
         //protected virtual void Sort(List<SaveLoadedEvent> toSort)
         //{
-        //    SaveSystem saveSys = SaveSystem.S;
+        //    SaveSystem saveSys = SaveSystem;
 
         //    // To save clock cycles, precompute orders
         //    var handlerOrders = new Dictionary<SaveLoadedEvent, int>(toSort.Count);

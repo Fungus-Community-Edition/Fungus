@@ -7,76 +7,19 @@ using System.IO;
 
 namespace AtMycelia.SaveSys
 { 
-    public class SaveSystem : MonoBehaviour, ISaveSlotPathResolver<SaveDirectoryType>, IProgressMarkerManager,
-        ITearDownResponder
+    public static class SaveSystem
     {
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
 
-        protected virtual void Awake()
-        {
-            // It's possible that we might not have an installer to handle this instance, so...
-            bool thisIsDuplicateInstance = !initted && _s != null && _s != this;
-            if (thisIsDuplicateInstance)
-            {
-                Debug.LogWarning("SaveSystem already exists. Destroying the new one.");
-                // We expect the AmanitaManager to handle the destruction here
-                return;
-            }
-        }
-
         public static readonly int minSlotNumber = 1;
-        protected bool initted;
-
-        public virtual void Init()
-        {
-            if (S != null && S != this)
-            {
-                Debug.LogWarning("SaveSystem already exists. Destroying the new one.");
-                // We expect the AmanitaManager to handle the destruction here
-                return;
-            }
-
-            if (initted)
-            {
-                Debug.LogWarning("SaveSystem already initialized. Init call ignored.");
-                return;
-            }
-
-            S = this;
-            initted = true;
-
-            Invoke(nameof(ActivateCoreLockAndInitSaveManager), coreLockDelay);
-        }
-
-        protected virtual void ActivateCoreLockAndInitSaveManager()
-        {
-            CoreLockMode = true;
-            saveManager.Init();
-        }
-
-        public bool DoesSaveExist(int slotNum)
-        {
-            return SaveManager.SlotExists(slotNum);
-        }
-
-        // We expect an instance of this to be attached to the AmanitaManager singleton
-        public static SaveSystem S
-        {
-            get { return _s; }
-            set
-            {
-                _s = value;
-            }
-        }
-        protected static SaveSystem _s;
-
-        protected float coreLockDelay = 1; // In seconds
+        private static bool initted;
+        private static float coreLockDelay = 1f; // In seconds
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like
         /// the save registry, what with how that handles volatile data.
         /// </summary>
-        protected virtual bool CoreLockMode { get; set; }
+        private static bool CoreLockMode { get; set; }
 
         #region Submodules
         // For third-party customizability, we want to give the option to inject the 
@@ -87,7 +30,7 @@ namespace AtMycelia.SaveSys
         /// <summary>
         /// Handler for saving and loading data to and from persistent storage.
         /// </summary>
-        public virtual ISaveRepository SaveRepo
+        public static ISaveRepository SaveRepo
         {
             get
             {
@@ -124,10 +67,10 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        // We use protected gets here to better control access to the modules
-        public virtual SaveRegistry Registry
+        // We use private gets here to better control access to the modules
+        public static SaveRegistry Registry
         {
-            protected get { return SaveManager.Registry; }
+            private get { return SaveManager.Registry; }
             set
             {
                 if (CoreLockMode)
@@ -141,11 +84,9 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        protected SaveRegistry registry;
-
-        public virtual SaveLoader Loader
+        public static SaveLoader Loader
         {
-            protected get { return SaveManager.Loader; }
+            private get { return SaveManager.Loader; }
             set
             {
                 if (CoreLockMode)
@@ -159,7 +100,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual IMetaFactory MetaFactory
+        public static IMetaFactory MetaFactory
         {
             get { return SaveManager.MetaFactory; }
             set
@@ -175,7 +116,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual IMainStateFactory MainStateFactory
+        public static IMainStateFactory MainStateFactory
         {
             get { return SaveManager.MainStateFactory; }
             set
@@ -191,7 +132,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual ISaveManager SaveManager
+        public static ISaveManager SaveManager
         {
             get { return saveManager; }
             set
@@ -206,7 +147,7 @@ namespace AtMycelia.SaveSys
                 saveManager = value;
             }
         }
-        protected ISaveManager saveManager;
+        private static ISaveManager saveManager;
         #endregion
 
         #region Submodule-Registration
@@ -214,13 +155,13 @@ namespace AtMycelia.SaveSys
         /// <summary>
         /// Decides what paths to use for saving and loading.
         /// </summary>
-        public virtual IConfigurableSaveSlotPathResolver SavePathResolver
+        public static IConfigurableSaveSlotPathResolver SavePathResolver
         {
             get => SaveRepo.PathResolver;
             set => SaveRepo.PathResolver = value;
         }
 
-        public virtual void RegisterSaveDataAppliersMulti(IList<ISaveDataApplier> toRegister)
+        public static void RegisterSaveDataAppliersMulti(IList<ISaveDataApplier> toRegister)
         {
             for (int i = 0; i < toRegister.Count; i++)
             {
@@ -229,7 +170,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual void RegisterSaveDataApplier(ISaveDataApplier applier)
+        public static void RegisterSaveDataApplier(ISaveDataApplier applier)
         {
             if (applier == null)
             {
@@ -243,13 +184,13 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual IList<ISaveDataApplier> SaveDataAppliers
+        public static IList<ISaveDataApplier> SaveDataAppliers
         {
             get { return new List<ISaveDataApplier>(saveDataAppliers); }
         }
-        protected IList<ISaveDataApplier> saveDataAppliers = new List<ISaveDataApplier>();
+        private static IList<ISaveDataApplier> saveDataAppliers = new List<ISaveDataApplier>();
 
-        public virtual void UnregisterSaveDataApplier(ISaveDataApplier applier)
+        public static void UnregisterSaveDataApplier(ISaveDataApplier applier)
         {
             if (applier == null)
             {
@@ -260,58 +201,84 @@ namespace AtMycelia.SaveSys
             saveDataAppliers.Remove(applier);
         }
 
-        public virtual void ClearSaveDataAppliers()
+        public static void ClearSaveDataAppliers()
         {
             saveDataAppliers.Clear();
         }
         #endregion
 
         #region Save/Load/Delete Operations
-        public virtual Task SaveToSlotAsync(int slotNum)
+        public static Task SaveToSlotAsync(int slotNum)
         {
             return saveManager.SaveToSlotAsync(slotNum);
         }
 
-        public virtual Task<CompositeSaveData> LoadMainAsync(int slotNum, bool loadScene = true,
+        public static Task<CompositeSaveData> LoadMainAsync(int slotNum, bool loadScene = true,
             CancellationToken token = default)
         {
             return saveManager.LoadMainAsync(slotNum, loadScene, token);
         }
 
-        public virtual Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
+        public static Task<ISaveMetaData> LoadMeta(int slotNum, CancellationToken token = default)
         {
             return saveManager.LoadMetaAsync(slotNum, token);
         }
 
-        public virtual void DeleteSave(int slotNum)
+        public static void DeleteSave(int slotNum)
         {
             saveManager.DeleteSave(slotNum);    
         }
         #endregion
 
+        public static void Init()
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning("SaveSystem.Init called in edit mode. This call will be ignored.");
+                return;
+            }
+
+            if (initted)
+            {
+                Debug.LogWarning("SaveSystem already initialized. Init call ignored.");
+                return;
+            }
+
+            initted = true;
+
+            int milliDelay = (int)(coreLockDelay * 1000);
+            Task.Run(async () =>
+            {
+                await Task.Delay(milliDelay);
+                ActivateCoreLockAndInitSaveManager();
+            });
+        }
+
+        private static void ActivateCoreLockAndInitSaveManager()
+        {
+            CoreLockMode = true;
+            saveManager.Init();
+        }
+
+        public static bool DoesSaveExist(int slotNum)
+        {
+            return SaveManager.SlotExists(slotNum);
+        }
+
         public static void ResetStaticsForTest()
         {
-            S = null;
-        }
-
-        protected virtual void OnDisable()
-        {
-            CancelInvoke();
-        }
-
-        protected virtual void OnDestroy()
-        {
-            if (S == this)
-            {
-                S = null;
-            }
+            initted = false;
+            CoreLockMode = false;
+            saveManager = null;
+            saveDataAppliers = new List<ISaveDataApplier>();
+            markerManager = new ProgressMarkerManager();
         }
 
         #region Resolving Details about Paths
 
-        public virtual SaveDirectoryType SaveDirectoryType { get; set; }
+        public static SaveDirectoryType SaveDirectoryType { get; set; }
 
-        public virtual string GetSaveDirectory(SaveDirectoryType dirType)
+        public static string GetSaveDirectory(SaveDirectoryType dirType)
         {
             string result = SavePathResolver.GetSaveFolderPath(dirType);
             if (!Directory.Exists(result))
@@ -321,95 +288,92 @@ namespace AtMycelia.SaveSys
             return result;
         }
 
-        public string FileExtension => SavePathResolver.FileExtension;
+        public static string FileExtension => SavePathResolver.FileExtension;
 
-        public string RelativePath => SavePathResolver.RelativePath;
+        public static string RelativePath => SavePathResolver.RelativePath;
 
-        public string NumberFormat => SavePathResolver.NumberFormat;
+        public static string NumberFormat => SavePathResolver.NumberFormat;
 
-        public string GetSaveFilePath(string fileName, object input)
+        public static string GetSaveFilePath(string fileName, object input)
         {
             return SavePathResolver.GetSaveFilePath(fileName, input);
         }
 
-        public string GetSaveFolderPath(object input)
+        public static string GetSaveFolderPath(object input)
         {
             return SavePathResolver.GetSaveFolderPath(input);
         }
 
-        public string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
+        public static string GetSaveFilePath(SaveDirectoryType input, int slotNumber)
         {
             return SavePathResolver.GetSaveFilePath(input, slotNumber);
         }
 
-        public string GetSaveFolderPath(SaveDirectoryType input)
+        public static string GetSaveFolderPath(SaveDirectoryType input)
         {
             return SavePathResolver.GetSaveFolderPath(input);
         }
 
-        public string GetSaveFilePath(string fileName, SaveDirectoryType input)
+        public static string GetSaveFilePath(string fileName, SaveDirectoryType input)
         {
             return SavePathResolver.GetSaveFilePath(fileName, input);
         }
 
-        public string GetSaveFileName(int slotNumber)
+        public static string GetSaveFileName(int slotNumber)
         {
             return SavePathResolver.GetSaveFileName(slotNumber);
         }
 
-        public string GetSaveFilePath(object input, int slotNumber)
+        public static string GetSaveFilePath(object input, int slotNumber)
         {
             return SavePathResolver.GetSaveFilePath(input, slotNumber);
         }
         #endregion
 
         #region ProgressMarker-Management
-        public virtual void RegisterProgressMarker(string id, int order = 0)
+        public static void RegisterProgressMarker(string id, int order = 0)
         {
             markerManager.RegisterProgressMarker(id, order);
-
         }
 
-        protected ProgressMarkerManager markerManager = new ProgressMarkerManager();
+        private static ProgressMarkerManager markerManager = new ProgressMarkerManager();
 
-        protected IList<ProgressMarker> progressMarkers = new List<ProgressMarker>();
-
-        public virtual void UnregisterProgressMarker(string id)
+        public static void UnregisterProgressMarker(string id)
         {
             markerManager.UnregisterProgressMarker(id);
         }
 
-        public virtual IList<ProgressMarker> ProgressMarkers
+        public static IList<ProgressMarker> ProgressMarkers
         {
             get { return markerManager.ProgressMarkers; }
         }
 
-        public virtual ProgressMarker GetProgressMarkerByID(string id)
+        public static ProgressMarker GetProgressMarkerByID(string id)
         {
             return markerManager.GetProgressMarkerByID(id);
         }
 
-        public virtual void ClearProgressMarkers()
+        public static void ClearProgressMarkers()
         {
             markerManager.ClearProgressMarkers();
         }
 
-        public virtual void SetProgressMarkerOrder(string id, int order)
+        public static void SetProgressMarkerOrder(string id, int order)
         {
             markerManager.SetProgressMarkerOrder(id, order);
         }
 
-        public virtual bool IsProgressMarkerRegistered(string id)
+        public static bool IsProgressMarkerRegistered(string id)
         {
             return markerManager.IsProgressMarkerRegistered(id);
         }
 
-        public IEnumerable<ProgressMarker> GetOrderedMarkers()
+        public static IEnumerable<ProgressMarker> GetOrderedMarkers()
         {
             return markerManager.GetOrderedMarkers();
         }
 
-        public virtual void EnsureMultiMarkersRegistered(IList<ProgressMarker> markers)
+        public static void EnsureMultiMarkersRegistered(IList<ProgressMarker> markers)
         {
             for (int i = 0; i < markers.Count; i++)
             {
@@ -418,7 +382,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        public virtual void EnsureMarkerRegistered(string id, int order = 0)
+        public static void EnsureMarkerRegistered(string id, int order = 0)
         {
             if (!IsProgressMarkerRegistered(id))
             {
@@ -426,12 +390,6 @@ namespace AtMycelia.SaveSys
             }
         }
         #endregion
-
-        public virtual void OnTearDown()
-        {
-            // Implement any necessary cleanup logic here
-            CancelInvoke();
-        }
     }
 
 }

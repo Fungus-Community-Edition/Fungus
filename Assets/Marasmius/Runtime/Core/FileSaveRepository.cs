@@ -159,7 +159,7 @@ namespace AtMycelia.SaveSys
             void PrepReadRequest()
             {
                 forPathFinding.Clear();
-                forPathFinding.BaseSaveDirectory = SaveSystem.S.SaveDirectoryType;
+                forPathFinding.BaseSaveDirectory = SaveSystem.SaveDirectoryType;
                 forPathFinding.SlotNumber = slot;
             }
 

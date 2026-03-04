@@ -259,7 +259,7 @@ namespace AtMycelia.SaveSys
                 throw exception;
             }
 
-            string baseDirectory = SaveSystem.S.GetSaveDirectory(writeArgs.BaseSaveDirectory);
+            string baseDirectory = SaveSystem.GetSaveDirectory(writeArgs.BaseSaveDirectory);
             bool validBaseDirectory = !string.IsNullOrEmpty(baseDirectory);
             if (!validBaseDirectory)
             {

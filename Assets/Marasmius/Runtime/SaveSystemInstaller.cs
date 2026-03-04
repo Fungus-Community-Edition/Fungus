@@ -1,23 +1,14 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
+using System.Collections.Generic;
 
 namespace AtMycelia.SaveSys
 {
     /// <summary>
-    /// Injects the save system's dependencies.
+    /// Injects the save system's dependencies and handles the initialization of the SaveSystem singleton. 
+    /// This is separate from the SaveSystemBootstrapper.
     /// </summary>
-    public class SaveSystemInstaller : MonoBehaviour
+    public class SaveSystemInstaller
     {
-        [SerializeField] protected int orderIndex = 0;
-        public int OrderIndex => orderIndex;
-        // Other modules that want to inject their own dependencies (say, for an RPG) should
-        // do so in Start. This installer will handle all the initialization for the SaveSystem Singleton,
-        // not just giving it its initial dependencies.
-
-        // We have this func instead of Awake so that when the time comes to set up any
-        // global Flowcharts, the Amanita Manager will be ready. Otherwise, there's a
-        // chance that things can get screwy
         public virtual void Init()
         {
             if (IsFullyInitted)
@@ -33,12 +24,13 @@ namespace AtMycelia.SaveSys
 
             S = this;
 
-            if (!Application.IsPlaying(this))
+            if (!Application.isPlaying)
             {
                 // We don't want to install the save system in edit mode.
                 return;
             }
 
+            #region Load settings and correct them as needed
             string pathToSysSettings = "SaveSys/Settings/SaveSystemSettings"; // Relative to the Resources folder
             sysSettings = Resources.Load<SaveSystemSettings>(pathToSysSettings);
             if (sysSettings == null)
@@ -47,6 +39,7 @@ namespace AtMycelia.SaveSys
                     $"Resources/{pathToSysSettings}! Cannot install save system.");
                 return;
             }
+            #endregion
 
             storageSettings = sysSettings.StorageSettings;
             CorrectSaveDirTypeAsNeeded();
@@ -116,20 +109,16 @@ namespace AtMycelia.SaveSys
             InjectDependencies();
             void InjectDependencies()
             {
-                saveSystem = UnityObj.FindFirstObjectByType<SaveSystem>();
-                // ^The save sys may not have set up its singleton field yet, hence why we're not accessing
-                // it through that. 
-
-                // Injecting dependendies before CoreLockMode activates.
-                saveSystem.SaveDirectoryType = sysSettings.StorageSettings.DirectoryType;
-                saveSystem.SaveManager = SaveManager;
+                // This should happen before CoreLockMode activates.
+                SaveSystem.SaveDirectoryType = storageSettings.DirectoryType;
+                SaveSystem.SaveManager = SaveManager;
                 // ^We gave the manager its dependencies already, hence why we won't
                 // apply them through the sys
-                
-                saveSystem.RegisterSaveDataAppliersMulti(appliers);
+
+                SaveSystem.RegisterSaveDataAppliersMulti(appliers);
             }
 
-            saveSystem.Init();
+            SaveSystem.Init();
             IsFullyInitted = true;
             SaveSysSignals.BaseSaveSysInstallationComplete();
         }
@@ -172,8 +161,6 @@ namespace AtMycelia.SaveSys
         public static SaveLoader Loader { get; private set; }
         public static ISaveRepository SaveRepo { get; private set; }
         public static ISaveManager SaveManager { get; private set; }
-
-        protected SaveSystem saveSystem;
 
         protected virtual void OnDestroy()
         {

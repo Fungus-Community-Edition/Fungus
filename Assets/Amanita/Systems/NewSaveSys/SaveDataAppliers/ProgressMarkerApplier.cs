@@ -15,18 +15,15 @@ namespace AtMycelia.SaveSys
 
         public override void Apply(ProgressMarkerSaveData saveData)
         {
-            SaveSystem saveSys = SaveSystem.S;
             var marker = saveData.Marker;
-            saveSys.EnsureMarkerRegistered(marker.Id, marker.Order);
+            SaveSystem.EnsureMarkerRegistered(marker.Id, marker.Order);
         }
 
         public override void ApplyRange(IList<SaveData> datas, Action onComplete)
         {
-            SaveSys.ClearProgressMarkers();
+            SaveSystem.ClearProgressMarkers();
             base.ApplyRange(datas, onComplete);
         }
-
-        private SaveSystem SaveSys => SaveSystem.S;
 
     }
 }

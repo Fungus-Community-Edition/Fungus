@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.TestTools;
-using AmanitaSaveManager = AtMycelia.SaveSys.SaveManager;
+using BaseSaveManager = AtMycelia.SaveSys.SaveManager;
 using AtMycelia.SaveSys;
 using AtMycelia.Amanita.SaveSys;
 
@@ -21,13 +21,13 @@ namespace SaveSystemTests
         protected override bool ReqFlowchart => true;
         protected override bool ShouldDeleteTestSavesAtEnd => true;
 
-        protected AmanitaSaveManager manager;
+        protected BaseSaveManager manager;
 
         [SetUp]
         public override void DoSetUp()
         {
             base.DoSetUp();
-            manager = (AmanitaSaveManager) saveSys.SaveManager;
+            manager = (BaseSaveManager)SaveSystem.SaveManager;
             readReq.BaseSaveDirectory = manager.SaveDirType;
         }
 

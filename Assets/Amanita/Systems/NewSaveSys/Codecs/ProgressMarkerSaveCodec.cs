@@ -26,11 +26,11 @@ namespace AtMycelia.SaveSys
         public IList<SaveData> FindAndCreateAll(Action<IList<SaveData>> onComplete = null)
         {
             IList<SaveData> results = new List<SaveData>();
-            var saveSys = SaveSystem.S;
-            for (int i = 0; i < saveSys.ProgressMarkers.Count; i++)
+            var markers = SaveSystem.ProgressMarkers;
+            for (int i = 0; i < markers.Count; i++)
             {
-                var marker = saveSys.ProgressMarkers[i];
-                var saveData = EncodeToSave(marker);
+                var markerEl = markers[i];
+                var saveData = EncodeToSave(markerEl);
                 results.Add(saveData);
             }
             onComplete?.Invoke(results);

@@ -46,7 +46,7 @@ namespace SaveSystemTests
 
         protected virtual async Task CommonSaveWriteTestAsync(SaveWriteRequest args)
         {
-            string fullPath = saveSys.GetSaveFilePath(args.BaseSaveDirectory, args.SlotNumber);
+            string fullPath = SaveSystem.GetSaveFilePath(args.BaseSaveDirectory, args.SlotNumber);
             await saveWriter.WriteOneToDiskAsync(args);
             bool fileWasWritten = File.Exists(fullPath);
             saveFilePathsForCleanup.Add(fullPath);
@@ -630,7 +630,7 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(path);
         }
 
-        // ------------- Large data -------------
+        // ------------- Large data ------------
 
         [Test]
         public async Task WritesLargeSaveData_Successfully()

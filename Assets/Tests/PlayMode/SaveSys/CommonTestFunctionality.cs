@@ -41,7 +41,6 @@ namespace SaveSystemTests
 
         // ---- Core Objects / Singletons ----
         protected AmanitaManager ammyManager;
-        protected SaveSystem saveSys;
         protected ISaveManager saveManager;
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
@@ -193,12 +192,10 @@ namespace SaveSystemTests
             if (AmanitaManager.S != ammyManager)
                 Debug.LogError("AmanitaManager.S was not set correctly!");
 
-            saveSys = ammyManager.GetComponentInChildren<SaveSystem>();
-            SaveSystem.S = saveSys;
-            var installer = ammyManager.GetComponentInChildren<SaveSystemInstaller>();
-            SaveSystemInstaller.S = installer;
+            SaveSystemInstaller installer = new SaveSystemInstaller();
+            installer.Init();
 
-            saveManager = saveSys.SaveManager;
+            saveManager = SaveSystem.SaveManager;
 
             storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
             storageSettings.RelativePath = "TestSaves";
@@ -392,10 +389,9 @@ namespace SaveSystemTests
 
         protected virtual void PrepNewPathsForTesting()
         {
-            if (!ReqSaveSystem || saveSys == null) return;
+            if (!ReqSaveSystem || SaveSystem.SaveManager == null) return;
             testPathResolver.RelativePath = "TestSaves";
-            saveSys = SaveSystem.S;
-            saveSys.SavePathResolver = testPathResolver;
+            SaveSystem.SavePathResolver = testPathResolver;
         }
 
         // ---- Teardown ----
@@ -405,12 +401,12 @@ namespace SaveSystemTests
             if (ReqSaveSystem)
             {
                 SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
-                if (SaveSystem.S != null)
-                    SaveSystem.S.ClearSaveDataAppliers();
+                if (SaveSystem.SaveManager != null)
+                    SaveSystem.ClearSaveDataAppliers();
             }
 
             UnregisterTestOnlyUids();
-            if (ReqSaveSystem && saveSys != null)
+            if (ReqSaveSystem && SaveSystem.SaveManager != null)
                 DeleteAllTestSaves();
             CleanupTrackedSaveFiles();
             DestroyRegisteredObjects();
@@ -456,14 +452,13 @@ namespace SaveSystemTests
             encryptor = null;
             saveWriter = null;
             saveReader = null;
-            saveSys = null;
             saveManager = null;
         }
 
         [OneTimeTearDown]
         public virtual void DoOneTimeTearDown()
         {
-            if (ShouldDeleteTestSavesAtEnd && ReqSaveSystem && saveSys != null)
+            if (ShouldDeleteTestSavesAtEnd && ReqSaveSystem && SaveSystem.SaveManager != null)
                 DeleteAllTestSaves();
 
             ResetRelativeSavePaths();
@@ -515,12 +510,12 @@ namespace SaveSystemTests
         // ---- Save File Deletion ----
         protected void DeleteAllTestSaves()
         {
-            if (saveSys == null) return;
+            if (SaveSystem.SaveManager == null) return;
 
             IList<string> folderPaths = new string[]
             {
-                saveSys.GetSaveDirectory(SaveDirectoryType.DataPath),
-                saveSys.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
+                SaveSystem.GetSaveDirectory(SaveDirectoryType.DataPath),
+                SaveSystem.GetSaveDirectory(SaveDirectoryType.PersistentDataPath),
                 testPathResolver.GetSaveFolderPath(SaveDirectoryType.DataPath),
                 testPathResolver.GetSaveFolderPath(SaveDirectoryType.PersistentDataPath),
             };

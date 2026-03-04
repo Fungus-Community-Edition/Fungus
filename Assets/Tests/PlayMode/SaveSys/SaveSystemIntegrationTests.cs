@@ -19,7 +19,6 @@ namespace SaveSystemTests
         protected override bool ReqFlowchart => true;
         protected override bool ShouldDeleteTestSavesAtEnd => true;
 
-        protected SaveSystem saveSystem;
         protected new ISaveManager saveManager;
         protected IMetaFactory metaFactory;
         protected IMainStateFactory mainStateFactory;
@@ -29,19 +28,18 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
             // Assume AmanitaManager and SaveSystem are set up in CommonTestFunctionality
-            saveSystem = SaveSystem.S;
-            saveManager = saveSystem.SaveManager;
-            metaFactory = saveSystem.MetaFactory;
-            mainStateFactory = saveSystem.MainStateFactory;
+            saveManager = SaveSystem.SaveManager;
+            metaFactory = SaveSystem.MetaFactory;
+            mainStateFactory = SaveSystem.MainStateFactory;
             ApplyResolvers();
             // Ensure clean state for Progress Markers between tests
-            saveSystem.ClearProgressMarkers();
+            SaveSystem.ClearProgressMarkers();
             RecordOrderCommand.ClearLog();
         }
 
         protected virtual void ApplyResolvers()
         {
-            saveSystem.SavePathResolver = testPathResolver;
+            SaveSystem.SavePathResolver = testPathResolver;
             saveReader.PathResolver = testPathResolver;
             saveWriter.PathResolver = testPathResolver;
         }
@@ -63,10 +61,10 @@ namespace SaveSystemTests
 
             // Save
             var saveDataSet = new SaveDataSet(meta, mainState);
-            await saveSystem.SaveToSlotAsync(slot);
+            await SaveSystem.SaveToSlotAsync(slot);
 
             // Load
-            var loadedMain = await saveSystem.LoadMainAsync(slot, loadScene: false);
+            var loadedMain = await SaveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: loadedMain should be a CompositeSaveData and contain FlowchartSaveData
             Assert.IsInstanceOf<CompositeSaveData>(loadedMain, "Loaded main state is not CompositeSaveData.");
@@ -92,13 +90,13 @@ namespace SaveSystemTests
             stringVar.Value = origVal;
 
             int slot = 10;
-            await saveSystem.SaveToSlotAsync(slot);
+            await SaveSystem.SaveToSlotAsync(slot);
 
             // Change the variable to something else to ensure load will restore it
             stringVar.Value = "ChangedValue";
 
             // Load
-            CompositeSaveData loadedMain = await saveSystem.LoadMainAsync(slot, loadScene: false);
+            CompositeSaveData loadedMain = await SaveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: variable value should be restored
             Assert.AreEqual(origVal, stringVar.Value, "Flowchart variable was not restored after load.");
@@ -108,9 +106,9 @@ namespace SaveSystemTests
         public void RegisterSaveDataApplier_AddsToList()
         {
             var dummyApplier = new DummySaveDataApplier();
-            saveSystem.RegisterSaveDataApplier(dummyApplier);
+            SaveSystem.RegisterSaveDataApplier(dummyApplier);
 
-            bool success = saveSystem.SaveDataAppliers.Contains(dummyApplier);
+            bool success = SaveSystem.SaveDataAppliers.Contains(dummyApplier);
             Assert.IsTrue(success);
         }
 
@@ -125,9 +123,9 @@ namespace SaveSystemTests
 
             // Register Progress Markers with different orders
             // Effective order for a block is the lowest order among its referenced marker IDs
-            saveSystem.RegisterProgressMarker("A", order: 10);
-            saveSystem.RegisterProgressMarker("B", order: 1);
-            saveSystem.RegisterProgressMarker("C", order: 5);
+            SaveSystem.RegisterProgressMarker("A", order: 10);
+            SaveSystem.RegisterProgressMarker("B", order: 1);
+            SaveSystem.RegisterProgressMarker("C", order: 5);
             // Note: "Z" not registered -> corresponding block should not execute
 
             // Create blocks and attach SaveLoaded handlers pointing to marker IDs
@@ -144,10 +142,10 @@ namespace SaveSystemTests
 
             // Save a slot to persist Progress Markers into Meta
             int slot = 21;
-            await saveSystem.SaveToSlotAsync(slot);
+            await SaveSystem.SaveToSlotAsync(slot);
 
             // Act: load the same slot (expect Save Loaded event handlers to fire)
-            await saveSystem.LoadMainAsync(slot, loadScene: false);
+            await SaveSystem.LoadMainAsync(slot, loadScene: false);
 
             // Assert: order should be by lowest referenced marker order -> B(1), AC(min(10,5)=5), A(10)
             string[] expected = { "Block_B", "Block_AC", "Block_A" };
@@ -168,15 +166,15 @@ namespace SaveSystemTests
             await CommonSetupAsync();
 
             // Arrange: register runtime markers
-            saveSystem.RegisterProgressMarker("Intro", order: 0);
-            saveSystem.RegisterProgressMarker("MidGame", order: 5);
-            saveSystem.RegisterProgressMarker("EndGame", order: 10);
+            SaveSystem.RegisterProgressMarker("Intro", order: 0);
+            SaveSystem.RegisterProgressMarker("MidGame", order: 5);
+            SaveSystem.RegisterProgressMarker("EndGame", order: 10);
 
             int slot = 22;
 
             // Act: save and then load meta
-            await saveSystem.SaveToSlotAsync(slot);
-            var loadedMeta = await saveSystem.LoadMeta(slot);
+            await SaveSystem.SaveToSlotAsync(slot);
+            var loadedMeta = await SaveSystem.LoadMeta(slot);
 
             // Assert
             Assert.IsInstanceOf<SaveMetaData>(loadedMeta);
@@ -212,8 +210,8 @@ namespace SaveSystemTests
 
             cmd.Execute();
 
-            Assert.IsTrue(saveSystem.IsProgressMarkerRegistered("P_REG"), "Marker was not registered.");
-            var marker = saveSystem.GetProgressMarkerByID("P_REG");
+            Assert.IsTrue(SaveSystem.IsProgressMarkerRegistered("P_REG"), "Marker was not registered.");
+            var marker = SaveSystem.GetProgressMarkerByID("P_REG");
             Assert.NotNull(marker);
             Assert.AreEqual(7, marker.Order, "Marker order not set during registration.");
 
@@ -225,7 +223,7 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync();
 
-            saveSystem.RegisterProgressMarker("P_UNREG", 3);
+            SaveSystem.RegisterProgressMarker("P_UNREG", 3);
 
             var flow = new GameObject("PMC_Flow_Unregister").AddComponent<Flowchart>();
             var block = CreatePlainBlock(flow, "PMC_Unregister");
@@ -235,7 +233,7 @@ namespace SaveSystemTests
 
             cmd.Execute();
 
-            Assert.IsFalse(saveSystem.IsProgressMarkerRegistered("P_UNREG"), "Marker was not unregistered.");
+            Assert.IsFalse(SaveSystem.IsProgressMarkerRegistered("P_UNREG"), "Marker was not unregistered.");
             toDestroyInTearDown.Add(flow.gameObject);
         }
 
@@ -252,8 +250,8 @@ namespace SaveSystemTests
 
             cmd.Execute();
 
-            Assert.IsTrue(saveSystem.IsProgressMarkerRegistered("P_CREATE"), "Marker should have been created by SetOrder.");
-            var marker = saveSystem.GetProgressMarkerByID("P_CREATE");
+            Assert.IsTrue(SaveSystem.IsProgressMarkerRegistered("P_CREATE"), "Marker should have been created by SetOrder.");
+            var marker = SaveSystem.GetProgressMarkerByID("P_CREATE");
             Assert.NotNull(marker);
             Assert.AreEqual(9, marker.Order, "Marker order not set correctly on creation via SetOrder.");
             toDestroyInTearDown.Add(flow.gameObject);
@@ -264,7 +262,7 @@ namespace SaveSystemTests
         {
             await CommonSetupAsync();
 
-            saveSystem.RegisterProgressMarker("P_UPDATE", 1);
+            SaveSystem.RegisterProgressMarker("P_UPDATE", 1);
 
             var flow = new GameObject("PMC_Flow_SetOrderUpdate").AddComponent<Flowchart>();
             var block = CreatePlainBlock(flow, "PMC_SetOrderUpdate");
@@ -274,7 +272,7 @@ namespace SaveSystemTests
 
             cmd.Execute();
 
-            var marker = saveSystem.GetProgressMarkerByID("P_UPDATE");
+            var marker = SaveSystem.GetProgressMarkerByID("P_UPDATE");
             Assert.NotNull(marker);
             Assert.AreEqual(14, marker.Order, "Existing marker order was not updated.");
 
@@ -295,7 +293,7 @@ namespace SaveSystemTests
             cmd.Execute();
 
             // No markers should have been created or modified
-            Assert.AreEqual(0, saveSystem.ProgressMarkers.Count, "Null action should not affect progress markers.");
+            Assert.AreEqual(0, SaveSystem.ProgressMarkers.Count, "Null action should not affect progress markers.");
             toDestroyInTearDown.Add(flow.gameObject);
         }
 

@@ -43,7 +43,7 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             await saveWriter.WriteOneToDiskAsync(writeReqLocal);
-            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
+            string filePath = SaveSystem.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             var readReqLocal = new SaveReadRequest

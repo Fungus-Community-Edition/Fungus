@@ -104,7 +104,7 @@ namespace AtMycelia.SaveSys.VScripting
             }
             else
             {
-                Task saveTask = SaveSystem.S.SaveToSlotAsync(slotIndexToGoWith);
+                Task saveTask = SaveSystem.SaveToSlotAsync(slotIndexToGoWith);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(saveTask));

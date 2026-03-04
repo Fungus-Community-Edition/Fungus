@@ -56,7 +56,7 @@ namespace AtMycelia.SaveSys
             await ApplyItemsToScene(itemsToApply);
             async Task ApplyItemsToScene(IList<SaveData> items)
             {
-                var appliers = SaveSystem.S.SaveDataAppliers;
+                var appliers = SaveSystem.SaveDataAppliers;
 
                 foreach (ISaveDataApplier applierEl in appliers)
                 {
