@@ -14,7 +14,8 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = 0;
+        [SerializeField] protected byte itemID = InvalidID; 
+        // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidID = 0;
 

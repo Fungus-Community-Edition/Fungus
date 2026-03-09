@@ -47,31 +47,46 @@ namespace AtMycelia.SaveSys
             {
                 plainText = Encoding.GetString(decryptionReq.RawBytes);
 
-                // The text should have the completion marker. If it doesn't, we want
-                // to throw an exception.
-                if (!EndsWithCompletionMarker(plainText))
+                string matchedMarker = null;
+                var allMarkers = SaveDiskAccessor.CompletionMarkers;
+                for (int i = 0; i < allMarkers.Length; i++)
+                {
+                    string marker = allMarkers[i];
+                    if (plainText.EndsWith(marker))
+                    {
+                        matchedMarker = marker;
+                        break;
+                    }
+                }
+
+                if (matchedMarker == null)
                 {
                     string errorMessage = "Decrypted text does not end with the expected completion marker.";
                     throw new IOException(errorMessage);
                 }
 
-                // The marker should only take up one line at the end of the plain text. Thus, the whole
-                // plain json should be everything up to the marker. And thus to extract said json, we can
-                // just take the text up to the marker.
-                plainJson = plainText[..^SaveDiskAccessor.CompletionMarkers.Length]; 
-                // ^Equals plainText.Substring(0, plainText.Length - SaveDiskAccessor.CompletionMarker.Length);
-
+                plainJson = plainText[..^matchedMarker.Length];
             }
             else
             {
                 byte key = 0xAA;
-                // ^We assume that the original encryption was UTF8 outputting
-                // a byte array with the bytes shifted by this exact key.
                 byte[] originalBytes = rawBytes.Select(b => (byte)(b ^ key))
                     .ToArray();
 
-                // We need to check if the bytes end with the completion marker.
-                if (!EndsWithCompletionMarker(originalBytes))
+                byte[] matchedMarkerBytes = null;
+                var allMarkers = SaveDiskAccessor.CompletionMarkers;
+                for (int i = 0; i < allMarkers.Length; i++)
+                {
+                    string marker = allMarkers[i];
+                    byte[] markerBytes = Encoding.GetBytes(marker);
+                    if (originalBytes.EndsWith(markerBytes))
+                    {
+                        matchedMarkerBytes = markerBytes;
+                        break;
+                    }
+                }
+
+                if (matchedMarkerBytes == null)
                 {
                     string errorMessage = "Decrypted bytes do not end with the expected completion marker.";
                     throw new IOException(errorMessage);

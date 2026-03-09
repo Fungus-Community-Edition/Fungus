@@ -7,5 +7,6 @@ namespace AtMycelia.SaveSys
         public const string PathToSaveSysDefaultsFolder = "AtMycelia/SaveSys/Defaults"; // Relative to Resources
         public static readonly Scene DoNotLoad = default;
         public static readonly string DefaultSaveVer = "1.0.0";
+        public static readonly string PathToSaveSysSettings = "AtMycelia/SaveSys/SaveSystemSettings"; // Relative to Resources
     }
 }

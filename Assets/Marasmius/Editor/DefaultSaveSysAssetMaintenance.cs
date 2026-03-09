@@ -18,7 +18,7 @@ namespace AtMycelia.SaveSys.EditorUtils
 
         private static void DoTheEnsuring()
         {
-            Debug.Log($"Doing default asset maintenance...");
+            Debug.Log($"Doing default save sys asset maintenance...");
 
             EnsureSaveStorageSettings();
             EnsureDefaultEncryptor();

@@ -15,12 +15,13 @@ namespace SaveSystemTests
         // Needs SaveSystem, but not scene/flowchart.
         protected override bool ReqSceneLoad => false;
         protected override bool ReqFlowchart => false;
+        protected override bool ReqSaveSystem => true;
 
         public override void DoSetUp()
         {
             base.DoSetUp();
             
-            saveReaderFallback = new TestSaveReader();
+            saveReaderFallback = ScriptableObject.CreateInstance<TestSaveReader>();
             saveReaderFallback.StorageSettings = storageSettings;
         }
 
@@ -242,6 +243,11 @@ namespace SaveSystemTests
         [Test, TestCaseSource(nameof(UnicodeTestCases))]
         public async Task EncryptedUnicodeData_RoundTrip(string unicodeString)
         {
+            while (!SaveSystem.FullyInitted)
+            {
+                await Task.Yield();
+            }
+
             saveWriter.ExpectEncryption = true;
             saveReader.ExpectEncryption = true;
 
@@ -256,6 +262,11 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
+
+            while (!SaveSystem.FullyInitted)
+            {
+                await Task.Yield();
+            }
             await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest

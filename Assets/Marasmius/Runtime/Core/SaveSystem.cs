@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using FullSerializer;
 using System.IO;
+using System;
 
 namespace AtMycelia.SaveSys
 { 
@@ -13,13 +14,12 @@ namespace AtMycelia.SaveSys
 
         public static readonly int minSlotNumber = 1;
         private static bool initted;
-        private static float coreLockDelay = 1f; // In seconds
 
         /// <summary>
         /// Whether or not late-time replacement for certain modules is allowed. Things like
         /// the save registry, what with how that handles volatile data.
         /// </summary>
-        private static bool CoreLockMode { get; set; }
+        public static bool CoreLockMode { get; private set; }
 
         #region Submodules
         // For third-party customizability, we want to give the option to inject the 
@@ -246,19 +246,24 @@ namespace AtMycelia.SaveSys
 
             initted = true;
 
-            int milliDelay = (int)(coreLockDelay * 1000);
             Task.Run(async () =>
             {
-                await Task.Delay(milliDelay);
+                await Task.Delay(500);
                 ActivateCoreLockAndInitSaveManager();
             });
+            
         }
 
         private static void ActivateCoreLockAndInitSaveManager()
         {
             CoreLockMode = true;
             saveManager.Init();
+            FullyInitted = true;
+            CoreLockActivated();
         }
+
+        public static event Action CoreLockActivated = delegate { };
+        public static bool FullyInitted { get; private set; }
 
         public static bool DoesSaveExist(int slotNum)
         {
@@ -272,6 +277,7 @@ namespace AtMycelia.SaveSys
             saveManager = null;
             saveDataAppliers = new List<ISaveDataApplier>();
             markerManager = new ProgressMarkerManager();
+            FullyInitted = false;
         }
 
         #region Resolving Details about Paths

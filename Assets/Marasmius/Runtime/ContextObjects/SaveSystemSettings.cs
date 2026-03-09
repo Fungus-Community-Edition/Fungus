@@ -183,5 +183,14 @@ namespace AtMycelia.SaveSys
         {
             mainCodecs.Remove(codec as ScriptableObject);
         }
+
+        public virtual void SetFrom(SaveSystemSettings other)
+        {
+            SaveReader = other.SaveReader;
+            SaveWriter = other.SaveWriter;
+            StorageSettings = other.StorageSettings;
+            MainAppliers = other.MainAppliers;
+            MainCodecs = other.MainCodecs;
+        }
     }
 }

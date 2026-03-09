@@ -110,6 +110,8 @@ namespace SaveSystemTests
         protected string FileExtension => saveWriter != null ? saveWriter.FileExtension : string.Empty;
         protected AudioSystem AudioSys => AudioSystem.S;
 
+        private ManualResetEventSlim saveSysInstallEvent;
+
         [OneTimeSetUp]
         public virtual void DoOneTimeSetUp()
         {
@@ -126,13 +128,16 @@ namespace SaveSystemTests
         [SetUp]
         public virtual void DoSetUp()
         {
+            // Note that this can run after the bootstrapper's done its whole initialization thing, so...
             LogAssert.ignoreFailingMessages = false;
             PlayerPrefs.DeleteAll();
+            SaveSystemBootstrapper.ResetStaticsForTest();
             DestroyExistingAmanitaManagerIfAny();
-            ResetSingletonStatics();
+            ResetSingletonStaticsForSetUp();
 
             if (ReqSaveSystem)
             {
+                saveSysInstallEvent = new ManualResetEventSlim(false);
                 SaveSysSignals.BaseSaveSysInstallationComplete += OnBaseSaveSysInstallationComplete;
                 SetupSaveSystemAndDependencies();
                 metaData.SaveVersion = "1.2.3";
@@ -172,10 +177,17 @@ namespace SaveSystemTests
             }
         }
 
-        protected virtual void ResetSingletonStatics()
+        protected virtual void ResetSingletonStaticsForSetUp()
         {
-            SaveSystem.ResetStaticsForTest();
-            SaveSystemInstaller.ResetStaticsForTest();
+            Flowchart.ResetStaticsForTest();
+            AmanitaManager.ResetStaticsForTest();
+            AudioSystem.ResetStaticsForTest();
+        }
+
+        protected virtual void ResetSingletonStaticsForTearDown()
+        {
+            //SaveSystem.ResetStaticsForTest(); // Leave this for one time tear down
+            SaveSystemBootstrapper.ResetStaticsForTest();
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
             AudioSystem.ResetStaticsForTest();
@@ -183,28 +195,37 @@ namespace SaveSystemTests
 
         private void SetupSaveSystemAndDependencies()
         {
-            pathToAmanitaManagerPrefab = AmanitaConstants.PathToAmanitaManagerPrefab;
-            AmanitaManager amanitaManagerPrefab = Resources.Load<AmanitaManager>(pathToAmanitaManagerPrefab);
-            ammyManager = UnityObj.Instantiate(amanitaManagerPrefab);
-            AmanitaManager.S = ammyManager;
+            ammyManager = AmanitaManager.EnsureExists();
             ammyManager.Init();
 
             if (AmanitaManager.S != ammyManager)
                 Debug.LogError("AmanitaManager.S was not set correctly!");
 
-            SaveSystemInstaller installer = new SaveSystemInstaller();
-            installer.Init();
-
-            saveManager = SaveSystem.SaveManager;
-
             storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
             storageSettings.RelativePath = "TestSaves";
+
+            testPathResolver.StorageSettings = storageSettings;
+            otherTestPathResolver.StorageSettings = storageSettings;
+
+            DeleteAllTestSaves();
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
             saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
-            otherTestPathResolver.StorageSettings = storageSettings;
             encryptor = ScriptableObject.CreateInstance<Encryptor>();
+
+            var testInstaller = new TestSaveSystemInstaller
+            {
+                StorageSettings = storageSettings,
+                SaveReaderOverride = saveReader,
+                SaveWriterOverride = saveWriter
+            };
+
+            SaveSystemBootstrapper.Installer = testInstaller;
+            SaveSystemBootstrapper.InstallContext = null;
+            testInstaller.Init();
+
+            saveManager = SaveSystem.SaveManager;
         }
 
         private void InitReadRequestFromWriteRequest()
@@ -327,7 +348,7 @@ namespace SaveSystemTests
         protected virtual IEnumerator CommonSetup()
         {
             yield return waitToYield;
-            PrepNewPathsForTesting();
+            //PrepNewPathsForTesting();
             PrepAndRegisterSaveData();
         }
 
@@ -384,14 +405,8 @@ namespace SaveSystemTests
         // ---- Path Prep ----
         protected virtual void OnBaseSaveSysInstallationComplete()
         {
-            PrepNewPathsForTesting();
-        }
-
-        protected virtual void PrepNewPathsForTesting()
-        {
-            if (!ReqSaveSystem || SaveSystem.SaveManager == null) return;
-            testPathResolver.RelativePath = "TestSaves";
-            SaveSystem.SavePathResolver = testPathResolver;
+            //PrepNewPathsForTesting();
+            saveSysInstallEvent?.Set();
         }
 
         // ---- Teardown ----
@@ -400,21 +415,23 @@ namespace SaveSystemTests
         {
             if (ReqSaveSystem)
             {
+                DeleteAllTestSaves();
                 SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
                 if (SaveSystem.SaveManager != null)
                     SaveSystem.ClearSaveDataAppliers();
             }
 
+            ResetSingletonStaticsForSetUp();
             UnregisterTestOnlyUids();
-            if (ReqSaveSystem && SaveSystem.SaveManager != null)
-                DeleteAllTestSaves();
+            
             CleanupTrackedSaveFiles();
             DestroyRegisteredObjects();
-            ResetSingletonStatics();
-
+            
             writeReq.MainState = new CompositeSaveData();
             testOnlyFlowcharts.Clear();
             testOnlyVarSourceAssets.Clear();
+
+            saveSysInstallEvent = null;
         }
 
         protected virtual void CleanupTrackedSaveFiles()
@@ -459,8 +476,11 @@ namespace SaveSystemTests
         public virtual void DoOneTimeTearDown()
         {
             if (ShouldDeleteTestSavesAtEnd && ReqSaveSystem && SaveSystem.SaveManager != null)
+            {
                 DeleteAllTestSaves();
+            }
 
+            SaveSystem.ResetStaticsForTest();
             ResetRelativeSavePaths();
             DestroyResidualSceneAndManager();
         }

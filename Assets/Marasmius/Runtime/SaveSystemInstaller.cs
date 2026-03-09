@@ -7,22 +7,14 @@ namespace AtMycelia.SaveSys
     /// Injects the save system's dependencies and handles the initialization of the SaveSystem singleton. 
     /// This is separate from the SaveSystemBootstrapper.
     /// </summary>
-    public class SaveSystemInstaller
+    public class SaveSystemInstaller : ISaveSystemInstaller
     {
-        public virtual void Init()
+        public virtual void Init(SaveSystemInstallContext context = null)
         {
             if (IsFullyInitted)
             {
                 return;
             }
-
-            bool otherInstallerAlreadyThere = S != null && S != this;
-            if (otherInstallerAlreadyThere)
-            {
-                return; // We expect the AmanitaManager to handle destroying this if needed
-            }
-
-            S = this;
 
             if (!Application.isPlaying)
             {
@@ -31,8 +23,14 @@ namespace AtMycelia.SaveSys
             }
 
             #region Load settings and correct them as needed
-            string pathToSysSettings = "SaveSys/Settings/SaveSystemSettings"; // Relative to the Resources folder
-            sysSettings = Resources.Load<SaveSystemSettings>(pathToSysSettings);
+            string pathToSysSettings = SaveSysConstants.PathToSaveSysSettings;
+            sysSettings = context?.SettingsOverride;
+            if (sysSettings == null)
+            {
+                sysSettings = Resources.Load<SaveSystemSettings>(pathToSysSettings);
+                Debug.Log("Using default save sys settings");
+                // ^Default asset in the project
+            }
             if (sysSettings == null)
             {
                 Debug.LogError($"[{nameof(SaveSystemInstaller)}] No SaveSystemSettings found at " +
@@ -95,9 +93,11 @@ namespace AtMycelia.SaveSys
                     PrepRepo();
                     void PrepRepo()
                     {
-                        SaveStorageSettings defaultSettings = DefaultSaveSysAssets.SaveStorageSettings;
-                        var resolver = new DefaultSavePathResolver();
-                        resolver.StorageSettings = defaultSettings;
+                        SaveStorageSettings storage = sysSettings.StorageSettings;
+                        var resolver = new DefaultSavePathResolver
+                        {
+                            StorageSettings = storage
+                        };
                         SaveRepo = new FileSaveRepository(sysSettings.SaveReader, sysSettings.SaveWriter,
                             sysSettings.StorageSettings.DirectoryType, resolver);
                     }
@@ -132,57 +132,11 @@ namespace AtMycelia.SaveSys
         }
         protected bool initted = false;
 
-        public static SaveSystemInstaller S
-        {
-            get { return _s; }
-            set
-            {
-                _s = value;
-            }
-        }
-        protected static SaveSystemInstaller _s;
-        public ISaveReader SaveReader
-        {
-            get
-            {
-                if (sysSettings == null)
-                {
-                    return null;
-                }
-
-                return sysSettings.SaveReader;
-            }
-
-        }
-        public static SaveDirectoryType SaveDirectoryType { get; private set; }
-        public static IMetaFactory MetaFactory { get; private set; }
-        public static IMainStateFactory MainStateFactory { get; private set; }
-        public static SaveRegistry Registry { get; private set; }
-        public static SaveLoader Loader { get; private set; }
-        public static ISaveRepository SaveRepo { get; private set; }
-        public static ISaveManager SaveManager { get; private set; }
-
-        protected virtual void OnDestroy()
-        {
-            if (S == this)
-            {
-                S = null;
-            }
-        }
-
-        public static void ResetStaticsForTest()
-        {
-            SaveDirectoryType = SaveDirectoryType.DataPath;
-            MetaFactory = null;
-            MainStateFactory = null;
-            Registry = null;
-            Loader = null;
-            SaveRepo = null;
-            SaveManager = null;
-
-            // If we reset the statics for AmanitaManger after calling this func, then this func 
-            // should work as intended
-            S = null;
-        }
+        public IMetaFactory MetaFactory { get; private set; }
+        public IMainStateFactory MainStateFactory { get; private set; }
+        public SaveRegistry Registry { get; private set; }
+        public SaveLoader Loader { get; private set; }
+        public ISaveRepository SaveRepo { get; private set; }
+        public ISaveManager SaveManager { get; private set; }
     }
 }

@@ -1,4 +1,3 @@
-using AtMycelia.Amanita.Myceliaudio;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using UnityEngine.EventSystems;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita;
 using AtMycelia.SaveSys;
+using AtMycelia.Amanita.Myceliaudio;
 
 namespace VScriptingTests.MuscariableTests
 {
@@ -41,9 +41,22 @@ namespace VScriptingTests.MuscariableTests
                 if (AmanitaManager.S != ammyManager)
                     Debug.LogError("AmanitaManager.S was not set correctly!");
 
-                SaveSystemInstaller installer = ammyManager.GetComponentInChildren<SaveSystemInstaller>();
-                SaveSystemInstaller.S = installer;
+                SaveStorageSettings storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
+                storageSettings.RelativePath = "TestSaves";
 
+                SaveWriter saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
+                SaveReader saveReader = ScriptableObject.CreateInstance<SaveReader>();
+                saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
+
+                var testInstaller = new TestSaveSystemInstaller
+                {
+                    StorageSettings = storageSettings,
+                    SaveReaderOverride = saveReader,
+                    SaveWriterOverride = saveWriter
+                };
+
+                SaveSystemBootstrapper.Installer = testInstaller;
+                SaveSystemBootstrapper.InstallContext = null;
             }
 
             if (ReqSceneLoad)
@@ -57,7 +70,7 @@ namespace VScriptingTests.MuscariableTests
         protected virtual void ResetSingletonStatics()
         {
             SaveSystem.ResetStaticsForTest();
-            SaveSystemInstaller.ResetStaticsForTest();
+            SaveSystemBootstrapper.ResetStaticsForTest();
             Flowchart.ResetStaticsForTest();
             AmanitaManager.ResetStaticsForTest();
             AudioSystem.ResetStaticsForTest();
