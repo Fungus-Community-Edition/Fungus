@@ -45,7 +45,7 @@ namespace SaveSystemTests
         protected SaveWriter saveWriter;
         protected SaveReader saveReader;
         protected Encryptor encryptor;
-        protected SaveStorageSettings storageSettings;
+        protected SaveStorageSettings testStorageSettings;
 
         // ---- Codecs / Appliers ----
         protected FlowchartSaveCodec flowchartSaveCodec;
@@ -201,31 +201,28 @@ namespace SaveSystemTests
             if (AmanitaManager.S != ammyManager)
                 Debug.LogError("AmanitaManager.S was not set correctly!");
 
-            storageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-            storageSettings.RelativePath = "TestSaves";
+            testStorageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
+            testStorageSettings.RelativePath = "TestSaves";
 
-            testPathResolver.StorageSettings = storageSettings;
-            otherTestPathResolver.StorageSettings = storageSettings;
-
-            DeleteAllTestSaves();
+            testPathResolver.StorageSettings = testStorageSettings;
+            otherTestPathResolver.StorageSettings = testStorageSettings;
 
             saveWriter = ScriptableObject.CreateInstance<SaveWriter>();
             saveReader = ScriptableObject.CreateInstance<SaveReader>();
-            saveWriter.StorageSettings = saveReader.StorageSettings = storageSettings;
+            saveWriter.StorageSettings = saveReader.StorageSettings = testStorageSettings;
             encryptor = ScriptableObject.CreateInstance<Encryptor>();
 
             var testInstaller = new TestSaveSystemInstaller
             {
-                StorageSettings = storageSettings,
+                StorageSettings = testStorageSettings,
                 SaveReaderOverride = saveReader,
                 SaveWriterOverride = saveWriter
             };
 
             SaveSystemBootstrapper.Installer = testInstaller;
             SaveSystemBootstrapper.InstallContext = null;
-            testInstaller.Init();
 
-            saveManager = SaveSystem.SaveManager;
+            SaveSystem.SavePathResolver = testPathResolver;
         }
 
         private void InitReadRequestFromWriteRequest()
@@ -317,7 +314,7 @@ namespace SaveSystemTests
             toDestroyInTearDown.Add(encryptor);
             toDestroyInTearDown.Add(saveWriter);
             toDestroyInTearDown.Add(saveReader);
-            toDestroyInTearDown.Add(storageSettings);
+            toDestroyInTearDown.Add(testStorageSettings);
             if (AmanitaManager.S != null)
             {
                 toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
@@ -372,6 +369,14 @@ namespace SaveSystemTests
                         countdown.Signal();
                     });
                     countdown.Wait();
+                }
+            }
+            //saveReader.PathResolver = saveWriter.PathResolver = testPathResolver;
+            if (ReqSaveSystem)
+            {
+                while (!SaveSystem.FullyInitted)
+                {
+                    await Task.Delay(50).ConfigureAwait(false);
                 }
             }
         }

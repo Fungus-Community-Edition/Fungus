@@ -29,8 +29,6 @@ namespace AtMycelia.SaveSys
             }
         }
 
-        
-
         private IConfigurableSaveSlotPathResolver pathResolver;
         public FileSaveRepository(ISaveReader saveReader, ISaveWriter saveWriter,
             SaveDirectoryType saveDir, IConfigurableSaveSlotPathResolver resolver = null)

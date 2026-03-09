@@ -22,7 +22,7 @@ namespace SaveSystemTests
             base.DoSetUp();
             
             saveReaderFallback = ScriptableObject.CreateInstance<TestSaveReader>();
-            saveReaderFallback.StorageSettings = storageSettings;
+            saveReaderFallback.StorageSettings = testStorageSettings;
         }
 
         protected TestSaveReader saveReaderFallback;

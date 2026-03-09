@@ -34,6 +34,7 @@ namespace AtMycelia.SaveSys
                 {
                     throw new System.ArgumentNullException(nameof(value), "Name settings cannot be null.");
                 }
+                pathResolver.RelativePath = value.RelativePath;
                 storageSettings = value;
             }
         }

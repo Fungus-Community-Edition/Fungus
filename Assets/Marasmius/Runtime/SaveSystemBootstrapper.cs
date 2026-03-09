@@ -83,6 +83,12 @@ namespace AtMycelia.SaveSys
                 Installer.Init(InstallContext);
             }
 
+            SaveSystem.Init();
+            // ^We only want to init the save system after the installers managed to inject 
+            // their dependencies. We don't want the installers themselves to init the save
+            // sys, since that would block others from injecting their dependencies if they
+            // run after the first installer.
+
             UnityObj.Destroy(_tempMb.gameObject);
         }
 

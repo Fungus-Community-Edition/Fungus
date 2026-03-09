@@ -118,7 +118,6 @@ namespace AtMycelia.SaveSys
                 SaveSystem.RegisterSaveDataAppliersMulti(appliers);
             }
 
-            SaveSystem.Init();
             IsFullyInitted = true;
             SaveSysSignals.BaseSaveSysInstallationComplete();
         }

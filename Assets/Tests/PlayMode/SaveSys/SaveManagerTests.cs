@@ -56,7 +56,9 @@ namespace SaveSystemTests
 
             await manager.SaveToSlotAsync(slot).ConfigureAwait(false);
 
-            Assert.IsTrue(File.Exists(expectedPath), $"Save at slot {slot} does not exist.");
+            bool success = File.Exists(expectedPath);
+            Assert.IsTrue(success, $"Save at slot {slot} does not exist at {expectedPath}");
+            Debug.Log($"Successfully wrote save at slot {slot} to path {expectedPath}");
         }
 
         [UnityTest]
