@@ -5,6 +5,7 @@ using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using AtMycelia.FSExt;
 using AtMycelia.SaveSys;
+using Type = System.Type;
 
 namespace AtMycelia.Amanita.SaveSys
 {
@@ -13,39 +14,24 @@ namespace AtMycelia.Amanita.SaveSys
     /// like it when you try to mess with Vector or Transform properties from a different thread.
     /// </summary>
     [VarCodec(true, typeof(TransformVariable), typeof(TransformMuscariable))]
-    public class TransformVarCodec : fsDirectConverter<Transform>, IVarCodec, 
+    public class TransformVarCodec : VarCodec, IVarCodec, 
         IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
-        public virtual bool CanHandle(IVariable variable)
-        {
-            return variable is IVariable<Transform>;
-        }
+        protected override IReadOnlyList<Type> SupportedContentTypes => (IReadOnlyList<Type>)_supportedContentTypes;
 
-        public virtual bool CanHandle(string typeName)
+        private static readonly IList<Type> _supportedContentTypes = new Type[]
         {
-            return typeName == nameof(TransformVariable) ||
-                typeName == nameof(TransformMuscariable);
-        }
+            typeof(Transform)
+        };
 
-        public virtual bool CanHandle(VariableSaveData saveData)
+        public override string EncodeToString(IVariable toEncode)
         {
-            return CanHandle(saveData.VarTypeName);
-        }
-
-        public virtual VariableSaveData EncodeToSave(IVariable variable)
-        {
-            VariableSaveData result = new()
+            if (!CanHandle(toEncode))
             {
-                VarTypeName = variable.GetType().Name,
-                ItemId = variable.ItemId,
-                Key = variable.Key,
-                Value = EncodeToString(variable)
-            };
-            return result;
-        }
+                Debug.LogError($"TransformVarEncoder: Cannot encode variable of type {toEncode.GetType()}");
+                return string.Empty;
+            }
 
-        public virtual string EncodeToString(IVariable toEncode)
-        {
             Transform varValue = null;
             if (toEncode is IVariable<Transform> transformVar)
             {
@@ -82,31 +68,14 @@ namespace AtMycelia.Amanita.SaveSys
 
             // Use the shared serializer, not the converter's injected one (which is null outside FS pipeline).
             string json;
-            var fs = SaveSystem.DefaultSerializer;
-            lock (fs)
+            lock (Serializer)
             {
-                json = fs.ToJson(stateToEncode, true);
+                json = Serializer.ToJson(stateToEncode, true);
             }
             return json;
         }
 
-        public virtual void ApplyState(IVariable variable, object data)
-        {
-            if (data is string strData)
-            {
-                ApplyState(variable, strData);
-            }
-            else if (data is VariableSaveData saveData)
-            {
-                ApplyState(variable, saveData);
-            }
-            else
-            {
-                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
-            }
-        }
-
-        public virtual void ApplyState(IVariable variable, string data)
+        public override void ApplyState(IVariable variable, string data)
         {
             if (variable is not IVariable<Transform> transformVar)
             {
@@ -115,14 +84,13 @@ namespace AtMycelia.Amanita.SaveSys
             }
 
             TransformState state;
-            var fs = SaveSystem.DefaultSerializer;
-            lock (fs)
+            lock (Serializer)
             {
-                state = fs.FromJson<TransformState>(data);
+                state = Serializer.FromJson<TransformState>(data);
             }
             state.OnDeserialize();
 
-            Transform toApplyTo = FindTheRightTransformBasedOn(state);
+            Transform toApplyTo = DecodeTo<Transform>(data);
             transformVar.Value = toApplyTo;
 
             if (toApplyTo == null)
@@ -159,7 +127,7 @@ namespace AtMycelia.Amanita.SaveSys
             return whatWeFound;
         }
 
-        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
+        public override void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             IVariable<Transform> transformVar = variable as IVariable<Transform>;
             if (transformVar == null)
@@ -168,7 +136,7 @@ namespace AtMycelia.Amanita.SaveSys
                 return;
             }
 
-            if (saveData.VarTypeName != variable.GetType().Name)
+            if (saveData.ContentTypeName != typeof(Transform).Name)
             {
                 Debug.LogError($"TransformVarEncoder: Cannot decode variable of type {variable.GetType()} with data of type {saveData.VarTypeName}");
                 return;
@@ -176,15 +144,14 @@ namespace AtMycelia.Amanita.SaveSys
             ApplyState(variable, saveData.Value);
         }
 
-        public virtual T DecodeTo<T>(string data)
+        public override T DecodeTo<T>(string dataJson)
         {
             if (typeof(T) == typeof(Transform))
             {
                 TransformState state;
-                var fs = SaveSystem.DefaultSerializer;
-                lock (fs)
+                lock (Serializer)
                 {
-                    state = fs.FromJson<TransformState>(data);
+                    state = Serializer.FromJson<TransformState>(dataJson);
                 }
                 state.OnDeserialize();
                 return (T)(object)FindTheRightTransformBasedOn(state);
@@ -195,8 +162,11 @@ namespace AtMycelia.Amanita.SaveSys
                 return default;
             }
         }
+    }
 
-        // Below: these run inside the FS pipeline; using SerializeMember/DeserializeMember is correct.
+    // FullSerializer pipeline converter for Transform.
+    public class TransformConverter : fsDirectConverter<Transform>
+    {
         protected override fsResult DoSerialize(Transform model, Dictionary<string, fsData> serialized)
         {
             TransformState tFormState = TransformState.From(model);
@@ -216,6 +186,4 @@ namespace AtMycelia.Amanita.SaveSys
             return fsResult.Success;
         }
     }
-
-    
 }

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Type = System.Type;
 using UnityEngine;
+using FullSerializer;
+using AtMycelia.SaveSys;
 
 namespace AtMycelia.Amanita.SaveSys
 {
@@ -91,5 +93,7 @@ namespace AtMycelia.Amanita.SaveSys
                 Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
             }
         }
+
+        protected static fsSerializer Serializer => SaveSystem.DefaultSerializer;
     }
 }

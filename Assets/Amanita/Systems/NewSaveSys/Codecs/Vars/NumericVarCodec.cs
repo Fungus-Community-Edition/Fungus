@@ -1,7 +1,6 @@
 using AtMycelia.Amanita.VScripting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace AtMycelia.Amanita.SaveSys
@@ -9,12 +8,6 @@ namespace AtMycelia.Amanita.SaveSys
     [VarCodec(true, typeof(IntegerVariable), typeof(FloatVariable), typeof(IntMuscariable), typeof(FloatMuscariable))]
     public class NumericVarCodec : VarCodec, IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
-        protected static Type[] supportedVarTypes = new Type[]
-        {
-            typeof(IVariable<int>),
-            typeof(IVariable<float>)
-        };
-
         protected override IReadOnlyList<Type> SupportedContentTypes => (IReadOnlyList<Type>)_supportedContentTypes;
 
         private static readonly IList<Type> _supportedContentTypes = new Type[]

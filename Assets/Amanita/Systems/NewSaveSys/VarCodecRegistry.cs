@@ -118,7 +118,16 @@ namespace AtMycelia.Amanita.SaveSys
 
         public static IVarCodec GetCodec(string typeName)
         {
-            var result = codecs.Find(toCheck => toCheck.CanHandle(typeName));
+            IVarCodec result = null;
+            for (int i = 0; i < codecs.Count; i++)
+            {
+                IVarCodec toCheck = codecs[i];
+                if (toCheck.CanHandle(typeName))
+                {
+                    result = toCheck;
+                    break;
+                }
+            }
             return result;
         }
 

@@ -58,7 +58,7 @@ namespace AtMycelia.Amanita.SaveSys
             
             if (foundVar != null)
             {
-                IVarCodec codec = VarCodecRegistry.GetCodec(foundVar.VarTypeName);
+                IVarCodec codec = VarCodecRegistry.GetCodec(foundVar.ContentTypeName);
                 if (codec != null)
                 {
                     result = codec.DecodeTo<T>(foundVar.Value);

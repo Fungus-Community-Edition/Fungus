@@ -1,10 +1,11 @@
 using AtMycelia.Amanita.VScripting;
-using System.Linq;
-using System;
-using UnityEngine;
-using FullSerializer;
 using AtMycelia.FSExt;
 using AtMycelia.SaveSys;
+using FullSerializer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace AtMycelia.Amanita.SaveSys
 {
@@ -14,28 +15,18 @@ namespace AtMycelia.Amanita.SaveSys
     [Serializable]
     [VarCodec(true, typeof(Vector2Variable), typeof(Vector3Variable), 
         typeof(VectorTwoMuscariable), typeof(VectorThreeMuscariable))]
-    public class VectorVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
+    public class VectorVarCodec : VarCodec, IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
-        public virtual bool CanHandle(IVariable variable) =>
-            variable is IVariable<Vector2> || variable is IVariable<Vector3>;
+        protected override IReadOnlyList<Type> SupportedContentTypes => (IReadOnlyList<Type>)_supportedContentTypes;
 
-        public virtual bool CanHandle(string typeName) =>
-            supportedVarTypes.Any(type => type.Name == typeName);
-
-        protected static Type[] supportedVarTypes = new Type[]
+        private static readonly IList<Type> _supportedContentTypes = new Type[]
         {
-            typeof(Vector2Variable),
-            typeof(Vector3Variable),
-            typeof(VectorTwoMuscariable),
-            typeof(VectorThreeMuscariable),
+            typeof(Vector2),
+            typeof(Vector3),
         };
 
-        public virtual bool CanHandle(VariableSaveData saveData)
-        {
-            return supportedVarTypes.Any(type => type.Name == saveData.VarTypeName);
-        }
 
-        public virtual string EncodeToString(IVariable variable)
+        public override string EncodeToString(IVariable variable)
         {
             fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
@@ -58,36 +49,20 @@ namespace AtMycelia.Amanita.SaveSys
             }
         }
 
-        public virtual void ApplyState(IVariable variable, object data)
-        {
-            if (data is string strData)
-            {
-                ApplyState(variable, strData);
-            }
-            else if (data is VariableSaveData saveData)
-            {
-                ApplyState(variable, saveData);
-            }
-            else
-            {
-                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
-            }
-        }
 
-        public virtual void ApplyState(IVariable variable, string data)
+        public override void ApplyState(IVariable variable, string data)
         {
-            fsSerializer serializer = SaveSystem.DefaultSerializer;
-            lock (serializer)
+            lock (Serializer)
             {
                 // We assume that data is a Vector2State or Vector3State serialized as JSON.
                 if (variable is IVariable<Vector2> vecTwoVar)
                 {
-                    Vector2State vecState = serializer.FromJson<Vector2State>(data);
+                    Vector2State vecState = Serializer.FromJson<Vector2State>(data);
                     vecTwoVar.Value = vecState.ToVector2();
                 }
                 else if (variable is IVariable<Vector3> vecThreeVar)
                 {
-                    Vector3State vecState = serializer.FromJson<Vector3State>(data);
+                    Vector3State vecState = Serializer.FromJson<Vector3State>(data);
                     vecThreeVar.Value = vecState.ToVector3();
                 }
                 else
@@ -97,7 +72,7 @@ namespace AtMycelia.Amanita.SaveSys
             }
         }
     
-        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
+        public override void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = variable is IVariable<Vector2> ||
                 variable is IVariable<Vector3>;
@@ -109,41 +84,20 @@ namespace AtMycelia.Amanita.SaveSys
             ApplyState(variable, saveData.Value);
         }
 
-        public virtual VariableSaveData EncodeToSave(IVariable variable)
-        {
-            string data = EncodeToString(variable);
-            if (string.IsNullOrEmpty(data))
-            {
-                Debug.LogError($"Failed to encode variable {variable} in {this.GetType().Name}.");
-                return VariableSaveData.Null;
-            }
-
-            VariableSaveData result = new()
-            {
-                VarTypeName = variable.GetType().Name,
-                ItemId = variable.ItemId,
-                Key = variable.Key,
-                Value = data,
-            };
-
-            return result;
-        }
-
-        public virtual T DecodeTo<T>(string data)
+        public override T DecodeTo<T>(string data)
         {
             // Again, we assume that the data is a Vector2State or Vector3State serialized as JSON.
             T result = default;
-            fsSerializer serializer = SaveSystem.DefaultSerializer;
-            lock (serializer)
+            lock (Serializer)
             {
                 if (typeof(T) == typeof(Vector2))
                 {
-                    Vector2State vecState = serializer.FromJson<Vector2State>(data);
+                    Vector2State vecState = Serializer.FromJson<Vector2State>(data);
                     result = (T)(object)vecState.ToVector2();
                 }
                 else if (typeof(T) == typeof(Vector3))
                 {
-                    Vector3State vecState = serializer.FromJson<Vector3State>(data);
+                    Vector3State vecState = Serializer.FromJson<Vector3State>(data);
                     result = (T)(object)vecState.ToVector3();
                 }
             }
