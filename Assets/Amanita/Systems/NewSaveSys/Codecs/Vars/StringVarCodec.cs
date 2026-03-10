@@ -1,6 +1,5 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
-using AtMycelia.SaveSys;
 
 namespace AtMycelia.Amanita.SaveSys
 {

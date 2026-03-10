@@ -1,72 +1,82 @@
-using System;
-using UnityEngine;
 using AtMycelia.Amanita.VScripting;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.SaveSys;
+using UnityEngine;
 
 namespace AtMycelia.Amanita.SaveSys
 {
     [VarCodec(true, typeof(IntegerVariable), typeof(FloatVariable), typeof(IntMuscariable), typeof(FloatMuscariable))]
-    public class NumericVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
+    public class NumericVarCodec : VarCodec, IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
-        public virtual bool CanHandle(IVariable variable) =>
-            supportedVarTypes.Contains(variable.GetType());
-
         protected static Type[] supportedVarTypes = new Type[]
         {
-            typeof(IntegerVariable),
-            typeof(FloatVariable),
-            typeof(IntMuscariable),
-            typeof(FloatMuscariable),
+            typeof(IVariable<int>),
+            typeof(IVariable<float>)
         };
 
-        public virtual bool CanHandle(string typeName) =>
-            supportedVarTypes.Any(type => type.Name == typeName);
+        protected override IReadOnlyList<Type> SupportedContentTypes => (IReadOnlyList<Type>)_supportedContentTypes;
 
-        public virtual bool CanHandle(VariableSaveData saveData) =>
-            CanHandle(saveData.VarTypeName);
-
-        public virtual string EncodeToString(IVariable variable) => variable switch
+        private static readonly IList<Type> _supportedContentTypes = new Type[]
         {
-            IVariable<int> intVar => intVar.Value.ToString(),
-            IVariable<float> floatVar => floatVar.Value.ToString(roundTripFormat),
-            _ => throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarCodec.")
+            typeof(int),
+            typeof(float)
         };
 
-        protected static string roundTripFormat = "R";
-        // ^ This is to make sure that when we convert a float to a string and then
-        // back to a float, we get the exact same value.
-        // We want to decode things as accurately as possible, so...
-
-        public virtual VariableSaveData EncodeToSave(IVariable variable)
+        public override string EncodeToString(IVariable variable)
         {
-            VariableSaveData result = new()
+            if (!CanHandle(variable))
             {
-                VarTypeName = variable.GetType().Name,
-                ItemId = variable.ItemId,
-                Key = variable.Key,
-                Value = EncodeToString(variable)
-            };
+                throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarCodec.");
+            }
+            
+            string result = "";
+            if (variable is IVariable<int> intVar)
+            {
+                result = intVar.Value.ToString();
+            }
+            else if (variable is IVariable<float> floatVar)
+            {
+                result = floatVar.Value.ToString(roundTripFormat, System.Globalization.CultureInfo.InvariantCulture);
+            }
+
             return result;
         }
 
-        public virtual void ApplyState(IVariable variable, object data)
+        public override VariableSaveData EncodeToSave(IVariable variable)
         {
-            if (data is string strData)
-            {
-                ApplyState(variable, strData);
-            }
-            else if (data is VariableSaveData saveData)
-            {
-                ApplyState(variable, saveData);
-            }
+            string typeName = "";
+            if (variable is IVariable<int>)
+                typeName = typeof(IVariable<int>).Name;
+            else if (variable is IVariable<float>)
+                typeName = typeof(IVariable<float>).Name;
             else
-            {
-                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in NumericVarEncoder.");
-            }
+                throw new InvalidOperationException($"Variable type {variable.GetType()} is not supported for encoding in NumericVarCodec.");
+
+            VariableSaveData result = base.EncodeToSave(variable);
+            result.VarTypeName = typeName;
+            return result;
         }
 
-        public virtual void ApplyState(IVariable variable, string data)
+        //public override void ApplyState(IVariable variable, object data)
+        //{
+        //    if (data is string strData)
+        //    {
+        //        IVarStateApplier<string> stringApplier = this as IVarStateApplier<string>;
+        //        stringApplier.ApplyState(variable, strData);
+        //    }
+        //    else if (data is VariableSaveData saveData)
+        //    {
+        //        IVarStateApplier<VariableSaveData> saveDataApplier = this as IVarStateApplier<VariableSaveData>;
+        //        saveDataApplier.ApplyState(variable, saveData);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError($"Data type {data.GetType()} is not supported for decoding in NumericVarEncoder.");
+        //    }
+        //}
+
+        public override void ApplyState(IVariable variable, string data)
         {
             if (variable is IVariable<int> intVar)
                 intVar.Value = int.Parse(data);
@@ -78,7 +88,7 @@ namespace AtMycelia.Amanita.SaveSys
             }
         }
 
-        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
+        public override void ApplyState(IVariable variable, VariableSaveData saveData)
         {
             bool validVarType = variable is IVariable<int> ||
                 variable is IVariable<float>;
@@ -92,14 +102,15 @@ namespace AtMycelia.Amanita.SaveSys
             ApplyState(variable, saveData.Value);
         }
 
-        public virtual T DecodeTo<T>(string data)
+        public override T DecodeTo<T>(string data)
         {
             T result = default;
-            if (typeof(T) == typeof(int))
+            Type tType = typeof(T);
+            if (tType == typeof(int))
             {
                 result = (T)(object)int.Parse(data);
             }
-            else if (typeof(T) == typeof(float))
+            else if (tType == typeof(float))
             {
                 result = (T)(object)float.Parse(data, System.Globalization.CultureInfo.InvariantCulture);
             }

@@ -1,6 +1,5 @@
-using UnityEngine;
 using AtMycelia.Amanita.VScripting;
-using AtMycelia.SaveSys;
+using UnityEngine;
 
 namespace AtMycelia.Amanita.SaveSys
 {
@@ -23,13 +22,8 @@ namespace AtMycelia.Amanita.SaveSys
 
         public virtual VariableSaveData EncodeToSave(IVariable variable)
         {
-            VariableSaveData result = new()
-            {
-                VarTypeName = variable.GetType().Name,
-                ItemId = variable.ItemId,
-                Key = variable.Key,
-                Value = EncodeToString(variable)
-            };
+            string val = EncodeToString(variable);
+            VariableSaveData result = VariableSaveData.From(variable, val);
             return result;
         }
 
@@ -108,7 +102,6 @@ namespace AtMycelia.Amanita.SaveSys
             }
             return (T)(object)value;
         }
-
 
     }
 }

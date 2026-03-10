@@ -1,11 +1,11 @@
 using AtMycelia.Amanita.VScripting;
-using System.Linq;
 using System;
 using UnityEngine;
 using FullSerializer;
 using AtMycelia.FSExt;
 using Lorekeeper;
 using AtMycelia.SaveSys;
+using System.Collections.Generic;
 
 namespace AtMycelia.Amanita.SaveSys
 {
@@ -14,43 +14,23 @@ namespace AtMycelia.Amanita.SaveSys
     /// </summary>
     [Serializable]
     [VarCodec(true, typeof(AudioClipVariable), typeof(AudioClipMuscariable))]
-    public class AudioClipVarCodec : IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
+    public class AudioClipVarCodec : VarCodec, IVarCodec, IVarStateApplier<VariableSaveData>, IVarStateApplier<string>
     {
-        public virtual bool CanHandle(IVariable variable) => variable is IVariable<AudioClip>;
-
-        public virtual bool CanHandle(string typeName)
+        protected override IReadOnlyList<Type> SupportedContentTypes => (IReadOnlyList<Type>)_supportedContentTypes;
+        private static readonly IList<Type> _supportedContentTypes = new Type[]
         {
-            bool result = TypeNameFitsWhatWeSupport(typeName);
-            return result;
-        }
-
-        private static bool TypeNameFitsWhatWeSupport(string typeName)
-        {
-            bool result = supportedVarTypes.Any(supported => supported.Name.Equals(typeName,
-                StringComparison.OrdinalIgnoreCase));
-            return result;
-        }
-
-        protected static Type[] supportedVarTypes = new Type[]
-        {
-            typeof(AudioClipVariable),
-            typeof(AudioClipMuscariable)
+            typeof(AudioClip)
         };
 
-        public virtual bool CanHandle(VariableSaveData saveData)
+        public override string EncodeToString(IVariable variable)
         {
-            bool result = TypeNameFitsWhatWeSupport(saveData.VarTypeName);
-            return result;
-        }
-        
-        public virtual string EncodeToString(IVariable variable)
-        {
-            if (variable is not IVariable<AudioClip> audioClipVar)
+            if (!CanHandle(variable))
             {
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for " +
                     $"encoding in {this.GetType().Name}.");
                 return string.Empty;
             }
+            IVariable<AudioClip> audioClipVar = variable as IVariable<AudioClip>;
             lock (Serializer)
             {
                 AudioClipState audioClipState = From(audioClipVar.Value);
@@ -58,31 +38,16 @@ namespace AtMycelia.Amanita.SaveSys
             }
         }
 
-        public virtual void ApplyState(IVariable toApplyTo, object data)
+        public override void ApplyState(IVariable variable, string stringData)
         {
-            if (data is string strData)
-            {
-                ApplyState(toApplyTo, strData);
-            }
-            else if (data is VariableSaveData saveData)
-            {
-                ApplyState(toApplyTo, saveData);
-            }
-            else
-            {
-                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
-            }
-        }
-
-        public virtual void ApplyState(IVariable variable, string stringData)
-        {
-            if (variable is not IVariable<AudioClip> audioClipVar)
+            if (!CanHandle(variable))
             {
                 Debug.LogError($"Variable type {variable.GetType()} is not supported for decoding " +
                     $"in {this.GetType().Name}.");
                 return;
             }
 
+            IVariable<AudioClip> audioClipVar = variable as IVariable<AudioClip>;
             lock (Serializer)
             {
                 // We assume that the string is a AudioClipState serialized as JSON.
@@ -132,9 +97,9 @@ namespace AtMycelia.Amanita.SaveSys
             return result;
         }
 
-        public virtual void ApplyState(IVariable variable, VariableSaveData saveData)
+        public override void ApplyState(IVariable variable, VariableSaveData saveData)
         {
-            bool validVarType = variable is IVariable<AudioClip>;
+            bool validVarType = CanHandle(variable);
             if (!validVarType)
             {
                 Debug.LogError($"Variable type {saveData.VarTypeName} is not supported for " +
@@ -144,27 +109,7 @@ namespace AtMycelia.Amanita.SaveSys
             ApplyState(variable, saveData.Value);
         }
 
-        public virtual VariableSaveData EncodeToSave(IVariable variable)
-        {
-            string data = EncodeToString(variable);
-            if (string.IsNullOrEmpty(data))
-            {
-                Debug.LogError($"Failed to encode variable {variable} in {this.GetType().Name}.");
-                return VariableSaveData.Null;
-            }
-
-            VariableSaveData result = new()
-            {
-                VarTypeName = variable.GetType().Name,
-                ItemId = variable.ItemId,
-                Key = variable.Key,
-                Value = data,
-            };
-
-            return result;
-        }
-
-        public virtual T DecodeTo<T>(string data)
+        public override T DecodeTo<T>(string data)
         {
             // Again, we assume that the data is a AudioClipState serialized as JSON.
             T result = default;

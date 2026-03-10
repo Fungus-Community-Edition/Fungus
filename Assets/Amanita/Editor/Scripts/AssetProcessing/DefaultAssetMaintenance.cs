@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.Tweening;
-using AtMycelia;
 
 namespace AtMycelia.Amanita.EditorUtils
 {

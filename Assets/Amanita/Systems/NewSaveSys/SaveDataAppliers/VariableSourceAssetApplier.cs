@@ -24,7 +24,8 @@ namespace AtMycelia.Amanita.SaveSys
 
         public override void Apply(VariableSourceAssetSaveData saveData)
         {
-            VariableSourceAsset toApplyTo = variableSourceAssets.Where((elem) => elem.UniqueId == saveData.UniqueId).FirstOrDefault();
+            VariableSourceAsset toApplyTo = variableSourceAssets.Where((elem) => elem.UniqueId == saveData.UniqueId)
+                .FirstOrDefault();
             if (toApplyTo == null)
             {
                 Debug.LogWarning($"No VariableSourceAsset with AssetId {saveData.UniqueId} was found to apply save data to.");

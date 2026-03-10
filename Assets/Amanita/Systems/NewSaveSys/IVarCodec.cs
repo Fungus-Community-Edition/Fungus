@@ -2,9 +2,8 @@ using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.SaveSys
 {
-    public interface IVarCodec
+    public interface IVarCodec : IVarStateApplier
     {
-        bool CanHandle(IVariable variable);
         bool CanHandle(string typeName);
         bool CanHandle(VariableSaveData variable);
         string EncodeToString(IVariable variable);

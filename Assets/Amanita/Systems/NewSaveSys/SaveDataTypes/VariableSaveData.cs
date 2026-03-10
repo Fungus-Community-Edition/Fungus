@@ -8,6 +8,7 @@ namespace AtMycelia.Amanita.SaveSys
     public class VariableSaveData : SaveData
     {
         [SerializeField] protected string varTypeName = string.Empty;
+        [SerializeField] protected string contentTypeName = string.Empty;
         [SerializeField] protected byte itemID = Variable.InvalidID;
         [SerializeField] protected string key = string.Empty;
         [SerializeField] protected string value = string.Empty;
@@ -20,6 +21,12 @@ namespace AtMycelia.Amanita.SaveSys
         {
             get => varTypeName;
             set => varTypeName = value;
+        }
+
+        public virtual string ContentTypeName
+        {
+            get => contentTypeName;
+            set => contentTypeName = value;
         }
 
         public byte ItemId
@@ -69,5 +76,21 @@ namespace AtMycelia.Amanita.SaveSys
             key = "null",
             value = "null"
         };
+
+        public void SetFrom(IVariable variable, string value)
+        {
+            this.VarTypeName = variable.GetType().Name;
+            this.ContentTypeName = variable.ContentType.Name;
+            this.ItemId = variable.ItemId;
+            this.Key = variable.Key;
+            this.Value = value;
+        }
+
+        public static VariableSaveData From(IVariable variable, string value)
+        {
+            VariableSaveData saveData = new();
+            saveData.SetFrom(variable, value);
+            return saveData;
+        }
     }
 }

@@ -1,6 +1,5 @@
 using AtMycelia.Amanita.VScripting;
 using UnityEngine;
-using AtMycelia.SaveSys;
 using AtMycelia.Amanita.SaveSys;
 
 namespace SaveSystemTests
@@ -70,6 +69,22 @@ namespace SaveSystemTests
                 Key = variable.Key,
                 Value = EncodeToString(variable)
             };
+        }
+
+        public void ApplyState(IVariable toApplyTo, object data)
+        {
+            if (data is string strData)
+            {
+                ApplyState(toApplyTo, strData);
+            }
+            else if (data is VariableSaveData saveData)
+            {
+                ApplyState(toApplyTo, saveData);
+            }
+            else
+            {
+                Debug.LogError($"Data type {data.GetType()} is not supported for decoding in {this.GetType().Name}.");
+            }
         }
     }
 

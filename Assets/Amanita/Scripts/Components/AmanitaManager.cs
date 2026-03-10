@@ -11,10 +11,6 @@ using AtMycelia.SaveSys.UI;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
-using System.Threading.Tasks;
-using System.Threading;
-
-using System;
 using AtMycelia.Amanita.SaveSys;
 using AtMycelia.Amanita.DialogueSys;
 
