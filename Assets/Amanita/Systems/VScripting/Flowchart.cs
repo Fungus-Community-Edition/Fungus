@@ -1643,11 +1643,15 @@ namespace AtMycelia.Amanita.VScripting
                 return null;
             }
 
+            added.ItemId = NextItemId();
+
             // Update Flowchart's internal list
             _commands.Add(added);
 
             // Update the Block's list
             toAddTo.CommandList.Add(added);
+
+            added.OnCommandAdded(toAddTo);
 
             // Mark Flowchart dirty so Unity saves the change
             EditorUtility.SetDirty(this);

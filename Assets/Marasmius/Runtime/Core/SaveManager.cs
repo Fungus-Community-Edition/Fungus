@@ -41,8 +41,6 @@ namespace AtMycelia.SaveSys
         }
         public virtual int MaxSlots { get; set; } = 100;
 
-        public Func<Task> AfterSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
-
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
                         SaveLoader loader, IMetaFactory metaFactory,
                         IMainStateFactory mainStateFactory)
@@ -52,8 +50,6 @@ namespace AtMycelia.SaveSys
             this.Loader = loader;
             this.MetaFactory = metaFactory;
             this.MainStateFactory = mainStateFactory;
-
-            BeforeSceneLoadAsync = StopAllExecutingFlowchartBlocks;
 
             static async Task StopAllExecutingFlowchartBlocks()
             {
@@ -103,6 +99,8 @@ namespace AtMycelia.SaveSys
                 return;
             }
 
+            bool saveAlreadyExists = SlotExists(slotNum);
+            SaveDataSet newSet = null;
             await Process();
             async Task Process()
             {
@@ -110,7 +108,7 @@ namespace AtMycelia.SaveSys
                 ISaveMetaData meta = MetaFactory.CreateMeta(slotNum);
                 meta.SaveName = saveName;
 
-                SaveDataSet newSet = new SaveDataSet(meta, mainState);
+                newSet = new SaveDataSet(meta, mainState);
                 Registry.AddSave(newSet);
 
                 await SaveRepo.SaveAsync(newSet, token);
@@ -118,6 +116,14 @@ namespace AtMycelia.SaveSys
 
             string logMessage = $"Save Manager: Saved to slot {slotNum}.";
             Debug.Log(logMessage);
+            if (saveAlreadyExists)
+            {
+                SaveSysSignals.SaveInSlotOverwritten(newSet);
+            }
+            else
+            {
+                SaveSysSignals.SaveAddedToSlot(newSet);
+            }
         }
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
@@ -192,6 +198,7 @@ namespace AtMycelia.SaveSys
                     return result;
                 }
 
+                var BeforeSceneLoadAsync = SaveSysSignals.BeforeSceneLoadAsync;
                 Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
                 await beforeSceneLoadHandlerTask;
             }
@@ -222,7 +229,7 @@ namespace AtMycelia.SaveSys
             }
 
             await Loader.LoadMain(mainData, sceneToLoad);
-
+            var AfterSceneLoadAsync = SaveSysSignals.AfterSceneLoadAsync;
             await ExecuteHandlers(AfterSceneLoadAsync);
 
             ExecuteSaveLoadedHandlers();
@@ -280,7 +287,6 @@ namespace AtMycelia.SaveSys
         //    });
         //}
 
-        public Func<Task> BeforeSceneLoadAsync { get; set; } = delegate { return Task.CompletedTask; };
         protected static string loadOp = "load";
 
         protected static async Task ExecuteHandlers(Func<Task> hasHandlers, CancellationToken token = default)

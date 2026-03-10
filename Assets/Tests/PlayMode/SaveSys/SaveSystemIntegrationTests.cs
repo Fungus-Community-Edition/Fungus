@@ -120,6 +120,8 @@ namespace SaveSystemTests
             // Arrange: create a dedicated Flowchart with SaveLoaded blocks
             var flowGO = new GameObject("SaveLoadedFlow");
             var flow = flowGO.AddComponent<Flowchart>();
+            GameObject.DontDestroyOnLoad(flowGO);
+            toDestroyInTearDown.Add(flowGO);
 
             // Register Progress Markers with different orders
             // Effective order for a block is the lowest order among its referenced marker IDs
@@ -127,12 +129,21 @@ namespace SaveSystemTests
             SaveSystem.RegisterProgressMarker("B", order: 1);
             SaveSystem.RegisterProgressMarker("C", order: 5);
             // Note: "Z" not registered -> corresponding block should not execute
+            // Assert that all the markers are registered
+            Assert.IsTrue(SaveSystem.IsProgressMarkerRegistered("A"), "Marker A was not registered.");
+            Assert.IsTrue(SaveSystem.IsProgressMarkerRegistered("B"), "Marker B was not registered.");
+            Assert.IsTrue(SaveSystem.IsProgressMarkerRegistered("C"), "Marker C was not registered.");
 
             // Create blocks and attach SaveLoaded handlers pointing to marker IDs
             var blockB = CreateSaveLoadedBlock(flow, "Block_B", new[] { "B" });
             var blockA = CreateSaveLoadedBlock(flow, "Block_A", new[] { "A" });
             var blockAC = CreateSaveLoadedBlock(flow, "Block_AC", new[] { "A", "C" });
             var blockZ = CreateSaveLoadedBlock(flow, "Block_Z", new[] { "Z" }); // should not fire
+            // Assert that the Blocks were created
+            Assert.IsNotNull(blockB, "Block_B was not created.");
+            Assert.IsNotNull(blockA, "Block_A was not created.");
+            Assert.IsNotNull(blockAC, "Block_AC was not created.");
+            Assert.IsNotNull(blockZ, "Block_Z was not created.");
 
             // Add a command to each block that records execution order
             AddRecordCommand(flow, blockB, "Block_B");
@@ -530,10 +541,8 @@ namespace SaveSystemTests
 
         private static void AddRecordCommand(Flowchart flow, Block block, string label)
         {
-            var cmd = flow.gameObject.AddComponent<RecordOrderCommand>();
+            var cmd = flow.AddCommand<RecordOrderCommand>(block);
             cmd.Label = label;
-            cmd.ParentBlock = block;
-            cmd.ItemId = flow.NextItemId();
             cmd.OnCommandAdded(block);
             block.CommandList.Add(cmd);
         }

@@ -1,6 +1,4 @@
-﻿using AtMycelia.Amanita.DialogueSys;
-using AtMycelia.Amanita.Myceliaudio;
-using AtMycelia.SaveSys;
+﻿using AtMycelia.SaveSys;
 using AtMycelia.Amanita.Tweening;
 using AtMycelia.Amanita.VScripting;
 using FullSerializer;
@@ -13,6 +11,14 @@ using AtMycelia.SaveSys.UI;
 using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
+using System.Threading.Tasks;
+using System.Threading;
+
+using System;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.Amanita.DialogueSys;
+
+
 #endif
 
 #if UNITY_EDITOR
@@ -29,6 +35,7 @@ namespace AtMycelia.Amanita
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
         [SerializeField] private SaveMenuManager saveMenuPrefab;
+        private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
@@ -503,7 +510,31 @@ namespace AtMycelia.Amanita
 
         private void OnEnable()
         {
+            saveLoadedBlockExecutor.OnEnable();
+            ToggleSubs(true);
             EnsureVariableRegistryIsReady();
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                SaveSysSignals.SaveInSlotLoaded += OnSaveSlotLoaded;
+            }
+            else
+            {
+                SaveSysSignals.SaveInSlotLoaded -= OnSaveSlotLoaded;
+            }
+        }
+
+        private void OnSaveSlotLoaded(SaveDataSet set)
+        {
+            if (saveLoadedBlockExecutor == null)
+            {
+                Debug.LogWarning("SaveLoadedBlockExecutor is not assigned. SaveLoaded blocks will not execute.");
+                return;
+            }
+
         }
 
 #if UNITY_EDITOR
@@ -523,5 +554,11 @@ namespace AtMycelia.Amanita
             }
         }
 #endif
+
+        private void OnDisable()
+        {
+            saveLoadedBlockExecutor.OnDisable();
+            ToggleSubs(false);
+        }
     }
 }

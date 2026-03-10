@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,7 +14,15 @@ namespace AtMycelia.Amanita.SaveSys
     [SaveSysAssetName("DefFlowchartApplier")]
     public class FlowchartApplier : SaveDataApplier<FlowchartSaveData>
     {
-        protected IList<Flowchart> allFlowcharts = new List<Flowchart>();
+        
+
+        public override void ApplyRange(IList<SaveData> datas, Action onComplete)
+        {
+            onComplete = AppliedToAllFcs + onComplete;
+            base.ApplyRange(datas, onComplete);
+        }
+
+        public static event Action AppliedToAllFcs = delegate { };
 
         protected virtual void OnEnable()
         {
@@ -27,6 +35,8 @@ namespace AtMycelia.Amanita.SaveSys
             // so we clear the list to avoid holding onto invalid references.
             allFlowcharts.Clear();
         }
+
+        protected IList<Flowchart> allFlowcharts = new List<Flowchart>();
 
         protected virtual void OnDisable()
         {
@@ -47,7 +57,7 @@ namespace AtMycelia.Amanita.SaveSys
         {
             if (allFlowcharts != null)
             {
-                // Editor-time prune; Unity “fake null” evaluates true here
+                // Editor-time prune; Unity ï¿½fake nullï¿½ evaluates true here
                 for (int i = 0; i < allFlowcharts.Count; i++)
                 {
                     if (allFlowcharts[i] == null)
@@ -106,7 +116,7 @@ namespace AtMycelia.Amanita.SaveSys
                     {
                         if (!enqueued)
                         {
-                            // ensure we don’t deadlock if enqueue fails
+                            // ensure we donï¿½t deadlock if enqueue fails
                             countdown.Signal();
                         }
                     }
@@ -126,7 +136,7 @@ namespace AtMycelia.Amanita.SaveSys
                 // Remember: Flowcharts should only get a chance to call their Start methods _after_
                 // all the appliers (including this one) have done their thing.
                 // Thus, this is a safe time to remove any GameStarted event handlers,
-                // making sure they don’t get triggered prematurely.
+                // making sure they donï¿½t get triggered prematurely.
                 var gameStartedBlocks = flowchart.GetComponents<Block>()
                     .Where(blockEl => blockEl._EventHandler is GameStarted);
                 foreach (var blockEl in gameStartedBlocks)
@@ -201,7 +211,7 @@ namespace AtMycelia.Amanita.SaveSys
 
         protected virtual bool TryGetFlowchartFor(FlowchartSaveData saveData, out Flowchart flowchart)
         {
-            // Prune stale “fake null” entries first
+            // Prune stale ï¿½fake nullï¿½ entries first
             PruneNulls(allFlowcharts);
 
             // If empty, (re)build the cache; include inactive flowcharts

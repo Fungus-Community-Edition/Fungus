@@ -308,6 +308,21 @@ namespace AtMycelia.SaveSys
                 return hash;
             }
         }
+
+        public override string ToString()
+        {
+            string result = $"SaveMetaData: " +
+                $"SaveId = {saveId}, \n" +
+                $"SaveVersion = {saveVersion}, \n" +
+                $"UTCTimeStamp = {utcTimeStamp}, \n" +
+                $"SaveName = {name}, \n" +
+                $"SceneName = {sceneName}, \n" +
+                $"SceneBuildIndex = {sceneBuildIndex}, \n" +
+                $"SlotNumber = {slotNumber}, \n" +
+                $"Playtime = {playtime}";
+            return result;
+        }
+
     }
 
     // For stuff that probably all save meta data should have
