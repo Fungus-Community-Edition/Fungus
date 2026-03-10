@@ -6,6 +6,7 @@ namespace AtMycelia.SaveSys
 {
     public static class SaveSystemBootstrapper
     {
+        
         public static ISaveSystemInstaller Installer
         {
             get
@@ -51,6 +52,7 @@ namespace AtMycelia.SaveSys
                 return;
             }
 
+
             _lastInstaller.Init(InstallContext); 
             // ^So the Save System has some modules ready right away. We do a delay after this so that
             // third party code can inject their own dependencies.
@@ -78,6 +80,12 @@ namespace AtMycelia.SaveSys
                 }
             }
 
+#if UNITY_EDITOR
+            if (!Enabled)
+            {
+                yield break;
+            }
+#endif
             if (InstallerChanges > 0)
             {
                 Installer.Init(InstallContext);
@@ -96,6 +104,7 @@ namespace AtMycelia.SaveSys
 
 #if UNITY_EDITOR
         // For testing only.
+        public static bool Enabled { get; set; } = true;
         public static void ResetStaticsForTest()
         {
             _lastInstaller = new SaveSystemInstaller();

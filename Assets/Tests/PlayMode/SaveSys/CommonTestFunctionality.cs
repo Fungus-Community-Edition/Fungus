@@ -135,6 +135,7 @@ namespace SaveSystemTests
             DestroyExistingAmanitaManagerIfAny();
             ResetSingletonStaticsForSetUp();
 
+            SaveSystemBootstrapper.Enabled = ReqSaveSystem;
             if (ReqSaveSystem)
             {
                 saveSysInstallEvent = new ManualResetEventSlim(false);
@@ -202,7 +203,7 @@ namespace SaveSystemTests
                 Debug.LogError("AmanitaManager.S was not set correctly!");
 
             testStorageSettings = ScriptableObject.CreateInstance<SaveStorageSettings>();
-            testStorageSettings.RelativePath = "TestSaves";
+            testStorageSettings.RelativePath = testPathResolver.RelativePath;
 
             testPathResolver.StorageSettings = testStorageSettings;
             otherTestPathResolver.StorageSettings = testStorageSettings;
@@ -418,6 +419,7 @@ namespace SaveSystemTests
         [TearDown]
         public virtual void DoTearDown()
         {
+            SaveSystemBootstrapper.Enabled = true; // Re-enable in case a test disabled it, to ensure proper teardown of the save system.
             if (ReqSaveSystem)
             {
                 DeleteAllTestSaves();
