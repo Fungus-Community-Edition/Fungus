@@ -24,21 +24,24 @@ namespace AtMycelia.SaveSys
                 }
             }
 
-            UnityThreadUtil.RunOnMainThread(() =>
-            {
-                IList<ISaveMetaData> metasOnDisk = SaveRepo.LoadAllMetasOnDisk();
-                for (int i = 0; i < metasOnDisk.Count; i++)
-                {
-                    ISaveMetaData meta = metasOnDisk[i];
-                    SaveDataSet dataSet = new SaveDataSet(meta, null);
-                    Registry.AddSave(dataSet);
-                }
-                SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
-            });
+            UnityThreadUtil.RunOnMainThread(LoadAllMetasOnInit);
 
             return Task.CompletedTask;
 
         }
+
+        private void LoadAllMetasOnInit()
+        {
+            IList<ISaveMetaData> metasOnDisk = SaveRepo.LoadAllMetasOnDisk();
+            for (int i = 0; i < metasOnDisk.Count; i++)
+            {
+                ISaveMetaData meta = metasOnDisk[i];
+                SaveDataSet dataSet = new SaveDataSet(meta, null);
+                Registry.AddSave(dataSet);
+            }
+            SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
+        }
+
         public virtual int MaxSlots { get; set; } = 100;
 
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,

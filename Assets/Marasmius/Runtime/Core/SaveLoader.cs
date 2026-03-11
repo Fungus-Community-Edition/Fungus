@@ -43,7 +43,7 @@ namespace AtMycelia.SaveSys
                 {
                     AsyncOperation loadOperation = SceneManager.LoadSceneAsync(scene.name, LoadSceneMode.Single);
                     await loadOperation;
-                    SaveSysSignals.SceneLoaded(scene);
+                    UnityThreadUtil.RunOnMainThread(() => AnnounceSceneLoad(scene));
                 }
                 else
                 {
@@ -82,6 +82,10 @@ namespace AtMycelia.SaveSys
             SaveSysSignals.SaveLoaded(mainData);
         }
 
+        private void AnnounceSceneLoad(Scene scene)
+        {
+            SaveSysSignals.SceneLoaded?.Invoke(scene);
+        }
         protected static Scene DoNotLoad { get { return SaveSysConstants.DoNotLoad; } }
     }
 
