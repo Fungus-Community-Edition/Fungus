@@ -42,7 +42,7 @@ namespace AtMycelia.SaveSys.UI
         protected virtual void UpdateVisuals()
         {
             // We assume that the meta is valid here.
-
+            Debug.Log($"Updating visuals for {this.name}.");
         }
 
     }

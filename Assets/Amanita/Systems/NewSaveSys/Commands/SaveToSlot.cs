@@ -34,11 +34,11 @@ namespace AtMycelia.SaveSys.VScripting
         {
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected -= OnSaveSlotSelected;
             }
         }
 

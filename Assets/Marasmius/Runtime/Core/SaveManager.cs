@@ -116,14 +116,6 @@ namespace AtMycelia.SaveSys
 
             string logMessage = $"Save Manager: Saved to slot {slotNum}.";
             Debug.Log(logMessage);
-            if (saveAlreadyExists)
-            {
-                SaveSysSignals.SaveInSlotOverwritten(newSet);
-            }
-            else
-            {
-                SaveSysSignals.SaveAddedToSlot(newSet);
-            }
         }
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
@@ -198,8 +190,8 @@ namespace AtMycelia.SaveSys
                     return result;
                 }
 
-                var BeforeSceneLoadAsync = SaveSysSignals.BeforeSceneLoadAsync;
-                Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
+                var beforeSceneLoadAsync = SaveSysSignals.BeforeSceneLoadAsync;
+                Task beforeSceneLoadHandlerTask = ExecuteHandlers(beforeSceneLoadAsync);
                 await beforeSceneLoadHandlerTask;
             }
 

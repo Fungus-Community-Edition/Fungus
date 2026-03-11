@@ -515,15 +515,15 @@ namespace AtMycelia.Amanita
         {
             if (on)
             {
-                SaveSysSignals.SaveInSlotLoaded += OnSaveSlotLoaded;
+                SaveSysSignals.SaveLoaded += OnSaveSlotLoaded;
             }
             else
             {
-                SaveSysSignals.SaveInSlotLoaded -= OnSaveSlotLoaded;
+                SaveSysSignals.SaveLoaded -= OnSaveSlotLoaded;
             }
         }
 
-        private void OnSaveSlotLoaded(SaveDataSet set)
+        private void OnSaveSlotLoaded(CompositeSaveData saveData)
         {
             if (saveLoadedBlockExecutor == null)
             {

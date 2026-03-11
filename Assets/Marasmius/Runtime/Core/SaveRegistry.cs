@@ -26,12 +26,11 @@ namespace AtMycelia.SaveSys
             if (!_savePairs.ContainsKey(dataSet.SlotNumber))
             {
                 _savePairs.Add(dataSet.SlotNumber, dataSet);
-                SaveSysSignals.SaveAddedToSlot(dataSet);
+                SaveSysSignals.SaveAdded(dataSet);
             }
             else
             {
                 _savePairs[dataSet.SlotNumber] = dataSet; // Overwriting
-                SaveSysSignals.SaveInSlotOverwritten(dataSet);
             }
         }
 
@@ -41,7 +40,7 @@ namespace AtMycelia.SaveSys
             {
                 SaveDataSet dataSet = _savePairs[slotToRemoveFrom];
                 _savePairs.Remove(slotToRemoveFrom);
-                SaveSysSignals.SaveRemovedFromSlot(dataSet);
+                SaveSysSignals.SaveRemoved(dataSet);
             }
         }
 
