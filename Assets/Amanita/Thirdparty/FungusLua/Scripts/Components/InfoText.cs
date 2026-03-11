@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Displays information text at the top left of the screen.

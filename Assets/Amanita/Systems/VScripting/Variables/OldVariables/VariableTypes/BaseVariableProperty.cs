@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [AddComponentMenu("")]
     public abstract class BaseVariableProperty : Command

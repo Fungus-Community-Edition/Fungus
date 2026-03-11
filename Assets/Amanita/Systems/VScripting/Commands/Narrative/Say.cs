@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine.Serialization;
 
-namespace Amanita.DialogueSys.VScripting
+namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
     /// <summary>
     /// Writes text in a dialog box.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public interface IFcWindowComponent : IDisposable
     {

@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public static class EditorFrameDelay
     {

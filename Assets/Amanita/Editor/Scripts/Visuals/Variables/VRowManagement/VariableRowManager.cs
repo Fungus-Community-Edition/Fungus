@@ -1,4 +1,4 @@
-﻿using Amanita.EditorUtils;
+﻿using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRowManager : IDisposable
     {

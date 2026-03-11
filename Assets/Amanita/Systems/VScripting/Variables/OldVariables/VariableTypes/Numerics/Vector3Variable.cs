@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Vector3 variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Vector3", typeof(Vector3), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class Vector3Variable : VariableBase<Vector3>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

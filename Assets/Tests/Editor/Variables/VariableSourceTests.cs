@@ -1,4 +1,4 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {

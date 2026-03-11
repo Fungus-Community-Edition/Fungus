@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// UITK-based grid renderer that redraws only when flowchart context changes,

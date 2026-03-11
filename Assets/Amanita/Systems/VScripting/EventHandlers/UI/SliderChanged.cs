@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the user changes the value of target UI slider.

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
     public abstract class VariableData : IVariableData

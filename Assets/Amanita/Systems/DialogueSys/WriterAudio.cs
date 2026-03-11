@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Amanita.Myceliaudio;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Audio;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Type of audio effect to play.

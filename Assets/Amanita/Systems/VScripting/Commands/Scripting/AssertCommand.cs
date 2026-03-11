@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Assert on 2 Amanita variable values.

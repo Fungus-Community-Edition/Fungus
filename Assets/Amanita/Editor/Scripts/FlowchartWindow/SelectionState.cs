@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Encapsulates Flowchart selection operations so callers don't have

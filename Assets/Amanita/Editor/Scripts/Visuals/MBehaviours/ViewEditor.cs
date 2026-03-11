@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CanEditMultipleObjects]
     [CustomEditor (typeof(View))]

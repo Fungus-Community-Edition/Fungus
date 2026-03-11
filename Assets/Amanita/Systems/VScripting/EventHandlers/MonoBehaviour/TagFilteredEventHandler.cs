@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// Base class for all of our physics event handlers

@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Transform variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("UnityGeneral", "Transform", typeof(Transform), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class TransformVariable : VariableBase<Transform>
     {
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Pass a value through an AnimationCurve

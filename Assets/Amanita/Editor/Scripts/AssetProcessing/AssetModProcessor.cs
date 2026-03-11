@@ -1,7 +1,7 @@
 using System.IO;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Prevents saving of selected blocks and commands to avoid version control conflicts.

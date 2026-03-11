@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [CommandInfo("UI",
         "InputFieldSetText",

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Lightweight list pool to avoid allocations when diffing block collections.

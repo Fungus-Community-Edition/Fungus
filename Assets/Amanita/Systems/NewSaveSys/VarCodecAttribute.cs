@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys
+namespace AtMycelia.Amanita.SaveSys
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class VarCodecAttribute : Attribute

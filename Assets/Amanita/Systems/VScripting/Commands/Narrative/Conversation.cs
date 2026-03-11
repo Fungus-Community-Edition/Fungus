@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys.Commands
+namespace AtMycelia.Amanita.DialogueSys.Commands
 {
     /// <summary>
     /// Do multiple say and portrait commands in a single block of text. Format is: [character] [portrait] [stage position] [hide] [<<< | >>>] [clear | noclear] [wait | nowait] [fade | nofade] [: Story text].

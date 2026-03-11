@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Load From Slot",
@@ -102,7 +102,7 @@ namespace Amanita.SaveSys.VScripting
             }
             else
             {
-                Task loadTask = SaveSystem.S.LoadMainAsync(slotIndex, loadScene);
+                Task loadTask = SaveSystem.LoadMainAsync(slotIndex, loadScene);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(loadTask));

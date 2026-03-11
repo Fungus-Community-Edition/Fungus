@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class SearchPanel : IDisposable
     {

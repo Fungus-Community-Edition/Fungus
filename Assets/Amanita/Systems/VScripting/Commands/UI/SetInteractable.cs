@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Set the interactable state of selectable objects.

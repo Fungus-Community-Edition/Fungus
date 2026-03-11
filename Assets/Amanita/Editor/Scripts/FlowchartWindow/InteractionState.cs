@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Captures transient interaction state such as hit-testing,

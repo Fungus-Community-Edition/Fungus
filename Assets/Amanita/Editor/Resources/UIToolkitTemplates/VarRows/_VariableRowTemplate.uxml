@@ -4,7 +4,7 @@
         <engine:Label text="Type Label" name="TypeLabel" view-data-key="" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" view-data-key="" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder" view-data-key="" />
-        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" view-data-key="" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" view-data-key="" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" view-data-key="" class="removeButton" />
     </engine:VisualElement>
 </UXML>

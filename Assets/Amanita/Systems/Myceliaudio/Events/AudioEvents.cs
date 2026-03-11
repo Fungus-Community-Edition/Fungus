@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public static class AudioEvents
     {

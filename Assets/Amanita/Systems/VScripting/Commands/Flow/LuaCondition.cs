@@ -1,8 +1,8 @@
 using UnityEngine;
 using MoonSharp.Interpreter;
-using Amanita.Lua;
+using AtMycelia.Amanita.Lua;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
 	public class LuaCondition : Condition 
 	{

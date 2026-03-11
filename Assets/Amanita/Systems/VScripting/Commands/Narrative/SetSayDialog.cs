@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting.Commands.Legacy
+namespace AtMycelia.Amanita.VScripting.Commands.Legacy
 {
     /// <summary>
     /// Sets a custom say dialog to use when displaying story text.

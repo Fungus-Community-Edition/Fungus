@@ -6,8 +6,9 @@ using System;
 using UnityEngine.Events;
 using MarkerMetro.Unity.WinLegacy.Reflection;
 using System.Linq;
+using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.
@@ -149,68 +150,126 @@ namespace Amanita.VScripting.Commands
                 else
                 {
                     object objValue = null;
+                    IVariable varFound = flowChart.GetVariableByName(item.variableKey);
+                    if (varFound == null)
+                    {
+                        string errorMessage = $"No variable found with the name: {item.variableKey} to pass as parameter " +
+                            $"to method: {targetMethod}";
+                        Debug.LogError(errorMessage);
+                        continue;
+                    }
+
+                    Type contentType = varFound.ContentType;
 
                     switch (item.objValue.typeFullname)
                     {
                         case "System.Int32":
-                            var intvalue = flowChart.GetVariableOfTypeByName<IntegerVariable>(item.variableKey);
-                            if (intvalue != null)
-                                objValue = intvalue.BoxedValue;
+                            if (contentType != typeof(int))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was int.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "System.Boolean":
-                            var boolean = flowChart.GetVariableOfTypeByName<BooleanVariable>(item.variableKey);
-                            if (boolean != null)
-                                objValue = boolean.BoxedValue;
+                            if (contentType != typeof(bool))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was bool.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "System.Single":
-                            var floatvalue = flowChart.GetVariableOfTypeByName<FloatVariable>(item.variableKey);
-                            if (floatvalue != null)
-                                objValue = floatvalue.BoxedValue;
+                            if (contentType != typeof(float))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was float.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "System.String":
-                            var stringvalue = flowChart.GetVariableOfTypeByName<StringVariable>(item.variableKey);
-                            if (stringvalue != null)
-                                objValue = stringvalue.BoxedValue;
+                            if (contentType != typeof(string))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was string.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Color":
-                            var color = flowChart.GetVariableOfTypeByName<ColorVariable>(item.variableKey);
-                            if (color != null)
-                                objValue = color.BoxedValue;
+                            if (contentType != typeof(Color))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was Color.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.GameObject":
-                            var gameObject = flowChart.GetVariableOfTypeByName<GameObjectVariable>(item.variableKey);
-                            if (gameObject != null)
-                                objValue = gameObject.BoxedValue;
+                            if (contentType != typeof(GameObject))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was GameObject.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Material":
-                            var material = flowChart.GetVariableOfTypeByName<MaterialVariable>(item.variableKey);
-                            if (material != null)
-                                objValue = material.BoxedValue;
+                            if (contentType != typeof(Material))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was Material.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Sprite":
-                            var sprite = flowChart.GetVariableOfTypeByName<SpriteVariable>(item.variableKey);
-                            if (sprite != null)
-                                objValue = sprite.BoxedValue;
+                            if (contentType != typeof(Sprite))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was Sprite.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Texture":
-                            var texture = flowChart.GetVariableOfTypeByName<TextureVariable>(item.variableKey);
-                            if (texture != null)
-                                objValue = texture.BoxedValue;
+                            if (contentType != typeof(Texture))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was Texture.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Vector2":
-                            var vector2 = flowChart.GetVariableOfTypeByName<Vector2Variable>(item.variableKey);
-                            if (vector2 != null)
-                                objValue = vector2.BoxedValue;
+                            if (contentType != typeof(Vector2))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was VectorTwo.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         case "UnityEngine.Vector3":
-                            var vector3 = flowChart.GetVariableOfTypeByName<Vector3Variable>(item.variableKey);
-                            if (vector3 != null)
-                                objValue = vector3.BoxedValue;
+                            if (contentType != typeof(Vector3))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was Vector3.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                         default:
-                            var obj = flowChart.GetVariableOfTypeByName<ObjectVariable>(item.variableKey);
-                            if (obj != null)
-                                objValue = obj.BoxedValue;
+                            if (contentType != typeof(UnityObj))
+                            {
+                                Debug.LogError($"Variable with key: {item.variableKey} is of type {varFound.ContentType}, " +
+                                    $"expected type was UnityObject.");
+                                continue;
+                            }
+                            objValue = varFound.BoxedValue;
                             break;
                     }
 
@@ -224,46 +283,15 @@ namespace Amanita.VScripting.Commands
         protected virtual void SetVariable(string key, object value, string returnType)
         {
             var flowChart = GetFlowchart();
-
-            switch (returnType)
+            IVariable varFound = flowChart.GetVariableByName(key);
+            if (varFound == null)
             {
-                case "System.Int32":
-                    flowChart.GetVariableOfTypeByName<IntegerVariable>(key).Value = (int)value;
-                    break;
-                case "System.Boolean":
-                    flowChart.GetVariableOfTypeByName<BooleanVariable>(key).Value = (bool)value;
-                    break;
-                case "System.Single":
-                    flowChart.GetVariableOfTypeByName<FloatVariable>(key).Value = (float)value;
-                    break;
-                case "System.String":
-                    flowChart.GetVariableOfTypeByName<StringVariable>(key).Value = (string)value;
-                    break;
-                case "UnityEngine.Color":
-                    flowChart.GetVariableOfTypeByName<ColorVariable>(key).Value = (UnityEngine.Color)value;
-                    break;
-                case "UnityEngine.GameObject":
-                    flowChart.GetVariableOfTypeByName<GameObjectVariable>(key).Value = (UnityEngine.GameObject)value;
-                    break;
-                case "UnityEngine.Material":
-                    flowChart.GetVariableOfTypeByName<MaterialVariable>(key).Value = (UnityEngine.Material)value;
-                    break;
-                case "UnityEngine.Sprite":
-                    flowChart.GetVariableOfTypeByName<SpriteVariable>(key).Value = (UnityEngine.Sprite)value;
-                    break;
-                case "UnityEngine.Texture":
-                    flowChart.GetVariableOfTypeByName<TextureVariable>(key).Value = (UnityEngine.Texture)value;
-                    break;
-                case "UnityEngine.Vector2":
-                    flowChart.GetVariableOfTypeByName<Vector2Variable>(key).Value = (UnityEngine.Vector2)value;
-                    break;
-                case "UnityEngine.Vector3":
-                    flowChart.GetVariableOfTypeByName<Vector3Variable>(key).Value = (UnityEngine.Vector3)value;
-                    break;
-                default:
-                    flowChart.GetVariableOfTypeByName<ObjectVariable>(key).Value = (UnityEngine.Object)value;
-                    break;
+                string errorMessage = $"No variable found with the name: {key} to store the return value " +
+                    $"of method: {targetMethod}";
+                Debug.LogError(errorMessage);
+                return;
             }
+            varFound.BoxedValue = value;
         }
 
         #region Public members

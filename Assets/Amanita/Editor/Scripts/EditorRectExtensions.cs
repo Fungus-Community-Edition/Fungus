@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     static class RectExtensions
     {

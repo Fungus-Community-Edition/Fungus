@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [RowVisualHandler(menuName: "UnityGeneral",
         contentType: typeof(GameObject),

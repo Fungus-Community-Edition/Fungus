@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     class GenericMenuFactory : IContextMenuFactory
     {

@@ -57,7 +57,7 @@ using UnityEngine;
 using System.Collections;
 
 // Using the Fungus namespace to minimize conflicts with other assets.
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
 
 	/// A Task object represents a coroutine.  Tasks can be started, paused, and stopped.

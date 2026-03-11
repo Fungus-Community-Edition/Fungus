@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [System.Serializable]
     [VariableInfo("Graphic", "String", typeof(string))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "StringMuscariable")]
     public class StringMuscariable : Muscariable<string>
     {
         public StringMuscariable() : base()
@@ -36,6 +38,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableInfo("Graphic", "Color", typeof(Color))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "ColorMuscariable")]
     public class ColorMuscariable : Muscariable<Color>
     {
         public ColorMuscariable() : base() { }
@@ -69,6 +72,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableInfo("Graphic", "Sprite", typeof(Sprite))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "SpriteMuscariable")]
     public class SpriteMuscariable : Muscariable<Sprite>
     {
         public SpriteMuscariable() : base() { }
@@ -102,6 +106,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableInfo("Graphic", "Texture", typeof(Texture))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "TextureMuscariable")]
     public class TextureMuscariable : Muscariable<Texture>
     {
         public TextureMuscariable() : base() { }

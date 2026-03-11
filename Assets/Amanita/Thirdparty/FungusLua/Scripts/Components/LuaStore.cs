@@ -2,7 +2,7 @@
 using MoonSharp.Interpreter;
 using System.Collections.Generic;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Wrapper for a prime Lua table that persists across scene loads. 

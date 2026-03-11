@@ -7,13 +7,13 @@ using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityRandom = UnityEngine.Random;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
 // Optional: avoid pulling conflicting types into the global scope
-using Amanita.EditorUtils;
-using Collections;
-using Amanita.VScripting.EditorUtils;
-using Amanita; // if you keep helpers here
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Collections;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita; // if you keep helpers here
 
 namespace VScriptingTests.VariableOperations
 {

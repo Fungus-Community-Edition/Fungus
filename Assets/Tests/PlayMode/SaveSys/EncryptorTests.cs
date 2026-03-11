@@ -1,13 +1,12 @@
-﻿using Amanita.SaveSys;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
-using Amanita.FSExt;
 using FullSerializer;
-using Amanita;
+using AtMycelia.SaveSys;
+using AtMycelia.FSExt;
 
 namespace SaveSystemTests
 {
@@ -197,7 +196,7 @@ namespace SaveSystemTests
             
             IList<byte> expectedBytes, secondExpectedBytes;
             // ^Need a second for the \r nonsense
-            fsSerializer serializer = AmanitaManager.DefaultSerializer;
+            fsSerializer serializer = SaveSystem.DefaultSerializer;
             lock (serializer)
             {
                 string expectedMetaDataJson = serializer.ToJson(metaData as ISaveMetaData, true);

@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Amanita.SaveSys;
-using Amanita.VScripting;
+using AtMycelia.SaveSys;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
-using Amanita.FSExt;
 using UnityEditor;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.FSExt;
 
 namespace SaveSystemTests
 {
@@ -116,10 +117,12 @@ namespace SaveSystemTests
             _applier.Apply(firstVsaSaveData, () => completed = true);
             while (!completed)
                 yield return null;
+
             completed = false;
             _applier.Apply(secondVsaSaveData, () => completed = true);
             while (!completed)
                 yield return null;
+
             // Assert values restored to saved ones
             string firstStringVarValue = GetVarValue<string>(firstVsa, "playerName");
             Assert.AreEqual("Shiitake", firstStringVarValue);

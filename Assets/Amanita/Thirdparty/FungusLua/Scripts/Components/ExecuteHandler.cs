@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     [Flags]
     public enum ExecuteMethod

@@ -1,18 +1,21 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = 0;
+        [SerializeField] protected byte itemID = InvalidID; 
+        // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidID = 0;
 
@@ -225,7 +228,9 @@ namespace Amanita.VScripting
     }
 
     [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
+
     {
         [SerializeField] protected T value, startValue;
 

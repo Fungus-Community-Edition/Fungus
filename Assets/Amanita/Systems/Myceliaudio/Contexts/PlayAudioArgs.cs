@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     [System.Serializable]
     public class PlayAudioArgs : EventArgs, IPlayAudioContext, IEquatable<IPlayAudioContext>

@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Amanita.VScripting;
-using Amanita.DialogueSys;
-using Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.DialogueSys;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita.UI.Legacy
+namespace AtMycelia.Amanita.UI.Legacy
 {
     /// <summary>
     /// A singleton game object which displays a simple UI for the Narrative Log.

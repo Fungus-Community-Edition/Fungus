@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Changes the Image property on a UI element.

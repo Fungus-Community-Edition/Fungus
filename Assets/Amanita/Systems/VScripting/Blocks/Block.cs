@@ -4,9 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Execution state of a Block.

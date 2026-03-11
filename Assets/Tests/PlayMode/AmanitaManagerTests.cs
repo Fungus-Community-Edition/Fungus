@@ -1,13 +1,11 @@
 using System.Collections;
 using System.IO;
-using Amanita;
-using Amanita.VScripting;
+using AtMycelia.Amanita;
 using Lorekeeper;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
-using UnityEditor;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;

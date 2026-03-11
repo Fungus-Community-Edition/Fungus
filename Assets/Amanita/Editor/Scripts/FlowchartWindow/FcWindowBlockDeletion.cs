@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
-using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class FcWindowBlockDeletion
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public class Tween<T> : ITween
     {

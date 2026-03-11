@@ -1,11 +1,11 @@
-using Amanita.Myceliaudio;
-using Amanita.Myceliaudio.VScripting;
-using Amanita.VScripting;
+using AtMycelia.Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio.VScripting;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Amanita;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.Commands
 {
