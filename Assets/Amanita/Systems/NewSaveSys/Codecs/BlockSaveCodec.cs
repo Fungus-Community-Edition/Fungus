@@ -30,20 +30,19 @@ namespace AtMycelia.Amanita.SaveSys
             }
         }
 
-        public virtual IList<BlockSaveData> EncodeToMultiSave(Flowchart withTheBlocks)
+        public virtual IList<BlockSaveData> EncodeToMultiSaves(Flowchart withTheBlocks)
         {
             IList<Block> blocksToConsider = (from elem in withTheBlocks.GetExecutingBlocks()
                                              where elem.IncludeInSaves == true
                                              select elem).ToList();
-            IList<BlockSaveData> blockSaves = blocksToConsider
-                .Select(block => EncodeToSave(block))
-                .ToList();
+            IList<BlockSaveData> blockSaves = EncodeToMultiSaves(blocksToConsider);
             return blockSaves;
         }
 
         public virtual IList<BlockSaveData> EncodeToMultiSaves(IList<Block> toCreateFrom)
         {
             List<BlockSaveData> blockSaves = toCreateFrom
+                .Where(block => block.IncludeInSaves == true)
                 .Select(block => EncodeToSave(block))
                 .ToList();
             return blockSaves;
@@ -56,7 +55,7 @@ namespace AtMycelia.Amanita.SaveSys
             string blockName = toCreateFrom.BlockName;
             int activeCommandId = -1, activeCommandIndex = -1;
 
-            if (toCreateFrom.ActiveCommand != null)
+            if (toCreateFrom.ActiveCommand != null && toCreateFrom.ActiveCommand.ReexecutableOnLoad)
             {
                 activeCommandId = toCreateFrom.ActiveCommand.ItemId;
                 activeCommandIndex = toCreateFrom.ActiveCommand.CommandIndex;

@@ -129,7 +129,7 @@ namespace SaveSystemTests
                                                  select elem).ToList();
             Assume.That(whatShouldBeIncluded.Count > 0, $"Test scene needs at least one Block in Flowchart {flowchart.name} that SHOULD be included");
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             Assert.IsTrue(result.Count == whatShouldBeIncluded.Count, "Encoded the wrong amount of Blocks");
 
             IList<ushort> idsThatShouldBeIncluded = whatShouldBeIncluded.Select(item => item.ItemId).ToList();
@@ -155,7 +155,7 @@ namespace SaveSystemTests
             var excludedBlocks = allBlocks.Where(b => !b.IncludeInSaves && b.IsExecuting()).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == false");
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
             foreach (var b in excludedBlocks)
@@ -170,7 +170,7 @@ namespace SaveSystemTests
             var excludedBlocks = allBlocks.Where(b => b.IncludeInSaves && !b.IsExecuting()).ToList();
             Assume.That(excludedBlocks.Count > 0, "Test scene needs at least one non-executing Block with IncludeInSaves == true");
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
             foreach (var b in excludedBlocks)
@@ -185,7 +185,7 @@ namespace SaveSystemTests
             var includedBlocks = allBlocks.Where(b => b.IncludeInSaves && b.IsExecuting()).ToList();
             Assume.That(includedBlocks.Count > 0, "Test scene needs at least one executing Block with IncludeInSaves == true");
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             var resultIDs = result.Select(b => b.ItemId).ToList();
 
             Assert.AreEqual(includedBlocks.Count, result.Count, "Encoded the wrong number of Blocks.");
@@ -203,7 +203,7 @@ namespace SaveSystemTests
             IList<Block> blocksFound = dummyFlowchart.GetComponents<Block>();
             Assume.That(blocksFound.Count == 0, "Adding Dummy Flowchart added a Block");
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(dummyFlowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(dummyFlowchart);
             Assert.IsTrue(result.Count == 0, "Created block save data from Flowchart with no Blocks");
         }
 
@@ -216,7 +216,7 @@ namespace SaveSystemTests
             foreach (var elem in allBlocks)
                 elem.IncludeInSaves = false;
 
-            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> result = blockSaveCodec.EncodeToMultiSaves(flowchart);
             Assert.IsTrue(result.Count == 0, "Created block save data from Flowchart with all Blocks set to NOT be included");
         }
     }

@@ -198,13 +198,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 }
                 else
                 {
-                    Debug.Log("Left mouse down detected");
+                    //Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
                     Block blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
                     bool mouseOverBlock = blockHit != null;
                     if (!mouseOverBlock)
                     {
-                        Debug.Log("Empty space left mouse down");
+                        //Debug.Log("Empty space left mouse down");
                         
                         FlowchartWindowSignals.EmptySpaceLeftMouseDown(_mouseDownInfo, guiEvent);
                     }
@@ -485,7 +485,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 Vector2 movementSinceLastFrame = guiEvent.mousePosition - activePanAnchor.Value;
                 if (movementSinceLastFrame.sqrMagnitude > Mathf.Epsilon)
                 {
-                    Debug.Log("Panning");
+                    //Debug.Log("Panning");
                     FlowchartWindowSignals.ScrollWheelDragged(movementSinceLastFrame);
                     FlowchartWindowSignals.WindowPanned();
                 }

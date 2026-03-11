@@ -67,7 +67,7 @@ namespace AtMycelia.SaveSys
     public interface IMultiSaveCodec<TInput, TOutput>
         where TOutput : SaveData
     {
-        IList<TOutput> EncodeToMultiSave(TInput toMakeFrom);
+        IList<TOutput> EncodeToMultiSaves(TInput toMakeFrom);
     }
 
     public interface ISaveCodecHandleCheck

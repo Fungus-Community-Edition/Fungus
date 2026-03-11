@@ -50,7 +50,7 @@ namespace AtMycelia.Amanita.SaveSys
             void EncodingProcess()
             {
                 varSaves = SaveVars(toCreateFrom);
-                blockSaves = blockCodec.EncodeToMultiSave(toCreateFrom);
+                blockSaves = blockCodec.EncodeToMultiSaves(toCreateFrom);
                 // TODO: Save the state of certain commands (such as Conversation)
 
                 saveData = new()
