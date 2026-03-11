@@ -1,4 +1,4 @@
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Changes the volume of a Track Set when a slider's value changes.

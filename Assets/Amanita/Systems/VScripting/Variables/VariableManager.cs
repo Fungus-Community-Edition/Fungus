@@ -1,11 +1,11 @@
-using Collections;
+using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
     public sealed class VariableManager : IVariableSource, IMuscariableSource
@@ -16,6 +16,7 @@ namespace Amanita.VScripting
         [SerializeReference] private List<Muscariable> muscariables = new();
         [SerializeField] private List<Variable> legacyVariables = new();
         [SerializeField] private byte nextValidVarID = 1;
+        [SerializeField] private bool isInitted = false;
 
         public void Initialize()
         {
@@ -25,95 +26,101 @@ namespace Amanita.VScripting
                     "all variables and reset the manager. Proceeding with reinitialization.");
             }
             Clear();
-            Refresh();
+            nextValidVarID = 1;
             IsInitted = true;
+        }
+
+        public bool IsInitted
+        {
+            get => isInitted;
+            private set => isInitted = value;
+        }
+
+        public void Clear()
+        {
+            // Remove them one by one so the right events fire
+            while (legacyVariables.Count > 0)
+            {
+                RemoveLegacyVarAtIndex(0);
+            }
+
+            while (muscariables.Count > 0)
+            {
+                RemoveMuscariAtIndex(0);
+            }
+        }
+
+        public IVariable RemoveLegacyVarAtIndex(int index)
+        {
+            if (index < 0 || index >= legacyVariables.Count)
+            {
+                string errorMessage = $"Index {index} is out of range for legacy variables. Valid range is " +
+                    $"0 to {legacyVariables.Count - 1}. No variable removed.";
+
+                throw new IndexOutOfRangeException(errorMessage);
+            }
+
+            Variable toRemove = legacyVariables[index];
+            RemoveFromCachesThenSignal(toRemove);
+            return toRemove;
+        }
+
+        private void RemoveFromCachesThenSignal(IVariable toRemove)
+        {
+            legacyVariables.Remove(toRemove as Variable);
+            muscariables.Remove(toRemove as Muscariable);
+            lookup.Remove(toRemove.ItemId);
+            VariableRemoved(toRemove);
+        }
+
+        private Dictionary<byte, IVariable> lookup = new(); // For faster retrieval by ID. Must be kept in sync with the lists.
+
+        public event Action<IVariable> VariableRemoved = delegate { };
+
+        public IVariable RemoveMuscariAtIndex(int index)
+        {
+            if (index < 0 || index >= muscariables.Count)
+            {
+                string errorMessage = $"Index {index} is out of range for muscariables. Valid range is " +
+                    $"0 to {muscariables.Count - 1}. No variable removed.";
+                throw new IndexOutOfRangeException(errorMessage);
+            }
+            Muscariable toRemove = muscariables[index];
+            RemoveFromCachesThenSignal(toRemove);
+            return toRemove;
         }
 
         public void Initialize(IList<Muscariable> initMuscaris, IList<Variable> initLegacies)
         {
             Initialize();
-
             AddMultiVars(initMuscaris);
 
-            // We don't want to convert the legacies yet
+            // For the sake of backwards compatibility with Fungus projects, we won't convert 
+            // any legacies we're being initialized with. At least, not here.
             for (int i = 0; i < initLegacies.Count; i++)
             {
                 Variable legacy = initLegacies[i];
                 legacyVariables.Add(legacy);
                 RegisterIntoVarLookup(new[] { legacy });
             }
-        }
 
-        public void OnEnable()
-        {
-            if (VarOwner is UnityObj ownerUnityObj && Application.IsPlaying(ownerUnityObj))
+            UpdateNextValidId();
+            void UpdateNextValidId()
             {
+                // We want it set to one more than the max ID currently in use, so that the next
+                // variable added will get an ID that is not already taken.
+                byte maxIdInUse = 0;
                 foreach (var elem in lookup.Values)
                 {
-                    elem.Init();
-                }
-            }
-        }
-        public bool IsInitted
-        {
-            get => isInitted;
-            private set => isInitted = value;
-        }
-        [SerializeField] private bool isInitted = false;
-
-        public void Refresh()
-        {
-            lookup ??= new Dictionary<byte, IVariable>();
-            lookup.Clear();
-            RegisterIntoVarLookup(muscariables);
-            RegisterIntoVarLookup(legacyVariables);
-            EnsureValidIds();
-        }
-
-        private Dictionary<byte, IVariable> lookup = new();
-
-
-        private void RegisterIntoVarLookup(IEnumerable<IVariable> varsToRegister)
-        {
-            foreach (var elem in varsToRegister)
-            {
-                if (elem.ItemId == Muscariable.InvalidID)
-                {
-                    elem.ItemId = NextValidVarID();
-                }
-                else if (lookup.ContainsKey(elem.ItemId))
-                {
-                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found. Reassigning.");
-                    elem.ItemId = NextValidVarID();
-                }
-                lookup[elem.ItemId] = elem;
-            }
-        }
-
-        /// <summary>
-        /// Checks for duplicate IDs and reassigns them if necessary
-        /// </summary>
-        public void EnsureValidIds()
-        {
-            var idGroups = lookup.Values.GroupBy(elem => elem.ItemId);
-            foreach (var group in idGroups)
-            {
-                if (group.Count() > 1)
-                {
-                    Debug.LogWarning($"Duplicate variable ID {group.Key}. Reassigning IDs.");
-                    foreach (var elem in group)
+                    if (elem.ItemId > maxIdInUse)
                     {
-                        elem.ItemId = NextValidVarID();
+                        maxIdInUse = elem.ItemId;
                     }
                 }
+                nextValidVarID = (byte)(maxIdInUse + 1);
             }
-        }
 
-        private byte NextValidVarID()
-        {
-            byte toReturn = nextValidVarID;
-            nextValidVarID++;
-            return toReturn;
+            EnsureValidIds();
         }
 
         public void AddMultiVars(IEnumerable<IVariable> toAdd)
@@ -180,10 +187,90 @@ namespace Amanita.VScripting
             toAdd.Owner = VarOwner;
             #endregion
 
-            muscariables.Add(toAdd);
+            AddToCachesThenSignal(toAdd);
+        }
+
+        private void AddToCachesThenSignal(IVariable toAdd)
+        {
+            if (toAdd is Muscariable)
+            {
+                muscariables.Add(toAdd as Muscariable);
+            }
+            else if (toAdd is Variable)
+            {
+                legacyVariables.Add(toAdd as Variable);
+            }
             lookup[toAdd.ItemId] = toAdd;
             VariableAdded(toAdd);
         }
+
+        public event Action<IVariable> VariableAdded = delegate { };
+
+        public void OnEnable()
+        {
+            if (VarOwner is UnityObj ownerUnityObj && Application.IsPlaying(ownerUnityObj))
+            {
+                EnsureValidIds();
+                foreach (var elem in lookup.Values)
+                {
+                    elem.Init(elem.BoxedValue);
+                }
+            }
+        }
+
+        public void Refresh()
+        {
+            lookup ??= new Dictionary<byte, IVariable>();
+            lookup.Clear();
+            RegisterIntoVarLookup(muscariables);
+            RegisterIntoVarLookup(legacyVariables);
+            EnsureValidIds();
+        }
+
+        private void RegisterIntoVarLookup(IEnumerable<IVariable> varsToRegister)
+        {
+            foreach (var elem in varsToRegister)
+            {
+                if (elem.ItemId == Muscariable.InvalidID)
+                {
+                    elem.ItemId = NextValidVarID();
+                }
+                else if (lookup.ContainsKey(elem.ItemId))
+                {
+                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found. Reassigning.");
+                    elem.ItemId = NextValidVarID();
+                }
+                lookup[elem.ItemId] = elem;
+            }
+        }
+
+        /// <summary>
+        /// Checks for duplicate IDs and reassigns them if necessary
+        /// </summary>
+        public void EnsureValidIds()
+        {
+            var idGroups = lookup.Values.GroupBy(elem => elem.ItemId);
+            foreach (var group in idGroups)
+            {
+                if (group.Count() > 1)
+                {
+                    Debug.LogWarning($"Duplicate variable ID {group.Key}. Reassigning IDs.");
+                    foreach (var elem in group)
+                    {
+                        elem.ItemId = NextValidVarID();
+                    }
+                }
+            }
+        }
+
+        private byte NextValidVarID()
+        {
+            byte toReturn = nextValidVarID;
+            nextValidVarID++;
+            return toReturn;
+        }
+
+        
 
         public IReadOnlyList<IVariable> Variables
         {
@@ -216,9 +303,6 @@ namespace Amanita.VScripting
 
         private IVariableSource _varOwner;
 
-        public event Action<IVariable> VariableAdded = delegate { };
-
-        
         public void RemoveVariable(IVariable toRemove)
         {
             bool alreadyRegistered = lookup.Values.Contains(toRemove);
@@ -228,44 +312,6 @@ namespace Amanita.VScripting
             }
 
             RemoveFromCachesThenSignal(toRemove);
-        }
-
-        private void RemoveFromCachesThenSignal(IVariable toRemove)
-        {
-            legacyVariables.Remove(toRemove as Variable);
-            muscariables.Remove(toRemove as Muscariable);
-            lookup.Remove(toRemove.ItemId);
-            VariableRemoved(toRemove);
-        }
-
-        public event Action<IVariable> VariableRemoved = delegate { };
-
-        public IVariable RemoveLegacyVarAtIndex(int index)
-        {
-            if (index < 0 || index >= legacyVariables.Count)
-            {
-                string errorMessage = $"Index {index} is out of range for legacy variables. Valid range is " +
-                    $"0 to {legacyVariables.Count - 1}. No variable removed.";
-
-                throw new IndexOutOfRangeException(errorMessage);
-            }
-
-            Variable toRemove = legacyVariables[index];
-            RemoveFromCachesThenSignal(toRemove);
-            return toRemove;
-        }
-
-        public IVariable RemoveMuscariAtIndex(int index)
-        {
-            if (index < 0 || index >= muscariables.Count)
-            {
-                string errorMessage = $"Index {index} is out of range for muscariables. Valid range is " +
-                    $"0 to {muscariables.Count - 1}. No variable removed.";
-                throw new IndexOutOfRangeException(errorMessage);
-            }
-            Muscariable toRemove = muscariables[index];
-            RemoveFromCachesThenSignal(toRemove);
-            return toRemove;
         }
 
         public IVariable GetVariable(byte id)
@@ -279,20 +325,6 @@ namespace Amanita.VScripting
             return lookup.TryGetValue(var.ItemId, out IVariable found) && found == var;
         }
 
-        public void Clear()
-        {
-            // Remove them one by one so the right events fire
-            while (legacyVariables.Count > 0)
-            {
-                RemoveLegacyVarAtIndex(0);
-            }
-
-            while (muscariables.Count > 0)
-            {
-                RemoveMuscariAtIndex(0);
-            }
-        }
-
         public void ResetAll()
         {
             foreach (var variable in lookup.Values)
@@ -301,10 +333,19 @@ namespace Amanita.VScripting
             }
         }
 
-        public Muscariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result as Muscariable;
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
+        /// </summary>
+        public IVariable<TContent> GetVariable<TContent>(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var result = lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            return result as IVariable<TContent>;
         }
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
@@ -373,12 +414,13 @@ namespace Amanita.VScripting
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
 
-        public TVarType AddNewVariable<TValHeld, TVarType>(string key,
+        public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
-            where TVarType : class, IVariable<TValHeld>
         {
-            TVarType newVar = VariableFactory.Create(typeof(TValHeld)) as TVarType;
+            Type valueType = typeof(TValHeld);
+            
+            IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
             newVar.Value = value;
@@ -392,8 +434,7 @@ namespace Amanita.VScripting
             {
                 newVar.Init(value);
             }
-            
-            AddVariable(toRegister);
+
             VariableAdded(toRegister);
 
             return newVar;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Select the UI element when the GameObject is enabled.

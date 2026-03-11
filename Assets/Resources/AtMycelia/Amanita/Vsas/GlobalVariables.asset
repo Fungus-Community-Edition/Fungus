@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: GlobalVariables
+  m_EditorClassIdentifier: 
+  includeInSaves: 1
+  uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  alwaysKeepGuid: 1
+  variables:
+  - rid: 7903258335965610039
+  - rid: 7903258335965610044
+  - rid: 7903258335965610040
+  - rid: 7903258335965610041
+  - rid: 7903258335965610042
+  - rid: 7903258335965610043
+  _nextVarID: 7
+  references:
+    version: 2
+    RefIds:
+    - rid: 7903258335965610039
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: Naruto
+        itemID: 6
+        value: Believe it! esytg
+        startValue: 
+    - rid: 7903258335965610040
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: One Piece
+        itemID: 1
+        value: 'I will become the
+
+          Pirate King!'
+        startValue: 
+    - rid: 7903258335965610041
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: Bleach
+        itemID: 2
+        value: 'Throwing away victory for the sake of manners is a cookie mistake.
+          Captains don''t have the time to waste on that kind of thing.
+
+
+          Don''t
+          waste your time trying to play the good guy. No matter what debts you may
+          owe, from the instant you find yourself on the battleground, both sides
+          are evil.'
+        startValue: 
+    - rid: 7903258335965610042
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: meaningOfLife
+        itemID: 3
+        value: 24
+        startValue: 0
+    - rid: 7903258335965610043
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: cuteBgm
+        itemID: 4
+        value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
+        startValue: {fileID: 0}
+    - rid: 7903258335965610044
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: pi
+        itemID: 5
+        value: 3.14159
+        startValue: 0

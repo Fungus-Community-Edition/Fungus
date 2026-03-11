@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     [CustomPropertyDrawer(typeof(EnumFlagAttribute))]
     public class EnumFlagDrawer : PropertyDrawer

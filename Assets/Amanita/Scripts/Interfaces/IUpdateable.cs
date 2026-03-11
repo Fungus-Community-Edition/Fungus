@@ -1,4 +1,4 @@
-﻿namespace Amanita
+﻿namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Interface for Flowchart components which can be updated when the 

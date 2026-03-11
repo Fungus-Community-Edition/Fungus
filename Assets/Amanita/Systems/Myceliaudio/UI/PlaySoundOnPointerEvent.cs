@@ -1,11 +1,11 @@
-using Amanita.UI;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using PointerEventData = UnityEngine.EventSystems.PointerEventData;
+using AtMycelia.UI;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public class PlaySoundOnPointerEvent : MonoBehaviour
     {

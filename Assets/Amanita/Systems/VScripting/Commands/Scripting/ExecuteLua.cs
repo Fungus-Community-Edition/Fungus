@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using MoonSharp.Interpreter;
-using Amanita.Lua;
+using AtMycelia.Amanita.Lua;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Executes a Lua code chunk using a Lua Environment.

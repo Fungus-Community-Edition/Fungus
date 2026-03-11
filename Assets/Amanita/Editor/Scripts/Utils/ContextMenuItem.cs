@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class ContextMenuItem : IContextMenuItem
     {

@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Texture variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Texture", typeof(Texture), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class TextureVariable : VariableBase<Texture>
     {
     }

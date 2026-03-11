@@ -1,7 +1,7 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles zooming the Flowchart canvas via scroll wheel.

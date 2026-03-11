@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Has a sound played when a slider's value changes. The volume played at depends

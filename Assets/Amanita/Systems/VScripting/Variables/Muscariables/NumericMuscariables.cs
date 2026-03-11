@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "NumericMuscariable")]
     public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>, IComparable<NumericMuscariable<T>>
         where T : IComparable<T>, IEquatable<T>
     {
@@ -74,6 +76,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric", "Integer", typeof(int))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "IntMuscariable")]
     public class IntMuscariable : NumericMuscariable<int>, IVariable<int>
     {
         public IntMuscariable() : base() { }
@@ -121,6 +124,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric", "Float", typeof(float))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "FloatMuscariable")]
     public class FloatMuscariable : NumericMuscariable<float>
     {
         public FloatMuscariable(): base() { }
@@ -168,6 +172,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric", "Boolean", typeof(bool))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "BoolMuscariable")]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
         public BoolMuscariable() : base() { }
@@ -202,6 +207,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric", "Double", typeof(double))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "DoubleMuscariable")]
     public class DoubleMuscariable : NumericMuscariable<double>
     {
         public DoubleMuscariable() : base() { }
@@ -248,6 +254,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "VectorTwoMuscariable")]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
         public VectorTwoMuscariable() : base() { }
@@ -389,6 +396,7 @@ namespace Amanita.VScripting
 
     [Serializable]
     [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "VectorThreeMuscariable")]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {
         public VectorThreeMuscariable() : base() { }

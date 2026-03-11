@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// String variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "String", typeof(string), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class StringVariable : VariableBase<string>
     {
     }

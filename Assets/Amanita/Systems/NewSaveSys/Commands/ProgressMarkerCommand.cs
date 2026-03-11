@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys", 
         "Progress Marker", 
@@ -43,25 +43,20 @@ namespace Amanita.SaveSys.VScripting
         {
             string id = markerID.Value;
             int order = markerOrder.Value;
-            SaveSys.RegisterProgressMarker(id, order);
-        }
-
-        protected SaveSystem SaveSys
-        {
-            get { return SaveSystem.S; }
+            SaveSystem.RegisterProgressMarker(id, order);
         }
 
         protected virtual void HandleDeregistration()
         {
             string id = markerID.Value;
-            SaveSys.UnregisterProgressMarker(id);
+            SaveSystem.UnregisterProgressMarker(id);
         }
 
         protected virtual void HandleSettingOrder()
         {
             string id = markerID.Value;
             int order = markerOrder.Value;
-            SaveSys.SetProgressMarkerOrder(id, order);
+            SaveSystem.SetProgressMarkerOrder(id, order);
         }
 
         protected virtual void WarnAboutNullInput()

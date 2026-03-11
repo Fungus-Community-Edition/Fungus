@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using TextVariationHandler = AtMycelia.Amanita.TextVariationHandler;
 
 namespace DialogueSys
 {
@@ -8,7 +9,7 @@ namespace DialogueSys
         [Test]
         public void SimpleSequenceSelection()
         {
-            Amanita.TextVariationHandler.ClearHistory();
+            TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [a|b|c]";
             string startingTextA = @"This is test a";
@@ -17,20 +18,20 @@ namespace DialogueSys
 
             string res = string.Empty;
 
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
         }
 
         [Test]
         public void SimpleCycleSelection()
         {
-            Amanita.TextVariationHandler.ClearHistory();
+            TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [&a|b|c]";
             string startingTextA = @"This is test a";
@@ -39,24 +40,24 @@ namespace DialogueSys
 
             string res = string.Empty;
 
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
         }
 
         [Test]
         public void SimpleOnceSelection()
         {
-            Amanita.TextVariationHandler.ClearHistory();
+            TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [!a|b|c]";
             string startingTextA = @"This is test a";
@@ -66,22 +67,22 @@ namespace DialogueSys
 
             string res = string.Empty;
 
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextC);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextD);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextD);
         }
 
         [Test]
         public void NestedSelection()
         {
-            Amanita.TextVariationHandler.ClearHistory();
+            TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test [a||sub [~a|b]|[!b|[~c|d]]]";
             string startingTextA = @"This is test a";
@@ -94,18 +95,18 @@ namespace DialogueSys
 
             string res = string.Empty;
 
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextA);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextBlank);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             if (res != startingTextSubA && res != startingTextSubB)
             {
                 Assert.Fail();
             }
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             Assert.AreEqual(res, startingTextB);
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
             if (res != startingTextC && res != startingTextD)
             {
                 Assert.Fail();
@@ -115,14 +116,14 @@ namespace DialogueSys
         [Test]
         public void SquareBracketsWithoutTypeNoImpact()
         {
-            Amanita.TextVariationHandler.ClearHistory();
+            TextVariationHandler.ClearHistory();
 
             string startingText = @"This is test a [of changing nothing]";
             const string expected = @"This is test a [of changing nothing]";
 
             string res = string.Empty;
 
-            res = Amanita.TextVariationHandler.SelectVariations(startingText);
+            res = TextVariationHandler.SelectVariations(startingText);
 
             Assert.AreEqual(expected, res);
         }

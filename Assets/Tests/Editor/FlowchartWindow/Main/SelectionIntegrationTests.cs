@@ -4,9 +4,10 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {
@@ -17,7 +18,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             base.SetUp();
 
-            window = ScriptableObject.CreateInstance<Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow>();
+            window = ScriptableObject.CreateInstance<FcWindow>();
             SetWindowContext(window, ctx);
 
             selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
@@ -44,11 +45,11 @@ namespace VScriptingTests.FCWindowOperations.Integration
 
         private SelectionBoxDragTrackerUitk selectionBoxTracker;
         private SingleSelectionHandler singleSelectionHandler;
-        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow window;
+        private FcWindow window;
 
-        private static void SetWindowContext(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow targetWindow, FlowchartContext context)
+        private static void SetWindowContext(FcWindow targetWindow, FlowchartContext context)
         {
-            FieldInfo field = typeof(Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow).GetField("_fcContext", BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = typeof(FcWindow).GetField("_fcContext", BindingFlags.Instance | BindingFlags.NonPublic);
             field.SetValue(targetWindow, context);
         }
 

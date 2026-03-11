@@ -1,8 +1,8 @@
-﻿using Amanita.VScripting.EditorUtils;
+﻿using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using DefaultHandler = Amanita.VScripting.EditorUtils.DefaultRowVisualHandler;
+using DefaultHandler = AtMycelia.Amanita.VScripting.EditorUtils.DefaultRowVisualHandler;
 
 namespace VScriptingTests.VariableOperations
 {

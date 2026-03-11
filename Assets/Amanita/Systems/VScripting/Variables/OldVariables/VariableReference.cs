@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// A reference to a variable belonging to a variable source (Flowchart or VariableSourceAsset).

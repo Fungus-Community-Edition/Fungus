@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// The static signals related to flowcharts.

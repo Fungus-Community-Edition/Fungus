@@ -1,8 +1,8 @@
-using Amanita.SaveSys.UI;
-using Amanita.VScripting;
+using AtMycelia.SaveSys.UI;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys/DebugOnly", 
         "ClickSaveSlotUI", 

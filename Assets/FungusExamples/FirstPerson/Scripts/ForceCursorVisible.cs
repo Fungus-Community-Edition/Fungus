@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Examples
+namespace AtMycelia.Amanita.Examples
 {
     /// <summary>
     /// Helper for FirstPerson Fungus Demo to work around some of the inflexibility of the Unity standard fps controller

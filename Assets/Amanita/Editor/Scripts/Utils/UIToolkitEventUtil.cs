@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine.UIElements;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public static class UIToolkitEventUtil
     {

@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Object variable type.
@@ -9,6 +10,7 @@ namespace Amanita.VScripting
     [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObj), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class ObjectVariable : VariableBase<UnityObj>
     {
     }

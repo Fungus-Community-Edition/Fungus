@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(Variable), true)]
     public class VariableEditor : CommandEditor

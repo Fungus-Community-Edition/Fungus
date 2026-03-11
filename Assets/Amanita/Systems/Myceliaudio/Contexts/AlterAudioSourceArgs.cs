@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Events;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Args for how you want to change some numeric aspect of an AudioSource

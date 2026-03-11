@@ -1,10 +1,10 @@
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EventHandlers;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(EventHandler), true)]
     public class EventHandlerEditor : Editor

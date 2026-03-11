@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Delete from Slot",
@@ -21,16 +21,17 @@ namespace Amanita.SaveSys.VScripting
                 Continue();
                 return;
             }
-            SaveSystem saveSystem = SaveSystem.S;
-            if (saveSystem == null)
+
+            if (SaveSystem.SaveManager == null)
             {
-                string errorMessage = "DeleteFromSlot: No SaveSystem instance found.";
+                string errorMessage = "DeleteFromSlot: SaveSystem is not initialized.";
                 Debug.LogError(errorMessage);
                 Continue();
                 return;
             }
-            saveSystem.DeleteSave(_slotIndex);
-            bool deletionSuccess = !saveSystem.DoesSaveExist(_slotIndex);
+
+            SaveSystem.DeleteSave(_slotIndex);
+            bool deletionSuccess = !SaveSystem.DoesSaveExist(_slotIndex);
             if (!deletionSuccess)
             {
                 string errorMessage = $"DeleteFromSlot: Failed to delete save data at slot {_slotIndex.Value}.";
@@ -38,6 +39,7 @@ namespace Amanita.SaveSys.VScripting
             }
             Continue();
         }
+
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();

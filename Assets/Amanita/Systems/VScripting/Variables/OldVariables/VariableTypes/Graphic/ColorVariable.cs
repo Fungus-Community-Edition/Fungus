@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Color variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("Graphic", "Color", typeof(Color), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class ColorVariable : VariableBase<Color>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)
