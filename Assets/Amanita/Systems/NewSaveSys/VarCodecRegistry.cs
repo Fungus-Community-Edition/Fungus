@@ -55,6 +55,7 @@ namespace AtMycelia.Amanita.SaveSys
             }
 
         }
+        
         private static readonly List<IVarCodec> codecs = new()
         {
             new NumericVarCodec(),
@@ -116,13 +117,13 @@ namespace AtMycelia.Amanita.SaveSys
             return result;
         }
 
-        public static IVarCodec GetCodec(string typeName)
+        public static IVarCodec GetCodec(string contentTypeName)
         {
             IVarCodec result = null;
             for (int i = 0; i < codecs.Count; i++)
             {
                 IVarCodec toCheck = codecs[i];
-                if (toCheck.CanHandle(typeName))
+                if (toCheck.CanHandle(contentTypeName))
                 {
                     result = toCheck;
                     break;

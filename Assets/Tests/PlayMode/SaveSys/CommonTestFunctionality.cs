@@ -135,7 +135,17 @@ namespace SaveSystemTests
             DestroyExistingAmanitaManagerIfAny();
             ResetSingletonStaticsForSetUp();
 
-            SaveSystemBootstrapper.Enabled = ReqSaveSystem;
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                SaveSystemBootstrapper.Enabled = false;
+            }
+            else
+#endif
+            {
+                SaveSystemBootstrapper.Enabled = ReqSaveSystem;
+            }
+
             if (ReqSaveSystem)
             {
                 saveSysInstallEvent = new ManualResetEventSlim(false);
@@ -424,8 +434,6 @@ namespace SaveSystemTests
             {
                 DeleteAllTestSaves();
                 SaveSysSignals.BaseSaveSysInstallationComplete -= OnBaseSaveSysInstallationComplete;
-                if (SaveSystem.SaveManager != null)
-                    SaveSystem.ClearSaveDataAppliers();
             }
 
             ResetSingletonStaticsForSetUp();
@@ -488,16 +496,7 @@ namespace SaveSystemTests
             }
 
             SaveSystem.ResetStaticsForTest();
-            ResetRelativeSavePaths();
             DestroyResidualSceneAndManager();
-        }
-
-        private void ResetRelativeSavePaths()
-        {
-            if (saveWriter != null)
-                saveWriter.RelativeSavePath = saveWriter.DefaultRelativeSavePath;
-            if (saveReader != null)
-                saveReader.RelativeSavePath = saveReader.DefaultRelativeSavePath;
         }
 
         private void DestroyResidualSceneAndManager()

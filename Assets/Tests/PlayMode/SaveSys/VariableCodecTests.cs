@@ -18,12 +18,14 @@ namespace SaveSystemTests
 
         protected virtual void PrepCodecs()
         {
-            numericCodec = VarCodecRegistry.GetCodec(nameof(IntegerVariable));
-            booleanCodec = VarCodecRegistry.GetCodec(nameof(BooleanVariable));
-            vectorCodec = VarCodecRegistry.GetCodec(nameof(Vector2Variable));
-            colorCodec = VarCodecRegistry.GetCodec(nameof(ColorVariable));
-            stringCodec = VarCodecRegistry.GetCodec(nameof(StringVariable));
-            transformCodec = VarCodecRegistry.GetCodec(nameof(TransformVariable));
+            VarCodecRegistry.DiscoverAndRegister_Runtime();
+
+            numericCodec = VarCodecRegistry.GetCodec(typeof(int).Name);
+            booleanCodec = VarCodecRegistry.GetCodec(typeof(bool).Name);
+            vectorCodec = VarCodecRegistry.GetCodec(typeof(Vector2).Name);
+            colorCodec = VarCodecRegistry.GetCodec(typeof(Color).Name);
+            stringCodec = VarCodecRegistry.GetCodec(typeof(string).Name);
+            transformCodec = VarCodecRegistry.GetCodec(typeof(Transform).Name);
         }
 
         protected IVarCodec numericCodec, booleanCodec, vectorCodec, colorCodec, stringCodec, transformCodec;

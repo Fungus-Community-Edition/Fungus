@@ -13,6 +13,10 @@ namespace SaveSystemTests
 {
     public class VsaSaveCodecTests : CommonTestFunctionality
     {
+        protected override bool ReqSaveSystem => false;
+        protected override bool ReqSceneLoad => false;
+        protected override bool ReqFlowchart => false;
+
         // ---- Resource / Asset Paths ----
         private const string ResourcesFolder = "Assets/Resources";
         private const string TestResourcesSubFolder = "Assets/Resources/VarSrcApplierTests";
