@@ -15,8 +15,6 @@ namespace AtMycelia.Amanita.VScripting
         Private,
         /// <summary> Can be accessed from any command in any Flowchart. </summary>
         Public,
-        /// <summary> Creates and/or references a global variable of that name, all variables of this name and scope share the same underlying fungus variable and exist for the duration of the instance of Unity.</summary>
-        Global,
     }
 
     /// <summary>
@@ -247,7 +245,7 @@ namespace AtMycelia.Amanita.VScripting
             }
             set
             {
-                if (scope != VariableScope.Global || !Application.isPlaying)
+                if (!Application.isPlaying)
                 {
                     this.value = value;
                     baseVal = value;
