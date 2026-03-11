@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Core interface for flowchart host windows, implemented by FlowchartWindow.

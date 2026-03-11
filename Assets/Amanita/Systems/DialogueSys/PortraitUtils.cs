@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using MoonSharp.Interpreter;
 using System.Collections.Generic;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// Contains all options to run a portrait command.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
 	/// <summary>
 	/// Container for a AudioClip variable reference or constant value.

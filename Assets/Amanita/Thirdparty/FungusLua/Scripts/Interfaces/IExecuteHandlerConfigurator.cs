@@ -1,4 +1,4 @@
-﻿namespace Amanita.Lua
+﻿namespace AtMycelia.Amanita.Lua
 {
     public interface IExecuteHandlerConfigurator
     {

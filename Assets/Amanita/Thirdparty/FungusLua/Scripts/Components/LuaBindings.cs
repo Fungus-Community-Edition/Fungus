@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using System;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Represents a single Unity object (+ optional component) bound to a string key.

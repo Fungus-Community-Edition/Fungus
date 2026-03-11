@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public interface IHitTester
     {

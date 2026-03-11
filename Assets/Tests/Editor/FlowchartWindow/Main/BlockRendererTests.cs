@@ -2,10 +2,10 @@
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UIElements;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -16,19 +16,20 @@ namespace VScriptingTests.FCWindowOperations
         class FakeDrawer : IBlockDrawerUitk
         {
             public readonly List<Block> CreatedFor = new List<Block>();
-            public readonly List<(Block Block, Button Button, float Zoom)> UpdateCalls
-                = new List<(Block, Button, float)>();
-            public readonly Dictionary<Block, Button> CreatedButtons = new Dictionary<Block, Button>();
+            public readonly List<(Block Block, BlockButton Button, float Zoom)> UpdateCalls
+                = new List<(Block, BlockButton, float)>();
+            public readonly Dictionary<Block, BlockButton> CreatedButtons = new Dictionary<Block, BlockButton>();
 
-            public Button CreateButton(Block block)
+            public BlockButton CreateButton(Block block)
             {
                 CreatedFor.Add(block);
-                var button = new Button();
+                var button = new BlockButton(new BlockGraphicsGenerator());
+                button.Initialize(block, null, null, null);
                 CreatedButtons[block] = button;
                 return button;
             }
 
-            public void UpdateButton(Button button, Block block, float zoom)
+            public void UpdateButton(BlockButton button, Block block, float zoom)
             {
                 UpdateCalls.Add((block, button, zoom));
             }
@@ -39,7 +40,7 @@ namespace VScriptingTests.FCWindowOperations
         Block _insideBlock;
         Block _outsideBlock;
         FakeDrawer _drawer;
-        BlockRendererUitk _renderer;
+        BlockRenderer _renderer;
 
         [SetUp]
         public void SetUp()
@@ -67,7 +68,7 @@ namespace VScriptingTests.FCWindowOperations
 
             // 4) Test double + renderer under test
             _drawer = new FakeDrawer();
-            _renderer = new BlockRendererUitk(_flowchartCtx, _drawer);
+            _renderer = new BlockRenderer(_flowchartCtx, _drawer);
         }
 
         [TearDown]
@@ -109,7 +110,7 @@ namespace VScriptingTests.FCWindowOperations
             foreach (var pair in _drawer.CreatedButtons)
             {
                 Block block = pair.Key;
-                Button createdButton = pair.Value;
+                BlockButton createdButton = pair.Value;
 
                 bool found = _drawer.UpdateCalls.Any(c =>
                     ReferenceEquals(c.Block, block) && ReferenceEquals(c.Button, createdButton));

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.UI
+namespace AtMycelia.Amanita.VScripting.UI
 {
     /// <summary>
     /// Model for Flowchart editor window. Stores information about selected blocks and

@@ -1,4 +1,4 @@
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace VScriptingTests.VariableOperations
 {

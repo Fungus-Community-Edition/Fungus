@@ -1,4 +1,4 @@
-﻿namespace Amanita
+﻿namespace AtMycelia.Amanita
 {
 
 	// Some CSV utilities cobbled together from stack overflow answers

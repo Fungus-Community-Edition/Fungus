@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(Call))]
     public class CallEditor : CommandEditor 

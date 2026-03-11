@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Helper class for hiding the many, many ways we might want to show text to the user.

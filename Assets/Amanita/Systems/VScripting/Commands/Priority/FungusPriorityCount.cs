@@ -1,4 +1,4 @@
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.

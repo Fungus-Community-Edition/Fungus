@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the user clicks or taps on the clickable object.

@@ -1,8 +1,8 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class BlockGraphicsGenerator : IBlockGraphicsGenerator
     {
@@ -15,8 +15,8 @@ namespace Amanita.VScripting.EditorUtils
             Color defaultTint;
             if (block._EventHandler != null)
             {
-                graphics.offTexture = AmanitaEditorResources.EventNodeOff;
-                graphics.onTexture = AmanitaEditorResources.EventNodeOn;
+                //graphics.offTexture = AmanitaEditorResources.EventNodeOff;
+                //graphics.onTexture = AmanitaEditorResources.EventNodeOn;
                 defaultTint = AmanitaConstants.DefaultEventBlockTint;
             }
             else
@@ -35,19 +35,21 @@ namespace Amanita.VScripting.EditorUtils
 
                 if (blockGraphicsUniqueListWorkSpace.Count > 1)
                 {
-                    graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
+                    //graphics.offTexture = AmanitaEditorResources.ChoiceNodeOff;
+                    //graphics.onTexture = AmanitaEditorResources.ChoiceNodeOn;
                     defaultTint = AmanitaConstants.DefaultChoiceBlockTint;
                 }
                 else
                 {
-                    graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
-                    graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
+                    //graphics.offTexture = AmanitaEditorResources.ProcessNodeOff;
+                    //graphics.onTexture = AmanitaEditorResources.ProcessNodeOn;
                     defaultTint = AmanitaConstants.DefaultProcessBlockTint;
                 }
             }
 
-            graphics.tint = (block.UseCustomTint ? block.Tint : defaultTint) * AmanitaEditorPreferences.flowchartBlockTint;
+            graphics.tint = block.UseCustomTint ? 
+                block.Tint : 
+                defaultTint * AmanitaEditorPreferences.flowchartBlockTint;
 
             return graphics;
         }

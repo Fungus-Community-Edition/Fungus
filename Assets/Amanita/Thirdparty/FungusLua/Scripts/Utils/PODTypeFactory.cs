@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Factory class to create new instances of common POD value types used by Unity.

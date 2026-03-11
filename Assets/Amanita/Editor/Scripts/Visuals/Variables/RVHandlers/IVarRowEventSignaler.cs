@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public interface IVarRowEventSignaler
     {

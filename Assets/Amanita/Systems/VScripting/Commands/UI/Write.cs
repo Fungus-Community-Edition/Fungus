@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// Text coloring mode for Write command.

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public interface IFlowchartWindowModule : IDisposable
     {
@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
         /// Lower number, sooner execution; Modules are executed in ascending order of this value.
         /// </summary>
         int Priority { get; set; }
-        void Initialize(FlowchartWindowUitk window);
+        void Initialize(FlowchartWindow window);
     }
 
     public sealed class FlowchartModuleDispatcher

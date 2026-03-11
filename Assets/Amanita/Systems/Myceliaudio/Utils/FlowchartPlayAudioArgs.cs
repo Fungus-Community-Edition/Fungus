@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     [System.Serializable]
     public class FlowchartPlayAudioArgs : IPlayAudioContext

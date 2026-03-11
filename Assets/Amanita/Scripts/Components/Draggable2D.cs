@@ -2,10 +2,10 @@
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
-using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Detects drag and drop interactions on a Game Object, and sends events to all Flowchart event handlers in the scene.

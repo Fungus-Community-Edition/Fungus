@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Collections.Generic;
 using UnityObj = UnityEngine.Object;
-using Amanita;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {

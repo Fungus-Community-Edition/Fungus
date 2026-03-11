@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.DialogueSys.UI
+namespace AtMycelia.Amanita.DialogueSys.UI
 {
     /// <summary>
     /// Manages the UI aspects of the Narrative Log via EntryDisplay objects

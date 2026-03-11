@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using AtMycelia.Audio;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Helper class for that also kind of wraps Unity's built-in AudioSource component.

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     [EventHandlerInfo("UI",
         "InputFieldTextChanged",

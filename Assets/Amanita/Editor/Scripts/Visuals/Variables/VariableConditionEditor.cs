@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Handles custom drawing for ConditionExperssions within the VariableCondition and inherited commands.

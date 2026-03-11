@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets a Draggable2D component to be draggable / non-draggable.

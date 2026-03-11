@@ -2,14 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class FcEmptySpacePopupWindow : VisualElement, IDisposable
     {
         [SerializeField]
         private VisualTreeAsset visualTreeAsset = default;
 
-        private static readonly string uxmlPath = "UIToolkitTemplates/FlowchartEmptySpacePopupMenu";
+        private static readonly string uxmlPath = "UIToolkitTemplates/ContextMenus/FlowchartEmptySpacePopupMenu";
         // ^Required to be a relative path from the Resources folder, without the file extension
 
         private static readonly Color GradientTop = new Color(1f, 1f, 1f, 1);
@@ -45,7 +45,7 @@ namespace Amanita.VScripting.EditorUtils
 
         private static void ApplyGradient(VisualElement element)
         {
-            UitkGradientDrawer.AttachVerticalGradient(element, GradientTop, GradientBottom);
+            GradientDrawer.AttachVerticalGradient(element, GradientTop, GradientBottom);
         }
 
         private void ToggleSubs(bool on)

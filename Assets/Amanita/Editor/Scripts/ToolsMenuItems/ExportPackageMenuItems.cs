@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class ExportPackageMenuItems : MonoBehaviour
     {

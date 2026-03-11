@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Amanita.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
-using Block = Amanita.VScripting.Block;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using Block = AtMycelia.Amanita.VScripting.Block;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -23,10 +22,10 @@ namespace VScriptingTests.FCWindowOperations
                 GridLineSpacingSize = _gridLineSpacingSize
             };
 
-            _renderer = new GridRendererUitk(ctx, _gridCtx);
+            _renderer = new GridRenderer(ctx, _gridCtx);
         }
 
-        protected GridRendererUitk _renderer;
+        protected GridRenderer _renderer;
         protected DrawGridContext _gridCtx;
         protected readonly Color _gridLineColor = Color.red;
         protected readonly int _gridLineSpacingSize = 50;

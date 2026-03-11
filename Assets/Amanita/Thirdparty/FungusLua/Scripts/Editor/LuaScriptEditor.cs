@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     [CustomEditor (typeof(LuaScript))]
     public class LuaScriptEditor : Editor

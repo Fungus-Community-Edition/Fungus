@@ -1,4 +1,4 @@
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     /// <summary>
     /// For classes that can kill all active tweens on a particular target.

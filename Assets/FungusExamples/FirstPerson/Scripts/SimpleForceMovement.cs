@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Amanita.Examples
+namespace AtMycelia.Amanita.Examples
 {
     /// <summary>
     /// A very simple movement script for a fungus demo. Not intended for use in full projects.

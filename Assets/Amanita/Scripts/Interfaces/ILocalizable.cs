@@ -1,4 +1,4 @@
-﻿namespace Amanita
+﻿namespace AtMycelia.Amanita
 {
     /// <summary>
     /// An item of localizeable text.

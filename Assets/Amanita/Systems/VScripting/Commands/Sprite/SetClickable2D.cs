@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Sets a Clickable2D component to be clickable / non-clickable.

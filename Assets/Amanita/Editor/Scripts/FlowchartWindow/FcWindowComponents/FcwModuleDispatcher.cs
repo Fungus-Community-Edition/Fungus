@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
 
     public abstract class FcwModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>

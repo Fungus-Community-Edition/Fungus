@@ -1,15 +1,30 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    public class ConnectionGatherer : IConnectionGatherer
+    public interface IBlockRectProvider
     {
-        private const float BlockNamePadding = 10f;
-        private List<Block> connectedBlocks = new List<Block>();
+        bool TryGetBlockRect(Block block, out Rect rect);
+    }
 
-        public virtual IList<ConnectionInfo> GatherConnections(DrawBlockContext drawCtx)
+    /// <summary>
+    /// Gathers connection information for all blocks in the flowchart, including 
+    /// their screen-space rectangles and highlight status.
+    /// </summary>
+    public sealed class ConnectionGatherer : IConnectionGatherer
+    {
+        private const bool DiagnosticsEnabled = true;
+
+        private List<Block> connectedBlocks = new List<Block>();
+        private readonly IBlockRectProvider rectProvider;
+
+        public ConnectionGatherer(IBlockRectProvider rectProvider)
+        {
+            this.rectProvider = rectProvider;
+        }
+
+        public IList<ConnectionInfo> GatherConnections(DrawBlockContext drawCtx)
         {
             var fcContext = drawCtx.FlowchartCtx;
             var fc = fcContext.Flowchart;
@@ -17,28 +32,47 @@ namespace Amanita.VScripting.EditorUtils
             var result = new List<ConnectionInfo>();
             var document = fcContext.Document;
 
-            foreach (var blockEl in document.AllBlocks.Where(b => b != null))
+            foreach (Block blockEl in document.AllBlocks)
             {
-                bool blockIsSelected = fc.SelectedBlock == blockEl;
-                Rect fromRect = CalculateWindowRect(blockEl, drawCtx, fc);
-
-                foreach (var commandEl in blockEl.CommandList.Where(cmd => cmd != null))
+                if (blockEl == null)
                 {
+                    continue;
+                }
+
+                bool blockIsSelected = fc.SelectedBlock == blockEl;
+                Rect fromRect = CalculateWindowRect(blockEl, fc);
+
+                var commands = blockEl.CommandList;
+                for (int i = 0; i < commands.Count; i++)
+                {
+                    Command commandEl = commands[i];
+                    if (commandEl == null)
+                    {
+                        continue;
+                    }
+
                     bool cmdIsSelected = fc.SelectedCommands.Contains(commandEl);
                     bool shouldHighlight = commandEl.IsExecuting || (blockIsSelected && cmdIsSelected);
 
                     connectedBlocks.Clear();
                     commandEl.GetConnectedBlocks(ref connectedBlocks);
 
-                    foreach (var dest in connectedBlocks)
+                    for (int j = 0; j < connectedBlocks.Count; j++)
                     {
+                        Block dest = connectedBlocks[j];
                         if (dest == null || dest == blockEl || dest.GetFlowchart() != fc)
+                        {
                             continue;
+                        }
 
-                        Rect toRect = CalculateWindowRect(dest, drawCtx, fc);
+                        Rect toRect = CalculateWindowRect(dest, fc);
                         if (OverlapsViewport(fromRect, toRect, viewRect))
                         {
-                            result.Add(new ConnectionInfo(fromRect, toRect, shouldHighlight));
+                            result.Add(new ConnectionInfo(blockEl, dest, shouldHighlight));
+                        }
+                        else if (DiagnosticsEnabled)
+                        {
+                            //Debug.Log($"[ConnectionGathererUitk] Skip connection. From={fromRect} To={toRect} View={viewRect}");
                         }
                     }
                 }
@@ -47,21 +81,26 @@ namespace Amanita.VScripting.EditorUtils
             return result;
         }
 
-        private static Rect CalculateWindowRect(Block block, DrawBlockContext drawCtx, Flowchart fc)
+        private Rect CalculateWindowRect(Block block, Flowchart fc)
         {
+            if (rectProvider != null && rectProvider.TryGetBlockRect(block, out Rect rect))
+            {
+                return rect;
+            }
+
             Rect modelRect = block._NodeRect;
-            GUIStyle nodeStyle = drawCtx.NodeStyle ?? GUI.skin.label;
-            Vector2 textSize = nodeStyle.CalcSize(new GUIContent(block.BlockName));
 
-            modelRect.width = Mathf.Clamp(textSize.x + BlockNamePadding, drawCtx.BlockMinWidth, drawCtx.BlockMaxWidth);
-            modelRect.height = drawCtx.DefaultBlockHeight;
-
-            if (drawCtx.UseGridSnap)
-                modelRect = modelRect.SnapPosition(drawCtx.GridObjectSnap);
-
+            float zoom = 1f;
+            Vector2 scrollPos = Vector2.zero;
             if (fc != null)
-                modelRect.position += fc.ScrollPos;
+            {
+                zoom = Mathf.Approximately(fc.Zoom, 0f) ? 1f : fc.Zoom;
+                scrollPos = fc.ScrollPos;
+            }
 
+            modelRect.width *= zoom;
+            modelRect.height *= zoom;
+            modelRect.position = (modelRect.position + scrollPos) * zoom;
             return modelRect;
         }
 
@@ -72,10 +111,16 @@ namespace Amanita.VScripting.EditorUtils
                 Mathf.Min(a.yMin, b.yMin),
                 Mathf.Max(a.xMax, b.xMax),
                 Mathf.Max(a.yMax, b.yMax));
+
+            if (DiagnosticsEnabled && !bound.Overlaps(view))
+            {
+                //Debug.Log($"[ConnectionGathererUitk] Bound={bound} does not overlap View={view}");
+            }
+
             return bound.Overlaps(view);
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             connectedBlocks.Clear();
         }

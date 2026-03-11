@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using Amanita.VScripting.Commands;
+using AtMycelia.Amanita.VScripting.Commands;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor

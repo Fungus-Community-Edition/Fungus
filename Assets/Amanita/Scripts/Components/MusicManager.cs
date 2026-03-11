@@ -1,9 +1,9 @@
 using UnityEngine;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Music manager which provides basic music and sound effect functionality.

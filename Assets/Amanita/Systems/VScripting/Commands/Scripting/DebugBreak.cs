@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Writes a log message to the debug console.

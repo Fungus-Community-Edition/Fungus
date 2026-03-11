@@ -1,10 +1,10 @@
-using Amanita.Myceliaudio;
+using AtMycelia.Amanita.Myceliaudio;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public class DefaultTweenAdapter : ScriptableObject, ITransformTweenAdapter, IGeneralTweenAdapter<Vector2>,
         IGeneralTweenAdapter<Vector3>, IGeneralTweenAdapter<float>, IGeneralTweenAdapter<int>,

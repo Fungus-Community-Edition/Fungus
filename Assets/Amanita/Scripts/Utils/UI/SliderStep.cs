@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Amanita.UI
+namespace AtMycelia.Amanita.UI
 {
     public class SliderStep : MonoBehaviour
     {

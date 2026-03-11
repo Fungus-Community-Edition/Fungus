@@ -4,11 +4,11 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using System.Linq;
 using MoonSharp.Interpreter;
-using Amanita.Lua;
+using AtMycelia.Amanita.Lua;
 using System;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
 	/// <summary>
 	/// Presents multiple choice buttons to the players.

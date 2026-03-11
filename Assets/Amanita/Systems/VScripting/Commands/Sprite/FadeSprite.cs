@@ -1,8 +1,8 @@
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Fades a sprite to a target color over a period of time.
