@@ -66,7 +66,33 @@ namespace AtMycelia.Amanita.VScripting
         /// <summary>
         /// If this is false, this is representing a literal value.
         /// </summary>
-        public virtual bool RepresentingVar => VarRef != null;
+        public virtual bool RepresentingVar
+        {
+            get
+            {
+                IVariable varRef = VarRef;
+                if (varRef == null)
+                {
+                    return false;
+                }
+
+                if (varRef.ItemId == Muscariable.InvalidID)
+                {
+                    Debug.LogWarning($"VariableData: Variable reference {varRef.Key} owned by {varRef.Owner} has invalid ID. Treating as literal value.");
+                    varRef = null; // Might as well get rid of it entirely to avoid future confusion, even if it means losing
+                                   // the key reference in the inspector. This is a consequence of how variable references
+                                   // are currently implemented, and will be resolved with the new variable system.
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(varRef.Key))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
 
         private bool CanHoldAsVar(IVariable variable)
         {

@@ -1500,16 +1500,14 @@ MonoBehaviour:
   _oldMuscariables: []
   description: Desc here loaaa
   uiModel:
-    _selectedBlocks:
-    - {fileID: 1620115443}
-    _selectedCommands:
-    - {fileID: 1620115447}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 1620115399}
-    <ScrollPos>k__BackingField: {x: 150.68561, y: -331.09366}
+    <ScrollPos>k__BackingField: {x: 30.520855, y: 38.86785}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.4
-    <BlockViewHeight>k__BackingField: 231
+    <Zoom>k__BackingField: 1.1999999
+    <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -2673,7 +2671,7 @@ MonoBehaviour:
           itemId: 0
           owningFc: {fileID: 1620115404}
           owningVsa: {fileID: 0}
-        value: 2
+        value: 1
         _intRef:
           scope: 0
           key: 
