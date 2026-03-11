@@ -34,6 +34,13 @@ namespace AtMycelia.Amanita.VScripting
                 // owner referenced
                 RefreshOwner();
                 IVariable result = null;
+
+                if (itemId == Muscariable.InvalidID)
+                {
+                    //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
+                    return null;
+                }
+
                 if (VarOwner != null)
                 {
                     result = VarOwner.GetVariable(itemId);

@@ -52,8 +52,8 @@ namespace AtMycelia.Amanita.SaveSys
                     continue;
                 }
 
-                Debug.Log($"Invoking SaveLoadedEvent handler on GameObject {handler.gameObject.name} " +
-                    $"with marker IDs {string.Join(", ", handler.MarkerIDs)}");
+                Debug.Log($"Invoking SaveLoadedEvent handler on Block {handler.ParentBlock.BlockName} on Flowchart " +
+                    $"{handler.gameObject.name} with marker IDs {string.Join(", ", handler.MarkerIDs)}");
                 handler.ExecuteBlock();
             }
         }

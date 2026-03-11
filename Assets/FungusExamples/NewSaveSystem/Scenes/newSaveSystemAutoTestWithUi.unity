@@ -1501,14 +1501,14 @@ MonoBehaviour:
   description: Desc here loaaa
   uiModel:
     _selectedBlocks:
-    - {fileID: 1620115403}
+    - {fileID: 1620115443}
     _selectedCommands:
-    - {fileID: 1620115437}
+    - {fileID: 1620115447}
     _owner: {fileID: 1620115399}
-    <ScrollPos>k__BackingField: {x: 308.01913, y: -104.65108}
+    <ScrollPos>k__BackingField: {x: 150.68561, y: -331.09366}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 0.9999999
+    <Zoom>k__BackingField: 1.4
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -2670,10 +2670,10 @@ MonoBehaviour:
       type: {class: FakeIntVariableData, ns: VScriptingTests.VariableOperations, asm: AmanitaEditorTests}
       data:
         backingVarRef:
-          itemId: 3
+          itemId: 0
           owningFc: {fileID: 1620115404}
           owningVsa: {fileID: 0}
-        value: 0
+        value: 2
         _intRef:
           scope: 0
           key: 
