@@ -78,10 +78,10 @@ namespace AtMycelia.Amanita.VScripting
 
                 if (varRef.ItemId == Muscariable.InvalidID)
                 {
-                    Debug.LogWarning($"VariableData: Variable reference {varRef.Key} owned by {varRef.Owner} has invalid ID. Treating as literal value.");
-                    varRef = null; // Might as well get rid of it entirely to avoid future confusion, even if it means losing
-                                   // the key reference in the inspector. This is a consequence of how variable references
-                                   // are currently implemented, and will be resolved with the new variable system.
+                    if (!string.IsNullOrEmpty(varRef.Key) || varRef.Owner != null)
+                    {
+                        Debug.LogWarning($"VariableData: Variable reference {varRef.Key} owned by {varRef.Owner} has invalid ID. Treating as literal value.");
+                    }
                     return false;
                 }
 
