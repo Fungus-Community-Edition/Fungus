@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using baseObj = System.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Collection of every Fungus VariableData type, used in commands that are designed to

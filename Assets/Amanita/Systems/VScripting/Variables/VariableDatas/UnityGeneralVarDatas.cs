@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Container for a GameObject variable reference or constant value.

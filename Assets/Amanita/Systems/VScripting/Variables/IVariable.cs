@@ -1,10 +1,10 @@
 using System;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     public interface IVariable : IHasKey, IHasItemID
     {
-        void Init();
+        void Init(object startValue = default);
         new string Key { get; set; }
         object BoxedValue { get; set; }
         VariableScope Scope { get; set; }
@@ -27,11 +27,17 @@ namespace Amanita.VScripting
         void Apply(SetOperator setOperator, object value);
         IVariableSource Owner { get; set; }
 
-        
+        /// <summary>
+        /// For returning a variable to its initial value
+        /// </summary>
+        void OnReset();
+        // ^We add the "On" for the sake of compatibility with legacy vars
+
     }
 
     public interface IVariable<T> : IVariable, IEquatable<T>
     {
+        void Init(T startValue = default);
         T Value { get; set; }
         void Apply(SetOperator setOperator, T value);
     }

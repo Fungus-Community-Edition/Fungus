@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Replaces special tokens in a string with substituted values (typically variables or localisation strings).

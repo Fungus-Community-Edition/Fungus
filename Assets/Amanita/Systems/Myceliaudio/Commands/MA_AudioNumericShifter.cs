@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     /// <summary>
     /// For changing some numeric value in an AudioSource. Volume, pitch, etc

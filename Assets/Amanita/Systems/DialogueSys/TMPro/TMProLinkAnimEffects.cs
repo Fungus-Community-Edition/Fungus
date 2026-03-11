@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Samples and helpers for creating TMProLink animations

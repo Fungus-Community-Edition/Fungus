@@ -1,4 +1,4 @@
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 using System;
 using UnityEngine;
 

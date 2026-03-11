@@ -1,9 +1,9 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Detects raw IMGUI input inside the UITK flowchart window and relays it to FlowchartWindowSignals.

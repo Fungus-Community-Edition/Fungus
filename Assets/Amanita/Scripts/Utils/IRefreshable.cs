@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     public interface IRefreshable
     {

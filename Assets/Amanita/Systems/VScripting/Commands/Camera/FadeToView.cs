@@ -1,7 +1,7 @@
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Fades the camera out and in again at a position specified by a View object.

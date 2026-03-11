@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.Myceliaudio.Utils
+namespace AtMycelia.Amanita.Myceliaudio.Utils
 {
     public class QuickPlayAudioArgs : EventArgs
     {

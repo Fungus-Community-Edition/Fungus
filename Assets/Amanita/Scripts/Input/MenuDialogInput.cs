@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine.InputSystem;
 #endif
 
-namespace Amanita.DialogueSys.UI
+namespace AtMycelia.Amanita.DialogueSys.UI
 {
     /// <summary>
     /// Handles how MenuDialogs respond to input.

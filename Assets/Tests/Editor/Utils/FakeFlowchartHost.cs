@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine.UIElements;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class FakeFlowchartHost : IFlowchartHost, IDisposable
     {

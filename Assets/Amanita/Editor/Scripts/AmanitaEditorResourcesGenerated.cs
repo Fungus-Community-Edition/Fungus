@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public partial class AmanitaEditorResources : ScriptableObject
     {

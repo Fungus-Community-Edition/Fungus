@@ -6,10 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Amanita.EditorUtils;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
 	[CustomEditor(typeof(Block))]
 	public class BlockEditor : Editor

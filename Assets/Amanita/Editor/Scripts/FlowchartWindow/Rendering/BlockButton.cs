@@ -1,10 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.UIElements.VisualElement;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// A button representing a Block in the flowchart. Displays the Block's name and changes 
@@ -201,6 +200,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 _nameLabel.style.fontSize = Mathf.RoundToInt(BaseFontSize);
             }
 
+            style.transformOrigin = new TransformOrigin(0f, 0f, 0f); // To make sure the connections render right
             transform.scale = new Vector3(zoom, zoom, 1f);
         }
 

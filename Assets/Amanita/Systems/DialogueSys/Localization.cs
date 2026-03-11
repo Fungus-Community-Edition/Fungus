@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Text;
 using Ideafixxxer.CsvParser;
-using Amanita.Lua;
-using Amanita.VScripting;
+using AtMycelia.Amanita.Lua;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.LocalizationSys
+namespace AtMycelia.Amanita.LocalizationSys
 {
     /// <summary>
     /// Multi-language localization support.

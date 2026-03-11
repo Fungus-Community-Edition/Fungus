@@ -1,18 +1,21 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>
     {
         [SerializeField] protected VariableScope scope = VariableScope.Private;
         [SerializeField] protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = 0;
+        [SerializeField] protected byte itemID = InvalidID; 
+        // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidID = 0;
 
@@ -114,26 +117,12 @@ namespace Amanita.VScripting
             return result;
         }
 
-        public virtual void Init()
+        public virtual void Init(object startValue = default)
         {
-            string errorMessage = string.Empty;
-            if (string.IsNullOrEmpty(Key))
-            {
-                errorMessage += "Variable needs a valid key before Init. ";
-            }
-
-            if (itemID == InvalidID)
-            {
-                errorMessage += "Variable needs a valid ID before Init.";
-            }
-
-            // For unique IDs, we'll let client code worry about that.
-
-            if (errorMessage.Length > 0)
-            {
-                throw new Exception(errorMessage);
-            }
+            _startValue = startValue;
         }
+
+        private object _startValue;
 
         public virtual void OnReset()
         {
@@ -239,20 +228,28 @@ namespace Amanita.VScripting
     }
 
     [Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
+
     {
-        [SerializeField] protected T value;
+        [SerializeField] protected T value, startValue;
 
         // We have these constructors to make sure that the base value starts out synced 
         // with the strongly typed one
         public Muscariable() : base()
         {
-            value = default;
+            value = startValue = default;
         }
 
         public Muscariable(T startVal) : this()
         {
-            value = startVal;
+            value = startValue = startVal;
+        }
+
+        public virtual void Init(T startValue = default)
+        {
+            this.startValue = startValue;
+            this.Value = startValue;
         }
 
         public static implicit operator T(Muscariable<T> genericMuscari)
@@ -267,12 +264,14 @@ namespace Amanita.VScripting
             get { return value; }
             set
             {
-                if (value != null && value.Equals(this.value))
+                bool sameVal = value != null && value.Equals(this.value);
+                if (sameVal)
                 {
                     return;
                 }
 
-                this.value = (T)this.FilterForValueSet(value);
+                this.value = (T)value; 
+                // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
             }
         }
@@ -284,7 +283,8 @@ namespace Amanita.VScripting
             {
                 if (!this.CanHoldAsValue(value))
                 {
-                    string errorMessage = $"Cannot set {ContentType.Name} variable {Key} to value of type {value.GetType().Name}.";
+                    string errorMessage = $"Cannot set {ContentType.Name} variable {Key} to value " +
+                        $"of type {value.GetType().Name}.";
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
@@ -306,7 +306,7 @@ namespace Amanita.VScripting
             if (!this.CanHoldAsValue(toApply))
             {
                 string errorMessage = $"Cannot apply {toApply} to {ContentType.Name} variable {Key}.";
-                throw new System.Exception(errorMessage);
+                throw new Exception(errorMessage);
             }
 
             Apply(setOperator, (T)toApply);
@@ -356,12 +356,11 @@ namespace Amanita.VScripting
                     result = !this.Value.Equals(toCompareTo); break;
                 default:
                     string errorMessage = $"Muscariable<{typeof(T).Name}> {Key} not compatible with CompareOperator {op}";
-                    throw new System.ArgumentException(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
 
             return result;
         }
-
 
         public virtual bool Equals(T other)
         {
@@ -389,6 +388,11 @@ namespace Amanita.VScripting
             return result;
         }
 
+        public override void OnReset()
+        {
+            value = startValue;
+            TriggerOnValueChanged();
+        }
 
     }
 

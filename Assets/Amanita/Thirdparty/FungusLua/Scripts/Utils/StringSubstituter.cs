@@ -4,7 +4,7 @@ using System.Text;
 using MarkerMetro.Unity.WinLegacy.Reflection;
 #endif
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Replaces special tokens in a string with substituted values (typically variables or localisation strings).

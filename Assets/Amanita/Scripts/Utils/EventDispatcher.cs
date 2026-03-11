@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// A simple efficient event dispatcher with logging support.

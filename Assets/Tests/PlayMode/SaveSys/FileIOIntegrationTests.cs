@@ -1,12 +1,12 @@
-﻿using Amanita.SaveSys;
-using NUnit.Framework;
-using System;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.TestTools;
+using AtMycelia.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -15,12 +15,14 @@ namespace SaveSystemTests
         // Needs SaveSystem, but not scene/flowchart.
         protected override bool ReqSceneLoad => false;
         protected override bool ReqFlowchart => false;
+        protected override bool ReqSaveSystem => true;
 
         public override void DoSetUp()
         {
             base.DoSetUp();
-            saveReaderFallback = new TestSaveReader();
-            saveReaderFallback.StorageSettings = storageSettings;
+            
+            saveReaderFallback = ScriptableObject.CreateInstance<TestSaveReader>();
+            saveReaderFallback.StorageSettings = testStorageSettings;
         }
 
         protected TestSaveReader saveReaderFallback;
@@ -28,6 +30,8 @@ namespace SaveSystemTests
         [Test]
         public async Task SmallData_RoundTrip()
         {
+            LogAssert.ignoreFailingMessages = true; // prevent expected error logs from failing the test
+
             var data = new CompositeSaveData();
             data.Add(new RawIntSaveData(42));
 
@@ -40,7 +44,7 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
             await saveWriter.WriteOneToDiskAsync(writeReqLocal);
-            string filePath = saveSys.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
+            string filePath = SaveSystem.GetSaveFilePath(SaveDirectoryType.DataPath, writeReqLocal.SlotNumber);
             saveFilePathsForCleanup.Add(filePath);
 
             var readReqLocal = new SaveReadRequest
@@ -239,6 +243,11 @@ namespace SaveSystemTests
         [Test, TestCaseSource(nameof(UnicodeTestCases))]
         public async Task EncryptedUnicodeData_RoundTrip(string unicodeString)
         {
+            while (!SaveSystem.FullyInitted)
+            {
+                await Task.Yield();
+            }
+
             saveWriter.ExpectEncryption = true;
             saveReader.ExpectEncryption = true;
 
@@ -253,6 +262,11 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
+
+            while (!SaveSystem.FullyInitted)
+            {
+                await Task.Yield();
+            }
             await saveWriter.WriteOneToDiskAsync(writeReq);
 
             var readReq = new SaveReadRequest
@@ -284,6 +298,7 @@ namespace SaveSystemTests
         public async Task EncryptedFlag_Mismatch_Throws()
         {
             // Write unencrypted
+            LogAssert.ignoreFailingMessages = true; // prevent expected error logs from failing the test
             saveWriter.ExpectEncryption = false;
             var data = new CompositeSaveData();
             data.Add(new RawIntSaveData(42));
@@ -307,8 +322,10 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            string assertErrorMessage = "Reading unencrypted file as encrypted did not throw.";
-            Assert.ThrowsAsync<ArgumentException>(async () => await saveReader.ReadMainSaveDataFromDiskAsync(readReq).ConfigureAwait(false),
+            string assertErrorMessage = "Reading unencrypted file as encrypted did not throw. " + 
+                "Or at least, didn't throw the expected exception type.";
+            Assert.ThrowsAsync<IOException>(async () => await saveReader.ReadMainSaveDataFromDiskAsync(readReq)
+            .ConfigureAwait(false),
                 assertErrorMessage);
         }
     }

@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     // For the fields that can accept either a variable or a literal value
     [CustomPropertyDrawer(typeof(VariableData), true)]

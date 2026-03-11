@@ -1,4 +1,3 @@
-using Amanita.SaveSys;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -7,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using Encoding = System.Text.Encoding;
+using AtMycelia.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -109,7 +109,7 @@ namespace SaveSystemTests
 
         protected virtual string GetAndPrepSaveFolderPath(SaveReadRequest request)
         {
-            string saveFolder = SaveSystem.S.GetSaveDirectory(request.BaseSaveDirectory);
+            string saveFolder = SaveSystem.GetSaveDirectory(request.BaseSaveDirectory);
             if (!string.IsNullOrEmpty(RelativeSavePath))
             {
                 saveFolder = Path.Combine(saveFolder, RelativeSavePath);

@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.Myceliaudio.Utils
+namespace AtMycelia.Amanita.Myceliaudio.Utils
 {
     [Flags]
     public enum AudioTiming

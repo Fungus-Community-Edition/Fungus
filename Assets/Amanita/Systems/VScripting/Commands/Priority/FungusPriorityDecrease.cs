@@ -1,4 +1,4 @@
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Decrease the FungusPriority count, causing the related FungusPrioritySignals to fire.

@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Save to Slot",
@@ -104,7 +104,7 @@ namespace Amanita.SaveSys.VScripting
             }
             else
             {
-                Task saveTask = SaveSystem.S.SaveToSlotAsync(slotIndexToGoWith);
+                Task saveTask = SaveSystem.SaveToSlotAsync(slotIndexToGoWith);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(saveTask));

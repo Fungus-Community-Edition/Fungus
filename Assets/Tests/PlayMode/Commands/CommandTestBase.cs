@@ -1,12 +1,12 @@
-﻿using Amanita.VScripting; // or your Flowchart namespace
+﻿using AtMycelia.Amanita.VScripting; // or your Flowchart namespace
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using Amanita;
+using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys;
 using Type = System.Type;
 using System.Reflection;
+using AtMycelia.SaveSys;
 
 /// <summary>
 /// Generic base for testing Flowchart commands with different tween adapters.

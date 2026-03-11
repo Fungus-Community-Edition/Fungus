@@ -1,7 +1,7 @@
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Myceliaudio.VScripting
+namespace AtMycelia.Amanita.Myceliaudio.VScripting
 {
     [CommandInfo("Myceliaudio", "MA Stop Audio", "Stops the audio playing in a specific track.")]
     public class MA_StopAudio : MyceliaudioCommand

@@ -1,4 +1,4 @@
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     internal interface IModuleDispatcher
     {

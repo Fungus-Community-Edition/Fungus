@@ -6,8 +6,8 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Amanita.VScripting;
-using Amanita;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.FlowchartLifecycle
@@ -25,10 +25,10 @@ namespace VScriptingTests.FlowchartLifecycle
         private class TestIntMuscariable : Muscariable<int>
         {
             public static int InitCalls;
-            public override void Init()
+            public override void Init(int startVal)
             {
                 InitCalls++;
-                base.Init();
+                base.Init(startVal as object);
             }
         }
 

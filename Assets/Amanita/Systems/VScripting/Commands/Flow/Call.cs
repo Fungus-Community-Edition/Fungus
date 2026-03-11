@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Supported modes for calling a block.

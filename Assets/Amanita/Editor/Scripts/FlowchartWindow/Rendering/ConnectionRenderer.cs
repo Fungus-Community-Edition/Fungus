@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// UITK-based connection renderer that draws using Painter2D.
@@ -129,7 +129,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             }
 
             diagnosticsRemaining--;
-            Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
+            //Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
         }
 
         private void UpdateDrawContext()

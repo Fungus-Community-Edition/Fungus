@@ -7,7 +7,7 @@ using UnityObj = UnityEngine.Object;
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
