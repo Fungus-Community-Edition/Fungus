@@ -1364,6 +1364,8 @@ GameObject:
   - component: {fileID: 1620115478}
   - component: {fileID: 1620115477}
   - component: {fileID: 1620115476}
+  - component: {fileID: 1620115481}
+  - component: {fileID: 1620115480}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1462,6 +1464,7 @@ MonoBehaviour:
   - {fileID: 1620115444}
   - {fileID: 1620115441}
   - {fileID: 1620115425}
+  - {fileID: 1620115481}
   - {fileID: 1620115446}
   includeInSaves: 1
   loadPriority: 0
@@ -1497,14 +1500,16 @@ MonoBehaviour:
   _oldMuscariables: []
   description: Desc here loaaa
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1620115403}
+    _selectedCommands:
+    - {fileID: 1620115437}
     _owner: {fileID: 1620115399}
-    <ScrollPos>k__BackingField: {x: 434.66022, y: -143.42386}
+    <ScrollPos>k__BackingField: {x: 308.01913, y: -104.65108}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 280
+    <Zoom>k__BackingField: 0.9999999
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -1587,6 +1592,8 @@ MonoBehaviour:
   - {fileID: 1620115472}
   - {fileID: 1620115478}
   - {fileID: 1620115477}
+  - {fileID: 1620115481}
+  - {fileID: 1620115480}
   nextValidVarID: 13
   uniqueId: 2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea
   references:
@@ -2253,7 +2260,7 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 2
+    value: 1
     floatRef: {fileID: 0}
 --- !u!114 &1620115438
 MonoBehaviour:
@@ -2531,6 +2538,7 @@ MonoBehaviour:
   commandList:
   - {fileID: 1620115442}
   - {fileID: 1620115447}
+  - {fileID: 1620115480}
   - {fileID: 1620115448}
   - {fileID: 1620115451}
   - {fileID: 1620115450}
@@ -2653,20 +2661,25 @@ MonoBehaviour:
         owningFc: {fileID: 1620115404}
         owningVsa: {fileID: 0}
       data:
-        rid: 8107162708717338950
+        rid: 6177420531114967110
   variable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 8107162708717338950
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+    - rid: 6177420531114967110
+      type: {class: FakeIntVariableData, ns: VScriptingTests.VariableOperations, asm: AmanitaEditorTests}
       data:
         backingVarRef:
-          itemId: 0
+          itemId: 3
           owningFc: {fileID: 1620115404}
           owningVsa: {fileID: 0}
-        value: 1
-        integerRef: {fileID: 0}
+        value: 0
+        _intRef:
+          scope: 0
+          key: 
+          itemID: 0
+          value: 0
+          startValue: 0
 --- !u!114 &1620115448
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2968,7 +2981,7 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 1
     integerRef: {fileID: 0}
   loadFromSelected:
     backingVarRef:
@@ -3736,6 +3749,46 @@ MonoBehaviour:
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
+--- !u!114 &1620115480
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 71
+  indentLevel: 0
+  duration: 0.5
+  targetAlpha: 0
+  waitUntilFinished: 1
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeTexture: {fileID: 0}
+  fadeTweener: {fileID: 0}
+--- !u!114 &1620115481
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 70
+  indentLevel: 0
+  duration: 0.5
+  targetAlpha: 1
+  waitUntilFinished: 1
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeTexture: {fileID: 0}
+  fadeTweener: {fileID: 0}
 --- !u!1 &1622107285
 GameObject:
   m_ObjectHideFlags: 0

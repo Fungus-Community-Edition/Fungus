@@ -305,7 +305,7 @@ namespace SaveSystemTests
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             MainSave.Add(flowchartSaveData);
 
-            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSave(flowchart);
+            IList<BlockSaveData> blockSaves = blockSaveCodec.EncodeToMultiSaves(flowchart);
             foreach (var blockSave in blockSaves)
             {
                 MainSave.Add(blockSave);
@@ -407,7 +407,7 @@ namespace SaveSystemTests
             flowchartSaveData = flowchartSaveCodec.EncodeToSave(flowchart);
             MainSave.Add(flowchartSaveData);
 
-            foreach (var blockSave in blockSaveCodec.EncodeToMultiSave(flowchart))
+            foreach (var blockSave in blockSaveCodec.EncodeToMultiSaves(flowchart))
             {
                 MainSave.Add(blockSave);
             }

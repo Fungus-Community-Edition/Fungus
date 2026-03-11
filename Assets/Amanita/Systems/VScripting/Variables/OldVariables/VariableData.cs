@@ -284,6 +284,18 @@ namespace AtMycelia.Amanita.VScripting
             this.VarRef = otherVarData.VarRef;
             this.value = otherVarData.value;
         }
+
+        public override string ToString()
+        {
+            if (BoxedValue == null)
+            {
+                return $"valueless {this.GetType().Name}";
+            }
+            else
+            {
+                return BoxedValue.ToString();
+            }
+        }
     }
 
 }

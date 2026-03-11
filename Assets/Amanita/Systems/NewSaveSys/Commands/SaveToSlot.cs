@@ -1,6 +1,7 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace AtMycelia.SaveSys.VScripting
 {
@@ -13,7 +14,11 @@ namespace AtMycelia.SaveSys.VScripting
         [Tooltip("If true, this will save to the selected slot instead of the specified slot index.")]
         [SerializeField] protected BooleanData saveToSelected = new BooleanData(false);
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [Tooltip("Before the save process starts, wait this many seconds. This can be useful if you " +
+            "want to ensure that some other Command is executing at the time of saving.")]
         [SerializeField] private FloatData delayBeforeSave = new FloatData(0);
+
+        public override bool ReexecutableOnLoad => false;
 
         protected override void RefreshVariableDataCache()
         {
@@ -51,91 +56,116 @@ namespace AtMycelia.SaveSys.VScripting
 
         protected virtual void OnDisable()
         {
+            StopAllCoroutines();
             ToggleSubs(false);
         }
 
         public override void OnEnter()
         {
-            if (delayBeforeSave > 0)
-            {
-                Invoke(nameof(TrySave), delayBeforeSave);
-            }
-            else
-            {
-                TrySave();
-            }
+            StartCoroutine(TrySaveCoroutine());
         }
 
-        private void TrySave()
+        private IEnumerator TrySaveCoroutine()
         {
-            int slotIndexToGoWith;
-            if (saveToSelected)
+            int slotIndexToGoWith = DecideSlotIndex();
+            bool skipDueToNoSlotSelected = false;
+            int DecideSlotIndex()
             {
-                // Find the selected slot
-                // If none is selected, log an error and exit
-                if (selectedSlotIndex < 0)
+                int result = -1;
+                if (saveToSelected)
                 {
-                    string format = "SaveToSlot Command in Block {0} of {1}'s Flowchart: no slot is currently selected.";
-                    string errorMessage = string.Format(format, this.ParentBlock.BlockName,
-                        this.gameObject.name);
-                    Debug.LogError(errorMessage);
-                    Continue();
-                    return;
+                    // Find the selected slot
+                    bool nothingSelected = selectedSlotIndex < 0;
+                    if (nothingSelected)
+                    {
+                        string format = "SaveToSlot Command in Block {0} of {1}'s Flowchart: no slot is currently selected.";
+                        string errorMessage = string.Format(format, this.ParentBlock.BlockName,
+                            this.gameObject.name);
+                        Debug.LogError(errorMessage);
+                        skipDueToNoSlotSelected = true;
+                    }
+                    else
+                    {
+                        result = selectedSlotIndex;
+                    }
                 }
                 else
                 {
-                    slotIndexToGoWith = selectedSlotIndex;
+                    result = slotIndex.Value;
                 }
-            }
-            else
-            {
-                slotIndexToGoWith = slotIndex.Value;
+
+                return result;
             }
 
-            bool validSlotIndex = slotIndexToGoWith >= SaveSystem.minSlotNumber;
+            if (skipDueToNoSlotSelected)
+            {
+                Continue();
+                yield break;
+            }
+
+            bool validSlotIndex = ValidateSlotIndex();
+            bool ValidateSlotIndex()
+            {
+                bool valid = slotIndexToGoWith >= SaveSystem.minSlotNumber;
+                if (!valid)
+                {
+                    string format = "SaveToSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
+                    string errorMessage = string.Format(format, this.ParentBlock.BlockName,
+                        this.gameObject.name, SaveSystem.minSlotNumber);
+                    Debug.LogError(errorMessage);
+                }
+                return valid;
+            }
+
             if (!validSlotIndex)
             {
-                string format = "SaveToSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
-                string errorMessage = string.Format(format, this.ParentBlock.BlockName,
-                    this.gameObject.name, SaveSystem.minSlotNumber);
-                Debug.LogError(errorMessage);
                 Continue();
-                return;
+                yield break;
             }
-            else
+
+            if (!waitUntilFinished)
             {
-                Task saveTask = SaveSystem.SaveToSlotAsync(slotIndexToGoWith);
-                if (waitUntilFinished.Value)
-                {
-                    StartCoroutine(WaitForTask(saveTask));
-                }
-                else
-                {
-                    Continue();
-                }
+                Continue(); // For when we want some other Command to be executing at the time of saving.
             }
+
+            if (delayBeforeSave > 0)
+            {
+                yield return new WaitForSeconds(delayBeforeSave);
+            }
+
+            Task saveTask = SaveSystem.SaveToSlotAsync(slotIndexToGoWith);
+            yield return WaitForTask(saveTask, waitUntilFinished);
         }
 
         public override string GetSummary()
         {
-            // Let's not concern ourselves with whether we're using the selected slot or not.
-            // That can dynamically change during runtime, so let's just go with the specified
-            // index set here in the editor.
             string result;
-            if (saveToSelected.Value)
+            if (saveToSelected)
             {
                 result = "Save to Selected Slot";
             }
             else
             {
-                result = $"Save to Slot {slotIndex.Value}";
+                result = $"Save to Slot {slotIndex}";
             }
             
             if (delayBeforeSave > 0)
             {
-                result += $" after {delayBeforeSave.Value} seconds";
+                result += $" after {delayBeforeSave} seconds";
             }
             return result;
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            bool literalSlotIndex = slotIndex.RepresentingVar == false;
+            if (literalSlotIndex && slotIndex < SaveSystem.minSlotNumber)
+            {
+                Debug.LogWarning($"SaveToSlot Command on {this.gameObject.name}: slot index cannot be less " +
+                    $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
+                slotIndex.Value = SaveSystem.minSlotNumber;
+            }
         }
     }
 }

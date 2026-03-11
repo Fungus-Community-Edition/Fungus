@@ -33,6 +33,12 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public virtual bool NonStandardPaste => false;
 
+        /// <summary>
+        /// Whether or not instances of this Command should have their execution states saved and loaded
+        /// by a save system.
+        /// </summary>
+        public virtual bool ReexecutableOnLoad => true;
+
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
@@ -440,7 +446,7 @@ namespace AtMycelia.Amanita.VScripting
             return false;
         }
 
-        protected virtual IEnumerator WaitForTask(Task task)
+        protected virtual IEnumerator WaitForTask(Task task, bool callContinueAfterwards = true)
         {
             while (!task.IsCompleted)
             {
@@ -448,7 +454,10 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             yield return null; // Just one more frame to ensure any follow-up actions are ready.
-            Continue();
+            if (callContinueAfterwards)
+            {
+                Continue();
+            }
         }
 
         #endregion

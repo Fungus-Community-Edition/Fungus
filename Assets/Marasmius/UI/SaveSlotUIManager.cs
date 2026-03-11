@@ -63,20 +63,19 @@ namespace AtMycelia.SaveSys.UI
             #region Pass the metas to the slot uis
             for (int i = 0; i < _slotUis.Count; i++)
             {
+                var slot = _slotUis[i];
                 ISaveMetaData metaToAssign;
                 DecideMetaToAssign();
                 void DecideMetaToAssign()
                 {
-                    if (i < metas.Count)
-                    {
-                        metaToAssign = metas[i];
-                    }
-                    else
+                    metaToAssign = metas.Where(metaEl => metaEl.SlotNumber == i + 1).FirstOrDefault();
+                    // ^Remember, slot numbers are 1-based, so we have to add 1 to the index to compare to the slot number
+                    if (metaToAssign == null)
                     {
                         ISaveMetaData fillerMeta = new SaveMetaData()
                         {
                             SaveName = "",
-                            SlotNumber = i + 1, // +1 because slot numbers are 1-based
+                            SlotNumber = i + 1, 
                             SaveVersion = string.Empty,
                         };
                         // ^This is so the slots at least display their slot numbers correctly
@@ -84,7 +83,6 @@ namespace AtMycelia.SaveSys.UI
                     }
                 }
 
-                var slot = _slotUis[i];
                 slot.Meta = metaToAssign;
             }
             #endregion

@@ -222,6 +222,7 @@ namespace AtMycelia.SaveSys.UI
 #if UNITY_EDITOR
         public void TriggerClick()
         {
+            button.Select();
             button.onClick.Invoke();
         }
 #endif
