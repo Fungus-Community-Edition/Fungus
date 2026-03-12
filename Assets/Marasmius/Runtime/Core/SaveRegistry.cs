@@ -26,13 +26,17 @@ namespace AtMycelia.SaveSys
             if (!_savePairs.ContainsKey(dataSet.SlotNumber))
             {
                 _savePairs.Add(dataSet.SlotNumber, dataSet);
-                SaveSysSignals.SaveAddedToSlot(dataSet);
+                UnityThreadUtil.RunOnMainThread(() => AnnounceSaveAdded(dataSet));
             }
             else
             {
                 _savePairs[dataSet.SlotNumber] = dataSet; // Overwriting
-                SaveSysSignals.SaveInSlotOverwritten(dataSet);
             }
+        }
+
+        void AnnounceSaveAdded(SaveDataSet dataSet)
+        {
+            SaveSysSignals.SaveAdded(dataSet);
         }
 
         public virtual void RemoveSave(int slotToRemoveFrom)
@@ -41,8 +45,13 @@ namespace AtMycelia.SaveSys
             {
                 SaveDataSet dataSet = _savePairs[slotToRemoveFrom];
                 _savePairs.Remove(slotToRemoveFrom);
-                SaveSysSignals.SaveRemovedFromSlot(dataSet);
+                UnityThreadUtil.RunOnMainThread(() => AnnounceSaveRemoved(dataSet));
             }
+        }
+
+        private void AnnounceSaveRemoved(SaveDataSet dataSet)
+        {
+            SaveSysSignals.SaveRemoved(dataSet);
         }
 
         public virtual SaveDataSet GetSave(int slotNumber)

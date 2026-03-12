@@ -61,6 +61,7 @@ namespace AtMycelia.SaveSys
             }
         }
 
+        public SaveWriteResults WriteResults => saveWriter.WriteResults;
         void KeepResolversInSync()
         {
             IHasConfigurableSaveSlotPathResolver readerWithPathResolver =
@@ -104,6 +105,10 @@ namespace AtMycelia.SaveSys
         private SaveWriteRequest writeReq;
         private SaveReadRequest forPathFinding;
 
+        /// <summary>
+        /// Loads save data from file based on the input, returning said data. Note that this is 
+        /// a retrieval operation; it does not modify the game state.
+        /// </summary>
         public virtual async Task<CompositeSaveData> LoadMainSaveAsync(int slot, CancellationToken token = default)
         {
             readRequest.SlotNumber = slot;
@@ -182,7 +187,7 @@ namespace AtMycelia.SaveSys
     /// <summary>
     /// For handling the interactions with persistent storage for loading and saving game data.
     /// </summary>
-    public interface ISaveRepository
+    public interface ISaveRepository : IWriteResultsProvider
     {
         IConfigurableSaveSlotPathResolver PathResolver { get; set; }
         IList<ISaveMetaData> LoadAllMetasOnDisk();
@@ -203,5 +208,8 @@ namespace AtMycelia.SaveSys
         string GetPathTo(int slot);
     }
 
-
+    public interface IWriteResultsProvider
+    {
+        SaveWriteResults WriteResults { get; }
+    }
 }

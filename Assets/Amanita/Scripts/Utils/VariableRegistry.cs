@@ -99,7 +99,7 @@ namespace AtMycelia.Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = otherChart;
                     }
                 }
             }
@@ -115,7 +115,7 @@ namespace AtMycelia.Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = source;
                     }
                 }
             }

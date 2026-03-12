@@ -135,16 +135,41 @@ namespace AtMycelia.SaveSys.UI
             if (on)
             {
                 button.onClick.AddListener(OnButtonClicked);
+                SaveSysSignals.SaveWrittenToEmptySlot += OnSaveWritten;
+                SaveSysSignals.SaveOverwritten += OnSaveWritten;
+                SaveSysSignals.SaveRemoved += OnSaveRemovedFromSlot;
             }
             else
             {
                 button.onClick.RemoveListener(OnButtonClicked);
+                SaveSysSignals.SaveWrittenToEmptySlot -= OnSaveWritten;
+                SaveSysSignals.SaveOverwritten -= OnSaveWritten;
+                SaveSysSignals.SaveRemoved -= OnSaveRemovedFromSlot;
             }
         }
 
+        private void OnSaveRemovedFromSlot(SaveDataSet set)
+        {
+            if (set.SlotNumber == SlotNumber)
+            {
+                Meta = null;
+                Refresh();
+            }
+        }
+
+        private void OnSaveWritten(SaveWriteResults results)
+        {
+            if (results.SlotNumber == SlotNumber)
+            {
+                Meta = results.Meta;
+                Refresh();
+            }
+        }
+
+
         private void OnButtonClicked()
         {
-            SaveSysSignals.SaveSlotSelected?.Invoke(SlotNumber);
+            SaveSysSignals.SlotSelected?.Invoke(SlotNumber);
         }
 
         public virtual void Select()
@@ -197,6 +222,7 @@ namespace AtMycelia.SaveSys.UI
 #if UNITY_EDITOR
         public void TriggerClick()
         {
+            button.Select();
             button.onClick.Invoke();
         }
 #endif

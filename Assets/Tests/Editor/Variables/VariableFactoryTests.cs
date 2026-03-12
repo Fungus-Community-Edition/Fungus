@@ -39,7 +39,7 @@ namespace VScriptingTests.VariableOperations
             var source = new IntMuscariable
             {
                 Key = "TestKey",
-                Scope = VariableScope.Global,
+                Scope = VariableScope.Public,
                 ItemId = 42,
                 Value = 99
             };
@@ -50,7 +50,7 @@ namespace VScriptingTests.VariableOperations
             // Assert
             Assert.NotNull(created);
             Assert.AreEqual("TestKey", created.Key);
-            Assert.AreEqual(VariableScope.Global, created.Scope);
+            Assert.AreEqual(VariableScope.Public, created.Scope);
             Assert.AreEqual(42, created.ItemId);
             Assert.AreEqual(99, created.Value);
         }

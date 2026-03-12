@@ -66,7 +66,33 @@ namespace AtMycelia.Amanita.VScripting
         /// <summary>
         /// If this is false, this is representing a literal value.
         /// </summary>
-        public virtual bool RepresentingVar => VarRef != null;
+        public virtual bool RepresentingVar
+        {
+            get
+            {
+                IVariable varRef = VarRef;
+                if (varRef == null)
+                {
+                    return false;
+                }
+
+                if (varRef.ItemId == Muscariable.InvalidID)
+                {
+                    if (!string.IsNullOrEmpty(varRef.Key) || varRef.Owner != null)
+                    {
+                        Debug.LogWarning($"VariableData: Variable reference {varRef.Key} owned by {varRef.Owner} has invalid ID. Treating as literal value.");
+                    }
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(varRef.Key))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
 
         private bool CanHoldAsVar(IVariable variable)
         {
@@ -283,6 +309,18 @@ namespace AtMycelia.Amanita.VScripting
         {
             this.VarRef = otherVarData.VarRef;
             this.value = otherVarData.value;
+        }
+
+        public override string ToString()
+        {
+            if (BoxedValue == null)
+            {
+                return $"valueless {this.GetType().Name}";
+            }
+            else
+            {
+                return BoxedValue.ToString();
+            }
         }
     }
 

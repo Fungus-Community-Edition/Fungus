@@ -48,7 +48,8 @@ namespace AtMycelia.SaveSys.VScripting
                 return;
             }
 
-            SaveSlotViewComposer targetSlotUI = slotUIs[_slotIndex];
+            SaveSlotViewComposer targetSlotUI = slotUIs[_slotIndex - 1]; 
+            // ^The slot indexes are 1-based, but the list is 0-based
             targetSlotUI.TriggerClick();
             Continue();
         }
