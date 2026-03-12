@@ -537,7 +537,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public virtual bool Equals(Block other)
         {
-            return other != null &&
+            return this != null && other != null &&
                 this.itemId == other.itemId &&
                 this.GetFlowchart().UniqueId == other.GetFlowchart().UniqueId &&
                 this.BlockName == other.BlockName;

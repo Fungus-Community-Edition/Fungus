@@ -85,9 +85,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             if (LogDrawer)
             {
-                Debug.Log($"VariableDataDrawer[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
-                          $"valueRect={valueRect} popupRect={popupRect} itemId={itemIdProp?.intValue} " +
-                          $"shouldDrawLiteral={shouldDrawLiteral} literalPropType={literalValueProp?.propertyType}");
+                //Debug.Log($"VariableDataDrawer[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
+                //          $"valueRect={valueRect} popupRect={popupRect} itemId={itemIdProp?.intValue} " +
+                //          $"shouldDrawLiteral={shouldDrawLiteral} literalPropType={literalValueProp?.propertyType}");
             }
 
             if (labelRect.width > 0f)
@@ -239,8 +239,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             if (LogDrawer)
             {
-                Debug.Log($"VariableDataDrawer[{varDataProp.propertyPath}] popupSelectedIndex={selectedIndex} " +
-                          $"popupLabel={options[selectedIndex]} prevIndex={prevSelectedIndex} itemIdBeforeApply={itemIdProp.intValue}");
+                //Debug.Log($"VariableDataDrawer[{varDataProp.propertyPath}] popupSelectedIndex={selectedIndex} " +
+                //          $"popupLabel={options[selectedIndex]} prevIndex={prevSelectedIndex} " +
+                //          $"itemIdBeforeApply={itemIdProp.intValue}");
             }
 
             // Apply selection only when changed
