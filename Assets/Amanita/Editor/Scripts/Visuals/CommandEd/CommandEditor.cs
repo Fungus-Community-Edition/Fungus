@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Reflection;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(Command), true)]
     public class CommandEditor : Editor 

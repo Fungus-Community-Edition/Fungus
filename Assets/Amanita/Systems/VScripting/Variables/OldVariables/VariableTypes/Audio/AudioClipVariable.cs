@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
 	/// <summary>
 	/// AudioClip variable type.
@@ -9,6 +10,7 @@ namespace Amanita.VScripting
 	[VariableInfo("Audio", "AudioClip", typeof(AudioClip), false)]
 	[AddComponentMenu("")]
 	[System.Serializable]
+	[MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
 	public class AudioClipVariable : VariableBase<UnityEngine.AudioClip>
 	{ }
 

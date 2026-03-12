@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

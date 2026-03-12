@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.VScripting.EditorUtils.FcWindow;
-
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 namespace VScriptingTests.FlowchartWindow.Modules
 {
     public sealed class ScrollPosResetterTests
     {
         private readonly IList<UnityObj> toDestroy = new List<UnityObj>();
         private FlowchartContext context;
-        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow windowStub;
+        private FcWindow windowStub;
         private ScrollPosResetter resetter;
         private Flowchart flowchart;
 
@@ -123,7 +123,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
                 shift = shift
             };
 
-        private sealed class TestFlowchartWindow : Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow
+        private sealed class TestFlowchartWindow : FcWindow
         {
             private new void OnEnable() { }
             private new void OnDisable() { }

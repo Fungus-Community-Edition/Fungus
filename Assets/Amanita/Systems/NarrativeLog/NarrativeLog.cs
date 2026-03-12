@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// A single line of dialog

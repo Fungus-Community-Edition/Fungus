@@ -1,10 +1,10 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor(typeof(VariableSourceAsset))]
     public class VariableSourceAssetInspector : Editor

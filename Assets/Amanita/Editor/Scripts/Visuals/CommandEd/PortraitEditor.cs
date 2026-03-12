@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.Commands;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.Commands;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
-namespace Amanita.DialogueSys.EditorUtils
+namespace AtMycelia.Amanita.DialogueSys.EditorUtils
 {
     [CustomEditor (typeof(Portrait))]
     public class PortraitEditor : CommandEditor

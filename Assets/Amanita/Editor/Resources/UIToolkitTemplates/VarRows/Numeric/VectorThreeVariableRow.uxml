@@ -6,7 +6,7 @@
             <engine:Label text="VecThree" name="TypeLabel" class="varRowTypeLabel" />
             <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="key" class="varRowInputField keyInput" />
             <engine:VisualElement name="SpaceFiller" style="flex-grow: 1;" />
-            <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" binding-path="scope" class="scopeRoot" />
+            <engine:EnumField value="Private" type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
             <engine:Button text="-" name="RemoveButton" class="removeButton" />
         </engine:VisualElement>
         <engine:VisualElement name="ValueFieldHolder" view-data-key="ValueField">

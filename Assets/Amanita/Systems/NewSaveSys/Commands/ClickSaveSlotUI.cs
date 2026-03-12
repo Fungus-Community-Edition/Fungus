@@ -1,8 +1,8 @@
-using Amanita.SaveSys.UI;
-using Amanita.VScripting;
+using AtMycelia.SaveSys.UI;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys/DebugOnly", 
         "ClickSaveSlotUI", 
@@ -48,7 +48,8 @@ namespace Amanita.SaveSys.VScripting
                 return;
             }
 
-            SaveSlotViewComposer targetSlotUI = slotUIs[_slotIndex];
+            SaveSlotViewComposer targetSlotUI = slotUIs[_slotIndex - 1]; 
+            // ^The slot indexes are 1-based, but the list is 0-based
             targetSlotUI.TriggerClick();
             Continue();
         }

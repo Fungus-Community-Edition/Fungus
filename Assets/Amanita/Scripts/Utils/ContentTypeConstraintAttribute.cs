@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     public class ContentTypeConstraintAttribute : PropertyAttribute
     {

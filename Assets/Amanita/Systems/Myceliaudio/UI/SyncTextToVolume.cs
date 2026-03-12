@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     /// <summary>
     /// Sets (and updates when appropriate) a text field so it displays the 

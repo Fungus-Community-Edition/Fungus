@@ -1,4 +1,4 @@
-﻿namespace Amanita
+﻿namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Interface for listening for dialogue input events.

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using Amanita.Tweening;
+using AtMycelia.Amanita.Tweening;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     /// <summary>
     /// Current state of the writing process.

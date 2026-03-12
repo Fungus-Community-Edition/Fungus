@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys",
         "Load From Slot",
@@ -17,6 +17,7 @@ namespace Amanita.SaveSys.VScripting
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
         [SerializeField] private FloatData delayBeforeLoad = new FloatData(0);
 
+        public override bool ReexecutableOnLoad => false;
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
@@ -37,11 +38,11 @@ namespace Amanita.SaveSys.VScripting
         {
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected -= OnSaveSlotSelected;
             }
         }
 
@@ -93,16 +94,16 @@ namespace Amanita.SaveSys.VScripting
             bool validSlotIndex = slotIndexToGoWith >= SaveSystem.minSlotNumber;
             if (!validSlotIndex)
             {
-                string format = "LoadFromSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
+                string format = $"LoadFromSlot Command in Block {{0}} of {{1}}'s Flowchart: slot index must be at least {2}. What was given: {3}";
                 string errorMessage = string.Format(format, this.ParentBlock.BlockName,
-                    this.gameObject.name, SaveSystem.minSlotNumber);
+                    this.gameObject.name, SaveSystem.minSlotNumber, slotIndexToGoWith);
                 Debug.LogError(errorMessage);
                 Continue();
                 return;
             }
             else
             {
-                Task loadTask = SaveSystem.S.LoadMainAsync(slotIndex, loadScene);
+                Task loadTask = SaveSystem.LoadMainAsync(slotIndex, loadScene);
                 if (waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(loadTask));
@@ -134,6 +135,18 @@ namespace Amanita.SaveSys.VScripting
                 result += $" after {delayBeforeLoad.Value} seconds";
             }
             return result;
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            bool literalSlotIndex = slotIndex.RepresentingVar == false;
+            if (literalSlotIndex && slotIndex < SaveSystem.minSlotNumber)
+            {
+                Debug.LogWarning($"LoadFromSlot Command on {this.gameObject.name}: slot index cannot be less " +
+                    $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
+                slotIndex.Value = SaveSystem.minSlotNumber;
+            }
         }
     }
 }

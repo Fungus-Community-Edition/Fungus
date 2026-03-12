@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.IO;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     public class LuaMenuItems 
     {

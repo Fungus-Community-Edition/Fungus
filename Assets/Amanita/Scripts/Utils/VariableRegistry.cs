@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Maintains a registry of all available variables from various sources accessible in the scene.
@@ -99,7 +99,7 @@ namespace Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = otherChart;
                     }
                 }
             }
@@ -115,7 +115,7 @@ namespace Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = source;
                     }
                 }
             }

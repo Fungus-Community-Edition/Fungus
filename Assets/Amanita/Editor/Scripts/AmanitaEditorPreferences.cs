@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Shows Amanita section in the Edit->Preferences in unity allows you to configure Amanita behaviour

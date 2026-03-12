@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.VScripting;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public interface IBlockDrawerUitk
     {
@@ -277,7 +276,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 {
                     return;
                 }
-                ClearAll();
+
+                if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button != button)
+                {
+                    return;
+                }
+
                 drawer.UpdateButton(button, block, CurrentZoom);
                 UpdateBlockLayouts();
             }).ExecuteLater(1);

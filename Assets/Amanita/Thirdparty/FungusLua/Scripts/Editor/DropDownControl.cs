@@ -5,7 +5,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     [Serializable]
     public class DropDownControl<T>

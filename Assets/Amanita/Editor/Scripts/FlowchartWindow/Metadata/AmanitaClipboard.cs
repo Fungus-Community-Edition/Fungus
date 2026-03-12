@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using System.Linq;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Centralized class for handling clipboard operations related to Amanita (such as Flowchart blocks and commands).

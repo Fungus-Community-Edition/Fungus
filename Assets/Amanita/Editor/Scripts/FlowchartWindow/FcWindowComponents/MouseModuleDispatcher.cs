@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public sealed class MouseModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>
     {

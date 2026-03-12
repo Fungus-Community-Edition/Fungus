@@ -4,13 +4,13 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -584,6 +584,16 @@ namespace VScriptingTests.VariableOperations
             public bool IsArithmeticSupported(SetOperator setOperator)
             {
                 return false;
+            }
+
+            public void Init(object startValue)
+            {
+                
+            }
+
+            public void OnReset()
+            {
+                
             }
         }
     }

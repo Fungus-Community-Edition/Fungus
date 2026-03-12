@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys;
 
 namespace DialogueSys
 {

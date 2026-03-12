@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Helper class used to extend the initialization behavior of LuaEnvironment.

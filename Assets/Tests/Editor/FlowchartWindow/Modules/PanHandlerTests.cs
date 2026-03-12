@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.VScripting.EditorUtils.FcWindow;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 
-namespace VScriptingTests.FlowchartWindow.Modules
+namespace VScriptingTests.FcW.Modules
 {
     public sealed class PanHandlerTests
     {
         private readonly IList<UnityObj> toDestroy = new List<UnityObj>();
         private FlowchartContext context;
-        private Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow windowStub;
-        private Amanita.VScripting.EditorUtils.FcWindow.PanHandler handler;
+        private FcWindow windowStub;
+        private PanHandler handler;
         private Flowchart flowchart;
 
         [SetUp]
@@ -31,7 +32,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             };
 
             windowStub = ScriptableObject.CreateInstance<TestFlowchartWindow>();
-            handler = new Amanita.VScripting.EditorUtils.FcWindow.PanHandler(context);
+            handler = new PanHandler(context);
             handler.Initialize(windowStub);
 
             toDestroy.Add(go);
@@ -123,7 +124,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
             }
         }
 
-        private sealed class TestFlowchartWindow : Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow
+        private sealed class TestFlowchartWindow : FcWindow
         {
             private new void OnEnable() { }
             private new void OnDisable() { }

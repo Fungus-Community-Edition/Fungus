@@ -4,12 +4,12 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public class FlowchartWindow : EditorWindow, IFlowchartHostCore
     {
@@ -43,7 +43,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         }
 
         public static FlowchartWindowConfig Config { get; private set; }
-        private static readonly string _configSubfolderPath = "Amanita/Configs";
+        private static readonly string _configSubfolderPath = "AtMycelia/Amanita";
         private static readonly string _configAssetName = "FlowchartWindowConfig";
 
         public AmanitaClipboard Clipboard { get; private set; }

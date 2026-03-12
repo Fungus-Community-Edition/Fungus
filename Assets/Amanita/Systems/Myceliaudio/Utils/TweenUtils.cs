@@ -1,7 +1,7 @@
 using UnityEngine;
 using Type = System.Type;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public static class TweenUtils
     {

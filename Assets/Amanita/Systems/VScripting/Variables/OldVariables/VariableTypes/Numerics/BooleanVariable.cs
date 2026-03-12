@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Boolean variable type.
@@ -8,6 +9,7 @@ namespace Amanita.VScripting
     [VariableInfo("Numeric", "Boolean", typeof(bool), false)]
     [AddComponentMenu("")]
     [System.Serializable]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public class BooleanVariable : VariableBase<bool>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

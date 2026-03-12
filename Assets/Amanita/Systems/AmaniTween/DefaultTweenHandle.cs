@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public class DefaultTweenHandle : ITweenHandle
     {

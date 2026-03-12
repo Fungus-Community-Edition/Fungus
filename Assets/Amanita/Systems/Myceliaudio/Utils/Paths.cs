@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Amanita.Myceliaudio.Editor
+namespace AtMycelia.Amanita.Myceliaudio.Editor
 {
     public static class Paths
     {

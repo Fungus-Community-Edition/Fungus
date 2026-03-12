@@ -2,7 +2,7 @@
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {   
     [CustomEditor (typeof(LuaUtils))]
     public class LuaUtilsEditor : Editor 

@@ -1,26 +1,27 @@
-﻿using Amanita.DialogueSys;
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
-using Amanita.Tweening;
-using Amanita.VScripting;
+﻿using AtMycelia.SaveSys;
+using AtMycelia.Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys.UI;
+using AtMycelia.SaveSys.UI;
 using UnityEngine.EventSystems;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.Amanita.DialogueSys;
+
+
 #endif
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
@@ -30,6 +31,7 @@ namespace Amanita
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
         [SerializeField] private SaveMenuManager saveMenuPrefab;
+        private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
@@ -261,9 +263,7 @@ namespace Amanita
         public bool IsFullyInitted
         {
             get => (TweenManager != null && TweenManager.IsFullyInitted) &&
-                (NarrativeLog != null && NarrativeLog.IsFullyInitted) &&
-                (AudioSystem != null && AudioSystem.IsFullyInitted) &&
-                (SaveSysInstaller != null && SaveSysInstaller.IsFullyInitted);
+                (NarrativeLog != null && NarrativeLog.IsFullyInitted);
         }
 
         private void PrepSubmodules()
@@ -276,11 +276,7 @@ namespace Amanita
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-                AudioSystem = GetComponentInChildren<AudioSystem>();
-                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
                 TweenManager = GetComponentInChildren<TweenManager>();
-                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
-                
             }
 
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
@@ -320,10 +316,6 @@ namespace Amanita
                     {
                         // Since DestroyImmediate doesn't call OnDestroy...
                         OnDestroy();
-                        if (AudioSystem != null)
-                        {
-                            AudioSystem.OnDestroy();
-                        }
                         DestroyImmediate(this.gameObject); // Prevents duplicates in edit mode
                     }
                     else
@@ -342,8 +334,6 @@ namespace Amanita
                 DontDestroyOnLoad(gameObject);
             }
         }
-
-        private SaveSystemInstaller SaveSysInstaller { get; set; }
 
         private TweenManager TweenManager { get; set; }
         #region Public methods
@@ -384,15 +374,11 @@ namespace Amanita
             S = null;
         }
 
-        public AudioSystem AudioSystem { get; private set; }
-
         private void OnDestroy()
         {
             if (_s == this)
             {
                 _s = null;
-                SaveSystem.S = null;
-                AudioSystem.S = null;
                 TweenManager.S = null;
 
                 // Clean up anchors we created
@@ -520,7 +506,31 @@ namespace Amanita
 
         private void OnEnable()
         {
+            saveLoadedBlockExecutor.OnEnable();
+            ToggleSubs(true);
             EnsureVariableRegistryIsReady();
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                SaveSysSignals.SaveLoaded += OnSaveSlotLoaded;
+            }
+            else
+            {
+                SaveSysSignals.SaveLoaded -= OnSaveSlotLoaded;
+            }
+        }
+
+        private void OnSaveSlotLoaded(CompositeSaveData saveData)
+        {
+            if (saveLoadedBlockExecutor == null)
+            {
+                Debug.LogWarning("SaveLoadedBlockExecutor is not assigned. SaveLoaded blocks will not execute.");
+                return;
+            }
+
         }
 
 #if UNITY_EDITOR
@@ -540,5 +550,11 @@ namespace Amanita
             }
         }
 #endif
+
+        private void OnDisable()
+        {
+            saveLoadedBlockExecutor.OnDisable();
+            ToggleSubs(false);
+        }
     }
 }

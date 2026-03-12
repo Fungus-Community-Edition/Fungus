@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace Amanita.Examples
+namespace AtMycelia.Amanita.Examples
 {
     /// <summary>
     /// A very simple mouse look behaviour for a Fungus demo. Not intended for use in full projects.
