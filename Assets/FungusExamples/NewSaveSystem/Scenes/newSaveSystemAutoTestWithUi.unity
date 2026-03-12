@@ -295,7 +295,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 73907072}
-  - component: {fileID: 73907071}
   m_Layer: 0
   m_Name: _FungusState
   m_TagString: Untagged
@@ -303,20 +302,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &73907071
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 73907070}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61dddfdc5e0e44ca298d8f46f7f5a915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedFlowchart: {fileID: 1620115404}
-  lastSelectedFc: {fileID: 1789447538}
 --- !u!4 &73907072
 Transform:
   m_ObjectHideFlags: 1
@@ -1379,6 +1364,25 @@ GameObject:
   - component: {fileID: 1620115478}
   - component: {fileID: 1620115477}
   - component: {fileID: 1620115476}
+  - component: {fileID: 1620115481}
+  - component: {fileID: 1620115482}
+  - component: {fileID: 1620115484}
+  - component: {fileID: 1620115483}
+  - component: {fileID: 1620115493}
+  - component: {fileID: 1620115492}
+  - component: {fileID: 1620115491}
+  - component: {fileID: 1620115490}
+  - component: {fileID: 1620115489}
+  - component: {fileID: 1620115488}
+  - component: {fileID: 1620115487}
+  - component: {fileID: 1620115486}
+  - component: {fileID: 1620115485}
+  - component: {fileID: 1620115497}
+  - component: {fileID: 1620115496}
+  - component: {fileID: 1620115495}
+  - component: {fileID: 1620115494}
+  - component: {fileID: 1620115499}
+  - component: {fileID: 1620115498}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1388,7 +1392,7 @@ GameObject:
   m_IsActive: 1
 --- !u!114 &1620115401
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1417,7 +1421,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115402
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1432,7 +1436,7 @@ MonoBehaviour:
   waitForFrames: 1
 --- !u!114 &1620115403
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1446,8 +1450,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 221
     y: 205
-    width: 300
-    height: 100
+    width: 60
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 21
@@ -1463,9 +1467,11 @@ MonoBehaviour:
   - {fileID: 1620115413}
   - {fileID: 1620115414}
   - {fileID: 1620115436}
+  - {fileID: 1620115499}
   - {fileID: 1620115435}
   - {fileID: 1620115408}
   - {fileID: 1620115434}
+  - {fileID: 1620115489}
   - {fileID: 1620115433}
   - {fileID: 1620115417}
   - {fileID: 1620115438}
@@ -1477,6 +1483,9 @@ MonoBehaviour:
   - {fileID: 1620115444}
   - {fileID: 1620115441}
   - {fileID: 1620115425}
+  - {fileID: 1620115488}
+  - {fileID: 1620115481}
+  - {fileID: 1620115484}
   - {fileID: 1620115446}
   includeInSaves: 1
   loadPriority: 0
@@ -1493,42 +1502,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables:
+    - rid: 846271704159223897
+    - rid: 846271704159223899
+    - rid: 7903257792018382921
+    - rid: 7903257792018382959
+    - rid: 4605209356947947849
+    - rid: 8107162614221504726
+    - rid: 8107162708717338949
+    - rid: 8107162708717339082
+    - rid: 8107162709333639348
+    - rid: 6177420550682706002
+    - rid: 6177420550682706003
+    - rid: 6177420550682706007
+    - rid: 6177420550682706008
+    - rid: 6177420551191527425
+    legacyVariables: []
+    nextValidVarID: 15
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: Desc here loaaa
   uiModel:
     _selectedBlocks:
-    - {fileID: 1620115473}
-    _selectedCommands: []
-    <ScrollPos>k__BackingField: {x: 76.66022, y: -29.090519}
+    - {fileID: 1620115443}
+    _selectedCommands:
+    - {fileID: 1620115463}
+    _owner: {fileID: 1620115399}
+    <ScrollPos>k__BackingField: {x: 21.7311, y: -56.05772}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 280
+    <Zoom>k__BackingField: 1.1000001
+    <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables:
-  - rid: 846271704159223897
-  - rid: 846271704159223899
-  - rid: 7903257792018382921
-  - rid: 7903257792018382959
-  - rid: 4605209356947947849
-  - rid: 8107162614221504726
-  - rid: 8107162708717338949
-  - rid: 8107162708717339082
-  - rid: 8107162709333639348
-  description: Desc here loaaa
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
@@ -1536,83 +1557,203 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  nextValidVarID: 13
+  _blockListCache:
+  - {fileID: 1620115403}
+  - {fileID: 1620115427}
+  - {fileID: 1620115443}
+  - {fileID: 1620115461}
+  - {fileID: 1620115469}
+  - {fileID: 1620115473}
+  - {fileID: 1620115479}
+  - {fileID: 1620115493}
+  - {fileID: 1620115492}
+  - {fileID: 1620115497}
+  - {fileID: 1620115495}
+  _commands:
+  - {fileID: 1620115401}
+  - {fileID: 1620115409}
+  - {fileID: 1620115408}
+  - {fileID: 1620115406}
+  - {fileID: 1620115413}
+  - {fileID: 1620115412}
+  - {fileID: 1620115414}
+  - {fileID: 1620115417}
+  - {fileID: 1620115416}
+  - {fileID: 1620115425}
+  - {fileID: 1620115429}
+  - {fileID: 1620115430}
+  - {fileID: 1620115431}
+  - {fileID: 1620115432}
+  - {fileID: 1620115436}
+  - {fileID: 1620115433}
+  - {fileID: 1620115434}
+  - {fileID: 1620115435}
+  - {fileID: 1620115439}
+  - {fileID: 1620115438}
+  - {fileID: 1620115437}
+  - {fileID: 1620115440}
+  - {fileID: 1620115441}
+  - {fileID: 1620115444}
+  - {fileID: 1620115442}
+  - {fileID: 1620115446}
+  - {fileID: 1620115447}
+  - {fileID: 1620115448}
+  - {fileID: 1620115451}
+  - {fileID: 1620115450}
+  - {fileID: 1620115449}
+  - {fileID: 1620115453}
+  - {fileID: 1620115452}
+  - {fileID: 1620115454}
+  - {fileID: 1620115457}
+  - {fileID: 1620115455}
+  - {fileID: 1620115456}
+  - {fileID: 1620115462}
+  - {fileID: 1620115459}
+  - {fileID: 1620115460}
+  - {fileID: 1620115463}
+  - {fileID: 1620115458}
+  - {fileID: 1620115465}
+  - {fileID: 1620115464}
+  - {fileID: 1620115467}
+  - {fileID: 1620115466}
+  - {fileID: 1620115470}
+  - {fileID: 1620115468}
+  - {fileID: 1620115474}
+  - {fileID: 1620115472}
+  - {fileID: 1620115478}
+  - {fileID: 1620115477}
+  - {fileID: 1620115481}
+  - {fileID: 1620115482}
+  - {fileID: 1620115484}
+  - {fileID: 1620115483}
+  - {fileID: 1620115491}
+  - {fileID: 1620115490}
+  - {fileID: 1620115489}
+  - {fileID: 1620115488}
+  - {fileID: 1620115487}
+  - {fileID: 1620115486}
+  - {fileID: 1620115485}
+  - {fileID: 1620115496}
+  - {fileID: 1620115494}
+  - {fileID: 1620115499}
+  - {fileID: 1620115498}
+  nextValidVarID: 15
   uniqueId: 2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea
   references:
     version: 2
     RefIds:
     - rid: 846271704159223897
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: firstMarkerID
         itemID: 3
-        _ownerIdIndex: -1
-        value: first
+        value: firstToTheParty
+        startValue: 
     - rid: 846271704159223899
-      type: {class: ColorMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: someColor
         itemID: 4
-        _ownerIdIndex: -1
         value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
+        startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
-      type: {class: FloatMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: Var
         itemID: 7
-        _ownerIdIndex: -1
         value: 1.234
+        startValue: 0
+    - rid: 6177420550682706002
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: clickSound
+        itemID: 1
+        value: {fileID: 8300000, guid: c18ae2c530c264a6880266d5e0a71337, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420550682706003
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: loadStartSound
+        itemID: 2
+        value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420550682706007
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: openMenuSound
+        itemID: 13
+        value: {fileID: 8300000, guid: 4b3146e7f4d247743bf8e5dc428e107c, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420550682706008
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: menuOpenSound
+        itemID: 8
+        value: {fileID: 8300000, guid: 4b3146e7f4d247743bf8e5dc428e107c, type: 3}
+        startValue: {fileID: 0}
+    - rid: 6177420551191527425
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: menuCloseSound
+        itemID: 14
+        value: {fileID: 8300000, guid: 24a9e6f8d79b28b48a4293c56c39e0c9, type: 3}
+        startValue: {fileID: 0}
     - rid: 7903257792018382921
-      type: {class: VectorTwoMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecTwoVar
         itemID: 5
-        _ownerIdIndex: -1
         value: {x: 5, y: 24}
+        startValue: {x: 0, y: 0}
     - rid: 7903257792018382959
-      type: {class: VectorThreeMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: vecThreeVar
         itemID: 6
-        _ownerIdIndex: -1
         value: {x: 0, y: 123, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
     - rid: 8107162614221504726
-      type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: afterFirstLoad
         itemID: 9
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162708717338949
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: timesLoaded
         itemID: 10
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162708717339082
-      type: {class: BoolMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BoolMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: secondLoad
         itemID: 11
-        _ownerIdIndex: -1
         value: 0
+        startValue: 0
     - rid: 8107162709333639348
-      type: {class: StringMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: secondMarkerId
         itemID: 12
-        _ownerIdIndex: -1
         value: secondsss
+        startValue: 
 --- !u!4 &1620115405
 Transform:
   m_ObjectHideFlags: 0
@@ -1622,7 +1763,7 @@ Transform:
   m_GameObject: {fileID: 1620115399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.03, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1630,7 +1771,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1620115406
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1660,7 +1801,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382955
-      type: {class: Vector2Data, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: Vector2Data, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1670,7 +1811,7 @@ MonoBehaviour:
         vector2Ref: {fileID: 0}
 --- !u!114 &1620115408
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1704,7 +1845,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115409
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1739,7 +1880,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115412
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1774,7 +1915,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115413
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1808,7 +1949,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115414
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1838,7 +1979,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 7903257792018382953
-      type: {class: ColorData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: ColorData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -1848,7 +1989,7 @@ MonoBehaviour:
         colorRef: {fileID: 0}
 --- !u!114 &1620115416
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1869,7 +2010,7 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 0
+  fadeWhenDone: 1
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
@@ -1883,7 +2024,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115417
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1918,7 +2059,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115425
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1952,7 +2093,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115426
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1968,7 +2109,7 @@ MonoBehaviour:
   respondToAny: 1
 --- !u!114 &1620115427
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1980,10 +2121,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 208
-    y: 376
-    width: 300
-    height: 100
+    x: 153.21095
+    y: 565.51605
+    width: 125
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 18
@@ -1998,7 +2139,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1620115429
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2020,7 +2161,7 @@ MonoBehaviour:
   oldSayDialog: {fileID: 0}
 --- !u!114 &1620115430
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2040,7 +2181,7 @@ MonoBehaviour:
   fadeTweener: {fileID: 0}
 --- !u!114 &1620115431
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2062,7 +2203,7 @@ MonoBehaviour:
     stringRef: {fileID: 0}
 --- !u!114 &1620115432
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2082,7 +2223,7 @@ MonoBehaviour:
   fadeTweener: {fileID: 0}
 --- !u!114 &1620115433
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2104,7 +2245,7 @@ MonoBehaviour:
   durationOLD: 0
 --- !u!114 &1620115434
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2125,7 +2266,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115435
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2147,7 +2288,7 @@ MonoBehaviour:
   durationOLD: 0
 --- !u!114 &1620115436
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2162,7 +2303,7 @@ MonoBehaviour:
   state: 1
 --- !u!114 &1620115437
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2202,11 +2343,11 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 2
+    value: 1
     floatRef: {fileID: 0}
 --- !u!114 &1620115438
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2227,7 +2368,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115439
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2248,7 +2389,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115440
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2401,7 +2542,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 8107162619758773178
-      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -2412,7 +2553,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &1620115441
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2426,7 +2567,7 @@ MonoBehaviour:
   indentLevel: 0
 --- !u!114 &1620115442
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2455,7 +2596,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115443
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2469,8 +2610,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 425.33978
     y: 203.09052
-    width: 300
-    height: 100
+    width: 133
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 34
@@ -2483,10 +2624,13 @@ MonoBehaviour:
   - {fileID: 1620115448}
   - {fileID: 1620115451}
   - {fileID: 1620115450}
+  - {fileID: 1620115498}
   - {fileID: 1620115457}
   - {fileID: 1620115453}
+  - {fileID: 1620115485}
   - {fileID: 1620115456}
   - {fileID: 1620115454}
+  - {fileID: 1620115486}
   - {fileID: 1620115449}
   - {fileID: 1620115455}
   - {fileID: 1620115463}
@@ -2494,13 +2638,16 @@ MonoBehaviour:
   - {fileID: 1620115460}
   - {fileID: 1620115459}
   - {fileID: 1620115452}
+  - {fileID: 1620115487}
+  - {fileID: 1620115482}
+  - {fileID: 1620115483}
   - {fileID: 1620115458}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1620115444
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2523,9 +2670,10 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
+  targetBlockId: 34
 --- !u!114 &1620115446
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2577,7 +2725,7 @@ MonoBehaviour:
     floatRef: {fileID: 0}
 --- !u!114 &1620115447
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2601,23 +2749,28 @@ MonoBehaviour:
         owningFc: {fileID: 1620115404}
         owningVsa: {fileID: 0}
       data:
-        rid: 8107162708717338950
+        rid: 6177420531114967110
   variable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 8107162708717338950
-      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+    - rid: 6177420531114967110
+      type: {class: FakeIntVariableData, ns: VScriptingTests.VariableOperations, asm: AmanitaEditorTests}
       data:
         backingVarRef:
           itemId: 0
           owningFc: {fileID: 1620115404}
           owningVsa: {fileID: 0}
         value: 1
-        integerRef: {fileID: 0}
+        _intRef:
+          scope: 0
+          key: 
+          itemID: 0
+          value: 0
+          startValue: 0
 --- !u!114 &1620115448
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2651,7 +2804,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115449
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2673,7 +2826,7 @@ MonoBehaviour:
   durationOLD: 0
 --- !u!114 &1620115450
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2688,7 +2841,7 @@ MonoBehaviour:
   state: 1
 --- !u!114 &1620115451
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2722,7 +2875,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115452
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2742,7 +2895,7 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 0
+  fadeWhenDone: 1
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
@@ -2756,7 +2909,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115453
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2777,7 +2930,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115454
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2798,7 +2951,7 @@ MonoBehaviour:
     integerRef: {fileID: 0}
 --- !u!114 &1620115455
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2838,11 +2991,11 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 2
+    value: 1
     floatRef: {fileID: 0}
 --- !u!114 &1620115456
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2877,7 +3030,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115457
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2899,7 +3052,7 @@ MonoBehaviour:
   durationOLD: 0
 --- !u!114 &1620115458
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2916,7 +3069,7 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 2
     integerRef: {fileID: 0}
   loadFromSelected:
     backingVarRef:
@@ -2947,11 +3100,11 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: 2
+    value: 0
     floatRef: {fileID: 0}
 --- !u!114 &1620115459
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2965,7 +3118,7 @@ MonoBehaviour:
   indentLevel: 0
 --- !u!114 &1620115460
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -2988,9 +3141,10 @@ MonoBehaviour:
     stringRef: {fileID: 0}
   startIndex: 0
   callMode: 0
+  targetBlockId: 52
 --- !u!114 &1620115461
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3004,8 +3158,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 646.3398
     y: 209.09052
-    width: 300
-    height: 100
+    width: 150
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 52
@@ -3022,7 +3176,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1620115462
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3175,7 +3329,7 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 8107162709096399019
-      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3186,7 +3340,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &1620115463
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3206,7 +3360,7 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 0
+  fadeWhenDone: 1
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
@@ -3220,7 +3374,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115464
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3250,7 +3404,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639216
-      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3260,7 +3414,7 @@ MonoBehaviour:
         integerRef: {fileID: 0}
 --- !u!114 &1620115465
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3290,7 +3444,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639214
-      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3301,7 +3455,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &1620115466
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3322,7 +3476,7 @@ MonoBehaviour:
   showAlways: 1
   showCount: 1
   extendPrevious: 0
-  fadeWhenDone: 0
+  fadeWhenDone: 1
   waitForClick: 0
   stopVoiceover: 1
   waitForVO: 0
@@ -3336,7 +3490,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115467
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3348,8 +3502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 58
   indentLevel: 0
-  storyText: This should show upAnd this should show up after the second load only!
-    {w=1.0}
+  storyText: And this should show up after the second load only! {w=1.0}
   description: 
   character: {fileID: 1495643923}
   portrait: {fileID: 0}
@@ -3371,7 +3524,7 @@ MonoBehaviour:
   oldSetSayDialog: {fileID: 0}
 --- !u!114 &1620115468
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3393,7 +3546,7 @@ MonoBehaviour:
     stringRef: {fileID: 0}
 --- !u!114 &1620115469
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3405,10 +3558,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 26.339783
-    y: 388.0905
-    width: 300
-    height: 100
+    x: 158.97725
+    y: 447.10104
+    width: 149
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 60
@@ -3423,7 +3576,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1620115470
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3445,7 +3598,7 @@ MonoBehaviour:
   oldSayDialog: {fileID: 0}
 --- !u!114 &1620115471
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3461,7 +3614,7 @@ MonoBehaviour:
   respondToAny: 1
 --- !u!114 &1620115472
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3483,7 +3636,7 @@ MonoBehaviour:
     stringRef: {fileID: 0}
 --- !u!114 &1620115473
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3495,10 +3648,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 392.33978
-    y: 373.0905
-    width: 300
-    height: 100
+    x: 426.62518
+    y: 448.80414
+    width: 149
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 63
@@ -3513,7 +3666,7 @@ MonoBehaviour:
   suppressAllAutoSelections: 0
 --- !u!114 &1620115474
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3543,7 +3696,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 8107162709333639347
-      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3554,7 +3707,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &1620115475
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3573,7 +3726,7 @@ MonoBehaviour:
   respondToAny: 0
 --- !u!114 &1620115476
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3592,7 +3745,7 @@ MonoBehaviour:
   respondToAny: 0
 --- !u!114 &1620115477
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3610,11 +3763,11 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
-    value: Set first load flag!
+    value: Set second load flag!
     stringRef: {fileID: 0}
 --- !u!114 &1620115478
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3629,7 +3782,7 @@ MonoBehaviour:
   setOperator: 0
   anyVar:
     varRef:
-      itemId: 9
+      itemId: 11
       owningFc: {fileID: 1620115404}
       owningVsa: {fileID: 0}
     data:
@@ -3644,7 +3797,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 1000
-      type: {class: BooleanData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
@@ -3655,7 +3808,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &1620115479
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3667,13 +3820,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 716.3398
-    y: 455.0905
-    width: 300
-    height: 100
+    x: 472.6046
+    y: 558.3873
+    width: 167
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 63
+  itemId: 69
   blockName: SetSecondLoadFlag
   description: 
   eventHandler: {fileID: 1620115476}
@@ -3683,6 +3836,714 @@ MonoBehaviour:
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
+--- !u!114 &1620115481
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 70
+  indentLevel: 0
+  duration: 0.5
+  targetAlpha: 1
+  waitUntilFinished: 1
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeTexture: {fileID: 0}
+  fadeTweener: {fileID: 0}
+--- !u!114 &1620115482
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207aecf668a0345388087ccf522f9957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 72
+  indentLevel: 0
+  duration: 0.5
+  targetAlpha: 1
+  waitUntilFinished: 1
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
+  fadeTexture: {fileID: 0}
+  fadeTweener: {fileID: 0}
+--- !u!114 &1620115483
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415ba253dda00fd4981c454be833c723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 77
+  indentLevel: 0
+  state: 2
+--- !u!114 &1620115484
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415ba253dda00fd4981c454be833c723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 76
+  indentLevel: 0
+  state: 2
+--- !u!114 &1620115485
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 83
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115493}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 73
+--- !u!114 &1620115486
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 82
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115493}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 73
+--- !u!114 &1620115487
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 81
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115492}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 74
+--- !u!114 &1620115488
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 80
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115492}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 74
+--- !u!114 &1620115489
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 79
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115493}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 73
+--- !u!114 &1620115490
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 78
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 1
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1620115491
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 75
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 2
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1620115492
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 559.633
+    y: 332.12637
+    width: 174
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 74
+  blockName: PlayLoadStartSound
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115491}
+  includeInSaves: 0
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115493
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 180.63293
+    y: 313.12637
+    width: 141
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 73
+  blockName: PlayClickSound
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115490}
+  includeInSaves: 0
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115494
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 87
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 10
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1620115495
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 144.04156
+    y: 66.00176
+    width: 182
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 85
+  blockName: PlayMenuCloseSound
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115494}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115496
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 88
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 8
+        owningFc: {fileID: 1620115404}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1620115497
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 515.44055
+    y: 62.48661
+    width: 183
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 84
+  blockName: PlayMenuOpenSound
+  description: 
+  eventHandler: {fileID: 0}
+  commandList:
+  - {fileID: 1620115496}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &1620115498
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 90
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115497}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 84
+--- !u!114 &1620115499
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620115399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 89
+  indentLevel: 0
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 1620115497}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+  startIndex: 0
+  callMode: 1
+  targetBlockId: 84
 --- !u!1 &1622107285
 GameObject:
   m_ObjectHideFlags: 0
@@ -3902,7 +4763,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 1
 --- !u!114 &1689154102
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3917,7 +4778,7 @@ MonoBehaviour:
   state: 3
 --- !u!114 &1689154103
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3932,7 +4793,7 @@ MonoBehaviour:
   targetButton: {fileID: 1689154099}
 --- !u!114 &1689154104
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3971,10 +4832,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables: []
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: 
   uiModel:
     _selectedBlocks: []
     _selectedCommands:
     - {fileID: 1689154102}
+    _owner: {fileID: 1689154097}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -3987,17 +4858,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables: []
-  description: 
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 0
@@ -4005,6 +4872,10 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache:
+  - {fileID: 1689154104}
+  _commands:
+  - {fileID: 1689154102}
   nextValidVarID: 1
   uniqueId: 44d8d2ef-887b-4eb9-9fc4-ffd8a251c290
   references:
@@ -4164,21 +5035,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: saveToSelected.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 714980095587541236, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: delayBeforeSave.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
     - target: {fileID: 819678433502044778, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_Name
@@ -4309,26 +5165,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2788740156257821556, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: selectedFlowchart
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: slotIndex.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: delayBeforeLoad.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
-    - target: {fileID: 2848506283971512254, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: loadFromSelected.backingVarRef.owningFc
-      value: 
-      objectReference: {fileID: 1789447538}
     - target: {fileID: 2915399098723150847, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4353,131 +5189,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: saveSlotIndex
-      value: 8107162709153547175
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[3050194087370293303]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162613787656548]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162613787656552]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: 'managedReferences[8107162709153547175]'
-      value: Amanita.Core Amanita.VScripting.IntMuscariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].key
-      value: lastSlotIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].scope
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].value
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175].itemID
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[3050194087370293303]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656548]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162613787656552]._ownerIdIndex
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3056245170888155371, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[8107162709153547175]._ownerIdIndex
-      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3506124658064910297, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -4618,21 +5329,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: uiModel._selectedBlocks.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[4605209293432029257]._ownerIdIndex
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-        type: 3}
-      propertyPath: managedReferences[7903257890697773170]._ownerIdIndex
-      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5112014327275012662, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -4892,7 +5588,7 @@ PrefabInstance:
     - target: {fileID: 7036876570447449985, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00009655301
+      value: -0.00001226664
       objectReference: {fileID: 0}
     - target: {fileID: 7045509288082565552, guid: a717114cba7201448ae3154bfb3fb737,
         type: 3}
@@ -5049,18 +5745,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a717114cba7201448ae3154bfb3fb737, type: 3}
---- !u!114 &1789447538 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4738044054644098906, guid: a717114cba7201448ae3154bfb3fb737,
-    type: 3}
-  m_PrefabInstance: {fileID: 1789447537}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1884665525
 GameObject:
   m_ObjectHideFlags: 0

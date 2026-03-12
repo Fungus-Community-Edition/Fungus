@@ -1,4 +1,4 @@
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     [System.Serializable]
     public class VolumeSettings

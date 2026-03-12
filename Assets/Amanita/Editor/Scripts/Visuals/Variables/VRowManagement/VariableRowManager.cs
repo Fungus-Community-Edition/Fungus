@@ -1,4 +1,4 @@
-﻿using Amanita.EditorUtils;
+﻿using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class VariableRowManager : IDisposable
     {
@@ -192,8 +192,8 @@ namespace Amanita.VScripting.EditorUtils
             }
 
 #if UNITY_EDITOR
-            var flowchartFromWindow = FlowchartWindow.GetFlowchart();
-            TryRebindTo(flowchartFromWindow);
+            var fcFromTracker = EditorSelectionTracker.ActiveFlowchart;
+            TryRebindTo(fcFromTracker);
 #endif
         }
 
@@ -272,11 +272,26 @@ namespace Amanita.VScripting.EditorUtils
 
             IVariable varInvolved = row.VarToRepresent;
             var owner = varInvolved.Owner;
+
+            PrepUndoRecordForOwner();
+            void PrepUndoRecordForOwner()
+            {
+                if (owner is UnityObj ownerObj && ownerObj != null)
+                {
+                    string typeName = varInvolved.ContentType.Name;
+                    if (typeName.Equals("Single"))
+                    {
+                        typeName = "Float";
+                    }
+
+                    Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
+                }
+            }
+            
             owner.RemoveVariable(varInvolved);
 
             if (varInvolved is UnityObj legacyVar && legacyVar != null)
             {
-                Debug.Log($"Removing legacy variable asset: {varInvolved.Key}");
                 UnityObj.DestroyImmediate(legacyVar);
             }
         }

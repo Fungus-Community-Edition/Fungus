@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.DialogueSys.Commands;
+using AtMycelia.Amanita.DialogueSys.Commands;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(MenuTimer))]
     public class MenuTimerEditor : CommandEditor 
@@ -20,7 +20,7 @@ namespace Amanita.VScripting.EditorUtils
         
         public override void DrawCommandGUI()
         {
-            var flowchart = FlowchartWindow.GetFlowchart();
+            var flowchart = EditorSelectionTracker.ActiveFlowchart;
             if (flowchart == null)
             {
                 return;

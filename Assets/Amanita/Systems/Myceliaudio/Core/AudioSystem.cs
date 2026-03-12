@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using Amanita.FSExt;
+using AtMycelia.FSExt;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
 #endif
 
-namespace Amanita.Myceliaudio
+namespace AtMycelia.Amanita.Myceliaudio
 {
     public class AudioSystem : MonoBehaviour, IAudioPlayer<IPlayAudioContext>, IAmanitaManagerSubmodule
     {

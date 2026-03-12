@@ -1,44 +1,138 @@
-﻿using Amanita.EditorUtils;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using FcWindow = AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {
     public class SelectionIntegrationTests : FlowchartWindowTestsCommon
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            window = ScriptableObject.CreateInstance<FcWindow>();
+            SetWindowContext(window, ctx);
+
+            selectionBoxTracker = new SelectionBoxDragTrackerUitk(ctx);
+            selectionBoxTracker.Initialize(window);
+
+            singleSelectionHandler = new SingleSelectionHandler(ctx);
+            singleSelectionHandler.Initialize(window);
+        }
+
+        [TearDown]
+        public override void TearDown()
+        {
+            selectionBoxTracker?.Dispose();
+            singleSelectionHandler?.Dispose();
+
+            if (window != null)
+            {
+                ScriptableObject.DestroyImmediate(window);
+                window = null;
+            }
+
+            base.TearDown();
+        }
+
+        private SelectionBoxDragTrackerUitk selectionBoxTracker;
+        private SingleSelectionHandler singleSelectionHandler;
+        private FcWindow window;
+
+        private static void SetWindowContext(FcWindow targetWindow, FlowchartContext context)
+        {
+            FieldInfo field = typeof(FcWindow).GetField("_fcContext", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(targetWindow, context);
+        }
+
+        private static PointerEventInfo CreatePointerInfo(Vector2 position, Vector2 delta)
+        {
+            return new PointerEventInfo(position, position, delta, delta);
+        }
+
+        private void HandleMouseDown(Event e)
+        {
+            PrePassHitTest(e);
+
+            if (ctx.Interaction.BlockHitInLastMouseDown == null)
+            {
+                PointerEventInfo info = CreatePointerInfo(e.mousePosition, Vector2.zero);
+                selectionBoxTracker.OnEmptySpaceLeftMouseDown(info, e);
+            }
+        }
+
+        private void HandleMouseDrag(Vector2 startPosition, Vector2 currentPosition, Event e)
+        {
+            PointerEventInfo dragStartInfo = CreatePointerInfo(startPosition, Vector2.zero);
+            selectionBoxTracker.OnLeftMouseDragStarted(dragStartInfo, e);
+
+            PointerEventInfo dragInfo = CreatePointerInfo(currentPosition, currentPosition - startPosition);
+            selectionBoxTracker.OnLeftMouseDragged(dragInfo, e);
+        }
+
+        private void HandleMouseDragEnd(Vector2 position, Event e)
+        {
+            PointerEventInfo info = CreatePointerInfo(position, Vector2.zero);
+            selectionBoxTracker.OnLeftMouseDragEnded(info, e);
+        }
+
+        private void HandleMouseUp(Event e, bool allowEmptySpaceClick = true)
+        {
+            Block blockHit = ctx.Interaction.BlockHitInLastMouseDown;
+            if (blockHit != null)
+            {
+                singleSelectionHandler.OnBlockClicked(blockHit, e);
+                return;
+            }
+
+            PointerEventInfo info = CreatePointerInfo(e.mousePosition, Vector2.zero);
+            selectionBoxTracker.OnEmptySpaceLeftMouseUp(info, e);
+
+            if (allowEmptySpaceClick)
+            {
+                singleSelectionHandler.OnEmptySpaceLeftClicked(info);
+            }
+        }
+
         /// <summary>
         /// Simulates the “pre-pass” hit test that FlowchartWindow.OnGUI does
         /// by setting BlockHitInLastMouseDown on the context.
         /// </summary>
-        void PrePassHitTest(Event e)
+        void PrePassHitTest(Event inputEv)
         {
-            if (e.type == EventType.MouseDown)
+            var document = ctx.Document;
+            if (inputEv.type == EventType.MouseDown)
             {
-                ctx.BlockHitInLastMouseDown = ctx.TopmostBlockOverlapping(e.mousePosition);
+                var interaction = ctx.Interaction;
+                interaction.BlockHitInLastMouseDown = document.TopmostBlockOverlapping(inputEv.mousePosition);
             }
             // clear any old marquee state
-            if (e.type == EventType.MouseDown)
-                ctx.SelectionBox = Rect.zero;
+            if (inputEv.type == EventType.MouseDown)
+            {
+                ctx.Interaction.SelectionBox = Rect.zero;
+            }
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
         public void ClickOnBlock_SelectsThatBlock(int blockIndex)
         {
             mouseDown.mousePosition = initBlockPositions[blockIndex];
-            PrePassHitTest(mouseDown);
+            HandleMouseDown(mouseDown);
 
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            string errorMessage = "The SingleSelectionHandler should never consume. When seeing a " +
-                "hit, neither should BoxSelectionHandler";
-            Assert.IsFalse(consumed, errorMessage);
+            mouseReleased.mousePosition = initBlockPositions[blockIndex];
+            HandleMouseUp(mouseReleased);
 
             // Expect exactly that block to be selected
             Block blockWeExpect = blocks[blockIndex];
-            errorMessage = "Click on a single block did not make it so only that one is selected";
+            string errorMessage = "Click on a single block did not make it so only that one is selected";
             CollectionAssert.AreEqual(
                 new[] { blockWeExpect },
                 flowchart.SelectedBlocks,
@@ -59,10 +153,10 @@ namespace VScriptingTests.FCWindowOperations.Integration
             flowchart.SelectedBlock = toSelect;
 
             mouseDown.mousePosition = emptySpace;
-            PrePassHitTest(mouseDown);
+            HandleMouseDown(mouseDown);
 
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
+            mouseReleased.mousePosition = emptySpace;
+            HandleMouseUp(mouseReleased);
 
             bool success = flowchart.SelectedBlockCount == 0;
             Assert.IsTrue(success, "Mouse down on empty space should've cleared all blocks");
@@ -74,10 +168,10 @@ namespace VScriptingTests.FCWindowOperations.Integration
         public virtual void MouseDown_EmptySpace_NoBlocksSelected_NothingStillSelected()
         {
             mouseDown.mousePosition = emptySpace;
-            PrePassHitTest(mouseDown);
+            HandleMouseDown(mouseDown);
 
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
+            mouseReleased.mousePosition = emptySpace;
+            HandleMouseUp(mouseReleased);
 
             bool success = flowchart.SelectedBlockCount == 0;
             Assert.IsTrue(success, "Mouse down on empty space with no blocks selected should've left the selection empty");
@@ -86,11 +180,11 @@ namespace VScriptingTests.FCWindowOperations.Integration
         [Test]
         public virtual void MouseUp_Empty_NothingSelected_RemainsCleared()
         {
-            mouseReleased.mousePosition = emptySpace;
-            PrePassHitTest(mouseReleased);
+            mouseDown.mousePosition = emptySpace;
+            HandleMouseDown(mouseDown);
 
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            Assume.That(consumed, "BoxSelectionHandler should've consumed the mouse down on empty space");
+            mouseReleased.mousePosition = emptySpace;
+            HandleMouseUp(mouseReleased);
 
             bool success = flowchart.SelectedBlockCount == 0;
             Assert.IsTrue(success, "Mouse release on empty space with no blocks selected should've left the selection empty");
@@ -101,7 +195,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             Block toSelect = blocks[blockIndex];
             Vector2 blockPos = toSelect._NodeRect.position;
-            Vector2 offset = BoxSelectionHandler.MinThreshold * 2;
+            Vector2 offset = SelectionBoxDragTrackerUitk.MinThreshold * 2;
 
             // We need to set up the mouse positions so we don't accidentally select 
             // multiple blocks
@@ -122,7 +216,8 @@ namespace VScriptingTests.FCWindowOperations.Integration
             toSelect = blocks[1];
             SimulateSingleBlockSelection(toSelect);
 
-            bool success = ctx.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
+            var selection = ctx.Selection;
+            bool success = selection.BlockCount == 1 && flowchart.SelectedBlock == toSelect;
             string errorMessage = "Selecting a non-selected block should change the selection to only that block";
             Assert.IsTrue(success, errorMessage);
         }
@@ -131,17 +226,16 @@ namespace VScriptingTests.FCWindowOperations.Integration
         public virtual void MouseDown_OnAlreadySelected_SelectThatOneBlock(int blockIndex)
         {
             Block toSelect = blocks[blockIndex];
-            Vector2 blockPos = toSelect._NodeRect.position;
-            bool consumed = false;
-            string errorMessage = string.Empty;
 
             SimulateSingleBlockSelection(toSelect);
 
-            consumed = pipeline.Process(mouseDown, ctx);
-            errorMessage = "With the mouse being on a block, nothing should have consumed the mouse down";
-            Assert.IsFalse(consumed, errorMessage);
+            mouseDown.mousePosition = toSelect._NodeRect.position;
+            HandleMouseDown(mouseDown);
 
-            errorMessage = "After clicking on an already-selected block, only that block should've been selected";
+            mouseReleased.mousePosition = toSelect._NodeRect.position;
+            HandleMouseUp(mouseReleased);
+
+            string errorMessage = "After clicking on an already-selected block, only that block should've been selected";
             bool noClear = flowchart.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
             Assert.IsTrue(noClear, errorMessage);
         }
@@ -149,16 +243,22 @@ namespace VScriptingTests.FCWindowOperations.Integration
         protected void SimulateSingleBlockSelection(Block toSelect, bool controlClick = false)
         {
             mouseDown.control = controlClick;
+            mouseReleased.control = controlClick;
+
             Vector2 blockPos = toSelect._NodeRect.position;
             mouseDown.mousePosition = blockPos;
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            string errorMessage = "Nothing should have consumed the mouse down, what with the mouse being on a block";
-            Assume.That(!consumed, errorMessage);
+            HandleMouseDown(mouseDown);
 
-            if (!controlClick) // Ctrl-clicking can add to the selection, so...
+            mouseReleased.mousePosition = blockPos;
+            HandleMouseUp(mouseReleased);
+
+            mouseDown.control = false;
+            mouseReleased.control = false;
+
+            if (!controlClick) // Ctrl-clicking is ignored by SingleSelectionHandler
             {
                 bool blockSelected = flowchart.SelectedBlockCount == 1 && flowchart.SelectedBlock == toSelect;
-                errorMessage = "Only the one block should've been selected in the prep";
+                string errorMessage = "Only the one block should've been selected in the prep";
                 Assume.That(blockSelected, errorMessage);
             }
         }
@@ -216,23 +316,16 @@ namespace VScriptingTests.FCWindowOperations.Integration
 
         protected virtual void SimulateBoxSelection(Vector2 startMousePos, Vector2 endMousePos)
         {
-            mouseDown.mousePosition = emptySpace;
-            PrePassHitTest(mouseDown);
-
             mouseDown.mousePosition = startMousePos;
-            bool consumed = pipeline.Process(mouseDown, ctx);
-            string errorMessage = "BoxSelectionHandler should've consumed the mouse up";
-            Assume.That(consumed, errorMessage);
+            HandleMouseDown(mouseDown);
 
             mouseDrag.mousePosition = endMousePos;
             mouseDrag.delta = endMousePos - startMousePos;
-            pipeline.Process(mouseDrag, ctx);
-            errorMessage = "BoxSelectionHandler should've consumed the mouse drag";
-            Assume.That(consumed, errorMessage);
+            HandleMouseDrag(startMousePos, endMousePos, mouseDrag);
 
             mouseReleased.mousePosition = mouseDrag.mousePosition;
-            errorMessage = "BoxSelectionHandler should've consumed the mouse release";
-            pipeline.Process(mouseReleased, ctx);
+            HandleMouseDragEnd(endMousePos, mouseReleased);
+            HandleMouseUp(mouseReleased, false);
         }
 
         [Test, TestCaseSource(nameof(BlockIndices))]
@@ -240,13 +333,13 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             Block toSelect = blocks[blockIndex];
             SimulateSingleBlockSelection(toSelect);
-            bool success = ctx.SelectionBox.size == Vector2.zero;
+            bool success = ctx.Interaction.SelectionBox.size == Vector2.zero;
             string errorMessage = "After selecting a block, mouse up should've reset the selection box";
             Assert.IsTrue(success, errorMessage);
         }
 
         [Test]
-        public void CtrlClick_OnSelected_AddsToSelection()
+        public void CtrlClick_OnSelected_DoesNotChangeSelection()
         {
             Block firstBlock = blocks[0];
             SimulateSingleBlockSelection(firstBlock);
@@ -254,44 +347,40 @@ namespace VScriptingTests.FCWindowOperations.Integration
             Block secondBlock = blocks[1];
             SimulateSingleBlockSelection(secondBlock, true);
 
-            bool justTwoBlocksSelected = flowchart.SelectedBlockCount == 2;
-            bool theTwoWeExpectAreSelected = justTwoBlocksSelected && flowchart.SelectedBlocks.Contains(firstBlock) 
-                && flowchart.SelectedBlocks.Contains(secondBlock);
-            Assert.IsTrue(theTwoWeExpectAreSelected, "Only the first 2 blocks should be selected");
+            bool onlyFirstBlockSelected = flowchart.SelectedBlockCount == 1 &&
+                flowchart.SelectedBlocks.Contains(firstBlock);
+            Assert.IsTrue(onlyFirstBlockSelected, 
+                "Ctrl-click should not change selection in SingleSelectionHandler.");
         }
 
         [Test]
-        public void CtrlClick_OnSelected_RemovesFromSelection()
+        public void CtrlClick_OnSelected_DoesNotDeselect()
         {
-            // pre-select blocks[0] and blocks[1]
             Block firstBlock = blocks[0];
-            Block secondBlock = blocks[1];
-
             SimulateSingleBlockSelection(firstBlock);
-            SimulateSingleBlockSelection(secondBlock, true);
 
-            bool bothBlocksSelected = flowchart.SelectedBlocks.Contains(firstBlock) &&
-                flowchart.SelectedBlocks.Contains(secondBlock);
-            Assert.IsTrue(bothBlocksSelected, "Both blocks should be selected in the prep");
+            SimulateSingleBlockSelection(firstBlock, true);
 
-            SimulateSingleBlockSelection(secondBlock, true);
-            bool onlyFirstBlockSelectedNow = flowchart.SelectedBlocks.Contains(firstBlock) &&
-                flowchart.SelectedBlockCount == 1;
-
-            Assert.IsTrue(onlyFirstBlockSelectedNow, "Only the first Block should be selected after ctrl-clicking the second one");
+            bool onlyFirstBlockSelected = flowchart.SelectedBlockCount == 1 &&
+                flowchart.SelectedBlocks.Contains(firstBlock);
+            Assert.IsTrue(onlyFirstBlockSelected, "Ctrl-click should not deselect in SingleSelectionHandler.");
         }
 
         [Test]
-        public void CtrlClick_EmptySpace_DoesNotClear()
+        public void CtrlClick_EmptySpace_ClearsSelection()
         {
             // pre-select block[2]
             SimulateSingleBlockSelection(blocks[2]);
 
-            var e = new Event { type = EventType.MouseUp, button = 0, control = true };
-            ctx.BlockHitInLastMouseDown = null;
-            pipeline.Process(e, ctx);
+            mouseDown.control = true;
+            mouseDown.mousePosition = emptySpace;
+            HandleMouseDown(mouseDown);
 
-            Assert.That(flowchart.SelectedBlocks, Is.EquivalentTo(new[] { blocks[2] }));
+            mouseReleased.control = true;
+            mouseReleased.mousePosition = emptySpace;
+            HandleMouseUp(mouseReleased);
+
+            Assert.IsEmpty(flowchart.SelectedBlocks);
         }
 
     }

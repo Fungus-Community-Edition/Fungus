@@ -6,8 +6,8 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Amanita.VScripting;
-using Amanita;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.FlowchartLifecycle
@@ -25,10 +25,10 @@ namespace VScriptingTests.FlowchartLifecycle
         private class TestIntMuscariable : Muscariable<int>
         {
             public static int InitCalls;
-            public override void Init()
+            public override void Init(int startVal)
             {
                 InitCalls++;
-                base.Init();
+                base.Init(startVal as object);
             }
         }
 
@@ -36,11 +36,11 @@ namespace VScriptingTests.FlowchartLifecycle
         public virtual void DoSetUp()
         {
             AmanitaManager.EnsureExists();
-            AmanitaManager.S.Init();
             fChartHolder = new GameObject("Flowchart_VariableHandlingTestHolder");
             fChart = fChartHolder.AddComponent<Flowchart>();
             fChart.AlwaysKeepGuid = false;
             toDestroyInTearDown.Add(fChartHolder);
+            toDestroyInTearDown.Add(AmanitaManager.S.gameObject);
         }
 
         private GameObject fChartHolder;
@@ -51,6 +51,7 @@ namespace VScriptingTests.FlowchartLifecycle
         public virtual void DoTearDown()
         {
             fChart.OnTearDown();
+            AmanitaManager.S.OnTearDown();
 
             foreach (var obj in toDestroyInTearDown)
             {

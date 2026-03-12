@@ -1,6 +1,6 @@
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Holds the UI elements to get a VariableRowManager to do its thing with.

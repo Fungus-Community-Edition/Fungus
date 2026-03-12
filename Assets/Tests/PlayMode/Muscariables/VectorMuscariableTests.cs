@@ -1,4 +1,4 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using NUnit.Framework;
 using System;
 using UnityEngine;
@@ -12,12 +12,12 @@ namespace VScriptingTests.MuscariableTests.DataOnly
         public void VecTwo_Init_RequiresKeyAndID()
         {
             var v = new VectorTwoMuscariable();
-            var ex = Assert.Throws<Exception>(() => v.Init());
+            var ex = Assert.Throws<Exception>(() => v.Init(default));
             StringAssert.Contains("needs a valid key", ex.Message);
             StringAssert.Contains("needs a valid ID", ex.Message);
 
             v.Key = "v2"; v.ItemId = 10;
-            Assert.DoesNotThrow(() => v.Init());
+            Assert.DoesNotThrow(() => v.Init(default));
         }
 
         [Test]

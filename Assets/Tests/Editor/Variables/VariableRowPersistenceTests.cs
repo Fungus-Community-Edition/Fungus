@@ -5,18 +5,16 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityObject = UnityEngine.Object;
-using Amanita;
+using AtMycelia.Amanita;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
-using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {

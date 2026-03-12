@@ -1095,7 +1095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00015013629}
+  m_AnchoredPosition: {x: 0, y: -0.00009655301}
   m_SizeDelta: {x: 1603, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4776211799061177608
@@ -1322,11 +1322,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables:
+    - rid: 7903257890697773170
+    - rid: 4605209293432029257
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 5517563102179242479}
+    - {fileID: 2674689422536112357}
     _selectedCommands:
-    - {fileID: 8263271778154824517}
+    - {fileID: 8806205604095629028}
+    _owner: {fileID: 5491679531932821053}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1338,20 +1350,14 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables: []
-  muscariables:
-  - rid: 7903257890697773170
-  - rid: 4605209293432029257
-  description: 
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 0
@@ -1359,27 +1365,42 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 0
+  _blockListCache:
+  - {fileID: 8425603792361900093}
+  - {fileID: 2674689422536112357}
+  - {fileID: 1752029211725043856}
+  - {fileID: 5517563102179242479}
+  _commands:
+  - {fileID: 6685305723448108047}
+  - {fileID: 8806205604095629028}
+  - {fileID: 5304501779363745784}
+  - {fileID: 8263271778154824517}
+  - {fileID: 5552533710245989651}
+  - {fileID: 3522029998774049069}
+  - {fileID: 3204976415759936792}
+  - {fileID: 2378518837195172376}
+  - {fileID: 550333160154067643}
   nextValidVarID: 3
   uniqueId: ddc5552f-57d9-4abd-9de8-db704265f780
   references:
     version: 2
     RefIds:
     - rid: 4605209293432029257
-      type: {class: AudioClipMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: loadSfx
         itemID: 2
-        _ownerIdIndex: -1
         value: {fileID: 8300000, guid: 5467a02549657ce418b3aeab5b1dfc18, type: 3}
+        startValue: {fileID: 0}
     - rid: 7903257890697773170
-      type: {class: IntMuscariable, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
         key: lastSlotIndex
         itemID: 1
-        _ownerIdIndex: -1
         value: -5
+        startValue: 0
 --- !u!114 &8425603792361900093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1394,10 +1415,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 379
-    y: 155
-    width: 300
-    height: 100
+    x: 391
+    y: 166
+    width: 165
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 7
@@ -1438,10 +1459,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 618
-    y: 265
-    width: 300
-    height: 100
+    x: 385
+    y: 282
+    width: 138
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 8
@@ -1468,12 +1489,18 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: -2
+    rid: 7084329990132072517
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 7084329990132072517
+      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: lastSlotIndex
+        itemID: 1
+        value: -5
+        startValue: 0
 --- !u!114 &6685305723448108047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1490,7 +1517,7 @@ MonoBehaviour:
   indentLevel: 0
   slotIndex:
     backingVarRef:
-      itemId: 0
+      itemId: 1
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
     value: 0
@@ -1554,10 +1581,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 204
-    y: 152
-    width: 300
-    height: 100
+    x: 133
+    y: 153
+    width: 60
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 12
@@ -1671,10 +1698,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 405
-    y: 235
-    width: 300
-    height: 100
+    x: 639
+    y: 187
+    width: 151
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 14
@@ -1722,11 +1749,19 @@ MonoBehaviour:
   indentLevel: 1
   slotIndex:
     backingVarRef:
-      itemId: 0
+      itemId: 1
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+  loadFromSelected:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
   loadScene:
     backingVarRef:
       itemId: 0
@@ -1743,6 +1778,13 @@ MonoBehaviour:
     value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
+  delayBeforeLoad:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
+    value: 0
+    floatRef: {fileID: 0}
 --- !u!114 &5552533710245989651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1898,11 +1940,11 @@ MonoBehaviour:
     - rid: -2
       type: {class: , ns: , asm: }
     - rid: 4605209097948364930
-      type: {class: IntegerData, ns: Amanita.VScripting, asm: Amanita.Core}
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
           itemId: 0
-          owningFc: {fileID: 0}
+          owningFc: {fileID: 1507031660960170913}
           owningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
@@ -2923,8 +2965,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2124332465217931599}
   m_HandleRect: {fileID: 7491140329138315829}
   m_Direction: 2
-  m_Value: 1.0000015
-  m_Size: 0.84415585
+  m_Value: 1.0000011
+  m_Size: 0.8441559
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

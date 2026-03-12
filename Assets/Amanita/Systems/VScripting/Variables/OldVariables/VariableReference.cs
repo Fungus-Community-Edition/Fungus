@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// A reference to a variable belonging to a variable source (Flowchart or VariableSourceAsset).
@@ -34,6 +34,13 @@ namespace Amanita.VScripting
                 // owner referenced
                 RefreshOwner();
                 IVariable result = null;
+
+                if (itemId == Muscariable.InvalidID)
+                {
+                    //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
+                    return null;
+                }
+
                 if (VarOwner != null)
                 {
                     result = VarOwner.GetVariable(itemId);

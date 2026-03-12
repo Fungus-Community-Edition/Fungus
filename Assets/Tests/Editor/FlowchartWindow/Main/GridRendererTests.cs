@@ -1,7 +1,10 @@
-﻿using Amanita.EditorUtils;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using Block = AtMycelia.Amanita.VScripting.Block;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -13,70 +16,85 @@ namespace VScriptingTests.FCWindowOperations
         {
             base.SetUp();
 
-            _drawer = new FakeLineDrawer();
-            _renderer = new GridRenderer(_drawer);
-
             _gridCtx = new DrawGridContext
             {
                 GridLineColor = _gridLineColor,
                 GridLineSpacingSize = _gridLineSpacingSize
             };
+
+            _renderer = new GridRenderer(ctx, _gridCtx);
         }
 
-        protected FakeLineDrawer _drawer;
         protected GridRenderer _renderer;
         protected DrawGridContext _gridCtx;
         protected readonly Color _gridLineColor = Color.red;
         protected readonly int _gridLineSpacingSize = 50;
 
         [Test]
-        public void Draw_CallsDrawLine_ForExpectedPositions()
+        public void OnFlowchartChanged_ResetsCachedState()
         {
             // Arrange
-            var spacing = _gridCtx.GridLineSpacingSize;
-            float width = ctx.Position.width / ctx.Flowchart.Zoom;
-            float height = ctx.Position.height / ctx.Flowchart.Zoom;
-
-            // Compute exactly what lines GridRenderer should draw
-            var expectedXs = GridUtils.GetVerticalLinePositions(
-                ctx.Flowchart.ScrollPos.x, width, spacing
-            );
-            var expectedYs = GridUtils.GetHorizontalLinePositions(
-                ctx.Flowchart.ScrollPos.y, height, spacing
-            );
+            SetPrivateField(_renderer, "cachedScrollPosition", new Vector2(10f, 20f));
+            SetPrivateField(_renderer, "cachedZoom", 2f);
 
             // Act
-            _renderer.Draw(ctx, _gridCtx);
+            _renderer.OnFlowchartChanged(flowchart, flowchart);
 
-            // Assert vertical lines
-            foreach (float x in expectedXs)
-            {
-                var line = (new Vector2(x, 0), new Vector2(x, height));
-                Assert.Contains(line, _drawer.LinesDrawn,
-                    $"Expected a vertical line at x={x} from y=0→{height}");
-            }
+            // Assert
+            Vector2 cachedScrollPosition = GetPrivateField<Vector2>(_renderer, "cachedScrollPosition");
+            float cachedZoom = GetPrivateField<float>(_renderer, "cachedZoom");
 
-            // Assert horizontal lines
-            foreach (float y in expectedYs)
-            {
-                var line = (new Vector2(0, y), new Vector2(width, y));
-                Assert.Contains(line, _drawer.LinesDrawn,
-                    $"Expected a horizontal line at y={y} from x=0→{width}");
-            }
+            Assert.That(float.IsNaN(cachedScrollPosition.x), Is.True);
+            Assert.That(float.IsNaN(cachedScrollPosition.y), Is.True);
+            Assert.That(float.IsNaN(cachedZoom), Is.True);
         }
 
         [Test]
-        public void Draw_PreservesDrawerColor()
+        public void OnBlockSelected_UpdatesLastSelection()
         {
             // Arrange
-            _drawer.Color = Color.blue;
+            Block selectedBlock = blocks[0];
 
             // Act
-            _renderer.Draw(ctx, _gridCtx);
+            _renderer.OnBlockSelected(selectedBlock);
 
-            // Assert original color restored
-            Assert.AreEqual(Color.blue, _drawer.Color);
+            // Assert
+            Block lastSelectedBlock = GetPrivateField<Block>(_renderer, "lastSelectedBlock");
+            IList<Block> lastBlocksSelected = GetPrivateField<IList<Block>>(_renderer, "lastBlocksSelected");
+
+            Assert.AreSame(selectedBlock, lastSelectedBlock);
+            CollectionAssert.AreEqual(new Block[] { selectedBlock }, lastBlocksSelected);
+        }
+
+        [Test]
+        public void OnMultiBlocksSelected_TracksSelectionList()
+        {
+            // Arrange
+            IList<Block> selectedBlocks = new List<Block> { blocks[0], blocks[1] };
+
+            // Act
+            _renderer.OnMultiBlocksSelected(selectedBlocks);
+
+            // Assert
+            Block lastSelectedBlock = GetPrivateField<Block>(_renderer, "lastSelectedBlock");
+            IList<Block> lastBlocksSelected = GetPrivateField<IList<Block>>(_renderer, "lastBlocksSelected");
+
+            Assert.IsNull(lastSelectedBlock);
+            CollectionAssert.AreEqual(selectedBlocks, lastBlocksSelected);
+        }
+
+        private static T GetPrivateField<T>(object target, string fieldName)
+        {
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null, $"Field '{fieldName}' was not found.");
+            return (T)field.GetValue(target);
+        }
+
+        private static void SetPrivateField<T>(object target, string fieldName, T value)
+        {
+            FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null, $"Field '{fieldName}' was not found.");
+            field.SetValue(target, value);
         }
     }
-
 }

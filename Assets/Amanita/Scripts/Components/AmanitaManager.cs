@@ -1,35 +1,37 @@
-﻿using Amanita.DialogueSys;
-using Amanita.Myceliaudio;
-using Amanita.SaveSys;
-using Amanita.Tweening;
-using Amanita.VScripting;
+﻿using AtMycelia.SaveSys;
+using AtMycelia.Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using Amanita.SaveSys.UI;
+using AtMycelia.SaveSys.UI;
 using UnityEngine.EventSystems;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
+using AtMycelia.Amanita.SaveSys;
+using AtMycelia.Amanita.DialogueSys;
+
+
 #endif
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Amanita manager singleton. Manages access to all Amanita singletons in a consistent manner.
     /// </summary>
-    public sealed class AmanitaManager : MonoBehaviour
+    public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
         [SerializeField] private SaveMenuManager saveMenuPrefab;
+        private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
         public IList<IVariable> GlobalVariables
@@ -58,46 +60,6 @@ namespace Amanita
                 globalVariables.AddRange(value);
             }
         }
-
-        public static int GetNumericIdTiedTo(string guid)
-        {
-            var fcGuidRegistry = GetOrAddGuidRegistryFor<Flowchart>();
-            fcGuidRegistry.Refresh();
-            fcGuidRegistry.AddTypeStoredFor<Flowchart>();
-            int result = fcGuidRegistry.GetNumericId(guid);
-            if (result >= 0)
-            {
-                return result;
-            }
-
-            var vsaGuidRegistry = GetOrAddGuidRegistryFor<VariableSourceAsset>();
-            vsaGuidRegistry.Refresh();
-            vsaGuidRegistry.AddTypeStoredFor<VariableSourceAsset>();
-            result = vsaGuidRegistry.GetNumericId(guid);
-            return result;
-        }
-
-        public static GuidRegistry GetOrAddGuidRegistryFor<T>() where T: IHasUniqueID
-        {
-            bool gotOneReady = typeToRegistryMap.TryGetValue(typeof(T), out var existing);
-            if (gotOneReady)
-            {
-                return existing;
-            }
-
-            string assetName = $"{typeof(T).Name}GuidRegistry";
-            var result = SOUtils.EnsureSOExists<GuidRegistry>(whereGuidRegistriesGo, assetName);
-            result.AddTypeStoredFor<T>();
-            typeToRegistryMap[typeof(T)] = result;
-            return result;
-        }
-
-        private static readonly string whereGuidRegistriesGo = "GuidRegistries"; // Relative to Resources folder
-
-        private static readonly IDictionary<System.Type, GuidRegistry> typeToRegistryMap =
-            new Dictionary<System.Type, GuidRegistry>(new TypeNameComparer())
-        {
-        };
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -146,12 +108,6 @@ namespace Amanita
         private static readonly string resourcesRootFolder = ""; 
         // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
-
-        private static void EnsureGuidRegistriesAvailable()
-        {
-            GetOrAddGuidRegistryFor<Flowchart>();//
-            GetOrAddGuidRegistryFor<VariableSourceAsset>();
-        }
 
         public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
 
@@ -259,7 +215,6 @@ namespace Amanita
             _s = this;
 
             EnsureShadowDbAvailable();
-            EnsureGuidRegistriesAvailable();
             EnsureEventSystemInScene();
             void EnsureEventSystemInScene()
             {
@@ -308,9 +263,7 @@ namespace Amanita
         public bool IsFullyInitted
         {
             get => (TweenManager != null && TweenManager.IsFullyInitted) &&
-                (NarrativeLog != null && NarrativeLog.IsFullyInitted) &&
-                (AudioSystem != null && AudioSystem.IsFullyInitted) &&
-                (SaveSysInstaller != null && SaveSysInstaller.IsFullyInitted);
+                (NarrativeLog != null && NarrativeLog.IsFullyInitted);
         }
 
         private void PrepSubmodules()
@@ -320,15 +273,10 @@ namespace Amanita
             void FetchSubmodules()
             {
                 FlowchartRegistry.EnsureInitialized(true);
-                this.gameObject.GetOrAddComponent<AmanitaState>();
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();
-                AudioSystem = GetComponentInChildren<AudioSystem>();
-                SaveSysInstaller = GetComponentInChildren<SaveSystemInstaller>();
                 TweenManager = GetComponentInChildren<TweenManager>();
-                SaveMenuManager = GetComponentInChildren<SaveMenuManager>();
-                
             }
 
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
@@ -368,10 +316,6 @@ namespace Amanita
                     {
                         // Since DestroyImmediate doesn't call OnDestroy...
                         OnDestroy();
-                        if (AudioSystem != null)
-                        {
-                            AudioSystem.OnDestroy();
-                        }
                         DestroyImmediate(this.gameObject); // Prevents duplicates in edit mode
                     }
                     else
@@ -390,8 +334,6 @@ namespace Amanita
                 DontDestroyOnLoad(gameObject);
             }
         }
-
-        private SaveSystemInstaller SaveSysInstaller { get; set; }
 
         private TweenManager TweenManager { get; set; }
         #region Public methods
@@ -432,15 +374,11 @@ namespace Amanita
             S = null;
         }
 
-        public AudioSystem AudioSystem { get; private set; }
-
         private void OnDestroy()
         {
             if (_s == this)
             {
                 _s = null;
-                SaveSystem.S = null;
-                AudioSystem.S = null;
                 TweenManager.S = null;
 
                 // Clean up anchors we created
@@ -568,7 +506,55 @@ namespace Amanita
 
         private void OnEnable()
         {
+            saveLoadedBlockExecutor.OnEnable();
+            ToggleSubs(true);
             EnsureVariableRegistryIsReady();
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                SaveSysSignals.SaveLoaded += OnSaveSlotLoaded;
+            }
+            else
+            {
+                SaveSysSignals.SaveLoaded -= OnSaveSlotLoaded;
+            }
+        }
+
+        private void OnSaveSlotLoaded(CompositeSaveData saveData)
+        {
+            if (saveLoadedBlockExecutor == null)
+            {
+                Debug.LogWarning("SaveLoadedBlockExecutor is not assigned. SaveLoaded blocks will not execute.");
+                return;
+            }
+
+        }
+
+#if UNITY_EDITOR
+        public void OnTearDown()
+        {
+            List<ITearDownResponder> responders = new List<ITearDownResponder>();
+            foreach (var submodule in GetComponentsInChildren<IAmanitaManagerSubmodule>())
+            {
+                if (submodule is ITearDownResponder responder)
+                {
+                    responders.Add(responder);
+                }
+            }
+            foreach (var responder in responders)
+            {
+                responder.OnTearDown();
+            }
+        }
+#endif
+
+        private void OnDisable()
+        {
+            saveLoadedBlockExecutor.OnDisable();
+            ToggleSubs(false);
         }
     }
 }

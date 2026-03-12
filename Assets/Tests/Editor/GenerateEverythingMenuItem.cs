@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public static class GenerateEverythingMenuItem
     {

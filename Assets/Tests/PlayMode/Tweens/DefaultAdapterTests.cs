@@ -1,5 +1,5 @@
-using Amanita;
-using Amanita.Tweening;
+using AtMycelia.Amanita;
+using AtMycelia.Amanita.Tweening;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;

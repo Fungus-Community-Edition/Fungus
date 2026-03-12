@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Supported target types for messages.

@@ -2,7 +2,7 @@ using UnityEngine;
 using Type = System.Type;
 using System.Collections.Generic;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Attribute class for variable properties. We use these so that fields in Commands

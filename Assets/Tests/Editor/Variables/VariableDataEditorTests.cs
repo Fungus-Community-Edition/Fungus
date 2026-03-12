@@ -2,8 +2,8 @@ using System;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using Amanita;
-using Amanita.VScripting;
+using AtMycelia.Amanita;
+using AtMycelia.Amanita.VScripting;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.TestTools;
@@ -30,22 +30,9 @@ namespace VScriptingTests.VariableOperations
             var fcGo = new GameObject("TestFlowchart");
             _flowchart = fcGo.AddComponent<Flowchart>();
 
-            AmanitaState amanitaState;
-            EnsureEditorSideFlowchartIsSet();
-            void EnsureEditorSideFlowchartIsSet()
-            {
-                amanitaState = GameObject.FindFirstObjectByType<AmanitaState>();
-                if (amanitaState == null)
-                {
-                    GameObject stateHolder = new GameObject("_AmanitaState");
-                    stateHolder.hideFlags = HideFlags.HideInHierarchy;
-                    amanitaState = stateHolder.AddComponent<AmanitaState>();
-                }
-                amanitaState.SelectedFlowchart = _flowchart;
-            }
+            Selection.activeGameObject = _flowchart.gameObject;
 
             toDestroyInTearDown.Add(_flowchart.gameObject);
-            toDestroyInTearDown.Add(amanitaState.gameObject);
             toDestroyInTearDown.Add(_manager.gameObject);
         }
 
@@ -96,7 +83,7 @@ namespace VScriptingTests.VariableOperations
             yield return windowViewWait;
             Assert.AreEqual(Variable.InvalidID, itemIdProp.intValue);
             wnd.Close();
-            
+
         }
 
         // Assigning a valid IVariable (owned by a Flowchart) should keep variable selection (not literal).

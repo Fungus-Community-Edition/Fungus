@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System.Linq;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using System.Reflection;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Searchable popup window content used to add a Variable component to the current Flowchart.
@@ -296,7 +296,13 @@ namespace Amanita.VScripting.EditorUtils
                     return;
                 }
 
-                Undo.RecordObject(varSourceObj, "Add Variable");
+                string typeName = info.ContentType.Name;
+                if (typeName.Equals("Single"))
+                {
+                    typeName = "Float";
+                }
+
+                Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
                 curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             }
         }

@@ -1,26 +1,40 @@
-﻿using Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using AtMycelia.Collections;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
+    /// <summary>
+    /// Clipboard for copying and pasting Flowchart blocks. Stores a list of 
+    /// BlockClipboardEntry objects, which are snapshots of the copied blocks.
+    /// </summary>
     public class BlockClipboard : IDisposable
     {
         readonly List<BlockClipboardEntry> _entries = new List<BlockClipboardEntry>();
 
-        public BlockClipboard(IFlowchartHost window)
+        public BlockClipboard()
+            : this(null)
         {
-            this.Window = window;
+        }
+
+        public BlockClipboard(IFlowchartHostCore window)
+        {
+            Window = window;
         }
 
         public void Copy(IEnumerable<Block> blocks)
         {
+            Copy(blocks, false);
+        }
+
+        public void Copy(IEnumerable<Block> blocks, bool isCut)
+        {
             origBlocks.Clear();
             _entries.Clear();
-            IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy));
+            IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy, isCut));
             _entries.AddRange(newEntries);
             origBlocks.AddRange(blocks.ToList());
         }
@@ -75,7 +89,7 @@ namespace Amanita.VScripting.EditorUtils
                            select elem).Any();
             return result;
         }
-        public virtual IFlowchartHost Window { get; protected set; }
+        public virtual IFlowchartHostCore Window { get; protected set; }
         protected virtual Flowchart Flowchart
         {
             get
@@ -91,14 +105,32 @@ namespace Amanita.VScripting.EditorUtils
 
         public void Paste(Vector2 screenMousePos, bool relative = false)
         {
-            // 1) Undo + clear out old selection
-            Undo.RecordObject(Flowchart, "Paste Blocks");
-            Window.DeselectAll();
+            if (Window == null || Flowchart == null)
+            {
+                return;
+            }
 
+            // 1) Undo + clear out old selection
+            Window.DeselectAll();
+            Undo.RecordObject(Flowchart, "Paste Block(s)");
+            
             // 2) Actually instantiate each snapshot
             var pasted = _entries
                 .Select(entry => entry.PasteBlock(Window, Flowchart))
                 .ToList();
+
+            var pastedById = new Dictionary<ushort, Block>();
+            for (int i = 0; i < _entries.Count && i < pasted.Count; i++)
+            {
+                pastedById[(ushort)_entries[i].BlockID] = pasted[i];
+            }
+
+            for (int i = 0; i < _entries.Count && i < pasted.Count; i++)
+            {
+                _entries[i].RestoreObjectReferences(pasted[i], Flowchart, pastedById);
+                _entries[i].RefreshPastedObjects(pasted[i]);
+            }
+
             // 3) Compute offset so center of pasted blocks is at mouse
             Vector2 copiedCenter = Window.GetBlockCenter(pasted) + Flowchart.ScrollPos;
             Vector2 worldMouse = screenMousePos / Flowchart.Zoom;

@@ -1,7 +1,7 @@
-using Amanita.Lua;
-using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting.UI;
-using Collections;
+using AtMycelia.Amanita.Lua;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.UI;
+using AtMycelia.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,16 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
-using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
-using UnityEngine.SceneManagement;
-
+using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Visual scripting controller for the Flowchart programming language.
@@ -27,8 +24,21 @@ namespace Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable
     {
+        [SerializeField] private VariableManager variableManager = new VariableManager();
+
+        [HideInInspector]
+        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
+
+        [HideInInspector]
+        [FormerlySerializedAs("variables")]
+        [SerializeField] protected List<Variable> legacyVariables = new List<Variable>();
+
+        [HideInInspector]
+        [FormerlySerializedAs("muscariables")]
+        [SerializeReference] protected List<Muscariable> _oldMuscariables = new List<Muscariable>();
+
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
         /// </summary>
@@ -39,16 +49,22 @@ namespace Amanita.VScripting
 
         public virtual IVariable GetVariable(byte itemID)
         {
-            varLookupById.TryGetValue(itemID, out IVariable result);
-            return result;
+            return variableManager.GetVariable(itemID);
         }
-        public const string SubstituteVariableRegexString = "{\\$.*?}";
 
-        // For more performant lookups, we cache a dictionary of vars by their id.
-        protected IDictionary<byte, IVariable> varLookupById = new Dictionary<byte, IVariable>();
+#if UNITY_EDITOR
 
-        // What the editor utils use to decide how to render this FC's data in the 
-        // FlowchartWindow and BlockInspector
+        // Locking this under #if UNITY_EDITOR to avoid unnecessary serialization in builds
+
+        [TextArea(3, 5)]
+        [Tooltip("Description text displayed in the Flowchart editor window")]
+        [FormerlySerializedAs("description")]
+        [SerializeField] protected string description = "";
+
+        /// <summary>
+        /// What the editor utils should use to decide how to render this FC's data in the 
+        /// FlowchartWindow and BlockInspector.
+        /// </summary>
         public virtual FlowchartUIModel UIModel
         {
             get { return uiModel; }
@@ -57,21 +73,6 @@ namespace Amanita.VScripting
         [HideInInspector]
         [SerializeField]
         protected FlowchartUIModel uiModel = new FlowchartUIModel();
-
-        [HideInInspector]
-        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
-        
-        [HideInInspector]
-        [FormerlySerializedAs("variables")]
-        [SerializeField] protected List<Variable> legacyVariables = new List<Variable>();
-
-        [HideInInspector]
-        [SerializeReference] protected List<Muscariable> muscariables = new List<Muscariable>();
-
-        [TextArea(3, 5)]
-        [Tooltip("Description text displayed in the Flowchart editor window")]
-        [FormerlySerializedAs("description")]
-        [SerializeField] protected string description = "";
 
         [Range(0f, 5f)]
         [Tooltip("Adds a pause after each execution step to make it easier to visualise program flow. Editor only, has no effect in platform builds.")]
@@ -86,15 +87,16 @@ namespace Amanita.VScripting
         [Tooltip("Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.")]
         [SerializeField] protected bool saveSelection = true;
 
-        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
-        [FormerlySerializedAs("localizationId")]
-        [SerializeField] protected string localizationId = "";
-
         [Tooltip("Display line numbers in the command list in the Block inspector.")]
         [SerializeField] protected bool showLineNumbers = false;
 
         [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
         [SerializeField] protected List<string> hideCommands = new List<string>();
+#endif
+
+        [Tooltip("Unique identifier for this flowchart in localized string keys. If no id is specified then the name of the Flowchart object will be used.")]
+        [FormerlySerializedAs("localizationId")]
+        [SerializeField] protected string localizationId = "";
 
         [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
         [FormerlySerializedAs("luaEnvironment")]
@@ -104,6 +106,7 @@ namespace Amanita.VScripting
         [FormerlySerializedAs("_luaBindingName")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
+        #region Save Sys Involvement
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
         [SerializeField] protected bool includeInSaves = true;
 
@@ -115,17 +118,9 @@ namespace Amanita.VScripting
 
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
         [SerializeField] protected int loadPriority = 0;
+        #endregion
 
         [SerializeField] private bool alwaysKeepGuid = true;
-
-        /// <summary>
-        /// Scroll position of Flowchart editor window.
-        /// </summary>
-        public virtual Vector2 ScrollPos
-        {
-            get => uiModel.ScrollPos;
-            set => uiModel.ScrollPos = value;
-        }
 
         public virtual bool IncludeInSaves
         {
@@ -146,7 +141,6 @@ namespace Amanita.VScripting
             set { saveVariables = value; }
         }
         
-
         public virtual int LoadPriority
         {
             get { return loadPriority; }
@@ -157,15 +151,23 @@ namespace Amanita.VScripting
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
-
-#if UNITY_EDITOR
-        public bool SelectedCommandsStale
+        
+        public IReadOnlyCollection<Block> Blocks
         {
-            get => UIModel.SelectedCommandsStale;
-            set => UIModel.SelectedCommandsStale = value;
+            get
+            {
+                // Refresh if cache is empty or contains null entries.
+                if (_blockListCache == null || _blockListCache.Count == 0 || 
+                    _blockListCache.Any(block => block == null))
+                {
+                    RefreshBlockAndCommandCache();
+                }
+
+                return _blockListCache;
+            }
         }
-#endif
-            
+        public IReadOnlyCollection<Command> Commands => _commands;
+
         protected virtual void Awake()
         {
             if (!this.IsInTheScene)
@@ -174,14 +176,79 @@ namespace Amanita.VScripting
                 return;
             }
 
-            UIModel.Owner = this.gameObject;
-            CheckEventSystem();
-
-            if (Application.IsPlaying(this))
+            legacyVariables ??= new List<Variable>();
+            if (legacyVariables.Count == 0)
             {
-                GetAndInitVars();
+                var found = GetComponents<Variable>();
+                legacyVariables.AddRange(found);
             }
+
+            AssertOwnership();
+            PrepVarManager();
+            RefreshBlockAndCommandCache();
+
+#if UNITY_EDITOR
+            UIModel.Owner = this.gameObject;
+#endif
+
         }
+
+        private void PrepVarManager()
+        {
+            if (!variableManager.IsInitted)
+            {
+                variableManager.Initialize(_oldMuscariables, legacyVariables);
+                // For now, let's not clear those lists
+
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
+            }
+            else
+            {
+                _oldMuscariables.Clear();
+                legacyVariables.Clear();
+                variableManager.Refresh();
+            }
+                
+        }
+
+        private void RefreshBlockAndCommandCache()
+        {
+            _blockListCache ??= new List<Block>();
+            _blocks ??= new Dictionary<uint, Block>();
+            _commands ??= new List<Command>();
+            // ^Despite the initializers in this class, weird things can happen with Unity
+
+            _blockListCache.Clear();
+            _blocks.Clear();
+            _commands.Clear();
+
+            var blocksFound = GetComponents<Block>();
+            for (int i = 0; i < blocksFound.Length; i++)
+            {
+                var currentBlock = blocksFound[i];
+                if (currentBlock == null)
+                {
+                    continue;
+                }
+
+                if (currentBlock.ItemId == 0 || _blocks.ContainsKey(currentBlock.ItemId))
+                {
+                    currentBlock.ItemId = NextItemId();
+                }
+
+                _blockListCache.Add(currentBlock);
+                _blocks[currentBlock.ItemId] = currentBlock;
+            }
+
+            var commandsFound = GetComponents<Command>();
+            _commands.AddRange(commandsFound);
+        }
+
+        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
+        private IDictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
+        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -189,31 +256,6 @@ namespace Amanita.VScripting
             {
                 StartCoroutine(HandleGameStartedBlocks());
             }
-        }
-
-        // There must be an Event System in the scene for Say and Menu input to work.
-        // This method will automatically instantiate one if none exists.
-        protected virtual void CheckEventSystem()
-        {
-            EventSystem eventSystem = GameObject.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-            if (eventSystem == null)
-            {
-                // Auto spawn an Event System from the prefab
-                GameObject prefab = Resources.Load<GameObject>(AmanitaConstants.EventSystemPrefabName);
-                if (prefab != null)
-                {
-                    GameObject holder = Instantiate(prefab);
-                    eventSystem = holder.GetComponent<EventSystem>();
-                    holder.name = "EventSystem";
-                }
-                else
-                {
-                    string errorMessage = "Event System prefab for Amanita not found.";
-                    throw new MissingFieldException(errorMessage);
-                }
-            }
-
-            eventSystem.gameObject.SetActive(true);
         }
 
         protected virtual IEnumerator HandleGameStartedBlocks()
@@ -237,49 +279,9 @@ namespace Amanita.VScripting
             
         }
 
-        /// <summary>
-        /// Specifically for legacy variables.
-        /// </summary>
-        /// <param name="index"></param>
-        public virtual void RemoveVariableAtIndex(int index)
-        {
-            if (index >= 0 && index < legacyVariables.Count)
-            {
-                IVariable toRemove = legacyVariables[index];
-                legacyVariables.RemoveAt(index);
-                MonoBehaviour component = toRemove as MonoBehaviour;
-                Destroy(component);
-                VariableRemoved(toRemove);
-            }
-        }
-
-        public virtual void RemoveMuscariableAtIndex(int index)
-        {
-            if (index >= 0 && index < muscariables.Count)
-            {
-                IVariable toRemove = muscariables[index];
-                muscariables.RemoveAt(index);
-                VariableRemoved(toRemove);
-            }
-        }
-
         public virtual void RemoveVariable(IVariable toRemove)
         {
-            // Different variables have Equals() implementations that don't always
-            // return true based on ref, so we have to be extra clear about
-            // how we care about references here.
-            int index;
-            if (legacyVariables.ContainsReference(toRemove))
-            {
-                index = legacyVariables.IndexOfReference(toRemove);
-                RemoveVariableAtIndex(index);
-            }
-
-            if (muscariables.ContainsReference(toRemove))
-            {
-                index = muscariables.IndexOfReference(toRemove);
-                RemoveMuscariableAtIndex(index);
-            }
+            variableManager.RemoveVariable(toRemove);
         }
 
         /// <summary>
@@ -287,62 +289,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void ClearVariables()
         {
-            // We'll remove them one by one so the right events fire
-            while (legacyVariables.Count > 0)
-            {
-                RemoveVariableAtIndex(0);
-            }
-
-            while (muscariables.Count > 0)
-            {
-                RemoveMuscariableAtIndex(0);
-            }
-        }
-
-        protected virtual void GetAndInitVars()
-        {
-            // Muscariables get automatically serialized as part of the list
-
-            IList<IVariable> allVars = legacyVariables.Cast<IVariable>()
-                .Concat(muscariables.Cast<IVariable>())
-                .ToList();
-
-            for (int i = 0; i < legacyVariables.Count; i++)
-            {
-                var currentVar = legacyVariables[i];
-                currentVar.Init();
-            }
-
-            ReplaceLegacyWithMuscaris();
-            void ReplaceLegacyWithMuscaris()
-            {
-                IList<Muscariable> newMuscaris = (from elem in legacyVariables
-                                                        select elem.ToMuscariable()).ToList();
-
-                while (legacyVariables.Count > 0)
-                {
-                    RemoveVariableAtIndex(0);
-                }
-
-                foreach (var elem in newMuscaris)
-                {
-                    elem.ParentFlowchart = this;
-                    AddVariable(elem);
-                }
-
-            }
-
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var currentVar = muscariables[i];
-                currentVar.Init();
-            }
-        }
-
-        protected void OnActiveSceneChanged(Scene prevScene, Scene currentScene)
-        {
-            // Reset the flag for checking for an event system as there may not be one in the newly loaded scene.
-            
+            variableManager.Clear();
         }
 
         protected virtual void OnEnable()
@@ -354,18 +301,43 @@ namespace Amanita.VScripting
             }
 
             AmanitaManager.EnsureExists();
-            var cachedFlowcharts = AmanitaManager.S.FlowchartsInScene;
-            if (!cachedFlowcharts.Contains(this))
-            {
-                SceneManager.activeSceneChanged -= OnActiveSceneChanged; // Just in case.
-                SceneManager.activeSceneChanged += OnActiveSceneChanged;
-            }
-
             Refresh();
+            ToggleSubs(true);
+            variableManager.OnEnable();
 
             StringSubstituter.RegisterHandler(this);   
             FlowchartSignals.FlowchartEnabled(this);
         }
+        
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                variableManager.VariableAdded += OnVarAdded;
+                variableManager.VariableRemoved += OnVarRemoved;
+            }
+            else
+            {
+                variableManager.VariableAdded -= OnVarAdded;
+                variableManager.VariableRemoved -= OnVarRemoved;
+            }
+        }
+
+        private void OnVarAdded(IVariable added)
+        {
+            VariableAdded(added);
+            FlowchartSignals.VariableAdded(this, added);
+        }
+
+        public event Action<IVariable> VariableAdded = delegate { };
+        
+        private void OnVarRemoved(IVariable removed)
+        {
+            VariableRemoved(removed);
+            FlowchartSignals.VariableRemoved(this, removed);
+        }
+
+        public event Action<IVariable> VariableRemoved = delegate { };
 
         private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
@@ -373,44 +345,42 @@ namespace Amanita.VScripting
         {
             AssertUniqueID();
             AssertOwnership();
-            
+#if UNITY_EDITOR
+            RefreshEditorCaches();
+            UpdateHideFlags();
+#endif
             CheckItemIds();
             CleanupComponents();
-            RefreshVarLookups();
             UpdateVersion();
+            PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
+
         }
 
-        protected virtual void RefreshVarLookups()
+#if UNITY_EDITOR
+        private void RefreshEditorCaches()
         {
-            varLookupById.Clear();
-            foreach (var variable in Variables)
+            if (Application.IsPlaying(this))
             {
-                varLookupById[variable.ItemId] = variable;
+                return;
             }
+
+            RefreshBlockAndCommandCache();
         }
+#endif
+
 
         protected virtual void AssertOwnership()
         {
-            foreach (Muscariable elem in Variables.Where((elem) => elem is Muscariable))
-            {
-                elem.Owner = this;
-                elem.ParentFlowchart = this;
-            }
-
+            variableManager.VarOwner = this;
             // Legacy variables automatically get their owner-registration done;
             // it's always the Flowchart they're attached to.
         }
 
         protected virtual void OnDisable()
         {
+            ToggleSubs(false);
             StopAllBlocks();
             StopAllCoroutines();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
-            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             StringSubstituter.UnregisterHandler(this);   
             FlowchartSignals.FlowchartDisabled(this);
         }
@@ -447,34 +417,24 @@ namespace Amanita.VScripting
             version = AmanitaConstants.CurrentVersion;
         }
 
-        public virtual void RemoveFromSelection(Command command)
-        {
-            uiModel.RemoveFromSelection(command);
-        }
-
-        public virtual void RemoveFromSelection(Block block)
-        {
-            uiModel.RemoveFromSelection(block);
-        }
-
         protected virtual void CheckItemIds()
         {
             // Make sure item ids are unique and monotonically increasing.
             // This should always be the case, but some legacy Flowcharts may have issues.
             List<ushort> usedIds = new List<ushort>();
+            RefreshBlockAndCommandCache();
             CheckForBlocks();
             void CheckForBlocks()
             {
-                
-                var blocks = GetComponents<Block>();
-                for (ushort i = 0; i < blocks.Length; i++)
+                foreach (var blockEl in _blocks.Values)
                 {
-                    var block = blocks[i];
-                    if (block.ItemId == 0 || usedIds.Contains(block.ItemId))
+                    if (blockEl == null) continue;
+
+                    if (blockEl.ItemId == 0 || usedIds.Contains(blockEl.ItemId))
                     {
-                        block.ItemId = NextItemId();
+                        blockEl.ItemId = NextItemId();
                     }
-                    usedIds.Add(block.ItemId);
+                    usedIds.Add(blockEl.ItemId);
                 }
             }
             
@@ -482,14 +442,19 @@ namespace Amanita.VScripting
             void CheckForCommands()
             {
                 var commands = GetComponents<Command>();
-                for (ushort i = 0; i < commands.Length; i++)
+                foreach (Command commandEl in _commands)
                 {
-                    var command = commands[i];
-                    if (command.ItemId == 0 || usedIds.Contains(command.ItemId))
+                    if (commandEl == null)
                     {
-                        command.ItemId = NextItemId();
+                        Debug.LogWarning($"Found null Command while ensuring unique IDs.");
+                        continue;
                     }
-                    usedIds.Add(command.ItemId);
+
+                    if (commandEl.ItemId == 0 || usedIds.Contains(commandEl.ItemId))
+                    {
+                        commandEl.ItemId = NextItemId();
+                    }
+                    usedIds.Add(commandEl.ItemId);
                 }
             }
 
@@ -508,23 +473,6 @@ namespace Amanita.VScripting
                 }
             }
 
-            // Due to how variables were directly added through the Variables list,
-            // and how we don't want to change all other parts of the code base so they use
-            // AddVariable... we're going with this workaround.
-            EnsureVarsHaveValidIDs();
-            void EnsureVarsHaveValidIDs()
-            {
-                IList<byte> usedIds = new List<byte>();
-                for (int i = 0; i < Variables.Count; i++)
-                {
-                    var currentVar = Variables[i];
-                    if (usedIds.Contains(currentVar.ItemId) || currentVar.ItemId == 0)
-                    {
-                        currentVar.ItemId = NextValidVarID();
-                    }
-                    usedIds.Add(currentVar.ItemId);
-                }
-            }
         }
 
         protected virtual byte NextValidVarID()
@@ -547,25 +495,16 @@ namespace Amanita.VScripting
             // It shouldn't happen but it seemed to occur for a user on the forum 
             legacyVariables.RemoveAll(item => item == null);
 
-            var allVariables = GetComponents<Variable>();
-            for (int i = 0; i < allVariables.Length; i++)
+            // Aviod destroying the legacy vars. Let them exist, even if we have muscaris
+            // acting in their place.
+
+            #region Destroy Commands that aren't in any blocks
+            for (int i = 0; i < _commands.Count; i++)
             {
-                var variable = allVariables[i];
-                if (!legacyVariables.Contains(variable))
-                {
-                    DestroyImmediate(variable);
-                }
-            }
-            
-            var blocks = GetComponents<Block>();
-            var commands = GetComponents<Command>();
-            for (int i = 0; i < commands.Length; i++)
-            {
-                var command = commands[i];
+                var command = _commands[i];
                 bool found = false;
-                for (int j = 0; j < blocks.Length; j++)
+                foreach (Block block in _blocks.Values)
                 {
-                    var block = blocks[j];
                     if (block.CommandList.Contains(command))
                     {
                         found = true;
@@ -577,15 +516,16 @@ namespace Amanita.VScripting
                     DestroyImmediate(command);
                 }
             }
-            
+            #endregion
+
+            #region Destroy EventHandlers that aren't on any blocks
             var eventHandlers = GetComponents<AmanitaEventHandler>();
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                for (int j = 0; j < blocks.Length; j++)
+                foreach (Block block in _blocks.Values)
                 {
-                    var block = blocks[j];
                     if (block._EventHandler == eventHandler)
                     {
                         found = true;
@@ -597,6 +537,7 @@ namespace Amanita.VScripting
                     DestroyImmediate(eventHandler);
                 }
             }
+            #endregion
         }
 
         protected virtual Block CreateBlockComponent(GameObject parent)
@@ -607,32 +548,22 @@ namespace Amanita.VScripting
 
         #region Public members
 
-        #region Flowchart UI State
-        /// <summary>
-        /// Scroll position of Flowchart variables window.
-        /// </summary>
-        public virtual Vector2 VariablesScrollPos
+#if UNITY_EDITOR
+        #region Flowchart UI State and Methods
+
+        public bool SelectedCommandsStale
         {
-            get => uiModel.VariablesScrollPos;
-            set => uiModel.VariablesScrollPos = value;
+            get => UIModel.SelectedCommandsStale;
+            set => UIModel.SelectedCommandsStale = value;
         }
 
         /// <summary>
-        /// Whether or not to show the variables pane.
+        /// Scroll position of Flowchart editor window.
         /// </summary>
-        public virtual bool VariablesExpanded
+        public virtual Vector2 ScrollPos
         {
-            get => uiModel.VariablesExpanded;
-            set => uiModel.VariablesExpanded = value;
-        }
-
-        /// <summary>
-        /// Height of command block view in inspector.
-        /// </summary>
-        public virtual float BlockViewHeight
-        {
-            get => uiModel.BlockViewHeight;
-            set => uiModel.BlockViewHeight = value;
+            get => uiModel.ScrollPos;
+            set => uiModel.ScrollPos = value;
         }
 
         public virtual float Zoom
@@ -683,27 +614,154 @@ namespace Amanita.VScripting
         {
             get { return uiModel.BlockCount; }
         }
-        #endregion
 
-        public virtual IReadOnlyList<IVariable> Variables
+        public void UpdateSelectedCache()
         {
-            get
-            {
-                IReadOnlyList<IVariable> copyOfList = legacyVariables.Cast<IVariable>()
-                    .Concat(muscariables.Cast<IVariable>())
-                    .ToList();
+            SelectedBlocks.Clear();
+            var res = gameObject.GetComponents<Block>();
+            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
+        }
 
-                return copyOfList;
+        public void ReverseUpdateSelectedCache()
+        {
+            for (int i = 0; i < SelectedBlockCount; i++)
+            {
+                if (SelectedBlocks[i] != null)
+                {
+                    SelectedBlocks[i].IsSelected = true;
+                }
             }
         }
 
-        public virtual int VariableCount { get { return muscariables.Count; } }
+        /// <summary>
+        /// Clears the list of selected blocks.
+        /// </summary>
+        public virtual void ClearSelectedBlocks()
+        {
+            IList<Block> blocksToSignal = SelectedBlocks;
+            UIModel.ClearSelectedBlocks();
+        }
+
+        public virtual void AddRangeToSelection(IList<Block> toSelect)
+        {
+            UIModel.AddRangeToSelection(toSelect);
+        }
 
         /// <summary>
-        /// Description text displayed in the Flowchart editor window
+        /// Adds a block to the list of selected blocks.
         /// </summary>
-        public virtual string Description { get { return description; } }
+        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
 
+        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+
+        public void DeselectAll()
+        {
+            UIModel.ClearSelectedBlocks();
+            UIModel.ClearSelectedCommands();
+        }
+
+        /// <summary>
+        /// Set the block objects to be hidden or visible depending on the hideComponents property.
+        /// </summary>
+        public virtual void UpdateHideFlags()
+        {
+            if (hideComponents)
+            {
+                var blocks = _blocks;
+                foreach (var block in blocks.Values)
+                {
+                    block.hideFlags = HideFlags.HideInInspector;
+                    if (block.gameObject != gameObject)
+                    {
+                        block.hideFlags = HideFlags.HideInHierarchy;
+                    }
+                }
+
+                var commands = _commands;
+                foreach (var command in commands)
+                {
+                    command.hideFlags = HideFlags.HideInInspector;
+                }
+                var eventHandlers = GetComponents<AmanitaEventHandler>();
+                for (int i = 0; i < eventHandlers.Length; i++)
+                {
+                    var eventHandler = eventHandlers[i];
+                    eventHandler.hideFlags = HideFlags.HideInInspector;
+                }
+            }
+            else
+            {
+                var monoBehaviours = GetComponents<MonoBehaviour>();
+                for (int i = 0; i < monoBehaviours.Length; i++)
+                {
+                    var monoBehaviour = monoBehaviours[i];
+                    if (monoBehaviour == null)
+                    {
+                        continue;
+                    }
+                    monoBehaviour.hideFlags = HideFlags.None;
+                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
+        /// </summary>
+        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
+        {
+            for (int i = 0; i < hideCommands.Count; i++)
+            {
+                // Match on category or command name (case insensitive)
+                var key = hideCommands[i];
+                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Clears the list of selected commands.
+        /// </summary>
+        public virtual void ClearSelectedCommands()
+        {
+            UIModel.ClearSelectedCommands();
+#if UNITY_EDITOR
+            SelectedCommandsStale = true;
+#endif
+        }
+
+        /// <summary>
+        /// Adds a command to the list of selected commands.
+        /// </summary>
+        public virtual void AddSelectedCommand(Command command)
+        {
+            if (!uiModel.Contains(command))
+            {
+                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
+                // like SelectedCommands.Add, we call the ui model's method specifically for registering
+                // Commands.
+                UIModel.AddToSelection(command);
+#if UNITY_EDITOR
+                SelectedCommandsStale = true;
+#endif
+                SelectedCommandAdded(command);
+            }
+        }
+
+        /// <summary>
+        /// For when added through AddSelectedCommand (as opposed to just setting 
+        /// the SelectedCommands property or such)
+        /// </summary>
+        public event Action<Command> SelectedCommandAdded = delegate { };
+
+        #endregion
+#endif
+
+#if UNITY_EDITOR
         /// <summary>
         /// Slow down execution in the editor to make it easier to visualise program flow.
         /// </summary>
@@ -720,14 +778,32 @@ namespace Amanita.VScripting
         public virtual bool SaveSelection { get { return saveSelection; } }
 
         /// <summary>
-        /// Unique identifier for identifying this flowchart in localized string keys.
-        /// </summary>
-        public virtual string LocalizationId { get { return localizationId; } }
-
-        /// <summary>
         /// Display line numbers in the command list in the Block inspector.
         /// </summary>
         public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
+
+#endif
+
+        public virtual IReadOnlyList<IVariable> Variables
+        {
+            get
+            {
+                var result = variableManager.Variables;
+                return result;
+            }
+        }
+
+        public virtual int VariableCount => variableManager.VariableCount;
+
+        /// <summary>
+        /// Description text displayed in the Flowchart editor window
+        /// </summary>
+        public virtual string Description { get { return description; } }
+
+        /// <summary>
+        /// Unique identifier for identifying this flowchart in localized string keys.
+        /// </summary>
+        public virtual string LocalizationId { get { return localizationId; } }
 
         /// <summary>
         /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
@@ -764,71 +840,43 @@ namespace Amanita.VScripting
         /// </summary>
         public ushort NextItemId()
         {
-            // As for why we make Blocks and Commands get IDs from the same pool while vars get their own...
-            // we want to give users the option to move commands between blocks without worrying about ID conflicts,
-            // but variables added to a Flowchart are supposed to forever be with that same Flowchart.
+            // As for why we make Blocks and Commands get IDs from the same pool while vars get 
+            // their own... we want to give users the option to move Commands between Blocks
+            // without worrying about ID conflicts, but variables added to a Flowchart are
+            // supposed to forever be with that same Flowchart.
             ushort maxId = 0;
-            var blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
+            for (int i = 0; i < _blockListCache.Count; i++)
             {
-                var block = blocks[i];
+                var block = _blockListCache[i];
                 maxId = Math.Max(maxId, block.ItemId);
             }
 
-            var commands = GetComponents<Command>();
-            for (int i = 0; i < commands.Length; i++)
+            for (int i = 0; i < _commands.Count; i++)
             {
-                var command = commands[i];
+                var command = _commands[i];
                 maxId = Math.Max(maxId, command.ItemId);
             }
-            return (ushort)(maxId + 1);
+
+            maxId++;
+            return maxId;
         }
 
         #region Block-Handling
 
-
-        public void UpdateSelectedCache()
-        {
-            SelectedBlocks.Clear();
-            var res = gameObject.GetComponents<Block>();
-            SelectedBlocks = res.Where(x => x.IsSelected).ToList();
-        }
-
-        public void ReverseUpdateSelectedCache()
-        {
-            for (int i = 0; i < SelectedBlockCount; i++)
-            {
-                if (SelectedBlocks[i] != null)
-                {
-                    SelectedBlocks[i].IsSelected = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clears the list of selected blocks.
-        /// </summary>
-        public virtual void ClearSelectedBlocks()
-        {
-            IList<Block> blocksToSignal = SelectedBlocks;
-            UIModel.ClearSelectedBlocks();
-            FlowchartSignals.BlockSelectionCleared(this, blocksToSignal);
-        }
-
-        public virtual void AddRangeToSelection(IList<Block> toSelect)
-        {
-            UIModel.AddRangeToSelection(toSelect);
-        }
-
         /// <summary>
         /// Create a new block node which you can then add commands to.
         /// </summary>
-        public virtual Block CreateBlock(Vector2 position)
+        public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
+            blockName ??= AmanitaConstants.DefaultBlockName;
             Block created = CreateBlockComponent(gameObject);
+#if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
-            created.BlockName = GetUniqueBlockKey(created.BlockName, created);
+#endif
+            created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
+            _blocks.Add(created.ItemId, created);
+            _blockListCache.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
         }
@@ -852,26 +900,20 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            var blocks = GetComponents<Block>();
-            for (int i = 0; i < blocks.Length; i++)
+            foreach (var blockEl in _blocks.Values)
             {
-                var block = blocks[i];
-                if (block.BlockName == blockName)
+                if (blockEl.BlockName == blockName)
                 {
-                    return block;
+                    return blockEl;
                 }
             }
 
             return null;
         }
 
-        public virtual Block FindBlockByItemId(int itemId)
+        public virtual Block FindBlockByItemId(uint itemId)
         {
-            var blocks = GetComponents<Block>();
-            Block result = (from blockEl in blocks
-                            where blockEl.ItemId == itemId
-                            select blockEl).FirstOrDefault();
-
+            _blocks.TryGetValue(itemId, out Block result);
             return result;
         }
 
@@ -1029,15 +1071,6 @@ namespace Amanita.VScripting
             }
         }
 
-        /// <summary>
-        /// Adds a block to the list of selected blocks.
-        /// </summary>
-        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
-
-        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
-
-        public virtual bool Contains(Block block) => UIModel.Contains(block);
-
         #endregion
 
         /// <summary>
@@ -1121,31 +1154,14 @@ namespace Amanita.VScripting
             }
         }
 
-        Muscariable IMuscariableSource.GetVariable(string name, StringComparison comparisonType = StringComparison.Ordinal)
-        {
-            Muscariable result = null;
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var currentVar = muscariables[i];
-                if (currentVar.Key.Equals(name, comparisonType))
-                {
-                    result = currentVar;
-                    break;
-                }
-            }
-            return result;
-        }
-
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
-            IntegrateMuscariable(muscaVar);
-            return muscaVar;
+            return variableManager.AddNewVariableOfContentType(contentType, key);
         }
 
         IVariable IVariableSource.AddVariable(IVariable toAdd)
         {
-            return AddVariable(toAdd.ToMuscariable());
+            return variableManager.AddAsMuscari(toAdd);
         }
 
         /// <summary>
@@ -1155,28 +1171,17 @@ namespace Amanita.VScripting
         /// </summary>
         public Muscariable AddVariable(Muscariable toAdd)
         {
-            Muscariable result = null;
-            if (!muscariables.ContainsReference(toAdd))
-            {
-                IntegrateMuscariable(toAdd);
-                result = toAdd;
-            }
-            return result;
-        }
-
-        Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
-        {
-            return muscariables.Where((elem) => elem.ItemId == itemId).FirstOrDefault();
+            return variableManager.AddAsMuscari(toAdd);
         }
 
         public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
         where TVarType : VariableBase<TBase>
         {
-            var variable = GetVariable<TVarType>(key);
+            var variable = GetVariableOfTypeByName<TVarType>(key);
 
             if (variable != null)
             {
-                variable.Value = value;
+                variable.BoxedValue = value;
             }
             else
             {
@@ -1184,61 +1189,16 @@ namespace Amanita.VScripting
             }
         }
 
-
         /// <summary>
         /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
         /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
         /// into its Muscariable equivalent and the legacy variable will be destroyed.
         /// </summary>
-        public virtual TVarType AddNewVariable<TValHeld, TVarType>(string key,
+        public virtual IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
-            where TVarType : class, IVariable<TValHeld>
         {
-            TVarType newVar = null;
-            bool wantMbType = typeof(MonoBehaviour).IsAssignableFrom(typeof(TVarType));
-            if (wantMbType)
-            {
-                newVar = gameObject.AddComponent(typeof(TVarType)) as TVarType;
-            }
-            else
-            {
-                newVar = VariableFactory.Create(typeof(TValHeld)) as TVarType;
-            }
-
-            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
-            newVar.Value = value;
-            newVar.Scope = scope;
-            newVar.ItemId = NextValidVarID();
-
-            IVariable toRegister = newVar;
-            bool createdLegacyVar = newVar is not Muscariable;
-            if (createdLegacyVar)
-            {
-                // We want to minimize use of the legacy variables, so we convert to Muscariable on the fly
-                // and then get rid of the legacy var.
-                Debug.Log($"AddNewVariable: Added legacy variable of type {typeof(TVarType).Name}. Converting it to its" +
-                    $" Muscariable equivalent. Returning null.");
-                toRegister = newVar.ToMuscariable();
-                AddVariable(toRegister);
-
-                if (Application.IsPlaying(this))
-                {
-                    Destroy(newVar as MonoBehaviour);
-                }
-                else
-                {
-                    DestroyImmediate(newVar as MonoBehaviour);
-                }
-            }
-
-            AddVariable(toRegister);
-            VariableAdded(toRegister);
-
-            if (createdLegacyVar)
-                return null;
-            else
-                return newVar;
+            return variableManager.AddNewVariable(key, value, scope);
         }
 
         /// <summary>
@@ -1249,15 +1209,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void AddVariable(IVariable toAdd)
         {
-            bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) || muscariables.ContainsReference(toAdd);
-            if (alreadyRegistered)
-            {
-                return;
-            }
-
-            toAdd = toAdd.ToMuscariable();
-            Muscariable muscari = toAdd as Muscariable;
-            AddVariable(muscari);
+            variableManager.AddVariable(toAdd);
         }
 
         /// <summary>
@@ -1269,46 +1221,17 @@ namespace Amanita.VScripting
         /// </summary>
         public IVariable GetVariable(string key, StringComparison strCompare = StringComparison.Ordinal)
         {
-            IVariable result = muscariables.Where(v => v.Key == key).FirstOrDefault();
-            result ??= legacyVariables.Where(v => v.Key == key).FirstOrDefault();
-
-            return result;
+            return variableManager.GetVariableByName(key, strCompare);
         }
 
-        /// <summary>
-        /// Alias for the GetVariable(string key) method.
-        /// </summary>
-        public IVariable GetVariableByName(string name)
+        public IVariable<TContent> GetVariable<TContent>(string key, StringComparison strCompare = StringComparison.Ordinal)
         {
-            return GetVariable(name);
-        }
-
-        public virtual IVariable GetVariableByIndex(int index)
-        {
-            IVariable result = null;
-            if (muscariables.Count > index && index >= 0)
-            {
-                result = muscariables[index];
-            }
-            return result;
-        }
-
-        public virtual IVariable GetVariableById(int id)
-        {
-            return GetVariableById((byte)id);
+            return variableManager.GetVariable<TContent>(key, strCompare);
         }
 
         public virtual IVariable GetVariableById(byte id)
         {
-            IVariable result = (from varEl in muscariables
-                                where varEl.ItemId == id
-                                select varEl).FirstOrDefault();
-            if (result == null)
-            {
-                Debug.LogWarning($"Variable with item ID {id} not found.");
-            }
-
-            return result;
+            return variableManager.GetVariable(id);
         }
 
         /// <summary>
@@ -1317,95 +1240,23 @@ namespace Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable<BooleanVariable>("MyBool");
         /// boolVar.Value = false;
         /// </summary>
-        public T GetVariable<T>(string key) where T : class, IVariable
+        public T GetVariableOfTypeByName<T>(string key, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
         {
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var variable = muscariables[i];
-                if (variable != null && variable.Key == key)
-                {
-                    return variable as T;
-                }
-            }
-
-            Debug.LogWarning("Variable " + key + " not found.");
-            return null;
+            return variableManager.GetVariableOfTypeByName<T>(key, strCompare);
         }
 
         /// <summary>
         /// Returns a list of variables matching the specified type.
         /// </summary>
-        public virtual IList<T> GetMultiVariables<T>() where T: class, IVariable
+        public virtual IList<T> GetMultiVariables<T>() where T: Muscariable
         {
-            var varsFound = new List<T>();
-            
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var currentVar = muscariables[i];
-                if (currentVar is T)
-                    varsFound.Add(currentVar as T);
-            }
-
-            return varsFound;
+            return variableManager.GetMultiVariables<T>();
         }
 
-        /// <summary>
-        /// Checks if a given variable exists in the flowchart.
-        /// </summary>
-        public virtual bool HasVariable(string key)
+        public virtual IList<IVariable> GetVariablesByScope(VariableScope scope)
         {
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var elem = muscariables[i];
-                if (elem != null && elem.Key == key)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Variables.Where((item) => item.Scope == scope).ToList();
         }
-
-        public virtual bool HasVariable(IVariable varInst)
-        {
-            return legacyVariables.Contains(varInst) || muscariables.Contains(varInst);
-        }
-
-        /// <summary>
-        /// Returns the list of variable names in the Flowchart.
-        /// </summary>
-        public virtual string[] GetVariableNames()
-        {
-            var vList = new string[legacyVariables.Count];
-
-            for (int i = 0; i < legacyVariables.Count; i++)
-            {
-                var elem = legacyVariables[i];
-                if (elem != null)
-                {
-                    vList[i] = elem.Key;
-                }
-            }
-            return vList;
-        }
-
-        /// <summary>
-        /// Gets a list of all variables with public scope in this Flowchart.
-        /// </summary>
-        public virtual IList<IVariable> GetPublicVariables()
-        {
-            IList<IVariable> publicVariables = new List<IVariable>();
-            for (int i = 0; i < muscariables.Count; i++)
-            {
-                var elem = muscariables[i];
-                if (elem != null && elem.Scope == VariableScope.Public)
-                {
-                    publicVariables.Add(elem);
-                }
-            }
-
-            return publicVariables;
-        }
-
 
         /// <summary>
         /// Creates and returns a new Muscariable of the specified type, with this
@@ -1414,12 +1265,7 @@ namespace Amanita.VScripting
         public virtual TVarType AddNewMuscariable<TValueType, TVarType>(string key = "", TValueType initValue = default,
             VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
         {
-            TVarType result = new TVarType();
-            result.Value = initValue;
-            result.Scope = scope;
-            result.Key = key;
-            IntegrateMuscariable(result);
-            return result;
+            return variableManager.AddNewMuscari<TValueType, TVarType>(key, initValue, scope);
         }
 
         /// <summary>
@@ -1427,20 +1273,7 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual void IntegrateMuscariable(Muscariable toAdd)
         {
-            bool hasValidId = toAdd.ItemId != Muscariable.InvalidID;
-            bool shouldAssignNewId = !hasValidId || muscariables.Any(registered => registered.ItemId == toAdd.ItemId && hasValidId);
-            if (shouldAssignNewId)
-            {
-                toAdd.ItemId = NextValidVarID();
-            }
-
-            toAdd.ParentFlowchart = this;
-            toAdd.Owner = this;
-            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
-            toAdd.Init();
-            muscariables.Add(toAdd);
-            varLookupById[toAdd.ItemId] = toAdd;
-            VariableAdded(toAdd);
+            FlowchartSignals.VariableAdded(this, toAdd);
         }
 
         /// <summary>
@@ -1449,164 +1282,15 @@ namespace Amanita.VScripting
         /// <param name="toRemove"></param>
         public virtual void RemoveVariable(Muscariable toRemove)
         {
-            if (muscariables.Contains(toRemove))
-            {
-                toRemove.ParentFlowchart = null;
-                muscariables.Remove(toRemove);
-                VariableRemoved(toRemove);
-            }
-
+            variableManager.RemoveVariable(toRemove);
         }
 
-        public virtual IList<TVarType> GetMuscariablesOfType<TVarType>() where TVarType : Muscariable
-        {
-            IList<TVarType> result = (from elem in muscariables
-                                      where elem.GetType().IsAssignableFrom(typeof(TVarType))
-                                      select elem).Cast<TVarType>().ToList();
-            return result;
-        }
-
-        public virtual TVarType GetMuscariableWithKey<TVarType>(string key) where TVarType : Muscariable
-        {
-            TVarType result = (from elem in muscariables
-                               where elem.Key == key
-                               where elem is TVarType
-                               select elem).FirstOrDefault() as TVarType;
-            return result;
-
-        }
-
-        public virtual int MuscariableCount { get { return muscariables.Count; } }
-
-        public virtual void RefreshVars()
-        {
-            muscariables = (from elem in muscariables
-                            where elem != null
-                            select elem).ToList();
-            legacyVariables = (from elem in legacyVariables
-                               where elem != null
-                               select elem).ToList();
-        }
-
-        public event Action<IVariable> VariableAdded = delegate { };
-        public event Action<IVariable> VariableRemoved = delegate { };
-
-        public virtual void InsertVariable(int index, Variable whatToInsert)
-        {
-            legacyVariables.Insert(index, whatToInsert);
-            VariableAdded(whatToInsert);
-        }
+        
 
         #endregion
 
         /// <summary>
-        /// Set the block objects to be hidden or visible depending on the hideComponents property.
-        /// </summary>
-        public virtual void UpdateHideFlags()
-        {
-            if (hideComponents)
-            {
-                var blocks = GetComponents<Block>();
-                for (int i = 0; i < blocks.Length; i++)
-                {
-                    var block = blocks[i];
-                    block.hideFlags = HideFlags.HideInInspector;
-                    if (block.gameObject != gameObject)
-                    {
-                        block.hideFlags = HideFlags.HideInHierarchy;
-                    }
-                }
-
-                var commands = GetComponents<Command>();
-                for (int i = 0; i < commands.Length; i++)
-                {
-                    var command = commands[i];
-                    command.hideFlags = HideFlags.HideInInspector;
-                }
-
-                var eventHandlers = GetComponents<AmanitaEventHandler>();
-                for (int i = 0; i < eventHandlers.Length; i++)
-                {
-                    var eventHandler = eventHandlers[i];
-                    eventHandler.hideFlags = HideFlags.HideInInspector;
-                }
-            }
-            else
-            {
-                var monoBehaviours = GetComponents<MonoBehaviour>();
-                for (int i = 0; i < monoBehaviours.Length; i++)
-                {
-                    var monoBehaviour = monoBehaviours[i];
-                    if (monoBehaviour == null)
-                    {
-                        continue;
-                    }
-                    monoBehaviour.hideFlags = HideFlags.None;
-                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
-                }
-            }
-        }
-
-        #region Command-Handling
-
-        /// <summary>
-        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
-        /// </summary>
-        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
-        {
-            for (int i = 0; i < hideCommands.Count; i++)
-            {
-                // Match on category or command name (case insensitive)
-                var key = hideCommands[i];
-                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Clears the list of selected commands.
-        /// </summary>
-        public virtual void ClearSelectedCommands()
-        {
-            UIModel.ClearSelectedCommands();
-#if UNITY_EDITOR
-            SelectedCommandsStale = true;
-#endif
-        }
-
-        /// <summary>
-        /// Adds a command to the list of selected commands.
-        /// </summary>
-        public virtual void AddSelectedCommand(Command command)
-        {
-            if (!uiModel.Contains(command))
-            {
-                // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
-                // like SelectedCommands.Add, we call the ui model's method specifically for registering
-                // Commands.
-                UIModel.AddToSelection(command); 
-#if UNITY_EDITOR
-                SelectedCommandsStale = true;
-#endif
-                SelectedCommandAdded(command);
-            }
-        }
-
-        /// <summary>
-        /// For when added through AddSelectedCommand (as opposed to just setting 
-        /// the SelectedCommands property or such)
-        /// </summary>
-        public event Action<Command> SelectedCommandAdded = delegate { };
-        public virtual bool Contains(Command command) => UIModel.Contains(command);
-
-        #endregion
-
-        /// <summary>
-        /// Reset the commands and variables in the Flowchart.
+        /// Reset the Commands and Variables in the Flowchart.
         /// </summary>
         public virtual void ResetFlowchart(bool resetCommands, bool resetVariables)
         {
@@ -1723,6 +1407,8 @@ namespace Amanita.VScripting
             }
         }
 
+        public const string SubstituteVariableRegexString = "{\\$.*?}";
+
         public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
         {
             Regex r = new Regex(SubstituteVariableRegexString);
@@ -1810,10 +1496,13 @@ namespace Amanita.VScripting
         {
             get
             {
-                return muscariables.ToList();
+                return variableManager.Variables.Where(elem => elem is Muscariable)
+                    .Cast<Muscariable>()
+                    .ToList();
             }
         }
 
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if (!this.IsInTheScene || Application.isPlaying)
@@ -1833,7 +1522,7 @@ namespace Amanita.VScripting
                 AmanitaManager.EnsureExists();
 
                 legacyVariables.RemoveAll((elem) => elem == null);
-                muscariables.RemoveAll((elem) => elem == null);
+                _oldMuscariables.RemoveAll((elem) => elem == null);
 
                 uiModel ??= new FlowchartUIModel();
                 if (uiModel.Owner == null)
@@ -1864,6 +1553,7 @@ namespace Amanita.VScripting
             };
             
         }
+#endif
 
         protected virtual void AssertUniqueID()
         {
@@ -1890,36 +1580,127 @@ namespace Amanita.VScripting
 
         protected virtual void LetUserKnowVarDoesntExist(string varName)
         {
-            string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just like Santa Claus: it doesn't exist.";
+            string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just " +
+                $"like Santa Claus: it doesn't exist.";
             Debug.LogWarning(warningMessage);
         }
+
+
+#if UNITY_EDITOR
 
         public static void ResetStaticsForTest()
         {
             eventSystemPresent = false;
         }
 
-#if UNITY_EDITOR
+
         public virtual void OnTearDown()
         {
-            GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<Flowchart>();
-            fcReg.RemoveGuid(this.UniqueId);
         }
+
+#endif
 
         public bool Contains(IVariable var)
         {
-            return legacyVariables.Contains(var) || muscariables.Contains(var);
+            return legacyVariables.Contains(var) || _oldMuscariables.Contains(var);
         }
 
         public void OnBeforeSerialize()
         {
-            
+
         }
 
         public void OnAfterDeserialize()
         {
         }
 
+#if UNITY_EDITOR
+        public T AddCommand<T>(Block toAddTo) where T : Command
+        {
+            return AddCommand(typeof(T), toAddTo) as T;
+        }
+
+        public Command AddCommand(Type commandType, Block toAddTo)
+        {
+            if (!typeof(Command).IsAssignableFrom(commandType))
+            {
+                Debug.LogError($"AddCommand: {commandType} does not inherit from Command.");
+                return null;
+            }
+
+            // Record the Flowchart because we're about to modify its internal _commands list
+            Undo.RecordObject(this, $"Add {commandType.Name} Command");
+
+            // Record the GameObject because we're adding a component to it
+            Undo.RecordObject(this.gameObject, $"Add {commandType.Name} Command Component");
+
+            // Create the component with Undo support
+            var added = Undo.AddComponent(this.gameObject, commandType) as Command;
+
+            if (added == null)
+            {
+                Debug.LogError($"AddCommand: Failed to add component of type {commandType}.");
+                return null;
+            }
+
+            added.ItemId = NextItemId();
+
+            // Update Flowchart's internal list
+            _commands.Add(added);
+
+            // Update the Block's list
+            toAddTo.CommandList.Add(added);
+
+            added.OnCommandAdded(toAddTo);
+
+            // Mark Flowchart dirty so Unity saves the change
+            EditorUtility.SetDirty(this);
+
+            return added;
+        }
+
+        /// <summary>
+        /// For editor operations only. Removes the blocks from the list of blocks in the flowchart,
+        /// without destroying them. This is used for operations like deleting multiple blocks, where we
+        /// want to remove the blocks from the flowchart's list of blocks before destroying them,
+        /// to avoid null references in the flowchart's list of blocks.
+        /// </summary>
+        public void RemoveMultiBlocks(IList<Block> toUnregister)
+        {
+            for (int i = 0; i < toUnregister.Count; i++)
+            {
+                RemoveBlock(toUnregister[i]);
+            }
+        }
+
+        /// <summary>
+        /// For editor operations only. Removes the block from the list of blocks in the flowchart, 
+        /// without destroying it. This is used for operations like deleting a block, where we 
+        /// want to remove the block from the flowchart's list of blocks before destroying it, 
+        /// to avoid null references in the flowchart's list of blocks.
+        /// </summary>
+        public void RemoveBlock(Block toUnregister)
+        {
+            _blocks.Remove(toUnregister.ItemId);
+            _blockListCache.Remove(toUnregister);
+        }
+
+        T IVariableSource.GetVariableOfType<T>() where T: class
+        {
+            return variableManager.GetVariableOfType<T>();
+        }
+
+        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            return variableManager.GetVariableByName(name, strCompare);
+        }
+
+        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            return variableManager.GetVariableOfTypeByName(type, name, strCompare);
+        }
+
 #endif
+
     }
 }

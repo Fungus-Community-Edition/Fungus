@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public static class FilterUtils
     {
@@ -10,7 +10,7 @@ namespace Amanita.VScripting.EditorUtils
         /// Returns all Blocks whose name or command content contains the query.
         /// Also sets each Block’s FilterState to Full, Partial, or None.
         /// </summary>
-        public static IList<Block> FilterBlocks(IList<Block> allBlocks, string query)
+        public static IList<Block> FilterBlocks(IReadOnlyCollection<Block> allBlocks, string query)
         {
             var results = new List<Block>();
 

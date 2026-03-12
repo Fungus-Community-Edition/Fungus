@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting.Commands
+namespace AtMycelia.Amanita.VScripting.Commands
 {
     /// <summary>
     /// Sets a variable to a new value using a simple arithmetic operation. 
@@ -19,6 +19,10 @@ namespace Amanita.VScripting.Commands
         [SerializeField] protected SetOperator setOperator;
         [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
         // ^Contains both the LHS variable reference and the RHS data
+
+#if UNITY_EDITOR
+        public override bool NonStandardPaste => true;
+#endif
 
         protected virtual void DoSetOperation()
         {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 {
     public interface IPositionShaker
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-namespace Amanita.Myceliaudio.Demos
+namespace AtMycelia.Amanita.Myceliaudio.Demos
 {
     public class CrossfadeTest : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     public enum GetOrSet
     {

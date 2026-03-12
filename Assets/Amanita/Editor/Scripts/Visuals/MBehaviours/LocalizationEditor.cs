@@ -1,9 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using Amanita.VScripting.EditorUtils;
 
-namespace Amanita.LocalizationSys.EditorUtils
+namespace AtMycelia.Amanita.LocalizationSys.EditorUtils
 {
     [CustomEditor(typeof(Localization))]
     public class LocalizationEditor : Editor 
@@ -111,7 +110,7 @@ namespace Amanita.LocalizationSys.EditorUtils
 
         protected virtual void ShowNotification(Localization localization)
         {
-            FlowchartWindow.ShowNotification(localization.NotificationText);
+            //FlowchartWindow.ShowNotification(localization.NotificationText);
             localization.NotificationText = "";
         }
     }

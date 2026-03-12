@@ -5,10 +5,13 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
-        "Amanita.Core",
+        "AtMycelia.Amanita.Core",
         "Amanita.Core.Editor",
         "Lorekeeper",
-        "AmanitaLegacyCollection"
+        "AmanitaLegacyCollection",
+        "AtMycelia.Common",
+        "AtMycelia.Marasmius.Core",
+        "AtMycelia.Marasmius.Editor"
     ],
     "includePlatforms": [
         "Editor"

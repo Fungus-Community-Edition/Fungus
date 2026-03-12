@@ -1,4 +1,4 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
 public class VariableRefHolder : ScriptableObject

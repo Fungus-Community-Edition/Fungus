@@ -1,17 +1,17 @@
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEditor;
 using System.Reflection;
 using System;
 using UnityObj = UnityEngine.Object;
 using System.Linq;
-using Amanita;
+using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -127,7 +127,7 @@ namespace VScriptingTests.VariableOperations
                 Assert.IsNotNull(valueField, "ValueField not found on the row template.");
 
                 // Confirm initial state
-                var original = _source.GetVariable(initStringVarKey) as StringMuscariable;
+                var original = _source.GetVariableByName(initStringVarKey) as StringMuscariable;
                 Assert.IsNotNull(original);
                 Assert.AreEqual(initStringVarValue, original.Value);
             }
@@ -155,12 +155,15 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
+            manager?.Dispose();
+            manager = null;
+
             AssetDatabase.DeleteAsset(TestAssetPath);
 
             try
             {
-                _listView?.Dispose();
                 _rowFactory?.Dispose();
+                _listView?.Dispose();
             }
             catch
             {
@@ -170,23 +173,20 @@ namespace VScriptingTests.VariableOperations
             foreach (var elem in _toDestroy)
             {
                 if (Application.isEditor && elem != null)
+                {
                     UnityObj.DestroyImmediate(elem);
+                }
             }
 
-            ReleaseNullRefs();
-            void ReleaseNullRefs()
-            {
-                _toDestroy.Clear();
-                _listView = null;
-                _rowFactory = null;
-                _uiList = null;
-                _countLabel = null;
-                _rowPool = null;
-                _handlerPool = null;
-                _resolver = null;
-                _source = null;
-                manager = null;
-            }
+            _toDestroy.Clear();
+            _listView = null;
+            _rowFactory = null;
+            _uiList = null;
+            _countLabel = null;
+            _rowPool = null;
+            _handlerPool = null;
+            _resolver = null;
+            _source = null;
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace VScriptingTests.VariableOperations
             Assert.IsNotNull(handler, "Expected StringRowVisualHandler for added string variable.");
 
             // Verify the underlying value is present and matches startingVal
-            var found = _source.GetVariable("myKey") as StringMuscariable;
+            var found = _source.GetVariableByName("myKey") as StringMuscariable;
             Assert.IsNotNull(found);
             Assert.AreEqual("myVal", found.Value);
 
@@ -229,7 +229,7 @@ namespace VScriptingTests.VariableOperations
             _listView.ForceMaterializeAllRowsForTests();
 
             Assert.AreEqual(expectedRowCount, _listView.RowCount);
-            Assert.IsNull(_source.GetVariable("toRemove"));
+            Assert.IsNull(_source.GetVariableByName("toRemove"));
         }
 
         [Test]
@@ -315,7 +315,7 @@ namespace VScriptingTests.VariableOperations
             _listView.ForceMaterializeAllRowsForTests();
 
             // Assert: source and UI updated
-            Assert.IsNull(_source.GetVariable("toRemove"), "Still has the var to remove after it should've been removed");
+            Assert.IsNull(_source.GetVariableByName("toRemove"), "Still has the var to remove after it should've been removed");
             // After removal the list should have one remaining (initial "greeting")
             Assert.AreEqual(1, _listView.RowCount);
         }

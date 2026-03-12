@@ -1,17 +1,15 @@
-﻿using Amanita.SaveSys;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-using Amanita.FSExt;
 using FullSerializer;
-using Amanita;
 using UnityEngine.TestTools;
+using AtMycelia.SaveSys;
+using AtMycelia.FSExt;
 
 namespace SaveSystemTests
 {
@@ -38,7 +36,6 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            saveWriter.RelativeSavePath = "";
         }
 
         protected string FileNameFormat => saveWriter.FileNameFormat;
@@ -48,11 +45,11 @@ namespace SaveSystemTests
 
         protected virtual async Task CommonSaveWriteTestAsync(SaveWriteRequest args)
         {
-            string fullPath = saveSys.GetSaveFilePath(args.BaseSaveDirectory, args.SlotNumber);
+            string fullPath = SaveSystem.GetSaveFilePath(args.BaseSaveDirectory, args.SlotNumber);
             await saveWriter.WriteOneToDiskAsync(args);
             bool fileWasWritten = File.Exists(fullPath);
             saveFilePathsForCleanup.Add(fullPath);
-            Assert.IsTrue(fileWasWritten, "Save file was not created.");
+            Assert.IsTrue(fileWasWritten, $"Save file was not created at path: {fullPath}");
         }
 
         // ------------- Successful writes ------------
@@ -207,14 +204,29 @@ namespace SaveSystemTests
 
             string expectedMetaJson = serializer.ToJson(args.SaveMetaData, true);
             string expectedMainJson = serializerForTest.ToJson(args.MainState, true);
-            string expectedAll = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainJson}{SaveDiskAccessor.CompletionMarker}";
-
+            IList<string> expectedAll = new List<string>();
+            for (int i = 0; i < SaveDiskAccessor.CompletionMarkers.Length; i++)
+            {
+                string result = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiters[i]}" +
+                    $"{expectedMainJson}{SaveDiskAccessor.CompletionMarkers[i]}";
+                expectedAll.Add(result);
+            }
             await CommonSaveWriteTestAsync(args);
 
             string path = saveWriter.GetSaveFilePath(args.BaseSaveDirectory, args.SlotNumber);
             saveFilePathsForCleanup.Add(path);
             string actual = await File.ReadAllTextAsync(path);
-            Assert.AreEqual(expectedAll, actual);
+
+            bool success = false;
+            for (int i = 0; i < expectedAll.Count; i++)
+            {
+                if (expectedAll[i] == actual)
+                {
+                    success = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(success, $"Save file content did not match expected content.\nActual content: {actual}");
         }
 
         [Test]
@@ -232,16 +244,26 @@ namespace SaveSystemTests
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
 
-            fsSerializer ser = AmanitaManager.DefaultSerializer;
+            fsSerializer ser = SaveSystem.DefaultSerializer;
             string expectedMetaJson = ser.ToJson(args.SaveMetaData, true);
             string expectedMainJson = serializerForTest.ToJson(args.MainState, true);
-            string expectedPlain = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiter}{expectedMainJson}{SaveDiskAccessor.CompletionMarker}";
+            IList<string> expectedPlain = new List<string>();
+            for (int i = 0; i < SaveDiskAccessor.CompletionMarkers.Length; i++)
+            {
+                string result = $"{expectedMetaJson}{SaveDiskAccessor.ReadWriteDelimiters[i]}" +
+                    $"{expectedMainJson}{SaveDiskAccessor.CompletionMarkers[i]}";
+                expectedPlain.Add(result);
+            }
 
             byte key = 0xAA;
-            byte[] expectedEncrypted = System.Text.Encoding.UTF8
-                .GetBytes(expectedPlain)
-                .Select(b => (byte)(b ^ key))
-                .ToArray();
+            IList<byte[]> expectedEncrypted = new List<byte[]>();
+            for (int i = 0; i < expectedPlain.Count; i++)
+            {
+                expectedEncrypted.Add(System.Text.Encoding.UTF8
+                    .GetBytes(expectedPlain[i])
+                    .Select(b => (byte)(b ^ key))
+                    .ToArray());
+            }
 
             await CommonSaveWriteTestAsync(args);
 
@@ -250,7 +272,20 @@ namespace SaveSystemTests
             byte[] encrypted = await File.ReadAllBytesAsync(path);
             byte[] decrypted = encrypted.Select(b => (byte)(b ^ key)).ToArray();
             string decryptedStr = System.Text.Encoding.UTF8.GetString(decrypted);
-            Assert.AreEqual(expectedPlain, decryptedStr);
+
+            // If at least one of the expected plains are equal to the decrypted strs,
+            // then the test should pass. This accounts for the fact that the completion marker may be any of the options.
+            bool success = false;
+            for (int i = 0; i < expectedPlain.Count; i++)
+            {
+                if (expectedPlain[i] == decryptedStr)
+                {
+                    success = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(success, $"Decrypted save file content did not match expected content.\n" +
+                $"Decrypted content: {decryptedStr}");
         }
 
         // ------------- Events ------------
@@ -262,13 +297,13 @@ namespace SaveSystemTests
             void Handler(SaveWriteResults r)
             {
                 responded = true;
-                Assert.IsNotNull(r.SaveData);
+                Assert.IsNotNull(r.MainSaveData);
                 Assert.IsNotNull(r.FilePath);
                 Assert.IsNotNull(r.FileName);
             }
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             await saveWriter.WriteOneToDiskAsync(writeArgs);
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsTrue(responded);
         }
 
@@ -277,10 +312,10 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             await saveWriter.WriteOneToDiskAsync(writeArgs);
             await saveWriter.WriteOneToDiskAsync(writeArgs);
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsTrue(responded);
         }
 
@@ -289,8 +324,8 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.AmanitaSaveWritten += Handler;
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -299,9 +334,9 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<NullReferenceException>(() => saveWriter.WriteOneToDiskAsync(null));
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -318,9 +353,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentNullException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -337,9 +372,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -356,9 +391,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = (SaveDirectoryType)999
             };
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -367,9 +402,9 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.AmanitaSaveWritten += Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<NullReferenceException>(() => saveWriter.WriteAllToDiskAsync(null));
-            SaveSysSignals.AmanitaSaveWritten -= Handler;
+            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -632,7 +667,7 @@ namespace SaveSystemTests
             saveFilePathsForCleanup.Add(path);
         }
 
-        // ------------- Large data -------------
+        // ------------- Large data ------------
 
         [Test]
         public async Task WritesLargeSaveData_Successfully()

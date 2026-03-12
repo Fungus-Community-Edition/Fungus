@@ -1,6 +1,4 @@
-using Amanita.SaveSys;
-using Collections;
-using FullSerializer;
+using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +10,11 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 #endif
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
-    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Amanita/VariableSource")]
-    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler
+    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Amanita/VariableSource")]
+    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,
+        IRefreshable
     {
         [SerializeField] private bool includeInSaves = true;
         [SerializeField, HideInInspector] private string uniqueId = string.Empty;
@@ -146,7 +145,7 @@ namespace Amanita.VScripting
         [SerializeField, HideInInspector] protected byte _nextVarID = 1;
         public event Action<IVariable> VariableAdded = delegate { };
 
-        public Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public Muscariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             EnsureVariablesList();
             for (int i = 0; i < variables.Count; i++)
@@ -286,22 +285,7 @@ namespace Amanita.VScripting
 
         public void RemoveVariable(Muscariable toRemove)
         {
-            throw new NotImplementedException();
-        }
-
-        Muscariable IVariableSource<Muscariable>.GetVar(int itemId)
-        {
-            EnsureVariablesList();
-            for (int i = 0; i < variables.Count; i++)
-            {
-                Muscariable var = variables[i];
-                if (var.ItemId == itemId)
-                {
-                    return var;
-                }
-            }
-
-            return null;
+            variables.Remove(toRemove);
         }
 
         protected virtual void OnEnable()
@@ -416,11 +400,6 @@ namespace Amanita.VScripting
         protected virtual void OnDisable()
         {
             EditorOnDisable();
-            if (!AlwaysKeepGuid)
-            {
-                GuidRegistry fcReg = AmanitaManager.GetOrAddGuidRegistryFor<VariableSourceAsset>();
-                fcReg.RemoveGuid(this.UniqueId);
-            }
             VsaSignals.VsaDisabled(this);
         }
 
@@ -467,22 +446,30 @@ namespace Amanita.VScripting
             EnsureVariablesList();
             return variables.ContainsReference(var);
         }
-    }
 
-    public interface IVariableSource : IHasUniqueID
-    {
-        event Action<IVariable> VariableAdded;
-        event Action<IVariable> VariableRemoved;
-        IReadOnlyList<IVariable> Variables { get; }
-        IVariable AddVariable(IVariable toAdd);
-        void RemoveVariable(IVariable toRemove);
-        IVariable GetVariable(byte itemId);
-        bool Contains(IVariable var);
-    }
+        T IVariableSource.GetVariableOfType<T>()
+        {
+            return variables.Where((elem) => elem is T).Cast<T>().FirstOrDefault();
+        }
 
-    public interface IHasUniqueID
-    {
-        string UniqueId { get; }
+        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        {
+            return GetVariableByName(name, strCompare);
+        }
+
+        T IVariableSource.GetVariableOfTypeByName<T>(string name, StringComparison strCompare)
+        {
+            return variables.Where((elem) => elem is T && elem.Key.Equals(name, strCompare))
+                .Cast<T>()
+                .FirstOrDefault();
+        }
+
+        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var result = variables.Where((elem) => type.IsAssignableFrom(elem.GetType()) && elem.Key.Equals(name, strCompare))
+                .FirstOrDefault();
+            return result;
+        }
     }
 
     public interface IForceResetUidHandler
@@ -490,76 +477,10 @@ namespace Amanita.VScripting
         void ForceResetUid();
     }
 
-    public interface IVariableSource<TVar> : IVariableSource where TVar: IVariable
-    {
-        new IReadOnlyList<TVar> Variables { get; }
-        TVar AddVariable(TVar toAdd);
-        void RemoveVariable(TVar toRemove);
-        TVar GetVar(int itemId);
-    }
-
-    public interface IMuscariableSource : IVariableSource<Muscariable>
-    {
-        Muscariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal);
-        Muscariable AddNewVariableOfContentType(Type contentType, string key);
-    }
-
-    public interface IReorderableVariableSource : IVariableSource
-    {
-        void ReorderVariables(IList<IVariable> newlyOrderedVars);
-    }
-
-    public interface IReorderableMuscariableSource : IReorderableVariableSource, IMuscariableSource
-    {
-        
-    }
-
     public interface IVarConvertible<TTargetType> where TTargetType : IVariable
     {
         TTargetType ToVar();
     }
 
-    public class VSAConverter : fsDirectConverter<VariableSourceAsset>
-    {
-        protected override fsResult DoSerialize(VariableSourceAsset model, Dictionary<string, fsData> serialized)
-        {
-            VariableSourceAssetSaveData saveData = new VariableSourceAssetSaveData();
-            saveData.UniqueId = model.UniqueId;
-            saveData.SavedVars = (IList<VariableSaveData>)model.Variables;
-            SerializeMember(serialized, null, "saveData", saveData);
-            return fsResult.Success;
-        }
-
-        protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref VariableSourceAsset model)
-        {
-            // We assume that the data contains a VariableSourceAssetSaveData under "saveData".
-            fsData saveDataData;
-            if (data.TryGetValue("saveData", out saveDataData))
-            {
-                fsResult result;
-                VariableSourceAssetSaveData saveData = null;
-                result = DeserializeMember(data, null, "saveData", out saveData);
-                if (result.Failed)
-                {
-                    return result;
-                }
-                // Now, we can reconstruct the VariableSourceAsset from the save data.
-                model = ScriptableObject.CreateInstance<VariableSourceAsset>();
-                model.IncludeInSaves = true;
-                model.Refresh();
-                
-                model.UniqueId = saveData.UniqueId;
-                foreach (var varSave in saveData.SavedVars)
-                {
-                    Muscariable var = VariableFactory.CreateByVarTypeName(varSave.VarTypeName, null);
-                    model.AddVariable(var);
-                }
-                return fsResult.Success;
-            }
-            else
-            {
-                return fsResult.Fail("No 'saveData' found in data for VariableSourceAsset deserialization.");
-            }
-        }
-    }
+    
 }

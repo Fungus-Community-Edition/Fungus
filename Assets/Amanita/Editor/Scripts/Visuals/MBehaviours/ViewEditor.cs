@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CanEditMultipleObjects]
     [CustomEditor (typeof(View))]
@@ -170,7 +170,7 @@ namespace Amanita.EditorUtils
 
             bool highlight = Selection.activeGameObject == view.gameObject;
 
-            var flowchart = FlowchartWindow.GetFlowchart();
+            var flowchart = EditorSelectionTracker.ActiveFlowchart;
             if (flowchart != null)
             {
                 var selectedCommands = flowchart.SelectedCommands;

@@ -1,9 +1,9 @@
-﻿using Amanita.EditorUtils;
+﻿using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -34,14 +34,6 @@ namespace VScriptingTests.FCWindowOperations
 
             }
 
-            // Build handlers pipeline: single click → box → (drag would follow)
-            pipeline = new FlowchartWindowInputHandler
-            (
-                new HitDetectionHandler(),
-                new SingleSelectionHandler(),
-                new BoxSelectionHandler()
-            );
-
             // Shared context
             ctx = new FlowchartContext
             {
@@ -67,7 +59,6 @@ namespace VScriptingTests.FCWindowOperations
         };
         static readonly Vector2 nodeSize = new Vector2(20, 20);
 
-        protected FlowchartWindowInputHandler pipeline;
         protected FlowchartContext ctx;
         protected static readonly Rect initCtxPos = new Rect(0, 0, 200, 200);
         protected Event mouseDown, mouseDrag, mouseReleased;
@@ -79,7 +70,6 @@ namespace VScriptingTests.FCWindowOperations
             host = null;
             flowchart = null;
             blocks = null;
-            pipeline = null;
             ctx = null;
             mouseDown = mouseDrag = mouseReleased = null;
         }

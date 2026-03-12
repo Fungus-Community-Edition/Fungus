@@ -34,7 +34,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace Amanita.Lua.JSON
+namespace AtMycelia.Amanita.Lua.JSON
 {
 	public class JSONObject : IEnumerable
 	{
@@ -1335,7 +1335,7 @@ namespace Amanita.Lua.JSON
 	}
 }
 
-namespace Amanita.Lua.JSON
+namespace AtMycelia.Amanita.Lua.JSON
 {
 	public class JSONObjectEnumer : IEnumerator
 	{

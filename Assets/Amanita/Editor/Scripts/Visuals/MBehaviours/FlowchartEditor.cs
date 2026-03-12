@@ -1,10 +1,10 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 
@@ -123,7 +123,7 @@ namespace Amanita.VScripting.EditorUtils
     
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
         {
-            EditorWindow.GetWindow(typeof(FlowchartWindow), false, "Flowchart");
+            FlowchartWindow.BringUp();
         }
     }
 }

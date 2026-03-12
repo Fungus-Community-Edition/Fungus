@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public interface IFcWindowComponent : IDisposable
     {
         // Called once when the window enables
-        void Initialize(IFlowchartHost window);
+        void Initialize(IFlowchartViewHost window);
 
         // Called inside OnGUI before and after zoom‐area, as needed
         void OnToolbarGUI();

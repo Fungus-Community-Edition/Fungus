@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys;
 
 namespace VScriptingTests.Commands
 {

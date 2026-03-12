@@ -4,9 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using AmanitaEventHandler = Amanita.VScripting.EventHandlers.EventHandler;
+using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Execution state of a Block.
@@ -199,6 +199,10 @@ namespace Amanita.VScripting
         /// </summary>
         public virtual Flowchart GetFlowchart()
         {
+            if (this == null)
+            {
+                return null;
+            }
             return GetComponent<Flowchart>();
         }
 
@@ -411,6 +415,10 @@ namespace Amanita.VScripting
 
         public virtual void GetConnectedBlocks(ref List<Block> connectedBlocks)
         {
+            if (commandList == null)
+            {
+                return;
+            }
             for (int i = 0; i < commandList.Count; i++)
             {
                 var command = commandList[i];
@@ -529,7 +537,7 @@ namespace Amanita.VScripting
 
         public virtual bool Equals(Block other)
         {
-            return other != null &&
+            return this != null && other != null &&
                 this.itemId == other.itemId &&
                 this.GetFlowchart().UniqueId == other.GetFlowchart().UniqueId &&
                 this.BlockName == other.BlockName;

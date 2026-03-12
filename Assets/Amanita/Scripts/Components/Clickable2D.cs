@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Amanita.VScripting.EventHandlers;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Detects mouse clicks and touches on a Game Object, and sends an event to all Flowchart event handlers in the scene.

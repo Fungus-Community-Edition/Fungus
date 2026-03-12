@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Handles replacing vary text segments. Keeps history of previous replacements to allow for ordered 

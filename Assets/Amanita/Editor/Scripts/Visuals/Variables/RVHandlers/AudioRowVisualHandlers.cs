@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.Audio;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [RowVisualHandler(menuName: "Audio",
         contentType: typeof(AudioClip),

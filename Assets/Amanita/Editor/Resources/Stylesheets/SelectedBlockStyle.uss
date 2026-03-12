@@ -1,0 +1,11 @@
+/* For non-selected Blocks. */
+
+:root
+{
+	--selected-block-border-color: rgba(0, 250, 0, 1);
+}
+
+.flowchartBlockSelected
+{
+	border-color: var(--selected-block-border-color);
+}

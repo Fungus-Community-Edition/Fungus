@@ -1,6 +1,6 @@
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting.RuntimeTesting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.RuntimeTesting;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -26,7 +26,7 @@ namespace VScriptingTests.FCWindowOperations
             _host = new GameObject("FlowchartHost_ForCommandEditorTests");
             _flowchart = _host.AddComponent<Flowchart>();
             _block = _host.AddComponent<Block>();
-            _flowchart.BlockViewHeight = 250f;
+            _flowchart.UIModel.BlockViewHeight = 250f;
         }
 
         protected GameObject _host;

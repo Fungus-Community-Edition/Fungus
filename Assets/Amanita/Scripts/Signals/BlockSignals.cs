@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Block event signalling system.
@@ -11,8 +11,9 @@ namespace Amanita.VScripting
     /// </summary>
     public static class BlockSignals
     {
-        #region Public members
-        public static Action<Block, Event> BlockClicked = delegate { };
+        #region Editor-Only Signals
+        public static Action<Block, Event> BlockLeftClicked = delegate { };
+        public static Action<Block, PointerEventInfo> BlockRightClicked = delegate { };
         public static Action<Block> BlockCreated = delegate { };
 
         /// <summary>
@@ -21,14 +22,44 @@ namespace Amanita.VScripting
         /// Blocks are selected.
         /// </summary>
         public static Action<Block> BlockSelected = delegate { };
-
-        public static Action<Block> BlockRemovedFromSelection = delegate { };
-
+        public static Action<Block> BlockDeselected = delegate { };
         /// <summary>
         /// For when multiple blocks are selected at once
         /// </summary>
         public static Action<IList<Block>> MultiBlocksSelected = delegate { };
 
+        public static Action<IList<Block>> MultiBlocksDeselected = delegate { };
+
+        public static Action<Block> PreBlockCut = delegate { };
+        public static Action<ushort> PostBlockCut = delegate { };
+
+        public static Action<IList<Block>> PreMultiBlockCut = delegate { };
+        public static Action<IList<ushort>> PostMultiBlockCut = delegate { };
+        /// <summary>
+        /// Sent just before a Block is deleted. This should only signal for when the user
+        /// is deleting one Block at a time, not when they're deleting multiple at once.
+        /// 
+        /// </summary>
+        public static Action<Block> PreBlockDelete = delegate { };
+        /// <summary>
+        /// Sent just after a Block is deleted. The ushort argument is the ID of the deleted Block.
+        /// </summary>
+        public static Action<ushort> PostBlockDelete = delegate { };
+
+        /// <summary>
+        /// Sent just before multiple Blocks are deleted at once.
+        /// </summary>
+        public static Action<IList<Block>> PreMultiBlockDelete = delegate { };
+        /// <summary>
+        /// Sent just after multiple Blocks are deleted at once. The IList<ushort> argument
+        /// contains the IDs of the deleted Blocks.
+        /// </summary>
+        public static Action<IList<ushort>> PostMultiBlockDelete = delegate { };
+
+        public static Action<IList<Block>> BlocksCopied = delegate { };
+        #endregion
+
+        #region Runtime Signals
         /// <summary>
         /// BlockStart signal. Sent when the Block starts execution.
         /// </summary>
@@ -48,6 +79,7 @@ namespace Amanita.VScripting
         {
             OnBlockEnd(block);
         }
+        #endregion
 
         /// <summary>
         /// CommandExecute signal. Sent just before a Command in a Block executes.
@@ -58,7 +90,77 @@ namespace Amanita.VScripting
         {
             OnCommandExecute(block, command, commandIndex, maxCommandIndex);
         }
-
-        #endregion
     }
+
+    public interface IPreBlockCutResponder
+    {
+        void OnPreBlockCut(Block block);
+    }
+
+    public interface IPostBlockCutResponder
+    {
+        void OnPostBlockCut(ushort blockId);
+    }
+
+    public interface IPreMultiBlockCutResponder
+    {
+        void OnPreMultiBlockCut(IList<Block> blocks);
+    }
+
+    public interface IPostMultiBlockCutResponder
+    {
+        void OnPostMultiBlockCut(IList<ushort> blockIds);
+    }
+
+    public interface IBlockClickResponder
+    {
+        void OnBlockClicked(Block block, Event evt);
+    }
+
+    public interface IBlockCreatedResponder
+    {
+        void OnBlockCreated(Block block);
+    }
+
+    public interface IBlockSelectionResponder
+    {
+        void OnBlockSelected(Block block);
+    }
+
+    public interface IBlockDeselectionResponder
+    {
+        void OnBlockDeselected(Block block);
+    }
+
+    public interface IMultiBlockSelectionResponder
+    {
+        void OnMultiBlocksSelected(IList<Block> blocks);
+    }
+
+    public interface IMultiBlockDeselectionResponder
+    {
+        void OnMultiBlocksDeselected(IList<Block> blocks);
+    }
+
+    public interface IPreBlockDeletionResponder
+    {
+        void OnPreBlockDeletion(IList<Block> blocks);
+        void OnPreBlockDeletion(Block block);
+    }
+
+    public interface IPostBlockDeletionResponder
+    {
+        void OnPostBlockDeletion(ushort blockId);
+    }
+
+    public interface IPostMultiBlockDeletionResponder
+    {
+        void OnPostMultiBlockDeletion(IList<ushort> blockIds);
+    }
+
+    public interface IBlocksCopiedResponder
+    {
+        void OnBlocksCopied(IList<Block> blocks);
+    }
+
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Attach this component to a sprite object to apply a simple parallax scrolling effect.

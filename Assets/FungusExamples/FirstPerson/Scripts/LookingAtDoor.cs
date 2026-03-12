@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityPhysics = UnityEngine.Physics;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.Examples
+namespace AtMycelia.Amanita.Examples
 {
     public class LookingAtDoor : MonoBehaviour
     {

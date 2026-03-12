@@ -1,25 +1,26 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Scope types for Variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public enum VariableScope
     {
         /// <summary> Can only be accessed by commands in the same Flowchart. </summary>
         Private,
         /// <summary> Can be accessed from any command in any Flowchart. </summary>
         Public,
-        /// <summary> Creates and/or references a global variable of that name, all variables of this name and scope share the same underlying fungus variable and exist for the duration of the instance of Unity.</summary>
-        Global,
     }
 
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     [RequireComponent(typeof(Flowchart))]
     [System.Serializable]
     [ExecuteInEditMode]
@@ -37,20 +38,6 @@ namespace Amanita.VScripting
         [SerializeField] private int oldItemID = 0;
 
         public static readonly byte InvalidID = 0;
-
-        public virtual int OwnerIdIndex
-        {
-            get
-            {
-                var owner = GetFlowchart();
-                if (owner != null)
-                {
-                    return AmanitaManager.GetNumericIdTiedTo(owner.UniqueId);
-                }
-
-                return -1;
-            }
-        }
 
         public virtual bool IsScalar() => false;
 
@@ -210,6 +197,7 @@ namespace Amanita.VScripting
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);
@@ -257,12 +245,19 @@ namespace Amanita.VScripting
             }
             set
             {
-                if (scope != VariableScope.Global || !Application.isPlaying)
+                if (!Application.isPlaying)
                 {
                     this.value = value;
                     baseVal = value;
                 }
             }
+        }
+
+        public virtual void Init(T startValue)
+        {
+            this.startValue = startValue;
+            this.value = startValue;
+            baseVal = startValue;
         }
 
         protected override void OnBaseValueSet(object prevValue)
@@ -325,12 +320,6 @@ namespace Amanita.VScripting
         }
 
         protected bool initted = false;
-
-        protected virtual void Init(T startVal)
-        {
-            this.startValue = startVal;
-            baseVal = startVal;
-        }
 
         //Apply to get from base system.object to T
         public override void Apply(SetOperator op, object value)

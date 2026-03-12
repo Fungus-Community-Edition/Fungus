@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
     /// Wrapper class for PlayerPrefs that adds the concept of multiple save slots.

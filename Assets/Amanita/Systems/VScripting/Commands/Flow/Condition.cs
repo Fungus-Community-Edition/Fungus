@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base for all Conditional based Commands, Ifs, Loops, and so on.
@@ -8,6 +8,7 @@ namespace Amanita.VScripting
     [AddComponentMenu("")]
     public abstract class Condition : Command
     {
+        public override bool NonStandardPaste => true;
         protected End endCommand;
      
         public override void OnEnter()

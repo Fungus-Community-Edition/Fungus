@@ -1,9 +1,10 @@
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
 #endif
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Used by the Flowchart window to serialize the currently active Flowchart object
@@ -15,6 +16,11 @@ namespace Amanita.VScripting
     {
         [SerializeField] protected Flowchart selectedFlowchart;
         [SerializeField] protected Flowchart lastSelectedFc;
+
+        private void Start()
+        {
+            Refresh();
+        }
 
         #region Public members
 
@@ -72,10 +78,13 @@ namespace Amanita.VScripting
                         lastSelectedFc = selectedFlowchart;
                     }
                     selectedFlowchart = fcFound;
+                    SelectedFlowchartChanged?.Invoke(selectedFlowchart);
                 }
             }
 
         }
+
+        public event Action<Flowchart> SelectedFlowchartChanged = delegate { };
 #endif
 
     }

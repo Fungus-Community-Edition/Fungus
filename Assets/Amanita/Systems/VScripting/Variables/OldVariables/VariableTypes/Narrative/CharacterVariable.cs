@@ -1,7 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
 	/// <summary>
 	/// Character variable type.
@@ -9,6 +9,7 @@ namespace Amanita.VScripting
 	[VariableInfo("Narrative", "Character", typeof(Character), false)]
 	[AddComponentMenu("")]
 	[System.Serializable]
+	[MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
 	public class CharacterVariable : VariableBase<Amanita.Character>
 	{ }
 
@@ -22,7 +23,7 @@ namespace Amanita.VScripting
 		[SerializeField]
 		[VariableProperty("<Value>", typeof(CharacterVariable))]
 		public CharacterVariable characterRef;
-
+		
 
 		public static implicit operator Character(CharacterData CharacterData)
 		{

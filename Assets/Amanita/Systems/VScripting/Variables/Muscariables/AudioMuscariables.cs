@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     [System.Serializable]
     [VariableInfo("Audio", "AudioClip", typeof(AudioClip))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "AudioClipMuscariable")]
     public class AudioClipMuscariable : Muscariable<AudioClip>
     {
         public AudioClipMuscariable() : base() { }
@@ -43,6 +45,7 @@ namespace Amanita.VScripting
 
     [System.Serializable]
     [VariableInfo("Audio", "AudioSource", typeof(AudioSource))]
+    [MovedFrom(true, "Amanita.VScripting", "Amanita.Core", "AudioSourceMuscariable")]
     public class AudioSourceMuscariable : Muscariable<AudioSource>
     {
         public AudioSourceMuscariable() : base() { }

@@ -1,9 +1,8 @@
-using Amanita.SaveSys;
-using Amanita.SaveSys.EditorUtils;
+using AtMycelia.SaveSys.EditorUtils;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
 using Type = System.Type;
+using AtMycelia.SaveSys;
 
 internal static class TypeCacheTestHelpers
 {

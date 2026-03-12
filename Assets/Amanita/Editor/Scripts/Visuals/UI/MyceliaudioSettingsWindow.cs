@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using System.IO;
 using UnityLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.Myceliaudio.Editor
+namespace AtMycelia.Amanita.Myceliaudio.Editor
 {
     public class MyceliaudioSettingsWindow : EditorWindow
     {

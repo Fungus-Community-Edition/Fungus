@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using Attribute = System.Attribute;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     /// <summary>
     /// Helper functions for generating the markdown files for Commands and Events.
@@ -26,7 +26,7 @@ namespace Amanita.EditorUtils
             ExportCommandInfo();
             ExportEventHandlerInfo();
 
-            FlowchartWindow.ShowNotification("Exported Reference Documentation");
+            //FlowchartWindow.ShowNotification("Exported Reference Documentation");
         }
 
         private static void ExportCommandInfo()
@@ -186,7 +186,7 @@ This is the reference documentation for all Fungus event handlers.
                 ConvertFileToGHMD(file);
             }
 
-            FlowchartWindow.ShowNotification("Converted " + files.Length.ToString() + " to Github MD");
+            //FlowchartWindow.ShowNotification("Converted " + files.Length.ToString() + " to Github MD");
         }
 
         //strips anchor links and TOC, which are not supported on Github wiki mds
