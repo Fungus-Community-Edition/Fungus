@@ -72,7 +72,7 @@ namespace AtMycelia.Amanita.EditorUtils
 
         private static AmanitaEditorResources instance;
         private static readonly string editorResourcesFolderName = "\"_EditorResources\"";
-        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "Resources", "_EditorResources");
+        private static readonly string PartialEditorResourcesPath = Path.Combine("Amanita", "Resources", "_EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
         public static AmanitaEditorResources Instance

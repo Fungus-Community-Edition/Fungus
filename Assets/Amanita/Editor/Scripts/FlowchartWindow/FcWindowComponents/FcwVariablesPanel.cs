@@ -7,7 +7,7 @@ using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    public sealed class FcWindowVariablesPanel : IFlowchartWindowModule, IFlowchartChangeResponder
+    public sealed class FcwVariablesPanel : IFlowchartWindowModule, IFlowchartChangeResponder
     {
         public int Priority { get; set; } = 0;
 

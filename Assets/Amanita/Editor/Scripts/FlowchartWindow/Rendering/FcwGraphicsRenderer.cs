@@ -1,3 +1,4 @@
+using AtMycelia.Graphics;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,15 +9,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
     /// <summary>
     /// Encapsulates all flowchart window graphics renderers (grid, blocks, selection box).
     /// </summary>
-    public sealed class FcWindowGraphicsRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
+    public sealed class FcwGraphicsRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
-        IPreBlockCutResponder, IPostBlockCutResponder, IPreMultiBlockCutResponder, IPostMultiBlockCutResponder
+        IPreBlockCutResponder, IPostBlockCutResponder, IPreMultiBlockCutResponder, IPostMultiBlockCutResponder,
+        IVisualResetter
     {
         public int Priority { get; set; } = 0;
-        public FcWindowGraphicsRenderer(FlowchartContext context, DrawGridContext gridDrawContext,
+        public FcwGraphicsRenderer(FlowchartContext context, DrawGridContext gridDrawContext,
             IBlockDrawerUitk blockDrawer)
         {
             #region Validate Parameters
@@ -213,6 +215,22 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public void OnPostMultiBlockCut(IList<ushort> blockIds)
         {
             Forward<IPostMultiBlockCutResponder>(r => r.OnPostMultiBlockCut(blockIds));
+        }
+
+        public void ResetVisuals()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _submodules.Count; i++)
+            {
+                if (_submodules[i] is IVisualResetter resetter)
+                {
+                    resetter.ResetVisuals();
+                }
+            }
         }
     }
 }

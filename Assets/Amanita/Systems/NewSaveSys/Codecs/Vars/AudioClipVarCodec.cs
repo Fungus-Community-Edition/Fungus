@@ -130,6 +130,5 @@ namespace AtMycelia.Amanita.SaveSys
             return result;
         }
 
-        private fsSerializer Serializer => SaveSystem.DefaultSerializer;
     }
 }
