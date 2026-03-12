@@ -78,6 +78,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 EditorSceneManager.sceneLoaded += OnSceneLoaded;
 
                 AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
 
@@ -93,6 +94,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 EditorSceneManager.sceneLoaded -= OnSceneLoaded;
 
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                 CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
             }
@@ -507,6 +509,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 return; // Still valid.
             }
 
+            Debug.Log("Seeking new flowchart for scene...");
             Flowchart fallback = FindFirstObjectByType<Flowchart>();
             if (fallback == null)
             {
@@ -536,8 +539,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
+            RebuildWindowUi();
+        }
+
+        private void RebuildWindowUi()
+        {
             rootVisualElement.Clear();
             _blockModuleDispatcher.ClearModules();
+            _mouseModuleDispatcher.ClearModules();
             _moduleDispatcher.ClearModules();
             DisposeSubmodules();
             NullOutSubmodules();
@@ -548,8 +557,41 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             _missingOverlay?.Dispose();
             _missingOverlay = null;
             _fcNameLabel = null;
+            _zoomAmountLabel = null;
 
             CreateGUI();
+        }
+
+        private bool _playModeGraphicsResetQueued;
+
+        private void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state != PlayModeStateChange.EnteredEditMode &&
+                state != PlayModeStateChange.EnteredPlayMode)
+            {
+                return;
+            }
+
+            if (_playModeGraphicsResetQueued)
+            {
+                return;
+            }
+
+            _playModeGraphicsResetQueued = true;
+            EditorApplication.delayCall += ResetGraphicsAfterPlayModeChange;
+        }
+
+        private void ResetGraphicsAfterPlayModeChange()
+        {
+            _playModeGraphicsResetQueued = false;
+            if (this == null)
+            {
+                return;
+            }
+
+            EnsureFlowchartForScene();
+            ResetActiveFlowchartSelections();
+            _graphicsRenderer?.ResetVisuals();
         }
 
         #region Cleanup

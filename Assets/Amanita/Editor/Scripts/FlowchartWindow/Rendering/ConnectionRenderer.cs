@@ -1,3 +1,4 @@
+using AtMycelia.Graphics;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         IBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IPreBlockDeletionResponder, IPostBlockDeletionResponder,
         IPostMultiBlockDeletionResponder, IBlockCreatedResponder, IBlocksCopiedResponder,
-        ICommandSelectionResponder
+        ICommandSelectionResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
         private const float DefaultBlockHeight = 40f;
@@ -161,6 +162,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
 
             MarkDirtyRepaint();
+        }
+
+        public void ResetVisuals()
+        {
+            RequestRepaint();
         }
 
         #region Just request a repaint for all of these events, since any of them could change the connections that need to be drawn.
