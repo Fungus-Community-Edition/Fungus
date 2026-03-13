@@ -1,5 +1,6 @@
 #pragma warning disable 0649
 
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
 namespace AtMycelia.Amanita.EditorUtils
@@ -24,6 +25,7 @@ namespace AtMycelia.Amanita.EditorUtils
         [SerializeField] private EditorTexture play_small;
         [SerializeField] private EditorTexture process_node_off;
         [SerializeField] private EditorTexture process_node_on;
+        [SerializeField] private FlowchartWindowConfig _fcwConfig;
 
         public static Texture2D Add { get { return Instance.add.Texture2D; } }
         public static Texture2D AddSmall { get { return Instance.add_small.Texture2D; } }
@@ -43,5 +45,6 @@ namespace AtMycelia.Amanita.EditorUtils
         public static Texture2D PlaySmall { get { return Instance.play_small.Texture2D; } }
         public static Texture2D ProcessNodeOff { get { return Instance.process_node_off.Texture2D; } }
         public static Texture2D ProcessNodeOn { get { return Instance.process_node_on.Texture2D; } }
+        public static FlowchartWindowConfig FcwConfig { get { return Instance._fcwConfig; } }
     }
 }

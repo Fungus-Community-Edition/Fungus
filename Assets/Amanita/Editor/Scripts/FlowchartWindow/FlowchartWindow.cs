@@ -16,9 +16,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        public static FlowchartWindow S => _s;
-        private static FlowchartWindow _s;
-
         /// <summary>
         /// Opens the FlowchartWindow, or focuses it if it's already open. Best use this instead
         /// of EditorWindow.GetWindow directly, since that would skip some important setup.
@@ -26,8 +23,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         [MenuItem("Window/Atelier Mycelia/Amanita/Flowchart Window")]
         public static void BringUp()
         {
-            EnsureConfigAssetInProject();
-
             FlowchartWindow wnd = _s != null ?
                 _s :
                 GetWindow<FlowchartWindow>();
@@ -35,28 +30,15 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             wnd.minSize = Config.WindowMinSize;
         }
 
-        static void EnsureConfigAssetInProject()
-        {
-            Config = SOUtils.EnsureSOExists<FlowchartWindowConfig>(
-                _configSubfolderPath,
-                _configAssetName);
-        }
+        public static FlowchartWindow S => _s;
+        private static FlowchartWindow _s;
 
-        public static FlowchartWindowConfig Config { get; private set; }
-        private static readonly string _configSubfolderPath = "AtMycelia/Amanita";
-        private static readonly string _configAssetName = "FlowchartWindowConfig";
-
-        public AmanitaClipboard Clipboard { get; private set; }
+        public static FlowchartWindowConfig Config => AmanitaEditorResources.FcwConfig;
 
         public Flowchart Flowchart => _fcContext?.Flowchart;
+        private FlowchartContext _fcContext;
 
-        BlockClipboard IFlowchartHostCore.Clipboard
-        {
-            get => _clipboardCoordinator.GetBlockClipboard(Clipboard);
-            set => Clipboard = _clipboardCoordinator.SetBlockClipboard(Clipboard, value);
-        }
-
-        bool IFlowchartHostCore.HasClipboard => _clipboardCoordinator.HasClipboard(Clipboard);
+        
         protected virtual void ToggleSubs(bool on)
         {
             _eventBinder.Toggle(on);
@@ -64,18 +46,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            _sceneLifecycleCoordinator.HandleSceneLoaded(
-                arg0,
-                arg1,
-                () => ActiveFlowchart,
-                _graphicsRenderer);
+            _sceneLifecycleCoordinator.HandleSceneLoaded(arg0, arg1,
+                () => ActiveFlowchart, _graphicsRenderer);
         }
 
         private void OnSceneClosed(Scene scene)
         {
-            _sceneLifecycleCoordinator.HandleSceneClosed(
-                scene,
-                () => ActiveFlowchart,
+            _sceneLifecycleCoordinator.HandleSceneClosed(scene, () => ActiveFlowchart,
                 _graphicsRenderer);
         }
 
@@ -165,20 +142,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly FcwModuleHost _moduleHost = new FcwModuleHost();
         private readonly FcwFlowchartStateService _flowchartStateService = new FcwFlowchartStateService();
         private readonly FcwPlayModeFocusService _playModeFocusService = new FcwPlayModeFocusService();
-        private readonly FcwUiBuilder _uiBuilder = new FcwUiBuilder();
-        private readonly FcwSelectionCoordinator _selectionCoordinator;
-        private readonly FcwEventBinder _eventBinder;
-        private readonly FcwLifecycleCoordinator _sceneLifecycleCoordinator;
-        private readonly FcwPlayModeCoordinator _playModeCoordinator;
-        private readonly FcwTeardownCoordinator _teardownCoordinator;
-        private readonly FcwClipboardCoordinator _clipboardCoordinator;
-        private readonly FcwRefreshCoordinator _refreshCoordinator;
-
+        
         public FlowchartWindow()
         {
             _selectionCoordinator = new FcwSelectionCoordinator(_flowchartStateService, _playModeFocusService);
             _sceneLifecycleCoordinator = new FcwLifecycleCoordinator(_flowchartStateService, _playModeFocusService);
-            _playModeCoordinator = new FcwPlayModeCoordinator(_playModeFocusService, _flowchartStateService, _selectionCoordinator);
+            _playModeCoordinator = new FcwPlayModeCoordinator(_playModeFocusService, _flowchartStateService, 
+                _selectionCoordinator);
             _teardownCoordinator = new FcwTeardownCoordinator();
             _clipboardCoordinator = new FcwClipboardCoordinator();
             _refreshCoordinator = new FcwRefreshCoordinator(_flowchartStateService);
@@ -187,6 +157,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 OnSceneLoaded, OnPlayModeStateChanged,
                 OnZoomChanged);
         }
+
+        private readonly FcwSelectionCoordinator _selectionCoordinator;
+        private readonly FcwLifecycleCoordinator _sceneLifecycleCoordinator;
+        private readonly FcwPlayModeCoordinator _playModeCoordinator;
+        private readonly FcwTeardownCoordinator _teardownCoordinator;
+        private readonly FcwClipboardCoordinator _clipboardCoordinator;
+        private readonly FcwRefreshCoordinator _refreshCoordinator;
+        private readonly FcwEventBinder _eventBinder;
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
@@ -212,15 +190,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             ToggleSubs(true);
         }
 
-        protected virtual void OnDisable()
-        {
-            Debug.Log("FlowchartWindowUitk OnDisable");
-        }
-
         public void CreateGUI()
         {
             _moduleHost.ClearModules();
-            EnsureConfigAssetInProject();
 
             Clipboard = _clipboardCoordinator.EnsureClipboard(Clipboard, this);
 
@@ -251,6 +223,17 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
+
+        bool IFlowchartHostCore.HasClipboard => _clipboardCoordinator.HasClipboard(Clipboard);
+        BlockClipboard IFlowchartHostCore.Clipboard
+        {
+            get => _clipboardCoordinator.GetBlockClipboard(Clipboard);
+            set => Clipboard = _clipboardCoordinator.SetBlockClipboard(Clipboard, value);
+        }
+
+        public AmanitaClipboard Clipboard { get; private set; }
+
+        private readonly FcwUiBuilder _uiBuilder = new FcwUiBuilder();
 
         /// <summary>
         /// The functionally-true root, gotten from the uxml. We use this as the parent for all of our UI elements,
@@ -305,8 +288,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             _refreshCoordinator.HandleRefresh(() => ActiveFlowchart, MissingOverlay, CreateGUI);
         }
 
-        private FlowchartContext _fcContext;
-
         private void OnGUI()
         {
             bool inValidState = _fcContext != null && _fcContext.Flowchart != null;
@@ -331,9 +312,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            _playModeCoordinator.HandlePlayModeStateChanged(state, () => ActiveFlowchart,
-                _fcContext, _fcNameLabel,
-                _zoomAmountLabel, _graphicsRenderer);
+            _playModeCoordinator.HandlePlayModeStateChanged(state, () => ActiveFlowchart, _fcContext,
+                _fcNameLabel, _zoomAmountLabel, _graphicsRenderer);
         }
 
         #region Cleanup
@@ -343,14 +323,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             {
                 _s = null;
             }
-            Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
 
-            FcwTeardownRequest request = new FcwTeardownRequest(_moduleHost, _fcContext,
-                _graphicsRenderer, _viewportManager,
-                _inputDetector, _contextMenuManager,
-                _variablesPanel, _fcNameLabel,
-                _missingOverlay);
+            FcwTeardownRequest request = new FcwTeardownRequest(_moduleHost, _fcContext, _graphicsRenderer, 
+                _viewportManager, _inputDetector, _contextMenuManager,
+                _variablesPanel, _fcNameLabel, _missingOverlay);
 
             FcwTeardownResult result = _teardownCoordinator.Teardown(request);
 

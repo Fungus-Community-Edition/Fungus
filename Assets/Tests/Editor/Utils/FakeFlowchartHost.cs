@@ -231,10 +231,6 @@ namespace AtMycelia.Amanita.EditorUtils
             {
             }
 
-            protected override void OnDisable()
-            {
-            }
-
             protected override void OnDestroy()
             {
             }

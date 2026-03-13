@@ -131,7 +131,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 interaction.HasSelectionBox;
             if (!thereIsBoxToRender)
             {
-                Debug.Log("No selection box to render.");
+                //Debug.Log("No selection box to render.");
                 return;
             }
 
