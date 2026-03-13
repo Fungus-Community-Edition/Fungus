@@ -69,14 +69,19 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            ResetActiveFlowchartSelections();
-            _graphicsRenderer?.RefreshNow();
+            _sceneLifecycleCoordinator.HandleSceneLoaded(
+                arg0,
+                arg1,
+                () => ActiveFlowchart,
+                _graphicsRenderer);
         }
 
         private void OnSceneClosed(Scene scene)
         {
-            ResetActiveFlowchartSelections();
-            _graphicsRenderer?.RefreshNow();
+            _sceneLifecycleCoordinator.HandleSceneClosed(
+                scene,
+                () => ActiveFlowchart,
+                _graphicsRenderer);
         }
 
         public Block CreateBlock(Flowchart fc, Vector2 pos)
@@ -168,13 +173,21 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly FlowchartWindowUiBuilder _uiBuilder = new FlowchartWindowUiBuilder();
         private readonly FlowchartWindowSelectionCoordinator _selectionCoordinator;
         private readonly FlowchartWindowEventBinder _eventBinder;
+        private readonly FlowchartWindowSceneLifecycleCoordinator _sceneLifecycleCoordinator;
+        private readonly FlowchartWindowPlayModeCoordinator _playModeCoordinator;
 
         public FlowchartWindow()
         {
             _selectionCoordinator = new FlowchartWindowSelectionCoordinator(_flowchartStateService, _playModeFocusService);
-            _eventBinder = new FlowchartWindowEventBinder(_moduleHost, OnSelectedFlowchartChanged,
-                OnSceneOpened, OnSceneClosed,
-                OnSceneLoaded, OnPlayModeStateChanged,
+            _sceneLifecycleCoordinator = new FlowchartWindowSceneLifecycleCoordinator(_flowchartStateService, _playModeFocusService);
+            _playModeCoordinator = new FlowchartWindowPlayModeCoordinator(_playModeFocusService, _flowchartStateService, _selectionCoordinator);
+            _eventBinder = new FlowchartWindowEventBinder(
+                _moduleHost,
+                OnSelectedFlowchartChanged,
+                OnSceneOpened,
+                OnSceneClosed,
+                OnSceneLoaded,
+                OnPlayModeStateChanged,
                 OnZoomChanged);
         }
 
@@ -333,98 +346,20 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             // right-clicking the scene in the hierarchy and selecting "Discard changes".
             // In that case, the active Flowchart may be destroyed without us knowing,
             // so we need to check validity and update accordingly.
-            EnsureFlowchartForScene();
-            ResetActiveFlowchartSelections();
-            _graphicsRenderer?.RefreshNow();
-        }
-
-        private void ResetActiveFlowchartSelections()
-        {
-            _flowchartStateService.ResetSelections(ActiveFlowchart);
-        }
-
-        private void EnsureFlowchartForScene()
-        {
-            if (_fcContext == null)
-            {
-                return; // UI not built yet; CreateGUI will initialize.
-            }
-
-            if (_fcContext.Flowchart != null)
-            {
-                return; // Still valid.
-            }
-
-            Debug.Log("Seeking new flowchart for scene...");
-
-            Flowchart lastFocusedInPlayMode;
-            _playModeFocusService.TryResolveLastFocused(_flowchartStateService, out lastFocusedInPlayMode);
-
-            bool usedPlayModeFlowchart;
-            Flowchart resolved = _flowchartStateService.ResolveFlowchartForScene(_fcContext.Flowchart, lastFocusedInPlayMode, out usedPlayModeFlowchart);
-            if (resolved == null)
-            {
-                MissingOverlay.Show(rootVisualElement);
-                return;
-            }
-
-            if (usedPlayModeFlowchart)
-            {
-                Debug.Log("Found last-focused flowchart from play mode.");
-            }
-
-            MissingOverlay.Hide();
-            Flowchart previous = _fcContext.Flowchart;
-            _fcContext.Flowchart = resolved;
-            _graphicsRenderer?.RefreshNow();
-            if (!ReferenceEquals(previous, resolved))
-            {
-                FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
-            }
+            _sceneLifecycleCoordinator.HandleSceneOpened(
+                scene,
+                () => ActiveFlowchart,
+                _fcContext,
+                rootVisualElement,
+                MissingOverlay,
+                _graphicsRenderer);
         }
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            if (state != PlayModeStateChange.EnteredEditMode &&
-                state != PlayModeStateChange.EnteredPlayMode &&
-                state != PlayModeStateChange.ExitingPlayMode)
-            {
-                return;
-            }
-            if (state == PlayModeStateChange.EnteredPlayMode)
-            {
-                string cachedUid;
-                if (_playModeFocusService.TryCacheFromActiveFlowchart(ActiveFlowchart, out cachedUid))
-                {
-                    Debug.Log($"Entered play mode - cached last-focused flowchart UID as {cachedUid}");
-                }
-            }
-                        
-            if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
-            {
-                EditorApplication.delayCall += () =>
-                {
-                    if (_fcContext == null)
-                    {
-                        return;
-                    }
-
-                    Flowchart lastFocusedInPlayMode;
-                    if (_playModeFocusService.TryResolveLastFocused(_flowchartStateService, out lastFocusedInPlayMode))
-                    {
-                        Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
-                        Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
-                        FcContext.Flowchart = lastFocusedInPlayMode;
-                        _selectionCoordinator.UpdateLabels(_fcContext, _fcNameLabel, _zoomAmountLabel);
-                    }
-                    else if (_playModeFocusService.HasCachedFocus)
-                    {
-                        Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
-                    }
-
-                    _graphicsRenderer?.ResetVisuals();
-                };
-            }
+            _playModeCoordinator.HandlePlayModeStateChanged(state, () => ActiveFlowchart,
+                _fcContext, _fcNameLabel,
+                _zoomAmountLabel, _graphicsRenderer);
         }
 
         #region Cleanup
