@@ -175,19 +175,17 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly FlowchartWindowEventBinder _eventBinder;
         private readonly FlowchartWindowSceneLifecycleCoordinator _sceneLifecycleCoordinator;
         private readonly FlowchartWindowPlayModeCoordinator _playModeCoordinator;
+        private readonly FlowchartWindowTeardownCoordinator _teardownCoordinator;
 
         public FlowchartWindow()
         {
             _selectionCoordinator = new FlowchartWindowSelectionCoordinator(_flowchartStateService, _playModeFocusService);
             _sceneLifecycleCoordinator = new FlowchartWindowSceneLifecycleCoordinator(_flowchartStateService, _playModeFocusService);
             _playModeCoordinator = new FlowchartWindowPlayModeCoordinator(_playModeFocusService, _flowchartStateService, _selectionCoordinator);
-            _eventBinder = new FlowchartWindowEventBinder(
-                _moduleHost,
-                OnSelectedFlowchartChanged,
-                OnSceneOpened,
-                OnSceneClosed,
-                OnSceneLoaded,
-                OnPlayModeStateChanged,
+            _teardownCoordinator = new FlowchartWindowTeardownCoordinator();
+            _eventBinder = new FlowchartWindowEventBinder(_moduleHost, OnSelectedFlowchartChanged,
+                OnSceneOpened, OnSceneClosed,
+                OnSceneLoaded, OnPlayModeStateChanged,
                 OnZoomChanged);
         }
 
@@ -346,13 +344,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             // right-clicking the scene in the hierarchy and selecting "Discard changes".
             // In that case, the active Flowchart may be destroyed without us knowing,
             // so we need to check validity and update accordingly.
-            _sceneLifecycleCoordinator.HandleSceneOpened(
-                scene,
-                () => ActiveFlowchart,
-                _fcContext,
-                rootVisualElement,
-                MissingOverlay,
-                _graphicsRenderer);
+            _sceneLifecycleCoordinator.HandleSceneOpened(scene, () => ActiveFlowchart,
+                _fcContext, rootVisualElement,
+                MissingOverlay, _graphicsRenderer);
         }
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -372,44 +366,24 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
 
-            _moduleHost.ClearModules();
+            FlowchartWindowTeardownRequest request = new FlowchartWindowTeardownRequest(_moduleHost, _fcContext,
+                _graphicsRenderer, _viewportManager,
+                _inputDetector, _contextMenuManager,
+                _variablesPanel, _fcNameLabel,
+                _missingOverlay);
 
-            _fcContext?.Dispose();
-            _fcContext = null;
+            FlowchartWindowTeardownResult result = _teardownCoordinator.Teardown(request);
 
-            DisposeSubmodules();
-            NullOutSubmodules();
-
-            _fcNameLabel?.RemoveFromHierarchy();
-            _missingOverlay?.Dispose();
+            _fcContext = result.FlowchartContext;
+            _graphicsRenderer = result.GraphicsRenderer;
+            _viewportManager = result.ViewportManager;
+            _contextMenuManager = result.ContextMenuManager;
+            _variablesPanel = result.VariablesPanel;
+            _fcNameLabel = result.FcNameLabel;
             _missingOverlay = null;
-            NullOutVisualElements();
-        }
-
-        void DisposeSubmodules()
-        {
-            _graphicsRenderer?.Dispose();
-            _viewportManager?.Dispose();
-
-            _inputDetector.Dispose();
-            _contextMenuManager?.Dispose();
-            _variablesPanel?.Dispose();
-        }
-
-        void NullOutSubmodules()
-        {
-            _graphicsRenderer = null;
-            _viewportManager = null;
-            _contextMenuManager = null;
-            _variablesPanel = null;
-        }
-
-        void NullOutVisualElements()
-        {
-            _fcNameLabel = null;
         }
         #endregion
     }
+}
 
     
-}
