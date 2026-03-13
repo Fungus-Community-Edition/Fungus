@@ -64,38 +64,35 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                                                 Clipboard.BlockClipboard.HasEntries;
         protected virtual void ToggleSubs(bool on)
         {
-            _blockModuleDispatcher.ToggleSubs(on);
-            _mouseModuleDispatcher.ToggleSubs(on);
+            _moduleHost.ToggleDispatcherSubs(on);
 
             if (on)
             {
                 EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
+                FlowchartWindowSignals.ChangedFlowchart += _moduleHost.ModuleDispatcher.NotifyFlowchartChanged;
+                FlowchartWindowSignals.WindowPanned += _moduleHost.ModuleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened += OnSceneOpened;
                 EditorSceneManager.sceneClosed += OnSceneClosed;
                 EditorSceneManager.sceneLoaded += OnSceneLoaded;
 
-                //AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-                CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
+                CommandSignals.CommandSelected += _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
 
             }
             else
             {
                 EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
+                FlowchartWindowSignals.ChangedFlowchart -= _moduleHost.ModuleDispatcher.NotifyFlowchartChanged;
+                FlowchartWindowSignals.WindowPanned -= _moduleHost.ModuleDispatcher.NotifyWindowPanned;
 
                 EditorSceneManager.sceneOpened -= OnSceneOpened;
                 EditorSceneManager.sceneClosed -= OnSceneClosed;
                 EditorSceneManager.sceneLoaded -= OnSceneLoaded;
 
-                //AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-                CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
+                CommandSignals.CommandSelected -= _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
             }
         }
@@ -195,9 +192,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             return (min + max) * 0.5f;
         }
 
-        private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
-        private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();
-        private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
+        private readonly FlowchartWindowModuleHost _moduleHost = new FlowchartWindowModuleHost();
         private readonly FlowchartWindowFlowchartStateService _flowchartStateService = new FlowchartWindowFlowchartStateService();
         private readonly FlowchartWindowPlayModeFocusService _playModeFocusService = new FlowchartWindowPlayModeFocusService();
 
@@ -259,9 +254,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public void CreateGUI()
         {
             #region Clear dispatchers
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
+            _moduleHost.ClearModules();
             #endregion
 
             #region Prep the root
@@ -349,12 +342,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             RegisterModules();
             void RegisterModules()
             {
-                RegisterModule(_graphicsRenderer);
-                RegisterModule(_viewportManager);
+                _moduleHost.Register(_graphicsRenderer);
+                _moduleHost.Register(_viewportManager);
 
-                RegisterModule(_contextMenuManager);
-                RegisterModule(_inputDetector);
-                RegisterModule(_variablesPanel);
+                _moduleHost.Register(_contextMenuManager);
+                _moduleHost.Register(_inputDetector);
+                _moduleHost.Register(_variablesPanel);
             }
 
             AttachUiElements();
@@ -387,18 +380,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private void OnZoomChanged(float newZoom)
         {
             _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
-        }
-
-        private void RegisterModule(IFlowchartWindowModule module)
-        {
-            if (module == null)
-            {
-                return;
-            }
-
-            _moduleDispatcher.AddModule(module);
-            _blockModuleDispatcher.AddModule(module);
-            _mouseModuleDispatcher.AddModule(module);
         }
 
         private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
@@ -581,9 +562,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
 
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
             _fcContext?.Dispose();
             _fcContext = null;
 
