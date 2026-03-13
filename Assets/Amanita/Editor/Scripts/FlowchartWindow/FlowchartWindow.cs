@@ -586,7 +586,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
             if (state != PlayModeStateChange.EnteredEditMode &&
-                state != PlayModeStateChange.EnteredPlayMode)
+                state != PlayModeStateChange.EnteredPlayMode &&
+                state != PlayModeStateChange.ExitingPlayMode)
             {
                 return;
             }
@@ -598,9 +599,28 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 Debug.Log($"Entered play mode - cached last-focused flowchart UID as {_lastPlayModeFcUid}");
             }
 
-            if (state == PlayModeStateChange.ExitingPlayMode)
+            
+            if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
             {
-                Debug.Log("Exiting play mode");
+                EditorApplication.delayCall += () =>
+                {
+                    if (!string.IsNullOrEmpty(_lastPlayModeFcUid))
+                    {
+                        var fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None).ToList();
+                        var lastFocusedInPlayMode = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
+                        if (lastFocusedInPlayMode != null)
+                        {
+                            Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
+                            Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
+                            FcContext.Flowchart = lastFocusedInPlayMode;
+                            UpdateLabels();
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
+                        }
+                    }
+                };
             }
             if (_playModeGraphicsResetQueued)
             {
