@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// Attribute class for Fungus event handlers.
@@ -111,6 +112,11 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnEnable()
         {
+            if (this == null || !this.IsInTheScene)
+            {
+                return;
+            }
+
             if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
             {
                 ToggleSubs(true);
@@ -122,7 +128,10 @@ namespace Amanita.VScripting.EventHandlers
 
             if (RehydrateVarInputs)
             {
-                DoRehydrationProcess();
+                EditorApplication.delayCall += () =>
+                {
+                    DoRehydrationProcess();
+                };
             }
         }
 
@@ -149,6 +158,15 @@ namespace Amanita.VScripting.EventHandlers
             if (weAreInTheEditor)
             {
                 RehydrateVariables();
+                return;
+            }
+
+            // Unity can call OnEnable after an object has been destroyed,
+            // which can cause us to hit this method with a null reference.
+            // In that case, just skip the rehydration process since it
+            // would only be relevant if the object were still alive.
+            if (this == null) 
+            {
                 return;
             }
 
@@ -237,11 +255,13 @@ namespace Amanita.VScripting.EventHandlers
             var correct = fChart.GetVariableById(varToCheck.ItemId);
             if (correct == null)
             {
-                Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) not found.");
+                Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) with id {varToCheck.ItemId} not found.");
                 return;
             }
             field.SetValue(target, correct);
         }
+
+        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
         protected bool didRuntimeRehydration = false;
 
@@ -252,6 +272,10 @@ namespace Amanita.VScripting.EventHandlers
 
         protected virtual void OnValidate()
         {
+            if (!this.IsInTheScene)
+            {
+                return;
+            }
             // Seems that when this is set to execute in edit mode, OnValidate can be called
             // before Awake does. Thus, we need to ensure fChart is assigned.
             if (fChart == null)
@@ -260,7 +284,8 @@ namespace Amanita.VScripting.EventHandlers
             }
             if (RehydrateVarInputs)
             {
-                DoRehydrationProcess();
+                // For now, let's avoid rehydrating in OnValidate. Still got some transitional
+                // stuff to deal with...
             }
         }
 

@@ -1,8 +1,8 @@
 using UnityEngine;
-using Amanita.VScripting;
-using Amanita.SaveSys.UI;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.SaveSys.UI;
 
-namespace Amanita.SaveSys.VScripting
+namespace AtMycelia.SaveSys.VScripting
 {
     [CommandInfo("Save Sys/DebugOnly",
         "SaveCanvasSortOrder",

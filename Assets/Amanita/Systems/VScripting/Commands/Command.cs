@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
@@ -32,6 +32,12 @@ namespace Amanita.VScripting
         /// after pasting, they will reference two different but identical objects).
         /// </summary>
         public virtual bool NonStandardPaste => false;
+
+        /// <summary>
+        /// Whether or not instances of this Command should have their execution states saved and loaded
+        /// by a save system.
+        /// </summary>
+        public virtual bool ReexecutableOnLoad => true;
 
         protected virtual void OnEnable()
         {
@@ -440,7 +446,7 @@ namespace Amanita.VScripting
             return false;
         }
 
-        protected virtual IEnumerator WaitForTask(Task task)
+        protected virtual IEnumerator WaitForTask(Task task, bool callContinueAfterwards = true)
         {
             while (!task.IsCompleted)
             {
@@ -448,7 +454,10 @@ namespace Amanita.VScripting
             }
 
             yield return null; // Just one more frame to ensure any follow-up actions are ready.
-            Continue();
+            if (callContinueAfterwards)
+            {
+                Continue();
+            }
         }
 
         #endregion

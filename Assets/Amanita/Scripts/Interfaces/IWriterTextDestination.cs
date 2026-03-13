@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// One of the possible ways to route text from a writer to a desired location.

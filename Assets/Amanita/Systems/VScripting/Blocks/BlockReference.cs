@@ -1,4 +1,4 @@
-﻿namespace Amanita.VScripting
+﻿namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// A simple struct wrapping a reference to a Fungus Block. Allows for BlockReferenceDrawer. 

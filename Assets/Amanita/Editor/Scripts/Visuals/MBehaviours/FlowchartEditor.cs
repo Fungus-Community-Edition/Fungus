@@ -1,10 +1,10 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     [CustomEditor (typeof(Flowchart))]
     public class FlowchartEditor : Editor 

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using Amanita.LocalizationSys;
+using AtMycelia.Amanita.LocalizationSys;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Set the active language for the scene. A Localization object with a localization file must be present in the scene.

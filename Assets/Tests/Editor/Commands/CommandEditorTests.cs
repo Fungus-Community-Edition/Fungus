@@ -1,6 +1,6 @@
-using Amanita.VScripting;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting.RuntimeTesting;
+using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.RuntimeTesting;
 using NUnit.Framework;
 using System;
 using System.Collections;

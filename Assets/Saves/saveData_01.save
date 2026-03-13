@@ -1,20 +1,25 @@
 ﻿{
     "name": "",
-    "saveID": "7958da5d-8a52-4f10-85ff-0ac993ded059",
+    "saveId": "f38734f8-680d-40a2-9333-7f66cafe41bc",
     "slotNumber": 1,
     "saveVersion": "1.0",
-    "utcTimeStamp": "2026-01-17T13:14:33.3705598Z",
-    "sceneName": "newSaveSystemDemoScene",
-    "sceneBuildIndex": 0,
-    "timeSpanString": "00:00:00",
+    "utcTimeStamp": "2026-03-12T17:24:05.5317941Z",
+    "sceneName": "newSaveSystemAutoTestWithUi",
+    "sceneBuildIndex": 1,
+    "playtimeStamp": "00:00:00",
     "progressMarkers": {
-        "$content": [],
-        "$type": "System.Collections.Generic.List`1[[Amanita.SaveSys.ProgressMarker, Amanita.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+        "$content": [
+            {
+                "id": "firstToTheParty",
+                "order": 0
+            }
+        ],
+        "$type": "System.Collections.Generic.List`1[[AtMycelia.SaveSys.ProgressMarker, AtMycelia.Marasmius.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
     },
-    "$type": "Amanita.SaveSys.SaveMetaData"
+    "$type": "AtMycelia.SaveSys.SaveMetaData"
 }
 
-<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>
+3<<letUsSeparateTheDataGoodSir,OrMyNameIsNotWeeweeMaximus>>
 
 {
     "items": [
@@ -24,44 +29,172 @@
             "savedVars": [
                 {
                     "varTypeName": "StringMuscariable",
+                    "contentTypeName": "String",
                     "itemID": 3,
                     "key": "firstMarkerID",
-                    "value": "first"
+                    "value": "firstToTheParty"
                 },
                 {
                     "varTypeName": "ColorMuscariable",
+                    "contentTypeName": "Color",
                     "itemID": 4,
                     "key": "someColor",
-                    "value": "{\"r\":0.2,\"g\":0.7647059,\"b\":0.2618993,\"a\":0.0}"
+                    "value": "{\"r\":0.3832769,\"g\":0.7802354,\"b\":0.8207547,\"a\":0.0}"
                 },
                 {
                     "varTypeName": "VectorTwoMuscariable",
+                    "contentTypeName": "Vector2",
                     "itemID": 5,
                     "key": "vecTwoVar",
-                    "value": "{\"x\":5.0,\"y\":0.0}"
+                    "value": "{\"x\":19.0,\"y\":97.0}"
                 },
                 {
                     "varTypeName": "VectorThreeMuscariable",
+                    "contentTypeName": "Vector3",
                     "itemID": 6,
                     "key": "vecThreeVar",
                     "value": "{\"x\":0.0,\"y\":123.0,\"z\":0.0}"
                 },
                 {
-                    "varTypeName": "FloatMuscariable",
+                    "varTypeName": "IVariable`1",
+                    "contentTypeName": "Single",
                     "itemID": 7,
                     "key": "Var",
                     "value": "1.234"
+                },
+                {
+                    "varTypeName": "BoolMuscariable",
+                    "contentTypeName": "Boolean",
+                    "itemID": 9,
+                    "key": "afterFirstLoad",
+                    "value": "False"
+                },
+                {
+                    "varTypeName": "IVariable`1",
+                    "contentTypeName": "Int32",
+                    "itemID": 10,
+                    "key": "timesLoaded",
+                    "value": "0"
+                },
+                {
+                    "varTypeName": "BoolMuscariable",
+                    "contentTypeName": "Boolean",
+                    "itemID": 11,
+                    "key": "secondLoad",
+                    "value": "False"
+                },
+                {
+                    "varTypeName": "StringMuscariable",
+                    "contentTypeName": "String",
+                    "itemID": 12,
+                    "key": "secondMarkerId",
+                    "value": "secondsss"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 1,
+                    "key": "clickSound",
+                    "value": "{\"lorekeeperIndex\":0,\"clipName\":\"Click\"}"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 2,
+                    "key": "loadStartSound",
+                    "value": "{\"lorekeeperIndex\":2,\"clipName\":\"guitar7_TK\"}"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 13,
+                    "key": "openMenuSound",
+                    "value": "{\"lorekeeperIndex\":10,\"clipName\":\"UiPopupOpen_JDS\"}"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 8,
+                    "key": "menuOpenSound",
+                    "value": "{\"lorekeeperIndex\":10,\"clipName\":\"UiPopupOpen_JDS\"}"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 14,
+                    "key": "menuCloseSound",
+                    "value": "{\"lorekeeperIndex\":9,\"clipName\":\"UiPopupClose_JDS\"}"
                 }
             ],
             "savedBlocks": [
                 {
                     "blockName": "Init",
                     "itemId": 21,
-                    "activeCommandId": 5,
-                    "activeCommandIndex": 4
+                    "activeCommandId": 9,
+                    "activeCommandIndex": 19
                 }
             ],
-            "$type": "Amanita.SaveSys.FlowchartSaveData"
+            "$type": "AtMycelia.Amanita.SaveSys.FlowchartSaveData"
+        },
+        {
+            "marker": {
+                "id": "firstToTheParty",
+                "order": 0
+            },
+            "$type": "AtMycelia.SaveSys.ProgressMarkerSaveData"
+        },
+        {
+            "uniqueId": "801a1e4d-5cb4-43b5-87d2-4e5c3ab66329",
+            "savedVars": [],
+            "$type": "AtMycelia.Amanita.SaveSys.VariableSourceAssetSaveData"
+        },
+        {
+            "uniqueId": "0d4feeae-7e82-42a5-b48d-108dfbab7778",
+            "savedVars": [
+                {
+                    "varTypeName": "StringMuscariable",
+                    "contentTypeName": "String",
+                    "itemID": 6,
+                    "key": "Naruto",
+                    "value": "Believe it! esytg"
+                },
+                {
+                    "varTypeName": "IVariable`1",
+                    "contentTypeName": "Single",
+                    "itemID": 5,
+                    "key": "pi",
+                    "value": "3.14159"
+                },
+                {
+                    "varTypeName": "StringMuscariable",
+                    "contentTypeName": "String",
+                    "itemID": 1,
+                    "key": "One Piece",
+                    "value": "I will become the\nPirate King!"
+                },
+                {
+                    "varTypeName": "StringMuscariable",
+                    "contentTypeName": "String",
+                    "itemID": 2,
+                    "key": "Bleach",
+                    "value": "Throwing away victory for the sake of manners is a cookie mistake. Captains don't have the time to waste on that kind of thing.\n\nDon't waste your time trying to play the good guy. No matter what debts you may owe, from the instant you find yourself on the battleground, both sides are evil."
+                },
+                {
+                    "varTypeName": "IVariable`1",
+                    "contentTypeName": "Int32",
+                    "itemID": 3,
+                    "key": "meaningOfLife",
+                    "value": "24"
+                },
+                {
+                    "varTypeName": "AudioClipMuscariable",
+                    "contentTypeName": "AudioClip",
+                    "itemID": 4,
+                    "key": "cuteBgm",
+                    "value": "{\"lorekeeperIndex\":51,\"clipName\":\"CKZ_-_09_-_Youre_Not_Real_wav\"}"
+                }
+            ],
+            "$type": "AtMycelia.Amanita.SaveSys.VariableSourceAssetSaveData"
         },
         {
             "playAudioArgs": {
@@ -90,56 +223,9 @@
                 ],
                 "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
             },
-            "$type": "Amanita.SaveSys.MyceliaudioSaveData"
-        },
-        {
-            "uniqueId": "801a1e4d-5cb4-43b5-87d2-4e5c3ab66329",
-            "savedVars": [],
-            "$type": "Amanita.SaveSys.VariableSourceAssetSaveData"
-        },
-        {
-            "uniqueId": "0d4feeae-7e82-42a5-b48d-108dfbab7778",
-            "savedVars": [
-                {
-                    "varTypeName": "StringMuscariable",
-                    "itemID": 6,
-                    "key": "Naruto",
-                    "value": "Believe it! esytg"
-                },
-                {
-                    "varTypeName": "FloatMuscariable",
-                    "itemID": 5,
-                    "key": "pi",
-                    "value": "3.14159"
-                },
-                {
-                    "varTypeName": "StringMuscariable",
-                    "itemID": 1,
-                    "key": "One Piece",
-                    "value": "I will become the\nPirate King!"
-                },
-                {
-                    "varTypeName": "StringMuscariable",
-                    "itemID": 2,
-                    "key": "Bleach",
-                    "value": "Throwing away victory for the sake of manners is a cookie mistake. Captains don't have the time to waste on that kind of thing.\n\nDon't waste your time trying to play the good guy. No matter what debts you may owe, from the instant you find yourself on the battleground, both sides are evil."
-                },
-                {
-                    "varTypeName": "IntMuscariable",
-                    "itemID": 3,
-                    "key": "meaningOfLife",
-                    "value": "24"
-                },
-                {
-                    "varTypeName": "AudioClipMuscariable",
-                    "itemID": 4,
-                    "key": "cuteBgm",
-                    "value": "{\"lorekeeperIndex\":51,\"clipName\":\"CKZ_-_09_-_Youre_Not_Real_wav\"}"
-                }
-            ],
-            "$type": "Amanita.SaveSys.VariableSourceAssetSaveData"
+            "$type": "AtMycelia.Amanita.SaveSys.MyceliaudioSaveData"
         }
     ],
-    "$type": "Amanita.SaveSys.CompositeSaveData"
+    "$type": "AtMycelia.SaveSys.CompositeSaveData"
 }
-<!-- Amanita Save Sys: Save Completed! -->
+3<!-- Amanita Save Sys: Save Completed! -->

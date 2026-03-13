@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Pairing of an AnyVariableData and an variable reference. Internal lookup for
@@ -69,12 +69,19 @@ namespace Amanita.VScripting
 
         public string GetDataDescription()
         {
-            bool success = TryGetTypeActionsFor(VarType, out var typeActions);
-            if (success)
+            if (data == null)
             {
-                return typeActions.DescFunc(data);
+                return "Null";
             }
-            return "Null";
+
+            string desc = data.GetDescription();
+            if (!string.IsNullOrEmpty(desc))
+            {
+                return desc;
+            }
+
+            object boxed = data.BoxedValue;
+            return boxed != null ? boxed.ToString() : "Null";
         }
 
         protected static bool TryGetTypeActionsFor(Type varType, out VariableTypeActions result)

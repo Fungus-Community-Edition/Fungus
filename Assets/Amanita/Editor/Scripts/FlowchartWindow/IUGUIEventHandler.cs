@@ -1,7 +1,7 @@
-using Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public interface IUGUIEventHandler
     {

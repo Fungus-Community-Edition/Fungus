@@ -1,7 +1,7 @@
 ﻿using UnityEngine.Assertions;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     static public class TestUtils
     {

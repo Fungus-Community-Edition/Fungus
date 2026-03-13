@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [System.Serializable]
     public class DrawGridContext : IDisposable

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor.Callbacks;
 
-namespace Amanita.Lua
+namespace AtMycelia.Amanita.Lua
 {
     [CustomEditor (typeof(LuaBindings))]
     public class LuaBindingsEditor : Editor 

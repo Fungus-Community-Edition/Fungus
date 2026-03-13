@@ -1,8 +1,8 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public class BlockGraphicsGenerator : IBlockGraphicsGenerator
     {

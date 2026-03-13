@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 
-namespace Amanita.Tests
+namespace AtMycelia.Amanita.Tests
 {
     [TestFixture]
     public class FungusPlayModeTest

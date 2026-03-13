@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Amanita.VScripting;
+using AtMycelia.Graphics;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     public interface IBlockDrawerUitk
     {
@@ -24,7 +24,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         ILeftMouseDragStartResponder, ILeftMouseDragResponder,
         ILeftMouseDragEndResponder, IBlockDeselectionResponder, IMultiBlockSelectionResponder,
         IMultiBlockDeselectionResponder, IBlockRectProvider,
-        IPostBlockCutResponder, IPostMultiBlockCutResponder
+        IPostBlockCutResponder, IPostMultiBlockCutResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
         private readonly Dictionary<Block, BlockBinding> blockBindings = new();
@@ -277,7 +277,12 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 {
                     return;
                 }
-                ClearAll();
+
+                if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button != button)
+                {
+                    return;
+                }
+
                 drawer.UpdateButton(button, block, CurrentZoom);
                 UpdateBlockLayouts();
             }).ExecuteLater(1);
@@ -332,7 +337,10 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         #region Callbacks
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
-            RefreshBlocks();
+            ClearAll();
+            initialRefreshPending = true;
+            TryRefreshAfterLayout();
+            SchedulePostLayoutRefresh();
         }
 
         public void OnWindowPanned()
@@ -605,6 +613,41 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         public void OnPostMultiBlockCut(IList<ushort> blockIds)
         {
             OnPostMultiBlockDeletion(blockIds);
+        }
+
+        public void ResetVisuals()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            ClearAll();
+            initialRefreshPending = true;
+
+            if (panel != null && contentRect.width > 0f && contentRect.height > 0f)
+            {
+                initialRefreshPending = false;
+                RefreshBlocks();
+                SchedulePostLayoutRefresh();
+                return;
+            }
+
+            schedule.Execute(TryRefreshAfterLayout).ExecuteLater(1);
+            SchedulePostLayoutRefresh();
+        }
+
+        private void SchedulePostLayoutRefresh()
+        {
+            schedule.Execute(() =>
+            {
+                if (isDisposed)
+                {
+                    return;
+                }
+
+                RefreshBlocks();
+            }).ExecuteLater(1);
         }
     }
 

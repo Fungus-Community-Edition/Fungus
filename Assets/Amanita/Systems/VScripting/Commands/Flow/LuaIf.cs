@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
 	/// <summary>
 	/// If the test expression is true, execute the following command block.

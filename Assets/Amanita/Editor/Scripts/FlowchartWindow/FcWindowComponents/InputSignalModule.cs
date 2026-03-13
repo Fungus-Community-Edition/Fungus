@@ -1,9 +1,9 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Detects raw IMGUI input inside the UITK flowchart window and relays it to FlowchartWindowSignals.
@@ -198,13 +198,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 }
                 else
                 {
-                    Debug.Log("Left mouse down detected");
+                    //Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
                     Block blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
                     bool mouseOverBlock = blockHit != null;
                     if (!mouseOverBlock)
                     {
-                        Debug.Log("Empty space left mouse down");
+                        //Debug.Log("Empty space left mouse down");
                         
                         FlowchartWindowSignals.EmptySpaceLeftMouseDown(_mouseDownInfo, guiEvent);
                     }
@@ -218,7 +218,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
         {
             if (graphicsRenderer == null && owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcWindowGraphicsRenderer>();
+                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
             if (graphicsRenderer == null)
@@ -485,7 +485,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 Vector2 movementSinceLastFrame = guiEvent.mousePosition - activePanAnchor.Value;
                 if (movementSinceLastFrame.sqrMagnitude > Mathf.Epsilon)
                 {
-                    Debug.Log("Panning");
+                    //Debug.Log("Panning");
                     FlowchartWindowSignals.ScrollWheelDragged(movementSinceLastFrame);
                     FlowchartWindowSignals.WindowPanned();
                 }
@@ -565,13 +565,13 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             }
         }
 
-        private FcWindowGraphicsRenderer graphicsRenderer;
+        private FcwGraphicsRenderer graphicsRenderer;
 
         private Vector2 ToFlowchartSpace(Vector2 panelPosition)
         {
             if (graphicsRenderer == null && owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcWindowGraphicsRenderer>();
+                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
             return graphicsRenderer != null

@@ -1,9 +1,10 @@
-using Amanita.VScripting.EventHandlers;
+using AtMycelia.Amanita.VScripting.EventHandlers;
 using UnityEngine;
-using VSEvent = Amanita.VScripting.EventHandlers.EventHandler;
-using Amanita.VScripting;
+using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
-namespace Amanita.SaveSys.VScripting
+using AtMycelia.SaveSys;
+
+namespace AtMycelia.Amanita.VScripting
 {
     [EventHandlerInfo("SaveSys",
         "Save Slot Selected",
@@ -22,11 +23,11 @@ namespace Amanita.SaveSys.VScripting
             base.ToggleSubs(on);
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected -= OnSaveSlotSelected;
             }
         }
 

@@ -1,9 +1,8 @@
-using Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Encapsulates viewport input handlers (pan/zoom/reset/selection/drag) for the UITK flowchart window.

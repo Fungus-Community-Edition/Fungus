@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Defines a camera view point.

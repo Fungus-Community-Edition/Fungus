@@ -1,6 +1,6 @@
 using System;
 
-namespace Amanita.DialogueSys
+namespace AtMycelia.Amanita.DialogueSys
 {
     public static class DialogueSysSignals
     {

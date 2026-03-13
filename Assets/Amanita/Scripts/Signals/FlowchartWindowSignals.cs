@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Amanita.VScripting
+namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
     /// Struct that encapsulates information about pointer events in the flowchart window, such as mouse clicks 

@@ -1,11 +1,11 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Amanita.VScripting.EditorUtils;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 
 namespace VScriptingTests.FCWindowOperations
 {

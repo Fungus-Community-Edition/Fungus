@@ -1,5 +1,5 @@
-using Amanita.SaveSys;
 using NUnit.Framework;
+using AtMycelia.SaveSys;
 
 namespace SaveSystemTests
 {
@@ -17,7 +17,8 @@ namespace SaveSystemTests
         {
             base.DoSetUp();
             // Sanity checks: installer should have wired these already.
-            Assert.IsNotNull(SaveSystemInstaller.S, "SaveSystemInstaller singleton not present.");
+            Assert.IsNotNull(SaveSystem.SaveManager, "SaveSystem.SaveManager not present.");
+            Assert.IsNotNull(SaveSystem.SaveRepo, "SaveSystem.SaveRepo not present.");
         }
 
     }

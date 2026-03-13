@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for VariableReference, allows selecting a target variable.

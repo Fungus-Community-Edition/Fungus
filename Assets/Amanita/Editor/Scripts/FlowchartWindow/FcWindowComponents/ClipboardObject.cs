@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     public class ClipboardObject
     {

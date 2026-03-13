@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityObject = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     [CustomEditor (typeof(Variable), true)]
     public class VariableEditor : CommandEditor
@@ -137,7 +137,7 @@ namespace Amanita.VScripting.EditorUtils
                             continue;
                         }
 
-                        IList<IVariable> publicVars = fcElem.GetPublicVariables();
+                        IList<IVariable> publicVars = fcElem.GetVariablesByScope(VariableScope.Public);
                         for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
                         {
                             IVariable varElem = publicVars[publicVarIndex];

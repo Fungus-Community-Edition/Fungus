@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Amanita.Myceliaudio.Demos
+namespace AtMycelia.Amanita.Myceliaudio.Demos
 {
     public class SimpleAudioChanges : MonoBehaviour
     {

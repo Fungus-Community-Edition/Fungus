@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// Component that is automatically added to all tmpro texts that contain links. Caches

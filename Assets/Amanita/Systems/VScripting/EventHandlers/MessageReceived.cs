@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Amanita.VScripting.EventHandlers
+namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     /// <summary>
     /// The block will execute when the specified message is received from a Send Message command.

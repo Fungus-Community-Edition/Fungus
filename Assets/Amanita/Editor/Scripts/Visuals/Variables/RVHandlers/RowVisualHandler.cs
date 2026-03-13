@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
 using UnityObj = UnityEngine.Object;
 
-namespace Amanita.VScripting.EditorUtils
+namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {

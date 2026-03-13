@@ -7,7 +7,7 @@
         <engine:VisualElement name="ValueFieldHolder" style="flex-grow: 1;">
             <engine:Toggle toggle-on-label-click="false" focusable="false" value="true" binding-path="value" name="ValueField" class="toggle" />
         </engine:VisualElement>
-        <engine:EnumField value="Private" type="Amanita.VScripting.VariableScope, Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, Amanita.Core" binding-path="scope" class="scopeRoot" />
+        <engine:EnumField value="Private" type="AtMycelia.Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" name="Scope" data-source-type="Amanita.VScripting.VariableScope, AtMycelia.Amanita.Core" binding-path="scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
     </engine:VisualElement>
 </UXML>

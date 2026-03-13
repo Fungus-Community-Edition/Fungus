@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System.Globalization;
-using Amanita.DialogueSys;
+using AtMycelia.Amanita.DialogueSys;
 
-namespace Amanita
+namespace AtMycelia.Amanita
 {
     /// <summary>
     /// A Character that can be used in dialogue via the Say, Conversation and Portrait commands.

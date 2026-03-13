@@ -1,16 +1,18 @@
-using Amanita.EditorUtils;
+using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Graphics;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Amanita.VScripting.EditorUtils.FcWindow
+namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
     /// <summary>
     /// Renders the current selection box stored in the flowchart interaction state.
     /// </summary>
     public sealed class SelectionBoxRenderer : VisualElement, IFlowchartWindowModule,
         ILeftMouseDragStartResponder, ILeftMouseDragResponder, ILeftMouseDragEndResponder,
-        IScrollWheelMoveResponder, IWindowPanResponder, IFlowchartChangeResponder
+        IScrollWheelMoveResponder, IWindowPanResponder, IFlowchartChangeResponder,
+        IVisualResetter
     {
         public int Priority { get; set; } = 0;
         public SelectionBoxRenderer(FlowchartContext context)
@@ -129,7 +131,7 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
                 interaction.HasSelectionBox;
             if (!thereIsBoxToRender)
             {
-                Debug.Log("No selection box to render.");
+                //Debug.Log("No selection box to render.");
                 return;
             }
 
@@ -166,6 +168,16 @@ namespace Amanita.VScripting.EditorUtils.FcWindow
             painter.Stroke();
         }
 
-        
+        public void ResetVisuals()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            _ignoreSelectionBoxThisFrame = false;
+            _shouldRender = false;
+            MarkDirtyRepaint();
+        }
     }
 }

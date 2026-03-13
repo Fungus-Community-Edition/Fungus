@@ -1,8 +1,8 @@
-using Amanita.VScripting;
+using AtMycelia.Amanita.VScripting;
 using System;
 using UnityEngine;
 
-namespace Amanita.Tweening
+namespace AtMycelia.Amanita.Tweening
 { 
     public abstract class BaseTweenCommand : Command
     {

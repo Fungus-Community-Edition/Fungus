@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Amanita.EditorUtils
+namespace AtMycelia.Amanita.EditorUtils
 {
     [CustomEditor(typeof(AmanitaEditorResources))]
     public class AmanitaEditorResourcesInspector : Editor
@@ -72,7 +72,7 @@ namespace Amanita.EditorUtils
 
         private static AmanitaEditorResources instance;
         private static readonly string editorResourcesFolderName = "\"_EditorResources\"";
-        private static readonly string PartialEditorResourcesPath = System.IO.Path.Combine("Amanita", "Resources", "_EditorResources");
+        private static readonly string PartialEditorResourcesPath = Path.Combine("Amanita", "Resources", "_EditorResources");
         [SerializeField] [HideInInspector] private bool updateOnReloadScripts = false;
 
         public static AmanitaEditorResources Instance
@@ -141,7 +141,7 @@ namespace Amanita.EditorUtils
                 writer.WriteLine("");
                 writer.WriteLine("using UnityEngine;");
                 writer.WriteLine("");
-                writer.WriteLine("namespace Amanita.EditorUtils");
+                writer.WriteLine("namespace AtMycelia.Amanita.EditorUtils");
                 writer.WriteLine("{");
                 writer.WriteLine("    public partial class AmanitaEditorResources : ScriptableObject");
                 writer.WriteLine("    {");
