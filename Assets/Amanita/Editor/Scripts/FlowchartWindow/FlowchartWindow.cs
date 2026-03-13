@@ -231,6 +231,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 previous.ClearSelectedCommands();
             }
             _fcContext.Flowchart = resolved;
+            if (Application.isPlaying)
+            {
+                _lastPlayModeFcUid = resolved != null ? 
+                    resolved.UniqueId : 
+                    _lastPlayModeFcUid;
+                Debug.Log($"In Play Mode - updated last-focused flowchart UID to {_lastPlayModeFcUid}");
+            }
             UpdateLabels();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
@@ -510,6 +517,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
 
             Debug.Log("Seeking new flowchart for scene...");
+
+            IList<Flowchart> fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None).ToList();
+            Flowchart lastFocusedInPlayMode = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
+            if (lastFocusedInPlayMode != null)
+            {
+                Debug.Log("Found last-focused flowchart from play mode.");
+                MissingOverlay.Hide();
+                _fcContext.Flowchart = lastFocusedInPlayMode;
+                _graphicsRenderer?.RefreshNow();
+                return;
+            }
+
             Flowchart fallback = FindFirstObjectByType<Flowchart>();
             if (fallback == null)
             {
@@ -571,7 +590,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             {
                 return;
             }
+            if (state == PlayModeStateChange.EnteredPlayMode)
+            {
+                _lastPlayModeFcUid = ActiveFlowchart != null ? 
+                    ActiveFlowchart.UniqueId
+                    : null;
+                Debug.Log($"Entered play mode - cached last-focused flowchart UID as {_lastPlayModeFcUid}");
+            }
 
+            if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Debug.Log("Exiting play mode");
+            }
             if (_playModeGraphicsResetQueued)
             {
                 return;
@@ -580,6 +610,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             _playModeGraphicsResetQueued = true;
             EditorApplication.delayCall += ResetGraphicsAfterPlayModeChange;
         }
+
+        private static string _lastPlayModeFcUid;
 
         private void ResetGraphicsAfterPlayModeChange()
         {
