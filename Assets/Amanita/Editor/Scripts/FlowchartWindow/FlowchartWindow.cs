@@ -64,37 +64,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                                                 Clipboard.BlockClipboard.HasEntries;
         protected virtual void ToggleSubs(bool on)
         {
-            _moduleHost.ToggleDispatcherSubs(on);
-
-            if (on)
-            {
-                EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart += _moduleHost.ModuleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned += _moduleHost.ModuleDispatcher.NotifyWindowPanned;
-
-                EditorSceneManager.sceneOpened += OnSceneOpened;
-                EditorSceneManager.sceneClosed += OnSceneClosed;
-                EditorSceneManager.sceneLoaded += OnSceneLoaded;
-
-                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-                CommandSignals.CommandSelected += _moduleHost.ModuleDispatcher.NotifyCommandSelected;
-                FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
-
-            }
-            else
-            {
-                EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart -= _moduleHost.ModuleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned -= _moduleHost.ModuleDispatcher.NotifyWindowPanned;
-
-                EditorSceneManager.sceneOpened -= OnSceneOpened;
-                EditorSceneManager.sceneClosed -= OnSceneClosed;
-                EditorSceneManager.sceneLoaded -= OnSceneLoaded;
-
-                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-                CommandSignals.CommandSelected -= _moduleHost.ModuleDispatcher.NotifyCommandSelected;
-                FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
-            }
+            _eventBinder.Toggle(on);
         }
 
         private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -195,41 +165,27 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly FlowchartWindowModuleHost _moduleHost = new FlowchartWindowModuleHost();
         private readonly FlowchartWindowFlowchartStateService _flowchartStateService = new FlowchartWindowFlowchartStateService();
         private readonly FlowchartWindowPlayModeFocusService _playModeFocusService = new FlowchartWindowPlayModeFocusService();
+        private readonly FlowchartWindowUiBuilder _uiBuilder = new FlowchartWindowUiBuilder();
+        private readonly FlowchartWindowSelectionCoordinator _selectionCoordinator;
+        private readonly FlowchartWindowEventBinder _eventBinder;
+
+        public FlowchartWindow()
+        {
+            _selectionCoordinator = new FlowchartWindowSelectionCoordinator(_flowchartStateService, _playModeFocusService);
+            _eventBinder = new FlowchartWindowEventBinder(_moduleHost, OnSelectedFlowchartChanged,
+                OnSceneOpened, OnSceneClosed,
+                OnSceneLoaded, OnPlayModeStateChanged,
+                OnZoomChanged);
+        }
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            if (_fcContext == null)
-            {
-                return;
-            }
-
-            Flowchart resolved = _flowchartStateService.ResolveSelectionChange(previous, current);
-            if (ReferenceEquals(previous, resolved))
-            {
-                return;
-            }
-
-            if (previous != null)
-            {
-                _flowchartStateService.ResetSelections(previous);
-            }
-
-            _fcContext.Flowchart = resolved;
-
-            string cachedUid;
-            if (_playModeFocusService.TryCacheFromSelection(resolved, out cachedUid))
-            {
-                Debug.Log($"In Play Mode - updated last-focused flowchart UID to {cachedUid}");
-            }
-
-            UpdateLabels();
-            FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
-        }
-
-        private void UpdateLabels()
-        {
-            _fcNameLabel.text = $"FC: {FcContext.Flowchart.name}";
-            _zoomAmountLabel.text = $"Zoom: {Math.Round(FcContext.Flowchart.Zoom * 100)}%";
+            _selectionCoordinator.HandleSelectionChanged(
+                previous,
+                current,
+                _fcContext,
+                _fcNameLabel,
+                _zoomAmountLabel);
         }
 
         public FlowchartContext FcContext => _fcContext;
@@ -253,120 +209,39 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         public void CreateGUI()
         {
-            #region Clear dispatchers
             _moduleHost.ClearModules();
-            #endregion
+            EnsureConfigAssetInProject();
 
-            #region Prep the root
-            UxmlRoot = m_VisualTreeAsset.Instantiate();
-            rootVisualElement.Add(UxmlRoot);
-            UxmlRoot.pickingMode = PickingMode.Position; 
-            // ^So that PointerUp events trigger properly when clicking on empty space.
-            // Sub-elements can override this to receive events as normal.
-            UxmlRoot.SetPadding(0);
-            UxmlRoot.SetMargin(0);
-            UxmlRoot.style.flexGrow = 1f;
-            UxmlRoot.style.width = Length.Percent(100);
-            UxmlRoot.style.height = Length.Percent(100);
-            // ^To take up the full space of the window
-            #endregion
+            FlowchartWindowUiBuildRequest request = new FlowchartWindowUiBuildRequest(
+                rootVisualElement,
+                m_VisualTreeAsset,
+                ActiveFlowchart,
+                MissingOverlay,
+                Clipboard,
+                Config,
+                _blockDrawer,
+                this,
+                position,
+                _moduleHost,
+                _inputDetector);
 
-            #region For when there's no Flowchart to show
-            // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
-            if (ActiveFlowchart == null)
+            FlowchartWindowUiBuildResult result = _uiBuilder.Build(request);
+            UxmlRoot = result.UxmlRoot;
+
+            if (!result.HasFlowchart)
             {
-                MissingOverlay.Show(UxmlRoot);
                 return;
             }
-            #endregion
 
-            MissingOverlay.Hide();
+            Clipboard = result.Clipboard;
+            _fcContext = result.FlowchartContext;
+            _fcNameLabel = result.FcNameLabel;
+            _zoomAmountLabel = result.ZoomLabel;
 
-            PrepClipboard();
-            void PrepClipboard()
-            {
-                Clipboard ??= new AmanitaClipboard(this);
-            }
-
-            PrepFcContext();
-            void PrepFcContext()
-            {
-                _fcContext = new FlowchartContext();
-                _fcContext.Flowchart = ActiveFlowchart;//
-                if (_fcContext.Flowchart == null)
-                {
-                    _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
-                    return;
-                }
-                _fcContext.FcHost = this;
-                _fcContext.Position = new Rect(0, 0, position.width, position.height);
-                _fcContext.GridObjectSnap = 10f;
-            }
-
-            PrepFcNameLabel();
-            void PrepFcNameLabel()
-            {
-                string labelText = "No Flowchart Selected";
-                if (_fcContext.Flowchart != null)
-                {
-                    labelText = $"FC: {_fcContext.Flowchart.name}";
-                }
-                _fcNameLabel = UxmlRoot.Q<UitkLabel>("FcNameLabel");
-                _fcNameLabel.text = labelText;
-            }
-
-            PrepZoomLabel();
-            void PrepZoomLabel()
-            {
-                _zoomAmountLabel = UxmlRoot.Q<UitkLabel>("ZoomLabel");
-                var newZoom = _fcContext.Flowchart != null ? 
-                    _fcContext.Flowchart.Zoom : 
-                    1f;
-                OnZoomChanged(newZoom);
-            }
-
-            EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
-
-            CreateModules();
-            void CreateModules()
-            {
-                _graphicsRenderer = new FcWindowGraphicsRenderer(_fcContext, Config.GridDrawConfig, 
-                    _blockDrawer);
-                _viewportManager = new MainViewportManager(_fcContext, Config.MinZoom, 
-                    Config.MaxZoom);
-
-                _contextMenuManager = new ContextMenuManager();
-                _variablesPanel = new FcWindowVariablesPanel();
-            }
-
-            RegisterModules();
-            void RegisterModules()
-            {
-                _moduleHost.Register(_graphicsRenderer);
-                _moduleHost.Register(_viewportManager);
-
-                _moduleHost.Register(_contextMenuManager);
-                _moduleHost.Register(_inputDetector);
-                _moduleHost.Register(_variablesPanel);
-            }
-
-            AttachUiElements();
-            void AttachUiElements()
-            {
-                UxmlRoot.Add(_graphicsRenderer);
-                UxmlRoot.Add(_fcNameLabel);
-            }
-
-            InitSubmodules();
-            void InitSubmodules()
-            {
-                _graphicsRenderer.Initialize(this);
-                _viewportManager.Initialize(this);
-
-                _inputDetector.Initialize(this);
-                _contextMenuManager.Initialize(this);
-                _variablesPanel.Initialize(this);
-            }
+            _graphicsRenderer = result.GraphicsRenderer;
+            _viewportManager = result.ViewportManager;
+            _contextMenuManager = result.ContextMenuManager;
+            _variablesPanel = result.VariablesPanel;
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
@@ -379,7 +254,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnZoomChanged(float newZoom)
         {
-            _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
+            _selectionCoordinator.UpdateZoom(_zoomAmountLabel, newZoom);
         }
 
         private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
@@ -540,7 +415,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                         Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
                         Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
                         FcContext.Flowchart = lastFocusedInPlayMode;
-                        UpdateLabels();
+                        _selectionCoordinator.UpdateLabels(_fcContext, _fcNameLabel, _zoomAmountLabel);
                     }
                     else if (_playModeFocusService.HasCachedFocus)
                     {
@@ -561,6 +436,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
             Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
+
+            _moduleHost.ClearModules();
 
             _fcContext?.Dispose();
             _fcContext = null;
