@@ -198,6 +198,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
         private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();
         private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
+        private readonly FlowchartWindowFlowchartStateService _flowchartStateService = new FlowchartWindowFlowchartStateService();
+        private readonly FlowchartWindowPlayModeFocusService _playModeFocusService = new FlowchartWindowPlayModeFocusService();
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
@@ -206,38 +208,25 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
-            Flowchart resolved;
-            bool currentWasRemovedWhileWeHavePrevious = current == null && previous != null;
-            if (currentWasRemovedWhileWeHavePrevious)
-            {
-                resolved = previous;
-            }
-            else
-            {
-                resolved = current == null ?
-                    FindFirstObjectByType<Flowchart>() :
-                    current;
-            }
-
-            bool changedToDiffFlowchart = !ReferenceEquals(previous, resolved); // Just in case.
-            if (!changedToDiffFlowchart)
+            Flowchart resolved = _flowchartStateService.ResolveSelectionChange(previous, current);
+            if (ReferenceEquals(previous, resolved))
             {
                 return;
             }
 
             if (previous != null)
             {
-                previous.ClearSelectedBlocks();
-                previous.ClearSelectedCommands();
+                _flowchartStateService.ResetSelections(previous);
             }
+
             _fcContext.Flowchart = resolved;
-            if (Application.isPlaying)
+
+            string cachedUid;
+            if (_playModeFocusService.TryCacheFromSelection(resolved, out cachedUid))
             {
-                _lastPlayModeFcUid = resolved != null ? 
-                    resolved.UniqueId : 
-                    _lastPlayModeFcUid;
-                Debug.Log($"In Play Mode - updated last-focused flowchart UID to {_lastPlayModeFcUid}");
+                Debug.Log($"In Play Mode - updated last-focused flowchart UID to {cachedUid}");
             }
+
             UpdateLabels();
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
@@ -451,10 +440,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         void OnRefreshButtonClicked()
         {
-            Flowchart flowchart = FindFirstObjectByType<Flowchart>();
+            Flowchart flowchart = _flowchartStateService.ResolveRefreshFlowchart(ActiveFlowchart);
             if (ActiveFlowchart != null)
             {
-                flowchart = ActiveFlowchart;
                 Selection.activeGameObject = flowchart.gameObject;
             }
 
@@ -468,7 +456,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             {
                 Debug.LogWarning("Flowchart still not found on refresh.");
             }
-
         }
 
         private FlowchartContext _fcContext;
@@ -497,11 +484,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void ResetActiveFlowchartSelections()
         {
-            if (ActiveFlowchart != null)
-            {
-                ActiveFlowchart.ClearSelectedBlocks();
-                ActiveFlowchart.ClearSelectedCommands();
-            }
+            _flowchartStateService.ResetSelections(ActiveFlowchart);
         }
 
         private void EnsureFlowchartForScene()
@@ -519,43 +502,29 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             Debug.Log("Seeking new flowchart for scene...");
 
             Flowchart lastFocusedInPlayMode;
-            if (TryGetLastPlayModeFlowchart(out lastFocusedInPlayMode))
-            {
-                Debug.Log("Found last-focused flowchart from play mode.");
-                MissingOverlay.Hide();
-                _fcContext.Flowchart = lastFocusedInPlayMode;
-                _graphicsRenderer?.RefreshNow();
-                return;
-            }
+            _playModeFocusService.TryResolveLastFocused(_flowchartStateService, out lastFocusedInPlayMode);
 
-            Flowchart fallback = FindFirstObjectByType<Flowchart>();
-            if (fallback == null)
+            bool usedPlayModeFlowchart;
+            Flowchart resolved = _flowchartStateService.ResolveFlowchartForScene(_fcContext.Flowchart, lastFocusedInPlayMode, out usedPlayModeFlowchart);
+            if (resolved == null)
             {
                 MissingOverlay.Show(rootVisualElement);
                 return;
             }
 
+            if (usedPlayModeFlowchart)
+            {
+                Debug.Log("Found last-focused flowchart from play mode.");
+            }
+
             MissingOverlay.Hide();
             Flowchart previous = _fcContext.Flowchart;
-            _fcContext.Flowchart = fallback;
+            _fcContext.Flowchart = resolved;
             _graphicsRenderer?.RefreshNow();
-            if (!ReferenceEquals(previous, fallback))
+            if (!ReferenceEquals(previous, resolved))
             {
-                FlowchartWindowSignals.ChangedFlowchart(previous, fallback);
+                FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
             }
-        }
-
-        private bool TryGetLastPlayModeFlowchart(out Flowchart flowchart)
-        {
-            flowchart = null;
-            if (string.IsNullOrEmpty(_lastPlayModeFcUid))
-            {
-                return false;
-            }
-
-            Flowchart[] fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
-            flowchart = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
-            return flowchart != null;
         }
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
@@ -568,10 +537,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
             if (state == PlayModeStateChange.EnteredPlayMode)
             {
-                _lastPlayModeFcUid = ActiveFlowchart != null ? 
-                    ActiveFlowchart.UniqueId
-                    : null;
-                Debug.Log($"Entered play mode - cached last-focused flowchart UID as {_lastPlayModeFcUid}");
+                string cachedUid;
+                if (_playModeFocusService.TryCacheFromActiveFlowchart(ActiveFlowchart, out cachedUid))
+                {
+                    Debug.Log($"Entered play mode - cached last-focused flowchart UID as {cachedUid}");
+                }
             }
                         
             if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
@@ -584,14 +554,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                     }
 
                     Flowchart lastFocusedInPlayMode;
-                    if (TryGetLastPlayModeFlowchart(out lastFocusedInPlayMode))
+                    if (_playModeFocusService.TryResolveLastFocused(_flowchartStateService, out lastFocusedInPlayMode))
                     {
                         Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
                         Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
                         FcContext.Flowchart = lastFocusedInPlayMode;
                         UpdateLabels();
                     }
-                    else if (!string.IsNullOrEmpty(_lastPlayModeFcUid))
+                    else if (_playModeFocusService.HasCachedFocus)
                     {
                         Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
                     }
@@ -600,8 +570,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 };
             }
         }
-
-        private static string _lastPlayModeFcUid;
 
         #region Cleanup
         protected virtual void OnDestroy()
