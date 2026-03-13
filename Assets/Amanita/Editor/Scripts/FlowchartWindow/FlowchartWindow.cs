@@ -193,33 +193,36 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public void CreateGUI()
         {
             _moduleHost.ClearModules();
-
             Clipboard = _clipboardCoordinator.EnsureClipboard(Clipboard, this);
 
-            FcwUiBuildRequest request = new FcwUiBuildRequest(rootVisualElement, m_VisualTreeAsset,
-                ActiveFlowchart, MissingOverlay,
-                Clipboard, Config,
-                _blockDrawer, this,
-                position, _moduleHost,
-                _inputDetector);
+            FcwUiBuildRequest request = new FcwUiBuildRequest(rootVisualElement, m_VisualTreeAsset, ActiveFlowchart,
+                MissingOverlay, Clipboard, Config,
+                _blockDrawer, this, position,
+                _moduleHost, _inputDetector);
 
             FcwUiBuildResult result = _uiBuilder.Build(request);
-            UxmlRoot = result.UxmlRoot;
+            UxmlRoot = result.UxmlRoot; 
+            // ^Need to fetch this before the rest of the results, since it's needed for things
+            // like the Missing Flowchart Overlay.
 
             if (!result.HasFlowchart)
             {
                 return;
             }
 
-            Clipboard = result.Clipboard;
-            _fcContext = result.FlowchartContext;
-            _fcNameLabel = result.FcNameLabel;
-            _zoomAmountLabel = result.ZoomLabel;
+            FetchFromResults();
+            void FetchFromResults()
+            {
+                Clipboard = result.Clipboard;
+                _fcContext = result.FlowchartContext;
+                _fcNameLabel = result.FcNameLabel;
+                _zoomAmountLabel = result.ZoomLabel;
 
-            _graphicsRenderer = result.GraphicsRenderer;
-            _viewportManager = result.ViewportManager;
-            _contextMenuManager = result.ContextMenuManager;
-            _variablesPanel = result.VariablesPanel;
+                _graphicsRenderer = result.GraphicsRenderer;
+                _viewportManager = result.ViewportManager;
+                _contextMenuManager = result.ContextMenuManager;
+                _variablesPanel = result.VariablesPanel;
+            }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
