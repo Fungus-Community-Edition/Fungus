@@ -1,6 +1,6 @@
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    public sealed class FlowchartWindowModuleHost
+    public sealed class FcwModuleHost
     {
         private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
         private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();

@@ -9,7 +9,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
     /// <summary>
     /// Encapsulates all flowchart window graphics renderers (grid, blocks, selection box).
     /// </summary>
-    public sealed class FcWindowGraphicsRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
+    public sealed class FcwGraphicsRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
         IFlowchartChangeResponder, IScrollWheelMoveResponder, IWindowPanResponder, IBlockCreatedResponder,
         IBlockSelectionResponder, IMultiBlockSelectionResponder, IBlockDeselectionResponder, IMultiBlockDeselectionResponder,
         IPreBlockDeletionResponder, IPostBlockDeletionResponder, IPostMultiBlockDeletionResponder,
@@ -18,7 +18,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         IVisualResetter
     {
         public int Priority { get; set; } = 0;
-        public FcWindowGraphicsRenderer(FlowchartContext context, DrawGridContext gridDrawContext,
+        public FcwGraphicsRenderer(FlowchartContext context, DrawGridContext gridDrawContext,
             IBlockDrawerUitk blockDrawer)
         {
             #region Validate Parameters

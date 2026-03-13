@@ -6,16 +6,16 @@ using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowPlayModeCoordinator
+    internal sealed class FcwPlayModeCoordinator
     {
-        private readonly FlowchartWindowPlayModeFocusService _playModeFocusService;
-        private readonly FlowchartWindowFlowchartStateService _flowchartStateService;
-        private readonly FlowchartWindowSelectionCoordinator _selectionCoordinator;
+        private readonly FcwPlayModeFocusService _playModeFocusService;
+        private readonly FcwFlowchartStateService _flowchartStateService;
+        private readonly FcwSelectionCoordinator _selectionCoordinator;
 
-        public FlowchartWindowPlayModeCoordinator(
-            FlowchartWindowPlayModeFocusService playModeFocusService,
-            FlowchartWindowFlowchartStateService flowchartStateService,
-            FlowchartWindowSelectionCoordinator selectionCoordinator)
+        public FcwPlayModeCoordinator(
+            FcwPlayModeFocusService playModeFocusService,
+            FcwFlowchartStateService flowchartStateService,
+            FcwSelectionCoordinator selectionCoordinator)
         {
             _playModeFocusService = playModeFocusService;
             _flowchartStateService = flowchartStateService;
@@ -28,7 +28,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             FlowchartContext context,
             UitkLabel fcNameLabel,
             UitkLabel zoomAmountLabel,
-            FcWindowGraphicsRenderer graphicsRenderer)
+            FcwGraphicsRenderer graphicsRenderer)
         {
             if (state != PlayModeStateChange.EnteredEditMode &&
                 state != PlayModeStateChange.EnteredPlayMode &&

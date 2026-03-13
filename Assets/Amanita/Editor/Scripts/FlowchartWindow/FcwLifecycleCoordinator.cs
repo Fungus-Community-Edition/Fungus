@@ -5,14 +5,14 @@ using UnityEngine.UIElements;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowSceneLifecycleCoordinator
+    internal sealed class FcwLifecycleCoordinator
     {
-        private readonly FlowchartWindowFlowchartStateService _flowchartStateService;
-        private readonly FlowchartWindowPlayModeFocusService _playModeFocusService;
+        private readonly FcwFlowchartStateService _flowchartStateService;
+        private readonly FcwPlayModeFocusService _playModeFocusService;
 
-        public FlowchartWindowSceneLifecycleCoordinator(
-            FlowchartWindowFlowchartStateService flowchartStateService,
-            FlowchartWindowPlayModeFocusService playModeFocusService)
+        public FcwLifecycleCoordinator(
+            FcwFlowchartStateService flowchartStateService,
+            FcwPlayModeFocusService playModeFocusService)
         {
             _flowchartStateService = flowchartStateService;
             _playModeFocusService = playModeFocusService;
@@ -22,7 +22,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             Scene scene,
             LoadSceneMode mode,
             Func<Flowchart> activeFlowchartGetter,
-            FcWindowGraphicsRenderer graphicsRenderer)
+            FcwGraphicsRenderer graphicsRenderer)
         {
             ResetActiveFlowchartSelections(activeFlowchartGetter);
             graphicsRenderer?.RefreshNow();
@@ -31,7 +31,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public void HandleSceneClosed(
             Scene scene,
             Func<Flowchart> activeFlowchartGetter,
-            FcWindowGraphicsRenderer graphicsRenderer)
+            FcwGraphicsRenderer graphicsRenderer)
         {
             ResetActiveFlowchartSelections(activeFlowchartGetter);
             graphicsRenderer?.RefreshNow();
@@ -43,7 +43,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             FlowchartContext context,
             VisualElement rootVisualElement,
             MissingFlowchartOverlay missingOverlay,
-            FcWindowGraphicsRenderer graphicsRenderer)
+            FcwGraphicsRenderer graphicsRenderer)
         {
             EnsureFlowchartForScene(
                 context,
@@ -69,7 +69,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             FlowchartContext context,
             VisualElement rootVisualElement,
             MissingFlowchartOverlay missingOverlay,
-            FcWindowGraphicsRenderer graphicsRenderer)
+            FcwGraphicsRenderer graphicsRenderer)
         {
             if (context == null)
             {

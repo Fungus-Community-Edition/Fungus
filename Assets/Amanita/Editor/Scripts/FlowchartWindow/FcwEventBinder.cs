@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowEventBinder
+    internal sealed class FcwEventBinder
     {
-        private readonly FlowchartWindowModuleHost _moduleHost;
+        private readonly FcwModuleHost _moduleHost;
         private readonly Action<Flowchart, Flowchart> _onSelectedFlowchartChanged;
         private readonly EditorSceneManager.SceneOpenedCallback _onSceneOpened;
         private readonly EditorSceneManager.SceneClosedCallback _onSceneClosed;
@@ -16,8 +16,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly Action<PlayModeStateChange> _onPlayModeStateChanged;
         private readonly Action<float> _onZoomChanged;
 
-        public FlowchartWindowEventBinder(
-            FlowchartWindowModuleHost moduleHost,
+        public FcwEventBinder(
+            FcwModuleHost moduleHost,
             Action<Flowchart, Flowchart> onSelectedFlowchartChanged,
             EditorSceneManager.SceneOpenedCallback onSceneOpened,
             EditorSceneManager.SceneClosedCallback onSceneClosed,

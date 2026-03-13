@@ -2,9 +2,9 @@ using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowTeardownCoordinator
+    internal sealed class FcwTeardownCoordinator
     {
-        public FlowchartWindowTeardownResult Teardown(FlowchartWindowTeardownRequest request)
+        public FcwTeardownResult Teardown(FcwTeardownRequest request)
         {
             request.ModuleHost.ClearModules();
 
@@ -20,7 +20,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             request.FcNameLabel?.RemoveFromHierarchy();
             request.MissingOverlay?.Dispose();
 
-            return new FlowchartWindowTeardownResult(
+            return new FcwTeardownResult(
                 null,
                 null,
                 null,
@@ -30,16 +30,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
     }
 
-    internal sealed class FlowchartWindowTeardownRequest
+    internal sealed class FcwTeardownRequest
     {
-        public FlowchartWindowTeardownRequest(
-            FlowchartWindowModuleHost moduleHost,
+        public FcwTeardownRequest(
+            FcwModuleHost moduleHost,
             FlowchartContext flowchartContext,
-            FcWindowGraphicsRenderer graphicsRenderer,
+            FcwGraphicsRenderer graphicsRenderer,
             MainViewportManager viewportManager,
             InputSignalModule inputDetector,
             ContextMenuManager contextMenuManager,
-            FcWindowVariablesPanel variablesPanel,
+            FcwVariablesPanel variablesPanel,
             UitkLabel fcNameLabel,
             MissingFlowchartOverlay missingOverlay)
         {
@@ -54,25 +54,25 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             MissingOverlay = missingOverlay;
         }
 
-        public FlowchartWindowModuleHost ModuleHost { get; }
+        public FcwModuleHost ModuleHost { get; }
         public FlowchartContext FlowchartContext { get; }
-        public FcWindowGraphicsRenderer GraphicsRenderer { get; }
+        public FcwGraphicsRenderer GraphicsRenderer { get; }
         public MainViewportManager ViewportManager { get; }
         public InputSignalModule InputDetector { get; }
         public ContextMenuManager ContextMenuManager { get; }
-        public FcWindowVariablesPanel VariablesPanel { get; }
+        public FcwVariablesPanel VariablesPanel { get; }
         public UitkLabel FcNameLabel { get; }
         public MissingFlowchartOverlay MissingOverlay { get; }
     }
 
-    internal sealed class FlowchartWindowTeardownResult
+    internal sealed class FcwTeardownResult
     {
-        public FlowchartWindowTeardownResult(
+        public FcwTeardownResult(
             FlowchartContext flowchartContext,
-            FcWindowGraphicsRenderer graphicsRenderer,
+            FcwGraphicsRenderer graphicsRenderer,
             MainViewportManager viewportManager,
             ContextMenuManager contextMenuManager,
-            FcWindowVariablesPanel variablesPanel,
+            FcwVariablesPanel variablesPanel,
             UitkLabel fcNameLabel)
         {
             FlowchartContext = flowchartContext;
@@ -84,10 +84,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         public FlowchartContext FlowchartContext { get; }
-        public FcWindowGraphicsRenderer GraphicsRenderer { get; }
+        public FcwGraphicsRenderer GraphicsRenderer { get; }
         public MainViewportManager ViewportManager { get; }
         public ContextMenuManager ContextMenuManager { get; }
-        public FcWindowVariablesPanel VariablesPanel { get; }
+        public FcwVariablesPanel VariablesPanel { get; }
         public UitkLabel FcNameLabel { get; }
     }
 }

@@ -218,7 +218,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         {
             if (graphicsRenderer == null && owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcWindowGraphicsRenderer>();
+                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
             if (graphicsRenderer == null)
@@ -565,13 +565,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
         }
 
-        private FcWindowGraphicsRenderer graphicsRenderer;
+        private FcwGraphicsRenderer graphicsRenderer;
 
         private Vector2 ToFlowchartSpace(Vector2 panelPosition)
         {
             if (graphicsRenderer == null && owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcWindowGraphicsRenderer>();
+                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
             return graphicsRenderer != null

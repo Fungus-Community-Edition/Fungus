@@ -4,7 +4,7 @@ using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    public sealed class FlowchartWindowFlowchartStateService
+    public sealed class FcwFlowchartStateService
     {
         public Flowchart ResolveSelectionChange(Flowchart previous, Flowchart current)
         {

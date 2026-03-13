@@ -6,9 +6,9 @@ using System;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowUiBuilder
+    internal sealed class FcwUiBuilder
     {
-        public FlowchartWindowUiBuildResult Build(FlowchartWindowUiBuildRequest request)
+        public FcwUiBuildResult Build(FcwUiBuildRequest request)
         {
             VisualElement uxmlRoot = request.VisualTreeAsset.Instantiate();
             request.RootVisualElement.Add(uxmlRoot);
@@ -25,7 +25,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             if (request.ActiveFlowchart == null)
             {
                 request.MissingOverlay.Show(uxmlRoot);
-                return FlowchartWindowUiBuildResult.Missing(uxmlRoot);
+                return FcwUiBuildResult.Missing(uxmlRoot);
             }
 
             request.MissingOverlay.Hide();
@@ -57,13 +57,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 1f;
             zoomLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
 
-            FcWindowGraphicsRenderer graphicsRenderer = new FcWindowGraphicsRenderer(context, request.Config.GridDrawConfig,
+            FcwGraphicsRenderer graphicsRenderer = new FcwGraphicsRenderer(context, request.Config.GridDrawConfig,
                 request.BlockDrawer);
             MainViewportManager viewportManager = new MainViewportManager(context, request.Config.MinZoom,
                 request.Config.MaxZoom);
 
             ContextMenuManager contextMenuManager = new ContextMenuManager();
-            FcWindowVariablesPanel variablesPanel = new FcWindowVariablesPanel();
+            FcwVariablesPanel variablesPanel = new FcwVariablesPanel();
 
             request.ModuleHost.Register(graphicsRenderer);
             request.ModuleHost.Register(viewportManager);
@@ -82,7 +82,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             contextMenuManager.Initialize(request.FlowchartHost as FlowchartWindow);
             variablesPanel.Initialize(request.FlowchartHost as FlowchartWindow);
 
-            return new FlowchartWindowUiBuildResult(
+            return new FcwUiBuildResult(
                 uxmlRoot,
                 true,
                 clipboard,
@@ -96,9 +96,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
     }
 
-    internal sealed class FlowchartWindowUiBuildRequest
+    internal sealed class FcwUiBuildRequest
     {
-        public FlowchartWindowUiBuildRequest(
+        public FcwUiBuildRequest(
             VisualElement rootVisualElement,
             VisualTreeAsset visualTreeAsset,
             Flowchart activeFlowchart,
@@ -108,7 +108,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             DefaultBlockDrawer blockDrawer,
             IFlowchartHostCore flowchartHost,
             Rect windowRect,
-            FlowchartWindowModuleHost moduleHost,
+            FcwModuleHost moduleHost,
             InputSignalModule inputDetector)
         {
             RootVisualElement = rootVisualElement;
@@ -133,23 +133,23 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public DefaultBlockDrawer BlockDrawer { get; }
         public IFlowchartHostCore FlowchartHost { get; }
         public Rect WindowRect { get; }
-        public FlowchartWindowModuleHost ModuleHost { get; }
+        public FcwModuleHost ModuleHost { get; }
         public InputSignalModule InputDetector { get; }
     }
 
-    internal sealed class FlowchartWindowUiBuildResult
+    internal sealed class FcwUiBuildResult
     {
-        public FlowchartWindowUiBuildResult(
+        public FcwUiBuildResult(
             VisualElement uxmlRoot,
             bool hasFlowchart,
             AmanitaClipboard clipboard,
             FlowchartContext flowchartContext,
             UitkLabel fcNameLabel,
             UitkLabel zoomLabel,
-            FcWindowGraphicsRenderer graphicsRenderer,
+            FcwGraphicsRenderer graphicsRenderer,
             MainViewportManager viewportManager,
             ContextMenuManager contextMenuManager,
-            FcWindowVariablesPanel variablesPanel)
+            FcwVariablesPanel variablesPanel)
         {
             UxmlRoot = uxmlRoot;
             HasFlowchart = hasFlowchart;
@@ -169,14 +169,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public FlowchartContext FlowchartContext { get; }
         public UitkLabel FcNameLabel { get; }
         public UitkLabel ZoomLabel { get; }
-        public FcWindowGraphicsRenderer GraphicsRenderer { get; }
+        public FcwGraphicsRenderer GraphicsRenderer { get; }
         public MainViewportManager ViewportManager { get; }
         public ContextMenuManager ContextMenuManager { get; }
-        public FcWindowVariablesPanel VariablesPanel { get; }
+        public FcwVariablesPanel VariablesPanel { get; }
 
-        public static FlowchartWindowUiBuildResult Missing(VisualElement uxmlRoot)
+        public static FcwUiBuildResult Missing(VisualElement uxmlRoot)
         {
-            return new FlowchartWindowUiBuildResult(
+            return new FcwUiBuildResult(
                 uxmlRoot,
                 false,
                 null,

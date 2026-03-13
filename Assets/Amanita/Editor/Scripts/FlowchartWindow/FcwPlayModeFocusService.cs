@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    public sealed class FlowchartWindowPlayModeFocusService
+    public sealed class FcwPlayModeFocusService
     {
         private string _lastPlayModeFcUid;
 
@@ -35,7 +35,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             return true;
         }
 
-        public bool TryResolveLastFocused(FlowchartWindowFlowchartStateService stateService, out Flowchart flowchart)
+        public bool TryResolveLastFocused(FcwFlowchartStateService stateService, out Flowchart flowchart)
         {
             flowchart = null;
             if (stateService == null || string.IsNullOrEmpty(_lastPlayModeFcUid))

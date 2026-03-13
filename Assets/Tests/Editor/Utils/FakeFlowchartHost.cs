@@ -31,7 +31,7 @@ namespace AtMycelia.Amanita.EditorUtils
             inputSignals.Initialize(window);
 
             blockDrawer = new FakeBlockDrawerUitk();
-            graphicsRenderer = new FcWindowGraphicsRenderer(FlowchartCtx, DrawGridCtx, blockDrawer);
+            graphicsRenderer = new FcwGraphicsRenderer(FlowchartCtx, DrawGridCtx, blockDrawer);
             viewportHandlers = new MainViewportManager(FlowchartCtx, FlowchartWindow.Config.MinZoom, FlowchartWindow.Config.MaxZoom);
 
             rootVisualElement.Add(graphicsRenderer);
@@ -199,12 +199,12 @@ namespace AtMycelia.Amanita.EditorUtils
         public VisualElement RootVisualElement => rootVisualElement;
         private VisualElement rootVisualElement;
 
-        public FcWindowGraphicsRenderer GraphicsRenderer => graphicsRenderer;
+        public FcwGraphicsRenderer GraphicsRenderer => graphicsRenderer;
         public MainViewportManager ViewportHandlers => viewportHandlers;
         public InputSignalModule InputSignals => inputSignals;
 
         private FlowchartWindow window;
-        private FcWindowGraphicsRenderer graphicsRenderer;
+        private FcwGraphicsRenderer graphicsRenderer;
         private MainViewportManager viewportHandlers;
         private InputSignalModule inputSignals;
         private IBlockDrawerUitk blockDrawer;

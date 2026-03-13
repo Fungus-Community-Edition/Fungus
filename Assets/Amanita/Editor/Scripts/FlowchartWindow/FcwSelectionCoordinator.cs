@@ -5,14 +5,14 @@ using System;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
-    internal sealed class FlowchartWindowSelectionCoordinator
+    internal sealed class FcwSelectionCoordinator
     {
-        private readonly FlowchartWindowFlowchartStateService _flowchartStateService;
-        private readonly FlowchartWindowPlayModeFocusService _playModeFocusService;
+        private readonly FcwFlowchartStateService _flowchartStateService;
+        private readonly FcwPlayModeFocusService _playModeFocusService;
 
-        public FlowchartWindowSelectionCoordinator(
-            FlowchartWindowFlowchartStateService flowchartStateService,
-            FlowchartWindowPlayModeFocusService playModeFocusService)
+        public FcwSelectionCoordinator(
+            FcwFlowchartStateService flowchartStateService,
+            FcwPlayModeFocusService playModeFocusService)
         {
             _flowchartStateService = flowchartStateService;
             _playModeFocusService = playModeFocusService;
