@@ -77,7 +77,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 EditorSceneManager.sceneClosed += OnSceneClosed;
                 EditorSceneManager.sceneLoaded += OnSceneLoaded;
 
-                AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+                //AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
@@ -93,7 +93,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 EditorSceneManager.sceneClosed -= OnSceneClosed;
                 EditorSceneManager.sceneLoaded -= OnSceneLoaded;
 
-                AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+                //AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                 CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
@@ -518,9 +518,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             Debug.Log("Seeking new flowchart for scene...");
 
-            IList<Flowchart> fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None).ToList();
-            Flowchart lastFocusedInPlayMode = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
-            if (lastFocusedInPlayMode != null)
+            Flowchart lastFocusedInPlayMode;
+            if (TryGetLastPlayModeFlowchart(out lastFocusedInPlayMode))
             {
                 Debug.Log("Found last-focused flowchart from play mode.");
                 MissingOverlay.Hide();
@@ -546,42 +545,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
         }
 
-        private void OnAfterAssemblyReload()
+        private bool TryGetLastPlayModeFlowchart(out Flowchart flowchart)
         {
-            EditorApplication.delayCall += RebuildAfterAssemblyReload;
-        }
-
-        private void RebuildAfterAssemblyReload()
-        {
-            if (this == null)
+            flowchart = null;
+            if (string.IsNullOrEmpty(_lastPlayModeFcUid))
             {
-                return;
+                return false;
             }
 
-            RebuildWindowUi();
+            Flowchart[] fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+            flowchart = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
+            return flowchart != null;
         }
-
-        private void RebuildWindowUi()
-        {
-            rootVisualElement.Clear();
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
-            DisposeSubmodules();
-            NullOutSubmodules();
-
-            _fcContext?.Dispose();
-            _fcContext = null;
-
-            _missingOverlay?.Dispose();
-            _missingOverlay = null;
-            _fcNameLabel = null;
-            _zoomAmountLabel = null;
-
-            CreateGUI();
-        }
-
-        private bool _playModeGraphicsResetQueued;
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
@@ -598,53 +573,35 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                     : null;
                 Debug.Log($"Entered play mode - cached last-focused flowchart UID as {_lastPlayModeFcUid}");
             }
-
-            
+                        
             if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
             {
                 EditorApplication.delayCall += () =>
                 {
-                    if (!string.IsNullOrEmpty(_lastPlayModeFcUid))
+                    if (_fcContext == null)
                     {
-                        var fcsInScene = FindObjectsByType<Flowchart>(FindObjectsSortMode.None).ToList();
-                        var lastFocusedInPlayMode = fcsInScene.FirstOrDefault(fc => fc.UniqueId == _lastPlayModeFcUid);
-                        if (lastFocusedInPlayMode != null)
-                        {
-                            Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
-                            Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
-                            FcContext.Flowchart = lastFocusedInPlayMode;
-                            UpdateLabels();
-                        }
-                        else
-                        {
-                            Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
-                        }
+                        return;
                     }
+
+                    Flowchart lastFocusedInPlayMode;
+                    if (TryGetLastPlayModeFlowchart(out lastFocusedInPlayMode))
+                    {
+                        Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
+                        Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
+                        FcContext.Flowchart = lastFocusedInPlayMode;
+                        UpdateLabels();
+                    }
+                    else if (!string.IsNullOrEmpty(_lastPlayModeFcUid))
+                    {
+                        Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
+                    }
+
+                    _graphicsRenderer?.ResetVisuals();
                 };
             }
-            if (_playModeGraphicsResetQueued)
-            {
-                return;
-            }
-
-            _playModeGraphicsResetQueued = true;
-            EditorApplication.delayCall += ResetGraphicsAfterPlayModeChange;
         }
 
         private static string _lastPlayModeFcUid;
-
-        private void ResetGraphicsAfterPlayModeChange()
-        {
-            _playModeGraphicsResetQueued = false;
-            if (this == null)
-            {
-                return;
-            }
-
-            EnsureFlowchartForScene();
-            ResetActiveFlowchartSelections();
-            _graphicsRenderer?.ResetVisuals();
-        }
 
         #region Cleanup
         protected virtual void OnDestroy()
