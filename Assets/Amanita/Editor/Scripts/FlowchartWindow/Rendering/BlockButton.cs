@@ -184,9 +184,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
 
             var info = EventHandlerEditor.GetEventHandlerInfo(handler.GetType());
-            string handlerName = info != null && !string.IsNullOrEmpty(info.EventHandlerName)
-                ? info.EventHandlerName
-                : handler.GetType().Name;
+            string handlerName = handler.DisplayNameAboveBlock;
 
             _eventHandlerLabel.text = string.Format(_eventHandlerLabelFormat, handlerName);
             _eventHandlerLabel.EnableInClassList(EventHandlerHiddenClass, string.IsNullOrEmpty(handlerName));

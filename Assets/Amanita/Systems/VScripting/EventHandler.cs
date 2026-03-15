@@ -265,6 +265,21 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
 
         protected bool didRuntimeRehydration = false;
 
+#if UNITY_EDITOR
+        public virtual string DisplayNameAboveBlock
+        {
+            get
+            {
+                var eventHandlerInfo = GetType().GetCustomAttribute<EventHandlerInfoAttribute>();
+                if (eventHandlerInfo != null)
+                {
+                    return eventHandlerInfo.EventHandlerName;
+                }
+                return GetType().Name;
+            }
+        }
+#endif
+
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
