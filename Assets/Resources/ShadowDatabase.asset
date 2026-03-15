@@ -585,6 +585,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 43026c74cced61248a54db6b2c2ab164, type: 2}
   - {fileID: 11400000, guid: 74772924501562d4386a06eea562bdb1, type: 2}
   - {fileID: 11400000, guid: 1c917c088143289409693089a486c6f8, type: 2}
+  - {fileID: 11400000, guid: d19d83671a8299142bc1b7cc61abd84d, type: 2}
   _textAssets:
   - {fileID: 4900000, guid: e7943ae6309508f4f9b82cf1e35a2b5e, type: 3}
   - {fileID: 4900000, guid: 6ae07f4b9d83d4662825fefe8ff30d45, type: 3}
