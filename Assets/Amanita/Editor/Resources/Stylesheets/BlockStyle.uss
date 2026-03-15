@@ -14,6 +14,29 @@
 	margin: 0px;
 }
 
+.block-root
+{
+	position: relative;
+}
+
+.block-event-handler-label
+{
+	position: absolute;
+	top: -18px;
+	left: 0px;
+	right: 0px;
+	height: 16px;
+	font-size: 14px;
+	-unity-text-align: middle-center;
+	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.block-event-handler-label-hidden
+{
+	display: none;
+}
+
 .block-button
 {
 	padding: 7px;
