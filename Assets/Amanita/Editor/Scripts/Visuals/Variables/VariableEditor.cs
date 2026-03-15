@@ -127,7 +127,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 RegisterOtherPublicVarsToShowInDropdown();
                 void RegisterOtherPublicVarsToShowInDropdown()
                 {
-                    IReadOnlyList<Flowchart> fcList = AmanitaManager.S.FlowchartsInScene;
+                    IReadOnlyList<Flowchart> fcList = FlowchartRegistry.GetFlowcharts();
 
                     for (int fcListIndex = 0; fcListIndex < fcList.Count; fcListIndex++)
                     {

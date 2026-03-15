@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita.VScripting.EditorUtils;
+using System.Reflection;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -12,6 +13,8 @@ namespace VScriptingTests.FCWindowOperations
         [SetUp]
         public virtual void SetUp()
         {
+            ResetFlowchartWindowSingleton();
+
             // Create a Flowchart with three blocks at known positions
             PrepSceneObjects();
             void PrepSceneObjects()
@@ -46,6 +49,14 @@ namespace VScriptingTests.FCWindowOperations
             mouseDown = new Event { type = EventType.MouseDown, button = MouseButton.Left  };
             mouseDrag = new Event { type = EventType.MouseDrag, button = MouseButton.Left };
             mouseReleased = new Event { type = EventType.MouseUp, button = MouseButton.Left };
+        }
+
+        private static void ResetFlowchartWindowSingleton()
+        {
+            FieldInfo field = typeof(AtMycelia.Amanita.VScripting.EditorUtils.FcWindow.FlowchartWindow)
+                .GetField("_s", BindingFlags.Static | BindingFlags.NonPublic);
+
+            field?.SetValue(null, null);
         }
 
         protected FakeFlowchartHost host;

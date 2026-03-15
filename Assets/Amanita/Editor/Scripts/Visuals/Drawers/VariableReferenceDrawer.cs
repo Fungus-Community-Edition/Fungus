@@ -30,7 +30,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 return;
             }
 
-            var varRegistry = ammieManager.VariableRegistry;
+            VariableRegistry varRegistry = VariableRegistryService.Registry;
+            if (varRegistry == null)
+            {
+                EditorGUI.LabelField(position, label.text, "Variable registry not available.");
+                EditorGUI.EndProperty();
+                return;
+            }
+
             var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
             
             List<IVariable> candidates = validVarsInScene.Values.ToList();

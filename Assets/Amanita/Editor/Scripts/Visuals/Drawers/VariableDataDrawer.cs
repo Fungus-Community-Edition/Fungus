@@ -148,7 +148,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             RegisterValidVars();
             void RegisterValidVars()
             {
-                var validVars = ammieManager.VariableRegistry.GetVarsOfType(contentType);
+                var validVars = VarRegistry.GetVarsOfType(contentType);
                 _labelsSeen.Clear();
                 orderedLabels.Clear();
                 orderedVars.Clear();
@@ -294,9 +294,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         private static readonly int popupGap = 5; // <- Between the value/ref field and the little button for the popup
         private static int SpaceForPopup => popupWidth + popupGap;
         private static readonly float MinimumValueWidth = 80f;
+        private static VariableRegistry VarRegistry => VariableRegistryService.Registry;
 
     }
 
+    
     [CustomPropertyDrawer(typeof(AnyVariableData), true)]
     public class AnyVariableDataDrawer : VariableDataDrawer
     {
