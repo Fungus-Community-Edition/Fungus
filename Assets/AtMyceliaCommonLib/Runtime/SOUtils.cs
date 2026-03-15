@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 namespace AtMycelia
 {
@@ -50,5 +51,26 @@ namespace AtMycelia
             return result;
 
         }
+
+        /// <summary>
+        /// Finds the first asset of type T in the project. Returns null if none found. Editor-only method.
+        /// </summary>
+        public static T FindFirstInProject<T>() where T : ScriptableObject
+        {
+#if UNITY_EDITOR
+            // Search for all assets of type T
+            string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+            if (guids.Length == 0)
+                return null;
+
+            // Load the first match
+            string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+            return AssetDatabase.LoadAssetAtPath<T>(path);
+#else
+        Debug.LogError("FindFirstInProject<T>() can only be used in the Unity Editor.");
+        return null;
+#endif
+        }
+
     }
 }
