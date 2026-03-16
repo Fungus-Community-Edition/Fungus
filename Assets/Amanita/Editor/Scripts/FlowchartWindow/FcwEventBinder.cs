@@ -16,8 +16,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private readonly Action<PlayModeStateChange> _onPlayModeStateChanged;
         private readonly Action<float> _onZoomChanged;
 
-        public FcwEventBinder(
-            FcwModuleHost moduleHost,
+        public FcwEventBinder(FcwModuleHost moduleHost,
             Action<Flowchart, Flowchart> onSelectedFlowchartChanged,
             EditorSceneManager.SceneOpenedCallback onSceneOpened,
             EditorSceneManager.SceneClosedCallback onSceneClosed,

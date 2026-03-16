@@ -1578,7 +1578,7 @@ Transform:
   m_GameObject: {fileID: 1620115399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.09, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2576,8 +2576,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 366
     y: 155
-    width: 300
-    height: 100
+    width: 151
+    height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 1
@@ -2612,8 +2612,7 @@ MonoBehaviour:
   description: 
   uiModel:
     _selectedBlocks: []
-    _selectedCommands:
-    - {fileID: 1689154102}
+    _selectedCommands: []
     _owner: {fileID: 1689154097}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -2626,7 +2625,7 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1

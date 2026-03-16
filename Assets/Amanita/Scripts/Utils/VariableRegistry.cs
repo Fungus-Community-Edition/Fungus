@@ -71,9 +71,9 @@ namespace AtMycelia.Amanita.VScripting
 
                 var type = toRegister.ContentType;
                 newVarsByType.TryGetValue(type, out var dictForContentType);
-                bool weHaveDictForThisContentType = dictForContentType != null;
+                bool weHaveDictForContentType = dictForContentType != null;
 
-                if (!weHaveDictForThisContentType)
+                if (!weHaveDictForContentType)
                 {
                     dictForContentType = new Dictionary<string, IVariable>();
                     newVarsByType[type] = dictForContentType;
@@ -82,7 +82,11 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             // Other Flowcharts
-            var cachedFcs = AmanitaManager.S.FlowchartsInScene;
+            var amanitaManager = AmanitaManager.S;
+            IReadOnlyList<Flowchart> cachedFcs = amanitaManager != null && amanitaManager.FlowchartsInScene != null
+                ? amanitaManager.FlowchartsInScene
+                : Array.Empty<Flowchart>();
+
             foreach (var otherChart in cachedFcs.Where(fc => fc != null && !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)

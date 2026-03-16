@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
@@ -13,11 +14,46 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
     [InitializeOnLoad]
     public static class EditorSelectionTracker
     {
-        public static Flowchart ActiveFlowchart => activeFlowchart != null ?
-            activeFlowchart :
-            ResolveActiveFlowchart();
+        public static Flowchart ActiveFlowchart => activeFlowchart;
         private static Flowchart activeFlowchart;
-        public static Flowchart LastActiveFlowchart { get; private set; }
+        public static Flowchart LastActiveFlowchart
+        {
+            get
+            {
+                Debug.Log($"Using LastActiveFlowchart getter. activeFlowchart: {(activeFlowchart != null ? activeFlowchart.name : "null")}, " +
+                    $"selection cache uid: {_selectionCache.LastSelectedFcUid}");
+                if (activeFlowchart != null)
+                {
+                    return activeFlowchart;
+                }
+
+                Flowchart fromSelection = FindFlowchartFromSelection();
+                if (fromSelection != null)
+                {
+                    Debug.Log($"Flowchart found from selection in LastActiveFlowchart getter: {fromSelection.name} (uid: {fromSelection.UniqueId})");
+                    return fromSelection;
+                }
+
+                Flowchart basedOnCache = FindFlowchartWithCachedId();
+                if (basedOnCache != null)
+                {
+                    return basedOnCache;
+                }
+
+                Flowchart inScene = FindFlowchartInScene();
+                if (inScene != null)
+                {
+                    Debug.Log($"Flowchart found from scene in LastActiveFlowchart getter: {inScene.name} (uid: {inScene.UniqueId})");
+                }
+                return inScene;
+            }
+        }
+
+        private static bool HasSameUidAsCache(Flowchart fc)
+        {
+            return fc != null && fc.UniqueId == _selectionCache.LastSelectedFcUid;
+        }
+
         public static IReadOnlyList<Block> CurrentBlocks => blockSelection;
         private static readonly List<Block> blockSelection = new List<Block>();
         public static IReadOnlyList<Command> CurrentCommands => commandSelection;
@@ -42,15 +78,52 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         static EditorSelectionTracker()
         {
+            EnsureSelectionCache(); 
             DestroyLegacyStateInstances();
             AttemptInitialHydration();
             ToggleSubs(true);
         }
 
+        private static void EnsureSelectionCache()
+        {
+            _selectionCache = SOUtils.EnsureSOExists<EditorSelectionCache>(_selectionCacheSubfolderPath, 
+                _selectionCacheAssetName);
+        }
+
+        private static EditorSelectionCache _selectionCache;
+        private static readonly string _selectionCacheSubfolderPath = "AtMycelia/Amanita/Editor";
+        private static readonly string _selectionCacheAssetName = "EditorSelectionCache";
+
+        private static void SelectFlowchartBasedOnCache()
+        {
+            if (string.IsNullOrEmpty(_selectionCache.LastSelectedFcUid))
+            {
+                return;
+            }
+            Flowchart toSelect = FindFlowchartWithCachedId();
+            if (toSelect != null)
+            {
+                Debug.Log($"Selecting flowchart based on cache: {toSelect.name} (uid: {toSelect.UniqueId})");
+                SetActiveFlowchart(toSelect);
+            }
+        }
+
+        private static Flowchart FindFlowchartWithCachedId()
+        {
+            if (string.IsNullOrEmpty(_selectionCache.LastSelectedFcUid))
+            {
+                return null;
+            }
+
+            Flowchart[] allInScene = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+            Flowchart result = allInScene.Where(HasSameUidAsCache).FirstOrDefault();
+            return result;
+        }
+
         private static void DestroyLegacyStateInstances()
         {
-            AmanitaState[] legacyStates = UnityObj.FindObjectsByType<AmanitaState>(
-                FindObjectsInactive.Include,
+            AmanitaState[] legacyStates = UnityObj.FindObjectsByType<AmanitaState>(FindObjectsInactive.Include,
                 FindObjectsSortMode.None);
 
             foreach (AmanitaState state in legacyStates)
@@ -73,10 +146,26 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void AttemptInitialHydration()
         {
-            Flowchart flowchart = FindFlowchartFromSelection();
+            Flowchart flowchart = FindFlowchartWithCachedId();
+            if (flowchart != null)
+            {
+                Debug.Log($"Flowchart found from cache during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
+            }
+            if (flowchart == null)
+            {
+                flowchart = FindFlowchartFromSelection();
+                if (flowchart != null)
+                {
+                    Debug.Log($"Flowchart found from selection during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
+                }
+            }
             if (flowchart == null)
             {
                 flowchart = FindFlowchartInScene();
+                if (flowchart != null)
+                {
+                    Debug.Log($"Flowchart found from scene during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
+                }
             }
 
             if (flowchart != null)
@@ -94,6 +183,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             activeObject.TryGetComponent(out Flowchart selected);
+            if (selected != null)
+            {
+                Debug.Log($"Flowchart found from selection: {selected.name} (uid: {selected.UniqueId})");
+            }
             return selected;
         }
 
@@ -104,23 +197,30 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void SetActiveFlowchart(Flowchart flowchart)
         {
-            if (ReferenceEquals(activeFlowchart, flowchart))
+            bool alreadySelected = ReferenceEquals(activeFlowchart, flowchart) ||
+                (flowchart != null && flowchart.UniqueId == _selectionCache.LastSelectedFcUid);
+            if (alreadySelected)
             {
                 return;
             }
 
             Flowchart previous = activeFlowchart;
             activeFlowchart = flowchart;
-
-            if (flowchart != null)
+            if (activeFlowchart != null)
             {
-                LastActiveFlowchart = flowchart;
+                Debug.Log($"Selected flowchart: {activeFlowchart.name} (uid: {activeFlowchart.UniqueId})");
             }
-
+            UpdateSelectionCache(flowchart);
             SyncSelectionsFromFlowchart(flowchart);
             SelectedFlowchartChanged(previous, flowchart);
         }
 
+        private static void UpdateSelectionCache(Flowchart flowchart)
+        {
+            _selectionCache.LastSelectedFcUid = flowchart != null ?
+                flowchart.UniqueId :
+                string.Empty;
+        }
         private static void SyncSelectionsFromFlowchart(Flowchart flowchart)
         {
             SyncBlockSelectionFromFlowchart(flowchart);
@@ -205,7 +305,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
                 BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
 
-                FlowchartWindowSignals.ChangedFlowchart += OnFlowchartWindowChanged;
                 FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
 
                 CommandSignals.CommandSelected += OnCommandSelected;
@@ -222,7 +321,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
                 BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
 
-                FlowchartWindowSignals.ChangedFlowchart -= OnFlowchartWindowChanged;
                 FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
 
                 CommandSignals.CommandSelected -= OnCommandSelected;
@@ -292,16 +390,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             ReplaceBlockSelection(blocks);
         }
 
-        private static void OnFlowchartWindowChanged(Flowchart previous, Flowchart current)
-        {
-            if (current == null && previous == null)
-            {
-                return;
-            }
-
-            SetActiveFlowchart(current);
-        }
-
         private static void OnEmptySpaceClicked(PointerEventInfo _)
         {
             ClearBlockSelectionInternal();
@@ -344,6 +432,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
         }
 
+        /// <summary>
+        /// Raised when the user selects a different Flowchart-having GameObject than before.
+        /// Params: previous Flowchart, new Flowchart
+        /// </summary>
         public static event Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
 
         public static Flowchart ResolveActiveFlowchart(bool attemptSceneFallback = true)
@@ -356,18 +448,23 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             Flowchart fromSelection = FindFlowchartFromSelection();
             if (fromSelection != null)
             {
-                SetActiveFlowchart(fromSelection);
+                activeFlowchart = fromSelection; 
+                // Not going with the method here, for the sake of avoiding more signaling than needed
                 return fromSelection;
+            }
+
+            Flowchart basedOnCache = FindFlowchartWithCachedId();
+
+            if (basedOnCache != null)
+            {
+                activeFlowchart = basedOnCache;
+                return basedOnCache;
             }
 
             if (attemptSceneFallback)
             {
-                Flowchart fallback = FindFlowchartInScene();
-                if (fallback != null)
-                {
-                    SetActiveFlowchart(fallback);
-                    return fallback;
-                }
+                Flowchart fallback = UnityObj.FindFirstObjectByType<Flowchart>(FindObjectsInactive.Include);
+                return fallback;
             }
 
             return null;
@@ -388,10 +485,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.EnteredEditMode)
-            {
-                ResolveActiveFlowchart();
-            }
+            UpdateSelectionCacheAssetState();
+            SelectFlowchartBasedOnCache();
         }
 
         private static void OnBeforeAssemblyReload()
@@ -406,9 +501,20 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 return;
             }
 
+            UpdateSelectionCacheAssetState();
             isCleaningUp = true;
 
             ToggleSubs(false);
+        }
+
+        private static void UpdateSelectionCacheAssetState()
+        {
+            if (_selectionCache == null)
+            {
+                return;
+            }
+            EditorUtility.SetDirty(_selectionCache);
+            AssetDatabase.SaveAssetIfDirty(_selectionCache);
         }
 
         private static bool isCleaningUp;

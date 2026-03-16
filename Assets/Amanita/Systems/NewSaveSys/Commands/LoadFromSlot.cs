@@ -174,7 +174,7 @@ namespace AtMycelia.SaveSys.VScripting
             }
             else
             {
-                Debug.Log($"Slot index of {slotIndex.Value} is valid.");
+                //Debug.Log($"Slot index of {slotIndex.Value} is valid.");
             }
         }
     }

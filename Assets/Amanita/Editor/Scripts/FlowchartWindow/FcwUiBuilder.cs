@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using AtMycelia.Amanita.EditorUtils;
 using System;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
@@ -11,16 +12,21 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public FcwUiBuildResult Build(FcwUiBuildRequest request)
         {
             VisualElement uxmlRoot = request.VisualTreeAsset.Instantiate();
-            request.RootVisualElement.Add(uxmlRoot);
-            uxmlRoot.pickingMode = PickingMode.Position;
-            // ^So that PointerUp events trigger properly when clicking on empty space.
-            // Sub-elements can override this to receive events as normal.
-            uxmlRoot.SetPadding(0);
-            uxmlRoot.SetMargin(0);
-            uxmlRoot.style.flexGrow = 1f;
-            uxmlRoot.style.width = Length.Percent(100);
-            uxmlRoot.style.height = Length.Percent(100);
-            // ^To take up the full space of the window
+
+            PrepRoot();
+            void PrepRoot()
+            {
+                request.RootVisualElement.Add(uxmlRoot);
+                uxmlRoot.pickingMode = PickingMode.Position;
+                // ^So that PointerUp events trigger properly when clicking on empty space.
+                // Sub-elements can override this to receive events as normal.
+                uxmlRoot.SetPadding(0);
+                uxmlRoot.SetMargin(0);
+                uxmlRoot.style.flexGrow = 1f;
+                uxmlRoot.style.width = Length.Percent(100);
+                uxmlRoot.style.height = Length.Percent(100);
+                // ^To take up the full space of the window
+            }
 
             if (request.ActiveFlowchart == null)
             {
@@ -32,30 +38,25 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             AmanitaClipboard clipboard = request.Clipboard ?? new AmanitaClipboard(request.FlowchartHost);
 
-            FlowchartContext context = new FlowchartContext();
-            context.Flowchart = request.ActiveFlowchart;
-            if (context.Flowchart == null)
+            FlowchartContext context;
+            PrepFcContext();
+            void PrepFcContext()
             {
-                context.Flowchart = UnityEngine.Object.FindFirstObjectByType<Flowchart>();
-            }
-            context.FcHost = request.FlowchartHost;
-            context.Position = new Rect(0, 0, request.WindowRect.width, request.WindowRect.height);
-            context.GridObjectSnap = 10f;
-
-            string labelText = "No Flowchart Selected";
-            if (context.Flowchart != null)
-            {
-                labelText = $"FC: {context.Flowchart.name}";
+                context = new FlowchartContext();
+                context.Flowchart = request.ActiveFlowchart;
+                if (context.Flowchart == null)
+                {
+                    context.Flowchart = UnityObj.FindFirstObjectByType<Flowchart>();
+                    Debug.Log($"Going with first Flowchart found in the project: {context.Flowchart.name}");
+                }
+                context.FcHost = request.FlowchartHost;
+                context.Position = new Rect(0, 0, request.WindowRect.width, request.WindowRect.height);
+                context.GridObjectSnap = 10f;
             }
 
             UitkLabel fcNameLabel = uxmlRoot.Q<UitkLabel>("FcNameLabel");
-            fcNameLabel.text = labelText;
-
             UitkLabel zoomLabel = uxmlRoot.Q<UitkLabel>("ZoomLabel");
-            float newZoom = context.Flowchart != null ?
-                context.Flowchart.Zoom :
-                1f;
-            zoomLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
+            UpdateLabels(context, fcNameLabel, zoomLabel);
 
             FcwGraphicsRenderer graphicsRenderer = new FcwGraphicsRenderer(context, request.Config.GridDrawConfig,
                 request.BlockDrawer);
@@ -65,12 +66,17 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             ContextMenuManager contextMenuManager = new ContextMenuManager();
             FcwVariablesPanel variablesPanel = new FcwVariablesPanel();
 
-            request.ModuleHost.Register(graphicsRenderer);
-            request.ModuleHost.Register(viewportManager);
+            RegisterInModuleHost();
+            void RegisterInModuleHost()
+            {
+                var host = request.ModuleHost;
+                host.Register(graphicsRenderer);
+                host.Register(viewportManager);
 
-            request.ModuleHost.Register(contextMenuManager);
-            request.ModuleHost.Register(request.InputDetector);
-            request.ModuleHost.Register(variablesPanel);
+                host.Register(contextMenuManager);
+                host.Register(request.InputDetector);
+                host.Register(variablesPanel);
+            }
 
             uxmlRoot.Add(graphicsRenderer);
             uxmlRoot.Add(fcNameLabel);
@@ -82,17 +88,32 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             contextMenuManager.Initialize(request.FlowchartHost as FlowchartWindow);
             variablesPanel.Initialize(request.FlowchartHost as FlowchartWindow);
 
-            return new FcwUiBuildResult(
-                uxmlRoot,
-                true,
-                clipboard,
-                context,
-                fcNameLabel,
-                zoomLabel,
-                graphicsRenderer,
-                viewportManager,
-                contextMenuManager,
-                variablesPanel);
+            return new FcwUiBuildResult(uxmlRoot, true,
+                clipboard, context,
+                fcNameLabel, zoomLabel,
+                graphicsRenderer, viewportManager,
+                contextMenuManager, variablesPanel);
+        }
+
+        private void UpdateLabels(FlowchartContext context, UitkLabel fcNameLabel, UitkLabel zoomAmountLabel)
+        {
+            if (context == null || context.Flowchart == null)
+            {
+                fcNameLabel.text = zoomAmountLabel.text = string.Empty;
+                return;
+            }
+
+            if (fcNameLabel != null)
+            {
+                fcNameLabel.text = $"FC: {context.Flowchart.name}";
+            }
+
+            if (zoomAmountLabel != null)
+            {
+                float zoomAmount = context.Flowchart.Zoom;
+                string amountToShow = Mathf.Round(zoomAmount * 100).ToString();
+                zoomAmountLabel.text = $"Zoom: {amountToShow}%";
+            }
         }
     }
 
