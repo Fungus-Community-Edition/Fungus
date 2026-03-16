@@ -278,8 +278,8 @@ public class SaveSysSettingsWindowTests
         CreateWindowWithUxmlAssigned();
 
         // Ensure defaults exist
-        var defaultReader = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveReader);
-        var defaultWriter = Resources.Load<ScriptableObject>(AmanitaConstants.PathToDefaultSaveWriter);
+        var defaultReader = DefaultSaveSysAssets.SaveReader;
+        var defaultWriter = DefaultSaveSysAssets.SaveWriter;
         Assert.IsNotNull(defaultReader, "DefaultSaveReader resource must exist.");
         Assert.IsNotNull(defaultWriter, "DefaultSaveWriter resource must exist.");
 

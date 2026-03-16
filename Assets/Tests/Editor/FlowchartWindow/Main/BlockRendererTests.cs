@@ -6,6 +6,7 @@ using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita.VScripting.EditorUtils;
 using AtMycelia.Amanita.EditorUtils;
 using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using UnityEngine.UIElements;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -15,6 +16,18 @@ namespace VScriptingTests.FCWindowOperations
         // Test double
         class FakeDrawer : IBlockDrawerUitk
         {
+            private readonly VisualTreeAsset blockTemplate;
+            private readonly StyleSheet baseStyleSheet;
+            private readonly StyleSheet selectedStyleSheet;
+
+            public FakeDrawer()
+            {
+                FlowchartWindowConfig config = AmanitaEditorResources.FcwConfig;
+                blockTemplate = config.BlockUxml;
+                baseStyleSheet = config.BlockStyleSheet;
+                selectedStyleSheet = config.SelectedBlockStyleSheet;
+            }
+
             public readonly List<Block> CreatedFor = new List<Block>();
             public readonly List<(Block Block, BlockButton Button, float Zoom)> UpdateCalls
                 = new List<(Block, BlockButton, float)>();
@@ -24,7 +37,7 @@ namespace VScriptingTests.FCWindowOperations
             {
                 CreatedFor.Add(block);
                 var button = new BlockButton(new BlockGraphicsGenerator());
-                button.Initialize(block, null, null, null);
+                button.Initialize(block, blockTemplate, baseStyleSheet, selectedStyleSheet);
                 CreatedButtons[block] = button;
                 return button;
             }

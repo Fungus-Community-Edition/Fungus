@@ -13,6 +13,7 @@ using UnityEngine.Serialization;
 using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace AtMycelia.Amanita.VScripting
@@ -339,7 +340,23 @@ namespace AtMycelia.Amanita.VScripting
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
+        private bool IsInTheScene
+        {
+            get
+            {
+                if (!gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
+                {
+                    return false;
+                }
+
+#if UNITY_EDITOR
+                //return PrefabStageUtility.GetPrefabStage(gameObject) == null;
+                return true;
+#else
+        return true;
+#endif
+            }
+        }
 
         public virtual void Refresh()
         {

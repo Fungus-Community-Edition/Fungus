@@ -10,8 +10,18 @@ GameObject:
   m_Component:
   - component: {fileID: 5053804930201960281}
   - component: {fileID: 5231096925602405738}
+  - component: {fileID: 7775790903546417938}
+  - component: {fileID: 7062429000645685522}
+  - component: {fileID: 6370810919254831962}
+  - component: {fileID: 1866077879759629950}
+  - component: {fileID: 5756673907950157102}
+  - component: {fileID: 9218346791677038221}
+  - component: {fileID: 4572415478675351787}
+  - component: {fileID: 9024458977027463532}
+  - component: {fileID: 2556774069806022284}
+  - component: {fileID: 5625088615775117596}
   m_Layer: 5
-  m_Name: Audio
+  m_Name: SaveAudio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,14 +72,15 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 7775790903546417938}
     _selectedCommands: []
     _owner: {fileID: 234453616329698692}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 0, y: 10.762987}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <Zoom>k__BackingField: 1.5
+    <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -91,8 +102,15 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  _blockListCache: []
-  _commands: []
+  _blockListCache:
+  - {fileID: 7775790903546417938}
+  - {fileID: 5756673907950157102}
+  - {fileID: 9024458977027463532}
+  _commands:
+  - {fileID: 6370810919254831962}
+  - {fileID: 1866077879759629950}
+  - {fileID: 4572415478675351787}
+  - {fileID: 2556774069806022284}
   nextValidVarID: 5
   uniqueId: 4b9bbe20-fad7-48e7-9f19-eeb0e6f07a24
   references:
@@ -130,6 +148,425 @@ MonoBehaviour:
         itemID: 4
         value: {fileID: 8300000, guid: fe7bcb8696a130d46a6977c0737c8d13, type: 3}
         startValue: {fileID: 0}
+--- !u!114 &7775790903546417938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 143.45453
+    y: 254
+    width: 134
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 1
+  blockName: OnButtonClick
+  description: 
+  eventHandler: {fileID: 7062429000645685522}
+  commandList:
+  - {fileID: 6370810919254831962}
+  - {fileID: 1866077879759629950}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &7062429000645685522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83dd6792d2116234bb777bf8c86ec0f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 7775790903546417938}
+  suppressBlockAutoSelect: 0
+  parents:
+  - {fileID: 8034622407171239906}
+--- !u!114 &6370810919254831962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 2
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 2
+        owningFc: {fileID: 5231096925602405738}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &1866077879759629950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 3
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: Responding to save emnu button click
+    stringRef: {fileID: 0}
+--- !u!114 &5756673907950157102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 413.84613
+    y: 151.29196
+    width: 158
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 4
+  blockName: OnSaveWriteStart
+  description: 
+  eventHandler: {fileID: 9218346791677038221}
+  commandList:
+  - {fileID: 4572415478675351787}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &9218346791677038221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95dd51c13944a7479a4a050e2c38b68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 5756673907950157102}
+  suppressBlockAutoSelect: 0
+  responseTiming: 0
+  _slotNumber:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
+--- !u!114 &4572415478675351787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 8
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 3
+        owningFc: {fileID: 5231096925602405738}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &9024458977027463532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 336.38458
+    y: 266.29193
+    width: 150
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 5
+  blockName: OnSaveWriteEnd
+  description: 
+  eventHandler: {fileID: 5625088615775117596}
+  commandList:
+  - {fileID: 2556774069806022284}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &2556774069806022284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68825b789e5fb0c42965d9efd4059ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 7
+  indentLevel: 0
+  mode: 1
+  mainPlayConfig:
+    trackGroup: 3
+    track:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      integerRef: {fileID: 0}
+    introClip:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    mainClip:
+      backingVarRef:
+        itemId: 4
+        owningFc: {fileID: 5231096925602405738}
+        owningVsa: {fileID: 0}
+      value: {fileID: 0}
+      audioClipRef: {fileID: 0}
+    loop:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+    loopStartPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    loopEndPoint:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 0
+      floatRef: {fileID: 0}
+    oneShot:
+      backingVarRef:
+        itemId: 0
+        owningFc: {fileID: 0}
+        owningVsa: {fileID: 0}
+      value: 1
+      booleanRef: {fileID: 0}
+      booleanVal: 0
+  skipIfAlreadyPlaying:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  useConfigSO:
+    backingVarRef:
+      itemId: 0
+      owningFc: {fileID: 0}
+      owningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  configSO: {fileID: 0}
+--- !u!114 &5625088615775117596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234453616329698692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95dd51c13944a7479a4a050e2c38b68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 9024458977027463532}
+  suppressBlockAutoSelect: 0
+  responseTiming: 1
+  _slotNumber:
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
 --- !u!1 &267139196374095512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,7 +1662,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.00009655301}
+  m_AnchoredPosition: {x: 0, y: -0.00010262324}
   m_SizeDelta: {x: 1603, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4776211799061177608
@@ -1418,6 +1855,9 @@ GameObject:
   - component: {fileID: 3204976415759936792}
   - component: {fileID: 2378518837195172376}
   - component: {fileID: 550333160154067643}
+  - component: {fileID: 2114998604253343111}
+  - component: {fileID: 6680143018317981727}
+  - component: {fileID: 8488521281207093642}
   m_Layer: 0
   m_Name: UIActionHandler
   m_TagString: Untagged
@@ -1464,15 +1904,14 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 8425603792361900093}
+    _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 5491679531932821053}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 0, y: 13.201632}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <Zoom>k__BackingField: 1.5
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -1499,6 +1938,7 @@ MonoBehaviour:
   - {fileID: 2674689422536112357}
   - {fileID: 1752029211725043856}
   - {fileID: 5517563102179242479}
+  - {fileID: 2114998604253343111}
   _commands:
   - {fileID: 6685305723448108047}
   - {fileID: 8806205604095629028}
@@ -1509,6 +1949,7 @@ MonoBehaviour:
   - {fileID: 3204976415759936792}
   - {fileID: 2378518837195172376}
   - {fileID: 550333160154067643}
+  - {fileID: 6680143018317981727}
   nextValidVarID: 3
   uniqueId: ddc5552f-57d9-4abd-9de8-db704265f780
   references:
@@ -1618,11 +2059,11 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 6177420641323188304
+    rid: 6177420644318969914
   references:
     version: 2
     RefIds:
-    - rid: 6177420641323188304
+    - rid: 6177420644318969914
       type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         scope: 0
@@ -1649,7 +2090,7 @@ MonoBehaviour:
       itemId: 1
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 1
     integerRef: {fileID: 0}
   saveToSelected:
     backingVarRef:
@@ -1881,7 +2322,7 @@ MonoBehaviour:
       itemId: 1
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 1
     integerRef: {fileID: 0}
   loadFromSelected:
     backingVarRef:
@@ -2211,6 +2652,71 @@ MonoBehaviour:
     booleanRef: {fileID: 0}
     booleanVal: 0
   configSO: {fileID: 0}
+--- !u!114 &2114998604253343111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d73aef2cfc4f51abf34ac00241f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeRect:
+    serializedVersion: 2
+    x: 132.04755
+    y: 275.132
+    width: 195
+    height: 40
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  useCustomTint: 0
+  itemId: 29
+  blockName: DeleteFromSelectedSlot
+  description: 
+  eventHandler: {fileID: 8488521281207093642}
+  commandList:
+  - {fileID: 6680143018317981727}
+  includeInSaves: 1
+  loadPriority: 0
+  suppressAllAutoSelections: 0
+--- !u!114 &6680143018317981727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae26827138916104b97773bf13c3e837, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 30
+  indentLevel: 0
+  _slotIndex:
+    backingVarRef:
+      itemId: 1
+      owningFc: {fileID: 1507031660960170913}
+      owningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+--- !u!114 &8488521281207093642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491679531932821053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10eaeba5e91be479e95d4fa48679f549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 2114998604253343111}
+  suppressBlockAutoSelect: 0
+  targetButton: {fileID: 65038133872781658}
 --- !u!1 &5681273892318264295
 GameObject:
   m_ObjectHideFlags: 0

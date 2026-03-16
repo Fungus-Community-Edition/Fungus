@@ -136,25 +136,15 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         private static void AttemptInitialHydration()
         {
             Flowchart flowchart = FindFlowchartWithCachedId();
-            if (flowchart != null)
-            {
-                Debug.Log($"Flowchart found from cache during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
-            }
+
             if (flowchart == null)
             {
                 flowchart = FindFlowchartFromSelection();
-                if (flowchart != null)
-                {
-                    Debug.Log($"Flowchart found from selection during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
-                }
             }
+
             if (flowchart == null)
             {
                 flowchart = FindFlowchartInScene();
-                if (flowchart != null)
-                {
-                    Debug.Log($"Flowchart found from scene during initial hydration: {flowchart.name} (uid: {flowchart.UniqueId})");
-                }
             }
 
             if (flowchart != null)
