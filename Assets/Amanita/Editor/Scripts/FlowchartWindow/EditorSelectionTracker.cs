@@ -301,13 +301,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 Selection.selectionChanged += OnUnitySelectionChanged;
 
-                BlockSignals.BlockSelected += OnBlockSelected;
-                BlockSignals.BlockDeselected += OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
-
                 FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected += OnCommandSelected;
 
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
@@ -317,13 +311,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 Selection.selectionChanged -= OnUnitySelectionChanged;
 
-                BlockSignals.BlockSelected -= OnBlockSelected;
-                BlockSignals.BlockDeselected -= OnBlockRemovedFromSelection;
-                BlockSignals.MultiBlocksSelected -= OnMultiBlocksSelected;
-
                 FlowchartWindowSignals.EmptySpaceLeftClicked -= OnEmptySpaceClicked;
-
-                CommandSignals.CommandSelected -= OnCommandSelected;
 
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                 AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
@@ -343,51 +331,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 SetActiveFlowchart(selected);
             }
-        }
-
-        private static void OnBlockSelected(Block block)
-        {
-            Flowchart flowchart = block != null ?
-                block.GetFlowchart() :
-                null;
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            Flowchart toSyncFrom = flowchart != null ?
-                flowchart :
-                activeFlowchart;
-            SyncBlockSelectionFromFlowchart(toSyncFrom);
-        }
-
-        private static void OnBlockRemovedFromSelection(Block block)
-        {
-            Flowchart flowchart = block != null ?
-                block.GetFlowchart() :
-                activeFlowchart;
-
-            SyncBlockSelectionFromFlowchart(flowchart);
-        }
-
-        private static void OnMultiBlocksSelected(IList<Block> blocks)
-        {
-            Flowchart flowchart = null;
-            if (blocks != null && blocks.Count > 0)
-            {
-                Block first = blocks[0];
-                if (first != null)
-                {
-                    flowchart = first.GetFlowchart();
-                }
-            }
-
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            ReplaceBlockSelection(blocks);
         }
 
         private static void OnEmptySpaceClicked(PointerEventInfo _)
@@ -470,23 +413,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             return null;
         }
 
-        private static void OnCommandSelected(Command command)
-        {
-            Flowchart flowchart = command != null ? 
-                command.GetFlowchart() : 
-                null;
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
-            }
-
-            SyncCommandSelectionFromFlowchart(flowchart ?? activeFlowchart);
-        }
-
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            UpdateSelectionCacheAssetState();
-            SelectFlowchartBasedOnCache();
+            if (state == PlayModeStateChange.EnteredPlayMode)
+            {
+                UpdateSelectionCacheAssetState();
+                SelectFlowchartBasedOnCache();
+            }
         }
 
         private static void OnBeforeAssemblyReload()
@@ -496,6 +429,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void Cleanup()
         {
+            // Why do this check? Because in some cases (entering play mode, for example), the
+            // cleanup method can be called multiple times, and we only want to run this
+            // logic once per "cleanup event".
             if (isCleaningUp)
             {
                 return;
