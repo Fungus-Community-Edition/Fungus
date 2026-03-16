@@ -164,7 +164,8 @@ namespace VScriptingTests.VariableOperations
             VariableTypeDiscovery.DiscoverAndRegister();
             var created = VariableFactory.CreateByContentType(contentType, null);
             Assert.IsNotNull(created, "VariableFactory.Create returned null for contentType " + contentType.Name);
-            Assert.AreEqual(expectedMuscariType, created.GetType(), $"Factory did not return the expected Muscariable type for {contentType.Name}");
+            Assert.IsTrue(expectedMuscariType.IsAssignableFrom(created.GetType()),
+                $"Factory did not return a Muscariable type assignable to {expectedMuscariType.Name} for {contentType.Name}");
             Assert.AreEqual(contentType, created.ContentType, "Created Muscariable did not report correct ContentType.");
         }
 

@@ -10,7 +10,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for VariableReference, allows selecting a target variable.
-    /// Supports filtering via VarTypeConstraint.
+    /// Supports filtering via ContentTypeConstraint.
     /// </summary>
     [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer

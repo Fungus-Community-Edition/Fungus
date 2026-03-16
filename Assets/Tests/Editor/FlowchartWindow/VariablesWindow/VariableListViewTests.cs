@@ -102,6 +102,16 @@ namespace VScriptingTests.VariableOperations
             return addedLegacyVar;
         }
 
+        TComp CreateVarOnHost<TComp, TValue>(GameObject host, string key, TValue value = default)
+    where TComp : Component, IVariable
+        {
+            var addedLegacyVar = host.AddComponent<TComp>();
+            addedLegacyVar.Key = key;
+            TrySetStrongValue(addedLegacyVar, value);
+            _createdVars.Add(addedLegacyVar);
+            return addedLegacyVar;
+        }
+
         // Fix for AmbiguousMatchException:
         // IVariable<T> introduces a strongly typed Value property hiding IVariable.Value (object).
         // Reflection GetProperty("Value") was ambiguous. We pick the non-object one if present.
@@ -434,10 +444,11 @@ namespace VScriptingTests.VariableOperations
             var fcHost = new GameObject("FlowchartHost");
             var flowchart = fcHost.AddComponent<Flowchart>();
 
-            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
-            var secondVar = CreateVar<StringVariable, string>("s1", "a");
+            var firstVar = CreateVarOnHost<FloatVariable, float>(fcHost, "f1", 1f);
+            var secondVar = CreateVarOnHost<StringVariable, string>(fcHost, "s1", "a");
 
             AssignLegacyVariables(flowchart, new List<Variable> { firstVar, secondVar });
+            flowchart.Refresh();
 
             _view.SetFlowchart(flowchart);
 
@@ -457,11 +468,12 @@ namespace VScriptingTests.VariableOperations
             var fcHost = new GameObject("FlowchartHost");
             var flowchart = fcHost.AddComponent<Flowchart>();
 
-            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
-            var destroyedVar = CreateVar<StringVariable, string>("s1", "a");
+            var firstVar = CreateVarOnHost<FloatVariable, float>(fcHost, "f1", 1f);
+            var destroyedVar = CreateVarOnHost<StringVariable, string>(fcHost, "s1", "a");
             UnityObj.DestroyImmediate((UnityObj)destroyedVar);
 
             AssignLegacyVariables(flowchart, new List<Variable> { firstVar, destroyedVar, null });
+            flowchart.Refresh();
 
             _view.SetFlowchart(flowchart);
 
@@ -481,6 +493,21 @@ namespace VScriptingTests.VariableOperations
                 Assert.Fail("Could not find legacyVariables field on Flowchart");
 
             field.SetValue(flowchart, variables);
+            ResetVariableManagerInit(flowchart);
+        }
+
+        static void ResetVariableManagerInit(Flowchart flowchart)
+        {
+            var managerField = typeof(Flowchart).GetField("variableManager", bindingFlags);
+            if (managerField == null)
+                Assert.Fail("Could not find variableManager field on Flowchart");
+
+            var manager = managerField.GetValue(flowchart);
+            var isInittedField = manager.GetType().GetField("isInitted", bindingFlags);
+            if (isInittedField == null)
+                Assert.Fail("Could not find isInitted field on VariableManager");
+
+            isInittedField.SetValue(manager, false);
         }
 
         class TestVariableListView : VariableListView
