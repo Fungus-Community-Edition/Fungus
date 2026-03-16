@@ -50,8 +50,7 @@ namespace AtMycelia.Amanita.SaveSys.VScripting
                 return;
             }
 
-            _slotNumber?.SetValue(request.SlotNumber);
-
+            UpdateSlotNumberVal(request.SlotNumber);
             ExecuteBlock();
         }
 
@@ -62,9 +61,16 @@ namespace AtMycelia.Amanita.SaveSys.VScripting
                 return;
             }
 
-            _slotNumber?.SetValue(results.SlotNumber);
-
+            UpdateSlotNumberVal(results.SlotNumber);
             ExecuteBlock();
+        }
+
+        private void UpdateSlotNumberVal(int val)
+        {
+            if (_slotNumber != null && _slotNumber.Variable != null)
+            {
+                _slotNumber?.SetValue(val);
+            }
         }
 
         public override string DisplayNameAboveBlock => $"Save Written ({responseTiming})";

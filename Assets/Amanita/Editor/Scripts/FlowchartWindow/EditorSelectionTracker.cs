@@ -20,19 +20,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             get
             {
-                Debug.Log($"Using LastActiveFlowchart getter. activeFlowchart: {(activeFlowchart != null ? activeFlowchart.name : "null")}, " +
-                    $"selection cache uid: {_selectionCache.LastSelectedFcUid}");
                 if (activeFlowchart != null)
                 {
                     return activeFlowchart;
                 }
 
                 Flowchart fromSelection = FindFlowchartFromSelection();
-                if (fromSelection != null)
-                {
-                    Debug.Log($"Flowchart found from selection in LastActiveFlowchart getter: {fromSelection.name} (uid: {fromSelection.UniqueId})");
-                    return fromSelection;
-                }
 
                 Flowchart basedOnCache = FindFlowchartWithCachedId();
                 if (basedOnCache != null)
@@ -41,10 +34,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 }
 
                 Flowchart inScene = FindFlowchartInScene();
-                if (inScene != null)
-                {
-                    Debug.Log($"Flowchart found from scene in LastActiveFlowchart getter: {inScene.name} (uid: {inScene.UniqueId})");
-                }
                 return inScene;
             }
         }
@@ -103,7 +92,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             Flowchart toSelect = FindFlowchartWithCachedId();
             if (toSelect != null)
             {
-                Debug.Log($"Selecting flowchart based on cache: {toSelect.name} (uid: {toSelect.UniqueId})");
+                //Debug.Log($"Selecting flowchart based on cache: {toSelect.name} (uid: {toSelect.UniqueId})");
                 SetActiveFlowchart(toSelect);
             }
         }
