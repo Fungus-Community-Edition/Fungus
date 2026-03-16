@@ -1,53 +1,25 @@
 using System;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
+    /// <summary>
+    /// Handles responses to changes in play mode state, ensuring that the flowchart
+    /// window updates correctly when entering/exiting play mode or edit mode.
+    /// </summary>
     internal sealed class FcwPlayModeCoordinator
     {
-        private readonly FcwPlayModeFocusService _playModeFocusService;
-        private readonly FcwFlowchartStateService _flowchartStateService;
-        private readonly FcwSelectionCoordinator _selectionCoordinator;
-
-        public FcwPlayModeCoordinator(
-            FcwPlayModeFocusService playModeFocusService,
-            FcwFlowchartStateService flowchartStateService,
-            FcwSelectionCoordinator selectionCoordinator)
-        {
-            _playModeFocusService = playModeFocusService;
-            _flowchartStateService = flowchartStateService;
-            _selectionCoordinator = selectionCoordinator;
-        }
-
-        public void HandlePlayModeStateChanged(
-            PlayModeStateChange state,
-            Func<Flowchart> activeFlowchartGetter,
-            FlowchartContext context,
-            UitkLabel fcNameLabel,
-            UitkLabel zoomAmountLabel,
-            FcwGraphicsRenderer graphicsRenderer)
+        public void HandlePlayModeStateChanged(PlayModeStateChange state, Func<Flowchart> activeFlowchartGetter,
+            FlowchartContext context, UitkLabel fcNameLabel,
+            UitkLabel zoomAmountLabel, FcwGraphicsRenderer graphicsRenderer)
         {
             if (state != PlayModeStateChange.EnteredEditMode &&
                 state != PlayModeStateChange.EnteredPlayMode &&
                 state != PlayModeStateChange.ExitingPlayMode)
             {
                 return;
-            }
-
-            if (state == PlayModeStateChange.EnteredPlayMode)
-            {
-                string cachedUid;
-                Flowchart activeFlowchart = activeFlowchartGetter != null ?
-                    activeFlowchartGetter() :
-                    null;
-
-                if (_playModeFocusService.TryCacheFromActiveFlowchart(activeFlowchart, out cachedUid))
-                {
-                    Debug.Log($"Entered play mode - cached last-focused flowchart UID as {cachedUid}");
-                }
             }
 
             if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
@@ -59,17 +31,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                         return;
                     }
 
-                    Flowchart lastFocusedInPlayMode;
-                    if (_playModeFocusService.TryResolveLastFocused(_flowchartStateService, out lastFocusedInPlayMode))
+                    Flowchart activeFlowchart = EditorSelectionTracker.ResolveActiveFlowchart();
+                    if (activeFlowchart != null)
                     {
-                        Debug.Log($"Found last-focused flowchart from play mode on exit: {lastFocusedInPlayMode.name}");
-                        Selection.activeGameObject = lastFocusedInPlayMode.gameObject;
-                        context.Flowchart = lastFocusedInPlayMode;
-                        _selectionCoordinator.UpdateLabels(context, fcNameLabel, zoomAmountLabel);
-                    }
-                    else if (_playModeFocusService.HasCachedFocus)
-                    {
-                        Debug.LogWarning("Could not find last-focused flowchart from play mode on exit.");
+                        Selection.activeGameObject = activeFlowchart.gameObject;
+                        context.Flowchart = activeFlowchart;
                     }
 
                     graphicsRenderer?.ResetVisuals();

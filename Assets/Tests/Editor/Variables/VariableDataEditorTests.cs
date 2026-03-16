@@ -1,14 +1,13 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Amanita;
 using AtMycelia.Amanita.VScripting;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.TestTools;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -17,14 +16,12 @@ namespace VScriptingTests.VariableOperations
     /// </summary>
     public class VariableDataEditorTests
     {
-        private AmanitaManager _manager;
         private Flowchart _flowchart;
 
         [SetUp]
         public void SetUp()
         {
-            // Ensure manager/registry exists (VariableDataDrawer uses AmanitaManager.S)
-            _manager = AmanitaManager.EnsureExists();
+            VariableRegistryService.EnsureDefault();
 
             // Create a Flowchart to act as owner for variables referenced by VariableData
             var fcGo = new GameObject("TestFlowchart");
@@ -33,7 +30,6 @@ namespace VScriptingTests.VariableOperations
             Selection.activeGameObject = _flowchart.gameObject;
 
             toDestroyInTearDown.Add(_flowchart.gameObject);
-            toDestroyInTearDown.Add(_manager.gameObject);
         }
 
         private readonly IList<UnityObj> toDestroyInTearDown = new List<UnityObj>();
@@ -44,7 +40,7 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
-            _manager.VariableRegistry.Rebuild(); // Clear out any test vars
+            VariableRegistryService.RebuildAll(); // Clear out any test vars
             foreach (var obj in toDestroyInTearDown)
             {
                 if (obj != null)
@@ -101,7 +97,7 @@ namespace VScriptingTests.VariableOperations
             legacyVars.Add(intVar);
             legacyVarsField.SetValue(_flowchart, legacyVars);
             _flowchart.Refresh();
-            _manager.VariableRegistry.Rebuild(_flowchart); // To make sure the registry knows about it
+            VariableRegistryService.RebuildAll(_flowchart); // To make sure the registry knows about it
 
             var holder = ScriptableObject.CreateInstance<IntegerDataHolder>();
             toDestroyInTearDown.Add(holder);

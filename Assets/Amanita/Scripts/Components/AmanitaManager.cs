@@ -1,4 +1,5 @@
-﻿using AtMycelia.SaveSys;
+﻿using System;
+using AtMycelia.SaveSys;
 using AtMycelia.Amanita.Tweening;
 using AtMycelia.Amanita.VScripting;
 using FullSerializer;
@@ -28,38 +29,11 @@ namespace AtMycelia.Amanita
     /// </summary>
     public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
-        [SerializeField] private List<VariableSourceAsset> globalVariables = new List<VariableSourceAsset>();
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
         [SerializeField] private SaveMenuManager saveMenuPrefab;
         private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
-        public IList<IVariable> GlobalVariables
-        {
-            get
-            {
-                List<IVariable> result = new List<IVariable>();
-                foreach (var src in globalVariables)
-                {
-                    if (src == null)
-                    {
-                        continue;
-                    }
-                    result.AddRange(src.Variables.Where(elem => elem != null));
-                }
-                return result;
-            }
-        }
-
-        public IList<VariableSourceAsset> GlobalVariableSources
-        {
-            get => globalVariables.ToArray();
-            set
-            {
-                globalVariables.Clear();
-                globalVariables.AddRange(value);
-            }
-        }
 
         public static DefaultTweenAdapter DefaultTweener
         {
@@ -226,8 +200,6 @@ namespace AtMycelia.Amanita
                     esGo.AddComponent<InputSystemUIInputModule>();
                 }
             }
-
-            VariableRegistry = new VariableRegistry(this);
 
             ResetAnchors();
             void ResetAnchors()
@@ -466,7 +438,6 @@ namespace AtMycelia.Amanita
 
         // replaced the old list with a dictionary keyed by adapter instance id
         private readonly Dictionary<int, GameObject> _adapterAnchors = new Dictionary<int, GameObject>();
-        public VariableRegistry VariableRegistry { get; private set; }
         private void OnValidate()
         {
             // OnValidate gets called on the prefab in response to Resources.Load(), so...
@@ -475,40 +446,13 @@ namespace AtMycelia.Amanita
                 return;
             }
             S = this;
-            // Best make sure to log errors and such when this has any screwy fields
-            if (globalVariables == null)
-            {
-                Debug.LogError("AmanitaManager has no globalVariables list assigned.");
-            }
-            else if (globalVariables.Any(elem => elem == null))
-            {
-                Debug.LogError("AmanitaManager has null global variable sources.");
-            }
 
-            EnsureVariableRegistryIsReady();
-
-        }
-
-        private void EnsureVariableRegistryIsReady()
-        {
-            if (VariableRegistry == null)
-            {
-                VariableRegistry = new VariableRegistry(this);
-                var selected = Selection.activeGameObject;
-                Flowchart currentFc = null;
-                if (selected != null)
-                {
-                    selected.TryGetComponent(out currentFc);
-                }
-                VariableRegistry.Rebuild(currentFc);
-            }
         }
 
         private void OnEnable()
         {
             saveLoadedBlockExecutor.OnEnable();
             ToggleSubs(true);
-            EnsureVariableRegistryIsReady();
         }
 
         private void ToggleSubs(bool on)
