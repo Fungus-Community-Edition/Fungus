@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Graphics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,7 +14,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
     /// </summary>
     public sealed class GridRenderer : VisualElement, IFlowchartWindowModule,  IDisposable,
         IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder,
-        IFlowchartChangeResponder
+        IFlowchartChangeResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
         private readonly FlowchartContext flowchartContext;
@@ -264,5 +265,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         private readonly IList<Block> lastBlocksSelected = new List<Block>();
+
+        public void ResetVisuals()
+        {
+            if (isDisposed)
+            {
+                return;
+            }
+
+            cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            cachedZoom = float.NaN;
+            cachedContentRect = Rect.zero;
+            QueueContextAwareRepaint(true);
+        }
     }
 }

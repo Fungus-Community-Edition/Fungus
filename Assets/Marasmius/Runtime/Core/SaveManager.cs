@@ -24,21 +24,24 @@ namespace AtMycelia.SaveSys
                 }
             }
 
-            UnityThreadUtil.RunOnMainThread(() =>
-            {
-                IList<ISaveMetaData> metasOnDisk = SaveRepo.LoadAllMetasOnDisk();
-                for (int i = 0; i < metasOnDisk.Count; i++)
-                {
-                    ISaveMetaData meta = metasOnDisk[i];
-                    SaveDataSet dataSet = new SaveDataSet(meta, null);
-                    Registry.AddSave(dataSet);
-                }
-                SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
-            });
+            UnityThreadUtil.RunOnMainThread(LoadAllMetasOnInit);
 
             return Task.CompletedTask;
 
         }
+
+        private void LoadAllMetasOnInit()
+        {
+            IList<ISaveMetaData> metasOnDisk = SaveRepo.LoadAllMetasOnDisk();
+            for (int i = 0; i < metasOnDisk.Count; i++)
+            {
+                ISaveMetaData meta = metasOnDisk[i];
+                SaveDataSet dataSet = new SaveDataSet(meta, null);
+                Registry.AddSave(dataSet);
+            }
+            SaveSysSignals.SaveMetasReadOnInit(metasOnDisk);
+        }
+
         public virtual int MaxSlots { get; set; } = 100;
 
         public SaveManager(ISaveRepository saveRepo, SaveRegistry registry,
@@ -116,14 +119,6 @@ namespace AtMycelia.SaveSys
 
             string logMessage = $"Save Manager: Saved to slot {slotNum}.";
             Debug.Log(logMessage);
-            if (saveAlreadyExists)
-            {
-                SaveSysSignals.SaveInSlotOverwritten(newSet);
-            }
-            else
-            {
-                SaveSysSignals.SaveAddedToSlot(newSet);
-            }
         }
 
         public virtual IMainStateFactory MainStateFactory { get; set; }
@@ -198,8 +193,8 @@ namespace AtMycelia.SaveSys
                     return result;
                 }
 
-                var BeforeSceneLoadAsync = SaveSysSignals.BeforeSceneLoadAsync;
-                Task beforeSceneLoadHandlerTask = ExecuteHandlers(BeforeSceneLoadAsync);
+                var beforeSceneLoadAsync = SaveSysSignals.BeforeSceneLoadAsync;
+                Task beforeSceneLoadHandlerTask = ExecuteHandlers(beforeSceneLoadAsync);
                 await beforeSceneLoadHandlerTask;
             }
 

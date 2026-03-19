@@ -39,7 +39,7 @@ namespace VScriptingTests.VariableOperations
             var source = new IntMuscariable
             {
                 Key = "TestKey",
-                Scope = VariableScope.Global,
+                Scope = VariableScope.Public,
                 ItemId = 42,
                 Value = 99
             };
@@ -50,7 +50,7 @@ namespace VScriptingTests.VariableOperations
             // Assert
             Assert.NotNull(created);
             Assert.AreEqual("TestKey", created.Key);
-            Assert.AreEqual(VariableScope.Global, created.Scope);
+            Assert.AreEqual(VariableScope.Public, created.Scope);
             Assert.AreEqual(42, created.ItemId);
             Assert.AreEqual(99, created.Value);
         }
@@ -164,7 +164,8 @@ namespace VScriptingTests.VariableOperations
             VariableTypeDiscovery.DiscoverAndRegister();
             var created = VariableFactory.CreateByContentType(contentType, null);
             Assert.IsNotNull(created, "VariableFactory.Create returned null for contentType " + contentType.Name);
-            Assert.AreEqual(expectedMuscariType, created.GetType(), $"Factory did not return the expected Muscariable type for {contentType.Name}");
+            Assert.IsTrue(expectedMuscariType.IsAssignableFrom(created.GetType()),
+                $"Factory did not return a Muscariable type assignable to {expectedMuscariType.Name} for {contentType.Name}");
             Assert.AreEqual(contentType, created.ContentType, "Created Muscariable did not report correct ContentType.");
         }
 

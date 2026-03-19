@@ -1,5 +1,6 @@
 using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace AtMycelia.SaveSys.VScripting
@@ -16,6 +17,11 @@ namespace AtMycelia.SaveSys.VScripting
         [Tooltip("If you want this to be true, best make sure that this Command is on a persistent GameObject.")]
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
         [SerializeField] private FloatData delayBeforeLoad = new FloatData(0);
+
+        public override bool ReexecutableOnLoad => false;
+
+        private int selectedSlotIndex = -1;
+        private bool validateScheduled;
 
         protected override void RefreshVariableDataCache()
         {
@@ -37,11 +43,11 @@ namespace AtMycelia.SaveSys.VScripting
         {
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected -= OnSaveSlotSelected;
             }
         }
 
@@ -49,8 +55,6 @@ namespace AtMycelia.SaveSys.VScripting
         {
             selectedSlotIndex = index;
         }
-
-        private int selectedSlotIndex = -1;
 
         public override void OnEnter()
         {
@@ -93,9 +97,9 @@ namespace AtMycelia.SaveSys.VScripting
             bool validSlotIndex = slotIndexToGoWith >= SaveSystem.minSlotNumber;
             if (!validSlotIndex)
             {
-                string format = "LoadFromSlot Command in Block {0} of {1}'s Flowchart: slot index must be at least {2}.";
+                string format = $"LoadFromSlot Command in Block {{0}} of {{1}}'s Flowchart: slot index must be at least {2}. What was given: {3}";
                 string errorMessage = string.Format(format, this.ParentBlock.BlockName,
-                    this.gameObject.name, SaveSystem.minSlotNumber);
+                    this.gameObject.name, SaveSystem.minSlotNumber, slotIndexToGoWith);
                 Debug.LogError(errorMessage);
                 Continue();
                 return;
@@ -134,6 +138,44 @@ namespace AtMycelia.SaveSys.VScripting
                 result += $" after {delayBeforeLoad.Value} seconds";
             }
             return result;
+        }
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            if (validateScheduled)
+            {
+                return;
+            }
+            validateScheduled = true;
+            EditorApplication.delayCall += ValidateSlotIndex;
+        }
+
+        private void ValidateSlotIndex()
+        {
+            EditorApplication.delayCall -= ValidateSlotIndex;
+            validateScheduled = false;
+
+            if (this.ParentBlock == null)
+            {
+                // The parent block being null implies that the slot indexes are not done being rehydrated
+                // by Unity's serialization system, so we should hold off on validating until they are.
+                // Otherwise, the warnings we log will be misleading, suggesting that a slot index setting
+                // is screwed up when (in reality) it just hasn't been loaded by the engine yet.
+                return;
+            }
+
+            bool literalSlotIndex = slotIndex.RepresentingVar == false;
+            if (literalSlotIndex && slotIndex < SaveSystem.minSlotNumber)
+            {
+                Debug.LogWarning($"LoadFromSlot Command on {this.gameObject.name}'s {this.ParentBlock?.name}: slot index cannot be less " +
+                    $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
+                slotIndex.Value = SaveSystem.minSlotNumber;
+            }
+            else
+            {
+                //Debug.Log($"Slot index of {slotIndex.Value} is valid.");
+            }
         }
     }
 }

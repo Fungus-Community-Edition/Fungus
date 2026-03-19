@@ -43,6 +43,7 @@ namespace AtMycelia.SaveSys
                 {
                     AsyncOperation loadOperation = SceneManager.LoadSceneAsync(scene.name, LoadSceneMode.Single);
                     await loadOperation;
+                    UnityThreadUtil.RunOnMainThread(() => AnnounceSceneLoad(scene));
                 }
                 else
                 {
@@ -51,10 +52,10 @@ namespace AtMycelia.SaveSys
             }
 
             // Option 2: Items are already concrete SaveData; no codec routing/decoding.
-            IList<SaveData> itemsToApply = mainData.Items?.ToList() ?? new List<SaveData>();
+            IReadOnlyList<SaveData> itemsToApply = mainData.Items;
 
             await ApplyItemsToScene(itemsToApply);
-            async Task ApplyItemsToScene(IList<SaveData> items)
+            async Task ApplyItemsToScene(IReadOnlyList<SaveData> items)
             {
                 var appliers = SaveSystem.SaveDataAppliers;
 
@@ -68,18 +69,23 @@ namespace AtMycelia.SaveSys
                         continue;
                     }
 
-                    bool completed = false;
-                    applierEl.ApplyRange(compatible, () => completed = true);
+                    bool doneApplying = false;
+                    applierEl.ApplyRange(compatible, () => doneApplying = true);
 
-                    while (!completed)
+                    while (!doneApplying)
                     {
                         await Task.Yield();
                     }
                 }
             }
-        
+
+            SaveSysSignals.SaveLoaded(mainData);
         }
 
+        private void AnnounceSceneLoad(Scene scene)
+        {
+            SaveSysSignals.SceneLoaded?.Invoke(scene);
+        }
         protected static Scene DoNotLoad { get { return SaveSysConstants.DoNotLoad; } }
     }
 

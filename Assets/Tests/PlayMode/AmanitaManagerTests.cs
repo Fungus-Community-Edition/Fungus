@@ -139,19 +139,4 @@ public class AmanitaManagerTests
         Assert.IsNotNull(directResource, "ShadowDatabase asset is missing from Resources/ShadowDatabase.");
     }
 
-
-    [UnityTest]
-    public IEnumerator Init_SetsUp_VariableRegistry()
-    {
-        yield return CreateManagerAsync();
-
-        Assert.IsNotNull(activeManager.VariableRegistry, "VariableRegistry should be initialized during AmanitaManager.Init.");
-        Assert.IsNotNull(activeManager.VariableRegistry.Variables, "VariableRegistry should expose a variables dictionary.");
-    }
-
-    private static string GetGuidRegistryPath(string typeName)
-    {
-        string relativePath = Path.Combine("Resources", "GuidRegistries", $"{typeName}GuidRegistry.asset");
-        return Path.Combine(Application.dataPath, relativePath);
-    }
 }

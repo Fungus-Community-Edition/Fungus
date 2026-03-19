@@ -9,6 +9,7 @@ using System.Threading;
 using FullSerializer;
 using AtMycelia.FSExt;
 using Action = System.Action;
+using AtMycelia;
 
 namespace AtMycelia.SaveSys
 {
@@ -116,7 +117,7 @@ namespace AtMycelia.SaveSys
 
             debugFilePath = filePath;
             string backupFilePath = $"{filePath}{backupFileExtension}";
-
+            bool areWeOverwriting = File.Exists(filePath);
             await DoTheWriting().ConfigureAwait(false);
             async Task DoTheWriting()
             {
@@ -133,8 +134,6 @@ namespace AtMycelia.SaveSys
                 PrepForOverwriting();
                 void PrepForOverwriting()
                 {
-                    bool areWeOverwriting = File.Exists(filePath);
-
                     if (areWeOverwriting)
                     {
                         PrepBackup();
@@ -216,18 +215,27 @@ namespace AtMycelia.SaveSys
                 }
             }
 
-            AnnounceResults();
+            UnityThreadUtil.RunOnMainThread(AnnounceResults);
             void AnnounceResults()
             {
                 writeResults.FilePath = filePath;
                 writeResults.FileName = GetSaveFileName(request.SlotNumber);
-                writeResults.SaveData = request.MainState as CompositeSaveData;
+                writeResults.MainSaveData = request.MainState as CompositeSaveData;
+                writeResults.Meta = request.SaveMetaData;
                 writeResults.Success = true;
                 writeResults.ErrorMessage = string.Empty;
                 writeResults.Request = request;
 
                 AmanitaSaveWritten(writeResults);
-                SaveSysSignals.AmanitaSaveWritten.Invoke(writeResults);
+
+                if (!areWeOverwriting)
+                {
+                    SaveSysSignals.PostSaveWrittenToEmptySlot.Invoke(writeResults);
+                }
+                else
+                {
+                    SaveSysSignals.PostSaveOverwritten.Invoke(writeResults);
+                }
             }
 
             return true;
@@ -236,6 +244,8 @@ namespace AtMycelia.SaveSys
         private static fsSerializer Serializer => SaveSystem.DefaultSerializer;
         private readonly BaseEncryptionRequest encryptionRequest = new BaseEncryptionRequest();
         private readonly SaveWriteResults writeResults = new SaveWriteResults(); // Caching this for performance
+
+        public SaveWriteResults WriteResults => writeResults;
 
         private static readonly string backupFileExtension = ".bak";
         public virtual string BackupFileExtension
@@ -313,5 +323,6 @@ namespace AtMycelia.SaveSys
         bool WriteAllToDisk(IList<SaveWriteRequest> args, Action onComplete = null);
         Task<bool> WriteOneToDiskAsync(SaveWriteRequest request, CancellationToken token = default);
         Task<bool> WriteAllToDiskAsync(IList<SaveWriteRequest> args, CancellationToken token = default);
+        SaveWriteResults WriteResults { get; }
     }
 }

@@ -172,9 +172,15 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
 
             // In runtime, we only need each EventHandler to rehydrate once. Letting them do so
             // more than once can waste valuable clock cycles, what with how we're using reflection.
+            if (fChart == null)
+            {
+                fChart = GetComponent<Flowchart>();
+            }
+
             bool shouldRehydrateDuringRuntime = !didRuntimeRehydration && Application.IsPlaying(this);
             if (shouldRehydrateDuringRuntime)
             {
+                fChart.Refresh();
                 RehydrateVariables();
                 didRuntimeRehydration = true;
             }
@@ -253,7 +259,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
                 return;
             }
             var correct = fChart.GetVariableById(varToCheck.ItemId);
-            if (correct == null)
+            if (correct == null)////
             {
                 Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) with id {varToCheck.ItemId} not found.");
                 return;
@@ -264,6 +270,21 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
         private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
         protected bool didRuntimeRehydration = false;
+
+#if UNITY_EDITOR
+        public virtual string DisplayNameAboveBlock
+        {
+            get
+            {
+                var eventHandlerInfo = GetType().GetCustomAttribute<EventHandlerInfoAttribute>();
+                if (eventHandlerInfo != null)
+                {
+                    return eventHandlerInfo.EventHandlerName;
+                }
+                return GetType().Name;
+            }
+        }
+#endif
 
         protected virtual void OnDisable()
         {

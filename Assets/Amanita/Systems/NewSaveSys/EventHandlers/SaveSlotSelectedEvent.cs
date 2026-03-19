@@ -3,6 +3,7 @@ using UnityEngine;
 using VSEvent = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 
 using AtMycelia.SaveSys;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -12,30 +13,46 @@ namespace AtMycelia.Amanita.VScripting
     public class SaveSlotSelectedEvent : VSEvent
     {
         [Tooltip("The index of the selected save slot.")]
-        [VariableProperty(typeof(IntegerVariable), typeof(IntMuscariable))]
-        [SerializeReference] protected IVariable<int> saveSlotIndex;
+        [ContentTypeConstraint(typeof(int))]
+        [SerializeField] protected VariableReference saveSlotIndex = new VariableReference();
 
+        [FormerlySerializedAs("saveSlotIndex")]
+        [Tooltip("The index of the selected save slot.")]
+        protected IVariable<int> _oldSaveSlotIndex;
         protected override bool RehydrateVarInputs => true;
         protected override bool ToggleSubsOnlyInRuntime => true;
-        
+
         protected override void ToggleSubs(bool on)
         {
             base.ToggleSubs(on);
             if (on)
             {
-                SaveSysSignals.SaveSlotSelected += OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected += OnSaveSlotSelected;
             }
             else
             {
-                SaveSysSignals.SaveSlotSelected -= OnSaveSlotSelected;
+                SaveSysSignals.SlotSelected -= OnSaveSlotSelected;
             }
         }
 
+        protected override void OnEnable()
+        {
+            if (_oldSaveSlotIndex != null)
+            {
+                saveSlotIndex ??= new VariableReference
+                {
+                    Variable = _oldSaveSlotIndex
+                };
+                saveSlotIndex.Variable = _oldSaveSlotIndex;
+                _oldSaveSlotIndex = null;
+            }
+            base.OnEnable();
+        }
         protected virtual void OnSaveSlotSelected(int index)
         {
-            if (saveSlotIndex != null)
+            if (saveSlotIndex != null && saveSlotIndex.Variable != null)
             {
-                saveSlotIndex.Value = index;
+                saveSlotIndex.SetValue(index);
             }
 
             ExecuteBlock();

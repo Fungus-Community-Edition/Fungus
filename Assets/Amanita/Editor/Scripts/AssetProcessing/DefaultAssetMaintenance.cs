@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.EditorUtils
 {
@@ -21,6 +22,7 @@ namespace AtMycelia.Amanita.EditorUtils
         {
             Debug.Log($"Doing default asset maintenance...");
             EnsureDefaultTweenAdapter();
+            EnsureVariableRegistryConfig();
         }
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
@@ -37,5 +39,18 @@ namespace AtMycelia.Amanita.EditorUtils
             return adaptor;
         }
 
+        public static VariableRegistryConfig EnsureVariableRegistryConfig()
+        {
+            VariableRegistryConfig config = DefaultAmanitaAssets.VariableRegistryConfig;
+            if (config == null)
+            {
+                string pathToContainingFolder = "AtMycelia/Amanita"; // Relative to Resources
+                config = SOUtils.EnsureSOExists<VariableRegistryConfig>(pathToContainingFolder,
+                    "VariableRegistryConfig");
+            }
+
+            DefaultAmanitaAssets.VariableRegistryConfig = config;
+            return config;
+        }
     }
 }

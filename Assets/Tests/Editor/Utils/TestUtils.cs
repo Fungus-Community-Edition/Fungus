@@ -1,10 +1,20 @@
 ﻿using UnityEngine.Assertions;
 using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
+using System.Reflection;
 
 namespace AtMycelia.Amanita.EditorUtils
 {
     static public class TestUtils
     {
+        public static void ResetFlowchartWindowSingleton()
+        {
+            FieldInfo field = typeof(FlowchartWindow)
+                .GetField("_s", BindingFlags.Static | BindingFlags.NonPublic);
+
+            field?.SetValue(null, null);
+        }
+
         /// <summary>
         /// Loads a prefab from the resources folder, optionally waiting a preset amount of time for it to complete or until says it is done.
         /// </summary>

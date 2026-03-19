@@ -34,6 +34,13 @@ namespace AtMycelia.Amanita.VScripting
                 // owner referenced
                 RefreshOwner();
                 IVariable result = null;
+
+                if (itemId == Muscariable.InvalidID)
+                {
+                    //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
+                    return null;
+                }
+
                 if (VarOwner != null)
                 {
                     result = VarOwner.GetVariable(itemId);
@@ -147,6 +154,25 @@ namespace AtMycelia.Amanita.VScripting
                     ourVar.BoxedValue = val;
                 }
             }
+        }
+    }
+
+    [System.Serializable]
+    public class VariableReference<T> : VariableReference
+    {
+        public new IVariable<T> Variable
+        {
+            get { return base.Variable as IVariable<T>; }
+            set { base.Variable = value; }
+        }
+
+        public T GetValue()
+        {
+            return base.GetValue<T>();
+        }
+        public void SetValue(T val)
+        {
+            base.SetValue(val);
         }
     }
 }

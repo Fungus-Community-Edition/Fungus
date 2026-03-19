@@ -70,7 +70,7 @@ namespace AtMycelia.SaveSys
         private static IEnumerator InitAltInstallerAfterDelay()
         {
             yield return DoWait();
-            IEnumerator DoWait()
+            static IEnumerator DoWait()
             {
                 float timer = 0f;
                 while (timer < _installDelaySeconds)

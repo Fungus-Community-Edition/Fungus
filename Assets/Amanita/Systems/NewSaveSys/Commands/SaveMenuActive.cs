@@ -17,11 +17,6 @@ namespace AtMycelia.SaveSys.UI.VScripting
 			Toggle
 		}
 
-		protected virtual void Awake()
-		{
-			saveMenu = FindFirstObjectByType<SaveMenuManager>();
-		}
-
 		public override void OnEnter()
 		{
 			base.OnEnter();
@@ -29,13 +24,13 @@ namespace AtMycelia.SaveSys.UI.VScripting
 			switch (state)
 			{
 				case SaveMenuState.Open:
-					saveMenu.Open(null);
+					SaveMenu.Open(null);
 					break;
 				case SaveMenuState.Close:
-					saveMenu.Close(null);
+					SaveMenu.Close(null);
 					break;
 				case SaveMenuState.Toggle:
-					saveMenu.Toggle();
+					SaveMenu.Toggle();
 					break;
 				case SaveMenuState.Null:
 					string errorMessage = "SaveMenuActive Command: SaveMenuState is set to Null, so no action will be taken.";
@@ -48,12 +43,24 @@ namespace AtMycelia.SaveSys.UI.VScripting
 			Continue();
 		}
 
+		private static SaveMenuManager SaveMenu
+		{
+			get
+			{
+				if (saveMenu == null)
+				{
+					saveMenu = FindFirstObjectByType<SaveMenuManager>();
+				}
+				return saveMenu;
+			}
+		}
+
 		private static SaveMenuManager saveMenu;
 
 		public override string GetSummary()
 		{
 			string result = "Save Menu: ";
-			if (saveMenu != null)
+			if (SaveMenu != null)
 			{
 				switch (state)
 				{
@@ -76,7 +83,7 @@ namespace AtMycelia.SaveSys.UI.VScripting
 			}
 			else
 			{
-				result = "Error: No SaveMenuManager found in AmanitaManager.";
+				result = "Error: No SaveMenuManager found in the scene.";
 			}
 			return result;
 		}

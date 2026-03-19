@@ -14,20 +14,21 @@ namespace AtMycelia.Amanita.VScripting
     /// </summary>
     public sealed class VariableRegistry
     {
-        private readonly AmanitaManager _manager;
+        private readonly Func<IReadOnlyList<VariableSourceAsset>> _globalSourcesProvider;
 
         // Master dictionary of all variables
-        private Dictionary<string, IVariable> _vars = new();
+        private Dictionary<string, IVariable> _vars = new Dictionary<string, IVariable>();
 
         // Secondary index: contentType -> dict of vars
-        private Dictionary<Type, Dictionary<string, IVariable>> _varsByType = new();
+        private Dictionary<Type, Dictionary<string, IVariable>> _varsByType =
+            new Dictionary<Type, Dictionary<string, IVariable>>();
 
         public IReadOnlyDictionary<string, IVariable> Variables => _vars;
         public event Action RegistryChanged;
 
-        public VariableRegistry(AmanitaManager manager)
+        public VariableRegistry(Func<IReadOnlyList<VariableSourceAsset>> globalSourcesProvider)
         {
-            _manager = manager;
+            _globalSourcesProvider = globalSourcesProvider ?? (() => emptySources);
             Rebuild();
 #if UNITY_EDITOR
             Selection.selectionChanged += OnSelectionChanged;
@@ -56,12 +57,8 @@ namespace AtMycelia.Amanita.VScripting
                 foreach (var toRegister in localSource.Variables)
                 {
                     Register(toRegister.Key, toRegister);
-                    // For the sake of the editor code, we'll rehydrate the owners here
-                    // and wherever else we register variables.
-                    // We can't assign the owner of legacy vars, given how they're always supposed
-                    // to be tied to their Flowchart.
                     bool isLegacyVariable = toRegister is Variable;
-                    if (!isLegacyVariable) 
+                    if (!isLegacyVariable)
                     {
                         toRegister.Owner = localSource;
                     }
@@ -74,9 +71,9 @@ namespace AtMycelia.Amanita.VScripting
 
                 var type = toRegister.ContentType;
                 newVarsByType.TryGetValue(type, out var dictForContentType);
-                bool weHaveDictForThisContentType = dictForContentType != null;
+                bool weHaveDictForContentType = dictForContentType != null;
 
-                if (!weHaveDictForThisContentType)
+                if (!weHaveDictForContentType)
                 {
                     dictForContentType = new Dictionary<string, IVariable>();
                     newVarsByType[type] = dictForContentType;
@@ -85,7 +82,11 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             // Other Flowcharts
-            var cachedFcs = AmanitaManager.S.FlowchartsInScene;
+            var amanitaManager = AmanitaManager.S;
+            IReadOnlyList<Flowchart> cachedFcs = amanitaManager != null && amanitaManager.FlowchartsInScene != null
+                ? amanitaManager.FlowchartsInScene
+                : Array.Empty<Flowchart>();
+
             foreach (var otherChart in cachedFcs.Where(fc => fc != null && !ReferenceEquals(fc, localSource)))
             {
                 foreach (var toRegister in otherChart.Variables)
@@ -99,13 +100,19 @@ namespace AtMycelia.Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = otherChart;
                     }
                 }
             }
 
             // Globals
-            foreach (var source in _manager.GlobalVariableSources)
+            IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider();
+            if (globalSources == null)
+            {
+                globalSources = emptySources;
+            }
+
+            foreach (var source in globalSources)
             {
                 if (source == null) continue;
                 foreach (var toRegister in source.Variables)
@@ -115,7 +122,7 @@ namespace AtMycelia.Amanita.VScripting
                     bool isLegacyVariable = toRegister is Variable;
                     if (!isLegacyVariable)
                     {
-                        toRegister.Owner = localSource;
+                        toRegister.Owner = source;
                     }
                 }
             }
@@ -180,12 +187,13 @@ namespace AtMycelia.Amanita.VScripting
                     }
                 }
                 result = merged;
-                
+
             }
             return result;
         }
 
-        static readonly ReadOnlyDictionary<string, IVariable> emptyDict = 
+        private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
+        private static readonly ReadOnlyDictionary<string, IVariable> emptyDict =
             new ReadOnlyDictionary<string, IVariable>(new Dictionary<string, IVariable>());
     }
 }
