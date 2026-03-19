@@ -38,7 +38,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public Flowchart Flowchart => _fcContext?.Flowchart;
         private FlowchartContext _fcContext;
 
-        
         protected virtual void ToggleSubs(bool on)
         {
             _eventBinder.Toggle(on);

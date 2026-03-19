@@ -161,10 +161,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             Flowchart previous = activeFlowchart;
             activeFlowchart = flowchart;
-            if (activeFlowchart != null)
-            {
-                Debug.Log($"Selected flowchart: {activeFlowchart.name} (uid: {activeFlowchart.UniqueId})");
-            }
             UpdateSelectionCache(flowchart);
             SyncSelectionsFromFlowchart(flowchart);
             SelectedFlowchartChanged(previous, flowchart);

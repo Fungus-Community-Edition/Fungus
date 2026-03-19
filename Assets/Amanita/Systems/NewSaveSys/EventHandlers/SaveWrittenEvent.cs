@@ -13,6 +13,7 @@ namespace AtMycelia.Amanita.SaveSys.VScripting
         [SerializeField] private ResponseTiming responseTiming = ResponseTiming.After;
 
         [Tooltip("The slot number of the save file will be assigned to the IntMuscariable assigned here (if any).")]
+        [ContentTypeConstraint(typeof(int))]
         [SerializeField] private VariableReference _slotNumber;
 
         public enum ResponseTiming
