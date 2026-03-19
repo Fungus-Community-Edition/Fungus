@@ -301,9 +301,9 @@ namespace SaveSystemTests
                 Assert.IsNotNull(r.FilePath);
                 Assert.IsNotNull(r.FileName);
             }
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             await saveWriter.WriteOneToDiskAsync(writeArgs);
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsTrue(responded);
         }
 
@@ -312,10 +312,10 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             await saveWriter.WriteOneToDiskAsync(writeArgs);
             await saveWriter.WriteOneToDiskAsync(writeArgs);
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsTrue(responded);
         }
 
@@ -324,8 +324,8 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -334,9 +334,9 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<NullReferenceException>(() => saveWriter.WriteOneToDiskAsync(null));
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -353,9 +353,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentNullException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -372,9 +372,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = SaveDirectoryType.DataPath
             };
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -391,9 +391,9 @@ namespace SaveSystemTests
                 SaveMetaData = new SaveMetaData(),
                 BaseSaveDirectory = (SaveDirectoryType)999
             };
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<ArgumentException>(() => saveWriter.WriteOneToDiskAsync(bad));
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 
@@ -402,9 +402,9 @@ namespace SaveSystemTests
         {
             bool responded = false;
             void Handler(SaveWriteResults r) => responded = true;
-            SaveSysSignals.SaveWrittenToEmptySlot += Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot += Handler;
             Assert.ThrowsAsync<NullReferenceException>(() => saveWriter.WriteAllToDiskAsync(null));
-            SaveSysSignals.SaveWrittenToEmptySlot -= Handler;
+            SaveSysSignals.PostSaveWrittenToEmptySlot -= Handler;
             Assert.IsFalse(responded);
         }
 

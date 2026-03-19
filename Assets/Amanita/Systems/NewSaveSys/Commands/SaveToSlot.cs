@@ -2,6 +2,7 @@ using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using System.Collections;
+using UnityEditor;
 
 namespace AtMycelia.SaveSys.VScripting
 {
@@ -159,10 +160,31 @@ namespace AtMycelia.SaveSys.VScripting
         protected override void OnValidate()
         {
             base.OnValidate();
-            bool literalSlotIndex = slotIndex.RepresentingVar == false;
-            if (literalSlotIndex && slotIndex < SaveSystem.minSlotNumber)
+
+            if (!gameObject.scene.IsValid())
             {
-                Debug.LogWarning($"SaveToSlot Command on {this.gameObject.name}: slot index cannot be less " +
+                return;
+            }
+
+            EditorApplication.delayCall += ValidateSlotIndex;
+        }
+
+        private void ValidateSlotIndex()
+        {
+            if (this == null || slotIndex == null || ParentBlock == null)
+            {
+                return;
+            }
+
+            if (slotIndex.RepresentingVar)
+            {
+                return;
+            }
+
+            if (slotIndex.Value < SaveSystem.minSlotNumber)
+            {
+                Debug.LogWarning($"SaveToSlot Command on {gameObject.name}'s " +
+                    $"{ParentBlock.BlockName} Block, index {CommandIndex}: slot index cannot be less " +
                     $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
                 slotIndex.Value = SaveSystem.minSlotNumber;
             }

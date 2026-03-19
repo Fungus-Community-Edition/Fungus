@@ -2,6 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Scripting.APIUpdating;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -204,12 +207,28 @@ namespace AtMycelia.Amanita.VScripting
 
         [SerializeField] protected T value;
 
+        private bool ShouldBlockValueAssignment()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                return EditorUtility.IsPersistent(this) || PrefabUtility.IsPartOfPrefabAsset(this);
+            }
+#endif
+            return false;
+        }
+
         // Explicit IVariable implementation for object-typed access
         object IVariable.BoxedValue
         {
             get => value; // boxes T correctly (works for structs like Vector2)
             set
             {
+                if (ShouldBlockValueAssignment())
+                {
+                    return;
+                }
+
                 if (value != null && ContentType.IsAssignableFrom(value.GetType()))
                 {
                     this.value = (T)value;
@@ -225,6 +244,11 @@ namespace AtMycelia.Amanita.VScripting
             get => value;
             set
             {
+                if (ShouldBlockValueAssignment())
+                {
+                    return;
+                }
+
                 if (value is T || value == null)
                 {
                     this.value = (T)value;
@@ -245,11 +269,13 @@ namespace AtMycelia.Amanita.VScripting
             }
             set
             {
-                if (!Application.isPlaying)
+                if (ShouldBlockValueAssignment())
                 {
-                    this.value = value;
-                    baseVal = value;
+                    return;
                 }
+
+                this.value = value;
+                baseVal = value;
             }
         }
 

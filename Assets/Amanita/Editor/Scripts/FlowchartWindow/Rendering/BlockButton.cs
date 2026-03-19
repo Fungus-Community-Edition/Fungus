@@ -1,4 +1,5 @@
 using System;
+using AtMycelia.Amanita.VScripting.EditorUtils;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
@@ -15,6 +16,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
     {
         public static readonly string BaseClass = "flowchartBlock";
         public static readonly string SelectedClass = "flowchartBlockSelected";
+        private static readonly string EventHandlerHiddenClass = "block-event-handler-label-hidden";
 
         private const float MinWidth = 60f;
         private const float MaxWidth = 280f;
@@ -81,7 +83,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             _clickable = _templateInstance.Q<Button>("ClickableArea");
             _nameLabel = _templateInstance.Q<UitkLabel>("BlockName");
-            Validate(_clickable, _nameLabel);
+            _eventHandlerLabel = _templateInstance.Q<UitkLabel>("EventHandlerName");
+            Validate(_clickable, _nameLabel, _eventHandlerLabel);
 
             _clickable.focusable = false;
 
@@ -98,8 +101,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private VisualElement _templateInstance;
         private Button _clickable;
         private UitkLabel _nameLabel;
+        private UitkLabel _eventHandlerLabel;
 
-        private void Validate(Button clickable, UitkLabel nameLabel)
+        private void Validate(Button clickable, UitkLabel nameLabel, UitkLabel eventHandlerLabel)
         {
             if (clickable == null)
             {
@@ -109,13 +113,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             {
                 throw new ArgumentNullException(nameof(nameLabel));
             }
-        }
-
-        public void InitializeForMeasurement(VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
-            StyleSheet selectedStyleSheet)
-        {
-            InitializeInternal(null, blockTemplate, baseStyleSheet, selectedStyleSheet, false);
-            ApplyBaseFontSize();
+            if (eventHandlerLabel == null)
+            {
+                throw new ArgumentNullException(nameof(eventHandlerLabel));
+            }
         }
 
         public VisualElement InputTarget => _clickable != null ? _clickable : this;
@@ -129,8 +130,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
         }
 
-        public Vector2 MeasureTextSize(string text, float width, MeasureMode widthMode, float height,
-            MeasureMode heightMode)
+        public Vector2 MeasureTextSize(string text, float width, MeasureMode widthMode, 
+            float height, MeasureMode heightMode)
         {
             if (_nameLabel == null)
             {
@@ -150,6 +151,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             _block = block;
             UpdateBlockName();
+            UpdateEventHandlerName();
             UpdateFont(zoom);
             UpdateSize();
             UpdateColors();
@@ -165,6 +167,30 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
             _nameLabel.text = SafeBlockName(_block);
         }
+
+        private void UpdateEventHandlerName()
+        {
+            if (_eventHandlerLabel == null || _block == null)
+            {
+                return;
+            }
+
+            var handler = _block._EventHandler;
+            if (handler == null)
+            {
+                _eventHandlerLabel.text = string.Empty;
+                _eventHandlerLabel.EnableInClassList(EventHandlerHiddenClass, true);
+                return;
+            }
+
+            var info = EventHandlerEditor.GetEventHandlerInfo(handler.GetType());
+            string handlerName = handler.DisplayNameAboveBlock;
+
+            _eventHandlerLabel.text = string.Format(_eventHandlerLabelFormat, handlerName);
+            _eventHandlerLabel.EnableInClassList(EventHandlerHiddenClass, string.IsNullOrEmpty(handlerName));
+        }
+
+        private static readonly string _eventHandlerLabelFormat = "[{0}]";
 
         private void ApplyStyles(StyleSheet baseStyleSheet, StyleSheet selectedStyleSheet)
         {
@@ -183,14 +209,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             _clickable.EnableInClassList(SelectedClass, false);
 
             GradientDrawer.AttachVerticalGradient(_clickable, GradientTop, GradientBottom);
-        }
-
-        private void ApplyBaseFontSize()
-        {
-            if (_nameLabel != null)
-            {
-                _nameLabel.style.fontSize = Mathf.RoundToInt(BaseFontSize);
-            }
         }
 
         private void UpdateFont(float zoom)
@@ -234,12 +252,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
             float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, minTextWidth);
 
-            Vector2 wrappedSize = _nameLabel.MeasureTextSize(
-                _nameLabel.text,
-                textWidthConstraint,
-                MeasureMode.AtMost,
-                float.NaN,
-                MeasureMode.Undefined);
+            Vector2 wrappedSize = _nameLabel.MeasureTextSize(_nameLabel.text, textWidthConstraint, MeasureMode.AtMost, 
+                float.NaN, MeasureMode.Undefined);
 
             if (IsInvalidSize(wrappedSize))
             {
@@ -362,7 +376,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         public virtual Color BackgroundColor
         {
-            get => _clickable != null ? _clickable.style.backgroundColor.value : default;
+            get => _clickable != null ? 
+                _clickable.style.backgroundColor.value : 
+                default;
             set
             {
                 if (_clickable != null)
@@ -397,6 +413,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             RemoveFromHierarchy();
             _clickable = null;
             _nameLabel = null;
+            _eventHandlerLabel = null;
             _block = null;
         }
 
@@ -418,7 +435,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         private static Color ChooseTextColor(Color background)
         {
             float luminance = 0.299f * background.r + 0.587f * background.g + 0.114f * background.b;
-            return luminance >= 0.5f ? Color.black : Color.white;
+            return luminance >= 0.5f ? 
+                Color.black : 
+                Color.white;
         }
     }
 }

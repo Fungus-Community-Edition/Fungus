@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2af387304e4b454b9ce8b815799cad0, type: 3}
   m_Name: AmanitaEditorResources
   m_EditorClassIdentifier: 
-  updateOnReloadScripts: 0
   add:
     free: {fileID: 2800000, guid: 24a867d6b4cdda04cb3aa3350f9ec7d0, type: 3}
     pro: {fileID: 2800000, guid: 4e43c476b4a7a49a08c37378fb01ce99, type: 3}
@@ -67,3 +66,4 @@ MonoBehaviour:
   process_node_on:
     free: {fileID: 2800000, guid: c2dceb780784240ccbe8d3cde89f7671, type: 3}
     pro: {fileID: 0}
+  _fcwConfig: {fileID: 11400000, guid: 3ed56e74834b09b4d9e79daefd8f8723, type: 2}

@@ -15,6 +15,8 @@ using System.Collections;
 using UnityEngine.Audio;
 using Lorekeeper;
 using System.Linq;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace VScriptingTests.VariableRows
 {
@@ -41,6 +43,8 @@ namespace VScriptingTests.VariableRows
         [SetUp]
         public void SetUp()
         {
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
             Undo.ClearAll();
             Flowchart.ResetStaticsForTest();
 
@@ -132,7 +136,9 @@ namespace VScriptingTests.VariableRows
         public IEnumerator VariableRowChange_PersistsAndSupportsUndoRedo(
             [ValueSource(nameof(VariableRowCases))] VariableRowTestCase testCase)
         {
-            var variable = testCase.CreateVariable(_flowchart);
+            yield return null;
+
+            IVariable variable = testCase.CreateVariable(_flowchart);
             yield return AssertValueChangePersists(variable, testCase.TargetValue, variable.ContentType);
         }
 

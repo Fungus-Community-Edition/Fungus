@@ -16,9 +16,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        public static FlowchartWindow S => _s;
-        private static FlowchartWindow _s;
-
         /// <summary>
         /// Opens the FlowchartWindow, or focuses it if it's already open. Best use this instead
         /// of EditorWindow.GetWindow directly, since that would skip some important setup.
@@ -26,8 +23,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         [MenuItem("Window/Atelier Mycelia/Amanita/Flowchart Window")]
         public static void BringUp()
         {
-            EnsureConfigAssetInProject();
-
             FlowchartWindow wnd = _s != null ?
                 _s :
                 GetWindow<FlowchartWindow>();
@@ -35,78 +30,29 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             wnd.minSize = Config.WindowMinSize;
         }
 
-        static void EnsureConfigAssetInProject()
-        {
-            Config = SOUtils.EnsureSOExists<FlowchartWindowConfig>(
-                _configSubfolderPath,
-                _configAssetName);
-        }
+        public static FlowchartWindow S => _s;
+        private static FlowchartWindow _s;
 
-        public static FlowchartWindowConfig Config { get; private set; }
-        private static readonly string _configSubfolderPath = "AtMycelia/Amanita";
-        private static readonly string _configAssetName = "FlowchartWindowConfig";
-
-        public AmanitaClipboard Clipboard { get; private set; }
+        public static FlowchartWindowConfig Config => AmanitaEditorResources.FcwConfig;
 
         public Flowchart Flowchart => _fcContext?.Flowchart;
+        private FlowchartContext _fcContext;
 
-        BlockClipboard IFlowchartHostCore.Clipboard
-        {
-            get => Clipboard?.BlockClipboard;
-            set
-            {
-                CommandClipboard commandClipboard = Clipboard?.CommandClipboard ?? new CommandClipboard();
-                Clipboard = new AmanitaClipboard(value, commandClipboard);
-            }
-        }
-
-        bool IFlowchartHostCore.HasClipboard => Clipboard?.BlockClipboard != null &&
-                                                Clipboard.BlockClipboard.HasEntries;
+        
         protected virtual void ToggleSubs(bool on)
         {
-            _blockModuleDispatcher.ToggleSubs(on);
-            _mouseModuleDispatcher.ToggleSubs(on);
-
-            if (on)
-            {
-                EditorSelectionTracker.SelectedFlowchartChanged += OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart += _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned += _moduleDispatcher.NotifyWindowPanned;
-
-                EditorSceneManager.sceneOpened += OnSceneOpened;
-                EditorSceneManager.sceneClosed += OnSceneClosed;
-                EditorSceneManager.sceneLoaded += OnSceneLoaded;
-
-                AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
-                CommandSignals.CommandSelected += _moduleDispatcher.NotifyCommandSelected;
-                FlowchartWindowSignals.ZoomChanged += OnZoomChanged;
-
-            }
-            else
-            {
-                EditorSelectionTracker.SelectedFlowchartChanged -= OnSelectedFlowchartChanged;
-                FlowchartWindowSignals.ChangedFlowchart -= _moduleDispatcher.NotifyFlowchartChanged;
-                FlowchartWindowSignals.WindowPanned -= _moduleDispatcher.NotifyWindowPanned;
-
-                EditorSceneManager.sceneOpened -= OnSceneOpened;
-                EditorSceneManager.sceneClosed -= OnSceneClosed;
-                EditorSceneManager.sceneLoaded -= OnSceneLoaded;
-
-                AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
-                CommandSignals.CommandSelected -= _moduleDispatcher.NotifyCommandSelected;
-                FlowchartWindowSignals.ZoomChanged -= OnZoomChanged;
-            }
+            _eventBinder.Toggle(on);
         }
 
-        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            ResetActiveFlowchartSelections();
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
             _graphicsRenderer?.RefreshNow();
         }
 
         private void OnSceneClosed(Scene scene)
         {
-            ResetActiveFlowchartSelections();
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
             _graphicsRenderer?.RefreshNow();
         }
 
@@ -193,50 +139,33 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             return (min + max) * 0.5f;
         }
 
-        private readonly BlockModuleDispatcher _blockModuleDispatcher = new BlockModuleDispatcher();
-        private readonly MouseModuleDispatcher _mouseModuleDispatcher = new MouseModuleDispatcher();
-        private readonly FlowchartModuleDispatcher _moduleDispatcher = new FlowchartModuleDispatcher();
+        private readonly FcwModuleHost _moduleHost = new FcwModuleHost();
+        
+        public FlowchartWindow()
+        {
+            _selectionCoordinator = new FcwSelectionCoordinator();
+            _playModeCoordinator = new FcwPlayModeCoordinator();
+            _teardownCoordinator = new FcwTeardownCoordinator();
+            _clipboardCoordinator = new FcwClipboardCoordinator();
+            _refreshCoordinator = new FcwRefreshCoordinator();
+            _eventBinder = new FcwEventBinder(_moduleHost, OnSelectedFlowchartChanged,
+                OnSceneOpened, OnSceneClosed,
+                OnSceneLoaded, OnPlayModeStateChanged,
+                OnZoomChanged);
+        }
+
+        private readonly FcwSelectionCoordinator _selectionCoordinator;
+        private readonly FcwPlayModeCoordinator _playModeCoordinator;
+        private readonly FcwTeardownCoordinator _teardownCoordinator;
+        private readonly FcwClipboardCoordinator _clipboardCoordinator;
+        private readonly FcwRefreshCoordinator _refreshCoordinator;
+        private readonly FcwEventBinder _eventBinder;
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            if (_fcContext == null)
-            {
-                return;
-            }
-
-            Flowchart resolved;
-            bool currentWasRemovedWhileWeHavePrevious = current == null && previous != null;
-            if (currentWasRemovedWhileWeHavePrevious)
-            {
-                resolved = previous;
-            }
-            else
-            {
-                resolved = current == null ?
-                    FindFirstObjectByType<Flowchart>() :
-                    current;
-            }
-
-            bool changedToDiffFlowchart = !ReferenceEquals(previous, resolved); // Just in case.
-            if (!changedToDiffFlowchart)
-            {
-                return;
-            }
-
-            if (previous != null)
-            {
-                previous.ClearSelectedBlocks();
-                previous.ClearSelectedCommands();
-            }
-            _fcContext.Flowchart = resolved;
-            UpdateLabels();
-            FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
-        }
-
-        private void UpdateLabels()
-        {
-            _fcNameLabel.text = $"FC: {FcContext.Flowchart.name}";
-            _zoomAmountLabel.text = $"Zoom: {Math.Round(FcContext.Flowchart.Zoom * 100)}%";
+            _selectionCoordinator.HandleSelectionChanged(previous, current,
+                ref _fcContext, _fcNameLabel,
+                _zoomAmountLabel);
         }
 
         public FlowchartContext FcContext => _fcContext;
@@ -253,132 +182,53 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             ToggleSubs(true);
         }
 
-        protected virtual void OnDisable()
-        {
-            Debug.Log("FlowchartWindowUitk OnDisable");
-        }
-
         public void CreateGUI()
         {
-            #region Clear dispatchers
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
-            #endregion
+            _moduleHost.ClearModules();
+            Clipboard = _clipboardCoordinator.EnsureClipboard(Clipboard, this);
 
-            #region Prep the root
-            UxmlRoot = m_VisualTreeAsset.Instantiate();
-            rootVisualElement.Add(UxmlRoot);
-            UxmlRoot.pickingMode = PickingMode.Position; 
-            // ^So that PointerUp events trigger properly when clicking on empty space.
-            // Sub-elements can override this to receive events as normal.
-            UxmlRoot.SetPadding(0);
-            UxmlRoot.SetMargin(0);
-            UxmlRoot.style.flexGrow = 1f;
-            UxmlRoot.style.width = Length.Percent(100);
-            UxmlRoot.style.height = Length.Percent(100);
-            // ^To take up the full space of the window
-            #endregion
+            FcwUiBuildRequest request = new FcwUiBuildRequest(rootVisualElement, m_VisualTreeAsset, ActiveFlowchart,
+                MissingOverlay, Clipboard, Config,
+                _blockDrawer, this, position,
+                _moduleHost, _inputDetector);
 
-            #region For when there's no Flowchart to show
-            // If we have no Flowchart to look at, we cannot proceed. Show a label and return.
-            if (ActiveFlowchart == null)
+            FcwUiBuildResult result = _uiBuilder.Build(request);
+            UxmlRoot = result.UxmlRoot; 
+            // ^Need to fetch this before the rest of the results, since it's needed for things
+            // like the Missing Flowchart Overlay.
+
+            if (!result.HasFlowchart)
             {
-                MissingOverlay.Show(UxmlRoot);
                 return;
             }
-            #endregion
 
-            MissingOverlay.Hide();
-
-            PrepClipboard();
-            void PrepClipboard()
+            FetchFromResults();
+            void FetchFromResults()
             {
-                Clipboard ??= new AmanitaClipboard(this);
-            }
+                Clipboard = result.Clipboard;
+                _fcContext = result.FlowchartContext;
+                _fcNameLabel = result.FcNameLabel;
+                _zoomAmountLabel = result.ZoomLabel;
 
-            PrepFcContext();
-            void PrepFcContext()
-            {
-                _fcContext = new FlowchartContext();
-                _fcContext.Flowchart = ActiveFlowchart;//
-                if (_fcContext.Flowchart == null)
-                {
-                    _fcContext.Flowchart = FindFirstObjectByType<Flowchart>();
-                    return;
-                }
-                _fcContext.FcHost = this;
-                _fcContext.Position = new Rect(0, 0, position.width, position.height);
-                _fcContext.GridObjectSnap = 10f;
-            }
-
-            PrepFcNameLabel();
-            void PrepFcNameLabel()
-            {
-                string labelText = "No Flowchart Selected";
-                if (_fcContext.Flowchart != null)
-                {
-                    labelText = $"FC: {_fcContext.Flowchart.name}";
-                }
-                _fcNameLabel = UxmlRoot.Q<UitkLabel>("FcNameLabel");
-                _fcNameLabel.text = labelText;
-            }
-
-            PrepZoomLabel();
-            void PrepZoomLabel()
-            {
-                _zoomAmountLabel = UxmlRoot.Q<UitkLabel>("ZoomLabel");
-                var newZoom = _fcContext.Flowchart != null ? 
-                    _fcContext.Flowchart.Zoom : 
-                    1f;
-                OnZoomChanged(newZoom);
-            }
-
-            EnsureConfigAssetInProject(); // Since it can get nulled out during assembly reload
-
-            CreateModules();
-            void CreateModules()
-            {
-                _graphicsRenderer = new FcWindowGraphicsRenderer(_fcContext, Config.GridDrawConfig, 
-                    _blockDrawer);
-                _viewportManager = new MainViewportManager(_fcContext, Config.MinZoom, 
-                    Config.MaxZoom);
-
-                _contextMenuManager = new ContextMenuManager();
-                _variablesPanel = new FcWindowVariablesPanel();
-            }
-
-            RegisterModules();
-            void RegisterModules()
-            {
-                RegisterModule(_graphicsRenderer);
-                RegisterModule(_viewportManager);
-
-                RegisterModule(_contextMenuManager);
-                RegisterModule(_inputDetector);
-                RegisterModule(_variablesPanel);
-            }
-
-            AttachUiElements();
-            void AttachUiElements()
-            {
-                UxmlRoot.Add(_graphicsRenderer);
-                UxmlRoot.Add(_fcNameLabel);
-            }
-
-            InitSubmodules();
-            void InitSubmodules()
-            {
-                _graphicsRenderer.Initialize(this);
-                _viewportManager.Initialize(this);
-
-                _inputDetector.Initialize(this);
-                _contextMenuManager.Initialize(this);
-                _variablesPanel.Initialize(this);
+                _graphicsRenderer = result.GraphicsRenderer;
+                _viewportManager = result.ViewportManager;
+                _contextMenuManager = result.ContextMenuManager;
+                _variablesPanel = result.VariablesPanel;
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
         }
+
+        bool IFlowchartHostCore.HasClipboard => _clipboardCoordinator.HasClipboard(Clipboard);
+        BlockClipboard IFlowchartHostCore.Clipboard
+        {
+            get => _clipboardCoordinator.GetBlockClipboard(Clipboard);
+            set => Clipboard = _clipboardCoordinator.SetBlockClipboard(Clipboard, value);
+        }
+
+        public AmanitaClipboard Clipboard { get; private set; }
+
+        private readonly FcwUiBuilder _uiBuilder = new FcwUiBuilder();
 
         /// <summary>
         /// The functionally-true root, gotten from the uxml. We use this as the parent for all of our UI elements,
@@ -388,32 +238,33 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnZoomChanged(float newZoom)
         {
-            _zoomAmountLabel.text = $"Zoom: {Math.Round(newZoom * 100)}%";
+            _selectionCoordinator.UpdateZoom(_zoomAmountLabel, newZoom);
         }
 
-        private void RegisterModule(IFlowchartWindowModule module)
+        private Flowchart ActiveFlowchart
         {
-            if (module == null)
+            get
             {
-                return;
+                Flowchart result = EditorSelectionTracker.ActiveFlowchart;
+
+                if (result == null)
+                {
+                    result = EditorSelectionTracker.LastActiveFlowchart;
+                }
+
+                return result;
             }
-
-            _moduleDispatcher.AddModule(module);
-            _blockModuleDispatcher.AddModule(module);
-            _mouseModuleDispatcher.AddModule(module);
         }
-
-        private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
         private MissingFlowchartOverlay _missingOverlay;
         private UitkLabel _fcNameLabel, _zoomAmountLabel;
 
         #region Submodules
-        private FcWindowGraphicsRenderer _graphicsRenderer;
+        private FcwGraphicsRenderer _graphicsRenderer;
         private MainViewportManager _viewportManager;
         private readonly InputSignalModule _inputDetector = new InputSignalModule();
 
         private ContextMenuManager _contextMenuManager;
-        private FcWindowVariablesPanel _variablesPanel;
+        private FcwVariablesPanel _variablesPanel;
         #endregion
         public InputSignalModule InputSignals => _inputDetector;
 
@@ -442,27 +293,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         void OnRefreshButtonClicked()
         {
-            Flowchart flowchart = FindFirstObjectByType<Flowchart>();
-            if (ActiveFlowchart != null)
-            {
-                flowchart = ActiveFlowchart;
-                Selection.activeGameObject = flowchart.gameObject;
-            }
-
-            if (flowchart)
-            {
-                Debug.Log("Flowchart found on refresh.");
-                MissingOverlay.Hide();
-                CreateGUI();
-            }
-            else
-            {
-                Debug.LogWarning("Flowchart still not found on refresh.");
-            }
-
+            _refreshCoordinator.HandleRefresh(() => ActiveFlowchart, MissingOverlay, CreateGUI);
         }
-
-        private FlowchartContext _fcContext;
 
         private void OnGUI()
         {
@@ -481,75 +313,64 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             // right-clicking the scene in the hierarchy and selecting "Discard changes".
             // In that case, the active Flowchart may be destroyed without us knowing,
             // so we need to check validity and update accordingly.
-            EnsureFlowchartForScene();
-            ResetActiveFlowchartSelections();
+            EnsureFlowchartForScene(_fcContext, rootVisualElement, MissingOverlay, _graphicsRenderer);
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
             _graphicsRenderer?.RefreshNow();
         }
 
-        private void ResetActiveFlowchartSelections()
+        private void ResetActiveFlowchartSelections(Func<Flowchart> activeFlowchartGetter)
         {
-            if (ActiveFlowchart != null)
+            if (activeFlowchartGetter == null)
             {
-                ActiveFlowchart.ClearSelectedBlocks();
-                ActiveFlowchart.ClearSelectedCommands();
+                return;
             }
+
+            Flowchart flowchart = activeFlowchartGetter();
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            flowchart.ClearSelectedBlocks();
+            flowchart.ClearSelectedCommands();
         }
 
-        private void EnsureFlowchartForScene()
+        private void EnsureFlowchartForScene(FlowchartContext context, VisualElement rootVisualElement,
+            MissingFlowchartOverlay missingOverlay, FcwGraphicsRenderer graphicsRenderer)
         {
-            if (_fcContext == null)
+            if (context == null)
             {
                 return; // UI not built yet; CreateGUI will initialize.
             }
 
-            if (_fcContext.Flowchart != null)
+            if (context.Flowchart != null)
             {
                 return; // Still valid.
             }
 
-            Flowchart fallback = FindFirstObjectByType<Flowchart>();
-            if (fallback == null)
+            Debug.Log("Seeking new flowchart for scene...");
+
+            Flowchart resolved = EditorSelectionTracker.ResolveActiveFlowchart();
+            if (resolved == null)
             {
-                MissingOverlay.Show(rootVisualElement);
+                missingOverlay?.Show(rootVisualElement);
                 return;
             }
 
-            MissingOverlay.Hide();
-            Flowchart previous = _fcContext.Flowchart;
-            _fcContext.Flowchart = fallback;
-            _graphicsRenderer?.RefreshNow();
-            if (!ReferenceEquals(previous, fallback))
+            missingOverlay?.Hide();
+            Flowchart previous = context.Flowchart;
+            context.Flowchart = resolved;
+            graphicsRenderer?.RefreshNow();
+            if (!ReferenceEquals(previous, resolved))
             {
-                FlowchartWindowSignals.ChangedFlowchart(previous, fallback);
+                FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
             }
         }
 
-        private void OnAfterAssemblyReload()
+        private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            EditorApplication.delayCall += RebuildAfterAssemblyReload;
-        }
-
-        private void RebuildAfterAssemblyReload()
-        {
-            if (this == null)
-            {
-                return;
-            }
-
-            rootVisualElement.Clear();
-            _blockModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
-            DisposeSubmodules();
-            NullOutSubmodules();
-
-            _fcContext?.Dispose();
-            _fcContext = null;
-
-            _missingOverlay?.Dispose();
-            _missingOverlay = null;
-            _fcNameLabel = null;
-
-            CreateGUI();
+            _playModeCoordinator.HandlePlayModeStateChanged(state, () => ActiveFlowchart, _fcContext,
+                _fcNameLabel, _zoomAmountLabel, _graphicsRenderer);
         }
 
         #region Cleanup
@@ -559,48 +380,22 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             {
                 _s = null;
             }
-            Debug.Log("FlowchartWindowUitk OnDestroy");
             ToggleSubs(false);
 
-            _blockModuleDispatcher.ClearModules();
-            _mouseModuleDispatcher.ClearModules();
-            _moduleDispatcher.ClearModules();
-            _fcContext?.Dispose();
-            _fcContext = null;
+            FcwTeardownRequest request = new FcwTeardownRequest(_moduleHost, _fcContext, _graphicsRenderer, 
+                _viewportManager, _inputDetector, _contextMenuManager,
+                _variablesPanel, _fcNameLabel, _missingOverlay);
 
-            DisposeSubmodules();
-            NullOutSubmodules();
+            FcwTeardownResult result = _teardownCoordinator.Teardown(request);
 
-            _fcNameLabel?.RemoveFromHierarchy();
-            _missingOverlay?.Dispose();
+            _fcContext = result.FlowchartContext;
+            _graphicsRenderer = result.GraphicsRenderer;
+            _viewportManager = result.ViewportManager;
+            _contextMenuManager = result.ContextMenuManager;
+            _variablesPanel = result.VariablesPanel;
+            _fcNameLabel = result.FcNameLabel;
             _missingOverlay = null;
-            NullOutVisualElements();
-        }
-
-        void DisposeSubmodules()
-        {
-            _graphicsRenderer?.Dispose();
-            _viewportManager?.Dispose();
-
-            _inputDetector.Dispose();
-            _contextMenuManager?.Dispose();
-            _variablesPanel?.Dispose();
-        }
-
-        void NullOutSubmodules()
-        {
-            _graphicsRenderer = null;
-            _viewportManager = null;
-            _contextMenuManager = null;
-            _variablesPanel = null;
-        }
-
-        void NullOutVisualElements()
-        {
-            _fcNameLabel = null;
         }
         #endregion
     }
-
-    
 }
