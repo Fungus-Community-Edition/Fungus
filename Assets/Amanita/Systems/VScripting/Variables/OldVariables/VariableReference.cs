@@ -156,4 +156,23 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
     }
+
+    [System.Serializable]
+    public class VariableReference<T> : VariableReference
+    {
+        public new IVariable<T> Variable
+        {
+            get { return base.Variable as IVariable<T>; }
+            set { base.Variable = value; }
+        }
+
+        public T GetValue()
+        {
+            return base.GetValue<T>();
+        }
+        public void SetValue(T val)
+        {
+            base.SetValue(val);
+        }
+    }
 }

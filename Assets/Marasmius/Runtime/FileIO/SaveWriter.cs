@@ -230,11 +230,11 @@ namespace AtMycelia.SaveSys
 
                 if (!areWeOverwriting)
                 {
-                    SaveSysSignals.SaveWrittenToEmptySlot.Invoke(writeResults);
+                    SaveSysSignals.PostSaveWrittenToEmptySlot.Invoke(writeResults);
                 }
                 else
                 {
-                    SaveSysSignals.SaveOverwritten.Invoke(writeResults);
+                    SaveSysSignals.PostSaveOverwritten.Invoke(writeResults);
                 }
             }
 

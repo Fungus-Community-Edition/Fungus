@@ -7,12 +7,19 @@ namespace AtMycelia.SaveSys
 {
     public static class SaveSysSignals
     {
-        public static Action<SaveWriteResults> SaveWrittenToEmptySlot = delegate { };
+        public static Action<SaveWriteRequest> PreSaveWrittenToEmptySlot = delegate { };
+        public static Action<SaveWriteResults> PostSaveWrittenToEmptySlot = delegate { };
+
         /// <summary>
-        /// Executes when a save is written to a slot that already had a save in it at the 
+        /// Happens right before a save starts getting written to a slot that already has 
+        /// a save in it at the time, thus overwriting it.
+        /// </summary>
+        public static Action<SaveWriteRequest> PreSaveOverwritten = delegate { };
+        /// <summary>
+        /// Executes right after a save is written to a slot that already had a save in it at the 
         /// time, thus overwriting it. 
         /// </summary>
-        public static Action<SaveWriteResults> SaveOverwritten = delegate { };
+        public static Action<SaveWriteResults> PostSaveOverwritten = delegate { };
 
         /// <summary>
         /// Executes when a save data set is added to the registry. Note that this is not triggered 
