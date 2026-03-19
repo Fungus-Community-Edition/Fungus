@@ -385,6 +385,18 @@ namespace AtMycelia.Amanita.VScripting
         }
 #endif
 
+#if UNITY_EDITOR
+        public void RefreshVariableManagerForEditorReload()
+        {
+            if (!IsInTheScene || Application.isPlaying)
+            {
+                return;
+            }
+
+            AssertOwnership();
+            variableManager.Refresh();
+        }
+#endif
 
         protected virtual void AssertOwnership()
         {

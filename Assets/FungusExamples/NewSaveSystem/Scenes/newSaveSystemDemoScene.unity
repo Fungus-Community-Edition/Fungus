@@ -2593,8 +2593,10 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 1689154104}
+    _selectedCommands:
+    - {fileID: 1689154102}
     _owner: {fileID: 1689154097}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}

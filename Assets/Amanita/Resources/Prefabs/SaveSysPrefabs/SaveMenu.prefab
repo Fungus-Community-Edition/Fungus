@@ -2059,18 +2059,9 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    rid: 6177420644318969914
-  references:
-    version: 2
-    RefIds:
-    - rid: 6177420644318969914
-      type: {class: IntMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: lastSlotIndex
-        itemID: 1
-        value: -5
-        startValue: 0
+    itemId: 0
+    owningFc: {fileID: 0}
+    owningVsa: {fileID: 0}
 --- !u!114 &6685305723448108047
 MonoBehaviour:
   m_ObjectHideFlags: 0

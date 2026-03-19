@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -14,6 +13,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
     [InitializeOnLoad]
     public static class EditorSelectionTracker
     {
+        private const string LastSelectedFlowchartUidKey = "AtMycelia.Amanita.Editor.LastSelectedFlowchartUid";
+
         public static Flowchart ActiveFlowchart => activeFlowchart;
         private static Flowchart activeFlowchart;
         public static Flowchart LastActiveFlowchart
@@ -40,7 +41,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static bool HasSameUidAsCache(Flowchart fc)
         {
-            return fc != null && fc.UniqueId == _selectionCache.LastSelectedFcUid;
+            return fc != null && fc.UniqueId == GetCachedFlowchartUid();
         }
 
         public static IReadOnlyList<Block> CurrentBlocks => blockSelection;
@@ -60,32 +61,21 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         /// </summary>
         public static Command PrimaryCommand { get; private set; }
 
-        public static event Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
-        public static event Action<Block, Block> PrimaryBlockChanged = delegate { };
-        public static event Action<IReadOnlyList<Command>> CommandSelectionChanged = delegate { };
-        public static event Action<Command, Command> PrimaryCommandChanged = delegate { };
+        public static event System.Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
+        public static event System.Action<Block, Block> PrimaryBlockChanged = delegate { };
+        public static event System.Action<IReadOnlyList<Command>> CommandSelectionChanged = delegate { };
+        public static event System.Action<Command, Command> PrimaryCommandChanged = delegate { };
 
         static EditorSelectionTracker()
         {
-            EnsureSelectionCache(); 
             DestroyLegacyStateInstances();
             AttemptInitialHydration();
             ToggleSubs(true);
         }
 
-        private static void EnsureSelectionCache()
-        {
-            _selectionCache = SOUtils.EnsureSOExists<EditorSelectionCache>(_selectionCacheSubfolderPath, 
-                _selectionCacheAssetName);
-        }
-
-        private static EditorSelectionCache _selectionCache;
-        private static readonly string _selectionCacheSubfolderPath = "AtMycelia/Amanita/Editor";
-        private static readonly string _selectionCacheAssetName = "EditorSelectionCache";
-
         private static void SelectFlowchartBasedOnCache()
         {
-            if (string.IsNullOrEmpty(_selectionCache.LastSelectedFcUid))
+            if (string.IsNullOrEmpty(GetCachedFlowchartUid()))
             {
                 return;
             }
@@ -99,7 +89,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static Flowchart FindFlowchartWithCachedId()
         {
-            if (string.IsNullOrEmpty(_selectionCache.LastSelectedFcUid))
+            if (string.IsNullOrEmpty(GetCachedFlowchartUid()))
             {
                 return null;
             }
@@ -135,21 +125,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void AttemptInitialHydration()
         {
-            Flowchart flowchart = FindFlowchartWithCachedId();
-
-            if (flowchart == null)
+            Flowchart fc = FindFlowchartFromSelection();
+            if (fc != null)
             {
-                flowchart = FindFlowchartFromSelection();
-            }
-
-            if (flowchart == null)
-            {
-                flowchart = FindFlowchartInScene();
-            }
-
-            if (flowchart != null)
-            {
-                SetActiveFlowchart(flowchart);
+                SetActiveFlowchart(fc);
+                return;
             }
         }
 
@@ -162,10 +142,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             activeObject.TryGetComponent(out Flowchart selected);
-            if (selected != null)
-            {
-                Debug.Log($"Flowchart found from selection: {selected.name} (uid: {selected.UniqueId})");
-            }
             return selected;
         }
 
@@ -177,7 +153,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         private static void SetActiveFlowchart(Flowchart flowchart)
         {
             bool alreadySelected = ReferenceEquals(activeFlowchart, flowchart) ||
-                (flowchart != null && flowchart.UniqueId == _selectionCache.LastSelectedFcUid);
+                (flowchart != null && flowchart.UniqueId == GetCachedFlowchartUid());
             if (alreadySelected)
             {
                 return;
@@ -196,10 +172,19 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void UpdateSelectionCache(Flowchart flowchart)
         {
-            _selectionCache.LastSelectedFcUid = flowchart != null ?
-                flowchart.UniqueId :
-                string.Empty;
+            SetCachedFlowchartUid(flowchart != null ? flowchart.UniqueId : string.Empty);
         }
+
+        private static string GetCachedFlowchartUid()
+        {
+            return EditorPrefs.GetString(LastSelectedFlowchartUidKey, string.Empty);
+        }
+
+        private static void SetCachedFlowchartUid(string uid)
+        {
+            EditorPrefs.SetString(LastSelectedFlowchartUidKey, uid ?? string.Empty);
+        }
+
         private static void SyncSelectionsFromFlowchart(Flowchart flowchart)
         {
             SyncBlockSelectionFromFlowchart(flowchart);
@@ -300,15 +285,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         private static void OnUnitySelectionChanged()
         {
-            GameObject activeObject = Selection.activeGameObject;
-            if (activeObject == null)
-            {
-                return;
-            }
+            Flowchart fc = FindFlowchartFromSelection();
 
-            if (activeObject.TryGetComponent(out Flowchart selected))
+            if (fc != null)
             {
-                SetActiveFlowchart(selected);
+                SetActiveFlowchart(fc);
             }
         }
 
@@ -358,7 +339,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         /// Raised when the user selects a different Flowchart-having GameObject than before.
         /// Params: previous Flowchart, new Flowchart
         /// </summary>
-        public static event Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
+        public static event System.Action<Flowchart, Flowchart> SelectedFlowchartChanged = delegate { };
 
         public static Flowchart ResolveActiveFlowchart(bool attemptSceneFallback = true)
         {
@@ -396,7 +377,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             if (state == PlayModeStateChange.EnteredPlayMode)
             {
-                UpdateSelectionCacheAssetState();
                 SelectFlowchartBasedOnCache();
             }
         }
@@ -416,20 +396,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 return;
             }
 
-            UpdateSelectionCacheAssetState();
             isCleaningUp = true;
 
             ToggleSubs(false);
-        }
-
-        private static void UpdateSelectionCacheAssetState()
-        {
-            if (_selectionCache == null)
-            {
-                return;
-            }
-            EditorUtility.SetDirty(_selectionCache);
-            AssetDatabase.SaveAssetIfDirty(_selectionCache);
         }
 
         private static bool isCleaningUp;
