@@ -590,6 +590,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3830793b6aa02f34e9538b1607bae006, type: 2}
   - {fileID: 11400000, guid: 23536c1bc8893304e877788094fb2f71, type: 2}
   - {fileID: 11400000, guid: 19bfbc85a570ae848a8bd1970233621a, type: 2}
+  - {fileID: 11400000, guid: 63fd81f2d1e61b84b89743405d8013c9, type: 2}
   _textAssets:
   - {fileID: 4900000, guid: e7943ae6309508f4f9b82cf1e35a2b5e, type: 3}
   - {fileID: 4900000, guid: 6ae07f4b9d83d4662825fefe8ff30d45, type: 3}
