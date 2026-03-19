@@ -21,7 +21,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             var flowcharts = Resources.FindObjectsOfTypeAll<Flowchart>()
                 .Where(fc => fc != null && !EditorUtility.IsPersistent(fc.gameObject));
-            Debug.Log("Refreshing Flowcharts after domain reload. Found " + flowcharts.Count() + " flowcharts to refresh.");
+            
             foreach (var flowchart in flowcharts)
             {
                 flowchart.RefreshVariableManagerForEditorReload();

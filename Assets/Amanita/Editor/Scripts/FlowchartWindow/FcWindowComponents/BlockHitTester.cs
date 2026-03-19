@@ -41,7 +41,24 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             return false;
         }
 
-        private static Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
+        private static Flowchart ActiveFlowchart
+        {
+            get
+            {
+                Flowchart result = EditorSelectionTracker.ActiveFlowchart;
+                if (result == null)
+                {
+                    // When the FlowchartWindow is docked, ActiveFlowchart might be null because the window's
+                    // context may not be fully initialized. In that case, we can attempt to get the _last_
+                    // active Flowchart as a fallback, which should still allow block hit testing to work in most cases.
+                    result = EditorSelectionTracker.LastActiveFlowchart;
+                }
+
+                return result;
+                
+            }
+        }
+
         /// <summary>
         /// Tries to get the block's rect in window space. It first attempts to get the rect 
         /// from the BlockRendererUitk for better accuracy, and falls back to calculating it 
