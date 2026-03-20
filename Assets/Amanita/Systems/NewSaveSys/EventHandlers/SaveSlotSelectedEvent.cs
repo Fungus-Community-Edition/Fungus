@@ -19,7 +19,6 @@ namespace AtMycelia.Amanita.VScripting
         [FormerlySerializedAs("saveSlotIndex")]
         [Tooltip("The index of the selected save slot.")]
         protected IVariable<int> _oldSaveSlotIndex;
-        protected override bool RehydrateVarInputs => true;
         protected override bool ToggleSubsOnlyInRuntime => true;
 
         protected override void ToggleSubs(bool on)
@@ -48,6 +47,7 @@ namespace AtMycelia.Amanita.VScripting
             }
             base.OnEnable();
         }
+
         protected virtual void OnSaveSlotSelected(int index)
         {
             if (saveSlotIndex != null && saveSlotIndex.Variable != null)

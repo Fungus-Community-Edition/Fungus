@@ -22,7 +22,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             if (IsInitted)
             {
-                Debug.LogWarning("VariableManager is already initialized. Reinitializing will clear " +
+                Debug.LogWarning($"VariableManager for {Name} is already initialized. Reinitializing will clear " +
                     "all variables and reset the manager. Proceeding with reinitialization.");
             }
             Clear();
@@ -67,13 +67,15 @@ namespace AtMycelia.Amanita.VScripting
 
         private void RemoveFromCachesThenSignal(IVariable toRemove)
         {
-            legacyVariables.Remove(toRemove as Variable);
-            muscariables.Remove(toRemove as Muscariable);
+            legacyVariables.RemoveByReference(toRemove as Variable);
+            muscariables.RemoveByReference(toRemove as Muscariable);
+
             lookup.Remove(toRemove.ItemId);
             VariableRemoved(toRemove);
         }
 
-        private Dictionary<byte, IVariable> lookup = new(); // For faster retrieval by ID. Must be kept in sync with the lists.
+        private Dictionary<byte, IVariable> lookup = new(); 
+        // ^For faster retrieval by ID. Must be kept in sync with the lists.
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
@@ -125,11 +127,81 @@ namespace AtMycelia.Amanita.VScripting
 
         public void AddMultiVars(IEnumerable<IVariable> toAdd)
         {
+            EnsureInitialized();
             foreach (var elem in toAdd)
             {
                 AddVariable(elem);
             }
         }
+
+#if UNITY_EDITOR
+        public void MigrateLegacyVariables(IList<Muscariable> oldMuscariables, IList<Variable> oldLegacyVariables)
+        {
+            EnsureInitialized();
+
+            bool addedAny = false;
+
+            if (oldMuscariables != null)
+            {
+                for (int i = 0; i < oldMuscariables.Count; i++)
+                {
+                    var muscariable = oldMuscariables[i];
+                    if (muscariable == null || IsRegistered(muscariable))
+                    {
+                        continue;
+                    }
+
+                    Integrate(muscariable);
+                    addedAny = true;
+                }
+            }
+
+            if (oldLegacyVariables != null)
+            {
+                for (int i = 0; i < oldLegacyVariables.Count; i++)
+                {
+                    var legacyVar = oldLegacyVariables[i];
+                    if (legacyVar == null || IsRegistered(legacyVar))
+                    {
+                        continue;
+                    }
+
+                    if (legacyVar.ItemId == Muscariable.InvalidID || lookup.ContainsKey(legacyVar.ItemId))
+                    {
+                        legacyVar.ItemId = NextValidVarID();
+                    }
+
+                    legacyVariables.Add(legacyVar);
+                    lookup[legacyVar.ItemId] = legacyVar;
+                    addedAny = true;
+                }
+            }
+
+            if (addedAny)
+            {
+                UpdateNextValidId();
+                EnsureValidIds();
+            }
+        }
+
+        private bool IsRegistered(IVariable variable)
+        {
+            if (variable == null)
+            {
+                return false;
+            }
+
+            foreach (var existing in lookup.Values)
+            {
+                if (ReferenceEquals(existing, variable))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+#endif
 
         /// <summary>
         /// Adds a variable to the manager before returning it. If the variable is already registered, it 
@@ -138,6 +210,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public IVariable AddVariable(IVariable toAdd)
         {
+            EnsureInitialized();
             Muscariable result = AddAsMuscari(toAdd);
             return result;
         }
@@ -149,6 +222,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public Muscariable AddAsMuscari(IVariable toAdd)
         {
+            EnsureInitialized();
             bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) ||
                 muscariables.ContainsReference(toAdd);
             if (alreadyRegistered)
@@ -168,14 +242,16 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         void Integrate(Muscariable toAdd)
         {
+            UpdateNextValidId();
             #region Ensure valid id and key
+            bool duplicateId = lookup.ContainsKey(toAdd.ItemId);
             if (toAdd.ItemId == Muscariable.InvalidID)
             {
                 toAdd.ItemId = NextValidVarID();
             }
-            else if (lookup.ContainsKey(toAdd.ItemId))
+            else if (duplicateId)
             {
-                Debug.LogWarning($"Duplicate variable ID {toAdd.ItemId} found. Reassigning.");
+                Debug.LogWarning($"Duplicate variable ID {toAdd.ItemId} found for {_varOwner?.Name}. Reassigning.");
                 toAdd.ItemId = NextValidVarID();
             }
 
@@ -237,7 +313,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
                 else if (lookup.ContainsKey(elem.ItemId))
                 {
-                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found. Reassigning.");
+                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found for {_varOwner?.Name}. Reassigning.");
                     elem.ItemId = NextValidVarID();
                 }
                 lookup[elem.ItemId] = elem;
@@ -254,7 +330,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 if (group.Count() > 1)
                 {
-                    Debug.LogWarning($"Duplicate variable ID {group.Key}. Reassigning IDs.");
+                    Debug.LogWarning($"Duplicate variable ID {group.Key} found for {_varOwner?.Name}. Reassigning IDs.");
                     foreach (var elem in group)
                     {
                         elem.ItemId = NextValidVarID();
@@ -295,7 +371,10 @@ namespace AtMycelia.Amanita.VScripting
                     _varOwner ??= this;
                     foreach (var elem in lookup.Values)
                     {
-                        elem.Owner = _varOwner;
+                        if (elem is not Variable)
+                        {
+                            elem.Owner = _varOwner;
+                        }
                     }
                 }
             }
@@ -350,6 +429,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
+            EnsureInitialized();
             Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
             Integrate(muscaVar);
             return muscaVar;
@@ -357,6 +437,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public Muscariable AddVariable(Muscariable toAdd)
         {
+            EnsureInitialized();
             return AddAsMuscari(toAdd);
         }
 
@@ -398,6 +479,7 @@ namespace AtMycelia.Amanita.VScripting
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
             VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
         {
+            EnsureInitialized();
             TVarType result = new TVarType();
             result.Value = initValue;
             result.Scope = scope;
@@ -414,10 +496,17 @@ namespace AtMycelia.Amanita.VScripting
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
 
+        public string Name
+        { 
+            get => _varOwner.Name; 
+            set => _varOwner.Name = value; 
+        }
+
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
         {
+            EnsureInitialized();
             Type valueType = typeof(TValHeld);
             
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
@@ -438,6 +527,43 @@ namespace AtMycelia.Amanita.VScripting
             VariableAdded(toRegister);
 
             return newVar;
+        }
+
+        /// <summary>
+        /// This function exists to help make sure we don't lose our vars during any setup process (especially
+        /// those in unit tests). This should be called at the beginning of any public function that modifies
+        /// the variables in any way, to ensure that if we haven't been initialized yet for some reason, 
+        /// we will be before we try to do anything with the vars. 
+        /// 
+        /// This is especially important for functions that might be called from outside the manager, since 
+        /// we can't guarantee that the caller will have called Initialize() first. It's less crucial for 
+        /// private functions that are only called from other functions in this class, since we can just 
+        /// make sure to call EnsureInitialized() at the beginning of those public functions, but it 
+        /// doesn't hurt to be extra safe.
+        /// </summary>
+        private void EnsureInitialized()
+        {
+            if (IsInitted)
+            {
+                return;
+            }
+
+            Refresh();
+            UpdateNextValidId();
+            IsInitted = true;
+        }
+
+        private void UpdateNextValidId()
+        {
+            byte maxIdInUse = 0;
+            foreach (var elem in lookup.Values)
+            {
+                if (elem.ItemId > maxIdInUse)
+                {
+                    maxIdInUse = elem.ItemId;
+                }
+            }
+            nextValidVarID = (byte)(maxIdInUse + 1);
         }
 
 

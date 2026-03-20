@@ -157,7 +157,7 @@ namespace AtMycelia.Amanita.VScripting
         }
 
         /// <summary>
-        /// Returns variables matching any of the given content types.
+        /// Returns available variables matching any of the given content types.
         /// If null/empty, returns all.
         /// </summary>
         public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(Type[] contentTypes = null)

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace AtMycelia.Amanita.VScripting.EventHandlers
 {
     [EventHandlerInfo("UI/ButtonInGroupClicked", 
-        "ButtonInGroupClicked",
+        "Button In Group Clicked",
         "Called when any buttons parented to specified GameObjects are clicked.")]
     public class ButtonInGroupClicked : EventHandler
     {

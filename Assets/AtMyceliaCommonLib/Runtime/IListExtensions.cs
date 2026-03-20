@@ -20,6 +20,17 @@ namespace AtMycelia.Collections
             return thisSet.SetEquals(otherSet);
         }
 
+        public static void RemoveByReference<T>(this IList<T> list, object item) where T : class
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (ReferenceEquals(list[i], item))
+                {
+                    list.RemoveAt(i);
+                    return;
+                }
+            }
+        }
         public static bool ContainsReference<T>(this IList<T> list, object item) where T : class
         {
             for (int i = 0; i < list.Count; i++)

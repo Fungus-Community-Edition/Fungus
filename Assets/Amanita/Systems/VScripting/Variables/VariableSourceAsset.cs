@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 if (!string.IsNullOrEmpty(uniqueId))
                 {
-                    Debug.LogWarning("Warning: Overwriting existing AssetId on VariableSourceAsset.");
+                    Debug.LogWarning($"Warning: Overwriting existing AssetId on VariableSourceAsset {name}.");
                 }
 
                 string prevId = uniqueId;
@@ -78,6 +78,15 @@ namespace AtMycelia.Amanita.VScripting
             {
                 EnsureVariablesList();
                 return variables.ToList();
+            }
+        }
+
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = value;
             }
         }
 
