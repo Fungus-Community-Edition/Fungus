@@ -67,8 +67,9 @@ namespace AtMycelia.Amanita.VScripting
 
         private void RemoveFromCachesThenSignal(IVariable toRemove)
         {
-            legacyVariables.Remove(toRemove as Variable);
-            muscariables.Remove(toRemove as Muscariable);
+            legacyVariables.RemoveByReference(toRemove as Variable);
+            muscariables.RemoveByReference(toRemove as Muscariable);
+
             lookup.Remove(toRemove.ItemId);
             VariableRemoved(toRemove);
         }
