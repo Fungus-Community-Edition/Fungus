@@ -54,14 +54,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
+
             List<IVariable> candidates = validVarsInScene.Values.ToList();
             string[] options = validVarsInScene.Keys
                 .Prepend("<None>")
                 .ToArray();
 
             SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
-            SerializedProperty owningFcProp = property.FindPropertyRelative("owningFc");
-            SerializedProperty owningVsaProp = property.FindPropertyRelative("owningVsa");
+            SerializedProperty owningSourceProp = property.FindPropertyRelative("owningSource");
 
             int currentItemId = itemIdProp.intValue;
             int currentIndex = 0;
@@ -76,25 +76,20 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
+            // ^This is what lets the user choose a variable from the dropdown, and it returns the index of the chosen option
 
             bool choseToSetNullVar = newIndex == 0;
             if (choseToSetNullVar)
             {
                 itemIdProp.intValue = Muscariable.InvalidID;
-                owningFcProp.objectReferenceValue = null;
-                owningVsaProp.objectReferenceValue = null;
+                owningSourceProp.objectReferenceValue = null;
             }
             else
             {
                 IVariable chosen = candidates[newIndex - 1];
                 // ^Need the -1 because of the <None> option at index 0
                 itemIdProp.intValue = chosen.ItemId;
-
-                // We're not assigning through the Variable property of VariableReference, and thus
-                // we have to assign the owner ourselves.
-                var chosenOwner = chosen.Owner;
-                owningFcProp.objectReferenceValue = chosenOwner as Flowchart;
-                owningVsaProp.objectReferenceValue = chosenOwner as VariableSourceAsset;
+                owningSourceProp.objectReferenceValue = chosen.Owner as UnityObj;
             }
 
             property.serializedObject.ApplyModifiedProperties();

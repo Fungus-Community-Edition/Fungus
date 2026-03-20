@@ -1636,6 +1636,11 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
+            if (this == null)
+            {
+                return;
+            }
+
             // We do this to make sure that on entering Play Mode, the variableManager
             // doesn't lose all the variables that were added in Edit Mode. We also want to make sure
             // that anything in our old var lists doesn't get left out of the manager.
@@ -1648,9 +1653,6 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnAfterDeserialize()
         {
-            //variableManager ??= new VariableManager();
-            //variableManager.Refresh();
-            //AssertOwnership();
         }
 
 

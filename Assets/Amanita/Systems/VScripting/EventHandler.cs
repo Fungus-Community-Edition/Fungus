@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -87,7 +84,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             }
 
             //if somehow the flowchart is invalid or has been disabled we don't want to continue
-            if(fChart == null || !fChart.isActiveAndEnabled)
+            if (fChart == null || !fChart.isActiveAndEnabled)
             {
                 return false;
             }
@@ -125,14 +122,6 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             {
                 ToggleSubs(true);
             }
-
-            if (RehydrateVarInputs)
-            {
-                EditorApplication.delayCall += () =>
-                {
-                    DoRehydrationProcess();
-                };
-            }
         }
 
         // We want subclasses to have control of when they sub. Some would prefer to only
@@ -147,129 +136,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
 
         }
 
-        protected virtual bool RehydrateVarInputs => false;
-
-        protected virtual void DoRehydrationProcess()
-        {
-            CacheVarFieldsFor(GetType());
-            // ^Need to do this in both OnEnable and OnValidate, because doing it only in the latter
-            // gets us a null ref error when Unity starts up the project
-            bool weAreInTheEditor = !Application.isPlaying;
-            if (weAreInTheEditor)
-            {
-                RehydrateVariables();
-                return;
-            }
-
-            // Unity can call OnEnable after an object has been destroyed,
-            // which can cause us to hit this method with a null reference.
-            // In that case, just skip the rehydration process since it
-            // would only be relevant if the object were still alive.
-            if (this == null) 
-            {
-                return;
-            }
-
-            // In runtime, we only need each EventHandler to rehydrate once. Letting them do so
-            // more than once can waste valuable clock cycles, what with how we're using reflection.
-            if (fChart == null)
-            {
-                fChart = GetComponent<Flowchart>();
-            }
-
-            bool shouldRehydrateDuringRuntime = !didRuntimeRehydration && Application.IsPlaying(this);
-            if (shouldRehydrateDuringRuntime)
-            {
-                fChart.Refresh();
-                RehydrateVariables();
-                didRuntimeRehydration = true;
-            }
-        }
-
-        private static readonly Dictionary<Type, FieldInfo[]> typeFieldCache = new();
-
-        protected static void CacheVarFieldsFor(Type ourType)
-        {
-            bool alreadyCachedForIt = typeFieldCache.ContainsKey(ourType);
-            if (alreadyCachedForIt)
-            {
-                return;
-            }
-
-            var cacheForOurType = ourType.GetFields(fieldSearchFlags)
-                    .Where(MightNeedRehydration)
-                    .ToArray();
-            typeFieldCache[ourType] = cacheForOurType;
-        }
-
-        protected static readonly BindingFlags fieldSearchFlags = BindingFlags.Instance |
-            BindingFlags.NonPublic | BindingFlags.Public;
-
-        protected static bool MightNeedRehydration(FieldInfo fieldInfo)
-        {
-            bool implementsIVariable = iVariableType.IsAssignableFrom(fieldInfo.FieldType);
-            bool result = HasTheRightAttributes(fieldInfo) && implementsIVariable;
-                
-            return result;
-        }
-
-        protected static Type iVariableType = typeof(IVariable);
-
-        private static bool HasTheRightAttributes(FieldInfo field)
-        {
-            return field.GetCustomAttribute<VariablePropertyAttribute>() != null &&
-                field.GetCustomAttribute<SerializeReference>() != null;
-        }
-
-        protected void RehydrateVariables()
-        {
-            bool ourTypeIsCachedFor = typeFieldCache.TryGetValue(GetType(), out var varFieldCache);
-            if (!ourTypeIsCachedFor)
-            {
-                Debug.LogError($"Tried to rehydrate variables in {GetType().Name} before caching its variable fields.");
-                return;
-            }
-
-            foreach (var fieldEl in varFieldCache)
-            {
-                RehydrateField(fieldEl, this, fChart);
-            }
-        }
-
-        protected static void RehydrateField(FieldInfo field, object target, Flowchart fChart)
-        {
-            IVariable varToCheck = (IVariable)field.GetValue(target);
-            // ^We already filtered the var fields based on implementing IVariable, 
-            // and thus this cast should always succeed.
-            if (varToCheck == null)
-            {
-                // This happens when the var is a legacy one that got semi-nulled, which would be why the
-                // hard cast above still works.
-                return;
-            }
-            bool alreadyHydrated = varToCheck.Owner != null;
-            if (alreadyHydrated)
-            {
-                return;
-            }
-
-            if (fChart == null)
-            {
-                Debug.LogError($"Cannot rehydrate variable {field.Name} because Flowchart is null.");
-                return;
-            }
-            var correct = fChart.GetVariableById(varToCheck.ItemId);
-            if (correct == null)////
-            {
-                Debug.LogError($"Variable {field.Name} in (Flowchart {fChart.name}) with id {varToCheck.ItemId} not found.");
-                return;
-            }
-            field.SetValue(target, correct);
-        }
-
         private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
-
-        protected bool didRuntimeRehydration = false;
 
 #if UNITY_EDITOR
         public virtual string DisplayNameAboveBlock
@@ -302,11 +169,6 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             if (fChart == null)
             {
                 fChart = GetComponent<Flowchart>();
-            }
-            if (RehydrateVarInputs)
-            {
-                // For now, let's avoid rehydrating in OnValidate. Still got some transitional
-                // stuff to deal with...
             }
         }
 
