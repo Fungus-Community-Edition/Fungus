@@ -48,6 +48,7 @@ namespace AtMycelia.Amanita.VScripting
             }
             base.OnEnable();
         }
+
         protected virtual void OnSaveSlotSelected(int index)
         {
             if (saveSlotIndex != null && saveSlotIndex.Variable != null)

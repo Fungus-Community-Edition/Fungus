@@ -180,9 +180,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables: []
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: 
   uiModel:
     _selectedBlocks: []
     _selectedCommands: []
+    _owner: {fileID: 0}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -195,23 +205,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables:
-  - {fileID: 114573728990135962}
-  - {fileID: 114024079056778752}
-  - {fileID: 114188004173552184}
-  - {fileID: 114777688141419168}
-  - {fileID: 114348338108346498}
-  - {fileID: 114326212544484044}
-  muscariables: []
-  description: 
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
@@ -219,6 +219,8 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache: []
+  _commands: []
   nextValidVarID: 1
   uniqueId: 
   references:

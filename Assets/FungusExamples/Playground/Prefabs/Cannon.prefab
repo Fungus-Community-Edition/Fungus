@@ -151,9 +151,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  variableManager:
+    muscariables: []
+    legacyVariables: []
+    nextValidVarID: 1
+    isInitted: 1
+  version: 1
+  legacyVariables: []
+  _oldMuscariables: []
+  description: 
   uiModel:
     _selectedBlocks: []
     _selectedCommands: []
+    _owner: {fileID: 0}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -166,25 +176,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
-  version: 1
-  legacyVariables:
-  - {fileID: 114704119826569804}
-  - {fileID: 114476154734915750}
-  - {fileID: 114310288066248142}
-  - {fileID: 114268424750904310}
-  - {fileID: 114499702294427518}
-  - {fileID: 114987963891140428}
-  - {fileID: 114680196880106302}
-  - {fileID: 114994441961358866}
-  muscariables: []
-  description: 
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
   saveSelection: 1
-  localizationId: 
   showLineNumbers: 0
   hideCommands: []
+  localizationId: 
   _luaEnvironment: {fileID: 0}
   luaBindingName: flowchart
   includeInSaves: 1
@@ -192,6 +190,8 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
+  _blockListCache: []
+  _commands: []
   nextValidVarID: 1
   uniqueId: 
   references:
@@ -599,10 +599,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 1
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -636,10 +632,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 6
   indentLevel: 1
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -801,10 +793,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 10
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
   setOperator: 0
   anyVar:
     varRef:
@@ -838,10 +826,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
   setOperator: 4
   anyVar:
     varRef:
@@ -875,10 +859,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 12
   indentLevel: 0
-  varToSet:
-    itemId: 0
-    owningFc: {fileID: 0}
-    owningVsa: {fileID: 0}
   setOperator: 4
   anyVar:
     varRef:

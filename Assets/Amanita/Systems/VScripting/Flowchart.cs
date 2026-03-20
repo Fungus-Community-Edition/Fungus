@@ -185,7 +185,7 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             AssertOwnership();
-            PrepVarManager();
+            //PrepVarManager();
             RefreshBlockAndCommandCache();
 
 #if UNITY_EDITOR
@@ -361,7 +361,7 @@ namespace AtMycelia.Amanita.VScripting
         public virtual void Refresh()
         {
             AssertUniqueID();
-            AssertOwnership();
+            AssertOwnership();//
 #if UNITY_EDITOR
             RefreshEditorCaches();
             UpdateHideFlags();
@@ -369,7 +369,7 @@ namespace AtMycelia.Amanita.VScripting
             CheckItemIds();
             CleanupComponents();
             UpdateVersion();
-            PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
+            //PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
 
         }
 
@@ -1636,12 +1636,23 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-
+            // We do this to make sure that on entering Play Mode, the variableManager
+            // doesn't lose all the variables that were added in Edit Mode. We also want to make sure
+            // that anything in our old var lists doesn't get left out of the manager.
+            PrepVarManager();
+            _oldMuscariables.Clear();
+            legacyVariables.Clear();
+            variableManager.Refresh();
+            AssertOwnership();
         }
 
         public void OnAfterDeserialize()
         {
+            //variableManager ??= new VariableManager();
+            //variableManager.Refresh();
+            //AssertOwnership();
         }
+
 
 #if UNITY_EDITOR
         public T AddCommand<T>(Block toAddTo) where T : Command

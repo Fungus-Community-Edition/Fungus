@@ -72,8 +72,7 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 7775790903546417938}
+    _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 234453616329698692}
     <ScrollPos>k__BackingField: {x: 0, y: 10.762987}
@@ -1904,7 +1903,8 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 2674689422536112357}
     _selectedCommands: []
     _owner: {fileID: 5491679531932821053}
     <ScrollPos>k__BackingField: {x: 0, y: 13.201632}
@@ -2036,7 +2036,7 @@ MonoBehaviour:
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 8
-  blockName: OnSlotSelected
+  blockName: UpdateLastSlotIndex
   description: 
   eventHandler: {fileID: 9170193551566332944}
   commandList:
@@ -2059,8 +2059,8 @@ MonoBehaviour:
   parentBlock: {fileID: 2674689422536112357}
   suppressBlockAutoSelect: 0
   saveSlotIndex:
-    itemId: 0
-    owningFc: {fileID: 0}
+    itemId: 1
+    owningFc: {fileID: 1507031660960170913}
     owningVsa: {fileID: 0}
 --- !u!114 &6685305723448108047
 MonoBehaviour:
@@ -2088,7 +2088,7 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   waitUntilFinished:
@@ -2320,7 +2320,7 @@ MonoBehaviour:
       itemId: 0
       owningFc: {fileID: 1507031660960170913}
       owningVsa: {fileID: 0}
-    value: 0
+    value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   loadScene:

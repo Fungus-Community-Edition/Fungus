@@ -41,7 +41,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             if (currentFc != null)
             {
                 //Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
-                //VariableRegistryService.RebuildAll(currentFc);
+                VariableRegistryService.RebuildAll(currentFc);
                 // ^For cases where the fc the FlowchartWindow is handling is not selected
             }
         }

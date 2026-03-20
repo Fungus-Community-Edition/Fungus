@@ -21,34 +21,52 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             UnityObj targetObject = property.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
+            AmanitaManager ammieManager = null;
+            VariableRegistry varRegistry = null;
 
-            var ammieManager = AmanitaManager.S;
-            if (ammieManager == null)
+            EnsurePrerequisites(out bool canContinue);
+            void EnsurePrerequisites(out bool success)
             {
-                EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
-                EditorGUI.EndProperty();
-                return;
+                success = false;
+
+                ammieManager = AmanitaManager.S;
+                if (ammieManager == null)
+                {
+                    EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                varRegistry = VariableRegistryService.Registry;
+                if (varRegistry == null)
+                {
+                    EditorGUI.LabelField(position, label.text, "Variable registry not available.");
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                success = true;
             }
 
-            VariableRegistry varRegistry = VariableRegistryService.Registry;
-            if (varRegistry == null)
+            if (!canContinue)
             {
-                EditorGUI.LabelField(position, label.text, "Variable registry not available.");
-                EditorGUI.EndProperty();
                 return;
             }
 
             var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
-            
             List<IVariable> candidates = validVarsInScene.Values.ToList();
             string[] options = validVarsInScene.Keys
                 .Prepend("<None>")
                 .ToArray();
 
             SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
+            SerializedProperty owningFcProp = property.FindPropertyRelative("owningFc");
+            SerializedProperty owningVsaProp = property.FindPropertyRelative("owningVsa");
+
             int currentItemId = itemIdProp.intValue;
             int currentIndex = 0;
-            if (currentItemId != Muscariable.InvalidID)
+            bool validId = currentItemId != Muscariable.InvalidID;
+            if (validId)
             {
                 int found = candidates.FindIndex(varEl => varEl.ItemId == currentItemId);
                 if (found >= 0)
@@ -56,17 +74,27 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                     currentIndex = found + 1;
                 }
             }
+
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
 
-            if (newIndex == 0)
+            bool choseToSetNullVar = newIndex == 0;
+            if (choseToSetNullVar)
             {
                 itemIdProp.intValue = Muscariable.InvalidID;
+                owningFcProp.objectReferenceValue = null;
+                owningVsaProp.objectReferenceValue = null;
             }
             else
             {
                 IVariable chosen = candidates[newIndex - 1];
                 // ^Need the -1 because of the <None> option at index 0
                 itemIdProp.intValue = chosen.ItemId;
+
+                // We're not assigning through the Variable property of VariableReference, and thus
+                // we have to assign the owner ourselves.
+                var chosenOwner = chosen.Owner;
+                owningFcProp.objectReferenceValue = chosenOwner as Flowchart;
+                owningVsaProp.objectReferenceValue = chosenOwner as VariableSourceAsset;
             }
 
             property.serializedObject.ApplyModifiedProperties();

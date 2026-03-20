@@ -295,7 +295,10 @@ namespace AtMycelia.Amanita.VScripting
                     _varOwner ??= this;
                     foreach (var elem in lookup.Values)
                     {
-                        elem.Owner = _varOwner;
+                        if (elem is not Variable)
+                        {
+                            elem.Owner = _varOwner;
+                        }
                     }
                 }
             }

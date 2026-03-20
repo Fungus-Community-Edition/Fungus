@@ -324,7 +324,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnWheel(WheelEvent evt)
         {
-            Debug.Log($"Running Wheel callback with event: {evt}");
+            //Debug.Log($"Running Wheel callback with event: {evt}");
             if (!ShouldHandleUiEvent(evt))
             {
                 return;
