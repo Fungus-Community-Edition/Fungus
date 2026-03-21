@@ -1,3 +1,4 @@
+using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -106,15 +107,48 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             // Flowchart is useful for listing vars, but do not force owner to it
-            Flowchart localFlowchart = EditorSelectionTracker.ActiveFlowchart;
-            if (localFlowchart == null)
+            // See if the VariableData's backing reference has an owning flowchart we can use as context
+            // for listing variables. If not, fall back to the last active flowchart in the editor, and
+            // if that's not available, try to find a flowchart on the currently selected GameObject.
+            Flowchart localFlowchart = null;
+            FindLocalFlowchart();
+            void FindLocalFlowchart()
             {
-                GameObject selectedGo = Selection.activeGameObject;
-                if (selectedGo != null)
+                if (backingVarRefProp != null)
                 {
-                    localFlowchart = selectedGo.GetComponent<Flowchart>();
+                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
+                    if (owningFcProp != null && owningFcProp.objectReferenceValue != null)
+                    {
+                        var fc = owningFcProp.objectReferenceValue as Flowchart;
+                        if (fc != null)
+                        {
+                            // Use flowchart owner from backing reference if available to keep context
+                            localFlowchart = fc;
+                        }
+                    }
                 }
+
+                if (localFlowchart == null)
+                {
+                    localFlowchart = EditorSelectionTracker.ActiveFlowchart;
+                }
+
+                if (localFlowchart == null)
+                {
+                    GameObject selectedGo = Selection.activeGameObject;
+                    if (selectedGo != null)
+                    {
+                        localFlowchart = selectedGo.GetComponent<Flowchart>();
+                    }
+                }
+
+                if (localFlowchart == null && FlowchartWindow.S != null)
+                {
+                    localFlowchart = FlowchartWindow.S.Flowchart;
+                }
+
             }
+
             string warningMessage;
             if (localFlowchart == null)
             {
@@ -148,7 +182,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             RegisterValidVars();
             void RegisterValidVars()
             {
-                var validVars = ammieManager.VariableRegistry.GetVarsOfType(contentType);
+                var validVars = VarRegistry.GetVarsOfType(contentType);
                 _labelsSeen.Clear();
                 orderedLabels.Clear();
                 orderedVars.Clear();
@@ -294,9 +328,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         private static readonly int popupGap = 5; // <- Between the value/ref field and the little button for the popup
         private static int SpaceForPopup => popupWidth + popupGap;
         private static readonly float MinimumValueWidth = 80f;
+        private static VariableRegistry VarRegistry => VariableRegistryService.Registry;
 
     }
 
+    
     [CustomPropertyDrawer(typeof(AnyVariableData), true)]
     public class AnyVariableDataDrawer : VariableDataDrawer
     {

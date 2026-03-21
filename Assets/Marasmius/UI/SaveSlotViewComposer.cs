@@ -135,15 +135,15 @@ namespace AtMycelia.SaveSys.UI
             if (on)
             {
                 button.onClick.AddListener(OnButtonClicked);
-                SaveSysSignals.SaveWrittenToEmptySlot += OnSaveWritten;
-                SaveSysSignals.SaveOverwritten += OnSaveWritten;
+                SaveSysSignals.PostSaveWrittenToEmptySlot += OnSaveWritten;
+                SaveSysSignals.PostSaveOverwritten += OnSaveWritten;
                 SaveSysSignals.SaveRemoved += OnSaveRemovedFromSlot;
             }
             else
             {
                 button.onClick.RemoveListener(OnButtonClicked);
-                SaveSysSignals.SaveWrittenToEmptySlot -= OnSaveWritten;
-                SaveSysSignals.SaveOverwritten -= OnSaveWritten;
+                SaveSysSignals.PostSaveWrittenToEmptySlot -= OnSaveWritten;
+                SaveSysSignals.PostSaveOverwritten -= OnSaveWritten;
                 SaveSysSignals.SaveRemoved -= OnSaveRemovedFromSlot;
             }
         }

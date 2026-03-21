@@ -4,26 +4,26 @@ using UnityEngine;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
+    /// <summary>
+    /// For handling what happens when the Flowchart Window's Refresh button is clicked. 
+    /// This is necessary to coordinate the various components of the window, such as
+    /// updating the active flowchart, hiding the missing flowchart overlay, and rebuilding the GUI.
+    /// </summary>
     internal sealed class FcwRefreshCoordinator
     {
-        private readonly FcwFlowchartStateService _flowchartStateService;
-
-        public FcwRefreshCoordinator(FcwFlowchartStateService flowchartStateService)
-        {
-            _flowchartStateService = flowchartStateService;
-        }
-
-        public void HandleRefresh(
-            Func<Flowchart> activeFlowchartGetter,
-            MissingFlowchartOverlay missingOverlay,
+        public void HandleRefresh(Func<Flowchart> activeFlowchartGetter, MissingFlowchartOverlay missingOverlay,
             Action rebuildGui)
         {
-            Flowchart activeFlowchart = activeFlowchartGetter != null ?
+            Flowchart flowchart = activeFlowchartGetter != null ?
                 activeFlowchartGetter() :
                 null;
 
-            Flowchart flowchart = _flowchartStateService.ResolveRefreshFlowchart(activeFlowchart);
-            if (activeFlowchart != null && flowchart != null)
+            if (flowchart == null)
+            {
+                flowchart = EditorSelectionTracker.LastActiveFlowchart;
+            }
+
+            if (flowchart != null)
             {
                 Selection.activeGameObject = flowchart.gameObject;
             }

@@ -10,7 +10,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     /// <summary>
     /// Custom drawer for VariableReference, allows selecting a target variable.
-    /// Supports filtering via VarTypeConstraint.
+    /// Supports filtering via ContentTypeConstraint.
     /// </summary>
     [CustomPropertyDrawer(typeof(VariableReference))]
     public class VariableReferenceDrawer : PropertyDrawer
@@ -21,27 +21,52 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             UnityObj targetObject = property.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
+            AmanitaManager ammieManager = null;
+            VariableRegistry varRegistry = null;
 
-            var ammieManager = AmanitaManager.S;
-            if (ammieManager == null)
+            EnsurePrerequisites(out bool canContinue);
+            void EnsurePrerequisites(out bool success)
             {
-                EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
-                EditorGUI.EndProperty();
+                success = false;
+
+                ammieManager = AmanitaManager.S;
+                if (ammieManager == null)
+                {
+                    EditorGUI.LabelField(position, label.text, "AmanitaManager not found in scene.");
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                varRegistry = VariableRegistryService.Registry;
+                if (varRegistry == null)
+                {
+                    EditorGUI.LabelField(position, label.text, "Variable registry not available.");
+                    EditorGUI.EndProperty();
+                    return;
+                }
+
+                success = true;
+            }
+
+            if (!canContinue)
+            {
                 return;
             }
 
-            var varRegistry = ammieManager.VariableRegistry;
             var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
-            
+
             List<IVariable> candidates = validVarsInScene.Values.ToList();
             string[] options = validVarsInScene.Keys
                 .Prepend("<None>")
                 .ToArray();
 
             SerializedProperty itemIdProp = property.FindPropertyRelative("itemId");
+            SerializedProperty owningSourceProp = property.FindPropertyRelative("owningSource");
+
             int currentItemId = itemIdProp.intValue;
             int currentIndex = 0;
-            if (currentItemId != Muscariable.InvalidID)
+            bool validId = currentItemId != Muscariable.InvalidID;
+            if (validId)
             {
                 int found = candidates.FindIndex(varEl => varEl.ItemId == currentItemId);
                 if (found >= 0)
@@ -49,17 +74,22 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                     currentIndex = found + 1;
                 }
             }
-            int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
 
-            if (newIndex == 0)
+            int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
+            // ^This is what lets the user choose a variable from the dropdown, and it returns the index of the chosen option
+
+            bool choseToSetNullVar = newIndex == 0;
+            if (choseToSetNullVar)
             {
                 itemIdProp.intValue = Muscariable.InvalidID;
+                owningSourceProp.objectReferenceValue = null;
             }
             else
             {
                 IVariable chosen = candidates[newIndex - 1];
                 // ^Need the -1 because of the <None> option at index 0
                 itemIdProp.intValue = chosen.ItemId;
+                owningSourceProp.objectReferenceValue = chosen.Owner as UnityObj;
             }
 
             property.serializedObject.ApplyModifiedProperties();

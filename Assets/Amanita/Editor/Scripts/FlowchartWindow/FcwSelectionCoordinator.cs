@@ -1,65 +1,54 @@
-using UnityEngine;
+using System;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
-using System;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 {
+    /// <summary>
+    /// Coordinates selection changes in the flowchart window, ensuring that the correct flowchart is selected
+    /// and displayed when the selection changes.
+    /// </summary>
     internal sealed class FcwSelectionCoordinator
     {
-        private readonly FcwFlowchartStateService _flowchartStateService;
-        private readonly FcwPlayModeFocusService _playModeFocusService;
-
-        public FcwSelectionCoordinator(
-            FcwFlowchartStateService flowchartStateService,
-            FcwPlayModeFocusService playModeFocusService)
-        {
-            _flowchartStateService = flowchartStateService;
-            _playModeFocusService = playModeFocusService;
-        }
-
-        public void HandleSelectionChanged(
-            Flowchart previous,
-            Flowchart current,
-            FlowchartContext context,
-            UitkLabel fcNameLabel,
+        public void HandleSelectionChanged(Flowchart previous, Flowchart current,
+            ref FlowchartContext context, UitkLabel fcNameLabel,
             UitkLabel zoomAmountLabel)
         {
-            if (context == null)
+            context ??= new FlowchartContext();
+
+            Flowchart resolved;
+            if (current != null && ReferenceEquals(current, previous))
             {
-                return;
+                resolved = current;
+            }
+            else
+            {
+                resolved = EditorSelectionTracker.LastActiveFlowchart;
             }
 
-            Flowchart resolved = _flowchartStateService.ResolveSelectionChange(previous, current);
-            if (ReferenceEquals(previous, resolved))
+            context.Flowchart = resolved;
+
+            UpdateLabels(context, fcNameLabel, zoomAmountLabel);
+            if (resolved == null || ReferenceEquals(previous, resolved))
             {
                 return;
             }
 
             if (previous != null)
             {
-                _flowchartStateService.ResetSelections(previous);
+                previous.ClearSelectedBlocks();
+                previous.ClearSelectedCommands();
             }
 
-            context.Flowchart = resolved;
-
-            string cachedUid;
-            if (_playModeFocusService.TryCacheFromSelection(resolved, out cachedUid))
-            {
-                Debug.Log($"In Play Mode - updated last-focused flowchart UID to {cachedUid}");
-            }
-
-            UpdateLabels(context, fcNameLabel, zoomAmountLabel);
             FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
         }
 
-        public void UpdateLabels(
-            FlowchartContext context,
-            UitkLabel fcNameLabel,
+        public void UpdateLabels(FlowchartContext context, UitkLabel fcNameLabel,
             UitkLabel zoomAmountLabel)
         {
             if (context == null || context.Flowchart == null)
             {
+                fcNameLabel.text = zoomAmountLabel.text = string.Empty;
                 return;
             }
 

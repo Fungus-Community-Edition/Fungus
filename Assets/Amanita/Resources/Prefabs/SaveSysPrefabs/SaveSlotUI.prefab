@@ -813,7 +813,7 @@ MonoBehaviour:
   textDisplay: {fileID: 3568923549923723673}
   prefix: 
   postfix: 
-  formatterSO: {fileID: 11400000, guid: 6df9b3050080816459375f326ce1898b, type: 2}
+  formatterSO: {fileID: 11400000, guid: cedc0896b81f0ea4091fbde72a8edde8, type: 2}
 --- !u!1 &8244055822220054543
 GameObject:
   m_ObjectHideFlags: 0

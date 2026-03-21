@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -13,10 +15,13 @@ namespace AtMycelia.Amanita.VScripting
         // What we do is store the id of the var, and then return the var itself based on
         // what source we're asked to work with. This minimizes the amount of data we need to serialize.
         [SerializeField] private byte itemId;
-        [SerializeField] private Flowchart owningFc;
-        [SerializeField] private VariableSourceAsset owningVsa;
-        // ^We use these two so that we can have an easier time fetching the right variable
-        // through the Variable property. Especially necessary for the editor.
+        [SerializeField] private UnityObj owningSource;
+
+        [FormerlySerializedAs("owningFc")]
+        [SerializeField] [HideInInspector] private Flowchart legacyOwningFc;
+
+        [FormerlySerializedAs("owningVsa")]
+        [SerializeField] [HideInInspector] private VariableSourceAsset legacyOwningVsa;
 
         public virtual byte VarItemId
         {
@@ -69,8 +74,24 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void RefreshOwner()
         {
             varOwner = null;
-            varOwner ??= owningFc;
-            varOwner ??= owningVsa;
+
+            if (owningSource == null)
+            {
+                if (legacyOwningFc != null)
+                {
+                    owningSource = legacyOwningFc;
+                    legacyOwningFc = null;
+                    legacyOwningVsa = null;
+                }
+                else if (legacyOwningVsa != null)
+                {
+                    owningSource = legacyOwningVsa;
+                    legacyOwningVsa = null;
+                }
+            }
+
+            varOwner ??= owningSource as Flowchart;
+            varOwner ??= owningSource as VariableSourceAsset;
         }
 
         private IVariableSource varOwner;
@@ -93,8 +114,9 @@ namespace AtMycelia.Amanita.VScripting
             set
             {
                 varOwner = value;
-                owningFc = value as Flowchart;
-                owningVsa = value as VariableSourceAsset;
+                owningSource = value as UnityObj;
+                legacyOwningFc = null;
+                legacyOwningVsa = null;
             }
         }
 
@@ -107,15 +129,14 @@ namespace AtMycelia.Amanita.VScripting
         {
             T result = default;
             IVariable varToFetchFrom = Variable;
-
+            var targetType = typeof(T);
             if (varToFetchFrom == null)
             {
-                Debug.LogError("VariableReference: Variable is null.");
+                Debug.LogError($"VariableReference: Variable is null. Returning default value of type {targetType}.");
             }
             else
             {
                 var contentType = varToFetchFrom.ContentType;
-                var targetType = typeof(T);
                 bool typesAreCompatible = targetType.IsAssignableFrom(contentType);
                 if (!typesAreCompatible)
                 {
@@ -136,7 +157,7 @@ namespace AtMycelia.Amanita.VScripting
             IVariable ourVar = Variable; // To reduce lookups, we cache it here.
             if (ourVar == null)
             {
-                Debug.LogError("VariableReference: Variable is null.");
+                Debug.LogError("VariableReference: Variable is null. Cannot set value.");
             }
             else
             {
@@ -154,6 +175,25 @@ namespace AtMycelia.Amanita.VScripting
                     ourVar.BoxedValue = val;
                 }
             }
+        }
+    }
+
+    [System.Serializable]
+    public class VariableReference<T> : VariableReference
+    {
+        public new IVariable<T> Variable
+        {
+            get { return base.Variable as IVariable<T>; }
+            set { base.Variable = value; }
+        }
+
+        public T GetValue()
+        {
+            return base.GetValue<T>();
+        }
+        public void SetValue(T val)
+        {
+            base.SetValue(val);
         }
     }
 }

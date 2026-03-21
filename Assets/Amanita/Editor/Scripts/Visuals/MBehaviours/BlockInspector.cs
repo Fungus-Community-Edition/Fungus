@@ -37,13 +37,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         protected void OnEnable()
         {
             ClearEditors();
-            var ammieManager = AmanitaManager.S;
             Flowchart currentFc = EditorSelectionTracker.ActiveFlowchart;
-            if (ammieManager != null && currentFc != null)
+            if (currentFc != null)
             {
-                Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
-                var varRegistry = ammieManager.VariableRegistry;
-                varRegistry.Rebuild(currentFc);
+                //Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
+                VariableRegistryService.RebuildAll(currentFc);
                 // ^For cases where the fc the FlowchartWindow is handling is not selected
             }
         }

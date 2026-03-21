@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AtMycelia.Amanita.VScripting
 {
-    public interface IVariableSource : IHasUniqueID
+    public interface IVariableSource : IHasUniqueID, IHasName
     {
         event Action<IVariable> VariableAdded;
         event Action<IVariable> VariableRemoved;

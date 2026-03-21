@@ -50,7 +50,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             }
 
             var interaction = flowchartContext.Interaction;
-            interaction.BlockHitInLastMouseDown = BlockHitTester.FindTopmostBlock(info.PanelPosition);
+            var topmostBlock = BlockHitTester.FindTopmostBlock(info.PanelPosition);
+            interaction.BlockHitInLastMouseDown = topmostBlock;
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)

@@ -1,16 +1,16 @@
 ﻿{
     "name": "",
-    "saveId": "f38734f8-680d-40a2-9333-7f66cafe41bc",
+    "saveId": "b6b1d2f7-cb9a-423d-b31e-174d08678e17",
     "slotNumber": 1,
     "saveVersion": "1.0",
-    "utcTimeStamp": "2026-03-12T17:24:05.5317941Z",
-    "sceneName": "newSaveSystemAutoTestWithUi",
-    "sceneBuildIndex": 1,
+    "utcTimeStamp": "2026-03-20T12:03:58.1924271Z",
+    "sceneName": "newSaveSystemDemoScene",
+    "sceneBuildIndex": 0,
     "playtimeStamp": "00:00:00",
     "progressMarkers": {
         "$content": [
             {
-                "id": "firstToTheParty",
+                "id": "DefaultMarker",
                 "order": 0
             }
         ],
@@ -24,121 +24,58 @@
 {
     "items": [
         {
-            "uniqueId": "2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea",
-            "flowchartName": "Main",
+            "uniqueId": "4b9bbe20-fad7-48e7-9f19-eeb0e6f07a24",
+            "flowchartName": "SaveAudio",
             "savedVars": [
-                {
-                    "varTypeName": "StringMuscariable",
-                    "contentTypeName": "String",
-                    "itemID": 3,
-                    "key": "firstMarkerID",
-                    "value": "firstToTheParty"
-                },
-                {
-                    "varTypeName": "ColorMuscariable",
-                    "contentTypeName": "Color",
-                    "itemID": 4,
-                    "key": "someColor",
-                    "value": "{\"r\":0.3832769,\"g\":0.7802354,\"b\":0.8207547,\"a\":0.0}"
-                },
-                {
-                    "varTypeName": "VectorTwoMuscariable",
-                    "contentTypeName": "Vector2",
-                    "itemID": 5,
-                    "key": "vecTwoVar",
-                    "value": "{\"x\":19.0,\"y\":97.0}"
-                },
-                {
-                    "varTypeName": "VectorThreeMuscariable",
-                    "contentTypeName": "Vector3",
-                    "itemID": 6,
-                    "key": "vecThreeVar",
-                    "value": "{\"x\":0.0,\"y\":123.0,\"z\":0.0}"
-                },
-                {
-                    "varTypeName": "IVariable`1",
-                    "contentTypeName": "Single",
-                    "itemID": 7,
-                    "key": "Var",
-                    "value": "1.234"
-                },
-                {
-                    "varTypeName": "BoolMuscariable",
-                    "contentTypeName": "Boolean",
-                    "itemID": 9,
-                    "key": "afterFirstLoad",
-                    "value": "False"
-                },
-                {
-                    "varTypeName": "IVariable`1",
-                    "contentTypeName": "Int32",
-                    "itemID": 10,
-                    "key": "timesLoaded",
-                    "value": "0"
-                },
-                {
-                    "varTypeName": "BoolMuscariable",
-                    "contentTypeName": "Boolean",
-                    "itemID": 11,
-                    "key": "secondLoad",
-                    "value": "False"
-                },
-                {
-                    "varTypeName": "StringMuscariable",
-                    "contentTypeName": "String",
-                    "itemID": 12,
-                    "key": "secondMarkerId",
-                    "value": "secondsss"
-                },
                 {
                     "varTypeName": "AudioClipMuscariable",
                     "contentTypeName": "AudioClip",
                     "itemID": 1,
-                    "key": "clickSound",
-                    "value": "{\"lorekeeperIndex\":0,\"clipName\":\"Click\"}"
-                },
-                {
-                    "varTypeName": "AudioClipMuscariable",
-                    "contentTypeName": "AudioClip",
-                    "itemID": 2,
-                    "key": "loadStartSound",
+                    "key": "loadSfx",
                     "value": "{\"lorekeeperIndex\":2,\"clipName\":\"guitar7_TK\"}"
                 },
                 {
                     "varTypeName": "AudioClipMuscariable",
                     "contentTypeName": "AudioClip",
-                    "itemID": 13,
-                    "key": "openMenuSound",
-                    "value": "{\"lorekeeperIndex\":10,\"clipName\":\"UiPopupOpen_JDS\"}"
+                    "itemID": 2,
+                    "key": "buttonClickSfx",
+                    "value": "{\"lorekeeperIndex\":0,\"clipName\":\"Click\"}"
                 },
                 {
                     "varTypeName": "AudioClipMuscariable",
                     "contentTypeName": "AudioClip",
-                    "itemID": 8,
-                    "key": "menuOpenSound",
-                    "value": "{\"lorekeeperIndex\":10,\"clipName\":\"UiPopupOpen_JDS\"}"
+                    "itemID": 3,
+                    "key": "startSaveSfx",
+                    "value": "{\"lorekeeperIndex\":6,\"clipName\":\"UiConfirm_JDS\"}"
                 },
                 {
                     "varTypeName": "AudioClipMuscariable",
                     "contentTypeName": "AudioClip",
-                    "itemID": 14,
-                    "key": "menuCloseSound",
-                    "value": "{\"lorekeeperIndex\":9,\"clipName\":\"UiPopupClose_JDS\"}"
+                    "itemID": 4,
+                    "key": "saveDoneSfx",
+                    "value": "{\"lorekeeperIndex\":6,\"clipName\":\"UiConfirm_JDS\"}"
                 }
             ],
+            "savedBlocks": [],
+            "$type": "AtMycelia.Amanita.SaveSys.FlowchartSaveData"
+        },
+        {
+            "uniqueId": "2ca35de7-a3f9-4de6-ab3d-f84cdac7cdea",
+            "flowchartName": "Main",
+            "savedVars": [],
             "savedBlocks": [
                 {
                     "blockName": "Init",
                     "itemId": 21,
-                    "activeCommandId": 9,
-                    "activeCommandIndex": 19
+                    "activeCommandId": 2,
+                    "activeCommandIndex": 3
                 }
             ],
             "$type": "AtMycelia.Amanita.SaveSys.FlowchartSaveData"
         },
         {
             "marker": {
-                "id": "firstToTheParty",
+                "id": "DefaultMarker",
                 "order": 0
             },
             "$type": "AtMycelia.SaveSys.ProgressMarkerSaveData"

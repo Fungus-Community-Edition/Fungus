@@ -38,22 +38,21 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         public Flowchart Flowchart => _fcContext?.Flowchart;
         private FlowchartContext _fcContext;
 
-        
         protected virtual void ToggleSubs(bool on)
         {
             _eventBinder.Toggle(on);
         }
 
-        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            _sceneLifecycleCoordinator.HandleSceneLoaded(arg0, arg1,
-                () => ActiveFlowchart, _graphicsRenderer);
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
+            _graphicsRenderer?.RefreshNow();
         }
 
         private void OnSceneClosed(Scene scene)
         {
-            _sceneLifecycleCoordinator.HandleSceneClosed(scene, () => ActiveFlowchart,
-                _graphicsRenderer);
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
+            _graphicsRenderer?.RefreshNow();
         }
 
         public Block CreateBlock(Flowchart fc, Vector2 pos)
@@ -140,18 +139,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         private readonly FcwModuleHost _moduleHost = new FcwModuleHost();
-        private readonly FcwFlowchartStateService _flowchartStateService = new FcwFlowchartStateService();
-        private readonly FcwPlayModeFocusService _playModeFocusService = new FcwPlayModeFocusService();
         
         public FlowchartWindow()
         {
-            _selectionCoordinator = new FcwSelectionCoordinator(_flowchartStateService, _playModeFocusService);
-            _sceneLifecycleCoordinator = new FcwLifecycleCoordinator(_flowchartStateService, _playModeFocusService);
-            _playModeCoordinator = new FcwPlayModeCoordinator(_playModeFocusService, _flowchartStateService, 
-                _selectionCoordinator);
+            _selectionCoordinator = new FcwSelectionCoordinator();
+            _playModeCoordinator = new FcwPlayModeCoordinator();
             _teardownCoordinator = new FcwTeardownCoordinator();
             _clipboardCoordinator = new FcwClipboardCoordinator();
-            _refreshCoordinator = new FcwRefreshCoordinator(_flowchartStateService);
+            _refreshCoordinator = new FcwRefreshCoordinator();
             _eventBinder = new FcwEventBinder(_moduleHost, OnSelectedFlowchartChanged,
                 OnSceneOpened, OnSceneClosed,
                 OnSceneLoaded, OnPlayModeStateChanged,
@@ -159,7 +154,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         private readonly FcwSelectionCoordinator _selectionCoordinator;
-        private readonly FcwLifecycleCoordinator _sceneLifecycleCoordinator;
         private readonly FcwPlayModeCoordinator _playModeCoordinator;
         private readonly FcwTeardownCoordinator _teardownCoordinator;
         private readonly FcwClipboardCoordinator _clipboardCoordinator;
@@ -168,11 +162,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
 
         private void OnSelectedFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            _selectionCoordinator.HandleSelectionChanged(
-                previous,
-                current,
-                _fcContext,
-                _fcNameLabel,
+            _selectionCoordinator.HandleSelectionChanged(previous, current,
+                ref _fcContext, _fcNameLabel,
                 _zoomAmountLabel);
         }
 
@@ -249,7 +240,20 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             _selectionCoordinator.UpdateZoom(_zoomAmountLabel, newZoom);
         }
 
-        private Flowchart ActiveFlowchart => EditorSelectionTracker.ActiveFlowchart;
+        private Flowchart ActiveFlowchart
+        {
+            get
+            {
+                Flowchart result = EditorSelectionTracker.ActiveFlowchart;
+
+                if (result == null)
+                {
+                    result = EditorSelectionTracker.LastActiveFlowchart;
+                }
+
+                return result;
+            }
+        }
         private MissingFlowchartOverlay _missingOverlay;
         private UitkLabel _fcNameLabel, _zoomAmountLabel;
 
@@ -308,9 +312,58 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
             // right-clicking the scene in the hierarchy and selecting "Discard changes".
             // In that case, the active Flowchart may be destroyed without us knowing,
             // so we need to check validity and update accordingly.
-            _sceneLifecycleCoordinator.HandleSceneOpened(scene, () => ActiveFlowchart,
-                _fcContext, rootVisualElement,
-                MissingOverlay, _graphicsRenderer);
+            EnsureFlowchartForScene(_fcContext, rootVisualElement, MissingOverlay, _graphicsRenderer);
+            ResetActiveFlowchartSelections(() => ActiveFlowchart);
+            _graphicsRenderer?.RefreshNow();
+        }
+
+        private void ResetActiveFlowchartSelections(Func<Flowchart> activeFlowchartGetter)
+        {
+            if (activeFlowchartGetter == null)
+            {
+                return;
+            }
+
+            Flowchart flowchart = activeFlowchartGetter();
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            flowchart.ClearSelectedBlocks();
+            flowchart.ClearSelectedCommands();
+        }
+
+        private void EnsureFlowchartForScene(FlowchartContext context, VisualElement rootVisualElement,
+            MissingFlowchartOverlay missingOverlay, FcwGraphicsRenderer graphicsRenderer)
+        {
+            if (context == null)
+            {
+                return; // UI not built yet; CreateGUI will initialize.
+            }
+
+            if (context.Flowchart != null)
+            {
+                return; // Still valid.
+            }
+
+            Debug.Log("Seeking new flowchart for scene...");
+
+            Flowchart resolved = EditorSelectionTracker.ResolveActiveFlowchart();
+            if (resolved == null)
+            {
+                missingOverlay?.Show(rootVisualElement);
+                return;
+            }
+
+            missingOverlay?.Hide();
+            Flowchart previous = context.Flowchart;
+            context.Flowchart = resolved;
+            graphicsRenderer?.RefreshNow();
+            if (!ReferenceEquals(previous, resolved))
+            {
+                FlowchartWindowSignals.ChangedFlowchart(previous, resolved);
+            }
         }
 
         private void OnPlayModeStateChanged(PlayModeStateChange state)

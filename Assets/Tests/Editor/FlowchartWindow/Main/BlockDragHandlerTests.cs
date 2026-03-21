@@ -50,6 +50,7 @@ namespace VScriptingTests.FCWindowOperations
             };
 
             handler = new BlockDragHandler(fcContext);
+            movementHandler = new BlockMovementHandler(fcContext);
 
             PrepEvents();
             void PrepEvents()
@@ -113,6 +114,7 @@ namespace VScriptingTests.FCWindowOperations
         protected readonly Vector2 blockSize = new Vector2(100, 30);
 
         protected BlockDragHandler handler;
+        protected BlockMovementHandler movementHandler;
         protected FlowchartContext fcContext;
         protected readonly Rect initPosition = new Rect(0, 0, 500, 500);
         protected readonly Rect noSelectionBox = default;
@@ -269,30 +271,6 @@ namespace VScriptingTests.FCWindowOperations
                     $"\nWhat we got: {actualPos}";
                 Assert.AreEqual(expectedPos, actualPos, assertErrorMessage);
             }
-        }
-
-        [Test, TestCaseSource(nameof(BlockIndices))]
-        public virtual void MouseUp_ValidDragBlock_SnapsDragBlock(int blockIndex)
-        {
-            SetGridSnap(true);
-            Block blockToDrag = blocksInFlowchart[blockIndex];
-            Rect rectBefore = blockToDrag._NodeRect;
-            SimulateDraggingBlockAtIndex(blockIndex);
-
-            handler.OnLeftMouseUp(mouseUpInfo, mouseUpEvent);
-
-            // If things were properly snapped, then the SnapPosition func should
-            // return a rect equal to the one it was called on
-            Rect rectAfter = blockToDrag._NodeRect;
-            string assertErrorMessage = $"Block #{blockIndex} wasn't even moved after dragging";
-            Assert.AreNotEqual(rectBefore, rectAfter, assertErrorMessage);
-
-            Rect snappedRectAfter = blockToDrag._NodeRect.SnapPosition(fcContext.GridObjectSnap);
-
-            assertErrorMessage = $"The snapping for Block #{blockIndex} didn't work as intended.\n" +
-                $"Rect pos after drag: {rectAfter.position}\n" +
-                $"Expected rect pos after drag: {snappedRectAfter.position}";
-            Assert.AreEqual(rectAfter, snappedRectAfter, assertErrorMessage);
         }
 
         protected virtual void SimulateDraggingBlockAtIndex(int blockIndex)

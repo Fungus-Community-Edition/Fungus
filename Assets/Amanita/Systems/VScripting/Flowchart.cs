@@ -13,6 +13,7 @@ using UnityEngine.Serialization;
 using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace AtMycelia.Amanita.VScripting
@@ -176,41 +177,24 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
-            legacyVariables ??= new List<Variable>();
-            if (legacyVariables.Count == 0)
+            RegisterLegacyVars();
+            void RegisterLegacyVars()
             {
-                var found = GetComponents<Variable>();
-                legacyVariables.AddRange(found);
+                legacyVariables ??= new List<Variable>();
+                if (legacyVariables.Count == 0)
+                {
+                    var found = GetComponents<Variable>();
+                    legacyVariables.AddRange(found);
+                }
             }
 
             AssertOwnership();
-            PrepVarManager();
             RefreshBlockAndCommandCache();
 
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
 #endif
 
-        }
-
-        private void PrepVarManager()
-        {
-            if (!variableManager.IsInitted)
-            {
-                variableManager.Initialize(_oldMuscariables, legacyVariables);
-                // For now, let's not clear those lists
-
-#if UNITY_EDITOR
-                EditorUtility.SetDirty(this);
-#endif
-            }
-            else
-            {
-                _oldMuscariables.Clear();
-                legacyVariables.Clear();
-                variableManager.Refresh();
-            }
-                
         }
 
         private void RefreshBlockAndCommandCache()
@@ -339,12 +323,28 @@ namespace AtMycelia.Amanita.VScripting
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
+        private bool IsInTheScene
+        {
+            get
+            {
+                if (!gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
+                {
+                    return false;
+                }
+
+#if UNITY_EDITOR
+                //return PrefabStageUtility.GetPrefabStage(gameObject) == null;
+                return true;
+#else
+        return true;
+#endif
+            }
+        }
 
         public virtual void Refresh()
         {
             AssertUniqueID();
-            AssertOwnership();
+            AssertOwnership();//
 #if UNITY_EDITOR
             RefreshEditorCaches();
             UpdateHideFlags();
@@ -352,8 +352,6 @@ namespace AtMycelia.Amanita.VScripting
             CheckItemIds();
             CleanupComponents();
             UpdateVersion();
-            PrepVarManager(); // Just for the transition to the manager; we may get rid of this soon
-
         }
 
 #if UNITY_EDITOR
@@ -368,6 +366,56 @@ namespace AtMycelia.Amanita.VScripting
         }
 #endif
 
+#if UNITY_EDITOR
+        public void RefreshVariableManagerForEditorReload()
+        {
+            if (!IsInTheScene || Application.isPlaying)
+            {
+                return;
+            }
+
+            AssertOwnership();
+            variableManager.Refresh();
+        }
+
+        /// <summary>
+        /// Migrate legacy variables and old muscariables into the VariableManager, then clear the old lists. 
+        /// 
+        /// This should only be used in the editor, and is meant to be called by the 
+        /// FlowchartVariableManagerInitializer when scenes are loaded in the editor. This is to ensure that 
+        /// users don't lose their variables when we transition to the new VariableManager system, but also to 
+        /// avoid unnecessary migration in builds.
+        /// </summary>
+        /// <returns></returns>
+        public void EnsureVariableManagerMigrationForEditor(out bool migrated)
+        {
+            migrated = false;
+            if (!IsInTheScene || Application.isPlaying)
+            {
+                return;
+            }
+
+            bool needsMigration = _oldMuscariables.Count > 0 || legacyVariables.Count > 0;
+            if (!needsMigration)
+            {
+                return;
+            }
+
+            AssertOwnership();
+            if (!variableManager.IsInitted)
+            {
+                variableManager.Initialize(_oldMuscariables, legacyVariables);
+            }
+            else
+            {
+                variableManager.MigrateLegacyVariables(_oldMuscariables, legacyVariables);
+            }
+            _oldMuscariables.Clear();
+            legacyVariables.Clear();
+            variableManager.Refresh();
+            migrated = true;
+        }
+#endif
 
         protected virtual void AssertOwnership()
         {
@@ -408,10 +456,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 var component = components[i];
                 IUpdateable toUpdate = component as IUpdateable;
-                if (toUpdate != null)
-                {
-                    toUpdate.UpdateToVersion(version, AmanitaConstants.CurrentVersion);
-                }
+                toUpdate?.UpdateToVersion(version, AmanitaConstants.CurrentVersion);
             }
 
             version = AmanitaConstants.CurrentVersion;
@@ -1578,6 +1623,12 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
         protected virtual void LetUserKnowVarDoesntExist(string varName)
         {
             string warningMessage = $"Variable named {varName} in Flowchart {this.name} is just " +
@@ -1607,12 +1658,12 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-
         }
 
         public void OnAfterDeserialize()
         {
         }
+
 
 #if UNITY_EDITOR
         public T AddCommand<T>(Block toAddTo) where T : Command

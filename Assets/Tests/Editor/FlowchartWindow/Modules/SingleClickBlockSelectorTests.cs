@@ -24,6 +24,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         [SetUp]
         public void SetUp()
         {
+            AtMycelia.Amanita.EditorUtils.TestUtils.ResetFlowchartWindowSingleton();
             previousSelection = Selection.activeGameObject;
 
             flowchartObject = new GameObject("Flowchart_Test");
@@ -68,7 +69,9 @@ namespace VScriptingTests.FlowchartWindow.Modules
             Command command = flowchart.AddCommand<DummyCommand>(block);
 
             flowchart.SelectedCommands = new List<Command> { command };
-            syncer.OnBlockClicked(block, null);
+
+            Event dummyEvent = new Event();
+            syncer.OnBlockClicked(block, dummyEvent);
 
             Assert.That(flowchart.SelectedBlock, Is.EqualTo(block));
             Assert.That(flowchart.SelectedCommandCount, Is.EqualTo(0));
@@ -83,7 +86,8 @@ namespace VScriptingTests.FlowchartWindow.Modules
             flowchart.SelectedBlock = block;
             flowchart.SelectedCommands = new List<Command> { command };
 
-            syncer.OnBlockClicked(block, null);
+            Event dummyEvent = new Event();
+            syncer.OnBlockClicked(block, dummyEvent);
 
             Assert.That(flowchart.SelectedBlock, Is.EqualTo(block));
             Assert.That(flowchart.SelectedCommandCount, Is.EqualTo(1));
