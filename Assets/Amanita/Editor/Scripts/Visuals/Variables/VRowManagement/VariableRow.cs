@@ -80,6 +80,14 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             AmanitaEditorSignals.ValueFieldChanged(this, obj);
         }
 
+        /// <summary>
+        /// Test helper to bypass UI event timing and apply a value change directly.
+        /// </summary>
+        public void ApplyValueForTests(object value)
+        {
+            OnValueFieldChanged(value);
+        }
+
         public void Dispose()
         {
             if (_isDisposed)

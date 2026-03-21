@@ -388,7 +388,7 @@ namespace VScriptingTests.VariableOperations
             var flowchart = fcHolder.AddComponent<Flowchart>();
 
             // Hook it into the view
-            _view.SetFlowchart(flowchart);
+            _view.SetSource(flowchart);
 
             // Simulate losing the reference (as if after undo/redo)
             var fiFlowchart = viewType.GetField("_flowchart", bindingFlags);
@@ -422,7 +422,7 @@ namespace VScriptingTests.VariableOperations
                     RowFactory = _factory
                 });
 
-                testView.SetFlowchart(flowchart);
+                testView.SetSource(flowchart);
 
                 // Act
                 var miHandleUndoRedo = viewType.GetMethod("HandleUndoRedoPerformed", bindingFlags);
@@ -450,7 +450,7 @@ namespace VScriptingTests.VariableOperations
             AssignLegacyVariables(flowchart, new List<Variable> { firstVar, secondVar });
             flowchart.Refresh();
 
-            _view.SetFlowchart(flowchart);
+            _view.SetSource(flowchart);
 
             // Act
             var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
@@ -475,7 +475,7 @@ namespace VScriptingTests.VariableOperations
             AssignLegacyVariables(flowchart, new List<Variable> { firstVar, destroyedVar, null });
             flowchart.Refresh();
 
-            _view.SetFlowchart(flowchart);
+            _view.SetSource(flowchart);
 
             // Act
             var miSync = viewType.GetMethod("SyncFromFlowchart", bindingFlags);
@@ -516,10 +516,10 @@ namespace VScriptingTests.VariableOperations
 
             public TestVariableListView(VariableListViewInitArgs initArgs) : base(initArgs) { }
 
-            protected override void SyncFromFlowchart()
+            protected override void SyncFromSource()
             {
                 SyncCalled = true;
-                base.SyncFromFlowchart();
+                base.SyncFromSource();
             }
         }
 
