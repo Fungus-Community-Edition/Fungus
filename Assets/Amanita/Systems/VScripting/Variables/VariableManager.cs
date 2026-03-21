@@ -126,6 +126,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public void AddMultiVars(IEnumerable<IVariable> toAdd)
         {
+            EnsureInitialized();
             foreach (var elem in toAdd)
             {
                 AddVariable(elem);
@@ -139,6 +140,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public IVariable AddVariable(IVariable toAdd)
         {
+            EnsureInitialized();
             Muscariable result = AddAsMuscari(toAdd);
             return result;
         }
@@ -150,6 +152,7 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public Muscariable AddAsMuscari(IVariable toAdd)
         {
+            EnsureInitialized();
             bool alreadyRegistered = legacyVariables.ContainsReference(toAdd) ||
                 muscariables.ContainsReference(toAdd);
             if (alreadyRegistered)
@@ -354,6 +357,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
+            EnsureInitialized();
             Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
             Integrate(muscaVar);
             return muscaVar;
@@ -361,6 +365,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public Muscariable AddVariable(Muscariable toAdd)
         {
+            EnsureInitialized();
             return AddAsMuscari(toAdd);
         }
 
@@ -402,6 +407,7 @@ namespace AtMycelia.Amanita.VScripting
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
             VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
         {
+            EnsureInitialized();
             TVarType result = new TVarType();
             result.Value = initValue;
             result.Scope = scope;
@@ -422,6 +428,7 @@ namespace AtMycelia.Amanita.VScripting
             TValHeld value = default,
             VariableScope scope = VariableScope.Private)
         {
+            EnsureInitialized();
             Type valueType = typeof(TValHeld);
             
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
@@ -442,6 +449,43 @@ namespace AtMycelia.Amanita.VScripting
             VariableAdded(toRegister);
 
             return newVar;
+        }
+
+        /// <summary>
+        /// This function exists to help make sure we don't lose our vars during any setup process (especially
+        /// those in unit tests). This should be called at the beginning of any public function that modifies
+        /// the variables in any way, to ensure that if we haven't been initialized yet for some reason, 
+        /// we will be before we try to do anything with the vars. 
+        /// 
+        /// This is especially important for functions that might be called from outside the manager, since 
+        /// we can't guarantee that the caller will have called Initialize() first. It's less crucial for 
+        /// private functions that are only called from other functions in this class, since we can just 
+        /// make sure to call EnsureInitialized() at the beginning of those public functions, but it 
+        /// doesn't hurt to be extra safe.
+        /// </summary>
+        private void EnsureInitialized()
+        {
+            if (IsInitted)
+            {
+                return;
+            }
+
+            Refresh();
+            UpdateNextValidId();
+            IsInitted = true;
+        }
+
+        private void UpdateNextValidId()
+        {
+            byte maxIdInUse = 0;
+            foreach (var elem in lookup.Values)
+            {
+                if (elem.ItemId > maxIdInUse)
+                {
+                    maxIdInUse = elem.ItemId;
+                }
+            }
+            nextValidVarID = (byte)(maxIdInUse + 1);
         }
 
 

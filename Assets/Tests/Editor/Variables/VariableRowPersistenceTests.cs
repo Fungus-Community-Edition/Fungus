@@ -65,7 +65,7 @@ namespace VScriptingTests.VariableRows
             _flowchart.AlwaysKeepGuid = false;
             _flowchart.Refresh();
 
-            _uiHost = ScriptableObject.CreateInstance<TestHostWindow>();
+            _uiHost = ScriptableObject.CreateInstance<TestHostWindow>();//
             InitializeVariableUi();
             _uiHost.rootVisualElement.Add(_uiRoot);
             _uiHost.ShowAuxWindow();
@@ -151,6 +151,7 @@ namespace VScriptingTests.VariableRows
             yield return null;
             Assert.NotNull(variable, "Variable creation failed.");
             byte variableId = variable.ItemId;
+            string variableKey = variable.Key;
 
             VariableRow row = GetRowFor(variable);
             Assert.NotNull(row, "Variable row could not be materialized.");
@@ -162,12 +163,12 @@ namespace VScriptingTests.VariableRows
             Assert.AreEqual(newValue, variable.BoxedValue, "Value change was not applied.");
 
             Undo.PerformUndo();
-            variable = _flowchart.GetVariable(variableId);
+            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
             Assert.NotNull(variable, "Variable was not found after undo.");
             Assert.AreEqual(originalValue, variable.BoxedValue, "Undo did not restore the original value.");
 
             Undo.PerformRedo();
-            variable = _flowchart.GetVariable(variableId);
+            variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
             Assert.NotNull(variable, "Variable was not found after redo.");
             Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
         }
@@ -462,7 +463,6 @@ namespace VScriptingTests.VariableRows
             }
 
             applyValue(valueElement, newValue);
-            //row.ApplyValueForTests(newValue);
         }
 
         private IDictionary<Type, Type> BuildHandlerLookup()

@@ -1516,7 +1516,7 @@ MonoBehaviour:
     - rid: 846271704159223897
       type: {class: StringMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
-        scope: 0
+        scope: 1
         key: firstMarkerID
         itemID: 3
         value: first
@@ -1527,12 +1527,12 @@ MonoBehaviour:
         scope: 0
         key: someColor
         itemID: 4
-        value: {r: 0.19999999, g: 0.7647059, b: 0.26189932, a: 0}
+        value: {r: 0.7647059, g: 0.19999999, b: 0.29125303, a: 0}
         startValue: {r: 0, g: 0, b: 0, a: 0}
     - rid: 4605209356947947849
       type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
-        scope: 0
+        scope: 1
         key: Var
         itemID: 7
         value: 1.234

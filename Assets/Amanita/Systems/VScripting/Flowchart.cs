@@ -1645,14 +1645,24 @@ namespace AtMycelia.Amanita.VScripting
             // doesn't lose all the variables that were added in Edit Mode. We also want to make sure
             // that anything in our old var lists doesn't get left out of the manager.
             PrepVarManager();
-            _oldMuscariables.Clear();
-            legacyVariables.Clear();
-            variableManager.Refresh();
             AssertOwnership();
+            variableManager.Refresh();
+            
         }
 
         public void OnAfterDeserialize()
         {
+            if (this == null)
+            {
+                return;
+            }
+
+            PrepVarManager();
+            AssertOwnership();
+            variableManager.Refresh();
+
+            _oldMuscariables.Clear();
+            legacyVariables.Clear();
         }
 
 
