@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -48,90 +49,113 @@ namespace AtMycelia.Amanita.VScripting
 
         public void Rebuild(IVariableSource localSource = null)
         {
-            var newVars = new Dictionary<string, IVariable>();
-            var newVarsByType = new Dictionary<Type, Dictionary<string, IVariable>>();
+            _vars.Clear();
+            _varsByType.Clear();
 
-            // Local
-            if (localSource != null)
+            RegisterLocalVars();
+            void RegisterLocalVars()
             {
-                foreach (var toRegister in localSource.Variables)
+                if (localSource != null)
                 {
-                    Register(toRegister.Key, toRegister);
-                    bool isLegacyVariable = toRegister is Variable;
-                    if (!isLegacyVariable)
+                    foreach (var toRegister in localSource.Variables)
                     {
-                        toRegister.Owner = localSource;
+                        Register(toRegister.Key, toRegister);
+                        bool isLegacyVariable = toRegister is Variable;
+                        if (!isLegacyVariable)
+                        {
+                            toRegister.Owner = localSource;
+                        }
+                    }
+                }
+            }
+            
+            RegisterOtherFcVars();
+            void RegisterOtherFcVars()
+            {
+                var amanitaManager = AmanitaManager.S;
+                IReadOnlyList<Flowchart> cachedFcs = FindFlowchartsToGoThrough();
+                IReadOnlyList<Flowchart> FindFlowchartsToGoThrough()
+                {
+                    IReadOnlyList<Flowchart> cachedFcs = FlowchartRegistry.GetFlowcharts()
+                        .Where(fc => fc != null && !ReferenceEquals(fc, localSource)).ToArray();
+                    return cachedFcs;
+                }
+
+                foreach (var otherFc in cachedFcs)
+                {
+                    foreach (var toRegister in otherFc.Variables)
+                    {
+                        if (toRegister.Scope != VariableScope.Public)
+                        {
+                            continue;
+                        }
+
+                        // To make it clear to users these variables are _not_ local to the source they're editing from,
+                        // we prefix said vars with their owners' names based on a specific format.
+                        string key = string.Format(_nonLocalFlowchartKeyFormat, otherFc.gameObject.name, toRegister.Key);
+                        Register(key, toRegister);
+                        bool isLegacyVariable = toRegister is Variable;
+                        if (!isLegacyVariable)
+                        {
+                            toRegister.Owner = otherFc;
+                        }
                     }
                 }
             }
 
-            void Register(string key, IVariable toRegister)
+            RegisterGlobals();
+            void RegisterGlobals()
             {
-                newVars[key] = toRegister;
+                IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider()
+                    .Where(source => source != null && source != localSource as UnityObj).ToArray();
+                globalSources ??= emptySources;
 
-                var type = toRegister.ContentType;
-                newVarsByType.TryGetValue(type, out var dictForContentType);
-                bool weHaveDictForContentType = dictForContentType != null;
-
-                if (!weHaveDictForContentType)
+                foreach (var source in globalSources)
                 {
-                    dictForContentType = new Dictionary<string, IVariable>();
-                    newVarsByType[type] = dictForContentType;
-                }
-                dictForContentType[key] = toRegister;
-            }
-
-            // Other Flowcharts
-            var amanitaManager = AmanitaManager.S;
-            IReadOnlyList<Flowchart> cachedFcs = amanitaManager != null && amanitaManager.FlowchartsInScene != null
-                ? amanitaManager.FlowchartsInScene
-                : Array.Empty<Flowchart>();
-
-            foreach (var otherChart in cachedFcs.Where(fc => fc != null && !ReferenceEquals(fc, localSource)))
-            {
-                foreach (var toRegister in otherChart.Variables)
-                {
-                    if (toRegister == null)
+                    foreach (var toRegister in source.Variables)
                     {
-                        continue;
-                    }
-                    string key = $"{otherChart.gameObject.name}/{toRegister.Key}";
-                    Register(key, toRegister);
-                    bool isLegacyVariable = toRegister is Variable;
-                    if (!isLegacyVariable)
-                    {
-                        toRegister.Owner = otherChart;
+                        string key = string.Format(_globalSourceKeyFormat, source.name, toRegister.Key);
+                        Register(key, toRegister);
+                        bool isLegacyVariable = toRegister is Variable;
+                        if (!isLegacyVariable)
+                        {
+                            toRegister.Owner = source;
+                        }
                     }
                 }
             }
 
-            // Globals
-            IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider();
-            if (globalSources == null)
-            {
-                globalSources = emptySources;
-            }
-
-            foreach (var source in globalSources)
-            {
-                if (source == null) continue;
-                foreach (var toRegister in source.Variables)
-                {
-                    string key = $"~{source.name}~/{toRegister.Key}";
-                    Register(key, toRegister);
-                    bool isLegacyVariable = toRegister is Variable;
-                    if (!isLegacyVariable)
-                    {
-                        toRegister.Owner = source;
-                    }
-                }
-            }
-
-            _vars = newVars;
-            _varsByType = newVarsByType;
             RegistryChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Registers the given variable under the given key, and also adds it to the secondary index for its content type.
+        /// </summary>
+        private void Register(string key, IVariable toRegister)
+        {
+            // The key we want to register the var under won't necessarily be the same as the
+            // var's own key, since we might want to prefix or postfix it with something.
+            _vars[key] = toRegister;
+
+            var type = toRegister.ContentType;
+            var dictForContentType = EnsureDictForContentType(type);
+            dictForContentType[key] = toRegister;
+        }
+
+        private Dictionary<string, IVariable> EnsureDictForContentType(Type contentType)
+        {
+            _varsByType.TryGetValue(contentType, out var dictForContentType);
+            bool weHaveDictForContentType = dictForContentType != null;
+            if (!weHaveDictForContentType)
+            {
+                dictForContentType = new Dictionary<string, IVariable>();
+                _varsByType[contentType] = dictForContentType;
+            }
+            return dictForContentType;
+        }
+
+        private static readonly string _nonLocalFlowchartKeyFormat = "[{0}]/{1}";
+        private static readonly string _globalSourceKeyFormat = "~{0}~/{1}";
         public IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null)
         {
             IReadOnlyDictionary<string, IVariable> result;

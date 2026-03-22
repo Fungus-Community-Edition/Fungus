@@ -38,6 +38,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             ClearEditors();
             Flowchart currentFc = EditorSelectionTracker.ActiveFlowchart;
+            if (currentFc == null)
+            {
+                currentFc = EditorSelectionTracker.LastActiveFlowchart;
+            }
             if (currentFc != null)
             {
                 //Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");

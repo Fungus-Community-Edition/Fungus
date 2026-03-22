@@ -16,7 +16,6 @@ MonoBehaviour:
   uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
   alwaysKeepGuid: 1
   variables:
-  - rid: 7903258335965610043
   - rid: 6177420756002537546
   - rid: 6177420756002537547
   - rid: 6177420756002537548
@@ -56,12 +55,4 @@ MonoBehaviour:
         key: uiHover
         itemID: 10
         value: {fileID: 8300000, guid: 647069b6aaf1d0e48b15259536799b3c, type: 3}
-        startValue: {fileID: 0}
-    - rid: 7903258335965610043
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: cuteBgm
-        itemID: 4
-        value: {fileID: 8300000, guid: c2b6a16176ef3b54d8b7aeca96c66316, type: 3}
         startValue: {fileID: 0}

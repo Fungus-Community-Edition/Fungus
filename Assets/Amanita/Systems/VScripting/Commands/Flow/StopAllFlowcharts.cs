@@ -21,7 +21,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         {
             base.OnEnter();
 
-            var inScene = AmanitaManager.S.FlowchartsInScene;
+            var inScene = FlowchartRegistry.GetSceneFlowcharts();
             for (int i = 0; i < inScene.Count; i++)
             {
                 var fChart = inScene[i];

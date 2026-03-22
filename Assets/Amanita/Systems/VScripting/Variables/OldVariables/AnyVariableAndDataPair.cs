@@ -127,12 +127,12 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-
+            //varRef.Refresh();
         }
 
         public void OnAfterDeserialize()
         {
-            varRef.Refresh();
+            
         }
     }
 }

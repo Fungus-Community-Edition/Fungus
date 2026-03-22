@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
@@ -174,7 +175,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             IVariable selectedVariable = varData.VarRef;
 
             // Build options
-            var ammieManager = AmanitaManager.S;
             var _labelsSeen = new HashSet<string>();
             var orderedLabels = new List<string>();
             var orderedVars = new List<IVariable>();
@@ -285,24 +285,25 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 bool choseLiteralValue = chosenNow == null;
 
                 // Update owner fields on backing varRef
-                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
-                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("owningVsa");
+                SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("legacyOwningFc");
+                SerializedProperty owningVsaProp = backingVarRefProp.FindPropertyRelative("legacyOwningVsa");
+                SerializedProperty ownerProp = backingVarRefProp.FindPropertyRelative("owningSource");
 
                 if (choseLiteralValue)
                 {
                     // Leave Flowchart owner to current local flowchart to keep context; clear VSA owner
-                    owningFcProp.objectReferenceValue = localFlowchart;
+                    owningFcProp.objectReferenceValue = null;
                     owningVsaProp.objectReferenceValue = null;
+                    ownerProp.objectReferenceValue = localFlowchart;
                     itemIdProp.intValue = Variable.InvalidID;
                 }
                 else
                 {
                     var vOwner = chosenNow.Owner;
-                    var fChart = vOwner as Flowchart;
-                    var vsa = vOwner as VariableSourceAsset;
 
-                    owningFcProp.objectReferenceValue = fChart;
-                    owningVsaProp.objectReferenceValue = vsa;
+                    owningFcProp.objectReferenceValue = null;
+                    owningVsaProp.objectReferenceValue = null;
+                    ownerProp.objectReferenceValue = vOwner as UnityObj;
                     itemIdProp.intValue = chosenNow.ItemId;
                 }
 

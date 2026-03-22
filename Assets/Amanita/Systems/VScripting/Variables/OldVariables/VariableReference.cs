@@ -35,16 +35,16 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                // We want this calculated purely based on the stored id as well as the 
-                // owner referenced
-                RefreshOwner();
-                IVariable result = null;
-
                 if (itemId == Muscariable.InvalidID)
                 {
                     //Debug.LogWarning($"VariableReference: Variable is null. Owner is {VarOwner}");
                     return null;
                 }
+
+                // We want this calculated purely based on the stored id as well as the 
+                // owner referenced
+                RefreshOwner();
+                IVariable result = null;
 
                 if (VarOwner != null)
                 {
@@ -75,15 +75,15 @@ namespace AtMycelia.Amanita.VScripting
         {
             varOwner = null;
 
-            if (owningSource == null)
+            if (IsUnityObjectNull(owningSource))
             {
-                if (legacyOwningFc != null)
+                if (!IsUnityObjectNull(legacyOwningFc))
                 {
                     owningSource = legacyOwningFc;
                     legacyOwningFc = null;
                     legacyOwningVsa = null;
                 }
-                else if (legacyOwningVsa != null)
+                else if (!IsUnityObjectNull(legacyOwningVsa))
                 {
                     owningSource = legacyOwningVsa;
                     legacyOwningVsa = null;
@@ -92,6 +92,23 @@ namespace AtMycelia.Amanita.VScripting
 
             varOwner ??= owningSource as Flowchart;
             varOwner ??= owningSource as VariableSourceAsset;
+        }
+
+        private static bool IsUnityObjectNull(UnityObj unityObj)
+        {
+            if (ReferenceEquals(unityObj, null))
+            {
+                return true;
+            }
+
+            try
+            {
+                return unityObj == null;
+            }
+            catch (System.InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         private IVariableSource varOwner;

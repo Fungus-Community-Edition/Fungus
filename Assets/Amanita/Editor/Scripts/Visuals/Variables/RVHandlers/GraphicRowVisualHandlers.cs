@@ -55,7 +55,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 return;
             }
 
-            colorValueField.SetValueWithoutNotify((Color)_currentVariable.BoxedValue);
+            Color currentCol = (Color)_currentVariable.BoxedValue;
+            colorValueField.SetValueWithoutNotify(currentCol);
             colorValueField.MarkDirtyRepaint();
         }
     }
