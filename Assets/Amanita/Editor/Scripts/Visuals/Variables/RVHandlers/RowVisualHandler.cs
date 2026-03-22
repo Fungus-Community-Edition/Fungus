@@ -28,6 +28,13 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             RowRoot?.MarkDirtyRepaint();
             KeyField?.MarkDirtyRepaint();
             ScopeField?.MarkDirtyRepaint();
+            bool shouldHideScopeField = Variable != null && Variable.Owner is ScriptableObject;
+            if (shouldHideScopeField)
+            {
+                // Variables belonging to ScriptableObjects such as VariableSourceAssets
+                // are meant to be global, and thus showing their Scope fields is misleading.
+                ScopeField.visible = false;
+            }
             ToggleSubs(true);
         }
 

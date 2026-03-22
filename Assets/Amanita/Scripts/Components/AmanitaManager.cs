@@ -83,8 +83,6 @@ namespace AtMycelia.Amanita
         // ^Relative to Resources folder, hence this being an empty string
         private static ShadowDatabase shadowDb;
 
-        public IReadOnlyList<Flowchart> FlowchartsInScene => FlowchartRegistry.GetFlowcharts();
-
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
@@ -244,7 +242,6 @@ namespace AtMycelia.Amanita
             FetchSubmodules();
             void FetchSubmodules()
             {
-                FlowchartRegistry.EnsureInitialized(true);
                 CameraManager = GetComponentInChildren<CameraManager>();
                 EventDispatcher = GetComponentInChildren<EventDispatcher>();
                 NarrativeLog = GetComponentInChildren<NarrativeLog>();

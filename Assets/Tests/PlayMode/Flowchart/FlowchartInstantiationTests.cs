@@ -85,7 +85,7 @@ namespace VScriptingTests.FlowchartLifecycle
             yield return null;
 
             // Assert
-            var flowcharts = AmanitaManager.S.FlowchartsInScene;
+            var flowcharts = FlowchartRegistry.GetSceneFlowcharts();
             Assert.IsTrue(flowcharts.Contains(testFc), "Flowchart should be present in CachedFlowcharts after OnEnable.");
 
         }
@@ -94,7 +94,7 @@ namespace VScriptingTests.FlowchartLifecycle
         public IEnumerator Flowchart_RemovesFromCachedFlowcharts_OnDestroy()
         {
             yield return null;
-            var cachedFcs = AmanitaManager.S.FlowchartsInScene;
+            var cachedFcs = FlowchartRegistry.GetSceneFlowcharts();
             Assert.IsTrue(cachedFcs.Contains(testFc), 
                 "Precondition failed: Flowchart not added to cache.");
 
@@ -102,7 +102,7 @@ namespace VScriptingTests.FlowchartLifecycle
             testFc.OnTearDown();
             UnityObj.Destroy(fcHolder);
             yield return null;
-            cachedFcs = AmanitaManager.S.FlowchartsInScene; // Since FlowchartsInScene only returns a snapshot
+            cachedFcs = FlowchartRegistry.GetSceneFlowcharts(); // Since FlowchartsInScene only returns a snapshot
             Assert.IsFalse(cachedFcs.Contains(testFc), 
                 "Flowchart should be removed from CachedFlowcharts on OnDisable.");
 
