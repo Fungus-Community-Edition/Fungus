@@ -191,8 +191,17 @@ namespace AtMycelia.Amanita.VScripting
             AssertOwnership();
             RefreshBlockAndCommandCache();
 
+            if (!variableManager.IsInitted)
+            {
+                variableManager.Initialize(_oldMuscariables, legacyVariables);
+            }
+            else
+            {
+                variableManager.Refresh();
+            }
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
+            EditorUtility.SetDirty(this);
 #endif
 
         }
@@ -244,7 +253,7 @@ namespace AtMycelia.Amanita.VScripting
 
         protected virtual IEnumerator HandleGameStartedBlocks()
         {
-            IList<GameStarted> gsEventHandler = GetComponentsInChildren<GameStarted>();
+            IList<GameStarted> gsEventHandler = GetComponents<GameStarted>();
 
             if (gsEventHandler.Count == 0)
             {
@@ -256,7 +265,8 @@ namespace AtMycelia.Amanita.VScripting
                 yield return null;
             }
 
-            foreach (var elem in gsEventHandler)
+
+            foreach (var elem in gsEventHandler)//
             {
                 elem.Trigger();
             }
@@ -286,6 +296,7 @@ namespace AtMycelia.Amanita.VScripting
 
             AmanitaManager.EnsureExists();
             Refresh();
+            MigrateStuffToVariableManager();//
             ToggleSubs(true);
             variableManager.OnEnable();
 
@@ -398,10 +409,25 @@ namespace AtMycelia.Amanita.VScripting
             bool needsMigration = _oldMuscariables.Count > 0 || legacyVariables.Count > 0;
             if (!needsMigration)
             {
+                variableManager.Refresh();
+                return;
+            }
+
+            MigrateStuffToVariableManager();
+            migrated = true;
+        }
+#endif
+
+        private void MigrateStuffToVariableManager()
+        {
+            bool needsMigration = _oldMuscariables.Count > 0 || legacyVariables.Count > 0;
+            if (!needsMigration)
+            {
                 return;
             }
 
             AssertOwnership();
+
             if (!variableManager.IsInitted)
             {
                 variableManager.Initialize(_oldMuscariables, legacyVariables);
@@ -413,9 +439,10 @@ namespace AtMycelia.Amanita.VScripting
             _oldMuscariables.Clear();
             legacyVariables.Clear();
             variableManager.Refresh();
-            migrated = true;
-        }
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
 #endif
+        }
 
         protected virtual void AssertOwnership()
         {
@@ -833,6 +860,8 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
+                variableManager ??= new VariableManager();
+                variableManager.VarOwner = this;
                 var result = variableManager.Variables;
                 return result;
             }

@@ -22,25 +22,23 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 return;
             }
 
-            if (state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
+            EditorApplication.delayCall += () =>
             {
-                EditorApplication.delayCall += () =>
+                if (context == null)
                 {
-                    if (context == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    Flowchart activeFlowchart = EditorSelectionTracker.ResolveActiveFlowchart();
-                    if (activeFlowchart != null)
-                    {
-                        Selection.activeGameObject = activeFlowchart.gameObject;
-                        context.Flowchart = activeFlowchart;
-                    }
+                Flowchart activeFlowchart = EditorSelectionTracker.ResolveActiveFlowchart();
+                if (activeFlowchart != null)
+                {
+                    Selection.activeGameObject = activeFlowchart.gameObject;
+                    context.Flowchart = activeFlowchart;
+                }
 
-                    graphicsRenderer?.ResetVisuals();
-                };
-            }
+                graphicsRenderer?.ResetVisuals();
+            };
+            
         }
     }
 }

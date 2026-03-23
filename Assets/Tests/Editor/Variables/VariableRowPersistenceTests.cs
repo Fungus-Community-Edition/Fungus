@@ -545,7 +545,7 @@ namespace VScriptingTests.VariableRows
             Sprite testSprite = sprites.Count > 0 ?
                 sprites[0] :
                 null;
-            Debug.Log($"Test sprite is {testSprite}");
+            //Debug.Log($"Test sprite is {testSprite}");
             yield return new VariableRowTestCase(
                 "SpriteVariable",
                 fc => fc.AddNewMuscariable<Sprite, SpriteMuscariable>("SpriteVar", testSprite),

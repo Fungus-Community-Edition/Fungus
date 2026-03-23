@@ -4,6 +4,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using AtMycelia.Amanita.VScripting;
+using UnityObj = UnityEngine.Object;
+using System;
 
 namespace AtMycelia.Amanita.EditorUtils
 {
@@ -12,19 +14,45 @@ namespace AtMycelia.Amanita.EditorUtils
     {
         static FlowchartVariableManagerInitializer()
         {
+            DelayedInitializeFlowcharts();
+            ToggleSubs(false);
+            ToggleSubs(true);
+        }
+
+        private static void DelayedInitializeFlowcharts()
+        {
             EditorApplication.delayCall += InitializeFlowcharts;
-            EditorSceneManager.sceneOpened += OnSceneOpened;
-            EditorSceneManager.sceneClosed += OnSceneClosed;
+        }
+
+        private static void OnAfterAssemblyReload()
+        {
+            DelayedInitializeFlowcharts();//
+        }
+
+        private static void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+                EditorSceneManager.sceneOpened += OnSceneOpened;
+                EditorSceneManager.sceneClosed += OnSceneClosed;
+            }
+            else
+            {
+                AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+                EditorSceneManager.sceneOpened -= OnSceneOpened;
+                EditorSceneManager.sceneClosed -= OnSceneClosed;
+            }
         }
 
         private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            InitializeFlowcharts();
+            DelayedInitializeFlowcharts();
         }
 
         private static void OnSceneClosed(Scene scene)
         {
-            InitializeFlowcharts();
+            DelayedInitializeFlowcharts();
         }
 
         private static void InitializeFlowcharts()
@@ -34,29 +62,29 @@ namespace AtMycelia.Amanita.EditorUtils
                 return;
             }
 
-            var flowcharts = Resources.FindObjectsOfTypeAll<Flowchart>();
+            var flowcharts = UnityObj.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             if (flowcharts == null || flowcharts.Length == 0)
             {
                 return;
             }
 
-            foreach (var flowchart in flowcharts)
+            foreach (var elem in flowcharts)
             {
-                if (flowchart == null || flowchart.gameObject == null)
+                if (elem == null || elem.gameObject == null)
                 {
                     continue;
                 }
 
-                var scene = flowchart.gameObject.scene;
+                var scene = elem.gameObject.scene;
                 if (!scene.IsValid() || !scene.isLoaded)
                 {
                     continue;
                 }
 
-                flowchart.EnsureVariableManagerMigrationForEditor(out bool migrated);
+                elem.EnsureVariableManagerMigrationForEditor(out bool migrated);
                 if (migrated)
                 {
-                    EditorUtility.SetDirty(flowchart);
+                    EditorUtility.SetDirty(elem);
                     EditorSceneManager.MarkSceneDirty(scene);
                 }
             }

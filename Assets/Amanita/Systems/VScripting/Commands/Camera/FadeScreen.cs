@@ -32,6 +32,15 @@ namespace AtMycelia.Amanita.VScripting
 
         [SerializeField] protected ScriptableObject fadeTweener;
 
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            variableDataCache.Add(duration);
+            variableDataCache.Add(targetAlpha);
+            variableDataCache.Add(waitUntilFinished);
+            variableDataCache.Add(fadeColor);
+        }
+
         protected virtual void Awake()
         {
             ValidateTweeners();
@@ -64,28 +73,22 @@ namespace AtMycelia.Amanita.VScripting
 
         private void BackwardsCompatibility()
         {
-            if (_oldDuration >= 0)
+            if (!_migrated)
             {
                 duration.Value = _oldDuration;
-                _oldDuration = -1;
-            }
-
-            if (_oldTargetAlpha >= 0)
-            {
                 targetAlpha.Value = _oldTargetAlpha;
-                _oldTargetAlpha = -1;
-            }
-
-            if (_oldWaitUntilFinished != waitUntilFinished.Value)
-            {
                 waitUntilFinished.Value = _oldWaitUntilFinished;
-                _oldWaitUntilFinished = false;
-            }
-
-            if (_oldFadeColor != fadeColor.Value)
-            {
                 fadeColor.Value = _oldFadeColor;
+
+                _oldDuration = -1;
+                _oldTargetAlpha = -1;
+                _oldWaitUntilFinished = false;
                 _oldFadeColor = Color.clear;
+                
+                _migrated = true;
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
             }
         }
 
@@ -101,6 +104,9 @@ namespace AtMycelia.Amanita.VScripting
         [FormerlySerializedAs("fadeColor")]
         [SerializeField] [HideInInspector] protected Color _oldFadeColor = Color.black;
 
+        [SerializeField]
+        [HideInInspector] private bool _migrated;
+
         protected IGeneralTweenAdapter<float> doFade;
 
         #region Public members
@@ -115,22 +121,23 @@ namespace AtMycelia.Amanita.VScripting
                 Texture2D result = fadeTexture;
                 if (result == null)
                 {
-                    result = CameraManager.CreateColorTexture(fadeColor, 32, 32);
+                    result = CameraManager.CreateColorTexture(fadeColor.Value, 32, 32);
                 }
 
                 return result;
             }
 
-            cameraManager.Fade(targetAlpha, duration, OnFadeDone, DoFadeTween);
+            cameraManager.Fade(targetAlpha.Value, duration.Value, OnFadeDone, DoFadeTween);
             void OnFadeDone()
             {
-                if (waitUntilFinished)
+                if (waitUntilFinished.Value)
                 {
+                    Debug.Log($"Fade finished, continuing with next command.");
                     Continue();
                 }
             }
 
-            if (!waitUntilFinished)
+            if (!waitUntilFinished.Value)
             {
                 Continue();
             }

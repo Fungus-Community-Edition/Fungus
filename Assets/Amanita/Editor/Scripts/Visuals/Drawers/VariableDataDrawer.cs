@@ -175,7 +175,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             IVariable selectedVariable = varData.VarRef;
 
             // Build options
-            var ammieManager = AmanitaManager.S;
             var _labelsSeen = new HashSet<string>();
             var orderedLabels = new List<string>();
             var orderedVars = new List<IVariable>();

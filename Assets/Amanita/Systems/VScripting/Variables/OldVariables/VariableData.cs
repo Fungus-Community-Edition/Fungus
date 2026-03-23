@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AtMycelia.Amanita.VScripting
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
-    public abstract class VariableData : IVariableData
+    public abstract class VariableData : IVariableData, IRefreshable
     {
         [SerializeField] protected VariableReference backingVarRef = new VariableReference();
         protected virtual Variable LegacyVarRef
@@ -243,6 +243,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
+                backingVarRef.Refresh();
                 if (RepresentingVar)
                 {
                     return VarRef.BoxedValue;
