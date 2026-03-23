@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using AtMycelia.Amanita.Tweening;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -15,16 +16,16 @@ namespace AtMycelia.Amanita.VScripting
     public class FadeScreen : Command 
     {
         [Tooltip("Time for fade effect to complete")]
-        [SerializeField] protected float duration = 1f;
+        [SerializeField] protected FloatData duration = new FloatData(1f);
 
         [Tooltip("Current target alpha transparency value. The fade gradually adjusts the alpha to approach this target value.")]
-        [SerializeField] protected float targetAlpha = 1f;
+        [SerializeField] protected FloatData targetAlpha = new FloatData(1f);
 
         [Tooltip("Wait until the fade has finished before executing next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         [Tooltip("Color to render fullscreen fade texture with when screen is obscured.")]
-        [SerializeField] protected Color fadeColor = Color.black;
+        [SerializeField] protected ColorData fadeColor = new ColorData(Color.black);
 
         [Tooltip("Optional texture to use when rendering the fullscreen fade effect.")]
         [SerializeField] protected Texture2D fadeTexture;
@@ -54,6 +55,51 @@ namespace AtMycelia.Amanita.VScripting
             }
             
         }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            BackwardsCompatibility();
+        }
+
+        private void BackwardsCompatibility()
+        {
+            if (_oldDuration >= 0)
+            {
+                duration.Value = _oldDuration;
+                _oldDuration = -1;
+            }
+
+            if (_oldTargetAlpha >= 0)
+            {
+                targetAlpha.Value = _oldTargetAlpha;
+                _oldTargetAlpha = -1;
+            }
+
+            if (_oldWaitUntilFinished != waitUntilFinished.Value)
+            {
+                waitUntilFinished.Value = _oldWaitUntilFinished;
+                _oldWaitUntilFinished = false;
+            }
+
+            if (_oldFadeColor != fadeColor.Value)
+            {
+                fadeColor.Value = _oldFadeColor;
+                _oldFadeColor = Color.clear;
+            }
+        }
+
+        [FormerlySerializedAs("duration")]
+        [SerializeField] [HideInInspector] protected float _oldDuration;
+
+        [FormerlySerializedAs("targetAlpha")]
+        [SerializeField] [HideInInspector] protected float _oldTargetAlpha;
+
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] [HideInInspector] protected bool _oldWaitUntilFinished = true;
+
+        [FormerlySerializedAs("fadeColor")]
+        [SerializeField] [HideInInspector] protected Color _oldFadeColor = Color.black;
 
         protected IGeneralTweenAdapter<float> doFade;
 
@@ -92,7 +138,22 @@ namespace AtMycelia.Amanita.VScripting
         
         public override string GetSummary()
         {
-            return "Fade to " + targetAlpha + " over " + duration + " seconds";
+            string result = $"Fade to {targetAlpha.Value} ";
+            if (targetAlpha.RepresentingVar)
+            {
+                result += $"({targetAlpha.VarRef.Key}) ";
+            }
+
+            result += $"over {duration.Value} ";
+
+            if (duration.RepresentingVar)
+            {
+                result += $"({duration.VarRef.Key}) ";
+            }
+
+            result += "seconds";
+
+            return result;
         }
         
         public override Color GetButtonColor()
