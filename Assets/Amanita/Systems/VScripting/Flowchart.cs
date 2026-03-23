@@ -390,7 +390,7 @@ namespace AtMycelia.Amanita.VScripting
         public void EnsureVariableManagerMigrationForEditor(out bool migrated)
         {
             migrated = false;
-            if (!IsInTheScene || Application.isPlaying)
+            if (!IsInTheScene || Application.isPlaying)//
             {
                 return;
             }
@@ -1576,11 +1576,11 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 Refresh();
-
+                variableManager.Refresh();
                 EnsureBlocksHaveAValidSize();
                 void EnsureBlocksHaveAValidSize()
                 {
-                    IList<Block> blocks = GetComponents<Block>();
+                    IList<Block> blocks = GetComponents<Block>();//
                     for (int i = 0; i < blocks.Count; i++)
                     {
                         var currentBlock = blocks[i];

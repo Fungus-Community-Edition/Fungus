@@ -292,6 +292,7 @@ namespace AtMycelia.Amanita.VScripting
                     elem.Init(elem.BoxedValue);
                 }
             }
+            Refresh();
         }
 
         public void Refresh()
