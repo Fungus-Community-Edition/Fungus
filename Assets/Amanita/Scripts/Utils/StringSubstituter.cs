@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Text;
-#if NETFX_CORE
-using MarkerMetro.Unity.WinLegacy.Reflection;
-#endif
 
 namespace AtMycelia.Amanita.Lua
 {
     /// <summary>
-    /// Replaces special tokens in a string with substituted values (typically variables or localisation strings).
+    /// Replaces special tokens in a string with substituted values (typically variables 
+    /// or localisation strings).
     /// </summary>
     public class StringSubstituter : IStringSubstituter
     {

@@ -1,5 +1,6 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.DialogueSys
 {
@@ -28,19 +29,20 @@ namespace AtMycelia.Amanita.DialogueSys
     public class Write : Command, ILocalizable
     {
         [Tooltip("Text object to set text on. Text, Input Field and Text Mesh objects are supported.")]
-        [SerializeField] protected GameObject textObject;
+        [SerializeField] protected GameObjectData textObject = new GameObjectData();
 
         [Tooltip("String value to assign to the text object")]
+        [HyphlowTextArea(3, 10)]
         [SerializeField] protected StringDataMulti text;
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
         [SerializeField] protected string description;
 
         [Tooltip("Clear existing text before writing new text")]
-        [SerializeField] protected bool clearText = true;
+        [SerializeField] protected BooleanData  clearText = new BooleanData(true);
 
         [Tooltip("Wait until this command finishes before executing the next command")]
-        [SerializeField] protected bool waitUntilFinished = true;
+        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
 
         [Tooltip("Color mode to apply to the text.")]
         [SerializeField] protected TextColor textColor = TextColor.Default;
@@ -169,5 +171,39 @@ namespace AtMycelia.Amanita.DialogueSys
         }
 
         #endregion
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldTextObject != null)
+            {
+                textObject.Value = _oldTextObject;
+                _oldTextObject = null;
+            }
+
+            // Gotta keep in mind the defaults for these bools when deciding whether or not to
+            // migrate them. If the old bool is false, that means the user had it toggled off,
+            // so we should migrate that value over. If it's true, that means the user never
+            // touched it and we should just keep it as is.
+            if (_oldClearText == false)
+            {
+                clearText.Value = _oldClearText;
+                _oldClearText = true;
+            }
+
+            if (_oldWaitUntilFinished == false)
+            {
+                waitUntilFinished.Value = _oldWaitUntilFinished;
+                _oldWaitUntilFinished = true;
+            }
+        }
+
+        [FormerlySerializedAs("textObject")]
+        [SerializeField] [HideInInspector] protected GameObject _oldTextObject;
+        [FormerlySerializedAs("clearText")]
+        [SerializeField] protected bool _oldClearText = true;
+
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] protected bool _oldWaitUntilFinished = true;
     }
 }

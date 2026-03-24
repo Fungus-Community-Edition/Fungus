@@ -332,15 +332,14 @@ namespace AtMycelia.Amanita.Myceliaudio.VScripting
             return result;
         }
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        public override void ApplyBackwardsCompatibility()
         {
+            base.ApplyBackwardsCompatibility();
             skipIfAlreadyPlaying ??= new BooleanData();
             useConfigSO ??= new BooleanData();
-        }
+        }  
+
 
     }
 
-    
 }

@@ -122,10 +122,9 @@ namespace AtMycelia.Amanita.Myceliaudio.VScripting
             return result;
         }
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        public override void OnAfterDeserialize()
         {
+            base.OnAfterDeserialize();
             targetVol ??= new FloatData();
             duration ??= new FloatData(0);
             waitUntilFinished ??= new BooleanData(false);

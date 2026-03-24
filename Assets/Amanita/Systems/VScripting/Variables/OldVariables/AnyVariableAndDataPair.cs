@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
@@ -127,12 +128,24 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-            //varRef.Refresh();
+
+        }
+
+        public void Refresh()
+        {
+            if (variable != null)
+            {
+                // Migrate legacy variable reference to the new VariableReference system
+                LhsVariable = variable;
+                variable = null;
+            }
         }
 
         public void OnAfterDeserialize()
         {
-            
+            Refresh();
         }
+
+        [UnityEngine.SerializeField] [HideInInspector] public Variable variable;
     }
 }

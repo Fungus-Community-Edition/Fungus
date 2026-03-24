@@ -13,7 +13,6 @@ using UnityEngine.Serialization;
 using AmanitaEventHandler = AtMycelia.Amanita.VScripting.EventHandlers.EventHandler;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.SceneManagement;
 #endif
 
 namespace AtMycelia.Amanita.VScripting
@@ -1432,56 +1431,18 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public virtual string SubstituteVariables(string input)
         {
-            if (stringSubstituter == null)
+            string prevResult = input;
+            string result = _stringVarSubstituter.SubstituteVariables(input, this);
+            while (prevResult != result) // Nested tags and all.
             {
-                stringSubstituter = new StringSubstituter();
+                prevResult = result;
+                result = _stringVarSubstituter.SubstituteVariables(result, this);
             }
-
-            // Use the string builder from StringSubstituter for efficiency.
-            StringBuilder sb = stringSubstituter._StringBuilder;
-            sb.Length = 0;
-            sb.Append(input);
-
-            // Instantiate the regular expression object.
-            Regex r = new Regex(SubstituteVariableRegexString);
-
-            bool changed = false;
-
-            // Match the regular expression pattern against a text string.
-            var results = r.Matches(input);
-            for (int i = 0; i < results.Count; i++)
-            {
-                Match match = results[i];
-                string key = match.Value.Substring(2, match.Value.Length - 3);
-                // Look for any matching private variables in this Flowchart first
-                for (int j = 0; j < legacyVariables.Count; j++)
-                {
-                    var variable = legacyVariables[j];
-                    if (variable == null)
-                        continue;
-                    if (variable.Scope == VariableScope.Private && variable.Key == key)
-                    {
-                        string value = variable.ToString();
-                        sb.Replace(match.Value, value);
-                        changed = true;
-                    }
-                }
-            }
-
-            // Now do all other substitutions in the scene
-            changed |= stringSubstituter.SubstituteStrings(sb);
-
-            if (changed)
-            {
-                return sb.ToString();
-            }
-            else
-            {
-                return input;
-            }
+            return result;
         }
 
-        public const string SubstituteVariableRegexString = "{\\$.*?}";
+        private StringVarSubstituter _stringVarSubstituter = new StringVarSubstituter();
+        public const string SubstituteVariableRegexString = StringVarSubstituter.SubstituteVariableRegexString;
 
         public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
         {
@@ -1504,42 +1465,26 @@ namespace AtMycelia.Amanita.VScripting
         #region IStringSubstituter implementation
 
         /// <summary>
-        /// Implementation of StringSubstituter.ISubstitutionHandler which matches any public variable in the Flowchart.
-        /// To perform full variable substitution with all substitution handlers in the scene, you should
-        /// use the SubstituteVariables() method instead.
+        /// Implementation of StringSubstituter.ISubstitutionHandler.
         /// </summary>
-        [MoonSharp.Interpreter.MoonSharpHidden]
         public virtual bool SubstituteStrings(StringBuilder input)
         {
-            // Instantiate the regular expression object.
-            Regex r = new Regex(SubstituteVariableRegexString);
-
-            bool modified = false;
-
-            // Match the regular expression pattern against a text string.
-            var results = r.Matches(input.ToString());
-            for (int i = 0; i < results.Count; i++)
+            if (input == null)
             {
-                Match match = results[i];
-                string key = match.Value.Substring(2, match.Value.Length - 3);
-                // Look for any matching public variables in this Flowchart
-                for (int j = 0; j < legacyVariables.Count; j++)
-                {
-                    var variable = legacyVariables[j];
-                    if (variable == null)
-                    {
-                        continue;
-                    }
-                    if (variable.Scope == VariableScope.Public && variable.Key == key)
-                    {
-                        string value = variable.ToString();
-                        input.Replace(match.Value, value);
-                        modified = true;
-                    }
-                }
+                return false;
             }
 
-            return modified;
+            string original = input.ToString();
+            string replaced = _stringVarSubstituter.SubstituteVariables(original, this);
+            bool anyChangesApplied = !string.Equals(original, replaced, StringComparison.Ordinal);
+            if (!anyChangesApplied)
+            {
+                return false;
+            }
+
+            input.Length = 0;
+            input.Append(replaced);
+            return true;
         }
 
         #endregion

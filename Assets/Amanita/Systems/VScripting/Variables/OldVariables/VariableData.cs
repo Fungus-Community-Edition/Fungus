@@ -4,14 +4,9 @@ using UnityEngine;
 namespace AtMycelia.Amanita.VScripting
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
-    public abstract class VariableData : IVariableData, IRefreshable
+    public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver
     {
         [SerializeField] protected VariableReference backingVarRef = new VariableReference();
-        protected virtual Variable LegacyVarRef
-        {
-            get => backingVarRef.Variable as Variable;
-            set => backingVarRef.Variable = value;
-        }
 
         public IVariableSource VarOwner
         {
@@ -114,7 +109,6 @@ namespace AtMycelia.Amanita.VScripting
             {
                 backingVarRef.VarOwner = null;
                 backingVarRef.Variable = null;
-                LegacyVarRef = null;
                 return;
             }
 
@@ -146,11 +140,6 @@ namespace AtMycelia.Amanita.VScripting
 
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
-            if (otherVarData is VariableData otherVarDataCasted)
-            {
-                this.VarOwner = otherVarDataCasted.VarOwner;
-            }
-
             this.VarRef = otherVarData.VarRef;
         }
 
@@ -169,6 +158,28 @@ namespace AtMycelia.Amanita.VScripting
 
             return result;
         }
+
+        public virtual void OnBeforeSerialize()
+        {
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += DoBackwardsCompatibility;
+#endif
+        }
+
+        protected virtual void DoBackwardsCompatibility()
+        {
+            if (LegacyVarRef != null)
+            {
+                backingVarRef.Variable = LegacyVarRef;
+                LegacyVarRef = null;
+            }
+        }
+
+        protected virtual Variable LegacyVarRef { get; set; }
     }
 
     public interface IVariableData
@@ -278,6 +289,17 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
+        public virtual TValue LiteralValue
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
         [SerializeField] protected TValue value = default;
 
         public override string GetDescription()
@@ -323,6 +345,20 @@ namespace AtMycelia.Amanita.VScripting
                 return BoxedValue.ToString();
             }
         }
+
+        protected override void DoBackwardsCompatibility()
+        {
+            base.DoBackwardsCompatibility();
+
+            // Backwards compatibility for the literal value
+            if (LegacyLiteralVal != null)
+            {
+                this.LiteralValue = LegacyLiteralVal;
+                LegacyLiteralVal = default;
+            }
+        }
+
+        protected virtual TValue LegacyLiteralVal { get; set; }
     }
 
 }
