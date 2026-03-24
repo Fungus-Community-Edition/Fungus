@@ -1,6 +1,6 @@
+using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
@@ -83,6 +83,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                     continue;
                 }
 
+                EnsureRhsDataInitialized(conditionAnyVar, selectedVariable);
+
                 GUIContent[] operatorsList;
                 if (selectedVariable.IsComparisonSupported())
                 {
@@ -115,6 +117,48 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private static void EnsureRhsDataInitialized(SerializedProperty conditionAnyVar, 
+            IVariable selectedVariable)
+        {
+            if (selectedVariable == null || conditionAnyVar == null)
+            {
+                return;
+            }
+
+            AnyVariableAndDataPair pairInstance = conditionAnyVar.boxedValue as AnyVariableAndDataPair;
+            if (pairInstance == null)
+            {
+                return;
+            }
+
+            AnyVariableData anyVarData = pairInstance.Data;
+            if (anyVarData == null)
+            {
+                return;
+            }
+
+            Type effectiveVarType = GetEffectiveVarType(selectedVariable);
+            if (effectiveVarType == null)
+            {
+                return;
+            }
+
+            anyVarData.SetFor(effectiveVarType, selectedVariable.ContentType);
+            pairInstance.Data = anyVarData;
+            conditionAnyVar.boxedValue = pairInstance;
+            conditionAnyVar.serializedObject.ApplyModifiedProperties();
+        }
+
+        private static Type GetEffectiveVarType(IVariable variable)
+        {
+            if (variable is IVariablePointer ptr && ptr.Component is IVariable inner)
+            {
+                return inner.GetType();
+            }
+
+            return variable?.GetType();
         }
     }
 }
