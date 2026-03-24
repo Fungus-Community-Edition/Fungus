@@ -50,6 +50,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
+            Debug.Log($"Indent level in VariableDataDrawer: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
             // Layout
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
@@ -57,9 +58,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             void HandleLayout()
             {
                 float labelWidth = EditorGUIUtility.labelWidth;
-                labelRect = new Rect(position.x, position.y, labelWidth, position.height);
-
-                fieldRect = new Rect(position.x + labelWidth, position.y, position.width - labelWidth, position.height);
+                // Might need to add spaces based on the indent level, so calculate the field rect based on the full width minus the label width, and then check if that leaves enough room for the value field and popup
+                float labelOffset = (EditorGUI.indentLevel * 15f); // <- This is the default indent per level in Unity, but it could be different if the user has customized their editor settings
+                
+                float labelX = position.x + labelOffset;
+                labelRect = new Rect(labelX, position.y, labelWidth, position.height);
+                
+                float fieldX = position.x + labelWidth + 2;
+                float fieldWidth = position.width - labelWidth;
+                fieldRect = new Rect(fieldX, position.y,
+                    fieldWidth, position.height);
                 if (fieldRect.width < MinimumValueWidth + SpaceForPopup)
                 {
                     fieldRect = new Rect(position.x, position.y, position.width, position.height);
@@ -68,7 +76,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
                 valueRect = fieldRect;
                 valueRect.width = Mathf.Max(0, fieldRect.width - SpaceForPopup);
-                popupRect = new Rect(fieldRect.x + valueRect.width + popupGap, fieldRect.y, popupWidth, fieldRect.height);
+                float popupX = position.x + (position.width - popupWidth);
+                popupRect = new Rect(popupX, fieldRect.y, popupWidth, fieldRect.height);
 
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
@@ -117,7 +126,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 if (backingVarRefProp != null)
                 {
-                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningFc");
+                    SerializedProperty owningFcProp = backingVarRefProp.FindPropertyRelative("owningSource");
                     if (owningFcProp != null && owningFcProp.objectReferenceValue != null)
                     {
                         var fc = owningFcProp.objectReferenceValue as Flowchart;

@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
@@ -64,29 +65,17 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             EditorGUI.indentLevel++;
             for (int i = 0; i < conditions.arraySize; i++)
             {
-                var conditionAnyVar = conditions.GetArrayElementAtIndex(i).FindPropertyRelative("anyVar");
-                var conditionCompare = conditions.GetArrayElementAtIndex(i).FindPropertyRelative("compareOperator");
+                var conditionAnyVar = conditions.GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("anyVar");
+                var varRefProp = conditionAnyVar.FindPropertyRelative("varRef");
+                var varDataProp = conditionAnyVar.FindPropertyRelative("data.data");
+                var conditionCompare = conditions.GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("compareOperator");
 
-                EditorGUILayout.PropertyField(conditionAnyVar, new GUIContent("Variable"), true);
+                EditorGUILayout.PropertyField(varRefProp, new GUIContent("Lhs"), true);
 
-                // Get selected variable - support both UnityEngine.Object and POCOs via [SerializeReference]
-                var varProp = conditionAnyVar.FindPropertyRelative("variable");
-                IVariable selectedVariable = null;
-
-                // UnityEngine.Object path
-                bool varIsUnityObj = varProp != null && varProp.propertyType == SerializedPropertyType.ObjectReference &&
-                    varProp.objectReferenceValue is UnityObj;
-                if (varIsUnityObj)
-                {
-                    selectedVariable = varProp.objectReferenceValue as IVariable;
-                }
-
-                // [SerializeReference] path for POCOs (e.g., Muscariable)
-                var varIsPoco = varProp != null && varProp.propertyType == SerializedPropertyType.ManagedReference;
-                if (varIsPoco)
-                {
-                    selectedVariable = varProp.managedReferenceValue as IVariable;
-                }
+                var varRef = varRefProp.boxedValue as VariableReference;
+                IVariable selectedVariable = varRef?.Variable;
 
                 if (selectedVariable == null)
                 {
@@ -114,13 +103,15 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 }
 
                 selectedIndex = EditorGUILayout.Popup(
-                    new GUIContent("Compare", "The comparison operator to use when comparing values"),
+                    new GUIContent("Operator", "The comparison operator to use when comparing values"),
                     selectedIndex,
                     operatorsList);
 
                 conditionCompare.enumValueIndex = selectedIndex;
 
+                EditorGUILayout.PropertyField(varDataProp, new GUIContent("Rhs"), true);
                 EditorGUILayout.Separator();
+                
             }
             EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
