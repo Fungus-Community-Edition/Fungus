@@ -5,6 +5,10 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
@@ -137,7 +141,7 @@ namespace AtMycelia.Amanita.VScripting
 #if UNITY_EDITOR
         public void MigrateLegacyVariables(IList<Muscariable> oldMuscariables, IList<Variable> oldLegacyVariables)
         {
-            EnsureInitialized();
+            EnsureInitialized();//
 
             bool addedAny = false;
 
@@ -150,8 +154,7 @@ namespace AtMycelia.Amanita.VScripting
                     {
                         continue;
                     }
-
-                    Integrate(muscariable);
+                    muscariables.Add(muscariable);
                     addedAny = true;
                 }
             }
@@ -179,8 +182,7 @@ namespace AtMycelia.Amanita.VScripting
 
             if (addedAny)
             {
-                UpdateNextValidId();
-                EnsureValidIds();
+                Refresh();
             }
         }
 
@@ -292,15 +294,25 @@ namespace AtMycelia.Amanita.VScripting
                     elem.Init(elem.BoxedValue);
                 }
             }
+            Refresh();
         }
 
         public void Refresh()
         {
             lookup ??= new Dictionary<byte, IVariable>();
             lookup.Clear();
+            legacyVariables.RemoveAll(elem => elem == null);
             RegisterIntoVarLookup(muscariables);
             RegisterIntoVarLookup(legacyVariables);
             EnsureValidIds();
+
+#if UNITY_EDITOR
+            if (VarOwner as UnityObj == null)
+            {
+                return;
+            }
+            EditorUtility.SetDirty(this.VarOwner as UnityObj);
+#endif
         }
 
         private void RegisterIntoVarLookup(IEnumerable<IVariable> varsToRegister)
@@ -352,6 +364,10 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
+                // Given how the lookup gets focibly cleared by Unity (what with it being a dict), 
+                // we'll need to Refresh every time we want to get the variables to make sure the
+                // lookup is populated and thus that the list we return is complete.
+                Refresh();
                 return lookup.Values.ToList();
             }
         }
@@ -395,6 +411,11 @@ namespace AtMycelia.Amanita.VScripting
 
         public IVariable GetVariable(byte id)
         {
+            if (lookup == null || lookup.Count == 0)
+            {
+                Refresh();
+            }
+
             lookup.TryGetValue(id, out IVariable result);
             return result;
         }

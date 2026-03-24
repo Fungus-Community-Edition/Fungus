@@ -44,6 +44,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 string errorMessage = $"VariableListView was not given a valid ListView in its init args.";
                 Debug.LogError(errorMessage);
             }
+
         }
 
         protected ListView _listDisplay;
@@ -580,5 +581,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         public UITKLabel CountLabel { get; set; }
         public IVariableSource VariableSource { get; set; }
         public IEditorAssetResolver AssetResolver { get; set; } // optional; testing override
+        public bool DisplayInInspector { get; set; } = false;
     }
 }

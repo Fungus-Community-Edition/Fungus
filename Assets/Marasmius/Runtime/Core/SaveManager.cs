@@ -58,7 +58,7 @@ namespace AtMycelia.SaveSys
             {
                 // TODO: Create a Command that stops all Executing Flowchart blocks,
                 // and get it executed in a Flowchart instead of handled here
-                //var flowcharts = AmanitaManager.S.FlowchartsInScene;
+                //var flowcharts = FlowchartRegistry.GetSceneFlowcharts();
                 //for (int i = 0; i < flowcharts.Count; i++)
                 //{
                 //    var fc = flowcharts[i];

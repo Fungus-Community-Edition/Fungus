@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
@@ -10,11 +13,22 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         static FlowchartDomainReloadHandler()
         {
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+            EditorSceneManager.sceneOpened += OnSceneOpened;
+        }
+
+        private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            DelayedRefresh();
+        }
+
+        private static void DelayedRefresh()
+        {
+            EditorApplication.delayCall += RefreshAllFlowcharts;
         }
 
         private static void OnAfterAssemblyReload()
         {
-            EditorApplication.delayCall += RefreshAllFlowcharts;
+            DelayedRefresh();
         }
 
         private static void RefreshAllFlowcharts()

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.IO.LowLevel.Unsafe;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -68,10 +69,15 @@ namespace AtMycelia.Amanita.VScripting
             EnsureVariableDataInstances();
             RefreshVariableDataCache();
             AssertOwnership();
+            RefreshVariableDatas();
         }
 
         private void EnsureVariableDataInstances()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
 #if UNITY_EDITOR
             // We only want to do this in the editor, since at runtime, we expect the
             // VariableDatas to already be populated and don't want to risk overwriting any data.
@@ -117,6 +123,14 @@ namespace AtMycelia.Amanita.VScripting
 
         protected IList<IVariableData> variableDataCache = new List<IVariableData>();
 
+        protected virtual void RefreshVariableDatas()
+        {
+            for (int i = 0; i < variableDataCache.Count; i++)
+            {
+                var refreshable = variableDataCache[i] as IRefreshable;
+                refreshable?.Refresh();
+            }
+        }
         protected virtual void AssertOwnership()
         {
             Flowchart fChart = GetFlowchart();
