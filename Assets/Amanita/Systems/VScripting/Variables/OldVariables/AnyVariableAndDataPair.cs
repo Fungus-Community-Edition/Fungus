@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace AtMycelia.Amanita.VScripting
 {
     /// <summary>
@@ -127,12 +128,12 @@ namespace AtMycelia.Amanita.VScripting
 
         public void OnBeforeSerialize()
         {
-            //varRef.Refresh();
+
         }
 
         public void OnAfterDeserialize()
         {
-            
+
         }
     }
 }

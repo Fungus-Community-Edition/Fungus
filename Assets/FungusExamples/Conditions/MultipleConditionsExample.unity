@@ -273,8 +273,8 @@ GameObject:
   - component: {fileID: 1292574185}
   - component: {fileID: 1292574184}
   - component: {fileID: 1292574183}
-  - component: {fileID: 1292574182}
   - component: {fileID: 1292574181}
+  - component: {fileID: 1292574187}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -571,15 +571,13 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 1292574186}
-    _selectedCommands:
-    - {fileID: 1292574184}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 1292574162}
-    <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
+    <ScrollPos>k__BackingField: {x: 0, y: 7.5349655}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.2
+    <Zoom>k__BackingField: 1.3000001
     <BlockViewHeight>k__BackingField: 223
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -616,9 +614,8 @@ MonoBehaviour:
   - {fileID: 1292574185}
   - {fileID: 1292574184}
   - {fileID: 1292574183}
-  - {fileID: 1292574182}
-  - {fileID: 1292574181}
   - {fileID: 0}
+  - {fileID: 1292574181}
   nextValidVarID: 8
   uniqueId: b29d9e24-9872-4229-9d93-9c9a8aac0e72
   references:
@@ -1138,49 +1135,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 17
   indentLevel: 0
---- !u!114 &1292574182
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 16
-  indentLevel: 1
-  setOperator: 2
-  anyVar:
-    varRef:
-      itemId: 3
-      owningSource: {fileID: 1292574166}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 1292574166}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
-      data:
-        rid: 6177420819874447714
-  variable: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 6177420819874447714
-      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
-        value: 1
-        integerRef: {fileID: 0}
 --- !u!114 &1292574183
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1479,11 +1433,54 @@ MonoBehaviour:
   commandList:
   - {fileID: 1292574184}
   - {fileID: 1292574183}
-  - {fileID: 1292574182}
+  - {fileID: 1292574187}
   - {fileID: 1292574181}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
+--- !u!114 &1292574187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292574162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb77d0ce495044f6e9feb91b31798e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 19
+  indentLevel: 1
+  setOperator: 2
+  anyVar:
+    varRef:
+      itemId: 3
+      owningSource: {fileID: 1292574166}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    data:
+      backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 1292574166}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      data:
+        rid: 6177420826070221573
+  variable: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 6177420826070221573
+      type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        integerRef: {fileID: 0}
 --- !u!1 &1677222588
 GameObject:
   m_ObjectHideFlags: 0

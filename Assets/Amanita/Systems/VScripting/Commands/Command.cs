@@ -130,6 +130,12 @@ namespace AtMycelia.Amanita.VScripting
                 var refreshable = variableDataCache[i] as IRefreshable;
                 refreshable?.Refresh();
             }
+#if UNITY_EDITOR
+            if (variableDataCache.Count > 0)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+#endif
         }
         protected virtual void AssertOwnership()
         {

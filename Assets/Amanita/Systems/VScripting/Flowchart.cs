@@ -1454,9 +1454,10 @@ namespace AtMycelia.Amanita.VScripting
                 Match match = results[i];
                 string key = match.Value.Substring(2, match.Value.Length - 3);
                 // Look for any matching private variables in this Flowchart first
-                for (int j = 0; j < legacyVariables.Count; j++)
+                var ourVars = variableManager.Variables;
+                for (int j = 0; j < ourVars.Count; j++)
                 {
-                    var variable = legacyVariables[j];
+                    var variable = ourVars[j];
                     if (variable == null)
                         continue;
                     if (variable.Scope == VariableScope.Private && variable.Key == key)
