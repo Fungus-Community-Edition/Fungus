@@ -194,7 +194,6 @@ namespace AtMycelia.Amanita.Lua
             // Static classes
             fungusTable["time"] = UserData.CreateStatic(typeof(Time));
             fungusTable["playerprefs"] = UserData.CreateStatic(typeof(PlayerPrefs));
-            fungusTable["prefs"] = UserData.CreateStatic(typeof(AmanitaPrefs));
             fungusTable["factory"] = UserData.CreateStatic(typeof(PODTypeFactory));
 
             // Lua Environment and Lua Utils components
