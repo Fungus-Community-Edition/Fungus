@@ -32,6 +32,37 @@ namespace AtMycelia.Amanita.VScripting
             set => gameObjectVal = value;
         }
 
+        public virtual T AddComponent<T>() where T : Component
+        {
+            if (this.Value == null)
+            {
+                Debug.LogError("Cannot add component to null GameObject reference.");
+                return default;
+            }
+            GameObject go = this.Value;
+            return go.AddComponent<T>();
+        }
+
+        public virtual string name
+        {
+            get
+            {
+                GameObject go = this.Value;
+                if (go != null)
+                {
+                    return go.name;
+                }
+                return null;
+            }
+            set
+            {
+                GameObject go = this.Value;
+                if (go != null)
+                {
+                    go.name = value;
+                }
+            }
+        }
         public virtual T GetComponent<T>()
         {
             GameObject go = this.Value;

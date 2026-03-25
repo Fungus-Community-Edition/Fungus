@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting.Commands
 {
@@ -95,36 +96,38 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         #region backwards compat
 
-        [Tooltip("Variable to use in expression")]
-        [VariableProperty]
-        [SerializeField] protected Variable variable;
-
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            //anyVar.OnAfterDeserialize();
-        }
-
+        
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            anyVar.Refresh();
-        }  
+            if (_oldVariable != null)
+            {
+                anyVar.LhsVariable = _oldVariable;
+                _oldVariable = null;
+            }
 
+            anyVar.Refresh();
+        }
+
+        [Tooltip("Variable to use in expression")]
+        [VariableProperty]
+        [FormerlySerializedAs("variable")]
+        [SerializeField] protected Variable _oldVariable;
 
         protected override void OnEnable()
         {
             base.OnEnable();
             // We only want this check in the editor, not at runtime
-            if (variable == null || Application.isPlaying)
+            if (_oldVariable == null || Application.isPlaying)
             {
                 return;
             }
             else
             {
-                anyVar.LhsVariable = variable;
+                anyVar.LhsVariable = _oldVariable;
             }
 
-            variable = null;
+            _oldVariable = null;
         }
         #endregion
     

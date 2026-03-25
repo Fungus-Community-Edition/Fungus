@@ -289,6 +289,17 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
+        public virtual TValue LiteralValue
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
         [SerializeField] protected TValue value = default;
 
         public override string GetDescription()
@@ -335,7 +346,6 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-
         protected override void DoBackwardsCompatibility()
         {
             base.DoBackwardsCompatibility();
@@ -343,7 +353,7 @@ namespace AtMycelia.Amanita.VScripting
             // Backwards compatibility for the literal value
             if (LegacyLiteralVal != null)
             {
-                this.value = LegacyLiteralVal; 
+                this.LiteralValue = LegacyLiteralVal;
                 LegacyLiteralVal = default;
             }
         }

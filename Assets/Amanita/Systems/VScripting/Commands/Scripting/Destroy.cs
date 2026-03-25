@@ -69,23 +69,20 @@ namespace AtMycelia.Amanita.VScripting
 
         #region Backwards compatibility
 
-        [HideInInspector] [FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
-
-        public override void OnAfterDeserialize()
-        {
-            base.OnAfterDeserialize();
-            destroyInXSeconds ??= new FloatData(0);
-        }
-
+        
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
+            destroyInXSeconds ??= new FloatData(0);
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;
                 targetGameObjectOLD = null;
             }
         }
+
+        [HideInInspector][FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
+
 
 
         #endregion

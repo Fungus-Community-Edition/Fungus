@@ -40,6 +40,24 @@ namespace AtMycelia.Amanita.VScripting
             set => stringRef = value as StringVariable;
         }
 
+        protected override string LegacyLiteralVal
+        {
+            get => stringVal;
+            set
+            {
+                if (value == "") 
+                {
+                    // So it's easier for the backwards compatibility to know when to migrate this.
+                    // It mainly checks for null, so...
+                    stringVal = null;
+                }
+                else
+                {
+                    stringVal = value;
+                }
+            }
+        }
+
         public override string Value
         {
             get

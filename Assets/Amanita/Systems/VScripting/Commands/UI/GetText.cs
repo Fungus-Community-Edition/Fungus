@@ -79,14 +79,11 @@ namespace AtMycelia.Amanita.VScripting
         // Backwards compatibility with Fungus 3.x
         [HideInInspector]
         [FormerlySerializedAs("targetTextObject")]
-        public GameObject targetTextObjectOLD;
+        public GameObject _oldTargetText;
         protected override void OnEnable()
         {
             base.OnEnable();
-            if (targetTextObjectOLD != null)
-            {
-                targetTextObject.Value = targetTextObjectOLD.gameObject;
-            }
+            
         }
 
         protected override void EnsureLegacyVarIdsAreValid()
@@ -100,10 +97,11 @@ namespace AtMycelia.Amanita.VScripting
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            if (_oldTargetTextObject != null)
+            EnsureLegacyVarIdsAreValid();
+
+            if (_oldTargetText != null)
             {
-                targetTextObject.Value = _oldTargetTextObject;
-                _oldTargetTextObject = null;
+                targetTextObject.Value = _oldTargetText;
             }
 
             if (_oldStringVariable != null)
@@ -113,8 +111,6 @@ namespace AtMycelia.Amanita.VScripting
             }
         }   
 
-        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetTextObject")]
-        protected GameObject _oldTargetTextObject;
 
         [FormerlySerializedAs("stringVariable")] [SerializeField] [HideInInspector] 
         protected StringVariable _oldStringVariable;

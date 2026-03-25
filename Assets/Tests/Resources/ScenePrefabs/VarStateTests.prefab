@@ -560,9 +560,18 @@ MonoBehaviour:
     value: 
     stringRef: {fileID: 0}
     stringVal: 
-  startIndex: 0
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
   callMode: 1
   targetBlockId: 3
+  _oldStartIndex: 0
 --- !u!1 &4017282831232097748
 GameObject:
   m_ObjectHideFlags: 0
