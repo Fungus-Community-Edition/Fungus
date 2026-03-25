@@ -188,6 +188,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -203,6 +204,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -221,6 +223,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -229,6 +232,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -237,6 +241,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -245,6 +250,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -261,6 +267,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -269,6 +276,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -277,6 +285,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -285,6 +294,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -293,6 +303,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -301,6 +312,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -309,6 +321,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -317,6 +330,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -325,6 +339,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -406,6 +421,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -421,6 +437,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -439,6 +456,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -447,6 +465,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -455,6 +474,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -463,6 +483,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -479,6 +500,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -487,6 +509,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -495,6 +518,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -503,6 +527,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -511,6 +536,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -519,6 +545,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -527,6 +554,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -535,6 +563,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -543,6 +572,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -570,6 +600,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
 --- !u!114 &7621839359048070760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,6 +623,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
 --- !u!114 &1326477007613712269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,6 +653,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   references:
     version: 2
@@ -658,6 +691,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -673,6 +707,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -691,6 +726,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -699,6 +735,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -707,6 +744,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -715,6 +753,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -731,6 +770,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -739,6 +779,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -747,6 +788,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -755,6 +797,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -763,6 +806,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -771,6 +815,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -779,6 +824,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -787,6 +833,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -795,6 +842,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -822,6 +870,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
 --- !u!114 &248897192821599427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,6 +919,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -885,6 +935,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -903,6 +954,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -911,6 +963,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -919,6 +972,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -927,6 +981,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -943,6 +998,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -951,6 +1007,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -959,6 +1016,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -967,6 +1025,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -975,6 +1034,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -983,6 +1043,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -991,6 +1052,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -999,6 +1061,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -1007,6 +1070,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -1073,6 +1137,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -1088,6 +1153,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -1106,6 +1172,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -1114,6 +1181,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -1122,6 +1190,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -1130,6 +1199,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -1146,6 +1216,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -1154,6 +1225,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -1162,6 +1234,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -1170,6 +1243,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -1178,6 +1252,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -1186,6 +1261,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -1194,6 +1270,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -1202,6 +1279,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -1210,6 +1288,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -1246,6 +1325,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: -2
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -1261,6 +1341,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -1279,6 +1360,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -1287,6 +1369,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -1295,6 +1378,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -1303,6 +1387,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -1319,6 +1404,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -1327,6 +1413,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -1335,6 +1422,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -1343,6 +1431,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -1351,6 +1440,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -1359,6 +1449,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -1367,6 +1458,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -1375,6 +1467,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -1383,6 +1476,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -1440,3 +1534,4 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 

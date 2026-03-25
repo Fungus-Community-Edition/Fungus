@@ -71,9 +71,15 @@ namespace AtMycelia.Amanita.VScripting
 
         [HideInInspector] [FormerlySerializedAs("targetGameObject")] public GameObject targetGameObjectOLD;
 
-        protected override void OnEnable()
+        public override void OnAfterDeserialize()
         {
-            base.OnEnable();
+            base.OnAfterDeserialize();
+            destroyInXSeconds ??= new FloatData(0);
+        }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;
@@ -81,14 +87,6 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            destroyInXSeconds ??= new FloatData(0);
-        }
 
         #endregion
     }

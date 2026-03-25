@@ -16,8 +16,8 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
 
         [Tooltip("String variable to store the text value in")]
-        [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable stringVariable;
+        [ContentTypeConstraint(typeof(string))]
+        [SerializeField] protected VariableReference stringVariable = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {
@@ -40,7 +40,7 @@ namespace AtMycelia.Amanita.VScripting
 
             if (textAdapter.HasTextObject())
             {
-                stringVariable.Value = textAdapter.Text;
+                stringVariable.SetValue(textAdapter.Text);
             }
 
             Continue();
@@ -48,17 +48,17 @@ namespace AtMycelia.Amanita.VScripting
         
         public override string GetSummary()
         {
-            if (targetTextObject == null)
+            if (targetTextObject == null || targetTextObject.Value == null)
             {
                 return "Error: No text object selected";
             }
             
-            if (stringVariable == null)
+            if (stringVariable == null || stringVariable.Variable == null)
             {
                 return "Error: No variable selected";
             }
-            
-            return targetTextObject.Value.name + " : " + stringVariable.name;
+
+            return targetTextObject.Value.name + " : " + stringVariable.Variable.Key;
         }
         
         public override Color GetButtonColor()
@@ -68,7 +68,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return stringVariable == variable || 
+            return ReferenceEquals(stringVariable.Variable, variable) || 
                 base.HasReference(variable);
         }
 
@@ -88,6 +88,36 @@ namespace AtMycelia.Amanita.VScripting
                 targetTextObject.Value = targetTextObjectOLD.gameObject;
             }
         }
+
+        protected override void EnsureLegacyVarIdsAreValid()
+        {
+            if (_oldStringVariable != null)
+            {
+                _oldStringVariable.ItemId = (byte)Mathf.Max(_oldStringVariable.ItemId, 1);
+            }
+        }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldTargetTextObject != null)
+            {
+                targetTextObject.Value = _oldTargetTextObject;
+                _oldTargetTextObject = null;
+            }
+
+            if (_oldStringVariable != null)
+            {
+                stringVariable.Variable = _oldStringVariable;
+                _oldStringVariable = null;
+            }
+        }   
+
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetTextObject")]
+        protected GameObject _oldTargetTextObject;
+
+        [FormerlySerializedAs("stringVariable")] [SerializeField] [HideInInspector] 
+        protected StringVariable _oldStringVariable;
 
         #endregion
     }

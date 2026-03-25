@@ -1,6 +1,7 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using UnityEngine.Serialization;
+using UnityEditor;
 
 namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
@@ -11,50 +12,51 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
                  "Say", 
                  "Writes text in a dialog box.")]
     [AddComponentMenu("")]
-    public class Say : Command, ILocalizable
+    public class Say : Command, ILocalizable, ISerializationCallbackReceiver
     {
         // Removed this tooltip as users's reported it obscures the text box
-        [TextArea(5,10)]
-        [SerializeField] protected string storyText = "";
+        [HyphlowTextArea(5, 10)]
+        [SerializeField] protected StringData _storyText = new StringData("");
 
+        [HyphlowTextArea(1, 3)]
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
-        [SerializeField] protected string description = "";
+        [SerializeField] protected StringData _description = new StringData("");
 
         [Tooltip("Character that is speaking")]
-        [SerializeField] protected Character character;
+        [SerializeField] protected GameObjectData _character = new GameObjectData();
 
         [Tooltip("Portrait that represents speaking character")]
-        [SerializeField] protected Sprite portrait;
+        [SerializeField] protected SpriteData _portrait = new SpriteData();
 
         [Tooltip("Voiceover audio to play when writing the text")]
-        [SerializeField] protected AudioClip voiceOverClip;
+        [SerializeField] protected AudioClipData _voiceOverClip = new AudioClipData();
 
         [Tooltip("Always show this Say text when the command is executed multiple times")]
-        [SerializeField] protected bool showAlways = true;
+        [SerializeField] protected BooleanData _showAlways = new BooleanData(true);
 
         [Tooltip("Number of times to show this Say text when the command is executed multiple times")]
-        [SerializeField] protected int showCount = 1;
+        [SerializeField] protected IntegerData _showCount = new IntegerData(1);
 
         [Tooltip("Type this text in the previous dialog box.")]
-        [SerializeField] protected bool extendPrevious = false;
+        [SerializeField] protected BooleanData _extendPrevious = new BooleanData(false);
 
         [Tooltip("Fade out the dialog box when writing has finished and not waiting for input.")]
-        [SerializeField] protected bool fadeWhenDone = true;
+        [SerializeField] protected BooleanData _fadeWhenDone = new BooleanData(true);
 
         [Tooltip("Wait for player to click before continuing.")]
-        [SerializeField] protected bool waitForClick = true;
+        [SerializeField] protected BooleanData _waitForClick = new BooleanData(true);
 
         [Tooltip("Stop playing voiceover when text finishes writing.")]
-        [SerializeField] protected bool stopVoiceover = true;
+        [SerializeField] protected BooleanData _stopVoiceover = new BooleanData(true);
 
         [Tooltip("Wait for the Voice Over to complete before continuing")]
-        [SerializeField] protected bool waitForVO = false;
+        [SerializeField] protected BooleanData _waitForVO = new BooleanData(false);
 
         //add wait for vo that overrides stopvo
 
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. All story text will now display using this Say Dialog.")]
         
-        [SerializeField] protected GameObjectData setSayDialog;
+        [SerializeField] protected GameObjectData _setSayDialog;
 
         protected int executionCount;
 
@@ -63,24 +65,24 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         /// <summary>
         /// Character that is speaking.
         /// </summary>
-        public virtual Character _Character { get { return character; } }
-
+        public virtual Character Character { get { return _character.GetComponent<Character>(); } }
+        [SerializeField] [HideInInspector] private Character _characterCached;
         /// <summary>
         /// Portrait that represents speaking character.
         /// </summary>
-        public virtual Sprite Portrait { get { return portrait; } set { portrait = value; } }
+        public virtual Sprite Portrait { get { return _portrait; } set { _portrait.Value = value; } }
 
         /// <summary>
         /// Type this text in the previous dialog box.
         /// </summary>
-        public virtual bool ExtendPrevious { get { return extendPrevious; } }
+        public virtual bool ExtendPrevious { get { return _extendPrevious; } }
 
         public override void OnEnter()
         {
             #region Input Validation
-            if (setSayDialog != null && setSayDialog.Value != null)
+            if (_setSayDialog != null && _setSayDialog.Value != null)
             {
-                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                if (!_setSayDialog.TryGetComponent(out SayDialog _))
                 {
                     Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
                         $"Say Dialog input.", this);
@@ -90,7 +92,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             }
             #endregion
 
-            if (!showAlways && executionCount >= showCount)
+            if (!_showAlways && executionCount >= _showCount)
             {
                 Continue();
                 return;
@@ -102,16 +104,17 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             OverrideActiveSayDialogAsNeeded();
             void OverrideActiveSayDialogAsNeeded()
             {
-                bool shouldGoWithCharacterSetDialog = character != null && character.SetSayDialog != null;
+                bool shouldGoWithCharacterSetDialog = _characterCached != null && 
+                    _characterCached.SetSayDialog != null;
                 
                 if (shouldGoWithCharacterSetDialog)
                 {
-                    var charaDialog = character.SetSayDialog;
+                    var charaDialog = _characterCached.SetSayDialog;
                     bool itIsPrefab = charaDialog.gameObject.scene == default;
                     var prevMain = SDManager.MainSayDialog;
                     if (itIsPrefab)
                     {
-                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(character.SetSayDialog);
+                        SDManager.MainSayDialog = SDManager.GetOrCreateSD(_characterCached.SetSayDialog);
                     }
                     else
                     {
@@ -120,11 +123,11 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
                 }
 
-                bool shouldGoWithCommandSetDialog = setSayDialog != null && setSayDialog.Value != null;
+                bool shouldGoWithCommandSetDialog = _setSayDialog != null && _setSayDialog.Value != null;
                 // ^Higher priority than the character's set dialog
                 if (shouldGoWithCommandSetDialog)
                 {
-                    var dialogComp = setSayDialog.GetComponent<SayDialog>();
+                    var dialogComp = _setSayDialog.GetComponent<SayDialog>();
                     bool itIsPrefab = dialogComp.gameObject.scene == default;
                     if (itIsPrefab)
                     {
@@ -161,10 +164,10 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
             sayDialog.SetActive(true);
 
-            sayDialog.SetCharacter(character);
-            sayDialog.SetCharacterImage(portrait);
+            sayDialog.SetCharacter(_characterCached);
+            sayDialog.SetCharacterImage(_portrait);
 
-            string displayText = storyText;
+            string displayText = _storyText;
 
             var activeCustomTags = CustomTag.activeCustomTags;
             for (int i = 0; i < activeCustomTags.Count; i++)
@@ -179,7 +182,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
             string subbedText = flowchart.SubstituteVariables(displayText);
 
-            sayDialog.Say(subbedText, !extendPrevious, waitForClick, fadeWhenDone, stopVoiceover, waitForVO, voiceOverClip, delegate {
+            sayDialog.Say(subbedText, !_extendPrevious, _waitForClick, _fadeWhenDone, _stopVoiceover, _waitForVO, _voiceOverClip, delegate {
                 Continue();
             });
         }
@@ -194,15 +197,15 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         public override string GetSummary()
         {
             string namePrefix = "";
-            if (character != null) 
+            if (_characterCached != null) 
             {
-                namePrefix = character.NameText + ": ";
+                namePrefix = _characterCached.NameText + ": ";
             }
-            if (extendPrevious)
+            if (_extendPrevious)
             {
                 namePrefix = "EXTEND" + ": ";
             }
-            return namePrefix + "\"" + storyText + "\"";
+            return namePrefix + "\"" + _storyText + "\"";
         }
 
         public override Color GetButtonColor()
@@ -233,7 +236,7 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
             base.OnEnable();
             if (oldSetSayDialog != null)
             {
-                setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
+                _setSayDialog = new GameObjectData(oldSetSayDialog.gameObject);
                 oldSetSayDialog = null;
             }
         }
@@ -247,26 +250,26 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
 
         public virtual string GetStandardText()
         {
-            return storyText;
+            return _storyText;
         }
 
         public virtual void SetStandardText(string standardText)
         {
-            storyText = standardText;
+            _storyText.Value = standardText;
         }
 
         public virtual string GetDescription()
         {
-            return description;
+            return _description;
         }
         
         public virtual string GetStringId()
         {
             // String id for Say commands is SAY.<Localization Id>.<Command id>.[Character Name]
             string stringId = "SAY." + GetFlowchartLocalizationId() + "." + itemId + ".";
-            if (character != null)
+            if (_characterCached != null)
             {
-                stringId += character.NameText;
+                stringId += _characterCached.NameText;
             }
 
             return stringId;
@@ -277,14 +280,152 @@ namespace AtMycelia.Amanita.DialogueSys.VScripting
         protected override void OnValidate()
         {
             base.OnValidate();
-            if (setSayDialog != null && setSayDialog.Value != null)
+            if (_setSayDialog != null && _setSayDialog.Value != null)
             {
-                if (!setSayDialog.TryGetComponent(out SayDialog _))
+                if (!_setSayDialog.TryGetComponent(out SayDialog _))
                 {
                     Debug.LogError($"Say Command on {gameObject.name} has invalid Set " +
-                        $"Say Dialog input. That input is the GameObject {setSayDialog.Value.name}");
+                        $"Say Dialog input. That input is the GameObject {_setSayDialog.Value.name}");
                 }
             }
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            MigrateStuff();
+        }
+        
+        void MigrateStuff()
+        {
+            if (!string.IsNullOrEmpty(_oldStoryText))
+            {
+                _storyText.Value = _oldStoryText;
+                _oldStoryText = "";
+            }
+
+            if (!string.IsNullOrEmpty(_oldDescription))
+            {
+                _description.Value = _oldDescription;
+                _oldDescription = "";
+            }
+
+            if (_oldCharacter != null)
+            {
+                _character.Value = _oldCharacter.gameObject;
+                _characterCached = _oldCharacter;
+                _oldCharacter = null;
+            }
+
+            if (_oldPortrait != null)
+            {
+                _portrait.Value = _oldPortrait;
+                _oldPortrait = null;
+            }
+
+            if (_oldVoiceOverClip != null)
+            {
+                _voiceOverClip.Value = _oldVoiceOverClip;
+                _oldVoiceOverClip = null;
+            }
+
+            if (_oldShowAlways != true) 
+            {
+                // The default value is true, meaning that if the old value is false,
+                // we want to set it to false. If the old value is true, we can just
+                // leave it as is and not overwrite it.
+                _showAlways.Value = _oldShowAlways;
+                _oldShowAlways = true;
+            }
+
+            if (_oldShowCount != 1)
+            {
+                // The default value is 1, meaning that if the old value is not 1,
+                // we want to set it to the old value. If the old value is 1, we can just
+                // leave it as is and not overwrite it.
+                _showCount.Value = _oldShowCount;
+                _oldShowCount = 1;
+            }
+
+            if (_oldExtendPrevious != false)
+            {
+                _extendPrevious.Value = _oldExtendPrevious;
+                _oldExtendPrevious = false;
+            }
+
+            if (_oldFadeWhenDone != true)
+            {
+                _fadeWhenDone.Value = _oldFadeWhenDone;
+                _oldFadeWhenDone = true;
+            }
+
+            if (_oldWaitForClick != true)
+            {
+                _waitForClick.Value = _oldWaitForClick;
+                _oldWaitForClick = true;
+            }
+
+            if (_oldStopVoiceover != true)
+            {
+                _stopVoiceover.Value = _oldStopVoiceover;
+                _oldStopVoiceover = true;
+            }
+
+            if (_oldWaitForVO != false)
+            {
+                _waitForVO.Value = _oldWaitForVO;
+                _oldWaitForVO = false;
+            }
+
+        }
+
+        [SerializeField]
+        [HideInInspector] protected bool _migrated;
+        [FormerlySerializedAs("storyText")]
+        [SerializeField] protected string _oldStoryText = "";
+        [Tooltip("Notes about this story text for other authors, localization, etc.")]
+
+        [FormerlySerializedAs("description")]
+        [SerializeField] protected string _oldDescription = "";
+
+        [Tooltip("Character that is speaking")]
+        [FormerlySerializedAs("character")]
+        [SerializeField] protected Character _oldCharacter;
+
+        [Tooltip("Portrait that represents speaking character")]
+        [FormerlySerializedAs("portrait")]
+        [SerializeField] protected Sprite _oldPortrait;
+
+        [Tooltip("Voiceover audio to play when writing the text")]
+        [FormerlySerializedAs("voiceOverClip")]
+        [SerializeField] protected AudioClip _oldVoiceOverClip;
+
+        [Tooltip("Always show this Say text when the command is executed multiple times")]
+        [FormerlySerializedAs("showAlways")]
+        [SerializeField] protected bool _oldShowAlways = true;
+
+        [Tooltip("Number of times to show this Say text when the command is executed multiple times")]
+        [FormerlySerializedAs("showCount")]
+        [SerializeField] protected int _oldShowCount = 1;
+
+        [Tooltip("Type this text in the previous dialog box.")]
+        [FormerlySerializedAs("extendPrevious")]
+        [SerializeField] protected bool _oldExtendPrevious = false;
+
+        [Tooltip("Fade out the dialog box when writing has finished and not waiting for input.")]
+        [FormerlySerializedAs("fadeWhenDone")]
+        [SerializeField] protected bool _oldFadeWhenDone = true;
+
+        [Tooltip("Wait for player to click before continuing.")]
+        [FormerlySerializedAs("waitForClick")]
+        [SerializeField] protected bool _oldWaitForClick = true;
+
+        [Tooltip("Stop playing voiceover when text finishes writing.")]
+        [FormerlySerializedAs("stopVoiceover")]
+        [SerializeField] protected bool _oldStopVoiceover = true;
+
+        [Tooltip("Wait for the Voice Over to complete before continuing")]
+        [FormerlySerializedAs("waitForVO")]
+        [SerializeField] protected bool _oldWaitForVO = false;
     }
 }

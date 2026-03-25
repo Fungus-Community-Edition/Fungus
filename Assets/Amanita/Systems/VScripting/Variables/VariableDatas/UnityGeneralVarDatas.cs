@@ -14,6 +14,9 @@ namespace AtMycelia.Amanita.VScripting
         [VariableProperty("<Value>", typeof(GameObjectVariable))]
         public GameObjectVariable gameObjectRef;
 
+        [SerializeField]
+        public GameObject gameObjectVal;
+
         public GameObjectData() : base(default) { }
         public GameObjectData(GameObject startVal = null) : base(startVal) { }
 
@@ -21,6 +24,12 @@ namespace AtMycelia.Amanita.VScripting
         {
             get => gameObjectRef;
             set => gameObjectRef = value as GameObjectVariable;
+        }
+
+        protected override GameObject LegacyLiteralVal 
+        {
+            get => gameObjectVal;
+            set => gameObjectVal = value;
         }
 
         public virtual T GetComponent<T>()
@@ -56,10 +65,19 @@ namespace AtMycelia.Amanita.VScripting
         [VariableProperty("<Value>", typeof(TransformVariable))]
         public TransformVariable transformRef;
 
+        [SerializeField]
+        public Transform transformVal;
+
         protected override Variable LegacyVarRef
         {
             get => transformRef;
             set => transformRef = value as TransformVariable;
+        }
+
+        protected override Transform LegacyLiteralVal
+        {
+            get => transformVal;
+            set => transformVal = value;
         }
 
         public TransformData() : base(default) { }
@@ -110,10 +128,19 @@ namespace AtMycelia.Amanita.VScripting
         [VariableProperty("<Value>", typeof(ObjectVariable))]
         public ObjectVariable objectRef;
 
+        [SerializeField]
+        public Object objectVal;
+
         protected override Variable LegacyVarRef
         {
             get => objectRef;
             set => objectRef = value as ObjectVariable;
+        }
+
+        protected override UnityObj LegacyLiteralVal
+        {
+            get => objectVal;
+            set => objectVal = value;
         }
 
         public ObjectData() : base(default) { }

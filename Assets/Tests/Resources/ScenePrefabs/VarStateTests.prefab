@@ -308,19 +308,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
-  storyText: erh tf3y4g7r3gtr67g 347egw4f7 3qfgq
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -328,7 +334,111 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &7505458795986732438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -421,8 +531,9 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   durationOLD: 0
 --- !u!114 &1749631385722854176
 MonoBehaviour:
@@ -448,6 +559,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   startIndex: 0
   callMode: 1
   targetBlockId: 3

@@ -99,15 +99,16 @@ namespace AtMycelia.Amanita.VScripting.Commands
         [VariableProperty]
         [SerializeField] protected Variable variable;
 
-        public void OnBeforeSerialize()
-        {
-            anyVar.OnBeforeSerialize();
-        }
-
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             //anyVar.OnAfterDeserialize();
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            anyVar.Refresh();
+        }  
 
 
         protected override void OnEnable()
