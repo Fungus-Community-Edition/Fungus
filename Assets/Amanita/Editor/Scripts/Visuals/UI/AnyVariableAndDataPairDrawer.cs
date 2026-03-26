@@ -23,16 +23,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUI.PropertyField(position, lhsVarRefProp, label);
                 lhsVarRefProp.serializedObject.ApplyModifiedProperties();
             }
-            IVariable currentLeftHandSideVar = ReadIVariable(lhsVarRefProp);
 
             AnyVariableAndDataPair pairInstance = holdsVarAndDataPair.boxedValue as AnyVariableAndDataPair;
+            IVariable currentLeftHandSideVar = pairInstance.LhsVariable;
+
             AnyVariableData anyVarData = pairInstance.Data;
             position.y += EditorGUIUtility.singleLineHeight;
 
             HandleInnerDataField();
             void HandleInnerDataField()
             {
-                // Safely read AnyVariableData whether Unity reports ManagedReference or Generic.
                 var effectiveVarType = GetEffectiveVarType(currentLeftHandSideVar);
                 if (effectiveVarType == null)
                 {
@@ -73,15 +73,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             GUILayout.Space(20);
             holdsVarAndDataPair.serializedObject.ApplyModifiedProperties();
-        }
-
-        private static IVariable ReadIVariable(SerializedProperty prop)
-        {
-            // We assume that we are drawing as part of a Command's editor fields, and that
-            // thus we have a Flowchart selected. We'll use that to find the variable instance.
-            VariableReference reference = (VariableReference)prop.boxedValue;
-            reference.VarOwner = EditorSelectionTracker.ActiveFlowchart;
-            return reference.Variable;
         }
 
         private static Type GetEffectiveVarType(IVariable var)

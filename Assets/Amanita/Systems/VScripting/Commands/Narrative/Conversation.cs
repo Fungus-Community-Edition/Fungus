@@ -14,6 +14,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
     [ExecuteInEditMode]
     public class Conversation : Command
     {
+        [HyphlowTextArea(5, 10)]
         [SerializeField] protected StringDataMulti conversationText;
 
         protected ConversationManager conversationManager = new ConversationManager();
@@ -86,7 +87,9 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
                 f.DetermineSubstituteVariables(conversationText, referencedVariables);
             }
         }
+
 #endif
         #endregion Editor caches
+
     }
 }

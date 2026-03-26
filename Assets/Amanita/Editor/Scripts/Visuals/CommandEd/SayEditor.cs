@@ -87,19 +87,22 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             base.OnEnable();
 
-            characterProp = serializedObject.FindProperty("character");
-            portraitProp = serializedObject.FindProperty("portrait");
-            storyTextProp = serializedObject.FindProperty("storyText");
-            descriptionProp = serializedObject.FindProperty("description");
-            voiceOverClipProp = serializedObject.FindProperty("voiceOverClip");
-            showAlwaysProp = serializedObject.FindProperty("showAlways");
-            showCountProp = serializedObject.FindProperty("showCount");
-            extendPreviousProp = serializedObject.FindProperty("extendPrevious");
-            fadeWhenDoneProp = serializedObject.FindProperty("fadeWhenDone");
-            waitForClickProp = serializedObject.FindProperty("waitForClick");
-            stopVoiceoverProp = serializedObject.FindProperty("stopVoiceover");
-            setSayDialogProp = serializedObject.FindProperty("setSayDialog");
-            waitForVOProp = serializedObject.FindProperty("waitForVO");
+            // Note that all these props are now for VariableData objects, so
+            // they will be drawn with the appropriate VariableProperty
+            // attribute handling (dropdowns for variables, fields for constants)
+            characterProp = serializedObject.FindProperty("_character");
+            portraitProp = serializedObject.FindProperty("_portrait");
+            storyTextProp = serializedObject.FindProperty("_storyText");
+            descriptionProp = serializedObject.FindProperty("_description");
+            voiceOverClipProp = serializedObject.FindProperty("_voiceOverClip");
+            showAlwaysProp = serializedObject.FindProperty("_showAlways");
+            showCountProp = serializedObject.FindProperty("_showCount");
+            extendPreviousProp = serializedObject.FindProperty("_extendPrevious");
+            fadeWhenDoneProp = serializedObject.FindProperty("_fadeWhenDone");
+            waitForClickProp = serializedObject.FindProperty("_waitForClick");
+            stopVoiceoverProp = serializedObject.FindProperty("_stopVoiceover");
+            setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
+            waitForVOProp = serializedObject.FindProperty("_waitForVO");
 
             if (blackTex == null)
             {
@@ -117,66 +120,65 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             serializedObject.Update();
 
             bool showPortraits = false;
-            CommandEditor.ObjectField<Character>(characterProp,
-                                                new GUIContent("Character", "Character that is speaking"),
-                                                new GUIContent("<None>"),
-                                                Character.ActiveCharacters);
+            EditorGUILayout.PropertyField(characterProp);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel(" ");
-            characterProp.objectReferenceValue = (Character) EditorGUILayout.ObjectField(characterProp.objectReferenceValue, typeof(Character), true);
             EditorGUILayout.EndHorizontal();
 
-            Say t = target as Say;
+            Say sayBeingDrawn = target as Say;
 
-            // Only show portrait selection if...
-            if (t._Character != null &&              // Character is selected
-                t._Character.Portraits != null &&    // Character has a portraits field
-                t._Character.Portraits.Count > 0 )   // Selected Character has at least 1 portrait
+            bool characterIsSelected = sayBeingDrawn.Character != null;
+            bool characterHasPortraitsField = characterIsSelected && 
+                sayBeingDrawn.Character.Portraits != null;
+            bool characterHasAtLeastOnePortrait = characterHasPortraitsField && 
+                sayBeingDrawn.Character.Portraits.Count > 0;
+            if (characterIsSelected && characterHasPortraitsField && characterHasAtLeastOnePortrait)  
             {
                 showPortraits = true;    
             }
 
             if (showPortraits) 
             {
-                CommandEditor.ObjectField<Sprite>(portraitProp, 
-                                                  new GUIContent("Portrait", "Portrait representing speaking character"), 
-                                                  new GUIContent("<None>"),
-                                                  t._Character.Portraits);
+                ObjectField(portraitProp, _portraitLabelContent, 
+                    _noneGuiContent, sayBeingDrawn.Character.Portraits);
             }
             else
             {
-                if (!t.ExtendPrevious)
+                if (!sayBeingDrawn.ExtendPrevious)
                 {
-                    t.Portrait = null;
+                    sayBeingDrawn.Portrait = null;
                 }
             }
-            
+
+            HandleTagHelpLabel();
+            static void HandleTagHelpLabel()
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                GUILayout.FlexibleSpace();
+
+                bool clickedTagHelpButton = GUILayout.Button(_tagHelpContent, _tagHelpStyle);
+                if (clickedTagHelpButton)
+                {
+                    showTagHelp = !showTagHelp;
+                }
+                EditorGUILayout.EndHorizontal();
+
+                if (showTagHelp)
+                {
+                    DrawTagHelpLabel();
+                    EditorGUILayout.Separator();
+                }
+
+            }
+
             EditorGUILayout.PropertyField(storyTextProp);
 
             EditorGUILayout.PropertyField(descriptionProp);
-
-            EditorGUILayout.BeginHorizontal();
-
             EditorGUILayout.PropertyField(extendPreviousProp);
 
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button(new GUIContent("Tag Help", "View available tags"), new GUIStyle(EditorStyles.miniButton)))
-            {
-                showTagHelp = !showTagHelp;
-            }
-            EditorGUILayout.EndHorizontal();
-            
-            if (showTagHelp)
-            {
-                DrawTagHelpLabel();
-            }
-            
-            EditorGUILayout.Separator();
-            
-            EditorGUILayout.PropertyField(voiceOverClipProp, 
-                                          new GUIContent("Voice Over Clip", "Voice over audio to play when the text is displayed"));
+            EditorGUILayout.PropertyField(voiceOverClipProp, _voiceClipLabelContent);
 
             EditorGUILayout.PropertyField(showAlwaysProp);
             
@@ -200,18 +202,29 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             EditorGUILayout.PropertyField(setSayDialogProp);
             EditorGUILayout.PropertyField(waitForVOProp);
             
-            if (showPortraits && t.Portrait != null)
+            if (showPortraits && sayBeingDrawn.Portrait != null)
             {
-                Texture2D characterTexture = t.Portrait.texture;
-                float aspect = (float)characterTexture.width / (float)characterTexture.height;
-                Rect previewRect = GUILayoutUtility.GetAspectRect(aspect, GUILayout.Width(100), GUILayout.ExpandWidth(true));
+                Texture2D characterTexture = sayBeingDrawn.Portrait.texture;
+                float aspect = (float)characterTexture.width / characterTexture.height;
+                Rect previewRect = GUILayoutUtility.GetAspectRect(aspect, GUILayout.Width(100), 
+                    GUILayout.ExpandWidth(true));
                 if (characterTexture != null)
                 {
-                    GUI.DrawTexture(previewRect,characterTexture,ScaleMode.ScaleToFit,true,aspect);
+                    GUI.DrawTexture(previewRect, characterTexture, ScaleMode.ScaleToFit, true, aspect);
                 }
             }
             
             serializedObject.ApplyModifiedProperties();
         }
+
+        private static readonly GUIContent _tagHelpContent = new GUIContent("Tag Help", "View available tags");
+        private static readonly GUIStyle _tagHelpStyle = new GUIStyle(EditorStyles.miniButton);
+
+        private static readonly GUIContent _portraitLabelContent = new GUIContent("Portrait", 
+            "Portrait representing speaking character");
+        private static readonly GUIContent _noneGuiContent = new GUIContent("<None>");
+        private static readonly GUIContent _voiceClipLabelContent = new GUIContent("Voice Over Clip", 
+            "Voice over audio to play when the text is displayed");
+
     }    
 }

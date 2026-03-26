@@ -66,10 +66,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             EditorGUILayout.PropertyField(lhsVarProp, new GUIContent("Var to Set"));
 
             // Ensure owner is set in the serialized fields (avoid touching boxedValue)
-            var owningFcProp = lhsVarProp.FindPropertyRelative("owningFc");
-            if (owningFcProp != null && owningFcProp.objectReferenceValue == null && flowchart != null)
+            var owningSourceProp = lhsVarProp.FindPropertyRelative("owningSource");
+            if (owningSourceProp != null && owningSourceProp.objectReferenceValue == null && flowchart != null)
             {
-                owningFcProp.objectReferenceValue = flowchart;
+                owningSourceProp.objectReferenceValue = flowchart;
             }
 
             // Resolve selected variable purely from serialized fields (no boxedValue)

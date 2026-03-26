@@ -13,7 +13,8 @@ namespace AtMycelia.Amanita.VScripting
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler
+    public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
+        ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
     {
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
@@ -130,6 +131,12 @@ namespace AtMycelia.Amanita.VScripting
                 var refreshable = variableDataCache[i] as IRefreshable;
                 refreshable?.Refresh();
             }
+#if UNITY_EDITOR
+            if (variableDataCache.Count > 0)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+#endif
         }
         protected virtual void AssertOwnership()
         {
@@ -472,6 +479,31 @@ namespace AtMycelia.Amanita.VScripting
             {
                 Continue();
             }
+        }
+
+        public virtual void OnBeforeSerialize()
+        {
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+        }
+
+        /// <summary>
+        /// Legacy var ids were allowed to be 0 (which is now considered an invalid value),
+        /// so we'll need to check for that and fix it if we see it. This is only needed for 
+        /// Commands that reference variables using legacy var ids, and should be called in 
+        /// OnAfterDeserializeBackwardsCompatibility. Command subclasses should
+        /// override this as needed.
+        /// </summary>
+        protected virtual void EnsureLegacyVarIdsAreValid()
+        {
+
+        }
+
+        public virtual void ApplyBackwardsCompatibility()
+        {
+            EnsureLegacyVarIdsAreValid();
         }
 
         #endregion

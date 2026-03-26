@@ -1,4 +1,5 @@
 using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using AtMycelia.Amanita.VScripting.EditorUtils.FcWindow;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,58 @@ using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
-    public abstract class VariableDataDrawerBase : PropertyDrawer
+    [CustomPropertyDrawer(typeof(StringData), true)]
+    public class StringDataDrawer : VariableDataDrawerBase
     {
+        protected override bool UseMultilineLabel(SerializedProperty varDataProp, VariableData varData, bool shouldDrawLiteral)
+        {
+            if (!shouldDrawLiteral)
+            {
+                return false;
+            }
+
+            if (!ShouldUseTextArea(varData))
+            {
+                return false;
+            }
+
+            HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
+            return textAreaAttribute != null && textAreaAttribute.MinLines >= 2;
+        }
+
         private const bool LogDrawer = true;
+
+        public override float GetPropertyHeight(SerializedProperty varDataProp, GUIContent label)
+        {
+            float baseHeight = EditorGUIUtility.singleLineHeight;
+            if (!ShouldDrawLiteral(varDataProp))
+            {
+                return baseHeight;
+            }
+
+            var varData = varDataProp.boxedValue as VariableData;
+            if (!ShouldUseTextArea(varData))
+            {
+                return baseHeight;
+            }
+
+            HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
+            if (textAreaAttribute == null)
+            {
+                return baseHeight;
+            }
+
+            int lineCount = Mathf.Max(1, textAreaAttribute.MinLines);
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            float textAreaHeight = (lineHeight * lineCount) + (EditorGUIUtility.standardVerticalSpacing * (lineCount - 1));
+
+            if (textAreaAttribute.MinLines >= 2)
+            {
+                return baseHeight + EditorGUIUtility.standardVerticalSpacing + textAreaHeight;
+            }
+
+            return textAreaHeight;
+        }
 
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
@@ -42,10 +92,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
-            bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
-            bool shouldDrawLiteral = !validStoredItemId;
-
-            Debug.Log($"Indent level in {GetType().Name}: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
+            Debug.Log($"Indent level in StringDataDrawer: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
             HandleLayout();
@@ -54,7 +101,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 float labelWidth = EditorGUIUtility.labelWidth;
                 float labelOffset = (EditorGUI.indentLevel * 15f);
 
-                bool useMultilineLabel = UseMultilineLabel(varDataProp, varData, shouldDrawLiteral);
+                bool shouldDrawLiteral = itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;
+                HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
+                bool useMultilineLabel = shouldDrawLiteral &&
+                    ShouldUseTextArea(varData) &&
+                    textAreaAttribute != null &&
+                    textAreaAttribute.MinLines >= 2;
 
                 if (useMultilineLabel)
                 {
@@ -95,9 +147,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUIUtility.labelWidth = prevLabelWidth;
             }
 
+            bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
+            bool shouldDrawLiteral = !validStoredItemId;
+
             if (LogDrawer)
             {
-                //Debug.Log($"{GetType().Name}[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
+                //Debug.Log($"StringDataDrawer[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
                 //          $"valueRect={valueRect} popupRect={popupRect} itemId={itemIdProp?.intValue} " +
                 //          $"shouldDrawLiteral={shouldDrawLiteral} literalPropType={literalValueProp?.propertyType}");
             }
@@ -180,7 +235,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             Type contentType = varData.ContentType;
             if (contentType == null)
             {
-                warningMessage = $"Could not resolve ContentType for {GetType().Name} " +
+                warningMessage = $"Could not resolve ContentType for StringData drawer " +
                     $"for {varDataProp.propertyPath}.";
                 Debug.LogWarning(warningMessage);
                 RestoreLayout();
@@ -320,95 +375,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             varDataProp.serializedObject.ApplyModifiedProperties();
         }
 
-        public override float GetPropertyHeight(SerializedProperty varDataProp, GUIContent label)
-        {
-            float baseHeight = EditorGUIUtility.singleLineHeight;
-            if (!ShouldDrawLiteral(varDataProp))
-            {
-                return baseHeight;
-            }
 
-            var varData = varDataProp.boxedValue as VariableData;
-            if (!ShouldUseTextArea(varData))
-            {
-                return baseHeight;
-            }
-
-            HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
-            if (textAreaAttribute == null)
-            {
-                return baseHeight;
-            }
-
-            int lineCount = Mathf.Max(1, textAreaAttribute.MinLines);
-            float lineHeight = EditorGUIUtility.singleLineHeight;
-            float textAreaHeight = (lineHeight * lineCount) + (EditorGUIUtility.standardVerticalSpacing * (lineCount - 1));
-
-            if (UseMultilineLabel(varDataProp, varData, true))
-            {
-                return baseHeight + EditorGUIUtility.standardVerticalSpacing + textAreaHeight;
-            }
-
-            return textAreaHeight;
-        }
-
-
-        protected virtual bool UseMultilineLabel(SerializedProperty varDataProp, VariableData varData, bool shouldDrawLiteral)
-        {
-            return false;
-        }
-
-        protected virtual bool ShouldUseTextArea(VariableData varData)
-        {
-            if (varData is not StringData)
-            {
-                return false;
-            }
-
-            return GetTextAreaAttribute() != null;
-        }
-
-        protected HyphlowTextAreaAttribute GetTextAreaAttribute()
-        {
-            return fieldInfo?.GetCustomAttribute<HyphlowTextAreaAttribute>();
-        }
-
-        protected static bool ShouldDrawLiteral(SerializedProperty varDataProp)
-        {
-            var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
-            var itemIdProp = backingVarRefProp?.FindPropertyRelative("itemId");
-            return itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;
-        }
-
-        protected static readonly int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
-        protected static readonly int popupGap = 5;
-        protected static int SpaceForPopup => popupWidth + popupGap;
-        protected static readonly float MinimumValueWidth = 80f;
-        protected static VariableRegistry VarRegistry => VariableRegistryService.Registry;
-    }
-
-    // For the fields that can accept either a variable or a literal value
-    [CustomPropertyDrawer(typeof(VariableData), true)]
-    public class VariableDataDrawer : VariableDataDrawerBase
-    {
-    }
-
-    [CustomPropertyDrawer(typeof(AnyVariableData), true)]
-    public class AnyVariableDataDrawer : VariableDataDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
-        {
-            var typedUnderlyingDataProp = varDataProp.FindPropertyRelative("data");
-            if (typedUnderlyingDataProp == null)
-            {
-                EditorGUI.BeginProperty(position, label, varDataProp);
-                EditorGUI.HelpBox(position, $"Could not find 'data' property for AnyVariableData drawer " +
-                    $"for {varDataProp.propertyPath}.", MessageType.Warning);
-                EditorGUI.EndProperty();
-                return;
-            }
-
-            base.OnGUI(position, typedUnderlyingDataProp, label);
-        }
     }
 }

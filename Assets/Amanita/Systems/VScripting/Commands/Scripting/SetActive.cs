@@ -69,6 +69,11 @@ namespace AtMycelia.Amanita.VScripting
         protected override void OnEnable()
         {
             base.OnEnable();
+        }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
             if (targetGameObjectOLD != null)
             {
                 _targetGameObject.Value = targetGameObjectOLD;

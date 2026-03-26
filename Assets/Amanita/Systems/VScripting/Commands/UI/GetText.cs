@@ -16,8 +16,8 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
 
         [Tooltip("String variable to store the text value in")]
-        [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable stringVariable;
+        [ContentTypeConstraint(typeof(string))]
+        [SerializeField] protected VariableReference stringVariable = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {
@@ -40,7 +40,7 @@ namespace AtMycelia.Amanita.VScripting
 
             if (textAdapter.HasTextObject())
             {
-                stringVariable.Value = textAdapter.Text;
+                stringVariable.SetValue(textAdapter.Text);
             }
 
             Continue();
@@ -48,17 +48,17 @@ namespace AtMycelia.Amanita.VScripting
         
         public override string GetSummary()
         {
-            if (targetTextObject == null)
+            if (targetTextObject == null || targetTextObject.Value == null)
             {
                 return "Error: No text object selected";
             }
             
-            if (stringVariable == null)
+            if (stringVariable == null || stringVariable.Variable == null)
             {
                 return "Error: No variable selected";
             }
-            
-            return targetTextObject.Value.name + " : " + stringVariable.name;
+
+            return targetTextObject.Value.name + " : " + stringVariable.Variable.Key;
         }
         
         public override Color GetButtonColor()
@@ -68,7 +68,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public override bool HasReference(Variable variable)
         {
-            return stringVariable == variable || 
+            return ReferenceEquals(stringVariable.Variable, variable) || 
                 base.HasReference(variable);
         }
 
@@ -79,15 +79,41 @@ namespace AtMycelia.Amanita.VScripting
         // Backwards compatibility with Fungus 3.x
         [HideInInspector]
         [FormerlySerializedAs("targetTextObject")]
-        public GameObject targetTextObjectOLD;
+        public GameObject _oldTargetText;
         protected override void OnEnable()
         {
             base.OnEnable();
-            if (targetTextObjectOLD != null)
+            
+        }
+
+        protected override void EnsureLegacyVarIdsAreValid()
+        {
+            if (_oldStringVariable != null)
             {
-                targetTextObject.Value = targetTextObjectOLD.gameObject;
+                _oldStringVariable.ItemId = (byte)Mathf.Max(_oldStringVariable.ItemId, 1);
             }
         }
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            EnsureLegacyVarIdsAreValid();
+
+            if (_oldTargetText != null)
+            {
+                targetTextObject.Value = _oldTargetText;
+            }
+
+            if (_oldStringVariable != null)
+            {
+                stringVariable.Variable = _oldStringVariable;
+                _oldStringVariable = null;
+            }
+        }   
+
+
+        [FormerlySerializedAs("stringVariable")] [SerializeField] [HideInInspector] 
+        protected StringVariable _oldStringVariable;
 
         #endregion
     }
