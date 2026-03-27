@@ -92,7 +92,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
-            Debug.Log($"Indent level in StringDataDrawer: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
             HandleLayout();

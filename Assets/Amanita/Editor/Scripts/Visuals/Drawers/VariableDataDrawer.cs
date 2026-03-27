@@ -12,8 +12,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public abstract class VariableDataDrawerBase : PropertyDrawer
     {
-        private const bool LogDrawer = true;
-
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
@@ -45,7 +43,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
             bool shouldDrawLiteral = !validStoredItemId;
 
-            Debug.Log($"Indent level in {GetType().Name}: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
             HandleLayout();
@@ -93,13 +90,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 EditorGUI.indentLevel = prevIndent;
                 EditorGUIUtility.labelWidth = prevLabelWidth;
-            }
-
-            if (LogDrawer)
-            {
-                //Debug.Log($"{GetType().Name}[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
-                //          $"valueRect={valueRect} popupRect={popupRect} itemId={itemIdProp?.intValue} " +
-                //          $"shouldDrawLiteral={shouldDrawLiteral} literalPropType={literalValueProp?.propertyType}");
             }
 
             if (labelRect.width > 0f)

@@ -33,13 +33,13 @@ namespace AtMycelia.Amanita.DialogueSys
 
         [Tooltip("String value to assign to the text object")]
         [HyphlowTextArea(3, 10)]
-        [SerializeField] protected StringDataMulti text;
+        [SerializeField] protected StringDataMulti text = new StringDataMulti();
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
         [SerializeField] protected string description;
 
         [Tooltip("Clear existing text before writing new text")]
-        [SerializeField] protected BooleanData  clearText = new BooleanData(true);
+        [SerializeField] protected BooleanData clearText = new BooleanData(true);
 
         [Tooltip("Wait until this command finishes before executing the next command")]
         [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
@@ -56,7 +56,10 @@ namespace AtMycelia.Amanita.DialogueSys
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
+            variableDataCache.Add(textObject);
             variableDataCache.Add(text);
+            variableDataCache.Add(clearText);
+            variableDataCache.Add(waitUntilFinished);
             variableDataCache.Add(setAlpha);
             variableDataCache.Add(setColor);
         }
