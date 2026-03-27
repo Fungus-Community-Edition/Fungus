@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace AtMycelia.Amanita.VScripting
@@ -136,6 +137,7 @@ namespace AtMycelia.Amanita.VScripting
             if (variable != null)
             {
                 // Migrate legacy variable reference to the new VariableReference system
+                Debug.Log($"Migrating legacy variable reference {variable} to new VariableReference system.");
                 LhsVariable = variable;
                 variable = null;
             }
@@ -146,6 +148,6 @@ namespace AtMycelia.Amanita.VScripting
             Refresh();
         }
 
-        [UnityEngine.SerializeField] [HideInInspector] public Variable variable;
+        [SerializeField] [FormerlySerializedAs("variable")] [HideInInspector] public Variable variable;
     }
 }

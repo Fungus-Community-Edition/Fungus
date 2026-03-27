@@ -93,12 +93,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 0
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
   version: 1
-  legacyVariables:
+  _legacyVariables:
   - {fileID: 108686680755132427}
   - {fileID: 2677308742917868254}
   - {fileID: 5708265625975436602}
@@ -161,6 +161,7 @@ MonoBehaviour:
   key: name
   itemID: 1
   oldItemID: 1
+  _owner: {fileID: 5559651170823982952}
   value: Alice
 --- !u!114 &2677308742917868254
 MonoBehaviour:
@@ -178,6 +179,7 @@ MonoBehaviour:
   key: score
   itemID: 2
   oldItemID: 2
+  _owner: {fileID: 5559651170823982952}
   value: 132
 --- !u!114 &5708265625975436602
 MonoBehaviour:
@@ -195,6 +197,7 @@ MonoBehaviour:
   key: newPlayer
   itemID: 3
   oldItemID: 3
+  _owner: {fileID: 5559651170823982952}
   value: 1
 --- !u!114 &5717713915927640460
 MonoBehaviour:
@@ -212,6 +215,7 @@ MonoBehaviour:
   key: fastestTimeInSeconds
   itemID: 4
   oldItemID: 4
+  _owner: {fileID: 5559651170823982952}
   value: 12.348
 --- !u!114 &2894303634136426304
 MonoBehaviour:
@@ -229,6 +233,7 @@ MonoBehaviour:
   key: twoDPos
   itemID: 5
   oldItemID: 5
+  _owner: {fileID: 5559651170823982952}
   value: {x: 12, y: 34}
 --- !u!114 &1975970902030707167
 MonoBehaviour:
@@ -246,6 +251,7 @@ MonoBehaviour:
   key: threeDPos
   itemID: 6
   oldItemID: 6
+  _owner: {fileID: 5559651170823982952}
   value: {x: 23, y: 45, z: 78}
 --- !u!114 &5244056966308270914
 MonoBehaviour:
@@ -263,6 +269,7 @@ MonoBehaviour:
   key: someTrans
   itemID: 7
   oldItemID: 7
+  _owner: {fileID: 5559651170823982952}
   value: {fileID: 2288069364643417435}
 --- !u!114 &3080362346236546621
 MonoBehaviour:

@@ -103,8 +103,11 @@ namespace AtMycelia.Amanita.VScripting.Commands.EditorUtils
             if (objComponent != null)
             {
                 var objMethods = objComponent.GetType().GetMethods(bindingFlags);
-                var methods = (from objMethod in objMethods where !objMethod.IsSpecialName select objMethod).ToList(); // filter out the getter/setter methods
-                var methodText = (from objMethod in methods select objMethod.Name + FormatParameters(objMethod.GetParameters()) + ": " + objMethod.ReturnType.Name).ToList();
+                var methods = (from objMethod in objMethods where !objMethod.IsSpecialName 
+                               select objMethod).ToList(); // filter out the getter/setter methods
+                var methodText = (from objMethod in methods select objMethod.Name + 
+                                  FormatParameters(objMethod.GetParameters()) + ": " + 
+                                  objMethod.ReturnType.Name).ToList();
                 int index = methodText.IndexOf(targetMethodTextProp.stringValue);
 
                 index = EditorGUILayout.Popup("Target Method", index, methodText.ToArray());
@@ -214,7 +217,8 @@ namespace AtMycelia.Amanita.VScripting.Commands.EditorUtils
                         var style = EditorStyles.label;
                         var prevColor = style.normal.textColor;
                         style.normal.textColor = Color.red;
-                        EditorGUILayout.LabelField(new GUIContent(objParam.ParameterType.Name + " cannot be drawn, don´t use this method in the flowchart."), style);
+                        EditorGUILayout.LabelField(new GUIContent(objParam.ParameterType.Name + 
+                            " cannot be drawn, don´t use this method in the flowchart."), style);
                         style.normal.textColor = prevColor;
                     }
 

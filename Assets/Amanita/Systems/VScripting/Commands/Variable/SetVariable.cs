@@ -17,8 +17,10 @@ namespace AtMycelia.Amanita.VScripting.Commands
     public class SetVariable : Command, ISerializationCallbackReceiver
     {
         [Tooltip("The type of math operation to be performed")]
-        [SerializeField] protected SetOperator setOperator;
-        [SerializeField] protected AnyVariableAndDataPair anyVar = new AnyVariableAndDataPair();
+        [FormerlySerializedAs("setOperator")]
+        [SerializeField] protected SetOperator _setOperator;
+        [FormerlySerializedAs("anyVar")]
+        [SerializeField] protected AnyVariableAndDataPair _anyVar = new AnyVariableAndDataPair();
         // ^Contains both the LHS variable reference and the RHS data
 
 #if UNITY_EDITOR
@@ -27,18 +29,18 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         protected virtual void DoSetOperation()
         {
-            if (anyVar.LhsVariable == null)
+            if (_anyVar.LhsVariable == null)
             {
                 return;
             }
 
-            anyVar.SetOp(setOperator);
+            _anyVar.SetOp(_setOperator);
         }
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(anyVar.Data);
+            variableDataCache.Add(_anyVar.Data);
         }
 
         #region Public members
@@ -46,7 +48,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         /// <summary>
         /// The type of math operation to be performed.
         /// </summary>
-        public virtual SetOperator SetOperator { get { return setOperator; } }
+        public virtual SetOperator SetOperator { get { return _setOperator; } }
 
         public override void OnEnter()
         {
@@ -57,14 +59,14 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            var lhsVar = anyVar.LhsVariable;
+            var lhsVar = _anyVar.LhsVariable;
             if (lhsVar == null)
             {
                 return "Error: Variable not selected";
             }
 
-            string setOperatorDesc = VariableUtil.GetSetOperatorDescription(setOperator);
-            string dataDesc = anyVar.GetDataDescription();
+            string setOperatorDesc = VariableUtil.GetSetOperatorDescription(_setOperator);
+            string dataDesc = _anyVar.GetDataDescription();
             string description = $"{lhsVar.Key} {setOperatorDesc} {dataDesc}";
 
             return description;
@@ -72,7 +74,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         public override bool HasReference(Variable variable)
         {
-            return anyVar.HasReference(variable);
+            return _anyVar.HasReference(variable);
         }
 
         public override Color GetButtonColor()
@@ -88,8 +90,8 @@ namespace AtMycelia.Amanita.VScripting.Commands
         {
             base.RefreshVariableCache();
 
-            anyVar ??= new AnyVariableAndDataPair();
-            anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+            _anyVar ??= new AnyVariableAndDataPair();
+            _anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -102,11 +104,11 @@ namespace AtMycelia.Amanita.VScripting.Commands
             base.ApplyBackwardsCompatibility();
             if (_oldVariable != null)
             {
-                anyVar.LhsVariable = _oldVariable;
+                _anyVar.LhsVariable = _oldVariable;
                 _oldVariable = null;
             }
 
-            anyVar.Refresh();
+            _anyVar.Refresh();
         }
 
         [Tooltip("Variable to use in expression")]
@@ -124,7 +126,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
             }
             else
             {
-                anyVar.LhsVariable = _oldVariable;
+                ApplyBackwardsCompatibility();
             }
 
             _oldVariable = null;

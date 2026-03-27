@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using MarkerMetro.Unity.WinLegacy.Reflection;
 using System.Linq;
 using UnityObj = UnityEngine.Object;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Amanita.VScripting.Commands
 {
@@ -15,14 +16,16 @@ namespace AtMycelia.Amanita.VScripting.Commands
     /// </summary>
     [CommandInfo("Scripting", 
                  "Invoke Method", 
-                 "Invokes a method of a component via reflection. Supports passing multiple parameters and storing returned values in a Fungus variable.")]
+                 "Invokes a method of a component via reflection. Supports passing multiple " +
+                 "parameters and storing returned values in an Amanita variable.")]
     public class InvokeMethod : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]
-        [SerializeField] protected string description = "";
+        [HyphlowTextArea(3, 10)]
+        [SerializeField] protected StringData _description = new StringData("");
 
         [Tooltip("GameObject containing the component method to be invoked")]
-        [SerializeField] protected GameObject targetObject;
+        [SerializeField] protected GameObjectData _targetObject = new GameObjectData();
 
         [HideInInspector]
         [Tooltip("Name of assembly containing the target component")]
@@ -299,13 +302,14 @@ namespace AtMycelia.Amanita.VScripting.Commands
         /// <summary>
         /// GameObject containing the component method to be invoked.
         /// </summary>
-        public virtual GameObject TargetObject { get { return targetObject; } }
+        public virtual GameObject TargetObject { get { return _targetObject.Value; } }
 
         public override void OnEnter()
         {
             PrepareTargets();
 
-            if (targetObject == null || string.IsNullOrEmpty(targetComponentAssemblyName) || string.IsNullOrEmpty(targetMethod))
+            if (TargetObject == null || string.IsNullOrEmpty(targetComponentAssemblyName) 
+                || string.IsNullOrEmpty(targetMethod))
             {
                 Continue();
                 return;
@@ -344,20 +348,41 @@ namespace AtMycelia.Amanita.VScripting.Commands
 
         public override string GetSummary()
         {
-            if (targetObject == null)
+            if (TargetObject == null)
             {
                 return "Error: targetObject is not assigned";
             }
 
-            if (!string.IsNullOrEmpty(description))
+            if (!string.IsNullOrEmpty(_description))
             {
-                return description;
+                return _description;
             }
 
-            return targetObject.name + "." + targetComponentText + "." + targetMethodText;
+            return $"{TargetObject.name}.{targetComponentText}.{targetMethodText}";
         }
 
         #endregion
+
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+
+            if (!string.IsNullOrEmpty(description))
+            {
+                _description.Value = description;
+                description = null;
+            }
+            if (!ReferenceEquals(targetObject, null))
+            {
+                _targetObject.Value = targetObject;
+                targetObject = null;
+            }
+        }
+
+        [FormerlySerializedAs("description")]
+        [SerializeField] [HideInInspector] protected string description = "";
+        [FormerlySerializedAs("targetObject")]
+        [SerializeField] [HideInInspector] protected GameObject targetObject;
     }
 
     [System.Serializable]
@@ -432,6 +457,8 @@ namespace AtMycelia.Amanita.VScripting.Commands
             return null;
         }
     }
+
+    
 
     public static class ReflectionHelper
     {

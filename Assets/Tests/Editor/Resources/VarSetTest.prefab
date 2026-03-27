@@ -343,12 +343,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 0
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
   version: 1
-  legacyVariables:
+  _legacyVariables:
   - {fileID: 4189454128208650146}
   - {fileID: 2997842933218785534}
   - {fileID: 8805465614666017928}
@@ -451,6 +451,7 @@ MonoBehaviour:
   key: Var
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &8805465614666017928
 MonoBehaviour:
@@ -468,6 +469,7 @@ MonoBehaviour:
   key: Var1
   itemID: 3
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &1828932151346816536
 MonoBehaviour:
@@ -485,6 +487,7 @@ MonoBehaviour:
   key: Var2
   itemID: 5
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 0
 --- !u!114 &1163417951521406283
 MonoBehaviour:
@@ -502,6 +505,7 @@ MonoBehaviour:
   key: Var8
   itemID: 15
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &6548361248272980334
 MonoBehaviour:
@@ -519,6 +523,7 @@ MonoBehaviour:
   key: Var10
   itemID: 18
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 0
 --- !u!114 &2914983618718069288
 MonoBehaviour:
@@ -536,6 +541,7 @@ MonoBehaviour:
   key: Var11
   itemID: 20
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &8530409915774343380
 MonoBehaviour:
@@ -553,6 +559,7 @@ MonoBehaviour:
   key: Var12
   itemID: 22
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 0
 --- !u!114 &6493889262705578041
 MonoBehaviour:
@@ -570,6 +577,7 @@ MonoBehaviour:
   key: Var13
   itemID: 24
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &5885514780426982157
 MonoBehaviour:
@@ -587,6 +595,7 @@ MonoBehaviour:
   key: Var19
   itemID: 34
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &2995839933451271312
 MonoBehaviour:
@@ -604,6 +613,7 @@ MonoBehaviour:
   key: Var20
   itemID: 36
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 
 --- !u!114 &4665366542711170054
 MonoBehaviour:
@@ -621,6 +631,7 @@ MonoBehaviour:
   key: Var21
   itemID: 38
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &3931316057658757917
 MonoBehaviour:
@@ -638,6 +649,7 @@ MonoBehaviour:
   key: Var22
   itemID: 40
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 0}
 --- !u!114 &3004060541595052673
 MonoBehaviour:
@@ -655,6 +667,7 @@ MonoBehaviour:
   key: Var23
   itemID: 42
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {x: 0, y: 0}
 --- !u!114 &4142613776352639886
 MonoBehaviour:
@@ -672,6 +685,7 @@ MonoBehaviour:
   key: Var24
   itemID: 44
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {x: 0, y: 0, z: 0}
 --- !u!114 &2828743190546237084
 MonoBehaviour:
@@ -757,8 +771,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -843,6 +857,7 @@ MonoBehaviour:
   key: VarComp
   itemID: 2
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 7316821857205532760}
 --- !u!82 &2539901819628314990
 AudioSource:
@@ -957,6 +972,7 @@ MonoBehaviour:
   key: Var1Comp
   itemID: 4
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 2539901819628314990}
 --- !u!114 &670469608650659671
 MonoBehaviour:
@@ -974,6 +990,7 @@ MonoBehaviour:
   key: Var2Comp
   itemID: 6
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 1
 --- !u!114 &6522387938227322495
 MonoBehaviour:
@@ -989,8 +1006,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 3
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1051,8 +1068,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 5
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1113,8 +1130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1177,6 +1194,7 @@ MonoBehaviour:
   key: Var8Comp
   itemID: 16
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &7453874730336948705
 MonoBehaviour:
@@ -1194,6 +1212,7 @@ MonoBehaviour:
   key: Var10Comp
   itemID: 19
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 3.14
 --- !u!114 &3116736742800406239
 MonoBehaviour:
@@ -1211,6 +1230,7 @@ MonoBehaviour:
   key: Var11Comp
   itemID: 21
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 3282095820723025708}
 --- !u!114 &8379622082962960298
 MonoBehaviour:
@@ -1228,6 +1248,7 @@ MonoBehaviour:
   key: Var12Comp
   itemID: 23
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: 7
 --- !u!114 &1249734079670282884
 MonoBehaviour:
@@ -1245,6 +1266,7 @@ MonoBehaviour:
   key: Var13Comp
   itemID: 25
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &2994228629059441923
 MonoBehaviour:
@@ -1262,6 +1284,7 @@ MonoBehaviour:
   key: Var15Comp
   itemID: 27
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &5632239392483222896
 MonoBehaviour:
@@ -1279,6 +1302,7 @@ MonoBehaviour:
   key: Var19Comp
   itemID: 35
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &2861589987192766990
 MonoBehaviour:
@@ -1296,6 +1320,7 @@ MonoBehaviour:
   key: Var20Comp
   itemID: 37
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: hello
 --- !u!114 &1658843741158537153
 MonoBehaviour:
@@ -1313,6 +1338,7 @@ MonoBehaviour:
   key: Var21Comp
   itemID: 39
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &7445773590752646648
 MonoBehaviour:
@@ -1330,6 +1356,7 @@ MonoBehaviour:
   key: Var24Comp
   itemID: 45
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {x: 1, y: 2, z: 3}
 --- !u!114 &4642638504608297107
 MonoBehaviour:
@@ -1347,6 +1374,7 @@ MonoBehaviour:
   key: Var23Comp
   itemID: 43
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {x: 1, y: 2}
 --- !u!114 &5515409587438433481
 MonoBehaviour:
@@ -1364,6 +1392,7 @@ MonoBehaviour:
   key: Var22Comp
   itemID: 41
   oldItemID: 0
+  _owner: {fileID: 1043080471272523523}
   value: {fileID: 2074430884284038955}
 --- !u!114 &2535924446719479443
 MonoBehaviour:
@@ -1379,8 +1408,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1441,8 +1470,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1503,8 +1532,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 13
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1565,8 +1594,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 15
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1627,8 +1656,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 17
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1689,8 +1718,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 19
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1751,8 +1780,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 21
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1813,8 +1842,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 23
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1875,8 +1904,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 25
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1937,8 +1966,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 27
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1999,8 +2028,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 29
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2061,8 +2090,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 31
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2123,8 +2152,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2185,8 +2214,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 35
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2247,8 +2276,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 37
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2309,8 +2338,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 39
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -2371,8 +2400,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 41
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}

@@ -95,7 +95,8 @@ namespace AtMycelia.Amanita.VScripting
             
             if (toSet == null)
             {
-                logMessage = $"Could not find appropriate IVariableData for the {varType.Name} content type";
+                logMessage = $"Could not find appropriate IVariableData for the " +
+                    $"{varType.Name} content type";
                 Debug.LogError(logMessage);
                 return;
             }

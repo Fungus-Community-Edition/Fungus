@@ -17,10 +17,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             base.OnEnable();
 
-            anyVarDataPairProp = serializedObject.FindProperty("anyVar");
-            lhsVarProp = serializedObject.FindProperty("anyVar.varRef"); // VariableReference
-            anyVarDataProp = serializedObject.FindProperty("anyVar.data"); // AnyVariableData
-            setOperatorProp = serializedObject.FindProperty("setOperator");
+            anyVarDataPairProp = serializedObject.FindProperty("_anyVar");
+            lhsVarProp = serializedObject.FindProperty("_anyVar.varRef"); // VariableReference
+            anyVarDataProp = serializedObject.FindProperty("_anyVar.data"); // AnyVariableData
+            setOperatorProp = serializedObject.FindProperty("_setOperator");
         }
 
         public override void DrawCommandGUI()
