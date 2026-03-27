@@ -21,7 +21,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(orderInLayer);
+            _variableDataCache.Add(orderInLayer);
         }
 
         #region Public members

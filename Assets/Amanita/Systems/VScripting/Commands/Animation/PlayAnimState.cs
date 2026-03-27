@@ -26,10 +26,10 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(animator);
-            variableDataCache.Add(stateName);
-            variableDataCache.Add(layer);
-            variableDataCache.Add(time);
+            _variableDataCache.Add(animator);
+            _variableDataCache.Add(stateName);
+            _variableDataCache.Add(layer);
+            _variableDataCache.Add(time);
         }
 
         #region Public members

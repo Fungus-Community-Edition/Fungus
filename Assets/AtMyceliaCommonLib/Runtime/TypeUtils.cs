@@ -8,11 +8,6 @@ namespace AtMycelia
 {
     public static class TypeUtils
     {
-        public static bool IsConcrete(this Type type)
-        {
-            return !(type.IsAbstract || type.IsInterface);
-        }
-
         public static IList<Type> GetInstantiatableTypes(Type baseType)
         {
             var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();

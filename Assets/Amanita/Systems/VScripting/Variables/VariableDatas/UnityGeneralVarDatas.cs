@@ -43,7 +43,7 @@ namespace AtMycelia.Amanita.VScripting
             return go.AddComponent<T>();
         }
 
-        public virtual string name
+        public virtual string Name
         {
             get
             {

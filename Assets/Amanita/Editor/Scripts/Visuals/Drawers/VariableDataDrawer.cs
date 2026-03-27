@@ -12,8 +12,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 {
     public abstract class VariableDataDrawerBase : PropertyDrawer
     {
-        private const bool LogDrawer = true;
-
         public override void OnGUI(Rect position, SerializedProperty varDataProp, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, varDataProp);
@@ -45,7 +43,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
             bool shouldDrawLiteral = !validStoredItemId;
 
-            Debug.Log($"Indent level in {GetType().Name}: {EditorGUI.indentLevel} for {varDataProp.propertyPath}");
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
             HandleLayout();
@@ -95,13 +92,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUIUtility.labelWidth = prevLabelWidth;
             }
 
-            if (LogDrawer)
-            {
-                //Debug.Log($"{GetType().Name}[{varDataProp.propertyPath}] pos={position} labelWidth={EditorGUIUtility.labelWidth} " +
-                //          $"valueRect={valueRect} popupRect={popupRect} itemId={itemIdProp?.intValue} " +
-                //          $"shouldDrawLiteral={shouldDrawLiteral} literalPropType={literalValueProp?.propertyType}");
-            }
-
             if (labelRect.width > 0f)
             {
                 EditorGUI.LabelField(labelRect, label);
@@ -112,7 +102,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUI.BeginChangeCheck();
                 if (ShouldUseTextArea(varData))
                 {
-                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue);
+                    GUIStyle textAreaStyle = new GUIStyle(EditorStyles.textArea)
+                    {
+                        wordWrap = ShouldWordWrapTextArea()
+                    };
+
+                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue, textAreaStyle);
                     if (EditorGUI.EndChangeCheck())
                     {
                         literalValueProp.stringValue = newValue;
@@ -366,6 +361,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             return GetTextAreaAttribute() != null;
+        }
+
+        protected bool ShouldWordWrapTextArea()
+        {
+            HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
+            if (textAreaAttribute == null)
+            {
+                return false;
+            }
+
+            int lineCount = Mathf.Max(1, textAreaAttribute.MinLines);
+            return lineCount >= 2;
         }
 
         protected HyphlowTextAreaAttribute GetTextAreaAttribute()

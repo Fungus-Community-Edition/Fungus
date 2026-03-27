@@ -37,10 +37,10 @@ namespace AtMycelia.Amanita.Tweening
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
-            variableDataCache.Add(repeats);
-            variableDataCache.Add(stopPreviousTweens);
-            variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(_duration);
+            _variableDataCache.Add(repeats);
+            _variableDataCache.Add(stopPreviousTweens);
+            _variableDataCache.Add(waitUntilFinished);
         }
 
         public override void OnEnter()

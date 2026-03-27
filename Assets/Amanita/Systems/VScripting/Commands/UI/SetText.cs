@@ -13,20 +13,21 @@ namespace AtMycelia.Amanita.VScripting
     public class SetText : Command, ILocalizable 
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]
-        [SerializeField] protected GameObjectData targetTextObject = new GameObjectData();
+        [SerializeField] protected GameObjectData _targetTextObjectData = new GameObjectData();
         
         [Tooltip("String value to assign to the text object")]
         [FormerlySerializedAs("stringData")]
-        [SerializeField] protected StringDataMulti text;
+        [SerializeField] protected StringDataMulti text = new StringDataMulti();
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
+        [HyphlowTextArea(3, 10)]
         [SerializeField] protected string description;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(targetTextObject);
-            variableDataCache.Add(text);
+            _variableDataCache.Add(_targetTextObjectData);
+            _variableDataCache.Add(text);
         }
 
         #region Public members
@@ -36,14 +37,14 @@ namespace AtMycelia.Amanita.VScripting
             var flowchart = GetFlowchart();
             string newText = flowchart.SubstituteVariables(text.Value);
             
-            if (targetTextObject == null)
+            if (_targetTextObjectData == null)
             {
                 Continue();
                 return;
             }
 
             TextAdapter textAdapter = new TextAdapter();
-            textAdapter.InitFromGameObject(targetTextObject);
+            textAdapter.InitFromGameObject(_targetTextObjectData);
 
             if (textAdapter.HasTextObject())
             {
@@ -55,9 +56,9 @@ namespace AtMycelia.Amanita.VScripting
         
         public override string GetSummary()
         {
-            if (targetTextObject != null)
+            if (_targetTextObjectData != null && _targetTextObjectData.Value != null)
             {
-                return targetTextObject.Value.name + " : " + text.Value;
+                return _targetTextObjectData.Value.name + " : " + text.Value;
             }
             
             return "Error: No text object selected";
@@ -115,18 +116,21 @@ namespace AtMycelia.Amanita.VScripting
 
         #region Backwards compatibility
 
-        // Backwards compatibility with Fungus v2.1.2
-        [HideInInspector]
-        [FormerlySerializedAs("targetTextObject")]
-        public GameObject _textObjectObsolete;
-        protected override void OnEnable()
+        public override void ApplyBackwardsCompatibility()
         {
-            base.OnEnable();
-            if (_textObjectObsolete != null)
+            base.ApplyBackwardsCompatibility();
+
+            if (!ReferenceEquals(targetTextObject, null))
             {
-                targetTextObject.Value = _textObjectObsolete.gameObject;
+                _targetTextObjectData.Value = targetTextObject;
+                targetTextObject = null;
             }
         }
+
+        [SerializeField]
+        [HideInInspector]
+        [FormerlySerializedAs("targetTextObject")]
+        protected GameObject targetTextObject;
 
         #endregion
     }    

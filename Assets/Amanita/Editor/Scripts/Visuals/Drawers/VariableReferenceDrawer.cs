@@ -64,17 +64,40 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             SerializedProperty owningSourceProp = property.FindPropertyRelative("owningSource");
 
             int currentItemId = itemIdProp.intValue;
+            UnityObj storedOwner = owningSourceProp.objectReferenceValue;
+
             int currentIndex = 0;
             bool validId = currentItemId != Muscariable.InvalidID;
             if (validId)
             {
-                int found = candidates.FindIndex(varEl => varEl.ItemId == currentItemId);
+                int found = candidates.FindIndex(IsVarWithRightIdAndOwner);
+
                 if (found >= 0)
                 {
                     currentIndex = found + 1;
                 }
             }
 
+            bool IsVarWithRightIdAndOwner(IVariable varEl)
+            {
+                // To avoid ID collision issues, we also check that the owner of the variable
+                // matches the stored owner reference. This way, even if there are multiple
+                // variables with the same ID, we should still show the correct one as
+                // selected in the dropdown.
+                if (varEl == null)
+                {
+                    return false;
+                }
+                if (varEl.ItemId != currentItemId)
+                {
+                    return false;
+                }
+                if (storedOwner == null)
+                {
+                    return true;
+                }
+                return ReferenceEquals(varEl.Owner as UnityObj, storedOwner);
+            }
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
             // ^This is what lets the user choose a variable from the dropdown, and it returns the index of the chosen option
 

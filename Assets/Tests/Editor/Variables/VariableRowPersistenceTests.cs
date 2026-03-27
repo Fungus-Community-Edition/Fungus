@@ -491,9 +491,9 @@ namespace VScriptingTests.VariableRows
                 #endregion
 
                 #region Physics
-                { typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
+                //{ typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
                 { typeof(Collider), typeof(ColliderThreeDRowVisualHandler) },
-                { typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
+                //{ typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
                 { typeof(Collider2D), typeof(ColliderTwoDRowVisualHandler) },
                 #endregion
 

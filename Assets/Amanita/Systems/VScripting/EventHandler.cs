@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Unity.Properties;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,7 +35,7 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class EventHandler : MonoBehaviour
+    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver
     {   
         [HideInInspector]
         [FormerlySerializedAs("parentSequence")]
@@ -172,6 +173,29 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
             }
         }
 
+        public virtual void OnBeforeSerialize()
+        {
+            
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+                OnAfterDeserializeBackwardsCompat();
+            };
+#endif
+        }
+
+        protected virtual void OnAfterDeserializeBackwardsCompat()
+        {
+
+        }
         protected virtual EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
         
     }

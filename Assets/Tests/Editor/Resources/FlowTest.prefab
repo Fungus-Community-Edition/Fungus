@@ -65,12 +65,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    muscariables: []
-    legacyVariables: []
-    nextValidVarID: 1
-    isInitted: 0
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
   version: 1
-  legacyVariables:
+  _legacyVariables:
   - {fileID: 1899702518119212923}
   _oldMuscariables: []
   description: 
@@ -375,6 +375,7 @@ MonoBehaviour:
   key: Var
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 3850397277397727160}
   value: 1
 --- !u!114 &3087442754994311981
 MonoBehaviour:
@@ -638,8 +639,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 1
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
       itemId: 0
       owningSource: {fileID: 0}

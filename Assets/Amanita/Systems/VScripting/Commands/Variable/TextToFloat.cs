@@ -15,7 +15,7 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(hasTextField);
+            _variableDataCache.Add(hasTextField);
         }
 
         public override void OnEnter()

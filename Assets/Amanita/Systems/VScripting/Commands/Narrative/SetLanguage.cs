@@ -20,7 +20,7 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_languageCode);
+            _variableDataCache.Add(_languageCode);
         }
 
         #region Public members

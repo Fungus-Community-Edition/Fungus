@@ -24,8 +24,8 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(minValue);
-            variableDataCache.Add(maxValue);
+            _variableDataCache.Add(minValue);
+            _variableDataCache.Add(maxValue);
         }
 
         #region Public members

@@ -5,7 +5,7 @@ using System.IO;
 namespace AtMycelia.Amanita.LocalizationSys.EditorUtils
 {
     [CustomEditor(typeof(Localization))]
-    public class LocalizationEditor : Editor 
+    public class LocalizationEditor : UnityEditor.Editor
     {
         protected SerializedProperty activeLanguageProp;
         protected SerializedProperty localizationFileProp;

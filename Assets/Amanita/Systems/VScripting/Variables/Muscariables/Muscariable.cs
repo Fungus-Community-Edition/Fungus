@@ -225,12 +225,17 @@ namespace AtMycelia.Amanita.VScripting
             return base.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            string result = $"{this.GetType().Name} w/ val: {BoxedValue})";
+            return result;
+        }
+
     }
 
     [Serializable]
     [MovedFrom(true, "Amanita.VScripting", "Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
-
     {
         [SerializeField] protected T value, startValue;
 
@@ -270,6 +275,7 @@ namespace AtMycelia.Amanita.VScripting
                     return;
                 }
 
+
                 this.value = (T)value; 
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
@@ -297,6 +303,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             base.TriggerOnValueChanged();
             OnValueChanged?.Invoke(value);
+            VariableSignals.PostValueChange.Invoke(this, value);
         }
 
         public new event Action<T> OnValueChanged = delegate { };

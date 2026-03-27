@@ -23,6 +23,7 @@
         </engine:Foldout>
         <engine:Toggle label="Always Keep Guid" name="AlwaysKeepGuid" value="true" binding-path="alwaysKeepGuid" />
         <engine:Button text="Open Flowchart Window" name="OpenFlowchartWindow" />
+        <engine:Button text="Migrate Vars" name="MigrateVars" />
         <engine:Instance template="VariableDisplayEditor" name="VariableDisplayEditor" />
     </engine:VisualElement>
 </engine:UXML>

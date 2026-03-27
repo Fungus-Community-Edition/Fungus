@@ -22,7 +22,7 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(targetTextObject);
+            _variableDataCache.Add(targetTextObject);
         }
 
         #region Public members

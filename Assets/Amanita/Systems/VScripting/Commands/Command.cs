@@ -44,6 +44,7 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
+            ApplyBackwardsCompatibility();
         }
 
         /// <summary>
@@ -118,21 +119,21 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void RefreshVariableDataCache()
         {
             // We expect child classes to add their VariableDatas to this list
-            variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
-            variableDataCache.Clear();
+            _variableDataCache ??= new List<IVariableData>(); // In case it was null during a unit test or something
+            _variableDataCache.Clear();
         }
 
-        protected IList<IVariableData> variableDataCache = new List<IVariableData>();
+        protected IList<IVariableData> _variableDataCache = new List<IVariableData>();
 
         protected virtual void RefreshVariableDatas()
         {
-            for (int i = 0; i < variableDataCache.Count; i++)
+            for (int i = 0; i < _variableDataCache.Count; i++)
             {
-                var refreshable = variableDataCache[i] as IRefreshable;
+                var refreshable = _variableDataCache[i] as IRefreshable;
                 refreshable?.Refresh();
             }
 #if UNITY_EDITOR
-            if (variableDataCache.Count > 0)
+            if (_variableDataCache.Count > 0)
             {
                 UnityEditor.EditorUtility.SetDirty(this);
             }
@@ -141,9 +142,9 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void AssertOwnership()
         {
             Flowchart fChart = GetFlowchart();
-            for (int i = 0; i < variableDataCache.Count; i++)
+            for (int i = 0; i < _variableDataCache.Count; i++)
             {
-                var currentVarData = variableDataCache[i];
+                var currentVarData = _variableDataCache[i];
 
                 // We only want to assert ownership if there is no owner already set.
                 // We want to allow the variable datas to have other owners so

@@ -24,7 +24,8 @@ namespace AtMycelia.Amanita.VScripting
     [ExecuteInEditMode]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
         IReorderableVariableSource, IReorderableMuscariableSource,
-        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable
+        IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
+        IBackwardsCompatibilityApplier
     {
         [SerializeField] private VariableManager variableManager = new VariableManager();
 
@@ -33,7 +34,8 @@ namespace AtMycelia.Amanita.VScripting
 
         [HideInInspector]
         [FormerlySerializedAs("variables")]
-        [SerializeField] protected List<Variable> legacyVariables = new List<Variable>();
+        [FormerlySerializedAs("legacyVariables")]
+        [SerializeField] protected List<Variable> _legacyVariables = new List<Variable>();
 
         [HideInInspector]
         [FormerlySerializedAs("muscariables")]
@@ -179,11 +181,11 @@ namespace AtMycelia.Amanita.VScripting
             RegisterLegacyVars();
             void RegisterLegacyVars()
             {
-                legacyVariables ??= new List<Variable>();
-                if (legacyVariables.Count == 0)
+                _legacyVariables ??= new List<Variable>();
+                if (_legacyVariables.Count == 0)
                 {
                     var found = GetComponents<Variable>();
-                    legacyVariables.AddRange(found);
+                    _legacyVariables.AddRange(found);
                 }
             }
 
@@ -192,7 +194,7 @@ namespace AtMycelia.Amanita.VScripting
 
             if (!variableManager.IsInitted)
             {
-                variableManager.Initialize(_oldMuscariables, legacyVariables);
+                variableManager.Initialize(_oldMuscariables, _legacyVariables);
             }
             else
             {
@@ -294,8 +296,9 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             AmanitaManager.EnsureExists();
+            
             Refresh();
-            MigrateStuffToVariableManager();//
+            MigrateStuffToVariableManager();
             ToggleSubs(true);
             variableManager.OnEnable();
 
@@ -405,7 +408,7 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
-            bool needsMigration = _oldMuscariables.Count > 0 || legacyVariables.Count > 0;
+            bool needsMigration = _oldMuscariables.Count > 0 || _legacyVariables.Count > 0;
             if (!needsMigration)
             {
                 variableManager.Refresh();
@@ -419,7 +422,8 @@ namespace AtMycelia.Amanita.VScripting
 
         private void MigrateStuffToVariableManager()
         {
-            bool needsMigration = _oldMuscariables.Count > 0 || legacyVariables.Count > 0;
+            bool needsMigration = _oldMuscariables.Count > 0 || _legacyVariables.Count > 0 
+                || !variableManager.IsInitted;
             if (!needsMigration)
             {
                 return;
@@ -429,19 +433,21 @@ namespace AtMycelia.Amanita.VScripting
 
             if (!variableManager.IsInitted)
             {
-                variableManager.Initialize(_oldMuscariables, legacyVariables);
+                variableManager.Initialize(_oldMuscariables, _legacyVariables);
             }
             else
             {
-                variableManager.MigrateLegacyVariables(_oldMuscariables, legacyVariables);
+                variableManager.MigrateLegacyVariables(_oldMuscariables, _legacyVariables);
             }
             _oldMuscariables.Clear();
-            legacyVariables.Clear();
+            _legacyVariables.Clear();
             variableManager.Refresh();
 #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
 #endif
         }
+
+        public VariableManager VariableManager => variableManager;
 
         protected virtual void AssertOwnership()
         {
@@ -453,6 +459,7 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
+            variableManager.OnDisable();
             StopAllBlocks();
             StopAllCoroutines();
             StringSubstituter.UnregisterHandler(this);   
@@ -564,7 +571,7 @@ namespace AtMycelia.Amanita.VScripting
 
             // Remove any null entries in the variables list
             // It shouldn't happen but it seemed to occur for a user on the forum 
-            legacyVariables.RemoveAll(item => item == null);
+            _legacyVariables.RemoveAll(item => item == null);
 
             // Aviod destroying the legacy vars. Let them exist, even if we have muscaris
             // acting in their place.
@@ -1203,27 +1210,27 @@ namespace AtMycelia.Amanita.VScripting
             if (newOrder == null || newOrder.Count == 0) return;
 
             // Extract legacy variables that appear in newOrder, in that order
-            var ordered = new List<Variable>(legacyVariables.Count);
+            var ordered = new List<Variable>(_legacyVariables.Count);
             var seen = new HashSet<Variable>();
 
             for (int i = 0; i < newOrder.Count; i++)
             {
-                if (newOrder[i] is Variable legacy && legacyVariables.ContainsReference(legacy) && seen.Add(legacy))
+                if (newOrder[i] is Variable legacy && _legacyVariables.ContainsReference(legacy) && seen.Add(legacy))
                     ordered.Add(legacy);
             }
 
             // Append the rest (not explicitly positioned)
-            for (int i = 0; i < legacyVariables.Count; i++)
+            for (int i = 0; i < _legacyVariables.Count; i++)
             {
-                var elem = legacyVariables[i];
+                var elem = _legacyVariables[i];
                 if (!seen.Contains(elem))
                 {
                     ordered.Add(elem);
                 }
             }
-            if (ordered.Count == legacyVariables.Count)
+            if (ordered.Count == _legacyVariables.Count)
             {
-                legacyVariables = ordered;
+                _legacyVariables = ordered;
             }
         }
 
@@ -1379,9 +1386,9 @@ namespace AtMycelia.Amanita.VScripting
 
             if (resetVariables)
             {
-                for (int i = 0; i < legacyVariables.Count; i++)
+                for (int i = 0; i < _legacyVariables.Count; i++)
                 {
-                    var variable = legacyVariables[i];
+                    var variable = _legacyVariables[i];
                     variable.OnReset();
                 }
             }
@@ -1540,7 +1547,7 @@ namespace AtMycelia.Amanita.VScripting
 
                 AmanitaManager.EnsureExists();
 
-                legacyVariables.RemoveAll((elem) => elem == null);
+                _legacyVariables.RemoveAll((elem) => elem == null);
                 _oldMuscariables.RemoveAll((elem) => elem == null);
 
                 uiModel ??= new FlowchartUIModel();
@@ -1627,7 +1634,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public bool Contains(IVariable var)
         {
-            return legacyVariables.Contains(var) || _oldMuscariables.Contains(var);
+            return _legacyVariables.Contains(var) || _oldMuscariables.Contains(var);
         }
 
         public void OnBeforeSerialize()
@@ -1723,6 +1730,11 @@ namespace AtMycelia.Amanita.VScripting
         public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             return variableManager.GetVariableOfTypeByName(type, name, strCompare);
+        }
+
+        public void ApplyBackwardsCompatibility()
+        {
+            MigrateStuffToVariableManager();
         }
 
 #endif

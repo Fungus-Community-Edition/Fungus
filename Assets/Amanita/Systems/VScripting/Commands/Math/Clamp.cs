@@ -32,10 +32,10 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(lower);
-            variableDataCache.Add(upper);
-            variableDataCache.Add(value);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(lower);
+            _variableDataCache.Add(upper);
+            _variableDataCache.Add(value);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()
