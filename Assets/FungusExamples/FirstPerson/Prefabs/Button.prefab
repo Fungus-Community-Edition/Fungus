@@ -190,7 +190,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: I think we can agree we need to crank this thing to 11 next time around.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -217,7 +217,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 5ba6e5e5e65bc084ba912d2d2d8718df, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -270,7 +270,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _stopVoiceover:
@@ -303,17 +303,16 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: I think we can agree we need to crank this thing to 11 next time
-    around.
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 5ba6e5e5e65bc084ba912d2d2d8718df, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
   _oldExtendPrevious: 0
   _oldFadeWhenDone: 1
-  _oldWaitForClick: 0
+  _oldWaitForClick: 1
   _oldStopVoiceover: 1
   _oldWaitForVO: 0
 --- !u!114 &114636333720846380
@@ -336,7 +335,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: Excellent. {w=1}
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -363,7 +362,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 96ca91f43a9c1f74b970b59f46047e74, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -416,7 +415,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _stopVoiceover:
@@ -449,16 +448,16 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: Excellent. {w=1}
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 96ca91f43a9c1f74b970b59f46047e74, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
   _oldExtendPrevious: 0
   _oldFadeWhenDone: 1
-  _oldWaitForClick: 0
+  _oldWaitForClick: 1
   _oldStopVoiceover: 1
   _oldWaitForVO: 0
 --- !u!114 &114601175633847876
@@ -489,11 +488,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 7
   indentLevel: 0
-  setOperator: 0
-  anyVar:
+  _setOperator: 0
+  _anyVar:
     varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+      itemId: 2
+      owningSource: {fileID: 114726772774787118}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     data:
@@ -503,14 +502,23 @@ MonoBehaviour:
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
-        rid: -2
+        rid: 6177420912830185777
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 6177420912830185777
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &114221714219153596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,7 +539,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: Well done. I'll get the door for you.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -644,7 +652,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: Well done. I'll get the door for you.
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -692,7 +700,7 @@ MonoBehaviour:
     integerVal: 0
   callMode: 0
   targetBlockId: 1
-  _oldStartIndex: 0
+  _oldStartIndex: -1
 --- !u!114 &114524164663952058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,7 +713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
+  itemId: 27
   indentLevel: 0
   _storyText:
     backingVarRef:
@@ -713,7 +721,10 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: '*That can''t be it*
+
+
+      Lets hear that again John.'
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -826,10 +837,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: '*That can''t be it*
-
-
-    Lets hear that again John.'
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -871,7 +879,6 @@ MonoBehaviour:
   - {fileID: 114601175633847876}
   - {fileID: 114636333720846380}
   - {fileID: 114668946771419768}
-  - {fileID: 0}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -954,7 +961,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 2
   key: isComplete
-  itemID: 0
+  itemID: 2
   oldItemID: 0
   _owner: {fileID: 114726772774787118}
   value: 0
@@ -972,7 +979,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 2
   key: isUnlocked
-  itemID: 0
+  itemID: 1
   oldItemID: 0
   _owner: {fileID: 114726772774787118}
   value: 0
@@ -1026,23 +1033,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   variableManager:
     _muscariables: []
-    _legacyVariables: []
-    _nextValidVarID: 1
-    _isInitted: 0
+    _legacyVariables:
+    - {fileID: 114845031120885838}
+    - {fileID: 114911326825087872}
+    _nextValidVarID: 3
+    _isInitted: 1
   version: 1
-  _legacyVariables:
-  - {fileID: 114845031120885838}
-  - {fileID: 114911326825087872}
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 114338234726659852}
     _selectedCommands: []
-    _owner: {fileID: 0}
-    <ScrollPos>k__BackingField: {x: 0, y: 12.425991}
+    _owner: {fileID: 1766213715120214}
+    <ScrollPos>k__BackingField: {x: 0, y: 9.925991}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.3000001
+    <Zoom>k__BackingField: 1.2
     <BlockViewHeight>k__BackingField: 400
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1093,8 +1101,8 @@ MonoBehaviour:
   - {fileID: 114922658582334470}
   - {fileID: 114436750874473106}
   - {fileID: 114887280257633318}
-  nextValidVarID: 1
-  uniqueId: 
+  nextValidVarID: 3
+  uniqueId: fcf689d2-2e2e-4be6-95e0-8d9e134f7935
   references:
     version: 2
     RefIds: []
@@ -1281,7 +1289,8 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: "If I have it, I don\u2019t share it. If I share it, I don\u2019t have
+      it. What is it?"
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1308,204 +1317,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-    spriteRef: {fileID: 0}
-    spriteVal: {fileID: 0}
-  _voiceOverClip:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-    audioClipRef: {fileID: 0}
-  _showAlways:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _showCount:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 1
-    integerRef: {fileID: 0}
-    integerVal: 0
-  _extendPrevious:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _fadeWhenDone:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _waitForClick:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _stopVoiceover:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 1
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _waitForVO:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 0
-    booleanRef: {fileID: 0}
-    booleanVal: 0
-  _setSayDialog:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  _characterCached: {fileID: 0}
-  oldSetSayDialog: {fileID: 0}
-  _migrated: 0
-  _oldStoryText: "If I have it, I don\u2019t share it. If I share it, I don\u2019t
-    have it. What is it?"
-  _oldDescription: 
-  _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 03bc547cc0049594bae51f00903eedef, type: 3}
-  _oldVoiceOverClip: {fileID: 0}
-  _oldShowAlways: 1
-  _oldShowCount: 1
-  _oldExtendPrevious: 0
-  _oldFadeWhenDone: 1
-  _oldWaitForClick: 1
-  _oldStopVoiceover: 1
-  _oldWaitForVO: 0
---- !u!114 &114861466768709660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766213715120214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 12
-  indentLevel: 0
---- !u!114 &114767732169189990
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766213715120214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 26
-  indentLevel: 1
-  targetFlowchart: {fileID: 0}
-  targetBlock: {fileID: 114338234726659852}
-  startLabel:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 
-    stringRef: {fileID: 0}
-    stringVal: 
-  startIndex:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 0
-    integerRef: {fileID: 0}
-    integerVal: 0
-  callMode: 0
-  targetBlockId: 1
-  _oldStartIndex: 0
---- !u!114 &114849391107444330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766213715120214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 25
-  indentLevel: 1
-  _storyText:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 
-    stringRef: {fileID: 0}
-    stringVal: 
-  _description:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: 
-    stringRef: {fileID: 0}
-    stringVal: 
-  _character:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
-    gameObjectRef: {fileID: 0}
-    gameObjectVal: {fileID: 0}
-  _portrait:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 03bc547cc0049594bae51f00903eedef, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -1594,7 +1406,203 @@ MonoBehaviour:
   _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: b9482ea03e69b5a4aa5e7827da354549, type: 3}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
+--- !u!114 &114861466768709660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 12
+  indentLevel: 0
+--- !u!114 &114767732169189990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050fb9e6e72f442b3b883da8a965bdeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 26
+  indentLevel: 1
+  targetFlowchart: {fileID: 0}
+  targetBlock: {fileID: 114338234726659852}
+  startLabel:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  callMode: 0
+  targetBlockId: 1
+  _oldStartIndex: -1
+--- !u!114 &114849391107444330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 25
+  indentLevel: 1
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 21300000, guid: b9482ea03e69b5a4aa5e7827da354549, type: 3}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
+  oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
@@ -1623,7 +1631,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: Riddle time!
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1650,7 +1658,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 3bcfc8e7b3c790e45b57cc6db1526225, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -1736,10 +1744,10 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: Riddle time!
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 3bcfc8e7b3c790e45b57cc6db1526225, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
@@ -1768,7 +1776,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: Very well then.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1795,7 +1803,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: 267c50c3c26c7e24fa27aece06aad7cd, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -1881,10 +1889,10 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: Very well then.
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 267c50c3c26c7e24fa27aece06aad7cd, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
@@ -1927,7 +1935,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: I found your button John. {w=1}
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -2007,7 +2015,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 1
+    value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _stopVoiceover:
@@ -2040,7 +2048,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: I found your button John. {w=1}
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -2049,7 +2057,7 @@ MonoBehaviour:
   _oldShowCount: 1
   _oldExtendPrevious: 0
   _oldFadeWhenDone: 1
-  _oldWaitForClick: 0
+  _oldWaitForClick: 1
   _oldStopVoiceover: 1
   _oldWaitForVO: 0
 --- !u!114 &114436750874473106
@@ -2085,8 +2093,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+        itemId: 1
+        owningSource: {fileID: 114726772774787118}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -2096,13 +2104,13 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 6177420912830185534
       variable: {fileID: 0}
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+        itemId: 2
+        owningSource: {fileID: 114726772774787118}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -2112,7 +2120,7 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 6177420912830185576
       variable: {fileID: 0}
   compareOperator: 0
   anyVar:
@@ -2270,3 +2278,25 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 6177420912830185534
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
+    - rid: 6177420912830185576
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0

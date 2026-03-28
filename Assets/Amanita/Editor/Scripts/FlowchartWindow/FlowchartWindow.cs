@@ -28,6 +28,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 GetWindow<FlowchartWindow>();
             wnd.titleContent = new GUIContent(Config.FlowchartWindowTitle);
             wnd.minSize = Config.WindowMinSize;
+            wnd.Focus();
         }
 
         public static FlowchartWindow S => _s;

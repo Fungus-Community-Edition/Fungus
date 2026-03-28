@@ -44,6 +44,7 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnEnable()
         {
             RefreshForVarDataStability();
+            ApplyBackwardsCompatibility();
         }
 
         /// <summary>

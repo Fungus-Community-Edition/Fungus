@@ -94,7 +94,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: Yes, that's the door...
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -207,7 +207,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: Yes, that's the door...
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -239,7 +239,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: '[~Still there|So enticing|But what does it mean?]'
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -352,7 +352,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: '[~Still there|So enticing|But what does it mean?]'
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -384,7 +384,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: "Yes, a door John. \n\nBut how to reach it."
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -411,7 +411,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: ab808050bc535a643afaf4755050339e, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -497,10 +497,10 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: "Yes, a door John. \n\nBut how to reach it."
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: ab808050bc535a643afaf4755050339e, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
@@ -584,8 +584,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+        itemId: 2
+        owningSource: {fileID: 114383920395763002}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -595,7 +595,7 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 6177420912830185922
       variable: {fileID: 0}
   compareOperator: 0
   anyVar:
@@ -753,6 +753,17 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 6177420912830185922
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &114923048309305226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -793,15 +804,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 6
+  itemId: 17
   indentLevel: 0
   anyOrAllConditions: 0
   conditions:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+        itemId: 1
+        owningSource: {fileID: 114383920395763002}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -811,7 +822,7 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 6177420912830185843
       variable: {fileID: 0}
   compareOperator: 0
   anyVar:
@@ -969,6 +980,17 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 6177420912830185843
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 0
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &114518782346171026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -985,7 +1007,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 240
     y: 200
-    width: 120
+    width: 118
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -1093,7 +1115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 0
   key: hasGazed
-  itemID: 0
+  itemID: 2
   oldItemID: 0
   _owner: {fileID: 114383920395763002}
   value: 0
@@ -1111,7 +1133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scope: 2
   key: isComplete
-  itemID: 0
+  itemID: 1
   oldItemID: 0
   _owner: {fileID: 114383920395763002}
   value: 0
@@ -1148,8 +1170,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+        itemId: 1
+        owningSource: {fileID: 114383920395763002}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -1159,7 +1181,7 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: -2
+          rid: 6177420912830185781
       variable: {fileID: 0}
   compareOperator: 0
   anyVar:
@@ -1317,6 +1339,17 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 6177420912830185781
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &114882431458328084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1333,11 +1366,11 @@ MonoBehaviour:
     serializedVersion: 2
     x: 240
     y: 120
-    width: 100
+    width: 107
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 0
+  itemId: 6
   blockName: New Block
   description: 
   eventHandler: {fileID: 0}
@@ -1363,19 +1396,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   variableManager:
     _muscariables: []
-    _legacyVariables: []
-    _nextValidVarID: 1
-    _isInitted: 0
+    _legacyVariables:
+    - {fileID: 114261855590980036}
+    - {fileID: 114896842043317900}
+    _nextValidVarID: 3
+    _isInitted: 1
   version: 1
-  _legacyVariables:
-  - {fileID: 114261855590980036}
-  - {fileID: 114896842043317900}
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
-    _owner: {fileID: 0}
+    _selectedBlocks:
+    - {fileID: 114518782346171026}
+    _selectedCommands:
+    - {fileID: 114224258008027204}
+    _owner: {fileID: 1802049371907118}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -1387,7 +1422,7 @@ MonoBehaviour:
       y: 0
       width: 0
       height: 0
-    <SelectedCommandsStale>k__BackingField: 0
+    <SelectedCommandsStale>k__BackingField: 1
   stepPause: 0
   colorCommands: 1
   hideComponents: 1
@@ -1402,10 +1437,27 @@ MonoBehaviour:
   saveVariables: 1
   loadPriority: 0
   alwaysKeepGuid: 1
-  _blockListCache: []
-  _commands: []
-  nextValidVarID: 1
-  uniqueId: 
+  _blockListCache:
+  - {fileID: 114518782346171026}
+  - {fileID: 114882431458328084}
+  _commands:
+  - {fileID: 114567342936519098}
+  - {fileID: 114916963967704122}
+  - {fileID: 114944159009707600}
+  - {fileID: 114361507536752658}
+  - {fileID: 114004784032651324}
+  - {fileID: 114372751668823446}
+  - {fileID: 114960568080128392}
+  - {fileID: 114224258008027204}
+  - {fileID: 114923048309305226}
+  - {fileID: 114479793123896908}
+  - {fileID: 114306308809613196}
+  - {fileID: 114089687185085138}
+  - {fileID: 114256462969571528}
+  - {fileID: 114763205264137340}
+  - {fileID: 114326529655225290}
+  nextValidVarID: 3
+  uniqueId: df92954a-ef15-416a-84fc-03fa37906604
   references:
     version: 2
     RefIds: []

@@ -87,6 +87,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
                 var inspectorRoot = uxml.CloneTree();
                 Button flowchartWindowButton = inspectorRoot.Q<Button>("OpenFlowchartWindow");
                 flowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
+                Button migrateVarsButton = inspectorRoot.Q<Button>("MigrateVars");
+                migrateVarsButton.RegisterCallback<ClickEvent>(OnMigrateVarsButtonClicked);
                 _rootElement.Add(inspectorRoot);
 
                 var managerRoot = inspectorRoot.Q("VariableDisplayEditor");
@@ -124,6 +126,26 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
         {
             FlowchartWindow.BringUp();
+        }
+
+        private void OnMigrateVarsButtonClicked(ClickEvent clickEvent)
+        {
+            Flowchart flowchart = (Flowchart)target;
+            if (flowchart == null)
+            {
+                Debug.LogError("No flowchart found for migration.");
+                return;
+            }
+
+            flowchart.EnsureVariableManagerMigrationForEditor(out bool migrated);
+            if (migrated)
+            {
+                Debug.Log("Flowchart variables migrated successfully.");
+            }
+            else
+            {
+                Debug.Log("Flowchart variables were already up to date. No migration needed.");
+            }
         }
     }
 }

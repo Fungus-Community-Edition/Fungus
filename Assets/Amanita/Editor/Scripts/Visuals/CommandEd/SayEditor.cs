@@ -87,22 +87,27 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         {
             base.OnEnable();
 
-            // Note that all these props are now for VariableData objects, so
-            // they will be drawn with the appropriate VariableProperty
-            // attribute handling (dropdowns for variables, fields for constants)
-            characterProp = serializedObject.FindProperty("_character");
-            portraitProp = serializedObject.FindProperty("_portrait");
-            storyTextProp = serializedObject.FindProperty("_storyText");
-            descriptionProp = serializedObject.FindProperty("_description");
-            voiceOverClipProp = serializedObject.FindProperty("_voiceOverClip");
-            showAlwaysProp = serializedObject.FindProperty("_showAlways");
-            showCountProp = serializedObject.FindProperty("_showCount");
-            extendPreviousProp = serializedObject.FindProperty("_extendPrevious");
-            fadeWhenDoneProp = serializedObject.FindProperty("_fadeWhenDone");
-            waitForClickProp = serializedObject.FindProperty("_waitForClick");
-            stopVoiceoverProp = serializedObject.FindProperty("_stopVoiceover");
-            setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
-            waitForVOProp = serializedObject.FindProperty("_waitForVO");
+            FetchProps();
+            void FetchProps()
+            {
+                // Note that all these props are now for VariableData objects, so
+                // they will be drawn with the appropriate VariableProperty
+                // attribute handling (dropdowns for variables, fields for constants)
+
+                characterProp = serializedObject.FindProperty("_character");
+                portraitProp = serializedObject.FindProperty("_portrait");
+                storyTextProp = serializedObject.FindProperty("_storyText");
+                descriptionProp = serializedObject.FindProperty("_description");
+                voiceOverClipProp = serializedObject.FindProperty("_voiceOverClip");
+                showAlwaysProp = serializedObject.FindProperty("_showAlways");
+                showCountProp = serializedObject.FindProperty("_showCount");
+                extendPreviousProp = serializedObject.FindProperty("_extendPrevious");
+                fadeWhenDoneProp = serializedObject.FindProperty("_fadeWhenDone");
+                waitForClickProp = serializedObject.FindProperty("_waitForClick");
+                stopVoiceoverProp = serializedObject.FindProperty("_stopVoiceover");
+                setSayDialogProp = serializedObject.FindProperty("_setSayDialog");
+                waitForVOProp = serializedObject.FindProperty("_waitForVO");
+            }
 
             if (blackTex == null)
             {
@@ -140,7 +145,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             if (showPortraits) 
             {
-                ObjectField(portraitProp, _portraitLabelContent, 
+                DrawPortraitField(portraitProp, _portraitLabelContent, 
                     _noneGuiContent, sayBeingDrawn.Character.Portraits);
             }
             else
@@ -181,8 +186,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             EditorGUILayout.PropertyField(voiceOverClipProp, _voiceClipLabelContent);
 
             EditorGUILayout.PropertyField(showAlwaysProp);
-            
-            if (showAlwaysProp.boolValue == false)
+            BooleanData showAlwaysData = showAlwaysProp.boxedValue as BooleanData;
+            if (!showAlwaysData.Value)
             {
                 EditorGUILayout.PropertyField(showCountProp);
             }
@@ -215,6 +220,96 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private static void DrawPortraitField(SerializedProperty portraitProperty, GUIContent label, GUIContent nullLabel, 
+            List<Sprite> portraits)
+        {
+            if (portraitProperty == null)
+            {
+                return;
+            }
+
+            SerializedProperty literalValueProperty = portraitProperty.FindPropertyRelative("value");
+            if (literalValueProperty == null || literalValueProperty.propertyType != SerializedPropertyType.ObjectReference)
+            {
+                ObjectField(portraitProperty, label, nullLabel, portraits);
+                return;
+            }
+
+            List<GUIContent> objectNames = new List<GUIContent>();
+            Sprite selectedSprite = literalValueProperty.objectReferenceValue as Sprite;
+
+            int selectedIndex = -1;
+            objectNames.Add(nullLabel);
+            if (selectedSprite == null)
+            {
+                selectedIndex = 0;
+            }
+
+            for (int i = 0; i < portraits.Count; ++i)
+            {
+                if (portraits[i] == null)
+                {
+                    continue;
+                }
+                objectNames.Add(new GUIContent(portraits[i].name));
+
+                if (selectedSprite == portraits[i])
+                {
+                    selectedIndex = i + 1;
+                }
+            }
+
+            selectedIndex = EditorGUILayout.Popup(label, selectedIndex, objectNames.ToArray());
+
+            if (selectedIndex == -1)
+            {
+                return;
+            }
+
+            Sprite result = selectedIndex == 0 ? null : portraits[selectedIndex - 1];
+            if (selectedSprite == result)
+            {
+                return;
+            }
+
+            literalValueProperty.objectReferenceValue = result;
+            ClearPortraitVariableReference(portraitProperty);
+        }
+
+        private static void ClearPortraitVariableReference(SerializedProperty portraitProperty)
+        {
+            SerializedProperty backingVarRefProperty = portraitProperty.FindPropertyRelative("backingVarRef");
+            if (backingVarRefProperty == null)
+            {
+                return;
+            }
+
+            SerializedProperty itemIdProperty = backingVarRefProperty.FindPropertyRelative("itemId");
+            if (itemIdProperty != null)
+            {
+                itemIdProperty.intValue = 0;
+            }
+
+            SetObjectReferenceToNull(backingVarRefProperty, "owningSource");
+            SetObjectReferenceToNull(backingVarRefProperty, "legacyOwningFc");
+            SetObjectReferenceToNull(backingVarRefProperty, "legacyOwningVsa");
+
+            SerializedProperty legacyVarRefProperty = portraitProperty.FindPropertyRelative("spriteRef");
+            if (legacyVarRefProperty != null)
+            {
+                legacyVarRefProperty.objectReferenceValue = null;
+            }
+        }
+
+        private static void SetObjectReferenceToNull(SerializedProperty parentProperty, string childPropertyName)
+        {
+            SerializedProperty childProperty = parentProperty.FindPropertyRelative(childPropertyName);
+            if (childProperty != null)
+            {
+                childProperty.objectReferenceValue = null;
+            }
         }
 
         private static readonly GUIContent _tagHelpContent = new GUIContent("Tag Help", "View available tags");

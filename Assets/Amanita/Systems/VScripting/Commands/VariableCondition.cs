@@ -8,8 +8,8 @@ namespace AtMycelia.Amanita.VScripting
     {
         public enum AnyOrAll
         {
-            AnyOf_OR, //Use as a chain of ORs
-            AllOf_AND, //Use as a chain of ANDs
+            AnyOf_OR, // Use as a chain of ORs
+            AllOf_AND, // Use as a chain of ANDs
         }
 
         [Tooltip("Selecting AnyOf will result in true if at least one of the conditions is true. Selecting AllOF will result in true only when all the conditions are true.")]
@@ -193,7 +193,13 @@ namespace AtMycelia.Amanita.VScripting
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this == null) return; // In case the object was deleted before the delayed call
+                anyVar?.Refresh();
+            };
+#endif
         }
 
         protected override void OnEnable()

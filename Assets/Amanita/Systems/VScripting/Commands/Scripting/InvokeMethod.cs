@@ -91,25 +91,22 @@ namespace AtMycelia.Amanita.VScripting.Commands
         
         protected virtual void PrepareTargets()
         { 
+            componentType ??= ReflectionHelper.GetType(targetComponentAssemblyName);
             if (componentType == null)
             {
-                componentType = ReflectionHelper.GetType(targetComponentAssemblyName);
+                Debug.LogError($"Could not find type with assembly name: {targetComponentAssemblyName} " +
+                    $"for method: {targetMethod}");
+                return;
             }
 
             if (objComponent == null)
             {
-                objComponent = targetObject.GetComponent(componentType);
+                objComponent = TargetObject.GetComponent(componentType);
             }
 
-            if (parameterTypes == null)
-            {
-                parameterTypes = GetParameterTypes();
-            }
-
-            if (objMethod == null)
-            {
-                objMethod = UnityEvent.GetValidMethodInfo(objComponent, targetMethod, parameterTypes);
-            }
+            parameterTypes ??= GetParameterTypes();
+            objMethod ??= UnityEvent.GetValidMethodInfo(objComponent, targetMethod, parameterTypes);
+            
         }
 
         protected virtual IEnumerator ExecuteCoroutine()
@@ -122,7 +119,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
             }
         }
 
-        protected virtual System.Type[] GetParameterTypes()
+        protected virtual Type[] GetParameterTypes()
         {
             System.Type[] types = new System.Type[methodParameters.Length];
 
@@ -302,7 +299,23 @@ namespace AtMycelia.Amanita.VScripting.Commands
         /// <summary>
         /// GameObject containing the component method to be invoked.
         /// </summary>
-        public virtual GameObject TargetObject { get { return _targetObject.Value; } }
+        public virtual GameObject TargetObject
+        {
+            get
+            {
+                if (_targetObject.Value != null)
+                {
+                    return _targetObject.Value;
+                }
+
+                if (targetObject != null) // This may execute before the migration is done, so...
+                {
+                    return targetObject;
+                }
+
+                return null;
+            }
+        }
 
         public override void OnEnter()
         {
