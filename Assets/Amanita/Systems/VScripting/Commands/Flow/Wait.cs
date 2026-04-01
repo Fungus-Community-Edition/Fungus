@@ -19,7 +19,7 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
+            _variableDataCache.Add(_duration);
         }
 
         protected virtual void OnWaitComplete()

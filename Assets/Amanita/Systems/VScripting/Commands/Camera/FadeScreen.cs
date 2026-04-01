@@ -35,10 +35,10 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(duration);
-            variableDataCache.Add(targetAlpha);
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(fadeColor);
+            _variableDataCache.Add(duration);
+            _variableDataCache.Add(targetAlpha);
+            _variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(fadeColor);
         }
 
         protected virtual void Awake()

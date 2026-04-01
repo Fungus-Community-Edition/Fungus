@@ -24,12 +24,12 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(initialRangeLower);
-            variableDataCache.Add(initialRangeUpper);
-            variableDataCache.Add(value);
-            variableDataCache.Add(newRangeLower);
-            variableDataCache.Add(newRangeUpper);
-            variableDataCache.Add(outValue);
+            _variableDataCache.Add(initialRangeLower);
+            _variableDataCache.Add(initialRangeUpper);
+            _variableDataCache.Add(value);
+            _variableDataCache.Add(newRangeLower);
+            _variableDataCache.Add(newRangeUpper);
+            _variableDataCache.Add(outValue);
         }
 
         public override void OnEnter()

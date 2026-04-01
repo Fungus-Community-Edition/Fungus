@@ -19,7 +19,7 @@ namespace AtMycelia.Amanita.VScripting.Commands.Legacy
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(sayDialog);
+            _variableDataCache.Add(sayDialog);
         }
 
         public override void OnEnter()

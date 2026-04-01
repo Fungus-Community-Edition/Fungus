@@ -447,6 +447,8 @@ namespace AtMycelia.Amanita.VScripting
 #endif
         }
 
+        public VariableManager VariableManager => variableManager;
+
         protected virtual void AssertOwnership()
         {
             variableManager.VarOwner = this;
@@ -457,6 +459,7 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
+            variableManager.OnDisable();
             StopAllBlocks();
             StopAllCoroutines();
             StringSubstituter.UnregisterHandler(this);   

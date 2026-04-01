@@ -1,6 +1,7 @@
 ﻿using AtMycelia.Amanita.EditorUtils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -101,6 +102,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             if (on && !subsActive)
             {
+                VariableSignals.PostValueChange += OnVariableValueChanged;
                 variableSource.VariableAdded += OnVariableAdded;
                 variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
@@ -117,6 +119,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             else if (!on)
             {
+                VariableSignals.PostValueChange -= OnVariableValueChanged;
                 variableSource.VariableAdded -= OnVariableAdded;
                 variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
@@ -127,6 +130,15 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 AmanitaEditorSignals.ScopeFieldChanged -= OnScopeFieldChanged;
                 AmanitaEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
                 subsActive = false;
+            }
+        }
+
+        private void OnVariableValueChanged(IVariable variable, object arg2)
+        {
+            // Only respond if it's a variable in a row we're managing
+            if (_listView.VarsToDisplay.Contains(variable))
+            {
+                _listView.Refresh();
             }
         }
 

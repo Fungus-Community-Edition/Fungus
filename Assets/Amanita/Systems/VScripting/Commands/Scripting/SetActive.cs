@@ -22,8 +22,8 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_targetGameObject);
-            variableDataCache.Add(activeState);
+            _variableDataCache.Add(_targetGameObject);
+            _variableDataCache.Add(activeState);
         }
 
         #region Public members

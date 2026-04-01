@@ -28,7 +28,7 @@ namespace AtMycelia.Amanita.VScripting
         [SerializeField] protected DebugLogType logType;
 
         [Tooltip("Text to write to the debug log. Supports variable substitution, e.g. {$Myvar}")]
-        [SerializeField] protected StringDataMulti logMessage;
+        [SerializeField] protected StringDataMulti logMessage = new StringDataMulti();
 
         #region Public members
 

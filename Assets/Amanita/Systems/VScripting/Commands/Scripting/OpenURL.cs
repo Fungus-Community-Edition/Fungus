@@ -16,7 +16,7 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(url);
+            _variableDataCache.Add(url);
         }
 
         #region Public members

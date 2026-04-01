@@ -169,6 +169,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils.FcWindow
         }
 
         public FlowchartContext FcContext => _fcContext;
+
         protected virtual void OnEnable()
         {
             if (_s != null && _s != this)

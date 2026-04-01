@@ -290,9 +290,19 @@ namespace AtMycelia.Amanita.VScripting
 
         public event Action<IVariable> VariableAdded = delegate { };
 
+        /// <summary>
+        /// Meant to be called through Unity's OnEnable message. This function ensures that 
+        /// all variables have valid IDs, and initializes them with their start values if 
+        /// the application is playing. It also registers the manager with the 
+        /// SceneObjectReferenceRestorer so that it can restore references for this manager 
+        /// when scenes are loaded. This is important because if the manager is disabled, 
+        /// it may be in a state where it can't properly restore references 
+        /// (for example, if it's been destroyed but not yet removed from the scene), 
+        /// and trying to do so could cause errors.
+        /// </summary>
         public void OnEnable()
         {
-            if (VarOwner is UnityObj ownerUnityObj && Application.IsPlaying(ownerUnityObj))
+            if (VarOwner is UnityObj ownerUnityObj)
             {
                 EnsureValidIds();
                 foreach (var elem in _lookup.Values)
@@ -301,6 +311,20 @@ namespace AtMycelia.Amanita.VScripting
                 }
             }
             Refresh();
+        }
+
+        /// <summary>
+        /// Meant to be called through Unity's OnDisable message. This function unregisters the 
+        /// manager from the SceneObjectReferenceRestorer so that it won't try to restore 
+        /// references for this manager while it's disabled. This is important because if 
+        /// the manager is disabled, it may be in a state where it can't properly restore 
+        /// references (for example, if it's been destroyed but not yet removed from the 
+        /// scene), and trying to do so could cause errors.
+        /// </summary>
+        public void OnDisable()
+        {
+            // No-op for now, but we might want to add some cleanup logic here in the
+            // future, and if we do, this is where it should go.
         }
 
         public void Refresh()

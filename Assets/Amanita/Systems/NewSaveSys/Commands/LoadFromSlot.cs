@@ -2,6 +2,7 @@ using AtMycelia.Amanita.VScripting;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.SaveSys.VScripting
 {
@@ -10,13 +11,18 @@ namespace AtMycelia.SaveSys.VScripting
         "As it says on the tin.")]
     public class LoadFromSlot : Command
     {
-        [SerializeField] protected IntegerData slotIndex = new IntegerData(0);
+        [FormerlySerializedAs("slotIndex")]
+        [SerializeField] protected IntegerData _slotIndex = new IntegerData(0);
         [Tooltip("If true, this will save to the selected slot instead of the specified slot index.")]
-        [SerializeField] protected BooleanData loadFromSelected = new BooleanData(false);
-        [SerializeField] protected BooleanData loadScene = new BooleanData(true);
+        [FormerlySerializedAs("loadFromSelected")]
+        [SerializeField] protected BooleanData _loadFromSelected = new BooleanData(false);
+        [FormerlySerializedAs("loadScene")]
+        [SerializeField] protected BooleanData _loadScene = new BooleanData(true);
         [Tooltip("If you want this to be true, best make sure that this Command is on a persistent GameObject.")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(false);
-        [SerializeField] private FloatData delayBeforeLoad = new FloatData(0);
+        [FormerlySerializedAs("waitUntilFinished")]
+        [SerializeField] protected BooleanData _waitUntilFinished = new BooleanData(false);
+        [FormerlySerializedAs("delayBeforeLoad")]
+        [SerializeField] private FloatData _delayBeforeLoad = new FloatData(0);
 
         public override bool ReexecutableOnLoad => false;
 
@@ -26,11 +32,11 @@ namespace AtMycelia.SaveSys.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(slotIndex);
-            variableDataCache.Add(loadFromSelected);
-            variableDataCache.Add(loadScene);
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(delayBeforeLoad);
+            _variableDataCache.Add(_slotIndex);
+            _variableDataCache.Add(_loadFromSelected);
+            _variableDataCache.Add(_loadScene);
+            _variableDataCache.Add(_waitUntilFinished);
+            _variableDataCache.Add(_delayBeforeLoad);
         }
 
         protected override void OnEnable()
@@ -58,9 +64,9 @@ namespace AtMycelia.SaveSys.VScripting
 
         public override void OnEnter()
         {
-            if (delayBeforeLoad > 0)
+            if (_delayBeforeLoad > 0)
             {
-                Invoke(nameof(TryLoad), delayBeforeLoad);
+                Invoke(nameof(TryLoad), _delayBeforeLoad);
             }
             else
             {
@@ -71,7 +77,7 @@ namespace AtMycelia.SaveSys.VScripting
         protected virtual void TryLoad()
         {
             int slotIndexToGoWith;
-            if (loadFromSelected)
+            if (_loadFromSelected)
             {
                 // Find the selected slot
                 // If none is selected, log an error and exit
@@ -91,7 +97,7 @@ namespace AtMycelia.SaveSys.VScripting
             }
             else
             {
-                slotIndexToGoWith = slotIndex.Value;
+                slotIndexToGoWith = _slotIndex.Value;
             }
 
             bool validSlotIndex = slotIndexToGoWith >= SaveSystem.minSlotNumber;
@@ -106,8 +112,8 @@ namespace AtMycelia.SaveSys.VScripting
             }
             else
             {
-                Task loadTask = SaveSystem.LoadMainAsync(slotIndex, loadScene);
-                if (waitUntilFinished.Value)
+                Task loadTask = SaveSystem.LoadMainAsync(_slotIndex, _loadScene);
+                if (_waitUntilFinished.Value)
                 {
                     StartCoroutine(WaitForTask(loadTask));
                 }
@@ -124,18 +130,18 @@ namespace AtMycelia.SaveSys.VScripting
             // That can dynamically change during runtime, so let's just go with the specified
             // index set here in the editor.
             string result;
-            if (loadFromSelected.Value)
+            if (_loadFromSelected.Value)
             {
                 result = "Load from Selected Slot";
             }
             else
             {
-                result = $"Load from Slot {slotIndex.Value}";
+                result = $"Load from Slot {_slotIndex.Value}";
             }
 
-            if (delayBeforeLoad > 0)
+            if (_delayBeforeLoad > 0)
             {
-                result += $" after {delayBeforeLoad.Value} seconds";
+                result += $" after {_delayBeforeLoad.Value} seconds";
             }
             return result;
         }
@@ -165,12 +171,12 @@ namespace AtMycelia.SaveSys.VScripting
                 return;
             }
 
-            bool literalSlotIndex = slotIndex.RepresentingVar == false;
-            if (literalSlotIndex && slotIndex < SaveSystem.minSlotNumber)
+            bool literalSlotIndex = _slotIndex.RepresentingVar == false;
+            if (literalSlotIndex && _slotIndex < SaveSystem.minSlotNumber)
             {
                 Debug.LogWarning($"LoadFromSlot Command on {this.gameObject.name}'s {this.ParentBlock?.name}: slot index cannot be less " +
                     $"than {SaveSystem.minSlotNumber}. Resetting to {SaveSystem.minSlotNumber}.");
-                slotIndex.Value = SaveSystem.minSlotNumber;
+                _slotIndex.Value = SaveSystem.minSlotNumber;
             }
             else
             {

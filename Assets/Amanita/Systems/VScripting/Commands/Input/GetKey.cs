@@ -46,8 +46,8 @@ namespace AtMycelia.Amanita.VScripting
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(keyCodeName);
-            variableDataCache.Add(keyCodeNameNegative);
+            _variableDataCache.Add(keyCodeName);
+            _variableDataCache.Add(keyCodeNameNegative);
         }
 
         public override void OnEnter()

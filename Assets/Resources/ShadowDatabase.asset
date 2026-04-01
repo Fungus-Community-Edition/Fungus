@@ -372,6 +372,7 @@ MonoBehaviour:
   - {fileID: 631365748883482439, guid: 4b1566b326ef60b42833251fd467a461, type: 2}
   - {fileID: -7224325721909345188, guid: 2e4fd558d5ef98a47a4560037f9dcc73, type: 2}
   - {fileID: 2100000, guid: 9d7a421c120fd084d84e95f71029b237, type: 3}
+  - {fileID: 2100000, guid: 0b07f7d707b02a547a7af75097de1a29, type: 2}
   _shaders:
   - {fileID: 4800000, guid: 48bb5f55d8670e349b6e614913f9d910, type: 3}
   - {fileID: 4800000, guid: 1e3b057af24249748ff873be7fafee47, type: 3}
@@ -593,6 +594,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 63fd81f2d1e61b84b89743405d8013c9, type: 2}
   - {fileID: 11400000, guid: a966fb2fe1cdf2a4e97590b0b2d113ba, type: 2}
   - {fileID: 11400000, guid: 68e18f947e35d3248be146a2acd20a8a, type: 2}
+  - {fileID: 11400000, guid: 6b0d944af51ce4c4c9077beca5e5fc28, type: 2}
   _textAssets:
   - {fileID: 4900000, guid: e7943ae6309508f4f9b82cf1e35a2b5e, type: 3}
   - {fileID: 4900000, guid: 6ae07f4b9d83d4662825fefe8ff30d45, type: 3}

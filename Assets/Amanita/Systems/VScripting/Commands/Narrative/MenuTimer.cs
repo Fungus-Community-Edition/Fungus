@@ -25,7 +25,7 @@ namespace AtMycelia.Amanita.DialogueSys.Commands
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(_duration);
+            _variableDataCache.Add(_duration);
         }
 
         #region Public members

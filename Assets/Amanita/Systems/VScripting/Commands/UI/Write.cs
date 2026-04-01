@@ -56,12 +56,12 @@ namespace AtMycelia.Amanita.DialogueSys
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            variableDataCache.Add(textObject);
-            variableDataCache.Add(text);
-            variableDataCache.Add(clearText);
-            variableDataCache.Add(waitUntilFinished);
-            variableDataCache.Add(setAlpha);
-            variableDataCache.Add(setColor);
+            _variableDataCache.Add(textObject);
+            _variableDataCache.Add(text);
+            _variableDataCache.Add(clearText);
+            _variableDataCache.Add(waitUntilFinished);
+            _variableDataCache.Add(setAlpha);
+            _variableDataCache.Add(setColor);
         }
 
         protected Writer GetWriter()
@@ -125,7 +125,7 @@ namespace AtMycelia.Amanita.DialogueSys
         {
             if (textObject != null)
             {
-                return textObject.name + " : " + text.Value;
+                return textObject.Name + " : " + text.Value;
             }
 
             return "Error: No text object selected";

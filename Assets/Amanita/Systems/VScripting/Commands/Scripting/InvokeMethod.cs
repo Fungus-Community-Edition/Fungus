@@ -76,6 +76,14 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected Type[] parameterTypes = null;
         protected MethodInfo objMethod;
 
+
+        protected override void RefreshVariableDataCache()
+        {
+            base.RefreshVariableDataCache();
+            _variableDataCache.Add(_description);
+            _variableDataCache.Add(_targetObject);
+        }
+
         protected virtual void Awake()
         {
             try
@@ -96,6 +104,12 @@ namespace AtMycelia.Amanita.VScripting.Commands
             {
                 Debug.LogError($"Could not find type with assembly name: {targetComponentAssemblyName} " +
                     $"for method: {targetMethod}");
+                return;
+            }
+
+            if (TargetObject == null)
+            {
+                Debug.LogError($"TargetObject is not assigned for method: {targetMethod}");
                 return;
             }
 
@@ -385,7 +399,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                 _description.Value = description;
                 description = null;
             }
-            if (!ReferenceEquals(targetObject, null))
+            if (targetObject != null)
             {
                 _targetObject.Value = targetObject;
                 targetObject = null;
