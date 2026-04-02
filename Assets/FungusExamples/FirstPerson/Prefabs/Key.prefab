@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 114296271849496316}
   - component: {fileID: 114408475763180490}
   - component: {fileID: 114126805715615206}
+  - component: {fileID: 4521491715789075485}
   m_Layer: 0
   m_Name: Key
   m_TagString: Untagged
@@ -171,7 +172,7 @@ MonoBehaviour:
     value: {fileID: 1247888977727998}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  activeState:
+  _activeState:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 114126805715615206}
@@ -215,10 +216,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 'A key of some sort.
-
-
-      What could it be for?'
+    value: A key of some sort. What could it be for?
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -331,10 +329,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: 'A key of some sort.
-
-
-    What could it be for?'
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -439,14 +434,14 @@ MonoBehaviour:
     serializedVersion: 2
     x: 260
     y: 80
-    width: 107
+    width: 137
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 1
-  blockName: New Block
+  blockName: OnPlayerTouch
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 4521491715789075485}
   commandList:
   - {fileID: 114296271849496316}
   - {fileID: 114442955185164142}
@@ -523,3 +518,44 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &4521491715789075485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247888977727998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 114408475763180490}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Player
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1247888977727998}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}

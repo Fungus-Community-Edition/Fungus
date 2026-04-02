@@ -96,9 +96,18 @@ namespace AtMycelia.Amanita.VScripting
             StringBuilder summary = new StringBuilder("");
             for (int i = 0; i < conditions.Count; i++)
             {
-                summary.Append(conditions[i].AnyVar.LhsVariable.Key + " " +
-                               VariableUtil.GetCompareOperatorDescription(conditions[i].CompareOperator) + " " +
-                               conditions[i].AnyVar.GetDataDescription());
+                var currentCond = conditions[i];
+                var anyVar = currentCond.AnyVar;
+                var lhsVar = anyVar.LhsVariable;
+                string lhsVarStr = lhsVar != null ? lhsVar.Key : "null";
+                if (lhsVar != null && lhsVar.Owner != null && !ReferenceEquals(lhsVar.Owner, GetFlowchart()))
+                {
+                    lhsVarStr = lhsVar.Owner.Name + "." + lhsVarStr;
+                }
+
+                string opDesc = VariableUtil.GetCompareOperatorDescription(currentCond.CompareOperator);
+                string whatToAppend = $"{lhsVarStr} {opDesc} {anyVar.GetDataDescription()}";
+                summary.Append(whatToAppend);
 
                 if (i < conditions.Count - 1)
                 {

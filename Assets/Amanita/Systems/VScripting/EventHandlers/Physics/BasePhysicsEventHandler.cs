@@ -70,6 +70,11 @@ namespace AtMycelia.Amanita.VScripting
         protected override void ToggleSubs(bool on)
         {
             base.ToggleSubs(on);
+            if (_notifier == null)
+            {
+                // Expected to trigger when OnDisable gets called before Awake
+                return;
+            }
             if (on)
             {
                 _notifier.TriggerEnter += OnTriggerEnterResponse;

@@ -55,7 +55,9 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             VariableRegistryConfig config = LoadDefaultConfig();
-            Func<IReadOnlyList<VariableSourceAsset>> provider = () => config != null ? config.GlobalSources : emptySources;
+            Func<IReadOnlyList<VariableSourceAsset>> provider = () => config != null ? 
+            config.GlobalSources : 
+            emptySources;
 
             VariableRegistryService service = new VariableRegistryService(provider, config);
             SetCurrent(service);
@@ -107,8 +109,12 @@ namespace AtMycelia.Amanita.VScripting
                 VsaSignals.VsaDisabled += OnVsaChanged;
 
 #if UNITY_EDITOR
+                FlowchartSignals.VariableAdded += OnVarAdded;
+                FlowchartSignals.VariableRemoved += OnVarRemoved;
+
                 VariableSourceAsset.AnyRightBeforeVarAdded += OnAnyVariableChanged;
                 VariableSourceAsset.AnyRightBeforeVarRemoved += OnAnyVariableChanged;
+
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
 
@@ -123,8 +129,12 @@ namespace AtMycelia.Amanita.VScripting
                 VsaSignals.VsaDisabled -= OnVsaChanged;
 
 #if UNITY_EDITOR
+                FlowchartSignals.VariableAdded -= OnVarAdded;
+                FlowchartSignals.VariableRemoved -= OnVarRemoved;
+
                 VariableSourceAsset.AnyRightBeforeVarAdded -= OnAnyVariableChanged;
                 VariableSourceAsset.AnyRightBeforeVarRemoved -= OnAnyVariableChanged;
+
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
 
@@ -133,6 +143,16 @@ namespace AtMycelia.Amanita.VScripting
                     _config.Changed -= OnConfigChanged;
                 }
             }
+        }
+
+        private void OnVarRemoved(Flowchart flowchart, IVariable variable)
+        {
+            _registry.Rebuild(flowchart);
+        }
+
+        private void OnVarAdded(Flowchart flowchart, IVariable variable)
+        {
+            _registry.Rebuild(flowchart);
         }
 
         private void OnConfigChanged()
@@ -145,7 +165,6 @@ namespace AtMycelia.Amanita.VScripting
             _registry.Rebuild();
         }
 
-#if UNITY_EDITOR
         private void OnAnyVariableChanged(Muscariable variable)
         {
             _registry.Rebuild();
@@ -155,7 +174,6 @@ namespace AtMycelia.Amanita.VScripting
         {
             _registry.Rebuild();
         }
-#endif
 
         private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
         private const string DefaultConfigResourcesPath = "AtMycelia/Amanita/VariableRegistryConfig";

@@ -68,6 +68,13 @@ namespace AtMycelia.Amanita.VScripting.Commands
             string setOperatorDesc = VariableUtil.GetSetOperatorDescription(_setOperator);
             string dataDesc = _anyVar.GetDataDescription();
             string description = $"{lhsVar.Key} {setOperatorDesc} {dataDesc}";
+            // If the variable doesn't share an owner with us, we should make that clear
+            // in the summary.
+            bool varBelongsToSomethingElse = lhsVar.Owner != null && !ReferenceEquals(lhsVar.Owner, GetFlowchart());
+            if (varBelongsToSomethingElse)
+            {
+                description = $"{lhsVar.Owner.Name}." + description;
+            }
 
             return description;
         }

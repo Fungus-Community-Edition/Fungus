@@ -14,25 +14,24 @@ namespace AtMycelia.Amanita.VScripting
     public class SetActive : Command
     {
         [Tooltip("Reference to game object to enable / disable")]
-        [SerializeField] protected GameObjectData _targetGameObject;
+        [SerializeField] protected GameObjectData _targetGameObject = new GameObjectData();
 
         [Tooltip("Set to true to enable the game object")]
-        [SerializeField] protected BooleanData activeState;
+        [FormerlySerializedAs("activeState")]
+        [SerializeField] protected BooleanData _activeState = new BooleanData();
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
             _variableDataCache.Add(_targetGameObject);
-            _variableDataCache.Add(activeState);
+            _variableDataCache.Add(_activeState);
         }
-
-        #region Public members
 
         public override void OnEnter()
         {
             if (_targetGameObject.Value != null)
             {
-                _targetGameObject.Value.SetActive(activeState.Value);
+                _targetGameObject.Value.SetActive(_activeState.Value);
             }
 
             Continue();
@@ -45,7 +44,20 @@ namespace AtMycelia.Amanita.VScripting
                 return "Error: No game object selected";
             }
 
-            return _targetGameObject.Value.name + " = " + activeState.GetDescription();
+            string result = "";
+
+            if (_targetGameObject.RepresentingVar)
+            {
+                result += $"{_targetGameObject.VarRef.Key} ";
+            }
+            else
+            {
+                GameObject targGo = _targetGameObject.Value;
+                result += $"{targGo.name} ";
+            }
+
+            result += $"= {_activeState.GetDescription()}";
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -56,11 +68,10 @@ namespace AtMycelia.Amanita.VScripting
         public override bool HasReference(Variable variable)
         {
             return ReferenceEquals(_targetGameObject.VarRef, variable) || 
-                ReferenceEquals(activeState.VarRef, variable) || 
+                ReferenceEquals(_activeState.VarRef, variable) || 
                 base.HasReference(variable);
         }
 
-        #endregion
 
         #region Backwards compatibility
 

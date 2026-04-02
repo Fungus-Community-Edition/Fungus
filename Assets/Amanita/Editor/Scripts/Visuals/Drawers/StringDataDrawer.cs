@@ -166,7 +166,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUI.BeginChangeCheck();
                 if (ShouldUseTextArea(varData))
                 {
-                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue);
+                    GUIStyle textAreaStyle = new GUIStyle(EditorStyles.textArea)
+                    {
+                        wordWrap = ShouldWordWrapTextArea()
+                    };
+
+                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue, textAreaStyle);
                     if (EditorGUI.EndChangeCheck())
                     {
                         literalValueProp.stringValue = newValue;
@@ -373,7 +378,6 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             varDataProp.serializedObject.ApplyModifiedProperties();
         }
-
 
     }
 }

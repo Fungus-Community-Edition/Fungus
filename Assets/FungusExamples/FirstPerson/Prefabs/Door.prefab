@@ -30,6 +30,11 @@ GameObject:
   - component: {fileID: 114326529655225290}
   - component: {fileID: 114882431458328084}
   - component: {fileID: 114383920395763002}
+  - component: {fileID: 6376465827079463897}
+  - component: {fileID: 6595798166915882646}
+  - component: {fileID: 3131459708527752031}
+  - component: {fileID: 2301879678054761241}
+  - component: {fileID: 874316152228077432}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -384,7 +389,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: "Yes, a door John. \n\nBut how to reach it."
+    value: Yes, that is indeed a door. As for how to reach it...
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -536,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemId: 12
-  indentLevel: 2
+  indentLevel: 1
 --- !u!114 &114372751668823446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1018,14 +1023,18 @@ MonoBehaviour:
   commandList:
   - {fileID: 114306308809613196}
   - {fileID: 114224258008027204}
-  - {fileID: 114004784032651324}
+  - {fileID: 6595798166915882646}
   - {fileID: 114944159009707600}
-  - {fileID: 114361507536752658}
+  - {fileID: 3131459708527752031}
   - {fileID: 114479793123896908}
+  - {fileID: 2301879678054761241}
   - {fileID: 114916963967704122}
+  - {fileID: 114361507536752658}
   - {fileID: 114923048309305226}
   - {fileID: 114372751668823446}
+  - {fileID: 114004784032651324}
   - {fileID: 114567342936519098}
+  - {fileID: 874316152228077432}
   - {fileID: 114960568080128392}
   includeInSaves: 1
   loadPriority: 0
@@ -1046,7 +1055,7 @@ MonoBehaviour:
   indentLevel: 1
   duration:
     backingVarRef:
-      itemId: 0
+      itemId: 3
       owningSource: {fileID: 114383920395763002}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -1055,7 +1064,7 @@ MonoBehaviour:
     floatVal: 0
   targetAlpha:
     backingVarRef:
-      itemId: 0
+      itemId: 4
       owningSource: {fileID: 114383920395763002}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -1113,7 +1122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
+  scope: 1
   key: hasGazed
   itemID: 2
   oldItemID: 0
@@ -1366,14 +1375,14 @@ MonoBehaviour:
     serializedVersion: 2
     x: 240
     y: 120
-    width: 107
+    width: 137
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 6
-  blockName: New Block
+  blockName: OnPlayerTouch
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 6376465827079463897}
   commandList:
   - {fileID: 114326529655225290}
   - {fileID: 114256462969571528}
@@ -1395,11 +1404,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    _muscariables: []
+    _muscariables:
+    - rid: 3688519627662688364
+    - rid: 3688519627662688365
     _legacyVariables:
     - {fileID: 114261855590980036}
     - {fileID: 114896842043317900}
-    _nextValidVarID: 3
+    _nextValidVarID: 5
     _isInitted: 1
   version: 1
   _legacyVariables: []
@@ -1409,7 +1420,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 114518782346171026}
     _selectedCommands:
-    - {fileID: 114224258008027204}
+    - {fileID: 114944159009707600}
     _owner: {fileID: 1802049371907118}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -1460,7 +1471,120 @@ MonoBehaviour:
   uniqueId: df92954a-ef15-416a-84fc-03fa37906604
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3688519627662688364
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: fadeDur
+        itemID: 3
+        value: 1
+        startValue: 0
+    - rid: 3688519627662688365
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: fadeOut
+        itemID: 4
+        value: 1
+        startValue: 0
+--- !u!114 &6376465827079463897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 114882431458328084}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Player
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1802049371907118}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}
+--- !u!114 &6595798166915882646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 18
+  indentLevel: 2
+--- !u!114 &3131459708527752031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc295ba6aed8944fa3974a64f33cc42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 18
+  indentLevel: 2
+--- !u!114 &2301879678054761241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 18
+  indentLevel: 2
+--- !u!114 &874316152228077432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc295ba6aed8944fa3974a64f33cc42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 18
+  indentLevel: 1
 --- !u!1 &1807841399872324
 GameObject:
   m_ObjectHideFlags: 0

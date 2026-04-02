@@ -1,4 +1,5 @@
 using System;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -11,5 +12,6 @@ namespace AtMycelia.Amanita.VScripting
         /// is obvious.
         /// </summary>
         public static Action<IVariable, object> PostValueChange = delegate { };
+
     }
 }

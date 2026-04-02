@@ -102,7 +102,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 EditorGUI.BeginChangeCheck();
                 if (ShouldUseTextArea(varData))
                 {
-                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue);
+                    GUIStyle textAreaStyle = new GUIStyle(EditorStyles.textArea)
+                    {
+                        wordWrap = ShouldWordWrapTextArea()
+                    };
+
+                    string newValue = EditorGUI.TextArea(valueRect, literalValueProp.stringValue, textAreaStyle);
                     if (EditorGUI.EndChangeCheck())
                     {
                         literalValueProp.stringValue = newValue;
@@ -356,6 +361,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
 
             return GetTextAreaAttribute() != null;
+        }
+
+        protected bool ShouldWordWrapTextArea()
+        {
+            HyphlowTextAreaAttribute textAreaAttribute = GetTextAreaAttribute();
+            if (textAreaAttribute == null)
+            {
+                return false;
+            }
+
+            int lineCount = Mathf.Max(1, textAreaAttribute.MinLines);
+            return lineCount >= 2;
         }
 
         protected HyphlowTextAreaAttribute GetTextAreaAttribute()

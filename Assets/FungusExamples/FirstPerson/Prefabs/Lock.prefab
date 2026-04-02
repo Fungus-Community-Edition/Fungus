@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 114275658263394176}
   - component: {fileID: 114572511229188600}
   - component: {fileID: -3901912534168384290}
+  - component: {fileID: 6388932191286628349}
   m_Layer: 0
   m_Name: Lock
   m_TagString: Untagged
@@ -172,14 +173,14 @@ MonoBehaviour:
   indentLevel: 1
   _targetGameObject:
     backingVarRef:
-      itemId: 0
+      itemId: 3
       owningSource: {fileID: 114572511229188600}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 1621252211410962}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
-  activeState:
+  _activeState:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 114572511229188600}
@@ -206,8 +207,8 @@ MonoBehaviour:
   _setOperator: 0
   _anyVar:
     varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+      itemId: 2
+      owningSource: {fileID: 114572511229188600}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     data:
@@ -217,14 +218,23 @@ MonoBehaviour:
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
-        rid: -2
+        rid: 3688519627662688338
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 3688519627662688338
+      type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        backingVarRef:
+          itemId: 0
+          owningSource: {fileID: 0}
+          legacyOwningFc: {fileID: 0}
+          legacyOwningVsa: {fileID: 0}
+        value: 1
+        booleanRef: {fileID: 0}
+        booleanVal: 0
 --- !u!114 &114347840029698070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,7 +255,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: When combined with the key, it appears to have activated something.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -358,7 +368,7 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: When combined with the key it appears to have activated something.
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
   _oldPortrait: {fileID: 0}
@@ -418,7 +428,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: You found a mechanism of some kind, Sherlock! It appears to be incomplete.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -531,11 +541,10 @@ MonoBehaviour:
   _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
   _migrated: 0
-  _oldStoryText: "You found a mechanism of some kind, Sherlock! \n\nIt appears to
-    be incomplete."
+  _oldStoryText: 
   _oldDescription: 
   _oldCharacter: {fileID: 0}
-  _oldPortrait: {fileID: 21300000, guid: 059763178da334d408b6fa05fdea33c8, type: 3}
+  _oldPortrait: {fileID: 0}
   _oldVoiceOverClip: {fileID: 0}
   _oldShowAlways: 1
   _oldShowCount: 1
@@ -584,7 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 1
+  itemId: 12
   indentLevel: 0
   anyOrAllConditions: 0
   conditions:
@@ -823,14 +832,14 @@ MonoBehaviour:
     serializedVersion: 2
     x: 220
     y: 80
-    width: 107
+    width: 137
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 1
-  blockName: New Block
+  blockName: OnPlayerTouch
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 6388932191286628349}
   commandList:
   - {fileID: 114471595115387154}
   - {fileID: 114876428647471578}
@@ -838,7 +847,6 @@ MonoBehaviour:
   - {fileID: 114519397478299416}
   - {fileID: 114347840029698070}
   - {fileID: 114302250439265382}
-  - {fileID: 0}
   - {fileID: -3901912534168384290}
   - {fileID: 114494055204058732}
   - {fileID: 114597286569973654}
@@ -859,11 +867,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    _muscariables: []
+    _muscariables:
+    - rid: 3688519627662688339
     _legacyVariables:
     - {fileID: 114411963098608266}
     - {fileID: 114269318563166244}
-    _nextValidVarID: 3
+    _nextValidVarID: 4
     _isInitted: 1
   version: 1
   _legacyVariables: []
@@ -873,8 +882,8 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 114275658263394176}
     _selectedCommands:
-    - {fileID: 0}
-    _owner: {fileID: 0}
+    - {fileID: 114597286569973654}
+    _owner: {fileID: 1621252211410962}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
@@ -913,11 +922,20 @@ MonoBehaviour:
   - {fileID: 114558234713279786}
   - {fileID: 114429204895628372}
   - {fileID: 114471595115387154}
-  nextValidVarID: 1
-  uniqueId: 
+  - {fileID: -3901912534168384290}
+  nextValidVarID: 4
+  uniqueId: 540ce04b-48ee-4e9a-b420-3987f41973f7
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3688519627662688339
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: thisGameObject
+        itemID: 3
+        value: {fileID: 1621252211410962}
+        startValue: {fileID: 0}
 --- !u!114 &-3901912534168384290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -942,3 +960,44 @@ MonoBehaviour:
     value: Need a command here to scale the lock to 0
     stringRef: {fileID: 0}
     stringVal: 
+--- !u!114 &6388932191286628349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621252211410962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 114275658263394176}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Player
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1621252211410962}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}

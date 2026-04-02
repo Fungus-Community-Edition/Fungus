@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using AtMycelia.Amanita.EditorUtils;
+using AtMycelia.Amanita.VScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -31,6 +33,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             inspectorRoot = uxml.CloneTree();
             rootElement.Add(inspectorRoot);
             BuildManager(inspectorRoot);
+            AddGlobalSourceButtons(inspectorRoot);
         }
 
         protected VariableRowManager _manager;
@@ -40,6 +43,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         protected readonly string pathToUxml = "UIToolkitTemplates/VariableDisplayEditor";
         protected VisualElement rootElement;
         protected TemplateContainer inspectorRoot;
+        protected Button _registerGlobalButton;
+        protected Button _unregisterGlobalButton;
 
         protected void BuildManager(VisualElement rootElem)
         {
@@ -160,5 +165,108 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             ToggleSubs(false);
         }
 
+        protected void AddGlobalSourceButtons(VisualElement rootElem)
+        {
+            var container = new VisualElement();
+
+            _registerGlobalButton = new Button(OnRegisterGlobalSourceClicked)
+            {
+                text = "Register as Global Source",
+            };
+
+            _unregisterGlobalButton = new Button(OnUnregisterGlobalSourceClicked)
+            {
+                text = "UNregister as Global Source",
+            };
+
+            _registerGlobalButton.style.marginTop = _registerGlobalButton.style.marginBottom = 
+                _unregisterGlobalButton.style.marginTop = _unregisterGlobalButton.style.marginBottom =
+                _regButtonTopBotMargins;
+
+            _registerGlobalButton.style.height = _unregisterGlobalButton.style.height =  _regButtonHeight;
+
+            _registerGlobalButton.style.fontSize = _unregisterGlobalButton.style.fontSize = 14;
+
+            container.Add(_registerGlobalButton);
+            container.Add(_unregisterGlobalButton);
+            rootElem.Add(container);
+
+            RefreshGlobalSourceButtons();
+        }
+
+        private static readonly int _regButtonTopBotMargins = 5;
+        private static readonly int _regButtonHeight = 30;
+
+        protected void OnRegisterGlobalSourceClicked()
+        {
+            UpdateGlobalSourceRegistration(true);
+        }
+
+        protected void OnUnregisterGlobalSourceClicked()
+        {
+            UpdateGlobalSourceRegistration(false);
+        }
+
+        protected void UpdateGlobalSourceRegistration(bool register)
+        {
+            var source = (VariableSourceAsset)target;
+            if (source == null)
+            {
+                return;
+            }
+
+            VariableRegistryConfig config = VariableRegistryService.LoadDefaultConfig();
+            if (config == null)
+            {
+                Debug.LogWarning("VariableSourceInspector: VariableRegistryConfig not found in Resources.");
+                RefreshGlobalSourceButtons();
+                return;
+            }
+
+            List<VariableSourceAsset> sources = new List<VariableSourceAsset>(config.GlobalSources);
+            bool isRegistered = sources.Contains(source);
+
+            if (register && !isRegistered)
+            {
+                sources.Add(source);
+                ApplyGlobalSources(config, sources);
+            }
+            else if (!register && isRegistered)
+            {
+                sources.Remove(source);
+                ApplyGlobalSources(config, sources);
+            }
+
+            RefreshGlobalSourceButtons();
+        }
+
+        protected void ApplyGlobalSources(VariableRegistryConfig config, List<VariableSourceAsset> sources)
+        {
+            config.SetGlobalSources(sources);
+            EditorUtility.SetDirty(config);
+            AssetDatabase.SaveAssetIfDirty(config);
+        }
+
+        protected void RefreshGlobalSourceButtons()
+        {
+            var source = (VariableSourceAsset)target;
+            if (source == null)
+            {
+                return;
+            }
+
+            VariableRegistryConfig config = VariableRegistryService.LoadDefaultConfig();
+            bool isRegistered = false;
+
+            if (config != null)
+            {
+                List<VariableSourceAsset> sources = new List<VariableSourceAsset>(config.GlobalSources);
+                isRegistered = sources.Contains(source);
+            }
+
+            _registerGlobalButton?.SetEnabled(config != null && !isRegistered);
+
+            _unregisterGlobalButton?.SetEnabled(config != null && isRegistered);
+        }
     }
 }
