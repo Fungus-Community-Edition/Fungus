@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Type = System.Type;
-using System.Linq;
 
 namespace AtMycelia
 {
-    public static class TypeUtils
+    public static class TypeExtensions
     {
-        public static IList<Type> GetInstantiatableTypes(Type baseType)
+        public static bool IsConcrete(this Type type)
+        {
+            return !(type.IsAbstract || type.IsInterface);
+        }
+
+        public static IList<Type> GetInstantiatableTypes(this Type baseType)
         {
             var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             IList<Type> result = allAssemblies.SelectMany(SafeGetTypes)

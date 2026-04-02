@@ -180,7 +180,8 @@ namespace AtMycelia.Amanita.VScripting
             {
                 var ourContentType = ourVar.ContentType;
                 var valueType = val?.GetType();
-                bool typesAreCompatible = ourContentType.IsAssignableFrom(valueType);
+                bool typesAreCompatible = ourContentType.IsAssignableFrom(valueType) || 
+                    valueType.IsAssignableFrom(ourContentType);
                 bool canBeAssigned = (ourContentType.IsClass && val == null) || typesAreCompatible;
                 if (!canBeAssigned)
                 {

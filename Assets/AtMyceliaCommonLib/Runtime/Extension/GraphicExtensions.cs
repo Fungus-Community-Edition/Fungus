@@ -1,5 +1,6 @@
 using UnityEngine;
-namespace AtMycelia.Amanita
+
+namespace AtMycelia.Graphics
 {
     public static class GraphicExtensions 
     {

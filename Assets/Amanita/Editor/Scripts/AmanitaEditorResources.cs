@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace AtMycelia.Amanita.EditorUtils
 {
     [CustomEditor(typeof(AmanitaEditorResources))]
-    public class AmanitaEditorResourcesInspector : Editor
+    public class AmanitaEditorResourcesInspector : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

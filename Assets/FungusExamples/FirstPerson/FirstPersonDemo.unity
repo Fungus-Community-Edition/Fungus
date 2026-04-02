@@ -746,13 +746,15 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+    _selectedBlocks:
+    - {fileID: 640305181}
+    _selectedCommands:
+    - {fileID: 640305193}
     _owner: {fileID: 640305172}
-    <ScrollPos>k__BackingField: {x: 366.6668, y: 42.727272}
+    <ScrollPos>k__BackingField: {x: 366.6668, y: 40}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.2
+    <Zoom>k__BackingField: 1.1
     <BlockViewHeight>k__BackingField: 280
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -4260,7 +4262,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1377282257}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db36b7852b6f9b54e8d797861d0c5560, type: 3}
   m_Name: 

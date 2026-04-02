@@ -1,7 +1,6 @@
 using UnityEngine;
 using AtMycelia.Amanita.VScripting;
 using UnityEngine.Serialization;
-using UnityEditor;
 
 namespace AtMycelia.Amanita.DialogueSys.VScripting
 {
