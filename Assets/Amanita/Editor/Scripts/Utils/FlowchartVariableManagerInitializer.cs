@@ -81,12 +81,6 @@ namespace AtMycelia.Amanita.EditorUtils
                     continue;
                 }
 
-                elem.EnsureVariableManagerMigrationForEditor(out bool migrated);
-                if (migrated)
-                {
-                    EditorUtility.SetDirty(elem);
-                    EditorSceneManager.MarkSceneDirty(scene);
-                }
             }
         }
     }

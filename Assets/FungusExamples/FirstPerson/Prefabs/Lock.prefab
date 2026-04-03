@@ -155,7 +155,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 5, y: 2, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114597286569973654
 MonoBehaviour:
@@ -207,8 +207,8 @@ MonoBehaviour:
   _setOperator: 0
   _anyVar:
     varRef:
-      itemId: 2
-      owningSource: {fileID: 114572511229188600}
+      itemId: 1
+      owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     data:
@@ -600,8 +600,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 1
-        owningSource: {fileID: 114572511229188600}
+        itemId: 3
+        owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -881,14 +881,13 @@ MonoBehaviour:
   uiModel:
     _selectedBlocks:
     - {fileID: 114275658263394176}
-    _selectedCommands:
-    - {fileID: 114597286569973654}
+    _selectedCommands: []
     _owner: {fileID: 1621252211410962}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0

@@ -126,6 +126,8 @@ GameObject:
   - component: {fileID: 114922658582334470}
   - component: {fileID: 114436750874473106}
   - component: {fileID: 114887280257633318}
+  - component: {fileID: 3354874841082550138}
+  - component: {fileID: 6739348486856070871}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -492,7 +494,7 @@ MonoBehaviour:
   _anyVar:
     varRef:
       itemId: 2
-      owningSource: {fileID: 114726772774787118}
+      owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     data:
@@ -566,7 +568,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: a79a4c2e96ba5fd418c637fe852e92d9, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -683,7 +685,7 @@ MonoBehaviour:
   startLabel:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 114726772774787118}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 
@@ -692,7 +694,7 @@ MonoBehaviour:
   startIndex:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 114726772774787118}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 0
@@ -721,10 +723,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: '*That can''t be it*
-
-
-      Lets hear that again John.'
+    value: (That can't be it.) Let's hear that again, John.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -751,7 +750,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: c27113fd8a09c7c45a856e5d3c843c11, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -879,6 +878,7 @@ MonoBehaviour:
   - {fileID: 114601175633847876}
   - {fileID: 114636333720846380}
   - {fileID: 114668946771419768}
+  - {fileID: 6739348486856070871}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -997,16 +997,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 140
+    x: 83.57139
     y: 80
-    width: 107
+    width: 137
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   itemId: 4
-  blockName: New Block
+  blockName: OnPlayerTouch
   description: 
-  eventHandler: {fileID: 0}
+  eventHandler: {fileID: 3354874841082550138}
   commandList:
   - {fileID: 114887280257633318}
   - {fileID: 114922658582334470}
@@ -1043,14 +1043,13 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 114338234726659852}
+    _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1766213715120214}
-    <ScrollPos>k__BackingField: {x: 0, y: 9.925991}
+    <ScrollPos>k__BackingField: {x: 0, y: 13.876541}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.2
+    <Zoom>k__BackingField: 1.4000001
     <BlockViewHeight>k__BackingField: 400
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1448,7 +1447,7 @@ MonoBehaviour:
   startLabel:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 114726772774787118}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 
@@ -1457,7 +1456,7 @@ MonoBehaviour:
   startIndex:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 114726772774787118}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 0
@@ -1486,7 +1485,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    value: ...
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1935,7 +1934,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: I found your button John. {w=1}
+    value: I found your button, John. {w=1}
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1962,7 +1961,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    value: {fileID: 21300000, guid: a3710c5af5b436a46b8d0ff4235d1dfe, type: 3}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   _voiceOverClip:
@@ -2094,7 +2093,7 @@ MonoBehaviour:
     anyVar:
       varRef:
         itemId: 1
-        owningSource: {fileID: 114726772774787118}
+        owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -2110,7 +2109,7 @@ MonoBehaviour:
     anyVar:
       varRef:
         itemId: 2
-        owningSource: {fileID: 114726772774787118}
+        owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -2300,3 +2299,68 @@ MonoBehaviour:
         value: 0
         booleanRef: {fileID: 0}
         booleanVal: 0
+--- !u!114 &3354874841082550138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentBlock: {fileID: 114328260454794762}
+  suppressBlockAutoSelect: 0
+  _tagFilter:
+    _tagFilter:
+    - backingVarRef:
+        itemId: 0
+        owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      value: Player
+      stringRef: {fileID: 0}
+      stringVal: 
+  _toWatch:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 1766213715120214}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  FireOn: 1
+  tagFilter: []
+  _colliderVar:
+    itemId: 0
+    owningSource: {fileID: 0}
+    legacyOwningFc: {fileID: 0}
+    legacyOwningVsa: {fileID: 0}
+  colliderVar: {fileID: 0}
+--- !u!114 &6739348486856070871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 28
+  indentLevel: 0
+  logType: 0
+  logMessage:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Need to move the door so the player can access it.
+    stringRef: {fileID: 0}
+    stringVal: 

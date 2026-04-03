@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 2456075333335827845}
   - component: {fileID: 3495293335381451495}
   - component: {fileID: 1393119562990955083}
+  - component: {fileID: 9068880134193511633}
   m_Layer: 0
   m_Name: VarSetTest
   m_TagString: Untagged
@@ -342,7 +343,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
+  _varManager: {fileID: 9068880134193511633}
+  legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
@@ -2448,6 +2450,28 @@ MonoBehaviour:
   a: {fileID: 0}
   b: {fileID: 0}
   method: 0
+--- !u!114 &9068880134193511633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6381672355547430666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1043080471272523523}
+  _variableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 1
+    _isInitted: 0
+  _cachedFlowchart: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &6906713865859834375
 GameObject:
   m_ObjectHideFlags: 0

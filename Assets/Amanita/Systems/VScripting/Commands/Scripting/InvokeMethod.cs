@@ -164,7 +164,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
                 else
                 {
                     object objValue = null;
-                    IVariable varFound = flowChart.GetVariableByName(item.variableKey);
+                    IVariable varFound = flowChart.GetVariable(item.variableKey);
                     if (varFound == null)
                     {
                         string errorMessage = $"No variable found with the name: {item.variableKey} to pass as parameter " +
@@ -297,7 +297,7 @@ namespace AtMycelia.Amanita.VScripting.Commands
         protected virtual void SetVariable(string key, object value, string returnType)
         {
             var flowChart = GetFlowchart();
-            IVariable varFound = flowChart.GetVariableByName(key);
+            IVariable varFound = flowChart.GetVariable(key);
             if (varFound == null)
             {
                 string errorMessage = $"No variable found with the name: {key} to store the return value " +

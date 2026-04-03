@@ -14,7 +14,8 @@ using UnityEditor;
 namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
-    public sealed class VariableManager : IVariableSource, IMuscariableSource
+    public sealed class VariableManager : IVariableSource, IMuscariableSource,
+        IReorderableVariableSource, IReorderableMuscariableSource
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
@@ -268,7 +269,7 @@ namespace AtMycelia.Amanita.VScripting
 
             #region Establish ownership and parent flowchart references
             toAdd.ParentFlowchart = VarOwner as Flowchart;
-            toAdd.Owner = VarOwner;
+            toAdd.Owner = _varOwner;
             #endregion
 
             AddToCachesThenSignal(toAdd);
@@ -411,10 +412,11 @@ namespace AtMycelia.Amanita.VScripting
             }
             set
             {
-                if (_varOwner != value)
+                if (!ReferenceEquals(_varOwner, value))
                 {
                     _varOwner = value;
                     _varOwner ??= this;
+
                     foreach (var elem in _lookup.Values)
                     {
                         if (elem is not Variable)
@@ -624,17 +626,17 @@ namespace AtMycelia.Amanita.VScripting
             return result;
         }
 
-        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
         {
             return GetVariableByName(name, strCompare);
         }
 
-        public T GetVariableOfTypeByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
         {
-            return GetVariableOfTypeByName(typeof(T), name, strCompare) as T;
+            return GetVariableOfType(typeof(T), name, strCompare) as T;
         }
 
-        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = null;
             var found = GetVariableByName(name, strCompare);
@@ -643,6 +645,12 @@ namespace AtMycelia.Amanita.VScripting
                 result = found;
             }
             return result;
+        }
+
+        public void ReorderVariables(IList<IVariable> newlyOrderedVars)
+        {
+            Clear();
+            AddMultiVars(newlyOrderedVars);
         }
     }
 }

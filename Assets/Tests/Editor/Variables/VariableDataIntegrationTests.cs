@@ -50,7 +50,7 @@ namespace VScriptingTests.VariableOperations
         [TestCase(typeof(AudioClip))]
         public void SelectingMuscariUnityObjVariable_AndResolvesValue(Type contentType)
         {
-            var muscariVar = flowchart.AddNewMuscariable<UnityObj, UnityObjectMuscariable>("data");
+            UnityObjectMuscariable muscariVar = flowchart.AddNewMuscariable<UnityObj, UnityObjectMuscariable>("data");
             Assert.IsNotNull(muscariVar, $"VariableFactory did not create a variable for {contentType}");
 
             var testValue = CreateTestValue(contentType, fcHolder);

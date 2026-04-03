@@ -165,7 +165,7 @@ MonoBehaviour:
   indentLevel: 0
   _targetGameObject:
     backingVarRef:
-      itemId: 0
+      itemId: 2
       owningSource: {fileID: 114126805715615206}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
@@ -376,8 +376,8 @@ MonoBehaviour:
   _setOperator: 0
   _anyVar:
     varRef:
-      itemId: 1
-      owningSource: {fileID: 114126805715615206}
+      itemId: 3
+      owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     data:
@@ -464,26 +464,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   variableManager:
-    _muscariables: []
+    _muscariables:
+    - rid: 3688519627662688363
     _legacyVariables:
     - {fileID: 114234563562086830}
-    _nextValidVarID: 2
+    _nextValidVarID: 3
     _isInitted: 1
   version: 1
   _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 114408475763180490}
-    _selectedCommands:
-    - {fileID: 114677516667119166}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 1247888977727998}
     <ScrollPos>k__BackingField: {x: 0, y: 5.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1.2
-    <BlockViewHeight>k__BackingField: 280
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -513,11 +512,19 @@ MonoBehaviour:
   - {fileID: 114677516667119166}
   - {fileID: 114442955185164142}
   - {fileID: 114296271849496316}
-  nextValidVarID: 1
+  nextValidVarID: 3
   uniqueId: 31944b55-2c0e-491a-80a7-4245a8a31b87
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3688519627662688363
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: thisKey
+        itemID: 2
+        value: {fileID: 1247888977727998}
+        startValue: {fileID: 0}
 --- !u!114 &4521491715789075485
 MonoBehaviour:
   m_ObjectHideFlags: 0
