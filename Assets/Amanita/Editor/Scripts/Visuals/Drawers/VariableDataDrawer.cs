@@ -192,7 +192,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             RegisterValidVars();
             void RegisterValidVars()
             {
-                var validVars = VarRegistry.GetVarsOfType(contentType);
+                var validVars = VarRegistry.GetVarsOfType(contentType, true);
                 _labelsSeen.Clear();
                 orderedLabels.Clear();
                 orderedVars.Clear();

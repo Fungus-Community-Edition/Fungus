@@ -128,7 +128,7 @@ namespace VScriptingTests.VariableOperations
 
         public class FakeFlowchartThatFailsAdd : Flowchart
         {
-            public override void AddVariable(IVariable v)
+            public override IVariable AddVariable(IVariable v)
             {
                 throw new System.Exception("Simulated failure");
             }

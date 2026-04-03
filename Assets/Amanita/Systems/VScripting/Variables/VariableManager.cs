@@ -14,7 +14,8 @@ using UnityEditor;
 namespace AtMycelia.Amanita.VScripting
 {
     [Serializable]
-    public sealed class VariableManager : IVariableSource, IMuscariableSource
+    public sealed class VariableManager : IVariableSource, IMuscariableSource,
+        IReorderableVariableSource, IReorderableMuscariableSource
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
@@ -268,7 +269,7 @@ namespace AtMycelia.Amanita.VScripting
 
             #region Establish ownership and parent flowchart references
             toAdd.ParentFlowchart = VarOwner as Flowchart;
-            toAdd.Owner = VarOwner;
+            toAdd.Owner = _varOwner;
             #endregion
 
             AddToCachesThenSignal(toAdd);
@@ -411,10 +412,11 @@ namespace AtMycelia.Amanita.VScripting
             }
             set
             {
-                if (_varOwner != value)
+                if (!ReferenceEquals(_varOwner, value))
                 {
                     _varOwner = value;
                     _varOwner ??= this;
+
                     foreach (var elem in _lookup.Values)
                     {
                         if (elem is not Variable)
@@ -463,11 +465,7 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result;
-        }
+        
 
         /// <summary>
         /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
@@ -505,25 +503,17 @@ namespace AtMycelia.Amanita.VScripting
             return result;
         }
 
-        public T GetVarByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
-        {
-            return _lookup.Values
-                .OfType<T>()
-                .FirstOrDefault(var => var.Key.Equals(name, strCompare));
-        }
+        //public T GetVariable<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        //{
+        //    return _lookup.Values
+        //        .OfType<T>()
+        //        .FirstOrDefault(var => var.Key.Equals(name, strCompare));
+        //}
 
         public IList<T> GetMultiVariables<T>(StringComparison strCompare = StringComparison.Ordinal) where T : IVariable
         {
             return _lookup.Values
                 .OfType<T>()
-                .ToList();
-        }
-
-        public IList<T> GetVariablesOfScope<T>(VariableScope scope) where T : IVariable
-        {
-            return _lookup.Values
-                .OfType<T>()
-                .Where(var => var.Scope == scope)
                 .ToList();
         }
 
@@ -541,7 +531,20 @@ namespace AtMycelia.Amanita.VScripting
 
         public byte NextId { get; }
 
-        public string UniqueId => VarOwner.UniqueId;
+        public string UniqueId
+        {
+            get
+            {
+                if (VarOwner != this)
+                {
+                    return VarOwner.UniqueId;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
 
         public int VariableCount => _lookup.Count;
 
@@ -624,25 +627,37 @@ namespace AtMycelia.Amanita.VScripting
             return result;
         }
 
-        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
         {
-            return GetVariableByName(name, strCompare);
+            return GetVariable(name, strCompare);
         }
 
-        public T GetVariableOfTypeByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            return GetVariableOfTypeByName(typeof(T), name, strCompare) as T;
+            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            return result;
         }
 
-        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        {
+            return GetVariableOfType(typeof(T), name, strCompare) as T;
+        }
+
+        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = null;
-            var found = GetVariableByName(name, strCompare);
+            var found = GetVariable(name, strCompare);
             if (found != null && type.IsAssignableFrom(found.GetType()))
             {
                 result = found;
             }
             return result;
+        }
+
+        public void ReorderVariables(IList<IVariable> newlyOrderedVars)
+        {
+            Clear();
+            AddMultiVars(newlyOrderedVars);
         }
     }
 }

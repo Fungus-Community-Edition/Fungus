@@ -149,12 +149,13 @@ namespace AtMycelia.Amanita.VScripting
             var targetType = typeof(T);
             if (varToFetchFrom == null)
             {
-                Debug.LogError($"VariableReference: Variable is null. Returning default value of type {targetType}.");
+                Debug.LogError($"VariableReference: Variable is null. Returning default " +
+                    $"value of type {targetType}.");
             }
             else
             {
                 var contentType = varToFetchFrom.ContentType;
-                bool typesAreCompatible = targetType.IsAssignableFrom(contentType);
+                bool typesAreCompatible = TypeUtils.TypesCompatible(targetType, contentType);
                 if (!typesAreCompatible)
                 {
                     Debug.LogError($"VariableReference: Variable content type {contentType} is not " +
@@ -196,22 +197,4 @@ namespace AtMycelia.Amanita.VScripting
         }
     }
 
-    [System.Serializable]
-    public class VariableReference<T> : VariableReference
-    {
-        public new IVariable<T> Variable
-        {
-            get { return base.Variable as IVariable<T>; }
-            set { base.Variable = value; }
-        }
-
-        public T GetValue()
-        {
-            return base.GetValue<T>();
-        }
-        public void SetValue(T val)
-        {
-            base.SetValue(val);
-        }
-    }
 }

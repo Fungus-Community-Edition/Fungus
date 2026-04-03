@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
-using System.Collections.Generic;
 
 namespace AtMycelia.Amanita.VScripting
 {
@@ -109,8 +107,8 @@ namespace AtMycelia.Amanita.VScripting
         {
             if (variable == null)
             {
-                backingVarRef.VarOwner = null;
                 backingVarRef.Variable = null;
+                backingVarRef.VarOwner = null;
                 return;
             }
 

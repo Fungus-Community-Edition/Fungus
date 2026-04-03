@@ -83,7 +83,9 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             object boxed = data.BoxedValue;
-            return boxed != null ? boxed.ToString() : "Null";
+            return boxed != null ? 
+                boxed.ToString() : 
+                "Null";
         }
 
         protected static bool TryGetTypeActionsFor(Type varType, out VariableTypeActions result)

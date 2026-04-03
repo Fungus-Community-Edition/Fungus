@@ -22,12 +22,16 @@ namespace AtMycelia.Amanita.VScripting
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler, 
+    [RequireComponent(typeof(VariableManagerComponent))]
+    public class Flowchart : MonoBehaviour, ISubstitutionHandler,
         IReorderableVariableSource, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
         IBackwardsCompatibilityApplier
     {
-        [SerializeField] private VariableManager variableManager = new VariableManager();
+        [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
+
+        [FormerlySerializedAs("variableManager")]
+        [SerializeField, HideInInspector] private VariableManager legacyVariableManager = new VariableManager();
 
         [HideInInspector]
         [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
@@ -49,10 +53,6 @@ namespace AtMycelia.Amanita.VScripting
             this.UniqueId = Guid.NewGuid().ToString();
         }
 
-        public virtual IVariable GetVariable(byte itemID)
-        {
-            return variableManager.GetVariable(itemID);
-        }
 
 #if UNITY_EDITOR
 
@@ -142,7 +142,7 @@ namespace AtMycelia.Amanita.VScripting
             get { return saveVariables; }
             set { saveVariables = value; }
         }
-        
+
         public virtual int LoadPriority
         {
             get { return loadPriority; }
@@ -153,13 +153,13 @@ namespace AtMycelia.Amanita.VScripting
         protected static bool eventSystemPresent;
 
         protected StringSubstituter stringSubstituter;
-        
+
         public IReadOnlyCollection<Block> Blocks
         {
             get
             {
                 // Refresh if cache is empty or contains null entries.
-                if (_blockListCache == null || _blockListCache.Count == 0 || 
+                if (_blockListCache == null || _blockListCache.Count == 0 ||
                     _blockListCache.Any(block => block == null))
                 {
                     RefreshBlockAndCommandCache();
@@ -178,6 +178,11 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
+            if (_varManager == null)
+            {
+                _varManager = GetComponent<VariableManagerComponent>();
+            }
+
             RegisterLegacyVars();
             void RegisterLegacyVars()
             {
@@ -191,15 +196,7 @@ namespace AtMycelia.Amanita.VScripting
 
             AssertOwnership();
             RefreshBlockAndCommandCache();
-
-            if (!variableManager.IsInitted)
-            {
-                variableManager.Initialize(_oldMuscariables, _legacyVariables);
-            }
-            else
-            {
-                variableManager.Refresh();
-            }
+            _varManager.Refresh();
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
             EditorUtility.SetDirty(this);
@@ -240,9 +237,9 @@ namespace AtMycelia.Amanita.VScripting
             _commands.AddRange(commandsFound);
         }
 
-        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
+        [SerializeField][HideInInspector] private List<Block> _blockListCache = new List<Block>();
         private IDictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
-        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
+        [SerializeField][HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -271,21 +268,9 @@ namespace AtMycelia.Amanita.VScripting
             {
                 elem.Trigger();
             }
-            
+
         }
 
-        public virtual void RemoveVariable(IVariable toRemove)
-        {
-            variableManager.RemoveVariable(toRemove);
-        }
-
-        /// <summary>
-        /// Removes all variables from this Flowchart.
-        /// </summary>
-        public virtual void ClearVariables()
-        {
-            variableManager.Clear();
-        }
 
         protected virtual void OnEnable()
         {
@@ -296,27 +281,29 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             AmanitaManager.EnsureExists();
-            
-            Refresh();
-            MigrateStuffToVariableManager();
-            ToggleSubs(true);
-            variableManager.OnEnable();
 
-            StringSubstituter.RegisterHandler(this);   
+            Refresh();
+            ToggleSubs(true);
+
+            StringSubstituter.RegisterHandler(this);
             FlowchartSignals.FlowchartEnabled(this);
         }
-        
+
         private void ToggleSubs(bool on)
         {
+            if (_varManager == null)
+            {
+                return;
+            }
             if (on)
             {
-                variableManager.VariableAdded += OnVarAdded;
-                variableManager.VariableRemoved += OnVarRemoved;
+                _varManager.VariableAdded += OnVarAdded;
+                _varManager.VariableRemoved += OnVarRemoved;
             }
             else
             {
-                variableManager.VariableAdded -= OnVarAdded;
-                variableManager.VariableRemoved -= OnVarRemoved;
+                _varManager.VariableAdded -= OnVarAdded;
+                _varManager.VariableRemoved -= OnVarRemoved;
             }
         }
 
@@ -327,7 +314,7 @@ namespace AtMycelia.Amanita.VScripting
         }
 
         public event Action<IVariable> VariableAdded = delegate { };
-        
+
         private void OnVarRemoved(IVariable removed)
         {
             VariableRemoved(removed);
@@ -335,6 +322,8 @@ namespace AtMycelia.Amanita.VScripting
         }
 
         public event Action<IVariable> VariableRemoved = delegate { };
+
+        public int VariableCount => _varManager.Variables.Count;
 
         private bool IsInTheScene
         {
@@ -380,7 +369,25 @@ namespace AtMycelia.Amanita.VScripting
 #endif
 
 #if UNITY_EDITOR
-        public void RefreshVariableManagerForEditorReload()
+
+        public virtual void GetVariableManagerMigrationData(out VariableManager legacyManager,
+            out IList<Muscariable> oldMuscariables,
+            out IList<Variable> legacyVariables)
+        {
+            legacyManager = legacyVariableManager;
+            oldMuscariables = _oldMuscariables;
+            legacyVariables = _legacyVariables;
+        }
+
+        public virtual void ClearVariableManagerMigrationData()
+        {
+            _oldMuscariables.Clear();
+            _legacyVariables.Clear();
+            legacyVariableManager.Clear();
+            EditorUtility.SetDirty(this);
+        }
+
+        public virtual void RefreshVariableManagerForEditorReload()
         {
             if (!IsInTheScene || Application.isPlaying)
             {
@@ -388,70 +395,30 @@ namespace AtMycelia.Amanita.VScripting
             }
 
             AssertOwnership();
-            variableManager.Refresh();
         }
 
-        /// <summary>
-        /// Migrate legacy variables and old muscariables into the VariableManager, then clear the old lists. 
-        /// 
-        /// This should only be used in the editor, and is meant to be called by the 
-        /// FlowchartVariableManagerInitializer when scenes are loaded in the editor. This is to ensure that 
-        /// users don't lose their variables when we transition to the new VariableManager system, but also to 
-        /// avoid unnecessary migration in builds.
-        /// </summary>
-        /// <returns></returns>
-        public void EnsureVariableManagerMigrationForEditor(out bool migrated)
-        {
-            migrated = false;
-            if (!IsInTheScene || Application.isPlaying)//
-            {
-                return;
-            }
-
-            bool needsMigration = _oldMuscariables.Count > 0 || _legacyVariables.Count > 0;
-            if (!needsMigration)
-            {
-                variableManager.Refresh();
-                return;
-            }
-
-            MigrateStuffToVariableManager();
-            migrated = true;
-        }
 #endif
 
-        private void MigrateStuffToVariableManager()
+
+        public IVariableSource VariableManager
         {
-            bool needsMigration = _oldMuscariables.Count > 0 || _legacyVariables.Count > 0 
-                || !variableManager.IsInitted;
-            if (!needsMigration)
+            get
             {
-                return;
+                if (_varManager != null)
+                {
+                    return _varManager;
+                }
+                else
+                {
+                    return legacyVariableManager;
+                }
             }
-
-            AssertOwnership();
-
-            if (!variableManager.IsInitted)
-            {
-                variableManager.Initialize(_oldMuscariables, _legacyVariables);
-            }
-            else
-            {
-                variableManager.MigrateLegacyVariables(_oldMuscariables, _legacyVariables);
-            }
-            _oldMuscariables.Clear();
-            _legacyVariables.Clear();
-            variableManager.Refresh();
-#if UNITY_EDITOR
-            EditorUtility.SetDirty(this);
-#endif
         }
-
-        public VariableManager VariableManager => variableManager;
 
         protected virtual void AssertOwnership()
         {
-            variableManager.VarOwner = this;
+            EnsureVariableManagerComponent();
+            _varManager.Owner = this;
             // Legacy variables automatically get their owner-registration done;
             // it's always the Flowchart they're attached to.
         }
@@ -459,10 +426,9 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
-            variableManager.OnDisable();
             StopAllBlocks();
             StopAllCoroutines();
-            StringSubstituter.UnregisterHandler(this);   
+            StringSubstituter.UnregisterHandler(this);
             FlowchartSignals.FlowchartDisabled(this);
         }
 
@@ -515,7 +481,7 @@ namespace AtMycelia.Amanita.VScripting
                     usedIds.Add(blockEl.ItemId);
                 }
             }
-            
+
             CheckForCommands();
             void CheckForCommands()
             {
@@ -693,14 +659,14 @@ namespace AtMycelia.Amanita.VScripting
             get { return uiModel.BlockCount; }
         }
 
-        public void UpdateSelectedCache()
+        public virtual void UpdateSelectedCache()
         {
             SelectedBlocks.Clear();
             var res = gameObject.GetComponents<Block>();
             SelectedBlocks = res.Where(x => x.IsSelected).ToList();
         }
 
-        public void ReverseUpdateSelectedCache()
+        public virtual void ReverseUpdateSelectedCache()
         {
             for (int i = 0; i < SelectedBlockCount; i++)
             {
@@ -732,7 +698,7 @@ namespace AtMycelia.Amanita.VScripting
 
         public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
 
-        public void DeselectAll()
+        public virtual void DeselectAll()
         {
             UIModel.ClearSelectedBlocks();
             UIModel.ClearSelectedCommands();
@@ -861,19 +827,6 @@ namespace AtMycelia.Amanita.VScripting
         public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
 
 #endif
-
-        public virtual IReadOnlyList<IVariable> Variables
-        {
-            get
-            {
-                variableManager ??= new VariableManager();
-                variableManager.VarOwner = this;
-                var result = variableManager.Variables;
-                return result;
-            }
-        }
-
-        public virtual int VariableCount => variableManager.VariableCount;
 
         /// <summary>
         /// Description text displayed in the Flowchart editor window
@@ -1020,7 +973,7 @@ namespace AtMycelia.Amanita.VScripting
             {
                 return false;
             }
-        }        
+        }
 
         /// <summary>
         /// Execute a child block in the Flowchart.
@@ -1031,16 +984,16 @@ namespace AtMycelia.Amanita.VScripting
 
             if (block == null)
             {
-                Debug.LogError("Block " + blockName  + " does not exist");
+                Debug.LogError("Block " + blockName + " does not exist");
                 return;
             }
 
             if (!ExecuteBlock(block))
             {
-                Debug.LogWarning("Block " + blockName  + " failed to execute");
+                Debug.LogWarning("Block " + blockName + " failed to execute");
             }
         }
-            
+
         /// <summary>
         /// Stops an executing Block in the Flowchart.
         /// </summary>
@@ -1050,7 +1003,7 @@ namespace AtMycelia.Amanita.VScripting
 
             if (block == null)
             {
-                Debug.LogError("Block " + blockName  + " does not exist");
+                Debug.LogError("Block " + blockName + " does not exist");
                 return;
             }
 
@@ -1077,7 +1030,7 @@ namespace AtMycelia.Amanita.VScripting
             if (block.gameObject != gameObject)
             {
                 Debug.LogError("Block must belong to the same gameObject as this Flowchart");
-                return false;                
+                return false;
             }
 
             // Can't restart a running block, have to wait until it's idle again
@@ -1234,52 +1187,20 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
-        {
-            return variableManager.AddNewVariableOfContentType(contentType, key);
-        }
-
-        IVariable IVariableSource.AddVariable(IVariable toAdd)
-        {
-            return variableManager.AddAsMuscari(toAdd);
-        }
 
         /// <summary>
         /// Adds an already-existing Muscariable to the Flowchart, getting it integrated as something
         /// owned by said Flowchart. If the variable is already registered,
         /// it will not be added again.
         /// </summary>
-        public Muscariable AddVariable(Muscariable toAdd)
-        {
-            return variableManager.AddAsMuscari(toAdd);
-        }
 
-        public virtual void SetVariable<TBase, TVarType>(string key, TBase value)
-        where TVarType : VariableBase<TBase>
-        {
-            var variable = GetVariableOfTypeByName<TVarType>(key);
 
-            if (variable != null)
-            {
-                variable.BoxedValue = value;
-            }
-            else
-            {
-                LetUserKnowVarDoesntExist(key);
-            }
-        }
 
         /// <summary>
         /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
         /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
         /// into its Muscariable equivalent and the legacy variable will be destroyed.
         /// </summary>
-        public virtual IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
-            TValHeld value = default,
-            VariableScope scope = VariableScope.Private)
-        {
-            return variableManager.AddNewVariable(key, value, scope);
-        }
 
         /// <summary>
         /// Adds an already-existing variable to the flowchart. If the variable is already registered,
@@ -1287,10 +1208,6 @@ namespace AtMycelia.Amanita.VScripting
         /// If the variable is a legacy Variable, a Muscariable version of it will
         /// be registered instead.
         /// </summary>
-        public virtual void AddVariable(IVariable toAdd)
-        {
-            variableManager.AddVariable(toAdd);
-        }
 
         /// <summary>
         /// Returns the variable with the specified key, or null if the key is not found.
@@ -1299,20 +1216,8 @@ namespace AtMycelia.Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable("MyBool") as BooleanVariable;
         /// boolVar.Value = false;
         /// </summary>
-        public IVariable GetVariable(string key, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            return variableManager.GetVariableByName(key, strCompare);
-        }
 
-        public IVariable<TContent> GetVariable<TContent>(string key, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            return variableManager.GetVariable<TContent>(key, strCompare);
-        }
 
-        public virtual IVariable GetVariableById(byte id)
-        {
-            return variableManager.GetVariable(id);
-        }
 
         /// <summary>
         /// Returns the variable with the specified key, or null if the key is not found.
@@ -1320,33 +1225,20 @@ namespace AtMycelia.Amanita.VScripting
         /// BooleanVariable boolVar = flowchart.GetVariable<BooleanVariable>("MyBool");
         /// boolVar.Value = false;
         /// </summary>
-        public T GetVariableOfTypeByName<T>(string key, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
-        {
-            return variableManager.GetVariableOfTypeByName<T>(key, strCompare);
-        }
+
 
         /// <summary>
         /// Returns a list of variables matching the specified type.
         /// </summary>
-        public virtual IList<T> GetMultiVariables<T>() where T: Muscariable
-        {
-            return variableManager.GetMultiVariables<T>();
-        }
 
-        public virtual IList<IVariable> GetVariablesByScope(VariableScope scope)
-        {
-            return Variables.Where((item) => item.Scope == scope).ToList();
-        }
+
+
 
         /// <summary>
         /// Creates and returns a new Muscariable of the specified type, with this
         /// as the parent Flowchart.
         /// </summary>
-        public virtual TVarType AddNewMuscariable<TValueType, TVarType>(string key = "", TValueType initValue = default,
-            VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
-        {
-            return variableManager.AddNewMuscari<TValueType, TVarType>(key, initValue, scope);
-        }
+
 
         /// <summary>
         /// Sets up the Muscariable to belong to this Flowchart before adding it.
@@ -1360,12 +1252,9 @@ namespace AtMycelia.Amanita.VScripting
         /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
         /// </summary>
         /// <param name="toRemove"></param>
-        public virtual void RemoveVariable(Muscariable toRemove)
-        {
-            variableManager.RemoveVariable(toRemove);
-        }
 
-        
+
+
 
         #endregion
 
@@ -1460,14 +1349,15 @@ namespace AtMycelia.Amanita.VScripting
             for (int i = 0; i < results.Count; i++)
             {
                 var match = results[i];
-                var v = GetVariable(match.Value.Substring(2, match.Value.Length - 3));
+                string varName = match.Value.Substring(2, match.Value.Length - 3);
+                var v = GetVariable(varName);
                 if (v != null)
                 {
                     vars.Add(v);
                 }
             }
         }
-#endregion
+        #endregion
 
         #region IStringSubstituter implementation
 
@@ -1518,15 +1408,6 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
-        {
-            get
-            {
-                return variableManager.Variables.Where(elem => elem is Muscariable)
-                    .Cast<Muscariable>()
-                    .ToList();
-            }
-        }
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -1545,6 +1426,8 @@ namespace AtMycelia.Amanita.VScripting
                     return;
                 }
 
+                EnsureVariableManagerComponent();
+
                 AmanitaManager.EnsureExists();
 
                 _legacyVariables.RemoveAll((elem) => elem == null);
@@ -1557,7 +1440,6 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
                 Refresh();
-                variableManager.Refresh();
                 EnsureBlocksHaveAValidSize();
                 void EnsureBlocksHaveAValidSize()
                 {
@@ -1577,7 +1459,7 @@ namespace AtMycelia.Amanita.VScripting
                 }
 
             };
-            
+
         }
 #endif
 
@@ -1591,7 +1473,7 @@ namespace AtMycelia.Amanita.VScripting
 #endif
             }
         }
-        
+
         public virtual bool AlwaysKeepGuid
         {
             get
@@ -1608,6 +1490,35 @@ namespace AtMycelia.Amanita.VScripting
         {
             get => name;
             set => name = value;
+        }
+
+        public virtual IReadOnlyList<IVariable> Variables
+        {
+            get
+            {
+                EnsureVariableManagerComponent();
+                _varManager.Owner = this;
+                return VariableManager.Variables;
+            }
+        }
+
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_varManager).Variables;
+
+        private void EnsureVariableManagerComponent()
+        {
+            if (_varManager != null)
+            {
+                return;
+            }
+
+            _varManager = GetComponent<VariableManagerComponent>();
+            if (_varManager == null)
+            {
+                _varManager = gameObject.AddComponent<VariableManagerComponent>();
+#if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+#endif
+            }
         }
 
         protected virtual void LetUserKnowVarDoesntExist(string varName)
@@ -1637,11 +1548,11 @@ namespace AtMycelia.Amanita.VScripting
             return _legacyVariables.Contains(var) || _oldMuscariables.Contains(var);
         }
 
-        public void OnBeforeSerialize()
+        public virtual void OnBeforeSerialize()
         {
         }
 
-        public void OnAfterDeserialize()
+        public virtual void OnAfterSerialize()
         {
         }
 
@@ -1697,7 +1608,7 @@ namespace AtMycelia.Amanita.VScripting
         /// want to remove the blocks from the flowchart's list of blocks before destroying them,
         /// to avoid null references in the flowchart's list of blocks.
         /// </summary>
-        public void RemoveMultiBlocks(IList<Block> toUnregister)
+        public virtual void RemoveMultiBlocks(IList<Block> toUnregister)
         {
             for (int i = 0; i < toUnregister.Count; i++)
             {
@@ -1711,33 +1622,94 @@ namespace AtMycelia.Amanita.VScripting
         /// want to remove the block from the flowchart's list of blocks before destroying it, 
         /// to avoid null references in the flowchart's list of blocks.
         /// </summary>
-        public void RemoveBlock(Block toUnregister)
+        public virtual void RemoveBlock(Block toUnregister)
         {
             _blocks.Remove(toUnregister.ItemId);
             _blockListCache.Remove(toUnregister);
         }
 
-        T IVariableSource.GetVariableOfType<T>() where T: class
+        public virtual void ApplyBackwardsCompatibility()
         {
-            return variableManager.GetVariableOfType<T>();
         }
 
-        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public virtual void OnAfterDeserialize()
         {
-            return variableManager.GetVariableByName(name, strCompare);
-        }
 
-        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            return variableManager.GetVariableOfTypeByName(type, name, strCompare);
         }
-
-        public void ApplyBackwardsCompatibility()
-        {
-            MigrateStuffToVariableManager();
-        }
-
 #endif
 
+        public virtual IVariable AddVariable(IVariable toAdd)
+        {
+            return VariableManager.AddVariable(toAdd);
+        }
+
+        public virtual void RemoveVariable(IVariable toRemove)
+        {
+            VariableManager.RemoveVariable(toRemove);
+        }
+
+        public IVariable GetVariable(byte itemID)
+        {
+            return VariableManager.GetVariable(itemID);
+        }
+
+        public virtual void ClearVariables()
+        {
+            _varManager.Clear();
+        }
+
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key)
+        {
+            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(contentType, key);
+        }
+
+        public Muscariable AddVariable(Muscariable toAdd)
+        {
+            return ((IVariableSource<Muscariable>)_varManager).AddVariable(toAdd);
+        }
+
+        public virtual void RemoveVariable(Muscariable toRemove)
+        {
+            ((IVariableSource<Muscariable>)_varManager).RemoveVariable(toRemove);
+        }
+
+        T IVariableSource.GetVariableOfType<T>()
+        {
+            return VariableManager.GetVariableOfType<T>();
+        }
+
+        public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            return VariableManager.GetVariable(name, strCompare);
+        }
+
+        T IVariableSource.GetVariableOfType<T>(string name, StringComparison strCompare)
+        {
+            return VariableManager.GetVariableOfType<T>(name, strCompare);
+        }
+
+        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            return VariableManager.GetVariableOfType(type, name, strCompare);
+        }
+
+        public virtual TVarType AddNewMuscariable<TContentType, TVarType>(string key,
+            TContentType defaultValue = default,
+            VariableScope scope = VariableScope.Private)
+            where TVarType : Muscariable<TContentType>, new()
+        {
+            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as TVarType;
+            result.Scope = scope;
+            return result;
+        }
+
+        public virtual IVariable<TContentType> AddNewVariable<TContentType>(string key,
+            TContentType defaultValue = default,
+            VariableScope scope = VariableScope.Private)
+        {
+            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key);
+            return result as IVariable<TContentType>;
+        }
     }
+    
 }

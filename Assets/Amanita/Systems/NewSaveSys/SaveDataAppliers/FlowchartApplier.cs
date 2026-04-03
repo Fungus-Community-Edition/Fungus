@@ -158,7 +158,7 @@ namespace AtMycelia.Amanita.SaveSys
 
                     // First try to find the variable by its unique ID, which is more reliable.
                     // If that fails, fall back to searching by name.
-                    IVariable varEl = flowchart.GetVariableById(varSaveData.ItemId);
+                    IVariable varEl = flowchart.GetVariable(varSaveData.ItemId);
                     if (varEl != null && !string.Equals(varEl.Key, varSaveData.VarName, StringComparison.Ordinal))
                     {
                         IVariable byName = flowchart.GetVariable(varSaveData.VarName);

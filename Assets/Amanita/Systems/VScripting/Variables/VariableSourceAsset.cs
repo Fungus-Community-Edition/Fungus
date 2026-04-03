@@ -361,13 +361,13 @@ namespace AtMycelia.Amanita.VScripting
         {
             // We want to make sure that the variables' states are returned to their 
             // pre-enter-play-mode values when we exit play mode. Thus,
-            // we need to set up backups when entering play mode.
-            if (change == PlayModeStateChange.EnteredPlayMode)
+            // we need to set up backups.
+            EnsureVariablesList();
+            if (change == PlayModeStateChange.ExitingEditMode)
             {
                 ReadyBackups();
                 void ReadyBackups()
                 {                     
-                    EnsureVariablesList();
                     backupMuscariables.Clear();
                     foreach (var var in variables)
                     {
@@ -382,7 +382,6 @@ namespace AtMycelia.Amanita.VScripting
                 RestoreFromBackups();
                 void RestoreFromBackups()
                 {
-                    EnsureVariablesList();
                     // Rather than recreating the vars as "restored" ones, we apply the values
                     // of the backups to the ones we got.
                     for (int i = 0; i < backupMuscariables.Count; i++)
@@ -396,7 +395,8 @@ namespace AtMycelia.Amanita.VScripting
                         }
                         else
                         {
-                            Debug.LogError($"Could not find variable with ID {backupVar.ItemId} to restore its value to.");
+                            Debug.LogError($"Could not find variable with ID {backupVar.ItemId} to " +
+                                $"restore its value to.");
                         }
                     }
                 }
@@ -461,19 +461,19 @@ namespace AtMycelia.Amanita.VScripting
             return variables.Where((elem) => elem is T).Cast<T>().FirstOrDefault();
         }
 
-        IVariable IVariableSource.GetVariableByName(string name, StringComparison strCompare)
+        IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
         {
             return GetVariableByName(name, strCompare);
         }
 
-        T IVariableSource.GetVariableOfTypeByName<T>(string name, StringComparison strCompare)
+        T IVariableSource.GetVariableOfType<T>(string name, StringComparison strCompare)
         {
             return variables.Where((elem) => elem is T && elem.Key.Equals(name, strCompare))
                 .Cast<T>()
                 .FirstOrDefault();
         }
 
-        public IVariable GetVariableOfTypeByName(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             var result = variables.Where((elem) => type.IsAssignableFrom(elem.GetType()) && elem.Key.Equals(name, strCompare))
                 .FirstOrDefault();

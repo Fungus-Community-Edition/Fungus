@@ -72,14 +72,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 owningSourceProp.objectReferenceValue = flowchart;
             }
-
+            IVariableSource owner = owningSourceProp != null ? 
+                owningSourceProp.objectReferenceValue as IVariableSource : 
+                null;
             // Resolve selected variable purely from serialized fields (no boxedValue)
             var itemIdProp = lhsVarProp.FindPropertyRelative("itemId");
             selectedVariable = null;
-            if (flowchart != null && itemIdProp != null)
+            if (owner != null && itemIdProp != null)
             {
                 byte itemId = (byte)itemIdProp.intValue; // Unity stores byte as int internally
-                selectedVariable = flowchart.GetVariable(itemId);
+                selectedVariable = owner.GetVariable(itemId);
             }
         }
 

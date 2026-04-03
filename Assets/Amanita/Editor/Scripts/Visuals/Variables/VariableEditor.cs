@@ -137,7 +137,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                             continue;
                         }
 
-                        IList<IVariable> publicVars = fcElem.GetVariablesByScope(VariableScope.Public);
+                        IList<IVariable> publicVars = fcElem.Variables.Where(IsVarPublic).ToList();
                         for (int publicVarIndex = 0; publicVarIndex < publicVars.Count; publicVarIndex++)
                         {
                             IVariable varElem = publicVars[publicVarIndex];
@@ -228,6 +228,11 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 // For ObjectReference fields, only UnityEngine.Object-backed variables can be assigned
                 property.objectReferenceValue = chosen as UnityObject;
             }
+        }
+
+        private static bool IsVarPublic(IVariable elem)
+        {
+            return elem.Scope == VariableScope.Public;
         }
 
         private static string ComputeSiblingLegacyPath(string path)
