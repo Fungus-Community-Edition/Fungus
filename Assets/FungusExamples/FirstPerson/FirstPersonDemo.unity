@@ -545,7 +545,7 @@ MonoBehaviour:
     _selectedBlocks:
     - {fileID: 640305181}
     _selectedCommands:
-    - {fileID: 640305187}
+    - {fileID: 640305184}
     _owner: {fileID: 640305172}
     <ScrollPos>k__BackingField: {x: 366.6668, y: 44.807693}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -593,7 +593,6 @@ MonoBehaviour:
   - {fileID: 640305190}
   - {fileID: 640305191}
   - {fileID: 640305193}
-  - {fileID: 0}
   nextValidVarID: 3
   uniqueId: cb25c09d-8355-4fce-819b-51d5c38edcb2
   references:
@@ -1016,7 +1015,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: It's the simulation you asked for... So we can solve even when there are
+    value: It's the simulation you asked for. So we can solve even when there are
       no cases.
     stringRef: {fileID: 0}
     stringVal: 
@@ -1359,7 +1358,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: No need for that tone Sherlock. I'm a doctor, not an environment artist.
+    value: No need for that tone, Sherlock. I'm a doctor, not an environment artist.
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -1504,7 +1503,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: We'll you've tripped me up again John. I never expected it to be this...
+    value: We'll you've tripped me up again, John. I never expected it to be this...
       plain.
     stringRef: {fileID: 0}
     stringVal: 
@@ -1795,7 +1794,7 @@ MonoBehaviour:
       owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: We agree to disagree then. {w=0.5} What's the situation?
+    value: We agree to disagree, then. {w=0.5} What's the situation?
     stringRef: {fileID: 0}
     stringVal: 
   _description:
@@ -5095,10 +5094,10 @@ MonoBehaviour:
     _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1788221405}
-    <ScrollPos>k__BackingField: {x: 307, y: 10.727273}
+    <ScrollPos>k__BackingField: {x: 307, y: 13.227273}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.1
+    <Zoom>k__BackingField: 1.2
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -5201,8 +5200,8 @@ MonoBehaviour:
       stringVal: 
   _toWatch:
     backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+      itemId: 1
+      owningSource: {fileID: 1788221410}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 1788221405}
@@ -5230,14 +5229,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _unityObjOwner: {fileID: 1788221410}
   _variableManager:
-    _muscariables: []
+    _muscariables:
+    - rid: 3688519646466015391
     _legacyVariables: []
-    _nextValidVarID: 1
-    _isInitted: 0
+    _nextValidVarID: 2
+    _isInitted: 1
   _cachedFlowchart: {fileID: 1788221410}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3688519646466015391
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: thisGameObject
+        itemID: 1
+        value: {fileID: 1788221405}
+        startValue: {fileID: 0}
 --- !u!1 &1874215332
 GameObject:
   m_ObjectHideFlags: 0

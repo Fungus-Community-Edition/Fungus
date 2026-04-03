@@ -543,7 +543,20 @@ namespace AtMycelia.Amanita.VScripting
 
         public byte NextId { get; }
 
-        public string UniqueId => VarOwner.UniqueId;
+        public string UniqueId
+        {
+            get
+            {
+                if (VarOwner != this)
+                {
+                    return VarOwner.UniqueId;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
 
         public int VariableCount => _lookup.Count;
 
