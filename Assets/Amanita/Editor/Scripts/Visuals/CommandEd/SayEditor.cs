@@ -114,13 +114,18 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 blackTex = CustomGUI.CreateBlackTexture();
             }
 
-            _tagHelpContent = new GUIContent("Tag Help", "View available tags");
-            _tagHelpStyle = new GUIStyle(EditorStyles.miniButton);
             
-            _portraitLabelContent = new GUIContent("Portrait",
+        }
+
+        private static void UpdateGuiContentMembers()
+        {
+            _tagHelpContent ??= new GUIContent("Tag Help", "View available tags");
+            _tagHelpStyle ??= new GUIStyle(EditorStyles.miniButton);
+
+            _portraitLabelContent ??= new GUIContent("Portrait",
             "Portrait representing speaking character");
-            _noneGuiContent = new GUIContent("<None>");
-            _voiceClipLabelContent = new GUIContent("Voice Over Clip",
+            _noneGuiContent ??= new GUIContent("<None>");
+            _voiceClipLabelContent ??= new GUIContent("Voice Over Clip",
             "Voice over audio to play when the text is displayed");
         }
 
@@ -139,6 +144,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
         public override void DrawCommandGUI() 
         {
             serializedObject.Update();
+            UpdateGuiContentMembers();
 
             bool showPortraits = false;
             EditorGUILayout.PropertyField(characterProp);

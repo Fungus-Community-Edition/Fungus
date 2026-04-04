@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AtMycelia.Amanita.VScripting
 {
-    [CommandInfo("Scene", 
+    [CommandInfo("Animation", 
         "Move", 
         "Moves a component's transform to a target position over time.")]
     public class MoveTransform : BaseTweenCommand

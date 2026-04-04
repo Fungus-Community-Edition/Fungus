@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 using Type = System.Type;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,10 +18,12 @@ namespace AtMycelia.Amanita.VScripting
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource, IForceResetUidHandler,
         IRefreshable
     {
-        [SerializeField] private bool includeInSaves = true;
-        [SerializeField, HideInInspector] private string uniqueId = string.Empty;
-        [SerializeField] private bool alwaysKeepGuid = true;
+        [SerializeField] private bool _includeInSaves = true;
+        [FormerlySerializedAs("uniqueId")]
+        [SerializeField, HideInInspector] private string _uniqueId = string.Empty;
+        [SerializeField] private bool _alwaysKeepGuid = true;
         [SerializeReference] private List<Muscariable> variables = new List<Muscariable>();
+        [SerializeField, HideInInspector] private VariableManager _varManager = new VariableManager();
 
         public virtual void ForceResetUid()
         {
@@ -28,26 +32,29 @@ namespace AtMycelia.Amanita.VScripting
 
         public bool IncludeInSaves
         {
-            get => includeInSaves;
-            set => includeInSaves = value;
+            get => _includeInSaves;
+            set => _includeInSaves = value;
         }
 
         public string UniqueId
         {
-            get => uniqueId;
+            get => _uniqueId;
             set
             {
-                if (!string.IsNullOrEmpty(uniqueId))
+                if (!string.IsNullOrEmpty(_uniqueId))
                 {
                     Debug.LogWarning($"Warning: Overwriting existing AssetId on VariableSourceAsset {name}.");
                 }
 
-                string prevId = uniqueId;
-                uniqueId = value;
+                string prevId = _uniqueId;
+                _uniqueId = value;
 #if UNITY_EDITOR
-                EditorUtility.SetDirty(this);
-                AssetDatabase.SaveAssetIfDirty(this);
-                AssetDatabase.Refresh();
+                if (!Application.isPlaying)
+                {
+                    EditorUtility.SetDirty(this);
+                    AssetDatabase.SaveAssetIfDirty(this);
+                    AssetDatabase.Refresh();
+                }
 #endif
             }
         }
@@ -58,8 +65,8 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public virtual bool AlwaysKeepGuid
         {
-            get => alwaysKeepGuid;
-            set => alwaysKeepGuid = value;
+            get => _alwaysKeepGuid;
+            set => _alwaysKeepGuid = value;
         }
 
         // Always return a list, even if the backing field was deserialized as null.
@@ -67,8 +74,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                EnsureVariablesList();
-                return variables.Cast<IVariable>().ToList();
+                return _varManager.Variables;
             }
         }
 
@@ -76,8 +82,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                EnsureVariablesList();
-                return variables.ToList();
+                return _varManager.Variables.OfType<Muscariable>().ToList();
             }
         }
 
@@ -97,18 +102,14 @@ namespace AtMycelia.Amanita.VScripting
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
             TContent startingVal = default)
         {
-            Muscariable<TContent> result = (Muscariable<TContent>)AddNewVariableOfContentType(typeof(TContent), key);
-            result.Value = startingVal;
-            return result; 
+            var result = _varManager.AddNewVariable(key, startingVal, VariableScope.Public);
+            return (Muscariable<TContent>)result; 
         }
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            EnsureVariablesList();
-            Muscariable var = VariableFactory.CreateByContentType(contentType, null);
-            var.Key = key;
-            AddVariable(var);
-            return var;
+            var result = _varManager.AddNewVariableOfContentType(contentType, key);
+            return result;
         }
 
         /// <summary>
@@ -117,126 +118,110 @@ namespace AtMycelia.Amanita.VScripting
         /// </summary>
         public virtual IVariable AddVariable(IVariable var)
         {
-            EnsureVariablesList();
-            Muscariable muscari = var.ToMuscariable();
-            if (muscari == null)
-            {
-                string logMessage = $"Cannot add {var} (a non-Muscariable) to a VariableSource asset; " +
-                    $"it can't hold that in the first place.";
-                Debug.LogWarning(logMessage);
-                return null;
-            }
-            else
-            {
-                return AddVariable(muscari);
-            }
+            var result = _varManager.AddVariable(var);
+            return result;
         }
 
-#if UNITY_EDITOR
-        // We only want editor code to respond to these events.
-        public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
-        public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
-#endif
-
-        public event Action VariablesReordered = delegate { };
-
-        // So that we can avoid what (at least look like) duplicates
-        protected virtual void MakeUniqueForThisSource(Muscariable var)
+        public event Action VariablesReordered
         {
-            EnsureVariablesList();
-            var.Key = UniqueKeyGenerator.GetUniqueKeyFor(var.Key, variables.Cast<IVariable>().ToList(), var);
-            IList<IHasItemID> toPass = variables.OfType<IHasItemID>().ToList();
-            var.ItemId = _nextVarID;
-            _nextVarID++;
-            var.Owner = this;
+            add
+            {
+                _varManager.Reordered += value;
+            }
+            remove
+            {
+                _varManager.Reordered -= value;
+            }
         }
 
         [SerializeField, HideInInspector] protected byte _nextVarID = 1;
-        public event Action<IVariable> VariableAdded = delegate { };
+        public event Action<IVariable> VariableAdded
+        {
+            add
+            {
+                _varManager.VariableAdded += value;
+            }
+            remove
+            {
+                _varManager.VariableAdded -= value;
+            }
+        }
 
         public Muscariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            EnsureVariablesList();
-            for (int i = 0; i < variables.Count; i++)
-            {
-                Muscariable var = variables[i];
-                if (var.Key.Equals(name, strCompare))
-                {
-                    return var;
-                }
-            }
-
-            return null;
+            var result = _varManager.GetVariable(name, strCompare);
+            return (Muscariable)result;
         }
 
         public virtual IVariable GetVariable(byte itemID)
         {
-            EnsureVariablesList();
-            IVariable result = variables.Where((elem) => elem.ItemId == itemID).FirstOrDefault();
+            var result = _varManager.GetVariable(itemID);
             return result;
         }
 
-        public virtual IList<Muscariable> GetVarsByContentType<TContent>()
+        /// <summary>
+        /// Returns all variables in this source that have the specified content type. If strict is false,
+        /// variables whose content types are assignable to the specified content type will also be returned. 
+        /// If true, only variables whose content types are <i>exactly</i> the one passed will be returned.
+        /// </summary>
+        public virtual IList<Muscariable> GetVarsByContentType<TContent>(bool strict = false)
         {
-            return GetVarsByContentType(typeof(TContent));
-        }
-
-        public virtual IList<Muscariable> GetVarsByContentType(Type contentType)
-        {
-            EnsureVariablesList();
-            IList<Muscariable> result = variables.Where(VarIsOfContentType).ToList();
-
-            bool VarIsOfContentType(Muscariable elem)
-            {
-                return elem.ContentType.IsAssignableFrom(contentType);
-            }
-
+            var result = GetVarsByContentType(typeof(TContent), strict);
             return result;
         }
 
-        public virtual IList<Muscariable> GetVarsByType<TVar>() where TVar : Muscariable
+        public virtual IList<Muscariable> GetVarsByContentType(Type contentType, bool strict = false)
+        {
+            var result = _varManager.GetMultiVariablesOfContentType(contentType, strict);
+            return result.OfType<Muscariable>().ToList();
+        }
+
+        /// <summary>
+        /// Returns all variables in this source that are of the specified type. If strict is false,
+        /// variables whose types are assignable to the specified type will also be returned. If 
+        /// strict is true, only variables whose types are exactly the one passed will be returned.
+        /// 
+        /// If you want a list of vars of a specified <i>content</i> type, 
+        /// use GetVarsByContentType instead.
+        /// 
+        /// </summary>
+        public virtual IList<Muscariable> GetVarsByType<TVar>(bool strict = false) where TVar : Muscariable
         {
             return GetVarsByType(typeof(TVar));
         }
 
         public virtual IList<Muscariable> GetVarsByType(Type varType)
         {
-            EnsureVariablesList();
-            IList<Muscariable> result = variables.Where((elem) => varType.IsAssignableFrom(elem.GetType())).ToList();
+            IList<Muscariable> result = _varManager.GetMultiVariablesOfType(varType)
+                .OfType<Muscariable>()
+                .ToList();
             return result;
         }
 
         public void ReorderVariables(IList<IVariable> newOrder)
         {
-            EnsureVariablesList();
             if (newOrder == null || newOrder.Count == 0) return;
 
-            IList<Muscariable> toCompareTo = newOrder.OfType<Muscariable>().ToList();
-            if (variables.SameContentsAs(toCompareTo) == false)
+            IList<IVariable> whatWeGot = Variables.ToList();
+            if (whatWeGot.SameContentsAs(newOrder) == false)
             {
-                Debug.LogWarning("VariableSource: ReorderVariables called with a list that doesn't contain the same elements as this source.");
+                Debug.LogWarning("VariableSource: ReorderVariables called with a list that " +
+                    "doesn't contain the same elements as this source.");
                 return;
             }
             else
             {
-                variables.Clear();
-                variables.AddRange(toCompareTo);
-
-                VariablesReordered();
-
+                _varManager.ReorderVariables(newOrder);
             }
         }
 
         public virtual void RemoveVariable(string key)
         {
-            EnsureVariablesList();
-            IVariable toRemove = variables.Find(elem => elem.Key == key);
-            RemoveVariable(toRemove);
+            _varManager.RemoveVariable(key);
         }
 
         public virtual void RemoveVariable(IVariable variable)
         {
-            EnsureVariablesList();
             if (variable is not Muscariable muscari)
             {
                 string logMessage = $"Cannot remove {variable} (a non-Muscariable) from a VariableSource asset; " +
@@ -245,61 +230,58 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
-            AnyRightBeforeVarRemoved(muscari);
-            // For the sake of Undo/Redo, we'd best NOT unregister ourselves as the owner.
-            // Even if it'd be sorta misleading...//
-            variables.Remove(muscari);
-            VariableRemoved(muscari);
+            _varManager.RemoveVariable(variable);
         }
 
-        public event Action<IVariable> VariableRemoved = delegate { };
+        public event Action<IVariable> VariableRemoved
+        {
+            add
+            {
+                _varManager.VariableRemoved += value;
+            }
+            remove
+            {
+                _varManager.VariableRemoved -= value;
+            }
+        }
 
         public virtual void Refresh()
         {
-            EnsureVariablesList();
             EnsureValidUniqueId();
 
-            variables.RemoveAll(elem => elem == null);
-
-            AssertOwnership();
-            void AssertOwnership()
-            {
-                foreach (var elem in variables)
-                {
-                    elem.Owner = this;
-                }
-            }
-
-            Refreshed();
+            _varManager.VarOwner = this;
+            _varManager.Refresh();
         }
 
-        public event Action Refreshed = delegate { };
+        public event Action Refreshed
+        {
+            add
+            {
+                _varManager.Refreshed += value;
+            }
+            remove
+            {
+                _varManager.Refreshed -= value;
+            }
+        }
 
         public Muscariable AddVariable(Muscariable toAdd)
         {
-            EnsureVariablesList();
-            if (!variables.ContainsReference(toAdd))
-            {
-                MakeUniqueForThisSource(toAdd);
-                _nextVarID = (byte)(toAdd.ItemId + 1);
-#if UNITY_EDITOR
-                AnyRightBeforeVarAdded(toAdd);
-#endif
-                variables.Add(toAdd);
-                VariableAdded(toAdd);
-            }
+            AnyRightBeforeVarAdded(toAdd);
 
-            return toAdd;
+            var result = _varManager.AddVariable(toAdd);
+            return result;
         }
 
         public void RemoveVariable(Muscariable toRemove)
         {
-            variables.Remove(toRemove);
+            _varManager.RemoveVariable(toRemove);
         }
 
         protected virtual void OnEnable()
         {
-            EnsureVariablesList();
+            ToggleSubs(false);
+            ToggleSubs(true);
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {
@@ -308,10 +290,49 @@ namespace AtMycelia.Amanita.VScripting
             }
 #endif
             EnsureValidUniqueId();
-            EnsureValidVarIDs();
-            EditorOnEnable();
             VsaSignals.VsaEnabled(this);
         }
+
+        protected virtual void ToggleSubs(bool on)
+        {
+#if UNITY_EDITOR
+            EditorToggleSubs(on);
+#endif
+        }
+
+#if UNITY_EDITOR
+        protected virtual void EditorToggleSubs(bool on)
+        {
+            if (on)
+            {
+                _varManager.PreVariableAdded += OnPreVarAdded;
+                _varManager.PreVariableRemoved += OnPreVarRemoved;
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            }
+            else
+            {
+                _varManager.PreVariableAdded -= OnPreVarAdded;
+                _varManager.PreVariableRemoved -= OnPreVarRemoved;
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            }
+        }
+
+        private void OnPreVarRemoved(IVariable variable)
+        {
+            AnyRightBeforeVarRemoved((Muscariable)variable);
+        }
+
+        // We only want editor code to respond to these events.
+        
+        public static event Action<Muscariable> AnyRightBeforeVarRemoved = delegate { };
+
+        private void OnPreVarAdded(IVariable variable)
+        {
+            AnyRightBeforeVarAdded((Muscariable)variable);
+        }
+
+        public static event Action<Muscariable> AnyRightBeforeVarAdded = delegate { };
+#endif
 
         protected virtual void EnsureValidUniqueId()
         {
@@ -321,40 +342,15 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
-            if (string.IsNullOrEmpty(uniqueId))
+            if (string.IsNullOrEmpty(_uniqueId))
             {
-                uniqueId = Guid.NewGuid().ToString();
+                _uniqueId = Guid.NewGuid().ToString();
 #if UNITY_EDITOR
                 EditorUtility.SetDirty(this);
 #endif
             }
         }
 
-        protected virtual void EnsureValidVarIDs()
-        {
-            EnsureVariablesList();
-            HashSet<int> usedIDs = new HashSet<int>();
-            foreach (var var in variables)
-            {
-                if (var.ItemId == 0 || usedIDs.Contains(var.ItemId))
-                {
-                    var.ItemId = _nextVarID;
-                    _nextVarID++;
-#if UNITY_EDITOR
-                    UnityEditor.EditorUtility.SetDirty(this);
-#endif
-                }
-                usedIDs.Add(var.ItemId);
-            }
-            
-        }
-
-        protected virtual void EditorOnEnable()
-        {
-#if UNITY_EDITOR
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-#endif
-        }
 
 #if UNITY_EDITOR
         private void OnPlayModeStateChanged(PlayModeStateChange change)
@@ -362,103 +358,74 @@ namespace AtMycelia.Amanita.VScripting
             // We want to make sure that the variables' states are returned to their 
             // pre-enter-play-mode values when we exit play mode. Thus,
             // we need to set up backups.
-            EnsureVariablesList();
             if (change == PlayModeStateChange.ExitingEditMode)
             {
                 ReadyBackups();
                 void ReadyBackups()
-                {                     
-                    backupMuscariables.Clear();
-                    foreach (var var in variables)
+                {
+                    var varsToReady = Variables;
+                    // ^Caching here to avoid multiple calls to the property, which would cause
+                    // needless allocations and iterations.
+                    for (int i = 0; i < varsToReady.Count; i++)
                     {
-                        Muscariable backupVar = var.Clone();
-                        backupMuscariables.Add(backupVar);
+                        var currentVar = varsToReady[i];
+                        string key = $"{_uniqueId}_{currentVar.ItemId}";
+                        string valueAsJson = EditorJsonUtility.ToJson(currentVar);
+                        PlayerPrefs.SetString(key, valueAsJson);
                     }
                 }
                 
             }
-            else if (change == PlayModeStateChange.ExitingPlayMode)
+            else if (change == PlayModeStateChange.ExitingPlayMode)//
             {
                 RestoreFromBackups();
                 void RestoreFromBackups()
                 {
-                    // Rather than recreating the vars as "restored" ones, we apply the values
-                    // of the backups to the ones we got.
-                    for (int i = 0; i < backupMuscariables.Count; i++)
+                    var varsToRestore = Variables;
+                    for (int i = 0; i < varsToRestore.Count; i++)//
                     {
-                        Muscariable backupVar = backupMuscariables[i];
-                        Muscariable varToRestoreTo = variables.Where((elem) => elem.ItemId == backupVar.ItemId)
-                            .FirstOrDefault();
-                        if (varToRestoreTo != null)
+                        var currentVar = varsToRestore[i];
+                        string key = $"{_uniqueId}_{currentVar.ItemId}";
+                        if (PlayerPrefs.HasKey(key))
                         {
-                            varToRestoreTo.BoxedValue = backupVar.BoxedValue;
-                        }
-                        else
-                        {
-                            Debug.LogError($"Could not find variable with ID {backupVar.ItemId} to " +
-                                $"restore its value to.");
+                            string valueAsJson = PlayerPrefs.GetString(key);
+                            EditorJsonUtility.FromJsonOverwrite(valueAsJson, currentVar);
+                            
+                            PlayerPrefs.DeleteKey(key);
                         }
                     }
                 }
             }
         }
 
-        protected List<Muscariable> backupMuscariables = new List<Muscariable>();
 #endif
 
         protected virtual void OnDisable()
         {
-            EditorOnDisable();
+            ToggleSubs(false);
             VsaSignals.VsaDisabled(this);
-        }
-
-        protected virtual void EditorOnDisable()
-        {
-#if UNITY_EDITOR
-            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-#endif
         }
 
         protected virtual void OnValidate()
         {
-            EnsureVariablesList();
-            if (!AssetDatabase.Contains(this))//
+            if (!AssetDatabase.Contains(this))
             {
                 // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
                 return;
             }
 
-            //variables.RemoveAll(elem => elem == null);
-
             EnsureValidUniqueId();
-            EnsureValidVarIDs();
-        }
-
-        // Centralized guard to materialize the list if it was deserialized as null. Will
-        // use this a lot to compensate for Unity's serialization quirks.
-        protected void EnsureVariablesList()
-        {
-            if (variables == null)
-            {
-                variables = new List<Muscariable>();
-#if UNITY_EDITOR
-                if (AssetDatabase.Contains(this))
-                {
-                    EditorUtility.SetDirty(this);
-                }
-#endif
-            }
         }
 
         public bool Contains(IVariable var)
         {
-            EnsureVariablesList();
-            return variables.ContainsReference(var);
+            return _varManager.Contains(var);
         }
 
         T IVariableSource.GetVariableOfType<T>()
         {
-            return variables.Where((elem) => elem is T).Cast<T>().FirstOrDefault();
+            var result = _varManager.GetVariableOfType<T>();
+            return result;
         }
 
         IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
@@ -468,17 +435,35 @@ namespace AtMycelia.Amanita.VScripting
 
         T IVariableSource.GetVariableOfType<T>(string name, StringComparison strCompare)
         {
-            return variables.Where((elem) => elem is T && elem.Key.Equals(name, strCompare))
-                .Cast<T>()
-                .FirstOrDefault();
+            var result = _varManager.GetVariableOfType<T>(name, strCompare);
+            return result;
         }
 
         public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            var result = variables.Where((elem) => type.IsAssignableFrom(elem.GetType()) && elem.Key.Equals(name, strCompare))
-                .FirstOrDefault();
+            var result = _varManager.GetVariableOfType(type, name, strCompare);
             return result;
         }
+
+#if UNITY_EDITOR
+
+        public void MigrateToVariableManager()
+        {
+            if (variables.Count == 0)
+            {
+                Debug.Log($"{this.name} has no variables to migrate.");
+                return;
+            }
+
+            _varManager ??= new VariableManager();
+            _varManager.Initialize(variables, new List<Variable>());
+            _varManager.VarOwner = this;
+            variables.Clear();
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssetIfDirty(this);
+            AssetDatabase.Refresh();
+        }
+#endif
     }
 
     public interface IForceResetUidHandler
