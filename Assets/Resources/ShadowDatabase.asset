@@ -598,6 +598,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
   - {fileID: 11400000, guid: 93af427b0976e02468ca7f3f32bc5dcc, type: 2}
   - {fileID: 11400000, guid: fcf129880fc6aed48bf2f219ea84a4d7, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
   _textAssets:
   - {fileID: 4900000, guid: e7943ae6309508f4f9b82cf1e35a2b5e, type: 3}

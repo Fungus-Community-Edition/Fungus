@@ -113,8 +113,24 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             {
                 blackTex = CustomGUI.CreateBlackTexture();
             }
+
+            _tagHelpContent = new GUIContent("Tag Help", "View available tags");
+            _tagHelpStyle = new GUIStyle(EditorStyles.miniButton);
+            
+            _portraitLabelContent = new GUIContent("Portrait",
+            "Portrait representing speaking character");
+            _noneGuiContent = new GUIContent("<None>");
+            _voiceClipLabelContent = new GUIContent("Voice Over Clip",
+            "Voice over audio to play when the text is displayed");
         }
-        
+
+        private static GUIContent _tagHelpContent;
+        private static GUIStyle _tagHelpStyle;
+
+        private static GUIContent _portraitLabelContent;
+        private static GUIContent _noneGuiContent;
+        private static GUIContent _voiceClipLabelContent;
+
         protected virtual void OnDisable()
         {
             DestroyImmediate(blackTex);
@@ -312,14 +328,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
         }
 
-        private static readonly GUIContent _tagHelpContent = new GUIContent("Tag Help", "View available tags");
-        private static readonly GUIStyle _tagHelpStyle = new GUIStyle(EditorStyles.miniButton);
-
-        private static readonly GUIContent _portraitLabelContent = new GUIContent("Portrait", 
-            "Portrait representing speaking character");
-        private static readonly GUIContent _noneGuiContent = new GUIContent("<None>");
-        private static readonly GUIContent _voiceClipLabelContent = new GUIContent("Voice Over Clip", 
-            "Voice over audio to play when the text is displayed");
+        
 
     }    
 }

@@ -11,6 +11,7 @@ using UnityEditor;
 namespace AtMycelia.Amanita.VScripting
 {
     [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public class VariableManagerComponent : MonoBehaviour, IVariableSource, IMuscariableSource,
         IReorderableVariableSource, IReorderableMuscariableSource
     {
@@ -157,6 +158,7 @@ namespace AtMycelia.Amanita.VScripting
         public void MigrateFromFlowchart()
         {
             EnsureOwner();
+            _cachedFlowchart = _unityObjOwner as Flowchart;
             if (_cachedFlowchart == null)
             {
                 return;

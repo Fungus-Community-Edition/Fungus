@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -658,6 +657,18 @@ namespace AtMycelia.Amanita.VScripting
         {
             Clear();
             AddMultiVars(newlyOrderedVars);
+        }
+
+        public void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            if (change == PlayModeStateChange.ExitingEditMode)
+            {
+                foreach (var variable in _lookup.Values)
+                {
+                    variable.Init(variable.BoxedValue);
+                    // ^To accomodate any changes that might have been made to the variables while in edit mode, since those changes won't be serialized and thus would be lost when entering play mode if we didn't do this.
+                }
+            }
         }
     }
 }
