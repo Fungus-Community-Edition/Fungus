@@ -207,7 +207,7 @@ namespace AtMycelia.Amanita.Tweening
             return result;
         }
         #endregion
-
+        //
         public Tween<float> TweenFloat(Func<float> getFloatToTween, Action<float> setFloatToTween,
             float endValue, float duration, Action onComplete = null)
         {

@@ -40,9 +40,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             }
             var itemIdProp = backingVarRefProp.FindPropertyRelative("itemId");
 
-            bool validStoredItemId = itemIdProp != null && itemIdProp.intValue != Variable.InvalidID;
-            bool shouldDrawLiteral = !validStoredItemId;
-
+            bool shouldDrawLiteral = ShouldDrawLiteral(varDataProp);
             Rect labelRect, valueRect, popupRect, fieldRect;
             int prevIndent;
             HandleLayout();
@@ -382,6 +380,12 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
         protected static bool ShouldDrawLiteral(SerializedProperty varDataProp)
         {
+            var varData = varDataProp.boxedValue as VariableData;
+            if (varData != null)
+            {
+                return !varData.RepresentingVar;
+            }
+
             var backingVarRefProp = varDataProp.FindPropertyRelative("backingVarRef");
             var itemIdProp = backingVarRefProp?.FindPropertyRelative("itemId");
             return itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;

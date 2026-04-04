@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: -3901912534168384290}
   - component: {fileID: 6388932191286628349}
   - component: {fileID: 995435950799189955}
+  - component: {fileID: 5592028959173968553}
   m_Layer: 0
   m_Name: Lock
   m_TagString: Untagged
@@ -849,6 +850,7 @@ MonoBehaviour:
   - {fileID: 114347840029698070}
   - {fileID: 114302250439265382}
   - {fileID: -3901912534168384290}
+  - {fileID: 5592028959173968553}
   - {fileID: 114494055204058732}
   - {fileID: 114597286569973654}
   - {fileID: 114558234713279786}
@@ -881,10 +883,10 @@ MonoBehaviour:
     _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1621252211410962}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 0, y: 1.2142844}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
+    <Zoom>k__BackingField: 1.1
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -920,7 +922,8 @@ MonoBehaviour:
   - {fileID: 114429204895628372}
   - {fileID: 114471595115387154}
   - {fileID: -3901912534168384290}
-  nextValidVarID: 4
+  - {fileID: 5592028959173968553}
+  nextValidVarID: 6
   uniqueId: 540ce04b-48ee-4e9a-b420-3987f41973f7
   references:
     version: 2
@@ -1006,10 +1009,13 @@ MonoBehaviour:
   _variableManager:
     _muscariables:
     - rid: 3688519646466015317
+    - rid: 3688519665286643779
+    - rid: 3688519665286643780
+    - rid: 3688519665286643793
     _legacyVariables:
     - {fileID: 114411963098608266}
     - {fileID: 114269318563166244}
-    _nextValidVarID: 1
+    _nextValidVarID: 7
     _isInitted: 1
   _cachedFlowchart: {fileID: 114572511229188600}
   references:
@@ -1023,3 +1029,114 @@ MonoBehaviour:
         itemID: 3
         value: {fileID: 1621252211410962}
         startValue: {fileID: 0}
+    - rid: 3688519665286643779
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: buttonMoveDur
+        itemID: 4
+        value: 1
+        startValue: 0
+    - rid: 3688519665286643780
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: buttonMoveAmount
+        itemID: 5
+        value: {x: 0, y: 2, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
+    - rid: 3688519665286643793
+      type: {class: TransformMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: buttonTForm
+        itemID: 6
+        value: {fileID: 0}
+        startValue: {fileID: 0}
+--- !u!114 &5592028959173968553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621252211410962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19a21133fb898be4cbb3d7a0a19cb828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 14
+  indentLevel: 1
+  _duration:
+    backingVarRef:
+      itemId: 4
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _toFrom: 1
+  _relativity: 2
+  _repeats:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _stopPreviousTweens:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _toMove:
+    backingVarRef:
+      itemId: 6
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+  _absoluteDest:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _moveByAmount:
+    backingVarRef:
+      itemId: 5
+      owningSource: {fileID: 114572511229188600}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _moveFromPosition:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}

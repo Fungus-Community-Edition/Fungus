@@ -81,12 +81,16 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 ToggleSubs(true);
             }
 
+            _varManagerComponent = variableSource as VariableManagerComponent;
+            
+
             Refresh();
         }
 
         protected bool _isDisposed;
         protected IReorderableVariableSource variableSource;
         protected Flowchart Flowchart => variableSource as Flowchart;
+        protected VariableManagerComponent _varManagerComponent;
         protected IVariableListView _listView;
         protected Button _addButton;
 
@@ -251,6 +255,15 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 return direct;
             }
 
+            if (variable.Owner is Flowchart fc)
+            {
+                if (_varManagerComponent == null)
+                {
+                    _varManagerComponent = fc.GetComponent<VariableManagerComponent>();
+                }
+                return _varManagerComponent;
+            }
+
             if (variable.Owner is UnityObj ownerObj && ownerObj != null)
             {
                 return ownerObj;
@@ -343,7 +356,9 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
                 owner = variableSource;
             }
 
-            return owner != null && variableSource != null && ReferenceEquals(owner, variableSource);
+            bool result = owner != null && variableSource != null && 
+                (ReferenceEquals(owner, variableSource) || _varManagerComponent != null);
+            return result;
         }
 
         protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
@@ -359,7 +374,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             UnityObj toRecord = ResolveRecordTarget(variable);
             if (toRecord == null)
             {
-                Debug.LogError($"VariableRowManager could not resolve a UnityEngine.Object to record for {varType} {description}.");
+                Debug.LogError($"VariableRowManager could not resolve a UnityEngine.Object " +
+                    $"to record for {varType} {description}.");
                 return;
             }
 
@@ -414,6 +430,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             if (_isDisposed || variableSource == null || _listView == null)
                 return;
 
+            
             _listView.SetVariables(variableSource.Variables);
         }
         #endregion

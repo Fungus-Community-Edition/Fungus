@@ -173,7 +173,9 @@ namespace AtMycelia.Amanita.VScripting
         protected override void OnValidate()
         {
             base.OnValidate();
-            ValidateTweeners();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += ValidateTweeners;
+#endif
         }
 
         protected IGeneralTweenAdapter<float> DoFadeTween => doFade as IGeneralTweenAdapter<float>;

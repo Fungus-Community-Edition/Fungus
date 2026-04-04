@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
   m_Name: SoundFX
   m_EditorClassIdentifier: 
-  includeInSaves: 1
-  uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
-  alwaysKeepGuid: 1
-  variables:
-  - rid: 6177420756002537546
-  - rid: 6177420756002537547
-  - rid: 6177420756002537548
-  - rid: 6177420756002537549
+  _includeInSaves: 1
+  _uniqueId: 0d4feeae-7e82-42a5-b48d-108dfbab7778
+  _alwaysKeepGuid: 1
+  variables: []
+  _varManager:
+    _muscariables:
+    - rid: 6177420756002537546
+    - rid: 6177420756002537547
+    - rid: 6177420756002537548
+    - rid: 6177420756002537549
+    _legacyVariables: []
+    _nextValidVarID: 11
+    _isInitted: 1
   _nextVarID: 11
   references:
     version: 2

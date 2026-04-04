@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -78,6 +77,7 @@ namespace AtMycelia.Amanita.VScripting
 
         private void RemoveFromCachesThenSignal(IVariable toRemove)
         {
+            PreVariableRemoved(toRemove);
             _legacyVariables.RemoveByReference(toRemove as Variable);
             _muscariables.RemoveByReference(toRemove as Muscariable);
 
@@ -85,8 +85,9 @@ namespace AtMycelia.Amanita.VScripting
             VariableRemoved(toRemove);
         }
 
-        private Dictionary<byte, IVariable> _lookup = new(); 
+        private Dictionary<byte, IVariable> _lookup = new();
         // ^For faster retrieval by ID. Must be kept in sync with the lists.
+        public event Action<IVariable> PreVariableRemoved = delegate { };
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
@@ -244,6 +245,7 @@ namespace AtMycelia.Amanita.VScripting
             return muscari;
         }
 
+
         /// <summary>
         /// Adds the given Muscariable to the caches, ensuring it has a valid ID and key, 
         /// and setting its owner and parent flowchart references. Also sends the signal
@@ -277,6 +279,7 @@ namespace AtMycelia.Amanita.VScripting
 
         private void AddToCachesThenSignal(IVariable toAdd)
         {
+            PreVariableAdded(toAdd);
             if (toAdd is Muscariable)
             {
                 _muscariables.Add(toAdd as Muscariable);
@@ -289,6 +292,7 @@ namespace AtMycelia.Amanita.VScripting
             VariableAdded(toAdd);
         }
 
+        public event Action<IVariable> PreVariableAdded = delegate { };
         public event Action<IVariable> VariableAdded = delegate { };
 
         /// <summary>
@@ -330,9 +334,9 @@ namespace AtMycelia.Amanita.VScripting
 
         public void Refresh()
         {
+            RemoveAll(elem => elem == null);
             _lookup ??= new Dictionary<byte, IVariable>();
             _lookup.Clear();
-            _legacyVariables.RemoveAll(elem => elem == null);
             RegisterIntoVarLookup(_muscariables);
             RegisterIntoVarLookup(_legacyVariables);
             EnsureValidIds();
@@ -344,7 +348,10 @@ namespace AtMycelia.Amanita.VScripting
             }
             EditorUtility.SetDirty(this.VarOwner as UnityObj);
 #endif
+            Refreshed();
         }
+
+        public event Action Refreshed = delegate { };
 
         private void RegisterIntoVarLookup(IEnumerable<IVariable> varsToRegister)
         {
@@ -389,7 +396,7 @@ namespace AtMycelia.Amanita.VScripting
             return toReturn;
         }
 
-        
+
 
         public IReadOnlyList<IVariable> Variables
         {
@@ -441,6 +448,15 @@ namespace AtMycelia.Amanita.VScripting
             RemoveFromCachesThenSignal(toRemove);
         }
 
+        public void RemoveVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var toRemove = GetVariable(name, strCompare);
+            if (toRemove != null)
+            {
+                RemoveVariable(toRemove);
+            }
+        }
+
         public IVariable GetVariable(byte id)
         {
             if (_lookup == null || _lookup.Count == 0)
@@ -465,7 +481,7 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        
+
 
         /// <summary>
         /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
@@ -510,11 +526,60 @@ namespace AtMycelia.Amanita.VScripting
         //        .FirstOrDefault(var => var.Key.Equals(name, strCompare));
         //}
 
-        public IList<T> GetMultiVariables<T>(StringComparison strCompare = StringComparison.Ordinal) where T : IVariable
+
+        /// <summary>
+        /// Returns a list of the variables this manager has that are of the specified variable
+        /// type. If you just want to get variables of a certain content type, use 
+        /// GetMultiVariablesOfContentType instead.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
-            return _lookup.Values
+            var result = GetMultiVariablesOfType(typeof(T), strict)
                 .OfType<T>()
                 .ToList();
+            return result;
+        }
+
+        public IList<IVariable> GetMultiVariablesOfType(Type varType, bool strict = false)
+        {
+            var result = _lookup.Values.Where(IsMatch).ToList();
+            bool IsMatch(IVariable var)
+            {
+                if (strict)
+                {
+                    return var.GetType() == varType;
+                }
+                else
+                {
+                    return varType.IsAssignableFrom(var.GetType());
+                }
+            }
+            return result;
+        }
+
+        public IList<T> GetMultiVariablesOfContentType<T>()
+        {
+            var result = GetMultiVariablesOfContentType(typeof(T)).OfType<T>().ToList();
+            return result;
+        }
+
+        public IList<IVariable> GetMultiVariablesOfContentType(Type contentType, bool strict = false)
+        {
+            return _lookup.Values.Where(IsMatch).ToList();
+
+            bool IsMatch(IVariable var)
+            {
+                if (strict)
+                {
+                    return var.ContentType == contentType;
+                }
+                else
+                {
+                    return contentType.IsAssignableFrom(var.ContentType);
+                }
+            }
         }
 
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
@@ -551,9 +616,9 @@ namespace AtMycelia.Amanita.VScripting
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
 
         public string Name
-        { 
-            get => _varOwner.Name; 
-            set => _varOwner.Name = value; 
+        {
+            get => _varOwner.Name;
+            set => _varOwner.Name = value;
         }
 
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
@@ -562,7 +627,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             EnsureInitialized();
             Type valueType = typeof(TValHeld);
-            
+
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
@@ -656,8 +721,39 @@ namespace AtMycelia.Amanita.VScripting
 
         public void ReorderVariables(IList<IVariable> newlyOrderedVars)
         {
+            var whatWeGot = _lookup.Values.ToList();
+            if (!newlyOrderedVars.SameContentsAs(whatWeGot))
+            {
+                Debug.LogWarning("Attempted to reorder variables with a list that doesn't have the same " +
+                    "contents as the current variables. Reorder aborted.");
+                return;
+            }
             Clear();
             AddMultiVars(newlyOrderedVars);
+            Reordered();
+        }
+
+        public event Action Reordered = delegate { };
+
+        public void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            if (change == PlayModeStateChange.ExitingEditMode)
+            {
+                foreach (var variable in _lookup.Values)
+                {
+                    variable.Init(variable.BoxedValue);
+                    // ^To accomodate any changes that might have been made to the variables while in edit mode, since those changes won't be serialized and thus would be lost when entering play mode if we didn't do this.
+                }
+            }
+        }
+
+        public void RemoveAll(Predicate<IVariable> match)
+        {
+            var toRemove = _lookup.Values.Where(var => match(var)).ToList();
+            foreach (var elem in toRemove)
+            {
+                RemoveVariable(elem);
+            }
         }
     }
 }

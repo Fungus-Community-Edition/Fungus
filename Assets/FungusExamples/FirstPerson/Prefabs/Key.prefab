@@ -148,7 +148,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 5, y: 1, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114806254156403658
 MonoBehaviour:
@@ -388,13 +388,13 @@ MonoBehaviour:
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
-        rid: 6177420912830186046
+        rid: 3688519650149400641
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
   references:
     version: 2
     RefIds:
-    - rid: 6177420912830186046
+    - rid: 3688519650149400641
       type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
