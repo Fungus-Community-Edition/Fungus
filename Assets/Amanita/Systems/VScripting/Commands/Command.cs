@@ -184,7 +184,6 @@ namespace AtMycelia.Amanita.VScripting
 #endif
         #endregion Editor caches
 
-        #region Public members
 
         /// <summary>
         /// Unique identifier for this command.
@@ -370,8 +369,12 @@ namespace AtMycelia.Amanita.VScripting
         protected virtual void OnValidate()
         {
             RefreshForVarDataStability();
-#if UNITY_EDITOR
             RefreshVariableCache();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                DelayedOnValidate();
+            };
 #endif
         }
 
@@ -507,6 +510,14 @@ namespace AtMycelia.Amanita.VScripting
             EnsureLegacyVarIdsAreValid();
         }
 
-        #endregion
+        /// <summary>
+        /// Override this for OnValidate code that might need to do stuff like access GameObjects
+        /// </summary>
+        protected virtual void DelayedOnValidate()
+        {
+            
+        }
+    
+    
     }
 }

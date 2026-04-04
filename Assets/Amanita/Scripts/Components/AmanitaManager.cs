@@ -46,7 +46,7 @@ namespace AtMycelia.Amanita
 
         private static void EnsureDefaultTweenerAvailable()
         {
-            _defaultTweener = SOUtils.EnsureSOExists<DefaultTweenAdapter>(resourcesRootFolder, "DefaultTweenAdapter");
+            _defaultTweener = DefaultAmanitaAssets.TweenAdapter;
         }
 
         static DefaultTweenAdapter _defaultTweener;
