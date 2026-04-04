@@ -465,11 +465,7 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        public IVariable GetVariableByName(string name, StringComparison strCompare = StringComparison.Ordinal)
-        {
-            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result;
-        }
+        
 
         /// <summary>
         /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
@@ -507,25 +503,17 @@ namespace AtMycelia.Amanita.VScripting
             return result;
         }
 
-        public T GetVarByName<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
-        {
-            return _lookup.Values
-                .OfType<T>()
-                .FirstOrDefault(var => var.Key.Equals(name, strCompare));
-        }
+        //public T GetVariable<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        //{
+        //    return _lookup.Values
+        //        .OfType<T>()
+        //        .FirstOrDefault(var => var.Key.Equals(name, strCompare));
+        //}
 
         public IList<T> GetMultiVariables<T>(StringComparison strCompare = StringComparison.Ordinal) where T : IVariable
         {
             return _lookup.Values
                 .OfType<T>()
-                .ToList();
-        }
-
-        public IList<T> GetVariablesOfScope<T>(VariableScope scope) where T : IVariable
-        {
-            return _lookup.Values
-                .OfType<T>()
-                .Where(var => var.Scope == scope)
                 .ToList();
         }
 
@@ -641,7 +629,13 @@ namespace AtMycelia.Amanita.VScripting
 
         IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
         {
-            return GetVariableByName(name, strCompare);
+            return GetVariable(name, strCompare);
+        }
+
+        public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        {
+            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
+            return result;
         }
 
         public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
@@ -652,7 +646,7 @@ namespace AtMycelia.Amanita.VScripting
         public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = null;
-            var found = GetVariableByName(name, strCompare);
+            var found = GetVariable(name, strCompare);
             if (found != null && type.IsAssignableFrom(found.GetType()))
             {
                 result = found;

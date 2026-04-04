@@ -20,7 +20,17 @@ namespace AtMycelia.Amanita.VScripting
 
         public IVariableSource Owner
         {
-            get => _unityObjOwner as IVariableSource;
+            get
+            {
+                if (_unityObjOwner is IVariableSource varSource)
+                {
+                    return varSource;
+                }
+                else
+                {
+                    return this;
+                }
+            }
             set
             {
                 _unityObjOwner = value as UnityObj;
@@ -61,10 +71,31 @@ namespace AtMycelia.Amanita.VScripting
             }
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             EnsureOwner();
             _variableManager.Refresh();
+        }
+
+        protected virtual void EnsureOwner()
+        {
+            if (_unityObjOwner is IVariableSource)
+            {
+                return;
+            }
+
+            if (_cachedFlowchart == null)
+            {
+                _cachedFlowchart = GetComponent<Flowchart>();
+            }
+
+            if (_cachedFlowchart == null)
+            {
+                Debug.LogWarning("VariableManagerComponent requires a Flowchart component to act as owner.");
+                return;
+            }
+
+            Owner = _cachedFlowchart;
         }
 
         private void OnEnable()
@@ -84,22 +115,6 @@ namespace AtMycelia.Amanita.VScripting
             _variableManager.Refresh();
         }
 
-        private void EnsureOwner()
-        {
-            if (_cachedFlowchart == null)
-            {
-                _cachedFlowchart = GetComponent<Flowchart>();
-            }
-
-            if (_cachedFlowchart == null)
-            {
-                Debug.LogWarning("VariableManagerComponent requires a Flowchart component to act as owner.");
-                return;
-            }
-
-            Owner = _cachedFlowchart;
-        }
-
 #if UNITY_EDITOR
         [MenuItem("Tools/Atelier Mycelia/Amanita/Migrate Flowchart Variables", false, 2000)]
         private static void MigrateAllFlowchartVariables()
@@ -110,7 +125,7 @@ namespace AtMycelia.Amanita.VScripting
                 return;
             }
 
-            Flowchart[] flowcharts = GameObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
+            Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             int migratedCount = 0;
 
             for (int i = 0; i < flowcharts.Length; i++)
@@ -201,17 +216,17 @@ namespace AtMycelia.Amanita.VScripting
 
         T IVariableSource.GetVariableOfType<T>()
         {
-            return ((IVariableSource)_variableManager).GetVariableOfType<T>();
+            return _variableManager.GetVariableOfType<T>();
         }
 
         public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
         {
-            return ((IVariableSource)_variableManager).GetVariable(name, strCompare);
+            return _variableManager.GetVariable(name, strCompare);
         }
 
         T IVariableSource.GetVariableOfType<T>(string name, StringComparison strCompare)
         {
-            return ((IVariableSource)_variableManager).GetVariableOfType<T>(name, strCompare);
+            return _variableManager.GetVariableOfType<T>(name, strCompare);
         }
 
         public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)

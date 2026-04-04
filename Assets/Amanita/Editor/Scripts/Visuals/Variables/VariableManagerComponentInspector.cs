@@ -49,6 +49,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             _rootElement = new VisualElement();
             _inspectorRoot = _uxml.CloneTree();
+            _inspectorRoot.style.marginTop = 5;
             _rootElement.Add(_inspectorRoot);
 
             BuildManager(_inspectorRoot);
@@ -69,6 +70,7 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             _rowFactory.Init(_factoryInitArgs);
 
             ListView list = rootElem.Q<ListView>("rowList");
+            
             UitkLabel count = rootElem.Q<UitkLabel>("varCountLabel");
             Button addBtn = rootElem.Q<Button>("addVarButton");
 

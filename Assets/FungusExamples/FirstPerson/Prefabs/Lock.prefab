@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 114572511229188600}
   - component: {fileID: -3901912534168384290}
   - component: {fileID: 6388932191286628349}
+  - component: {fileID: 995435950799189955}
   m_Layer: 0
   m_Name: Lock
   m_TagString: Untagged
@@ -866,12 +867,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    _muscariables:
-    - rid: 3688519627662688339
-    _legacyVariables:
-    - {fileID: 114411963098608266}
-    - {fileID: 114269318563166244}
+  _varManager: {fileID: 995435950799189955}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
     _nextValidVarID: 4
     _isInitted: 1
   version: 1
@@ -879,8 +878,7 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 114275658263394176}
+    _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 1621252211410962}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
@@ -926,15 +924,7 @@ MonoBehaviour:
   uniqueId: 540ce04b-48ee-4e9a-b420-3987f41973f7
   references:
     version: 2
-    RefIds:
-    - rid: 3688519627662688339
-      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: thisGameObject
-        itemID: 3
-        value: {fileID: 1621252211410962}
-        startValue: {fileID: 0}
+    RefIds: []
 --- !u!114 &-3901912534168384290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1000,3 +990,36 @@ MonoBehaviour:
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
+--- !u!114 &995435950799189955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621252211410962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 114572511229188600}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519646466015317
+    _legacyVariables:
+    - {fileID: 114411963098608266}
+    - {fileID: 114269318563166244}
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 114572511229188600}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519646466015317
+      type: {class: GameObjectMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: thisGameObject
+        itemID: 3
+        value: {fileID: 1621252211410962}
+        startValue: {fileID: 0}

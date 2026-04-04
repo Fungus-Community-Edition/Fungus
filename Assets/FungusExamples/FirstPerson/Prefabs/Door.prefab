@@ -35,6 +35,7 @@ GameObject:
   - component: {fileID: 3131459708527752031}
   - component: {fileID: 2301879678054761241}
   - component: {fileID: 874316152228077432}
+  - component: {fileID: 2718052440194111709}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -816,8 +817,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 1
-        owningSource: {fileID: 114383920395763002}
+        itemId: 2
+        owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -1179,8 +1180,8 @@ MonoBehaviour:
   - compareOperator: 0
     anyVar:
       varRef:
-        itemId: 1
-        owningSource: {fileID: 114383920395763002}
+        itemId: 2
+        owningSource: {fileID: 11400000, guid: a988e823023c7d047b7b8f39d55935fb, type: 2}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
       data:
@@ -1190,7 +1191,7 @@ MonoBehaviour:
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
         data:
-          rid: 6177420912830185781
+          rid: 3688519629742539423
       variable: {fileID: 0}
   compareOperator: 0
   anyVar:
@@ -1348,7 +1349,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 6177420912830185781
+    - rid: 3688519629742539423
       type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
         backingVarRef:
@@ -1403,13 +1404,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    _muscariables:
-    - rid: 3688519627662688364
-    - rid: 3688519627662688365
-    _legacyVariables:
-    - {fileID: 114261855590980036}
-    - {fileID: 114896842043317900}
+  _varManager: {fileID: 2718052440194111709}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
     _nextValidVarID: 5
     _isInitted: 1
   version: 1
@@ -1418,15 +1416,14 @@ MonoBehaviour:
   description: 
   uiModel:
     _selectedBlocks:
-    - {fileID: 114518782346171026}
-    _selectedCommands:
-    - {fileID: 114944159009707600}
+    - {fileID: 114882431458328084}
+    _selectedCommands: []
     _owner: {fileID: 1802049371907118}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 1
-    <BlockViewHeight>k__BackingField: 400
+    <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -1467,27 +1464,15 @@ MonoBehaviour:
   - {fileID: 114256462969571528}
   - {fileID: 114763205264137340}
   - {fileID: 114326529655225290}
-  nextValidVarID: 3
+  - {fileID: 6595798166915882646}
+  - {fileID: 3131459708527752031}
+  - {fileID: 2301879678054761241}
+  - {fileID: 874316152228077432}
+  nextValidVarID: 5
   uniqueId: df92954a-ef15-416a-84fc-03fa37906604
   references:
     version: 2
-    RefIds:
-    - rid: 3688519627662688364
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: fadeDur
-        itemID: 3
-        value: 1
-        startValue: 0
-    - rid: 3688519627662688365
-      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
-      data:
-        scope: 0
-        key: fadeOut
-        itemID: 4
-        value: 1
-        startValue: 0
+    RefIds: []
 --- !u!114 &6376465827079463897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1555,7 +1540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc295ba6aed8944fa3974a64f33cc42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 18
+  itemId: 19
   indentLevel: 2
 --- !u!114 &2301879678054761241
 MonoBehaviour:
@@ -1569,7 +1554,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d07cf5e706b13a4eb0ae53386c30fbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 18
+  itemId: 20
   indentLevel: 2
 --- !u!114 &874316152228077432
 MonoBehaviour:
@@ -1583,8 +1568,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc295ba6aed8944fa3974a64f33cc42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 18
+  itemId: 21
   indentLevel: 1
+--- !u!114 &2718052440194111709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802049371907118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 114383920395763002}
+  _variableManager:
+    _muscariables:
+    - rid: 3688519646466015318
+    - rid: 3688519646466015319
+    _legacyVariables:
+    - {fileID: 114261855590980036}
+    - {fileID: 114896842043317900}
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 114383920395763002}
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688519646466015318
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: fadeDur
+        itemID: 3
+        value: 1
+        startValue: 0
+    - rid: 3688519646466015319
+      type: {class: FloatMuscariable, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
+      data:
+        scope: 0
+        key: fadeOut
+        itemID: 4
+        value: 1
+        startValue: 0
 --- !u!1 &1807841399872324
 GameObject:
   m_ObjectHideFlags: 0

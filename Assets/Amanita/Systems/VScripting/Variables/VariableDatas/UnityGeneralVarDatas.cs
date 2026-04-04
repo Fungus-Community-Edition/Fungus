@@ -3,6 +3,30 @@ using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Amanita.VScripting
 {
+    [System.Serializable]
+    [VariableData(typeof(Component), typeof(IVariable<Component>), typeof(IVariable<GameObject>))]
+    public class ComponentData : VariableData<Component>
+    {
+        protected override Variable LegacyVarRef
+        {
+            get => null;
+            set
+            {
+
+            }
+        }
+        protected override Component LegacyLiteralVal
+        {
+            get => null;
+            set
+            {
+
+            }
+        }
+        public ComponentData() : base(default) { }
+        public ComponentData(Component startVal = null) : base(startVal) { }
+    }
+    
     /// <summary>
     /// Container for a GameObject variable reference or constant value.
     /// </summary>
@@ -118,8 +142,9 @@ namespace AtMycelia.Amanita.VScripting
         {
             get
             {
-                // Prefer legacy field for compatibility
-                return transformRef != null ? transformRef : base.VarRef;
+                return transformRef != null ? 
+                    transformRef : 
+                    base.VarRef;
             }
             set
             {

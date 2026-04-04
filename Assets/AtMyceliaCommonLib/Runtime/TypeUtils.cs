@@ -8,6 +8,25 @@ namespace AtMycelia
 {
     public static class TypeUtils
     {
+        public static bool TypesCompatible(Type firstType, Type secondType)
+        {
+            bool regularAssignability = firstType.IsAssignableFrom(secondType);
+            bool castableNumericTypes = _basicNumericTypes.Contains(firstType) && 
+                _basicNumericTypes.Contains(secondType);
+            bool result = regularAssignability || castableNumericTypes;
+            return result;
+        }
+
+        private static readonly Type[] _basicNumericTypes = new Type[]
+        {
+            typeof(sbyte), typeof(byte),
+            typeof(short), typeof(ushort),
+            typeof(int), typeof(uint),
+            typeof(long), typeof(ulong),
+            typeof(char), typeof(float),
+            typeof(double), typeof(decimal)
+        };
+
         public static IList<Type> GetInstantiatableTypes(Type baseType)
         {
             var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();

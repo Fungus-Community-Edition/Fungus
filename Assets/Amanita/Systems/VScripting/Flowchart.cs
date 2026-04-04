@@ -291,6 +291,10 @@ namespace AtMycelia.Amanita.VScripting
 
         private void ToggleSubs(bool on)
         {
+            if (_varManager == null)
+            {
+                return;
+            }
             if (on)
             {
                 _varManager.VariableAdded += OnVarAdded;
