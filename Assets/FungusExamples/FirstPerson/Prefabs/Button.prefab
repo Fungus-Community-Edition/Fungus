@@ -127,8 +127,8 @@ GameObject:
   - component: {fileID: 114436750874473106}
   - component: {fileID: 114887280257633318}
   - component: {fileID: 3354874841082550138}
-  - component: {fileID: 6739348486856070871}
   - component: {fileID: 4967441238045203939}
+  - component: {fileID: 5946497391379537664}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -171,7 +171,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 3, y: 1, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114668946771419768
 MonoBehaviour:
@@ -879,7 +879,8 @@ MonoBehaviour:
   - {fileID: 114601175633847876}
   - {fileID: 114636333720846380}
   - {fileID: 114668946771419768}
-  - {fileID: 6739348486856070871}
+  - {fileID: 0}
+  - {fileID: 5946497391379537664}
   includeInSaves: 1
   loadPriority: 0
   suppressAllAutoSelections: 0
@@ -1043,13 +1044,14 @@ MonoBehaviour:
   _oldMuscariables: []
   description: 
   uiModel:
-    _selectedBlocks: []
+    _selectedBlocks:
+    - {fileID: 114047401655285550}
     _selectedCommands: []
     _owner: {fileID: 1766213715120214}
-    <ScrollPos>k__BackingField: {x: 0, y: 13.876541}
+    <ScrollPos>k__BackingField: {x: 0, y: 19.876541}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1.4000001
+    <Zoom>k__BackingField: 1.5
     <BlockViewHeight>k__BackingField: 400
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1100,7 +1102,7 @@ MonoBehaviour:
   - {fileID: 114922658582334470}
   - {fileID: 114436750874473106}
   - {fileID: 114887280257633318}
-  - {fileID: 6739348486856070871}
+  - {fileID: 5946497391379537664}
   nextValidVarID: 3
   uniqueId: fcf689d2-2e2e-4be6-95e0-8d9e134f7935
   references:
@@ -2341,30 +2343,6 @@ MonoBehaviour:
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
---- !u!114 &6739348486856070871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1766213715120214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 28
-  indentLevel: 0
-  logType: 0
-  logMessage:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
-    value: Need to move the door so the player can access it.
-    stringRef: {fileID: 0}
-    stringVal: 
 --- !u!114 &4967441238045203939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2389,3 +2367,90 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &5946497391379537664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766213715120214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19a21133fb898be4cbb3d7a0a19cb828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 29
+  indentLevel: 0
+  _duration:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114726772774787118}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    floatRef: {fileID: 0}
+    floatVal: 0
+  _tweenerSO: {fileID: 11400000, guid: 2456e8060d1222e4cac681fb832cd207, type: 2}
+  _toFrom: 1
+  _relativity: 2
+  _repeats:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114726772774787118}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _stopPreviousTweens:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114726772774787118}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitUntilFinished:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 114726772774787118}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _toMove:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+  _absoluteDest:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _moveByAmount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: -5, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
+  _moveFromPosition:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {x: 0, y: 0, z: 0}
+    vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}

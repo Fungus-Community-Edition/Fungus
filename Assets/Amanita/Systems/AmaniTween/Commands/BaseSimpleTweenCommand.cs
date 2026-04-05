@@ -1,26 +1,15 @@
-using AtMycelia.Amanita.VScripting;
 using UnityEngine;
+using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.Tweening.VScripting
-{ 
-    public abstract class BaseTweenCommand : Command, ITweenCommand
+{
+    public abstract class BaseSimpleTweenCommand : Command, ITweenCommand
     {
         [Tooltip("The time in seconds the animation will take to complete")]
         [SerializeField] protected FloatData _duration = new FloatData(1f);
 
         [Tooltip("Tween adapter that will handle the process")]
         [SerializeField] protected ScriptableObject _tweenerSO = null;
-
-        [Tooltip("Does the tween act from current TO destination or is it reversed and act " +
-            "FROM destination to its current")]
-        [SerializeField] protected StartFromMode _toFrom = StartFromMode.Current;
-
-        [Tooltip("Does the tween use the value as a target or as a delta to be added to " +
-            "where it already is at the time?")]
-        [SerializeField] protected TweenRelativity _relativity = TweenRelativity.Absolute;
-
-        [Tooltip("Number of times to repeat the tween. -1 is infinite.")]
-        [SerializeField] protected IntegerData _repeats = new IntegerData(0);
 
         [Tooltip("Stop any previous tweens on this object before adding this one. " +
             "Warning: expensive.")]
@@ -57,7 +46,6 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         {
             base.RefreshVariableDataCache();
             _variableDataCache.Add(_duration);
-            _variableDataCache.Add(_repeats);
             _variableDataCache.Add(_stopPreviousTweens);
             _variableDataCache.Add(_waitUntilFinished);
         }
@@ -85,15 +73,12 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         }
 
         protected abstract bool AreTargetsValid();
-
-        // Different tween types may have various types of targets, and thus we want
-        // to let subclasses implement their own logic for stopping tweens that are relevant to them.
         protected abstract void StopAllTweens();
 
         protected ITweenHandle _ourTween;
 
-        // TODO: Have this set the repeat and loop type
         protected abstract ITweenHandle PrepAndExecuteTween();
+
         protected virtual void OnTweenComplete()
         {
             if (_waitUntilFinished)
@@ -119,18 +104,5 @@ namespace AtMycelia.Amanita.Tweening.VScripting
             base.DelayedOnValidate();
             ValidateTweener();
         }
-    }
-
-    /// <summary>
-    /// For helping decide where a tween will start.
-    /// </summary>
-    public enum StartFromMode { Null, Current, FromValue }
-
-    /// <summary>
-    /// For helping decide whether the tween's target value is absolute or relative to the current value.
-    /// </summary>
-    public enum TweenRelativity
-    {
-        Null, Absolute, Relative
     }
 }

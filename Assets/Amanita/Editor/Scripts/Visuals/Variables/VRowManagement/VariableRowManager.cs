@@ -257,6 +257,10 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
 
             if (variable.Owner is Flowchart fc)
             {
+                if (_varManagerComponent == null)
+                {
+                    _varManagerComponent = fc.GetComponent<VariableManagerComponent>();
+                }
                 return _varManagerComponent;
             }
 
@@ -370,7 +374,8 @@ namespace AtMycelia.Amanita.VScripting.EditorUtils
             UnityObj toRecord = ResolveRecordTarget(variable);
             if (toRecord == null)
             {
-                Debug.LogError($"VariableRowManager could not resolve a UnityEngine.Object to record for {varType} {description}.");
+                Debug.LogError($"VariableRowManager could not resolve a UnityEngine.Object " +
+                    $"to record for {varType} {description}.");
                 return;
             }
 

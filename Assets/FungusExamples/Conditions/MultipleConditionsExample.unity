@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: 1292574183}
   - component: {fileID: 1292574181}
   - component: {fileID: 1292574187}
+  - component: {fileID: 1292574188}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -313,6 +314,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420819874447779
+      variable: {fileID: 0}
   - compareOperator: 4
     anyVar:
       varRef:
@@ -328,6 +330,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420819874447980
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -343,6 +346,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -361,6 +365,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -369,6 +374,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -377,6 +383,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -385,6 +392,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -401,6 +409,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -409,6 +418,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -417,6 +427,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -425,6 +436,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -433,6 +445,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -441,6 +454,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -449,6 +463,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -457,6 +472,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -465,6 +481,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -491,6 +508,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &1292574164
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -554,20 +572,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a334fe2ffb574b3583ff3b18b4792d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  variableManager:
-    muscariables: []
-    legacyVariables:
-    - {fileID: 1292574180}
-    - {fileID: 1292574179}
-    - {fileID: 1292574178}
-    - {fileID: 1292574177}
-    - {fileID: 1292574171}
-    - {fileID: 1292574176}
-    - {fileID: 1292574175}
-    nextValidVarID: 8
-    isInitted: 1
+  _varManager: {fileID: 1292574188}
+  legacyVariableManager:
+    _muscariables: []
+    _legacyVariables: []
+    _nextValidVarID: 8
+    _isInitted: 1
   version: 1
-  legacyVariables: []
+  _legacyVariables: []
   _oldMuscariables: []
   description: 
   uiModel:
@@ -650,19 +662,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 10
   indentLevel: 1
-  storyText: In Else
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: In Else
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -670,7 +688,111 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &1292574169
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -685,19 +807,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 9
   indentLevel: 1
-  storyText: Else If condition is True
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Else If condition is True
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -705,7 +833,111 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &1292574170
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -720,19 +952,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 8
   indentLevel: 1
-  storyText: If condition is True
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: If condition is True
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -740,7 +978,111 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &1292574171
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -757,6 +1099,7 @@ MonoBehaviour:
   key: C
   itemID: 5
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: 16
 --- !u!114 &1292574172
 MonoBehaviour:
@@ -817,6 +1160,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420826070220866
+      variable: {fileID: 0}
   - compareOperator: 3
     anyVar:
       varRef:
@@ -832,6 +1176,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420826070220867
+      variable: {fileID: 0}
   - compareOperator: 3
     anyVar:
       varRef:
@@ -847,6 +1192,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420826070220868
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -862,6 +1208,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -880,6 +1227,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -888,6 +1236,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -896,6 +1245,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -904,6 +1254,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -920,6 +1271,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -928,6 +1280,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -936,6 +1289,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -944,6 +1298,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -952,6 +1307,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -960,6 +1316,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -968,6 +1325,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -976,6 +1334,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -984,6 +1343,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -999,6 +1359,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 
         stringRef: {fileID: 0}
+        stringVal: 
     - rid: 6177420826070220867
       type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
@@ -1009,6 +1370,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
+        integerVal: 0
     - rid: 6177420826070220868
       type: {class: IntegerData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
@@ -1019,6 +1381,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 0
         integerRef: {fileID: 0}
+        integerVal: 0
 --- !u!114 &1292574175
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1035,6 +1398,7 @@ MonoBehaviour:
   key: bar
   itemID: 7
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: preda2or
 --- !u!114 &1292574176
 MonoBehaviour:
@@ -1052,6 +1416,7 @@ MonoBehaviour:
   key: foo
   itemID: 6
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: vjs
 --- !u!114 &1292574177
 MonoBehaviour:
@@ -1069,6 +1434,7 @@ MonoBehaviour:
   key: B
   itemID: 4
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: 5
 --- !u!114 &1292574178
 MonoBehaviour:
@@ -1086,6 +1452,7 @@ MonoBehaviour:
   key: A
   itemID: 3
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: 0
 --- !u!114 &1292574179
 MonoBehaviour:
@@ -1103,6 +1470,7 @@ MonoBehaviour:
   key: booly
   itemID: 2
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: 0
 --- !u!114 &1292574180
 MonoBehaviour:
@@ -1120,6 +1488,7 @@ MonoBehaviour:
   key: boolx
   itemID: 1
   oldItemID: 0
+  _owner: {fileID: 1292574166}
   value: 0
 --- !u!114 &1292574181
 MonoBehaviour:
@@ -1149,19 +1518,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 15
   indentLevel: 1
-  storyText: Value of A = {$A}
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog:
+  _storyText:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: Value of A = {$A}
+    stringRef: {fileID: 0}
+    stringVal: 
+  _description:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 
+    stringRef: {fileID: 0}
+    stringVal: 
+  _character:
     backingVarRef:
       itemId: 0
       owningSource: {fileID: 0}
@@ -1169,7 +1544,111 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _portrait:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
+  _voiceOverClip:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    audioClipRef: {fileID: 0}
+  _showAlways:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _showCount:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    integerRef: {fileID: 0}
+    integerVal: 0
+  _extendPrevious:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _fadeWhenDone:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForClick:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _stopVoiceover:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 1
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _waitForVO:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    booleanRef: {fileID: 0}
+    booleanVal: 0
+  _setSayDialog:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: {fileID: 0}
+    gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
+  _characterCached: {fileID: 0}
   oldSetSayDialog: {fileID: 0}
+  _migrated: 0
+  _oldStoryText: 
+  _oldDescription: 
+  _oldCharacter: {fileID: 0}
+  _oldPortrait: {fileID: 0}
+  _oldVoiceOverClip: {fileID: 0}
+  _oldShowAlways: 1
+  _oldShowCount: 1
+  _oldExtendPrevious: 0
+  _oldFadeWhenDone: 1
+  _oldWaitForClick: 1
+  _oldStopVoiceover: 1
+  _oldWaitForVO: 0
 --- !u!114 &1292574184
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1201,6 +1680,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420819874447438
+      variable: {fileID: 0}
   - compareOperator: 0
     anyVar:
       varRef:
@@ -1216,6 +1696,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         data:
           rid: 6177420819874447541
+      variable: {fileID: 0}
   compareOperator: 0
   anyVar:
     varRef:
@@ -1231,6 +1712,7 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: -2
+    variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
     backingVarRef:
@@ -1249,6 +1731,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     integerRef: {fileID: 0}
+    integerVal: 0
   floatData:
     backingVarRef:
       itemId: 0
@@ -1257,6 +1740,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 0
     floatRef: {fileID: 0}
+    floatVal: 0
   stringData:
     backingVarRef:
       itemId: 0
@@ -1265,6 +1749,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
+    stringVal: 
   animatorData:
     backingVarRef:
       itemId: 0
@@ -1273,6 +1758,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     animatorRef: {fileID: 0}
+    animatorVal: {fileID: 0}
   audioSourceData:
     backingVarRef:
       itemId: 0
@@ -1289,6 +1775,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
+    colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
     backingVarRef:
       itemId: 0
@@ -1297,6 +1784,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     gameObjectRef: {fileID: 0}
+    gameObjectVal: {fileID: 0}
   materialData:
     backingVarRef:
       itemId: 0
@@ -1305,6 +1793,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     materialRef: {fileID: 0}
+    materialVal: {fileID: 0}
   objectData:
     backingVarRef:
       itemId: 0
@@ -1313,6 +1802,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     objectRef: {fileID: 0}
+    objectVal: {fileID: 0}
   spriteData:
     backingVarRef:
       itemId: 0
@@ -1321,6 +1811,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     spriteRef: {fileID: 0}
+    spriteVal: {fileID: 0}
   textureData:
     backingVarRef:
       itemId: 0
@@ -1329,6 +1820,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     textureRef: {fileID: 0}
+    textureVal: {fileID: 0}
   transformData:
     backingVarRef:
       itemId: 0
@@ -1337,6 +1829,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {fileID: 0}
     transformRef: {fileID: 0}
+    transformVal: {fileID: 0}
   vector2Data:
     backingVarRef:
       itemId: 0
@@ -1345,6 +1838,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
+    vector2Val: {x: 0, y: 0}
   vector3Data:
     backingVarRef:
       itemId: 0
@@ -1353,6 +1847,7 @@ MonoBehaviour:
       legacyOwningVsa: {fileID: 0}
     value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
+    vector3Val: {x: 0, y: 0, z: 0}
   references:
     version: 2
     RefIds:
@@ -1368,6 +1863,7 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 5
         integerRef: {fileID: 0}
+        integerVal: 0
     - rid: 6177420819874447541
       type: {class: BooleanData, ns: AtMycelia.Amanita.VScripting, asm: AtMycelia.Amanita.Core}
       data:
@@ -1398,14 +1894,24 @@ MonoBehaviour:
   startLabel:
     backingVarRef:
       itemId: 0
-      owningSource: {fileID: 0}
+      owningSource: {fileID: 1292574166}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     value: 
     stringRef: {fileID: 0}
-  startIndex: 0
+    stringVal: 
+  startIndex:
+    backingVarRef:
+      itemId: 0
+      owningSource: {fileID: 1292574166}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    value: 0
+    integerRef: {fileID: 0}
+    integerVal: 0
   callMode: 0
   targetBlockId: 12
+  _oldStartIndex: -1
 --- !u!114 &1292574186
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1452,8 +1958,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 19
   indentLevel: 1
-  setOperator: 2
-  anyVar:
+  _setOperator: 2
+  _anyVar:
     varRef:
       itemId: 3
       owningSource: {fileID: 1292574166}
@@ -1467,7 +1973,8 @@ MonoBehaviour:
         legacyOwningVsa: {fileID: 0}
       data:
         rid: 6177420826070221573
-  variable: {fileID: 0}
+    variable: {fileID: 0}
+  _oldVariable: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -1481,6 +1988,36 @@ MonoBehaviour:
           legacyOwningVsa: {fileID: 0}
         value: 1
         integerRef: {fileID: 0}
+        integerVal: 0
+--- !u!114 &1292574188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292574162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3326e6921119d6f4fb53c4243fb91015, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unityObjOwner: {fileID: 1292574166}
+  _variableManager:
+    _muscariables: []
+    _legacyVariables:
+    - {fileID: 1292574180}
+    - {fileID: 1292574179}
+    - {fileID: 1292574178}
+    - {fileID: 1292574177}
+    - {fileID: 1292574171}
+    - {fileID: 1292574176}
+    - {fileID: 1292574175}
+    _nextValidVarID: 1
+    _isInitted: 1
+  _cachedFlowchart: {fileID: 1292574166}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1677222588
 GameObject:
   m_ObjectHideFlags: 0

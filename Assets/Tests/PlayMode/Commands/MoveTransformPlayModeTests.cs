@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.VScripting;
+using AtMycelia.Amanita.Tweening.VScripting;
 using UnityObj = UnityEngine.Object;
 
 namespace AmaniTweenTests.Commands
@@ -21,7 +21,7 @@ namespace AmaniTweenTests.Commands
             cmd.SetTarget(_target);
             cmd.SetDuration(Duration);
             cmd.SetRelativity(TweenRelativity.Absolute);
-            cmd.SetToFrom(ToFrom.To);
+            cmd.SetToFrom(StartFromMode.Current);
         }
 
         public override void TearDown()
@@ -49,7 +49,7 @@ namespace AmaniTweenTests.Commands
             _target.position = Vector3.zero;
             command.SetAbsoluteDest(destination);
             command.SetRelativity(TweenRelativity.Absolute);
-            command.SetToFrom(ToFrom.To);
+            command.SetToFrom(StartFromMode.Current);
             command.SetDuration(Duration);
 
             yield return RunBlockAndWait();
@@ -68,7 +68,7 @@ namespace AmaniTweenTests.Commands
             _target.position = startPos;
             command.SetMoveByAmount(moveBy);
             command.SetRelativity(TweenRelativity.Relative);
-            command.SetToFrom(ToFrom.To);
+            command.SetToFrom(StartFromMode.Current);
             command.SetDuration(Duration);
 
             yield return RunBlockAndWait();
@@ -87,7 +87,7 @@ namespace AmaniTweenTests.Commands
             command.SetMoveFromPosition(fromPos);
             command.SetAbsoluteDest(destination);
             command.SetRelativity(TweenRelativity.Absolute);
-            command.SetToFrom(ToFrom.From);
+            command.SetToFrom(StartFromMode.FromValue);
             command.SetDuration(Duration);
 
             flowchart.ExecuteBlock(block);
@@ -128,7 +128,7 @@ namespace AmaniTweenTests.Commands
                 _relativity = relativity;
             }
 
-            public void SetToFrom(ToFrom toFrom)
+            public void SetToFrom(StartFromMode toFrom)
             {
                 _toFrom = toFrom;
             }

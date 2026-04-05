@@ -196,6 +196,7 @@ namespace AtMycelia.Amanita.VScripting
             _variableManager.MigrateLegacyVariables(muscariablesToMigrate, legacyVarsToMigrate);
             _cachedFlowchart.ClearVariableManagerMigrationData();
             _variableManager.Refresh();
+            Owner = _cachedFlowchart;
 
             EditorUtility.SetDirty(this);
             EditorUtility.SetDirty(_cachedFlowchart);

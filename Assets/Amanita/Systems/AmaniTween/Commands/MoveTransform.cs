@@ -1,7 +1,7 @@
-using AtMycelia.Amanita.Tweening;
+using AtMycelia.Amanita.VScripting;
 using UnityEngine;
 
-namespace AtMycelia.Amanita.VScripting
+namespace AtMycelia.Amanita.Tweening.VScripting
 {
     [CommandInfo("Animation", 
         "Move", 
@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.VScripting
         {
             Vector3 startPos = Vector3.zero;
 
-            if (_toFrom == ToFrom.From)
+            if (_toFrom == StartFromMode.FromValue)
             {
                 startPos = _moveFromPosition.Value;
             }
@@ -124,7 +124,7 @@ namespace AtMycelia.Amanita.VScripting
 
             string toFromStr = _toFrom.ToString();
 
-            if (_toFrom == ToFrom.From)
+            if (_toFrom == StartFromMode.FromValue)
             {
                 string moveFromStr;
                 if (_moveFromPosition.RepresentingVar)

@@ -1,0 +1,14 @@
+using UnityEngine;
+using AtMycelia.Amanita.VScripting;
+
+namespace AtMycelia.Amanita.Tweening.VScripting
+{
+    public interface ITweenCommand
+    {
+        FloatData Duration { get; }
+        ScriptableObject TweenerSO { get; }
+        BooleanData StopPreviousTweens { get; }
+        BooleanData WaitUntilFinished { get; }
+        ITweenHandle CurrentTween { get; }
+    }
+}
