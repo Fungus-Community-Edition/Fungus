@@ -3,7 +3,7 @@ using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.Tweening.VScripting
 {
-    [CommandInfo("Animation",
+    [CommandInfo("BI Tween",
         "Scale Relative",
         "Scales a component's transform by a target amount over time.")]
     public class ScaleRelative : BaseSimpleTweenCommand
@@ -14,9 +14,9 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         [SerializeField] protected Vector3Data _scaleByAmount = new Vector3Data();
         [Tooltip("The scale the tween will start at. Only applies if ToFrom is set to From.")]
         [SerializeField] protected Vector3Data _scaleFromValue = new Vector3Data();
-        [Tooltip("Does the tween act from current TO destination or is it reversed and act " +
-            "FROM destination to its current")]
-        [SerializeField] protected StartFromMode _toFrom = StartFromMode.Current;
+        [Tooltip("Whether or not the tween starts from the target's current scale or " +
+            "another one.")]
+        [SerializeField] protected StartFromMode _startMode = StartFromMode.Current;
 
         protected override bool AreTargetsValid()
         {
@@ -40,7 +40,7 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         {
             Vector3 startScale = Vector3.one;
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 startScale = _scaleFromValue.Value;
             }
@@ -92,9 +92,9 @@ namespace AtMycelia.Amanita.Tweening.VScripting
             }
 
             string targetStr = _toScale.RepresentingVar ? $"{_toScale.VarRef.Key}" : $"{_toScale.Value.name}";
-            string toFromStr = _toFrom.ToString();
+            string toFromStr = _startMode.ToString();
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 string scaleFromStr = _scaleFromValue.RepresentingVar
                     ? $"{_scaleFromValue.VarRef.Key}"

@@ -130,7 +130,7 @@ namespace AmaniTweenTests.Commands
 
             public void SetToFrom(StartFromMode toFrom)
             {
-                _toFrom = toFrom;
+                _startMode = toFrom;
             }
 
             public void SetDuration(float duration)

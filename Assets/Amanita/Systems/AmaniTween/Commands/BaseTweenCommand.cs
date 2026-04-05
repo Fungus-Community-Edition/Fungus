@@ -11,9 +11,9 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         [Tooltip("Tween adapter that will handle the process")]
         [SerializeField] protected ScriptableObject _tweenerSO = null;
 
-        [Tooltip("Does the tween act from current TO destination or is it reversed and act " +
-            "FROM destination to its current")]
-        [SerializeField] protected StartFromMode _toFrom = StartFromMode.Current;
+        [Tooltip("Decides whether or not the tween starts from a value the target already has, " +
+            "or a specific other value.")]
+        [SerializeField] protected StartFromMode _startMode = StartFromMode.Current;
 
         [Tooltip("Does the tween use the value as a target or as a delta to be added to " +
             "where it already is at the time?")]

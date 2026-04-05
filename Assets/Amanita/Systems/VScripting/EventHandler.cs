@@ -196,7 +196,17 @@ namespace AtMycelia.Amanita.VScripting.EventHandlers
         {
 
         }
-        protected virtual EventDispatcher EventDispatcher => AmanitaManager.S.EventDispatcher;
+        protected virtual EventDispatcher EventDispatcher
+        {
+            get
+            {
+                if (AmanitaManager.S != null)
+                {
+                    return AmanitaManager.S.EventDispatcher;
+                }
+                return null;
+            }
+        }
         
     }
 }
