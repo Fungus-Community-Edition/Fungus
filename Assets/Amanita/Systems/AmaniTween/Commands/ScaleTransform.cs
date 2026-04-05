@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         {
             Vector3 startScale = Vector3.one;
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 startScale = _scaleFromValue.Value;
             }
@@ -122,9 +122,9 @@ namespace AtMycelia.Amanita.Tweening.VScripting
                 targetStr = $"{_toScale.Value.name}";
             }
 
-            string toFromStr = _toFrom.ToString();
+            string toFromStr = _startMode.ToString();
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 string scaleFromStr;
                 if (_scaleFromValue.RepresentingVar)

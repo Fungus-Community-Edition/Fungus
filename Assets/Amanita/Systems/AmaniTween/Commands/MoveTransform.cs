@@ -39,7 +39,7 @@ namespace AtMycelia.Amanita.Tweening.VScripting
         {
             Vector3 startPos = Vector3.zero;
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 startPos = _moveFromPosition.Value;
             }
@@ -122,9 +122,9 @@ namespace AtMycelia.Amanita.Tweening.VScripting
                 targetStr = $"{_toMove.Value.name}";
             }
 
-            string toFromStr = _toFrom.ToString();
+            string toFromStr = _startMode.ToString();
 
-            if (_toFrom == StartFromMode.FromValue)
+            if (_startMode == StartFromMode.FromValue)
             {
                 string moveFromStr;
                 if (_moveFromPosition.RepresentingVar)

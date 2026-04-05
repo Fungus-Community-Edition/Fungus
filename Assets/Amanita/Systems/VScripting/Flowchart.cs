@@ -878,12 +878,14 @@ namespace AtMycelia.Amanita.VScripting
             // without worrying about ID conflicts, but variables added to a Flowchart are
             // supposed to forever be with that same Flowchart.
             ushort maxId = 0;
+            _blockListCache.RemoveAll(item => item == null);
             for (int i = 0; i < _blockListCache.Count; i++)
             {
                 var block = _blockListCache[i];
                 maxId = Math.Max(maxId, block.ItemId);
             }
 
+            _commands.RemoveAll(item => item == null);
             for (int i = 0; i < _commands.Count; i++)
             {
                 var command = _commands[i];

@@ -3,7 +3,7 @@ using AtMycelia.Amanita.VScripting;
 
 namespace AtMycelia.Amanita.Tweening.VScripting
 {
-    [CommandInfo("Animation",
+    [CommandInfo("BI Tween",
         "Scale Set",
         "Scales a component's transform to a target scale over time.")]
     public class ScaleSet : BaseSimpleTweenCommand
