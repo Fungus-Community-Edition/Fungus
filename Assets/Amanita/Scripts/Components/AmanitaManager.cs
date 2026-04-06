@@ -1,21 +1,14 @@
-﻿using System;
-using AtMycelia.SaveSys;
+﻿using AtMycelia.SaveSys;
 using AtMycelia.Amanita.Tweening;
-using AtMycelia.Amanita.VScripting;
 using FullSerializer;
 using Lorekeeper;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.SaveSys.UI;
-using UnityEngine.EventSystems;
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem.UI;
 using AtMycelia.Amanita.SaveSys;
 using AtMycelia.Amanita.DialogueSys;
-
-
 #endif
 
 #if UNITY_EDITOR
@@ -30,7 +23,6 @@ namespace AtMycelia.Amanita
     public sealed class AmanitaManager : MonoBehaviour, ITearDownResponder
     {
         [SerializeField, HideInInspector] private GameObject tweenAnchorHolder;
-        [SerializeField] private SaveMenuManager saveMenuPrefab;
         private SaveLoadedBlockExecutor saveLoadedBlockExecutor = new SaveLoadedBlockExecutor();
 
         public static fsSerializer DefaultSerializer { get; } = new fsSerializer();
@@ -79,15 +71,13 @@ namespace AtMycelia.Amanita
                 Debug.LogError("ShadowDatabase asset not found in Resources/ShadowDatabase.");
             }
         }
-        private static readonly string resourcesRootFolder = ""; 
-        // ^Relative to Resources folder, hence this being an empty string
+
         private static ShadowDatabase shadowDb;
 
         /// <summary>
         /// Ensure a single AmanitaManager instance exists in the scene (robust to edit-mode and concurrent calls).
         /// When there are any Flowcharts in the scene editor, there should also be an AmanitaManager in that same scene.
         /// </summary>
-        [MenuItem("Tools/Atelier Mycelia/Amanita/Ensure Amanita Manager", priority = 0)]
         public static AmanitaManager EnsureExists()
         {
             // Fast path
@@ -121,8 +111,7 @@ namespace AtMycelia.Amanita
 #if UNITY_EDITOR
                     // Note: FindObjectsOfTypeAll includes stuff in the scene AND project files, even in edit mode.
                     var postAll = Resources.FindObjectsOfTypeAll<AmanitaManager>()
-                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && 
-                        elem != newlyInstantiated && elem != null);
+                        .Where((elem) => !EditorUtility.IsPersistent(elem.gameObject) && elem != newlyInstantiated && elem != null);
                     // ^This Where clause is so we skip project files. Apparently, FindFirstObjectByType can miss
                     // stuff in the scene.
 
@@ -148,22 +137,22 @@ namespace AtMycelia.Amanita
 
         private static AmanitaManager CreateNewManager()
         {
-            AmanitaManager prefab = Resources.Load<AmanitaManager>(AmanitaConstants.PathToAmanitaManagerPrefab);
-            if (prefab == null)
-            {
-                Debug.LogError($"AmanitaManager prefab not found at Resources/{AmanitaConstants.PathToAmanitaManagerPrefab}.");
-                return null;
-            }
+            GameObject managerGo = new GameObject(nameof(AmanitaManager));
+            AmanitaManager manager = managerGo.AddComponent<AmanitaManager>();
 
-            AmanitaManager instantiated;
-#if UNITY_EDITOR
-            instantiated = PrefabUtility.InstantiatePrefab(prefab) as AmanitaManager;
-#else
-            instantiated = Instantiate(prefab);
-#endif
+            CreateSubmodule<CameraManager>(nameof(CameraManager), managerGo.transform);
+            CreateSubmodule<EventDispatcher>(nameof(EventDispatcher), managerGo.transform);
+            CreateSubmodule<NarrativeLog>(nameof(NarrativeLog), managerGo.transform);
+            CreateSubmodule<TweenManager>(nameof(TweenManager), managerGo.transform);
 
-            instantiated.gameObject.name = prefab.name; // We don't want "Clone" in the name
-            return instantiated;
+            return manager;
+        }
+
+        private static T CreateSubmodule<T>(string name, Transform parent) where T : Component
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            return go.AddComponent<T>();
         }
 
         public void Init()
@@ -187,17 +176,6 @@ namespace AtMycelia.Amanita
             _s = this;
 
             EnsureShadowDbAvailable();
-            EnsureEventSystemInScene();
-            void EnsureEventSystemInScene()
-            {
-                var existing = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-                if (existing == null)
-                {
-                    var esGo = new GameObject("EventSystem");
-                    esGo.AddComponent<EventSystem>();
-                    esGo.AddComponent<InputSystemUIInputModule>();
-                }
-            }
 
             ResetAnchors();
             void ResetAnchors()
@@ -228,8 +206,6 @@ namespace AtMycelia.Amanita
             PrepSubmodules();
         }
 
-        public static SaveMenuManager SaveMenuManager { get; private set; }
-
         public bool IsFullyInitted
         {
             get => (TweenManager != null && TweenManager.IsFullyInitted) &&
@@ -248,6 +224,8 @@ namespace AtMycelia.Amanita
                 TweenManager = GetComponentInChildren<TweenManager>();
             }
 
+            ApplySceneOverrides();
+
             List<IAmanitaManagerSubmodule> submodules = GetComponentsInChildren<IAmanitaManagerSubmodule>().ToList();
             // Lower order index, earlier execution
             submodules.Sort((first, second) => first.OrderIndex.CompareTo(second.OrderIndex));
@@ -255,6 +233,14 @@ namespace AtMycelia.Amanita
             {
                 var module = submodules[i];
                 module.Init();
+            }
+        }
+
+        public void ApplySceneOverrides()
+        {
+            if (CameraManager != null)
+            {
+                CameraManager.ApplyConfig(AmanitaConfigResolver.ResolveCameraManagerConfig());
             }
         }
 
@@ -368,8 +354,6 @@ namespace AtMycelia.Amanita
                     }
                     _adapterAnchors.Clear();
                 }
-
-                
             }
         }
 
